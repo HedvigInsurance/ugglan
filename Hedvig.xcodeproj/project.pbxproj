@@ -1,0 +1,591 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E15421930A94006B5CE4 /* AppDelegate.swift */; };
+		EB75E15721930A94006B5CE4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E15621930A94006B5CE4 /* ViewController.swift */; };
+		EB75E15A21930A94006B5CE4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15821930A94006B5CE4 /* Main.storyboard */; };
+		EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15B21930A95006B5CE4 /* Assets.xcassets */; };
+		EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */; };
+		EB75E16A21930A95006B5CE4 /* HedvigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E16921930A95006B5CE4 /* HedvigTests.swift */; };
+		EB75E17521930A95006B5CE4 /* HedvigUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E17421930A95006B5CE4 /* HedvigUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EB75E16621930A95006B5CE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB75E14921930A94006B5CE4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EB75E15021930A94006B5CE4;
+			remoteInfo = Hedvig;
+		};
+		EB75E17121930A95006B5CE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB75E14921930A94006B5CE4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EB75E15021930A94006B5CE4;
+			remoteInfo = Hedvig;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EB75E15121930A94006B5CE4 /* Hedvig.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hedvig.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB75E15421930A94006B5CE4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		EB75E15621930A94006B5CE4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		EB75E15921930A94006B5CE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		EB75E15B21930A95006B5CE4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EB75E15E21930A95006B5CE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		EB75E16021930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB75E16521930A95006B5CE4 /* HedvigTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HedvigTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB75E16921930A95006B5CE4 /* HedvigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigTests.swift; sourceTree = "<group>"; };
+		EB75E16B21930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB75E17021930A95006B5CE4 /* HedvigUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HedvigUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB75E17421930A95006B5CE4 /* HedvigUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigUITests.swift; sourceTree = "<group>"; };
+		EB75E17621930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EB75E14E21930A94006B5CE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB75E16221930A95006B5CE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB75E16D21930A95006B5CE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EB75E14821930A94006B5CE4 = {
+			isa = PBXGroup;
+			children = (
+				EB75E15321930A94006B5CE4 /* Hedvig */,
+				EB75E16821930A95006B5CE4 /* HedvigTests */,
+				EB75E17321930A95006B5CE4 /* HedvigUITests */,
+				EB75E15221930A94006B5CE4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EB75E15221930A94006B5CE4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E15121930A94006B5CE4 /* Hedvig.app */,
+				EB75E16521930A95006B5CE4 /* HedvigTests.xctest */,
+				EB75E17021930A95006B5CE4 /* HedvigUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EB75E15321930A94006B5CE4 /* Hedvig */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E15421930A94006B5CE4 /* AppDelegate.swift */,
+				EB75E15621930A94006B5CE4 /* ViewController.swift */,
+				EB75E15821930A94006B5CE4 /* Main.storyboard */,
+				EB75E15B21930A95006B5CE4 /* Assets.xcassets */,
+				EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */,
+				EB75E16021930A95006B5CE4 /* Info.plist */,
+			);
+			path = Hedvig;
+			sourceTree = "<group>";
+		};
+		EB75E16821930A95006B5CE4 /* HedvigTests */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E16921930A95006B5CE4 /* HedvigTests.swift */,
+				EB75E16B21930A95006B5CE4 /* Info.plist */,
+			);
+			path = HedvigTests;
+			sourceTree = "<group>";
+		};
+		EB75E17321930A95006B5CE4 /* HedvigUITests */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E17421930A95006B5CE4 /* HedvigUITests.swift */,
+				EB75E17621930A95006B5CE4 /* Info.plist */,
+			);
+			path = HedvigUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EB75E15021930A94006B5CE4 /* Hedvig */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB75E17921930A95006B5CE4 /* Build configuration list for PBXNativeTarget "Hedvig" */;
+			buildPhases = (
+				EB75E14D21930A94006B5CE4 /* Sources */,
+				EB75E14E21930A94006B5CE4 /* Frameworks */,
+				EB75E14F21930A94006B5CE4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Hedvig;
+			productName = Hedvig;
+			productReference = EB75E15121930A94006B5CE4 /* Hedvig.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EB75E16421930A95006B5CE4 /* HedvigTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB75E17C21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigTests" */;
+			buildPhases = (
+				EB75E16121930A95006B5CE4 /* Sources */,
+				EB75E16221930A95006B5CE4 /* Frameworks */,
+				EB75E16321930A95006B5CE4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB75E16721930A95006B5CE4 /* PBXTargetDependency */,
+			);
+			name = HedvigTests;
+			productName = HedvigTests;
+			productReference = EB75E16521930A95006B5CE4 /* HedvigTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EB75E16F21930A95006B5CE4 /* HedvigUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB75E17F21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigUITests" */;
+			buildPhases = (
+				EB75E16C21930A95006B5CE4 /* Sources */,
+				EB75E16D21930A95006B5CE4 /* Frameworks */,
+				EB75E16E21930A95006B5CE4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB75E17221930A95006B5CE4 /* PBXTargetDependency */,
+			);
+			name = HedvigUITests;
+			productName = HedvigUITests;
+			productReference = EB75E17021930A95006B5CE4 /* HedvigUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EB75E14921930A94006B5CE4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1010;
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Sam Pettersson";
+				TargetAttributes = {
+					EB75E15021930A94006B5CE4 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					EB75E16421930A95006B5CE4 = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = EB75E15021930A94006B5CE4;
+					};
+					EB75E16F21930A95006B5CE4 = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = EB75E15021930A94006B5CE4;
+					};
+				};
+			};
+			buildConfigurationList = EB75E14C21930A94006B5CE4 /* Build configuration list for PBXProject "Hedvig" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EB75E14821930A94006B5CE4;
+			productRefGroup = EB75E15221930A94006B5CE4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EB75E15021930A94006B5CE4 /* Hedvig */,
+				EB75E16421930A95006B5CE4 /* HedvigTests */,
+				EB75E16F21930A95006B5CE4 /* HedvigUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EB75E14F21930A94006B5CE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */,
+				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
+				EB75E15A21930A94006B5CE4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB75E16321930A95006B5CE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB75E16E21930A95006B5CE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EB75E14D21930A94006B5CE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB75E15721930A94006B5CE4 /* ViewController.swift in Sources */,
+				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB75E16121930A95006B5CE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB75E16A21930A95006B5CE4 /* HedvigTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB75E16C21930A95006B5CE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB75E17521930A95006B5CE4 /* HedvigUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB75E16721930A95006B5CE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EB75E15021930A94006B5CE4 /* Hedvig */;
+			targetProxy = EB75E16621930A95006B5CE4 /* PBXContainerItemProxy */;
+		};
+		EB75E17221930A95006B5CE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EB75E15021930A94006B5CE4 /* Hedvig */;
+			targetProxy = EB75E17121930A95006B5CE4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		EB75E15821930A94006B5CE4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EB75E15921930A94006B5CE4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EB75E15E21930A95006B5CE4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EB75E17721930A95006B5CE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EB75E17821930A95006B5CE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EB75E17A21930A95006B5CE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AW656G5PFM;
+				INFOPLIST_FILE = Hedvig/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.Hedvig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EB75E17B21930A95006B5CE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AW656G5PFM;
+				INFOPLIST_FILE = Hedvig/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.Hedvig;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EB75E17D21930A95006B5CE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AW656G5PFM;
+				INFOPLIST_FILE = HedvigTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.HedvigTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hedvig.app/Hedvig";
+			};
+			name = Debug;
+		};
+		EB75E17E21930A95006B5CE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AW656G5PFM;
+				INFOPLIST_FILE = HedvigTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.HedvigTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hedvig.app/Hedvig";
+			};
+			name = Release;
+		};
+		EB75E18021930A95006B5CE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AW656G5PFM;
+				INFOPLIST_FILE = HedvigUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.HedvigUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Hedvig;
+			};
+			name = Debug;
+		};
+		EB75E18121930A95006B5CE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AW656G5PFM;
+				INFOPLIST_FILE = HedvigUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.HedvigUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Hedvig;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EB75E14C21930A94006B5CE4 /* Build configuration list for PBXProject "Hedvig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB75E17721930A95006B5CE4 /* Debug */,
+				EB75E17821930A95006B5CE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB75E17921930A95006B5CE4 /* Build configuration list for PBXNativeTarget "Hedvig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB75E17A21930A95006B5CE4 /* Debug */,
+				EB75E17B21930A95006B5CE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB75E17C21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB75E17D21930A95006B5CE4 /* Debug */,
+				EB75E17E21930A95006B5CE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB75E17F21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB75E18021930A95006B5CE4 /* Debug */,
+				EB75E18121930A95006B5CE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EB75E14921930A94006B5CE4 /* Project object */;
+}
