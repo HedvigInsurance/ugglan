@@ -43,7 +43,7 @@ struct AppState: State {
             globalId: "123",
             fromMyself: true,
             body: MessageBody(
-                text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"
+                text: "hej mitt"
             )
         )
     ]

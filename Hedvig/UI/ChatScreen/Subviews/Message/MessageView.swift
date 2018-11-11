@@ -72,7 +72,10 @@ class MessageView: UITableViewCell, View {
     }
     
     func layout() {
-        messageLabel.pin.maxWidth(200).sizeToFit(.width)
+        messageLabel.pin.sizeToFit(.width)
+            .width(messageLabel.intrinsicContentSize.width)
+            .maxWidth(200)
+        
         messageBubble.pin.wrapContent(padding: 15).top(10)
         
         if let fromMyself = message?.fromMyself {
