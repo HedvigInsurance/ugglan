@@ -13,7 +13,7 @@ import PinLayout
 
 class MessageView: UITableViewCell, View {
     let messageBubble = UIView()
-    let messageLabel = UILabel()
+    let messageLabel = CopyableLabel()
     
     var message: Message? {
         didSet {
@@ -76,7 +76,8 @@ class MessageView: UITableViewCell, View {
             .width(messageLabel.intrinsicContentSize.width)
             .maxWidth(200)
         
-        messageBubble.pin.wrapContent(padding: 15).top(10)
+        let messageBubblePadding = PEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
+        messageBubble.pin.wrapContent(padding: messageBubblePadding).top(10)
         
         if let fromMyself = message?.fromMyself {
             if fromMyself {
