@@ -7,16 +7,34 @@
 //
 
 import UIKit
+import Katana
+import Tempura
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, RootInstaller {
 
     var window: UIWindow?
-
+    var store: Store<AppState>!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        self.store = Store<AppState>(middleware: [], dependencies: DependenciesContainer.self)
+        
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let navigator: Navigator! = (self.store!.dependencies as! DependenciesContainer).navigator
+        navigator.start(using: self, in: self.window!, at: Screen.chat)
+        
         return true
+    }
+    
+    func installRoot(identifier: RouteElementIdentifier, context: Any?, completion: () -> ()) {
+        if identifier == Screen.chat.rawValue {
+            let chatViewController = ChatViewController(store: self.store)
+            let navigationController = UINavigationController(rootViewController: chatViewController)
+            self.window?.rootViewController = navigationController
+            completion()
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

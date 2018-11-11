@@ -7,13 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19B76C7FFFF41BAF684C1629 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */; };
+		57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */; };
+		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
+		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
+		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
+		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
+		EB5ED9D7219860DF004CE441 /* CircularStd-Book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */; };
+		EB5ED9D8219860DF004CE441 /* CircularStd-Book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */; };
+		EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D3219860DE004CE441 /* Merriweather-Light.ttf */; };
+		EB5ED9DA219860DF004CE441 /* Merriweather-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D3219860DE004CE441 /* Merriweather-Light.ttf */; };
+		EB5ED9DB219860DF004CE441 /* CircularStd-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D4219860DF004CE441 /* CircularStd-Bold.ttf */; };
+		EB5ED9DC219860DF004CE441 /* CircularStd-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D4219860DF004CE441 /* CircularStd-Bold.ttf */; };
+		EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9DD21986127004CE441 /* HedvigFonts.swift */; };
+		EB5ED9DF21986127004CE441 /* HedvigFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9DD21986127004CE441 /* HedvigFonts.swift */; };
+		EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9E321986A6C004CE441 /* Icon.swift */; };
 		EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E15421930A94006B5CE4 /* AppDelegate.swift */; };
-		EB75E15721930A94006B5CE4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E15621930A94006B5CE4 /* ViewController.swift */; };
-		EB75E15A21930A94006B5CE4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15821930A94006B5CE4 /* Main.storyboard */; };
 		EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15B21930A95006B5CE4 /* Assets.xcassets */; };
 		EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */; };
 		EB75E16A21930A95006B5CE4 /* HedvigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E16921930A95006B5CE4 /* HedvigTests.swift */; };
-		EB75E17521930A95006B5CE4 /* HedvigUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E17421930A95006B5CE4 /* HedvigUITests.swift */; };
+		EB75E184219331B5006B5CE4 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E183219331B5006B5CE4 /* AppState.swift */; };
+		EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E187219332AE006B5CE4 /* ChatViewController.swift */; };
+		EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E18B2193334F006B5CE4 /* ChatView.swift */; };
+		EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E190219337C2006B5CE4 /* DependenciesContainer.swift */; };
+		EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E19321933815006B5CE4 /* AppNavigation.swift */; };
+		EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E19721933BFD006B5CE4 /* InputFieldView.swift */; };
+		EB75E1A52197572E006B5CE4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A42197572E006B5CE4 /* Message.swift */; };
+		EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A7219758E9006B5CE4 /* MessageView.swift */; };
+		EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1AA21975CCC006B5CE4 /* ListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,29 +45,43 @@
 			remoteGlobalIDString = EB75E15021930A94006B5CE4;
 			remoteInfo = Hedvig;
 		};
-		EB75E17121930A95006B5CE4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EB75E14921930A94006B5CE4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EB75E15021930A94006B5CE4;
-			remoteInfo = Hedvig;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		13FA3601F0B8BDBD7935F7CD /* Pods-HedvigTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.release.xcconfig"; sourceTree = "<group>"; };
+		2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Hedvig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F6B2B05E8EFE56C572BA222 /* Pods-Hedvig.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hedvig.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig.debug.xcconfig"; sourceTree = "<group>"; };
+		64746E2464ADFE0A14A3B61C /* Pods-Hedvig.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hedvig.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig.release.xcconfig"; sourceTree = "<group>"; };
+		9066419AE4DCAF8731CA72D7 /* Pods_HedvigUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HedvigUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0BD1F44A8B0A6F955342C51 /* Pods-HedvigUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigUITests/Pods-HedvigUITests.release.xcconfig"; sourceTree = "<group>"; };
+		D806B7D70CD966A5F5BE4DBC /* Pods-HedvigUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigUITests/Pods-HedvigUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HedvigTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
+		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
+		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
+		EB5ED9D3219860DE004CE441 /* Merriweather-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-Light.ttf"; sourceTree = "<group>"; };
+		EB5ED9D4219860DF004CE441 /* CircularStd-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Bold.ttf"; sourceTree = "<group>"; };
+		EB5ED9DD21986127004CE441 /* HedvigFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigFonts.swift; sourceTree = "<group>"; };
+		EB5ED9E321986A6C004CE441 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
 		EB75E15121930A94006B5CE4 /* Hedvig.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hedvig.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB75E15421930A94006B5CE4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		EB75E15621930A94006B5CE4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		EB75E15921930A94006B5CE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EB75E15B21930A95006B5CE4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EB75E15E21930A95006B5CE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EB75E16021930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB75E16521930A95006B5CE4 /* HedvigTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HedvigTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB75E16921930A95006B5CE4 /* HedvigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigTests.swift; sourceTree = "<group>"; };
 		EB75E16B21930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EB75E17021930A95006B5CE4 /* HedvigUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HedvigUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EB75E17421930A95006B5CE4 /* HedvigUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigUITests.swift; sourceTree = "<group>"; };
-		EB75E17621930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB75E183219331B5006B5CE4 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		EB75E187219332AE006B5CE4 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		EB75E18B2193334F006B5CE4 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		EB75E190219337C2006B5CE4 /* DependenciesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesContainer.swift; sourceTree = "<group>"; };
+		EB75E19321933815006B5CE4 /* AppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigation.swift; sourceTree = "<group>"; };
+		EB75E19721933BFD006B5CE4 /* InputFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputFieldView.swift; sourceTree = "<group>"; };
+		EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Hedvig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB75E1A42197572E006B5CE4 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		EB75E1A7219758E9006B5CE4 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
+		EB75E1AA21975CCC006B5CE4 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +89,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */,
+				19B76C7FFFF41BAF684C1629 /* Pods_Hedvig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,26 +98,65 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EB75E16D21930A95006B5CE4 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		21EDD2C3550A9477D864A4FD /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2F6B2B05E8EFE56C572BA222 /* Pods-Hedvig.debug.xcconfig */,
+				64746E2464ADFE0A14A3B61C /* Pods-Hedvig.release.xcconfig */,
+				F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */,
+				13FA3601F0B8BDBD7935F7CD /* Pods-HedvigTests.release.xcconfig */,
+				D806B7D70CD966A5F5BE4DBC /* Pods-HedvigUITests.debug.xcconfig */,
+				D0BD1F44A8B0A6F955342C51 /* Pods-HedvigUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		EB5ED9CD21985D37004CE441 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				EB5ED9E021986666004CE441 /* Icons */,
+				EB5ED9D0219860A9004CE441 /* Fonts */,
+				EB75E15B21930A95006B5CE4 /* Assets.xcassets */,
+				EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		EB5ED9D0219860A9004CE441 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				EB5ED9D4219860DF004CE441 /* CircularStd-Bold.ttf */,
+				EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */,
+				EB5ED9D3219860DE004CE441 /* Merriweather-Light.ttf */,
+				EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */,
+				EB5ED9DD21986127004CE441 /* HedvigFonts.swift */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		EB5ED9E021986666004CE441 /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				EB5ED9E321986A6C004CE441 /* Icon.swift */,
+			);
+			path = Icons;
+			sourceTree = "<group>";
+		};
 		EB75E14821930A94006B5CE4 = {
 			isa = PBXGroup;
 			children = (
 				EB75E15321930A94006B5CE4 /* Hedvig */,
 				EB75E16821930A95006B5CE4 /* HedvigTests */,
-				EB75E17321930A95006B5CE4 /* HedvigUITests */,
 				EB75E15221930A94006B5CE4 /* Products */,
+				21EDD2C3550A9477D864A4FD /* Pods */,
+				F42E0389CDD3147AF74CFD44 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,7 +165,6 @@
 			children = (
 				EB75E15121930A94006B5CE4 /* Hedvig.app */,
 				EB75E16521930A95006B5CE4 /* HedvigTests.xctest */,
-				EB75E17021930A95006B5CE4 /* HedvigUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,10 +172,12 @@
 		EB75E15321930A94006B5CE4 /* Hedvig */ = {
 			isa = PBXGroup;
 			children = (
+				EB5ED9CD21985D37004CE441 /* Assets */,
+				EB75E19221933806006B5CE4 /* Navigation */,
+				EB75E18F219337B6006B5CE4 /* Dependencies */,
+				EB75E1852193328E006B5CE4 /* UI */,
+				EB75E182219331A8006B5CE4 /* State */,
 				EB75E15421930A94006B5CE4 /* AppDelegate.swift */,
-				EB75E15621930A94006B5CE4 /* ViewController.swift */,
-				EB75E15821930A94006B5CE4 /* Main.storyboard */,
-				EB75E15B21930A95006B5CE4 /* Assets.xcassets */,
 				EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */,
 				EB75E16021930A95006B5CE4 /* Info.plist */,
 			);
@@ -116,13 +193,92 @@
 			path = HedvigTests;
 			sourceTree = "<group>";
 		};
-		EB75E17321930A95006B5CE4 /* HedvigUITests */ = {
+		EB75E182219331A8006B5CE4 /* State */ = {
 			isa = PBXGroup;
 			children = (
-				EB75E17421930A95006B5CE4 /* HedvigUITests.swift */,
-				EB75E17621930A95006B5CE4 /* Info.plist */,
+				EB75E183219331B5006B5CE4 /* AppState.swift */,
+				EB75E1A42197572E006B5CE4 /* Message.swift */,
 			);
-			path = HedvigUITests;
+			path = State;
+			sourceTree = "<group>";
+		};
+		EB75E1852193328E006B5CE4 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E18621933298006B5CE4 /* ChatScreen */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		EB75E18621933298006B5CE4 /* ChatScreen */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E19521933BE3006B5CE4 /* Subviews */,
+				EB75E187219332AE006B5CE4 /* ChatViewController.swift */,
+				EB75E18B2193334F006B5CE4 /* ChatView.swift */,
+			);
+			path = ChatScreen;
+			sourceTree = "<group>";
+		};
+		EB75E18F219337B6006B5CE4 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E190219337C2006B5CE4 /* DependenciesContainer.swift */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		EB75E19221933806006B5CE4 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E19321933815006B5CE4 /* AppNavigation.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		EB75E19521933BE3006B5CE4 /* Subviews */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E1A921975CB9006B5CE4 /* ListView */,
+				EB75E1A6219758DC006B5CE4 /* Message */,
+				EB75E19621933BEB006B5CE4 /* InputField */,
+			);
+			path = Subviews;
+			sourceTree = "<group>";
+		};
+		EB75E19621933BEB006B5CE4 /* InputField */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E19721933BFD006B5CE4 /* InputFieldView.swift */,
+			);
+			path = InputField;
+			sourceTree = "<group>";
+		};
+		EB75E1A6219758DC006B5CE4 /* Message */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E1A7219758E9006B5CE4 /* MessageView.swift */,
+			);
+			path = Message;
+			sourceTree = "<group>";
+		};
+		EB75E1A921975CB9006B5CE4 /* ListView */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E1AA21975CCC006B5CE4 /* ListView.swift */,
+			);
+			path = ListView;
+			sourceTree = "<group>";
+		};
+		F42E0389CDD3147AF74CFD44 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */,
+				2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */,
+				E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */,
+				9066419AE4DCAF8731CA72D7 /* Pods_HedvigUITests.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,9 +288,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EB75E17921930A95006B5CE4 /* Build configuration list for PBXNativeTarget "Hedvig" */;
 			buildPhases = (
+				660C5C5DFB5E6A4FFA6C9CD0 /* [CP] Check Pods Manifest.lock */,
 				EB75E14D21930A94006B5CE4 /* Sources */,
 				EB75E14E21930A94006B5CE4 /* Frameworks */,
 				EB75E14F21930A94006B5CE4 /* Resources */,
+				255C099E949733C48A4322D1 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -149,9 +307,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EB75E17C21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigTests" */;
 			buildPhases = (
+				A654EA2B414FD7D9E448E4DC /* [CP] Check Pods Manifest.lock */,
 				EB75E16121930A95006B5CE4 /* Sources */,
 				EB75E16221930A95006B5CE4 /* Frameworks */,
 				EB75E16321930A95006B5CE4 /* Resources */,
+				5B9E6CC4B380044A8158C4A4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -162,24 +322,6 @@
 			productName = HedvigTests;
 			productReference = EB75E16521930A95006B5CE4 /* HedvigTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		EB75E16F21930A95006B5CE4 /* HedvigUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EB75E17F21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigUITests" */;
-			buildPhases = (
-				EB75E16C21930A95006B5CE4 /* Sources */,
-				EB75E16D21930A95006B5CE4 /* Frameworks */,
-				EB75E16E21930A95006B5CE4 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EB75E17221930A95006B5CE4 /* PBXTargetDependency */,
-			);
-			name = HedvigUITests;
-			productName = HedvigUITests;
-			productReference = EB75E17021930A95006B5CE4 /* HedvigUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -195,10 +337,6 @@
 						CreatedOnToolsVersion = 10.1;
 					};
 					EB75E16421930A95006B5CE4 = {
-						CreatedOnToolsVersion = 10.1;
-						TestTargetID = EB75E15021930A94006B5CE4;
-					};
-					EB75E16F21930A95006B5CE4 = {
 						CreatedOnToolsVersion = 10.1;
 						TestTargetID = EB75E15021930A94006B5CE4;
 					};
@@ -219,7 +357,6 @@
 			targets = (
 				EB75E15021930A94006B5CE4 /* Hedvig */,
 				EB75E16421930A95006B5CE4 /* HedvigTests */,
-				EB75E16F21930A95006B5CE4 /* HedvigUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -229,9 +366,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB5ED9D7219860DF004CE441 /* CircularStd-Book.ttf in Resources */,
+				EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */,
+				EB5ED9DB219860DF004CE441 /* CircularStd-Bold.ttf in Resources */,
 				EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */,
 				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
-				EB75E15A21930A94006B5CE4 /* Main.storyboard in Resources */,
+				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,24 +379,125 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EB75E16E21930A95006B5CE4 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				EB5ED9DA219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
+				EB5ED9D8219860DF004CE441 /* CircularStd-Book.ttf in Resources */,
+				EB5ED9DC219860DF004CE441 /* CircularStd-Bold.ttf in Resources */,
+				EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		255C099E949733C48A4322D1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
+				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
+				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
+				"${BUILT_PRODUCTS_DIR}/SVGKit/SVGKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVGKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5B9E6CC4B380044A8158C4A4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
+				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
+				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
+				"${BUILT_PRODUCTS_DIR}/SVGKit/SVGKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
+				"${BUILT_PRODUCTS_DIR}/TempuraTesting/TempuraTesting.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVGKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TempuraTesting.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		660C5C5DFB5E6A4FFA6C9CD0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Hedvig-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A654EA2B414FD7D9E448E4DC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-HedvigTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EB75E14D21930A94006B5CE4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB75E15721930A94006B5CE4 /* ViewController.swift in Sources */,
+				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
+				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
+				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
+				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
+				EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */,
+				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
+				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
+				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
+				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
+				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
+				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
+				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,14 +507,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB75E16A21930A95006B5CE4 /* HedvigTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EB75E16C21930A95006B5CE4 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EB75E17521930A95006B5CE4 /* HedvigUITests.swift in Sources */,
+				EB5ED9DF21986127004CE441 /* HedvigFonts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,22 +519,9 @@
 			target = EB75E15021930A94006B5CE4 /* Hedvig */;
 			targetProxy = EB75E16621930A95006B5CE4 /* PBXContainerItemProxy */;
 		};
-		EB75E17221930A95006B5CE4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EB75E15021930A94006B5CE4 /* Hedvig */;
-			targetProxy = EB75E17121930A95006B5CE4 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		EB75E15821930A94006B5CE4 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				EB75E15921930A94006B5CE4 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -430,10 +651,12 @@
 		};
 		EB75E17A21930A95006B5CE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F6B2B05E8EFE56C572BA222 /* Pods-Hedvig.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AW656G5PFM;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Hedvig/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -448,10 +671,12 @@
 		};
 		EB75E17B21930A95006B5CE4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 64746E2464ADFE0A14A3B61C /* Pods-Hedvig.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AW656G5PFM;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Hedvig/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -466,6 +691,7 @@
 		};
 		EB75E17D21930A95006B5CE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -487,6 +713,7 @@
 		};
 		EB75E17E21930A95006B5CE4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 13FA3601F0B8BDBD7935F7CD /* Pods-HedvigTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -503,46 +730,6 @@
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hedvig.app/Hedvig";
-			};
-			name = Release;
-		};
-		EB75E18021930A95006B5CE4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = AW656G5PFM;
-				INFOPLIST_FILE = HedvigUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.HedvigUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Hedvig;
-			};
-			name = Debug;
-		};
-		EB75E18121930A95006B5CE4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = AW656G5PFM;
-				INFOPLIST_FILE = HedvigUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.HedvigUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Hedvig;
 			};
 			name = Release;
 		};
@@ -572,15 +759,6 @@
 			buildConfigurations = (
 				EB75E17D21930A95006B5CE4 /* Debug */,
 				EB75E17E21930A95006B5CE4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EB75E17F21930A95006B5CE4 /* Build configuration list for PBXNativeTarget "HedvigUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EB75E18021930A95006B5CE4 /* Debug */,
-				EB75E18121930A95006B5CE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

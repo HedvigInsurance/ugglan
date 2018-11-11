@@ -1,34 +1,31 @@
 //
-//  HedvigTests.swift
-//  HedvigTests
+//  UITest.swift
 //
-//  Created by Sam Pettersson on 2018-11-07.
-//  Copyright © 2018 Sam Pettersson. All rights reserved.
+//
+//  Created by Sam Pettersson on 2018-11-10.
 //
 
 import XCTest
+import TempuraTesting
 @testable import Hedvig
 
-class HedvigTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+class UITest: XCTestCase, UITestCase {
+    typealias V = ChatView
+    
+    var firstTestViewModel: ChatViewModel {
+        return ChatViewModel(messages: [
+                Message(globalId: "1", fromMyself: true, body: MessageBody(text: "testing")),
+            Message(globalId: "2", fromMyself: false, body: MessageBody(text: "testing a longer message")),
+            Message(globalId: "3", fromMyself: true, body: MessageBody(text: "testing a longer message"))
+        ])
     }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    func testChatScreen() {
+        var context = UITests.Context<ChatView>()
+        context.container = .navigationController
+        
+        self.uiTest(testCases: [
+            "chatView001": firstTestViewModel
+            ], context: context)
     }
-
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }
