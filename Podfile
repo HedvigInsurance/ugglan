@@ -9,6 +9,8 @@ target 'Hedvig' do
   pod 'Tempura'
   pod 'PinLayout'
   pod 'SwiftLint'
+  pod 'DynamicColor', '~> 4.0.2'
+  
 
   target 'HedvigTests' do
     inherit! :search_paths

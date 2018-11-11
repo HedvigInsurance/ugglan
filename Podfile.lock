@@ -1,4 +1,5 @@
 PODS:
+  - DynamicColor (4.0.2)
   - Katana (2.0.0)
   - PinLayout (1.8.6)
   - SwiftLint (0.27.0)
@@ -8,6 +9,7 @@ PODS:
     - Tempura (< 3.0, >= 2.0)
 
 DEPENDENCIES:
+  - DynamicColor (~> 4.0.2)
   - PinLayout
   - SwiftLint
   - Tempura
@@ -15,6 +17,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - DynamicColor
     - Katana
     - PinLayout
     - SwiftLint
@@ -22,12 +25,13 @@ SPEC REPOS:
     - TempuraTesting
 
 SPEC CHECKSUMS:
+  DynamicColor: c7adcfe871781a2b39877a5774e452ba51b79eb3
   Katana: f624d693c272dac8e3a20c5049a34d0821f067c9
   PinLayout: fe2a2432d6982588e208572005c941aeeae417ab
   SwiftLint: 3207c1faa2240bf8973b191820a116113cd11073
   Tempura: 819db8b32776dc68e628902da7119621fddb33bf
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
 
-PODFILE CHECKSUM: 8bdc067ec1b6088fa67b49319529458c9fb0b852
+PODFILE CHECKSUM: 216bc153ffa0fc48f7e698bbd40b85cd0b0e82fa
 
 COCOAPODS: 1.5.3

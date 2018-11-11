@@ -10,12 +10,14 @@ import Foundation
 import UIKit
 import Tempura
 import PinLayout
+import DynamicColor
 
 let blurEffect = UIBlurEffect(style: .light)
 
 class InputFieldView: UIView, View, UITextViewDelegate {
     var textView = UITextView()
     var blurView = UIVisualEffectView(effect: blurEffect)
+    var borderView = UIView()
     var safeAreaContainer = UIView()
     var heightConstraint: NSLayoutConstraint?
     
@@ -34,6 +36,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         self.blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         safeAreaContainer.translatesAutoresizingMaskIntoConstraints = false
         
+        safeAreaContainer.addSubview(borderView)
         safeAreaContainer.addSubview(textView)
         blurView.contentView.addSubview(safeAreaContainer)
         addSubview(blurView)
@@ -52,22 +55,30 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
     
     func style() {
-        textView.backgroundColor = UIColor.white
-        textView.layer.cornerRadius = 10
-        textView.layer.borderColor = UIColor.black.cgColor
+        let grayColor = HedvigColors.darkGray.lighter(amount: 0.30)
+        
+        blurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.3)
+        textView.backgroundColor = HedvigColors.white.withAlphaComponent(0.5)
+        textView.layer.cornerRadius = 20
+        textView.layer.borderColor = grayColor.cgColor
         textView.layer.borderWidth = 1
-        textView.font = UIFont.systemFont(ofSize: 15)
+        textView.font = HedvigFonts.circularStdBook?.withSize(15)
+        textView.tintColor = HedvigColors.purple
+        borderView.backgroundColor = grayColor
     }
     
     func update() {
     }
     
     override func layoutSubviews() {
-        textView.contentInset = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
         textView.pin.width(95%)
         textView.pin.height(max(textView.contentSize.height, 40))
         textView.pin.top(10)
         textView.pin.left(2.5%)
+        borderView.pin.width(100%)
+        borderView.pin.height(1)
+        borderView.pin.top(0)
     }
     
     override var intrinsicContentSize: CGSize {
