@@ -102,7 +102,10 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     
     func textViewDidChange(_ textView: UITextView) {
         self.heightConstraint?.constant = max(textView.contentSize.height + 20, 60)
-        self.setNeedsLayout()
+        textView.setContentOffset(CGPoint.zero, animated: false)
+    
+        self.layoutIfNeeded()
+        
         handleButtonState()
     }
 }
