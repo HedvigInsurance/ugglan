@@ -16,6 +16,7 @@ private let messageViewReuseIdentifier = "MessageView"
 class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     var messages: [Message]? {
         didSet {
+            self.messages = self.messages?.reversed()
             self.update()
         }
     }
@@ -38,6 +39,8 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         self.allowsSelection = false
         self.estimatedRowHeight = 10
         self.register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
+        self.transform = CGAffineTransform(rotationAngle: (-.pi))
+        self.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: self.bounds.size.width - 10)
     }
     
     func style() {

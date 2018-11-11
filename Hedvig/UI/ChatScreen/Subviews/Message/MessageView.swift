@@ -33,6 +33,8 @@ class MessageView: UITableViewCell, View {
     }
     
     func setup() {
+        self.transform = CGAffineTransform(rotationAngle: (-.pi))
+        
         messageLabel.text = message?.body.text
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.numberOfLines = 0

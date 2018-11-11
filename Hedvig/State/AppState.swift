@@ -45,6 +45,104 @@ struct AppState: State {
             body: MessageBody(
                 text: "hej mitt"
             )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt"
+            )
         )
     ]
 }
