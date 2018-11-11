@@ -11,11 +11,40 @@ import Katana
 
 struct AppState: State {
     var messages: [Message] = [
-        Message(globalId: "123", fromMyself: true, body: MessageBody(text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe")),
-        Message(globalId: "123", fromMyself: true, body: MessageBody(text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe")),
-        Message(globalId: "123", fromMyself: false, body: MessageBody(text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe")),
-        Message(globalId: "123", fromMyself: true, body: MessageBody(text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe")),
-        Message(globalId: "123", fromMyself: true, body: MessageBody(text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"))
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: false,
+            body: MessageBody(
+                text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"
+            )
+        ),
+        Message(
+            globalId: "123",
+            fromMyself: true,
+            body: MessageBody(
+                text: "hej mitt namn är sam bla bla hej jag är fisk hej hej hehe"
+            )
+        )
     ]
 }
-

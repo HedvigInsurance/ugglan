@@ -1,0 +1,6 @@
+disabled_rules:
+  - trailing_whitespace
+excluded:
+  - Pods
+type_name:
+  excluded: V

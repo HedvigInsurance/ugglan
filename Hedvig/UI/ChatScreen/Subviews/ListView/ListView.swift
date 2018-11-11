@@ -11,7 +11,7 @@ import UIKit
 import Tempura
 import PinLayout
 
-private let MessageViewReuseIdentifier = "MessageView"
+private let messageViewReuseIdentifier = "MessageView"
 
 class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     var messages: [Message]? {
@@ -37,7 +37,7 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         self.separatorStyle = .none
         self.allowsSelection = false
         self.estimatedRowHeight = 10
-        self.register(MessageView.self, forCellReuseIdentifier: MessageViewReuseIdentifier)
+        self.register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
     }
     
     func style() {
@@ -54,11 +54,18 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: MessageViewReuseIdentifier, for: indexPath) as! MessageView
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: messageViewReuseIdentifier,
+            for: indexPath
+        ) as? MessageView
         
-        cell.message = messages?[indexPath.item]
+        if cell == nil {
+            return UITableViewCell()
+        }
         
-        return cell
+        cell!.message = messages?[indexPath.item]
+        
+        return cell!
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

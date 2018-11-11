@@ -23,9 +23,9 @@ extension ChatViewController: RoutableWithConfiguration {
     var navigationConfiguration: [NavigationRequest: NavigationInstruction] {
         return [
             .show(Screen.chat): .presentModally({ [unowned self] context in
-                let ai = ChatViewController(store: self.store)
-                ai.modalPresentationStyle = .overCurrentContext
-                return ai
+                let chatViewController = ChatViewController(store: self.store)
+                chatViewController.modalPresentationStyle = .overCurrentContext
+                return chatViewController
             })]
     }
 }

@@ -8,7 +8,7 @@ target 'Hedvig' do
   # Pods for Hedvig
   pod 'Tempura'
   pod 'PinLayout'
-  pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :branch => '2.x'
+  pod 'SwiftLint'
 
   target 'HedvigTests' do
     inherit! :search_paths
@@ -16,6 +16,5 @@ target 'Hedvig' do
     pod 'TempuraTesting'
     pod 'Tempura'
     pod 'PinLayout'
-    pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :branch => '2.x'
   end
 end

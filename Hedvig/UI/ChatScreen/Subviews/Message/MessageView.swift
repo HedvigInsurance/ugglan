@@ -47,7 +47,7 @@ class MessageView: UITableViewCell, View {
         let fontSize: CGFloat = 15
         
         if let fromMyself = message?.fromMyself {
-            if (fromMyself) {
+            if fromMyself {
                 messageBubble.backgroundColor = HedvigColors.purple
                 messageLabel.textColor = HedvigColors.white
                 messageLabel.font = HedvigFonts.circularStdBook?.withSize(fontSize)

@@ -26,8 +26,4 @@ struct Message: Equatable {
         self.fromMyself = fromMyself
         self.body = body
     }
-    
-    static func == (l: Message, r: Message) -> Bool {
-        return l.globalId != r.globalId
-    }
 }
