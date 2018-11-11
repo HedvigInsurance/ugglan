@@ -25,7 +25,7 @@
 		EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E15421930A94006B5CE4 /* AppDelegate.swift */; };
 		EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15B21930A95006B5CE4 /* Assets.xcassets */; };
 		EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */; };
-		EB75E16A21930A95006B5CE4 /* HedvigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E16921930A95006B5CE4 /* HedvigTests.swift */; };
+		EB75E16A21930A95006B5CE4 /* ChatViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E16921930A95006B5CE4 /* ChatViewTest.swift */; };
 		EB75E184219331B5006B5CE4 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E183219331B5006B5CE4 /* AppState.swift */; };
 		EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E187219332AE006B5CE4 /* ChatViewController.swift */; };
 		EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E18B2193334F006B5CE4 /* ChatView.swift */; };
@@ -69,7 +69,7 @@
 		EB75E15E21930A95006B5CE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EB75E16021930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB75E16521930A95006B5CE4 /* HedvigTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HedvigTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EB75E16921930A95006B5CE4 /* HedvigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigTests.swift; sourceTree = "<group>"; };
+		EB75E16921930A95006B5CE4 /* ChatViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewTest.swift; sourceTree = "<group>"; };
 		EB75E16B21930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB75E183219331B5006B5CE4 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		EB75E187219332AE006B5CE4 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -187,7 +187,7 @@
 		EB75E16821930A95006B5CE4 /* HedvigTests */ = {
 			isa = PBXGroup;
 			children = (
-				EB75E16921930A95006B5CE4 /* HedvigTests.swift */,
+				EB75E16921930A95006B5CE4 /* ChatViewTest.swift */,
 				EB75E16B21930A95006B5CE4 /* Info.plist */,
 			);
 			path = HedvigTests;
@@ -517,7 +517,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB75E16A21930A95006B5CE4 /* HedvigTests.swift in Sources */,
+				EB75E16A21930A95006B5CE4 /* ChatViewTest.swift in Sources */,
 				EB5ED9DF21986127004CE441 /* HedvigFonts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
