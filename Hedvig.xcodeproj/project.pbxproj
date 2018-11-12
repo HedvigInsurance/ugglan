@@ -12,6 +12,7 @@
 		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
 		EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6821988E9A00CF0624 /* SendButton.swift */; };
 		EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */; };
+		EB328E702198B68600CF0624 /* KeyboardSpacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6F2198B68600CF0624 /* KeyboardSpacer.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -60,6 +61,7 @@
 		E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HedvigTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB328E6821988E9A00CF0624 /* SendButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendButton.swift; sourceTree = "<group>"; };
 		EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
+		EB328E6F2198B68600CF0624 /* KeyboardSpacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSpacer.swift; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				EB75E1AA21975CCC006B5CE4 /* ListView.swift */,
+				EB328E6F2198B68600CF0624 /* KeyboardSpacer.swift */,
 			);
 			path = ListView;
 			sourceTree = "<group>";
@@ -523,6 +526,7 @@
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
+				EB328E702198B68600CF0624 /* KeyboardSpacer.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,7 +12,7 @@ import Tempura
 import PinLayout
 import DynamicColor
 
-let blurEffect = UIBlurEffect(style: .light)
+let blurEffect = UIBlurEffect(style: .extraLight)
 
 class InputFieldView: UIView, View, UITextViewDelegate {
     var textView = UITextView()
@@ -59,7 +59,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
     
     func style() {
-        let grayColor = HedvigColors.darkGray.lighter(amount: 0.30)
+        let grayColor = HedvigColors.darkGray.lighter(amount: 0.15).withAlphaComponent(0.5)
         
         blurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.3)
         textView.backgroundColor = HedvigColors.white.withAlphaComponent(0.5)

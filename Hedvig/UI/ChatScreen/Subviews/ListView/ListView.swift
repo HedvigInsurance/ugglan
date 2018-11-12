@@ -40,7 +40,40 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         self.estimatedRowHeight = 10
         self.register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
         self.transform = CGAffineTransform(rotationAngle: (-.pi))
-        self.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: self.bounds.size.width - 10)
+        self.contentInset = .zero
+        self.contentInsetAdjustmentBehavior = .never
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            
+            self.contentInset = UIEdgeInsets(top: keyboardHeight, left: 0, bottom: 0, right: 0)
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            
+            self.contentInset = UIEdgeInsets(top: keyboardHeight, left: 0, bottom: 0, right: 0)
+        }
     }
     
     func style() {
@@ -54,6 +87,8 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.pin.all()
+        
+        self.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: self.frame.width - 8)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -72,8 +107,6 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        // The UITableView will call the cell's sizeThatFit() method to compute the height.
-        // WANRING: You must also set the UITableView.estimatedRowHeight for this to work.
         return UITableView.automaticDimension
     }
     
