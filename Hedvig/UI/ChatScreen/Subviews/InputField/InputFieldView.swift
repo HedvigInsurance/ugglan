@@ -59,16 +59,14 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
     
     func style() {
-        let grayColor = HedvigColors.darkGray.lighter(amount: 0.15).withAlphaComponent(0.5)
-        
         blurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.3)
         textView.backgroundColor = HedvigColors.white.withAlphaComponent(0.5)
         textView.layer.cornerRadius = 20
-        textView.layer.borderColor = grayColor.cgColor
+        textView.layer.borderColor = HedvigColors.grayBorder.cgColor
         textView.layer.borderWidth = 1
         textView.font = HedvigFonts.circularStdBook?.withSize(15)
         textView.tintColor = HedvigColors.purple
-        borderView.backgroundColor = grayColor
+        borderView.backgroundColor = HedvigColors.grayBorder
     }
     
     func update() {

@@ -82,12 +82,15 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     }
     
     func setContentInsetsFor(keyboardHeight: CGFloat) {
-        self.keyboardHeight = keyboardHeight
+        if contentOffset.y == 0 {
+            self.setContentOffset(CGPoint(x: 0, y: keyboardHeight), animated: true)
+        }
         
+        self.keyboardHeight = keyboardHeight
         self.contentInset = UIEdgeInsets(
-            top: keyboardHeight + navigationBarHeight + extraContentInsetPadding,
+            top: keyboardHeight + extraContentInsetPadding,
             left: 0,
-            bottom: 0,
+            bottom: navigationBarHeight,
             right: 0
         )
     }
@@ -103,14 +106,12 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.pin.all()
-        
-        let scrollIndicatorTop = navigationBarHeight + keyboardHeight
-        
+                
         self.scrollIndicatorInsets = UIEdgeInsets(
-            top: scrollIndicatorTop,
+            top: keyboardHeight,
             left: 0,
-            bottom: 0,
-            right: self.frame.width - 10
+            bottom: navigationBarHeight,
+            right: self.frame.width - 9
         )
     }
     

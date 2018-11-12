@@ -9,21 +9,49 @@
 import Foundation
 import Tempura
 import Katana
+import PinLayout
 
 class ChatViewController: ViewControllerWithLocalState<ChatView> {
     let inputFieldView = InputFieldView()
     let wordmarkIocn = Icon(frame: .zero, iconName: "Wordmark", iconWidth: 90)
+    let navigationBarBorder = UIView(frame: .zero)
+    let navigationBarBlurView = UIVisualEffectView(frame: .zero)
+    static let blurEffect = UIBlurEffect(style: .extraLight)
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.navigationController?.navigationBar.topItem?.titleView = wordmarkIocn
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(title: "Fortsätt", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         ]
-        
-        self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        self.navigationController?.navigationBar.isTranslucent = false
+                
+        if let navigationBar = self.navigationController?.navigationBar {
+            navigationBar.topItem?.titleView = wordmarkIocn
+            navigationBar.tintColor = HedvigColors.purple
+            navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+            navigationBar.shadowImage = UIImage()
+            
+            navigationBarBlurView.effect = ChatViewController.blurEffect
+            
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            navigationBarBlurView.frame = navigationBar.bounds.insetBy(
+                dx: 0,
+                dy: -statusBarHeight
+            ).offsetBy(
+                dx: 0,
+                dy: -statusBarHeight
+            )
+            navigationBarBlurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.3)
+            
+            navigationBar.addSubview(navigationBarBlurView)
+            navigationBar.sendSubviewToBack(navigationBarBlurView)
+            navigationBarBlurView.contentView.addSubview(navigationBarBorder)
+            
+            navigationBarBorder.pin.bottom(1)
+            navigationBarBorder.pin.height(1)
+            navigationBarBorder.pin.width(navigationBarBlurView.frame.width)
+            navigationBarBorder.backgroundColor = HedvigColors.grayBorder
+        }
     }
     
     override var inputAccessoryView: UIView? {
