@@ -15,6 +15,11 @@ class ChatView: UIView, ViewControllerModellableView {
     var listView = ListView()
 
     func setup() {
+        if let navigationBarHeight = self.viewController?.navigationController?.navigationBar.frame.height {
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            listView.navigationBarHeight = navigationBarHeight + statusBarHeight
+        }
+        
         listView.messages = model?.messages
         self.addSubview(listView)
     }

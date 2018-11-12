@@ -20,6 +20,9 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
             self.update()
         }
     }
+    var keyboardHeight: CGFloat = 0.0
+    var navigationBarHeight: CGFloat = 0.0
+    let extraContentInsetPadding: CGFloat = 10
     
     override init(frame: CGRect = .zero, style: UITableView.Style = .plain) {
         super.init(frame: frame, style: style)
@@ -56,14 +59,17 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
+        
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.reloadData()
+        })
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardRectangle = keyboardFrame.cgRectValue
             let keyboardHeight = keyboardRectangle.height
-            
-            self.contentInset = UIEdgeInsets(top: keyboardHeight, left: 0, bottom: 0, right: 0)
+            setContentInsetsFor(keyboardHeight: keyboardHeight)
         }
     }
     
@@ -71,9 +77,19 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardRectangle = keyboardFrame.cgRectValue
             let keyboardHeight = keyboardRectangle.height
-            
-            self.contentInset = UIEdgeInsets(top: keyboardHeight, left: 0, bottom: 0, right: 0)
+            setContentInsetsFor(keyboardHeight: keyboardHeight)
         }
+    }
+    
+    func setContentInsetsFor(keyboardHeight: CGFloat) {
+        self.keyboardHeight = keyboardHeight
+        
+        self.contentInset = UIEdgeInsets(
+            top: keyboardHeight + navigationBarHeight + extraContentInsetPadding,
+            left: 0,
+            bottom: 0,
+            right: 0
+        )
     }
     
     func style() {
@@ -88,7 +104,14 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         super.layoutSubviews()
         self.pin.all()
         
-        self.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: self.frame.width - 8)
+        let scrollIndicatorTop = navigationBarHeight + keyboardHeight
+        
+        self.scrollIndicatorInsets = UIEdgeInsets(
+            top: scrollIndicatorTop,
+            left: 0,
+            bottom: 0,
+            right: self.frame.width - 10
+        )
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
