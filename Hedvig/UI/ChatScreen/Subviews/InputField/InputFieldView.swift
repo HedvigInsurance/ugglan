@@ -59,7 +59,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
     
     func style() {
-        blurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.3)
+        blurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.7)
         textView.backgroundColor = HedvigColors.white.withAlphaComponent(0.5)
         textView.layer.cornerRadius = 20
         textView.layer.borderColor = HedvigColors.grayBorder.cgColor

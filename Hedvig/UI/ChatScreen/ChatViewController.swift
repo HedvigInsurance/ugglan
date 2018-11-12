@@ -24,7 +24,7 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(title: "Fortsätt", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         ]
-                
+        
         if let navigationBar = self.navigationController?.navigationBar {
             navigationBar.topItem?.titleView = wordmarkIocn
             navigationBar.tintColor = HedvigColors.purple
@@ -41,7 +41,7 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
                 dx: 0,
                 dy: -statusBarHeight
             )
-            navigationBarBlurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.3)
+            navigationBarBlurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.7)
             
             navigationBar.addSubview(navigationBarBlurView)
             navigationBar.sendSubviewToBack(navigationBarBlurView)
