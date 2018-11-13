@@ -15,8 +15,17 @@ private let messageViewReuseIdentifier = "MessageView"
 
 class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     var messages: [Message]? {
-        didSet {
+        didSet(oldValue) {
             self.messages = self.messages?.reversed()
+            
+            if self.messages == nil || oldValue == nil {
+                return
+            }
+            
+            if self.messages!.count - oldValue!.count == 1 {
+                self.animateInsertion()
+                self.scrollToBottom()
+            }
         }
     }
     var keyboardHeight: CGFloat = 0.0
@@ -41,7 +50,6 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         self.allowsSelection = false
         self.estimatedRowHeight = 10
         self.register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
-        self.transform = CGAffineTransform(rotationAngle: (-.pi))
         self.contentInset = .zero
         self.contentInsetAdjustmentBehavior = .never
         
@@ -95,12 +103,16 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     }
     
     func style() {
-        
+        self.transform = CGAffineTransform(rotationAngle: (-.pi))
     }
     
     func update() {
-        self.scrollToBottom()
-        self.reloadData()
+        
+    }
+    
+    func animateInsertion() {
+        let indexPath = IndexPath(item: 0, section: 0)
+        self.insertRows(at: [indexPath], with: UITableView.RowAnimation.top)
     }
     
     override func layoutSubviews() {
