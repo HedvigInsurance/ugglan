@@ -16,11 +16,12 @@ let blurEffect = UIBlurEffect(style: .extraLight)
 
 class InputFieldView: UIView, View, UITextViewDelegate {
     var textView = UITextView()
-    var sendButton = SendButton()
+    var sendButton: SendButton!
     var blurView = UIVisualEffectView(effect: blurEffect)
     var borderView = UIView()
     var safeAreaContainer = UIView()
     var heightConstraint: NSLayoutConstraint?
+    var onSend: ((_ text: String) -> Void)!
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -33,6 +34,8 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
     
     func setup() {
+        self.sendButton = SendButton(frame: .zero, onSend: self.onShouldSend)
+        
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         safeAreaContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -73,7 +76,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
     
     override func layoutSubviews() {
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 35)
         textView.pin.width(95%)
         textView.pin.height(max(textView.contentSize.height, 40))
         textView.pin.top(10)
@@ -105,5 +108,9 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         self.layoutIfNeeded()
         
         handleButtonState()
+    }
+    
+    func onShouldSend() {
+        self.onSend(self.textView.text)
     }
 }

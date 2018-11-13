@@ -17,7 +17,6 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     var messages: [Message]? {
         didSet {
             self.messages = self.messages?.reversed()
-            self.update()
         }
     }
     var keyboardHeight: CGFloat = 0.0
@@ -100,6 +99,7 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     }
     
     func update() {
+        self.scrollToBottom()
         self.reloadData()
     }
     
@@ -140,5 +140,9 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         }
         
         return 0
+    }
+        
+    func scrollToBottom() {
+        self.scrollToRow(at: IndexPath(item: 0, section: 0), at: UITableView.ScrollPosition.bottom, animated: true)
     }
 }

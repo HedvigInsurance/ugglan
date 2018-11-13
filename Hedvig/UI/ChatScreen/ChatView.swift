@@ -30,6 +30,7 @@ class ChatView: UIView, ViewControllerModellableView {
 
     func update(oldModel: ChatViewModel?) {
         listView.messages = model?.messages
+        listView.update()
     }
 
     override func layoutSubviews() {

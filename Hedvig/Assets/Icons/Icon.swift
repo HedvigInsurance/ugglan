@@ -29,6 +29,9 @@ class Icon: UIView, View {
     }
     
     func setup() {
+        image.isUserInteractionEnabled = false
+        self.isUserInteractionEnabled = false
+        
         if let icon = UIImage(named: iconName) {
             image.image = icon
             self.addSubview(image)

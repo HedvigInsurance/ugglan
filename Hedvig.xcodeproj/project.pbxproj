@@ -37,6 +37,8 @@
 		EB75E1A52197572E006B5CE4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A42197572E006B5CE4 /* Message.swift */; };
 		EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A7219758E9006B5CE4 /* MessageView.swift */; };
 		EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1AA21975CCC006B5CE4 /* ListView.swift */; };
+		EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C2219B0F2F00AFC30F /* SendMessage.swift */; };
+		EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C4219B0F7E00AFC30F /* AppActions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +87,8 @@
 		EB75E1A42197572E006B5CE4 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		EB75E1A7219758E9006B5CE4 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		EB75E1AA21975CCC006B5CE4 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		EBC049C2219B0F2F00AFC30F /* SendMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessage.swift; sourceTree = "<group>"; };
+		EBC049C4219B0F7E00AFC30F /* AppActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActions.swift; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -184,6 +188,7 @@
 		EB75E15321930A94006B5CE4 /* Hedvig */ = {
 			isa = PBXGroup;
 			children = (
+				EBC049C1219B0F1B00AFC30F /* Actions */,
 				EB5ED9CD21985D37004CE441 /* Assets */,
 				EB75E19221933806006B5CE4 /* Navigation */,
 				EB75E18F219337B6006B5CE4 /* Dependencies */,
@@ -282,6 +287,15 @@
 				EB75E1AA21975CCC006B5CE4 /* ListView.swift */,
 			);
 			path = ListView;
+			sourceTree = "<group>";
+		};
+		EBC049C1219B0F1B00AFC30F /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				EBC049C2219B0F2F00AFC30F /* SendMessage.swift */,
+				EBC049C4219B0F7E00AFC30F /* AppActions.swift */,
+			);
+			path = Actions;
 			sourceTree = "<group>";
 		};
 		F42E0389CDD3147AF74CFD44 /* Frameworks */ = {
@@ -518,8 +532,10 @@
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
+				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
 				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
+				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,

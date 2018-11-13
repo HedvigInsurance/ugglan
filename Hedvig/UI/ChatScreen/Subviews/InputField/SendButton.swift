@@ -16,8 +16,10 @@ class SendButton: UIButton, View {
             update()
         }
     }
+    var onSend: () -> Void
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, onSend: @escaping () -> Void) {
+        self.onSend = onSend
         super.init(frame: frame)
         setup()
         style()
@@ -29,6 +31,30 @@ class SendButton: UIButton, View {
     
     func setup() {
         self.addSubview(arrowUpIcon)
+        self.addTarget(self, action: #selector(self.onTap), for: .touchDown)
+        self.addTarget(self, action: #selector(self.onTapRelease), for: .touchUpInside)
+    }
+    
+    @objc func onTap() {
+        UIView.animate(withDuration: 0.25) {
+            if self.isEnabled {
+                self.backgroundColor = HedvigColors.purple.darkened(amount: 0.25)
+            } else {
+                self.backgroundColor = HedvigColors.darkGray
+            }
+        }
+    }
+    
+    @objc func onTapRelease() {
+        onSend()
+        
+        UIView.animate(withDuration: 0.25) {
+            if self.isEnabled {
+                self.backgroundColor = HedvigColors.purple
+            } else {
+                self.backgroundColor = HedvigColors.darkGray
+            }
+        }
     }
     
     func style() {

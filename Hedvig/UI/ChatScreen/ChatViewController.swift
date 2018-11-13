@@ -21,6 +21,8 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.inputFieldView.onSend = self.onSend
+        
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(title: "Fortsätt", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         ]
@@ -65,5 +67,9 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     
     override var canBecomeFirstResponder: Bool {
         return true
+    }
+    
+    func onSend(_ text: String) {
+        self.dispatch(SendMessage(text: text))
     }
 }
