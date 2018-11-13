@@ -113,5 +113,6 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         onSend(String(textView.text))
         textView.text = ""
         handleButtonState()
+        textViewDidChange(textView)
     }
 }
