@@ -17,11 +17,11 @@ extension AppAction {
         guard var state = currentState as? AppState else {
             fatalError()
         }
-        self.updatedState(currentState: &state)
+        updatedState(currentState: &state)
         return state
     }
 }
 
 extension AppAction {
-    func updatedState(currentState: inout AppState) {}
+    func updatedState(currentState _: inout AppState) {}
 }

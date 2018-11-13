@@ -5,16 +5,16 @@
 //  Created by Sam Pettersson on 2018-11-10.
 //
 
-import XCTest
-import TempuraTesting
-import Katana
 @testable import Hedvig
+import Katana
+import TempuraTesting
+import XCTest
 
 class ChatViewTest: XCTestCase, UITestCase {
     typealias V = ChatView
-    
+
     let store = Store<AppState>(middleware: [], dependencies: DependenciesContainer.self)
-    
+
     var chatViewModel: ChatViewModel {
         return ChatViewModel(messages: [
             Message(
@@ -34,9 +34,9 @@ class ChatViewTest: XCTestCase, UITestCase {
             )
         ])
     }
-    
+
     func testChatScreen() {
-        self.uiTest(testCases: [
+        uiTest(testCases: [
             "chatView001": chatViewModel
         ])
     }

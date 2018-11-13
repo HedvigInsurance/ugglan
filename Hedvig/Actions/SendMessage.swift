@@ -11,7 +11,7 @@ import Katana
 
 struct SendMessage: AppAction {
     var text: String
-    
+
     func updatedState(currentState: inout AppState) {
         let newMessage = Message(globalId: "5", fromMyself: true, body: MessageBody(text: text))
         currentState.messages.insert(newMessage, at: currentState.messages.count)

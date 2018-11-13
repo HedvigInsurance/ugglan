@@ -2,36 +2,44 @@ PODS:
   - DynamicColor (4.0.2)
   - Katana (2.0.0)
   - PinLayout (1.8.6)
+  - SwiftFormat/CLI (0.35.7)
   - SwiftLint (0.27.0)
   - Tempura (2.1.0):
     - Katana (< 3, >= 2.0)
   - TempuraTesting (2.1.0):
     - Tempura (< 3.0, >= 2.0)
+  - UIViewRoundedCorners (1.0.0)
 
 DEPENDENCIES:
   - DynamicColor (~> 4.0.2)
   - PinLayout
+  - SwiftFormat/CLI
   - SwiftLint
   - Tempura
   - TempuraTesting
+  - UIViewRoundedCorners
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - DynamicColor
     - Katana
     - PinLayout
+    - SwiftFormat
     - SwiftLint
     - Tempura
     - TempuraTesting
+    - UIViewRoundedCorners
 
 SPEC CHECKSUMS:
   DynamicColor: c7adcfe871781a2b39877a5774e452ba51b79eb3
   Katana: f624d693c272dac8e3a20c5049a34d0821f067c9
   PinLayout: fe2a2432d6982588e208572005c941aeeae417ab
+  SwiftFormat: d97eadc55d4e02d04cf1f03b8a2d6ff5b6cdb2fd
   SwiftLint: 3207c1faa2240bf8973b191820a116113cd11073
   Tempura: 819db8b32776dc68e628902da7119621fddb33bf
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
+  UIViewRoundedCorners: 51b74df8b6052e0488c71197951566aac632ee1a
 
-PODFILE CHECKSUM: 216bc153ffa0fc48f7e698bbd40b85cd0b0e82fa
+PODFILE CHECKSUM: eb77b817536128ad8f91fc7666cb933200e65f41
 
 COCOAPODS: 1.5.3

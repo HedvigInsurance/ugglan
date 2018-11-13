@@ -7,71 +7,72 @@
 //
 
 import Foundation
-import UIKit
-import Tempura
 import PinLayout
+import Tempura
+import UIKit
 
 private let messageViewReuseIdentifier = "MessageView"
 
 class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     var messages: [Message]? {
         didSet(oldValue) {
-            self.messages = self.messages?.reversed()
-            
-            if self.messages == nil || oldValue == nil {
+            messages = messages?.reversed()
+
+            if messages == nil || oldValue == nil {
                 return
             }
-            
-            if self.messages!.count - oldValue!.count == 1 {
-                self.animateInsertion()
-                self.scrollToBottom()
+
+            if messages!.count - oldValue!.count == 1 {
+                animateInsertion()
+                scrollToBottom()
             }
         }
     }
+
     var keyboardHeight: CGFloat = 0.0
     var navigationBarHeight: CGFloat = 0.0
     let extraContentInsetPadding: CGFloat = 10
-    
+
     override init(frame: CGRect = .zero, style: UITableView.Style = .plain) {
         super.init(frame: frame, style: style)
-        self.setup()
+        setup()
         self.style()
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func setup() {
-        self.keyboardDismissMode = .interactive
-        self.dataSource = self
-        self.delegate = self
-        self.separatorStyle = .none
-        self.allowsSelection = false
-        self.estimatedRowHeight = 10
-        self.register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
-        self.contentInset = .zero
-        self.contentInsetAdjustmentBehavior = .never
-        
+        keyboardDismissMode = .interactive
+        dataSource = self
+        delegate = self
+        separatorStyle = .none
+        allowsSelection = false
+        estimatedRowHeight = 10
+        register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
+        contentInset = .zero
+        contentInsetAdjustmentBehavior = .never
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillShow),
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
-        
+
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(self.keyboardWillHide),
+            selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
-        
+
         DispatchQueue.main.async(execute: { () -> Void in
             self.reloadData()
         })
     }
-    
+
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardRectangle = keyboardFrame.cgRectValue
@@ -79,7 +80,7 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
             setContentInsetsFor(keyboardHeight: keyboardHeight)
         }
     }
-    
+
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardRectangle = keyboardFrame.cgRectValue
@@ -87,74 +88,102 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
             setContentInsetsFor(keyboardHeight: keyboardHeight)
         }
     }
-    
+
     func setContentInsetsFor(keyboardHeight: CGFloat) {
         if contentOffset.y == 0 {
-            self.setContentOffset(CGPoint(x: 0, y: keyboardHeight), animated: true)
+            setContentOffset(CGPoint(x: 0, y: keyboardHeight), animated: true)
         }
-        
+
         self.keyboardHeight = keyboardHeight
-        self.contentInset = UIEdgeInsets(
+        contentInset = UIEdgeInsets(
             top: keyboardHeight + extraContentInsetPadding,
             left: 0,
             bottom: navigationBarHeight,
             right: 0
         )
     }
-    
+
     func style() {
-        self.transform = CGAffineTransform(rotationAngle: (-.pi))
+        transform = CGAffineTransform(rotationAngle: (-.pi))
     }
-    
-    func update() {
-        
-    }
-    
+
+    func update() {}
+
     func animateInsertion() {
-        let indexPath = IndexPath(item: 0, section: 0)
-        self.insertRows(at: [indexPath], with: UITableView.RowAnimation.top)
+        let firstIndexPath = IndexPath(item: 0, section: 0)
+        let visibleIndexPaths = indexPathsForVisibleRows!.filter { $0.item != 0 }
+
+        beginUpdates()
+
+        reloadRows(at: visibleIndexPaths, with: .none)
+        insertRows(at: [firstIndexPath], with: .top)
+
+        endUpdates()
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.pin.all()
-                
-        self.scrollIndicatorInsets = UIEdgeInsets(
+        pin.all()
+
+        scrollIndicatorInsets = UIEdgeInsets(
             top: keyboardHeight,
             left: 0,
             bottom: navigationBarHeight,
-            right: self.frame.width - 9
+            right: frame.width - 9
         )
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
             withIdentifier: messageViewReuseIdentifier,
             for: indexPath
         ) as? MessageView
-        
+
         if cell == nil {
             return UITableViewCell()
         }
-        
+
+        if indexPath.item + 1 != messages?.count {
+            if let nextMessage = messages?[indexPath.item + 1] {
+                cell!.nextMessage = nextMessage
+            } else {
+                cell!.nextMessage = nil
+            }
+        } else {
+            cell!.nextMessage = nil
+        }
+
+        if indexPath.item != 0 {
+            if let previousMessage = messages?[indexPath.item - 1] {
+                cell!.previousMessage = previousMessage
+            } else {
+                cell!.previousMessage = nil
+            }
+        } else {
+            cell!.previousMessage = nil
+        }
+
         cell!.message = messages?[indexPath.item]
-        
+
+        cell!.update()
+        cell!.style()
+
         return cell!
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+
+    func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         if let messages = self.messages {
             return messages.count
         }
-        
+
         return 0
     }
-        
+
     func scrollToBottom() {
-        self.scrollToRow(at: IndexPath(item: 0, section: 0), at: UITableView.ScrollPosition.bottom, animated: true)
+        scrollToRow(at: IndexPath(item: 0, section: 0), at: UITableView.ScrollPosition.bottom, animated: true)
     }
 }

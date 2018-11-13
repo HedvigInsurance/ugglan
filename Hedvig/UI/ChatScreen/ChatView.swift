@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import UIKit
-import Tempura
 import PinLayout
+import Tempura
+import UIKit
 
 class ChatView: UIView, ViewControllerModellableView {
     var listView = ListView()
@@ -19,23 +19,23 @@ class ChatView: UIView, ViewControllerModellableView {
             let statusBarHeight = UIApplication.shared.statusBarFrame.height
             listView.navigationBarHeight = navigationBarHeight + statusBarHeight
         }
-        
+
         listView.messages = model?.messages
-        self.addSubview(listView)
+        addSubview(listView)
     }
 
     func style() {
-        self.backgroundColor = UIColor.red
+        backgroundColor = UIColor.red
     }
 
-    func update(oldModel: ChatViewModel?) {
+    func update(oldModel _: ChatViewModel?) {
         listView.messages = model?.messages
         listView.update()
     }
 
     override func layoutSubviews() {
-        self.pin.height(100%)
-        self.pin.width(100%)
+        pin.height(100%)
+        pin.width(100%)
     }
 }
 
@@ -50,8 +50,8 @@ struct ChatViewModel: ViewModelWithLocalState, Equatable {
         self.messages = messages
     }
 
-    init?(state: AppState?, localState: ChatLocalState) {
+    init?(state: AppState?, localState _: ChatLocalState) {
         guard let state = state else { return nil }
-        self.messages = state.messages
+        messages = state.messages
     }
 }

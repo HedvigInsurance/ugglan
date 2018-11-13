@@ -10,7 +10,8 @@ target 'Hedvig' do
   pod 'PinLayout'
   pod 'SwiftLint'
   pod 'DynamicColor', '~> 4.0.2'
-  
+  pod 'SwiftFormat/CLI'
+  pod 'UIViewRoundedCorners'
 
   target 'HedvigTests' do
     inherit! :search_paths

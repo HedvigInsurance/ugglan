@@ -7,50 +7,45 @@
 //
 
 import Foundation
-import UIKit
 import Tempura
+import UIKit
 
 class Icon: UIView, View {
     let image = UIImageView()
     let iconName: String!
     let iconWidth: CGFloat!
-    
+
     init(frame: CGRect, iconName: String!, iconWidth: CGFloat!) {
         self.iconName = iconName
         self.iconWidth = iconWidth
         super.init(frame: frame)
-        
+
         setup()
         style()
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func setup() {
         image.isUserInteractionEnabled = false
-        self.isUserInteractionEnabled = false
-        
+        isUserInteractionEnabled = false
+
         if let icon = UIImage(named: iconName) {
             image.image = icon
-            self.addSubview(image)
+            addSubview(image)
         }
     }
-    
-    func style() {
-        
-    }
-    
-    func update() {
-        
-    }
-    
+
+    func style() {}
+
+    func update() {}
+
     override func layoutSubviews() {
         super.layoutSubviews()
         image.pin.width(iconWidth).aspectRatio()
-        self.pin.center()
-        self.pin.size(of: image)
+        pin.center()
+        pin.size(of: image)
     }
-    
 }

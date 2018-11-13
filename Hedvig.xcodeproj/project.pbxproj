@@ -39,6 +39,7 @@
 		EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1AA21975CCC006B5CE4 /* ListView.swift */; };
 		EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C2219B0F2F00AFC30F /* SendMessage.swift */; };
 		EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C4219B0F7E00AFC30F /* AppActions.swift */; };
+		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		EB75E1AA21975CCC006B5CE4 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
 		EBC049C2219B0F2F00AFC30F /* SendMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessage.swift; sourceTree = "<group>"; };
 		EBC049C4219B0F7E00AFC30F /* AppActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActions.swift; sourceTree = "<group>"; };
+		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -130,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
+				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 				EB75E14E21930A94006B5CE4 /* Frameworks */,
 				EB75E14F21930A94006B5CE4 /* Resources */,
 				255C099E949733C48A4322D1 /* [CP] Embed Pods Frameworks */,
+				EBC049CA219B320400AFC30F /* Format Swift code */,
 				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
 			);
 			buildRules = (
@@ -429,6 +433,7 @@
 				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
 				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
+				"${BUILT_PRODUCTS_DIR}/UIViewRoundedCorners/UIViewRoundedCorners.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -436,6 +441,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIViewRoundedCorners.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -516,6 +522,20 @@
 			shellPath = /bin/sh;
 			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint\n";
 		};
+		EBC049CA219B320400AFC30F /* Format Swift code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Format Swift code";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"${SRCROOT}\" --disable trailingCommas\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -527,6 +547,7 @@
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
 				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
+				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */,
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
