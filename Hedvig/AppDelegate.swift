@@ -6,6 +6,7 @@
 //  Copyright © 2018 Sam Pettersson. All rights reserved.
 //
 
+import Apollo
 import Katana
 import Tempura
 import UIKit

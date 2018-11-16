@@ -59,6 +59,37 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
             navigationBarBorder.pin.width(navigationBarBlurView.frame.width)
             navigationBarBorder.backgroundColor = HedvigColors.grayBorder
         }
+
+        loadMessages()
+        // subscribeToMessages()
+    }
+
+    func loadMessages() {
+        apollo.fetch(query: MessagesQuery()) { result, _ in
+            if let apolloMessages = result?.data?.messages {
+                let messages = apolloMessages.map({ (message) -> Message in
+                    Message(fromApollo: message!)
+                })
+
+                DispatchQueue.main.async {
+                    self.dispatch(SetMessages(messages: messages))
+                }
+            }
+        }
+    }
+
+    func subscribeToMessages() {
+        apollo.subscribe(subscription: MessageSubscription()) { result, _ in
+            DispatchQueue.main.async {
+                let text = result?.data?.message?.body.fragments.subscriptionMessageBodyCoreFragment.text ?? ""
+                let globalId = ""
+
+                let header = MessageHeader(fromMyself: false)
+                let body = MessageBody(text: text)
+
+                self.dispatch(InsertMessage(globalId: globalId, header: header, body: body))
+            }
+        }
     }
 
     override var inputAccessoryView: UIView? {

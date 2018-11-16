@@ -1,0 +1,20 @@
+fragment MessageBodyCoreFragment on MessageBodyCore {
+    text
+}
+
+query messages {
+    messages {
+        globalId
+        header {
+            messageId
+            editAllowed
+            shouldRequestPushNotifications
+            timeStamp
+            richTextChatCompatible
+            fromMyself
+        }
+        body {
+            ...MessageBodyCoreFragment
+        }
+    }
+}

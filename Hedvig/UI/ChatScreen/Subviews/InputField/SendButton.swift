@@ -11,7 +11,7 @@ import Tempura
 
 class SendButton: UIButton, View {
     let arrowUpIcon = Icon(frame: .zero, iconName: "ArrowUp", iconWidth: 10)
-    override var isEnabled: Bool {
+    var activated: Bool {
         didSet {
             update()
         }
@@ -21,6 +21,7 @@ class SendButton: UIButton, View {
 
     init(frame: CGRect, onSend: @escaping () -> Void) {
         self.onSend = onSend
+        activated = true
         super.init(frame: frame)
         setup()
         style()
@@ -38,19 +39,26 @@ class SendButton: UIButton, View {
 
     @objc func onTap() {
         UIView.animate(withDuration: 0.25) {
-            if self.isEnabled {
+            if self.activated {
                 self.backgroundColor = HedvigColors.purple.darkened(amount: 0.25)
             } else {
-                self.backgroundColor = HedvigColors.darkGray
+                self.backgroundColor = HedvigColors.darkGray.darkened(amount: 0.25)
             }
         }
     }
 
     @objc func onTapRelease() {
-        onSend()
+        if activated {
+            onSend()
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+        } else {
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.error)
+        }
 
         UIView.animate(withDuration: 0.25) {
-            if self.isEnabled {
+            if self.activated {
                 self.backgroundColor = HedvigColors.purple
             } else {
                 self.backgroundColor = HedvigColors.darkGray
@@ -65,7 +73,7 @@ class SendButton: UIButton, View {
 
     func update() {
         UIView.animate(withDuration: 0.25) {
-            if self.isEnabled {
+            if self.activated {
                 self.backgroundColor = HedvigColors.purple
             } else {
                 self.backgroundColor = HedvigColors.darkGray

@@ -12,6 +12,8 @@ target 'Hedvig' do
   pod 'DynamicColor', '~> 4.0.2'
   pod 'SwiftFormat/CLI'
   pod 'UIViewRoundedCorners'
+  pod 'Apollo'
+  pod 'Apollo/WebSocket'
 
   target 'HedvigTests' do
     inherit! :search_paths

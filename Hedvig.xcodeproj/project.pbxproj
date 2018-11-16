@@ -37,9 +37,17 @@
 		EB75E1A52197572E006B5CE4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A42197572E006B5CE4 /* Message.swift */; };
 		EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A7219758E9006B5CE4 /* MessageView.swift */; };
 		EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1AA21975CCC006B5CE4 /* ListView.swift */; };
+		EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */; };
+		EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */; };
+		EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */; };
+		EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB5D219DC68700D5C8E1 /* SetMessages.swift */; };
 		EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C2219B0F2F00AFC30F /* SendMessage.swift */; };
 		EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C4219B0F7E00AFC30F /* AppActions.swift */; };
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
+		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
+		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
+		EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */; };
+		EBC049D8219C88EB00AFC30F /* ApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D7219C88EB00AFC30F /* ApolloClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,9 +96,17 @@
 		EB75E1A42197572E006B5CE4 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		EB75E1A7219758E9006B5CE4 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		EB75E1AA21975CCC006B5CE4 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertMessage.swift; sourceTree = "<group>"; };
+		EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicator.swift; sourceTree = "<group>"; };
+		EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Messages.graphql; sourceTree = "<group>"; };
+		EB88DB5D219DC68700D5C8E1 /* SetMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetMessages.swift; sourceTree = "<group>"; };
 		EBC049C2219B0F2F00AFC30F /* SendMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessage.swift; sourceTree = "<group>"; };
 		EBC049C4219B0F7E00AFC30F /* AppActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActions.swift; sourceTree = "<group>"; };
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
+		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
+		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MessageSubscription.graphql; sourceTree = "<group>"; };
+		EBC049D7219C88EB00AFC30F /* ApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClient.swift; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -191,6 +207,7 @@
 		EB75E15321930A94006B5CE4 /* Hedvig */ = {
 			isa = PBXGroup;
 			children = (
+				EBC049D0219C87B300AFC30F /* Data */,
 				EBC049C1219B0F1B00AFC30F /* Actions */,
 				EB5ED9CD21985D37004CE441 /* Assets */,
 				EB75E19221933806006B5CE4 /* Navigation */,
@@ -280,6 +297,7 @@
 			isa = PBXGroup;
 			children = (
 				EB75E1A7219758E9006B5CE4 /* MessageView.swift */,
+				EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */,
 			);
 			path = Message;
 			sourceTree = "<group>";
@@ -297,8 +315,22 @@
 			children = (
 				EBC049C2219B0F2F00AFC30F /* SendMessage.swift */,
 				EBC049C4219B0F7E00AFC30F /* AppActions.swift */,
+				EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */,
+				EB88DB5D219DC68700D5C8E1 /* SetMessages.swift */,
 			);
 			path = Actions;
+			sourceTree = "<group>";
+		};
+		EBC049D0219C87B300AFC30F /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				EBC049D2219C87DF00AFC30F /* API.swift */,
+				EBC049D1219C87DF00AFC30F /* schema.json */,
+				EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */,
+				EBC049D7219C88EB00AFC30F /* ApolloClient.swift */,
+				EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		F42E0389CDD3147AF74CFD44 /* Frameworks */ = {
@@ -326,6 +358,7 @@
 				255C099E949733C48A4322D1 /* [CP] Embed Pods Frameworks */,
 				EBC049CA219B320400AFC30F /* Format Swift code */,
 				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
+				EBC049CD219C833B00AFC30F /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -399,11 +432,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBC049D4219C87DF00AFC30F /* schema.json in Resources */,
+				EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */,
 				EB5ED9D7219860DF004CE441 /* CircularStd-Book.ttf in Resources */,
 				EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */,
 				EB5ED9DB219860DF004CE441 /* CircularStd-Bold.ttf in Resources */,
 				EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */,
 				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
+				EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -429,17 +465,21 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Apollo/Apollo.framework",
 				"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework",
 				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
 				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
+				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
 				"${BUILT_PRODUCTS_DIR}/UIViewRoundedCorners/UIViewRoundedCorners.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Apollo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIViewRoundedCorners.framework",
 			);
@@ -536,6 +576,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"${SRCROOT}\" --disable trailingCommas\n";
 		};
+		EBC049CD219C833B00AFC30F /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "APOLLO_FRAMEWORK_PATH=\"$(eval find $FRAMEWORK_SEARCH_PATHS -name \"Apollo.framework\" -maxdepth 1)\"\n\nif [ -z \"$APOLLO_FRAMEWORK_PATH\" ]; then\necho \"error: Couldn't find Apollo.framework in FRAMEWORK_SEARCH_PATHS; make sure to add the framework to your project.\"\nexit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n$APOLLO_FRAMEWORK_PATH/check-and-run-apollo-cli.sh codegen:generate --queries=\"$(find . -name '*.graphql')\"  --schema=Data/schema.json Data/API.swift\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -543,19 +597,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */,
 				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
+				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
+				EBC049D8219C88EB00AFC30F /* ApolloClient.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
 				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */,
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
+				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
 				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
 				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
+				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
 				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,

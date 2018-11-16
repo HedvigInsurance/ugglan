@@ -1,0 +1,15 @@
+fragment SubscriptionMessageBodyCoreFragment on MessageBodyCore {
+    text
+}
+
+subscription message {
+    message {
+        globalId
+        header {
+            fromMyself
+        }
+        body {
+            ...SubscriptionMessageBodyCoreFragment
+        }
+    }
+}

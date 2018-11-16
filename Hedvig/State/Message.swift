@@ -16,14 +16,36 @@ struct MessageBody: Equatable {
     }
 }
 
+struct MessageHeader: Equatable {
+    var fromMyself: Bool
+
+    init(fromMyself: Bool) {
+        self.fromMyself = fromMyself
+    }
+}
+
 struct Message: Equatable {
     var globalId: String
-    var fromMyself: Bool
+    var header: MessageHeader
     var body: MessageBody
+    var isSending: Bool
 
-    init(globalId: String, fromMyself: Bool, body: MessageBody) {
+    init(globalId: String, header: MessageHeader, body: MessageBody, isSending: Bool) {
         self.globalId = globalId
-        self.fromMyself = fromMyself
+        self.header = header
         self.body = body
+        self.isSending = isSending
+    }
+
+    init(fromApollo message: MessagesQuery.Data.Message) {
+        globalId = message.globalId
+
+        let header = MessageHeader(fromMyself: message.header.fromMyself)
+        self.header = header
+
+        let body = MessageBody(text: message.body.fragments.messageBodyCoreFragment.text)
+        self.body = body
+
+        isSending = false
     }
 }

@@ -94,9 +94,9 @@ class InputFieldView: UIView, View, UITextViewDelegate {
 
     func handleButtonState() {
         if textView.text.count == 0 {
-            sendButton.isEnabled = false
+            sendButton.activated = false
         } else {
-            sendButton.isEnabled = true
+            sendButton.activated = true
         }
     }
 

@@ -2,5 +2,6 @@ disabled_rules:
   - trailing_whitespace
 excluded:
   - Pods
+  - Hedvig/Data/API.swift
 type_name:
   excluded: V

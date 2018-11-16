@@ -16,7 +16,9 @@ private let messageViewReuseIdentifier = "MessageView"
 class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
     var messages: [Message]? {
         didSet(oldValue) {
-            messages = messages?.reversed()
+            if messages?.count != nil && oldValue == nil {
+                reload()
+            }
 
             if messages == nil || oldValue == nil {
                 return
@@ -25,6 +27,8 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
             if messages!.count - oldValue!.count == 1 {
                 animateInsertion()
                 scrollToBottom()
+            } else {
+                reload()
             }
         }
     }
@@ -43,13 +47,19 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func reload() {
+        DispatchQueue.main.async {
+            self.reloadData()
+        }
+    }
+
     func setup() {
         keyboardDismissMode = .interactive
         dataSource = self
         delegate = self
         separatorStyle = .none
         allowsSelection = false
-        estimatedRowHeight = 10
+        estimatedRowHeight = 50
         register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
         contentInset = .zero
         contentInsetAdjustmentBehavior = .never
@@ -67,10 +77,6 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
-
-        DispatchQueue.main.async(execute: { () -> Void in
-            self.reloadData()
-        })
     }
 
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -114,10 +120,8 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         let visibleIndexPaths = indexPathsForVisibleRows!.filter { $0.item != 0 }
 
         beginUpdates()
-
-        reloadRows(at: visibleIndexPaths, with: .none)
         insertRows(at: [firstIndexPath], with: .top)
-
+        reloadRows(at: visibleIndexPaths, with: .none)
         endUpdates()
     }
 

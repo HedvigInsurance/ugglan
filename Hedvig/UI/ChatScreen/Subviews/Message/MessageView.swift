@@ -15,6 +15,7 @@ import UIViewRoundedCorners
 class MessageView: UITableViewCell, View {
     let messageBubble = UIView()
     let messageLabel = CopyableLabel()
+    var sendingIndicator: SendingIndicator?
 
     var message: Message?
     var previousMessage: Message?
@@ -41,12 +42,14 @@ class MessageView: UITableViewCell, View {
 
         messageBubble.addSubview(messageLabel)
         addSubview(messageBubble)
+
+        addSendingIndicator()
     }
 
     func style() {
         let fontSize: CGFloat = 15
 
-        if let fromMyself = message?.fromMyself {
+        if let fromMyself = message?.header.fromMyself {
             if fromMyself {
                 messageBubble.backgroundColor = HedvigColors.purple
                 messageLabel.textColor = HedvigColors.white
@@ -69,7 +72,10 @@ class MessageView: UITableViewCell, View {
 
         layout()
 
-        return CGSize(width: contentView.frame.width, height: messageBubble.frame.maxY)
+        let sendingIndicatorHeight = sendingIndicator?.frame.height ?? 0
+        let height = messageBubble.frame.maxY + sendingIndicatorHeight
+
+        return CGSize(width: contentView.frame.width, height: height)
     }
 
     func layout() {
@@ -80,13 +86,13 @@ class MessageView: UITableViewCell, View {
         let messageBubblePadding = PEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
         messageBubble.pin.wrapContent(padding: messageBubblePadding)
 
-        if nextMessage?.fromMyself == message?.fromMyself {
+        if nextMessage?.header.fromMyself == message?.header.fromMyself {
             messageBubble.pin.top(2)
         } else {
             messageBubble.pin.top(10)
         }
 
-        if let fromMyself = message?.fromMyself {
+        if let fromMyself = message?.header.fromMyself {
             if fromMyself {
                 messageBubble.pin.right(10)
             } else {
@@ -95,39 +101,72 @@ class MessageView: UITableViewCell, View {
         }
 
         setMessageBubbleRadius()
-    }
 
+        if sendingIndicator != nil {
+            sendingIndicator!.pin.width(100%)
+            sendingIndicator!.pin.bottom(0)
+        }
+    }
+    
     func setMessageBubbleRadius() {
-        let hasOwnPreviousMessage = previousMessage?.fromMyself == message?.fromMyself
-        let hasOwnNextMessage = nextMessage?.fromMyself == message?.fromMyself
+        let hasOwnPreviousMessage = previousMessage?.header.fromMyself == message?.header.fromMyself
+        let hasOwnNextMessage = nextMessage?.header.fromMyself == message?.header.fromMyself
+        let fromMyself = message?.header.fromMyself ?? false
 
         let majorPadding: CGFloat = 21
         let minorPadding: CGFloat = 5
-
+        
         if hasOwnPreviousMessage {
             if hasOwnNextMessage {
-                messageBubble.applyRadiusMaskFor(
-                    topLeft: majorPadding,
-                    bottomLeft: majorPadding,
-                    bottomRight: minorPadding,
-                    topRight: minorPadding
-                )
+                if fromMyself {
+                    messageBubble.applyRadiusMaskFor(
+                        topLeft: majorPadding,
+                        bottomLeft: majorPadding,
+                        bottomRight: minorPadding,
+                        topRight: minorPadding
+                    )
+                } else {
+                    messageBubble.applyRadiusMaskFor(
+                        topLeft: minorPadding,
+                        bottomLeft: minorPadding,
+                        bottomRight: majorPadding,
+                        topRight: majorPadding
+                    )
+                }
             } else {
-                messageBubble.applyRadiusMaskFor(
-                    topLeft: majorPadding,
-                    bottomLeft: majorPadding,
-                    bottomRight: minorPadding,
-                    topRight: majorPadding
-                )
+                if fromMyself {
+                    messageBubble.applyRadiusMaskFor(
+                        topLeft: majorPadding,
+                        bottomLeft: majorPadding,
+                        bottomRight: minorPadding,
+                        topRight: majorPadding
+                    )
+                } else {
+                    messageBubble.applyRadiusMaskFor(
+                        topLeft: majorPadding,
+                        bottomLeft: minorPadding,
+                        bottomRight: majorPadding,
+                        topRight: majorPadding
+                    )
+                }
             }
         } else {
             if hasOwnNextMessage {
-                messageBubble.applyRadiusMaskFor(
-                    topLeft: majorPadding,
-                    bottomLeft: majorPadding,
-                    bottomRight: majorPadding,
-                    topRight: minorPadding
-                )
+                if fromMyself {
+                    messageBubble.applyRadiusMaskFor(
+                        topLeft: majorPadding,
+                        bottomLeft: majorPadding,
+                        bottomRight: majorPadding,
+                        topRight: minorPadding
+                    )
+                } else {
+                    messageBubble.applyRadiusMaskFor(
+                        topLeft: minorPadding,
+                        bottomLeft: majorPadding,
+                        bottomRight: majorPadding,
+                        topRight: majorPadding
+                    )
+                }
             } else {
                 messageBubble.applyRadiusMaskFor(
                     topLeft: majorPadding,
@@ -136,6 +175,13 @@ class MessageView: UITableViewCell, View {
                     topRight: majorPadding
                 )
             }
+        }
+    }
+
+    func addSendingIndicator() {
+        if message?.isSending == true {
+            sendingIndicator = SendingIndicator()
+            addSubview(sendingIndicator!)
         }
     }
 
