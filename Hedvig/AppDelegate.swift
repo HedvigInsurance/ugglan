@@ -24,16 +24,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RootInstaller {
 
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        #if DEBUG
-            Bundle(path: "/Applications/InjectionIII.app/Contents/Resources/iOSInjection10.bundle")?.load()
-        #endif
-
         if let dependenciesContainer = self.store!.dependencies as? DependenciesContainer {
             let navigator: Navigator! = dependenciesContainer.navigator
 
-            CreateApolloClient(onCreate: { apolloClient in
+            CreateApolloClient.create(onCreate: { apolloClient in
                 apollo = apolloClient
-                navigator.start(using: self, in: self.window!, at: Screen.chat)
+                navigator.start(using: self, in: self.window!, at: Screen.marketing)
             })
         }
 
@@ -48,6 +44,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RootInstaller {
         if identifier == Screen.chat.rawValue {
             let chatViewController = ChatViewController(store: store)
             let navigationController = UINavigationController(rootViewController: chatViewController)
+            window?.rootViewController = navigationController
+            completion()
+        }
+
+        if identifier == Screen.marketing.rawValue {
+            let marketingViewController = MarketingViewController(store: store)
+            let navigationController = UINavigationController(rootViewController: marketingViewController)
             window?.rootViewController = navigationController
             completion()
         }

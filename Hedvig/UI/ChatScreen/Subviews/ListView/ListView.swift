@@ -24,8 +24,10 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
                 return
             }
 
-            if messages!.count - oldValue!.count == 1 {
-                animateInsertion()
+            let newRowsCount = messages!.count - oldValue!.count
+
+            if newRowsCount >= 1 {
+                animateInsertion(newRowsCount: newRowsCount)
                 scrollToBottom()
             } else {
                 reload()
@@ -115,13 +117,20 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
 
     func update() {}
 
-    func animateInsertion() {
-        let firstIndexPath = IndexPath(item: 0, section: 0)
-        let visibleIndexPaths = indexPathsForVisibleRows!.filter { $0.item != 0 }
+    func animateInsertion(newRowsCount: Int) {
+        let rowsToAnimate = newRowsCount - 1
+        let animatedIndexPaths = Array(0 ... rowsToAnimate).map { (index) -> IndexPath in
+            return IndexPath(item: index, section: 0)
+        }
+        let visibleIndexPaths = indexPathsForVisibleRows!.filter { !animatedIndexPaths.contains($0) }
 
         beginUpdates()
-        insertRows(at: [firstIndexPath], with: .top)
-        reloadRows(at: visibleIndexPaths, with: .none)
+        insertRows(at: animatedIndexPaths, with: .top)
+
+        if visibleIndexPaths.count != 0 {
+            reloadRows(at: visibleIndexPaths, with: .fade)
+        }
+
         endUpdates()
     }
 

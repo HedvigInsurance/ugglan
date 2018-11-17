@@ -37,6 +37,10 @@ class InputFieldView: UIView, View, UITextViewDelegate {
 
     func setup() {
         selectCollectionView.alpha = 0
+        selectCollectionView.transform = CGAffineTransform(
+            translationX: 0,
+            y: -selectCollectionView.frame.height
+        )
 
         subscribeToCurrentResponse()
         sendButton = SendButton(frame: .zero, onSend: onShouldSend)
@@ -69,12 +73,18 @@ class InputFieldView: UIView, View, UITextViewDelegate {
                 UIView.animate(withDuration: 0.25) {
                     self.textView.alpha = 0
                     self.selectCollectionView.alpha = 1
+                    self.selectCollectionView.transform = CGAffineTransform.identity
                     self.selectCollectionView.choices = choices
+                    self.selectCollectionView.update()
                 }
             } else {
                 UIView.animate(withDuration: 0.25) {
                     self.textView.alpha = 1
                     self.selectCollectionView.alpha = 0
+                    self.selectCollectionView.transform = CGAffineTransform(
+                        translationX: 0,
+                        y: -self.selectCollectionView.frame.height
+                    )
                 }
             }
         }
@@ -127,7 +137,11 @@ class InputFieldView: UIView, View, UITextViewDelegate {
 
     func onSelect(_ choice: MessageBodySingleSelectFragment.Choice?) {
         if let globalId = self.currentChatResponse?.globalId {
-            if let choiceValue = choice?.fragments.messageBodyChoicesSelectionFragment?.fragments.messageBodyChoicesCoreFragment.value {
+            if let choiceValue = choice?
+                .fragments
+                .messageBodyChoicesSelectionFragment?
+                .fragments
+                .messageBodyChoicesCoreFragment.value {
                 let body = ChatResponseBodySingleSelectInput(selectedValue: choiceValue)
                 let input = ChatResponseSingleSelectInput(globalId: globalId, body: body)
                 let mutation = SendChatSingleSelectResponseMutation(input: input)

@@ -20,6 +20,7 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
 
         if let navigationBar = self.navigationController?.navigationBar {
             navigationBar.topItem?.titleView = wordmarkIocn
@@ -71,7 +72,12 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
             DispatchQueue.main.async {
                 if let message = result?.data?.message {
                     let stateMessage = Message(fromApollo: message)
-                    self.dispatch(InsertMessage(globalId: stateMessage.globalId, header: stateMessage.header, body: stateMessage.body))
+                    let action = InsertMessage(
+                        globalId: stateMessage.globalId,
+                        header: stateMessage.header,
+                        body: stateMessage.body
+                    )
+                    self.dispatch(action)
                 }
             }
         }

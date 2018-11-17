@@ -11,7 +11,7 @@ import Disk
 import Foundation
 
 class CreateApolloClient {
-    static func create(token: String?) -> ApolloClient {
+    private static func createClient(token: String?) -> ApolloClient {
         let authPayloads = [
             "Authorization": token ?? ""
         ]
@@ -37,20 +37,21 @@ class CreateApolloClient {
         return ApolloClient(networkTransport: splitNetworkTransport)
     }
 
-    init(onCreate: @escaping (_ apolloClient: ApolloClient) -> Void) {
+    static func create(onCreate: @escaping (_ apolloClient: ApolloClient) -> Void) {
         let tokenData = try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
             as: AuthorizationToken.self
         )
 
-        let apolloClient = CreateApolloClient.create(token: tokenData?.token ?? nil)
+        let apolloClient = CreateApolloClient.createClient(token: tokenData?.token ?? nil)
 
         if tokenData == nil {
             let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
             let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
+
             apolloClient.perform(mutation: mutation) { result, _ in
-                let newApolloClient = CreateApolloClient.create(token: result?.data?.createSession)
+                let newApolloClient = CreateApolloClient.createClient(token: result?.data?.createSession)
                 onCreate(newApolloClient)
             }
         }

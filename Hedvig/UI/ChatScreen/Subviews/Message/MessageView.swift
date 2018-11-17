@@ -55,7 +55,7 @@ class MessageView: UITableViewCell, View {
                 messageLabel.textColor = HedvigColors.white
                 messageLabel.font = HedvigFonts.circularStdBook?.withSize(fontSize)
             } else {
-                messageBubble.backgroundColor = HedvigColors.offWhite
+                messageBubble.backgroundColor = HedvigColors.offWhite.darkened(amount: 0.01)
                 messageLabel.textColor = HedvigColors.black
                 messageLabel.font = HedvigFonts.merriweather?.withSize(fontSize)
             }

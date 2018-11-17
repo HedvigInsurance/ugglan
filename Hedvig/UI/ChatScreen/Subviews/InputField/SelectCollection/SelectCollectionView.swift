@@ -29,7 +29,10 @@ class SelectCollectionView: UICollectionView, View, UICollectionViewDataSource {
     }
 
     func collectionView(_: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as? SelectCollectionViewCell
+        let cell = dequeueReusableCell(
+            withReuseIdentifier: cellReuseIdentifier,
+            for: indexPath
+        ) as? SelectCollectionViewCell
 
         if cell == nil {
             return SelectCollectionViewCell()
@@ -49,7 +52,7 @@ class SelectCollectionView: UICollectionView, View, UICollectionViewDataSource {
 
         if let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout {
             flowLayout.scrollDirection = .horizontal
-            flowLayout.estimatedItemSize = CGSize(width: 100, height: 100)
+            flowLayout.estimatedItemSize = CGSize(width: 100, height: 60)
             flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
         }
     }
@@ -58,7 +61,9 @@ class SelectCollectionView: UICollectionView, View, UICollectionViewDataSource {
         backgroundColor = UIColor.clear
     }
 
-    func update() {}
+    func update() {
+        layoutIfNeeded()
+    }
 
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)

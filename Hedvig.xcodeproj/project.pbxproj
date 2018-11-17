@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		19B76C7FFFF41BAF684C1629 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */; };
 		57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */; };
 		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
@@ -17,6 +16,9 @@
 		EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */; };
 		EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE66219EF150007DE1C9 /* SelectButton.swift */; };
 		EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */; };
+		EB06FE6C21A03AE4007DE1C9 /* MarketingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE6B21A03AE4007DE1C9 /* MarketingViewController.swift */; };
+		EB06FE6E21A03B11007DE1C9 /* MarketingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE6D21A03B11007DE1C9 /* MarketingView.swift */; };
+		EB06FE7121A03DCA007DE1C9 /* OpenChatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */; };
 		EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6821988E9A00CF0624 /* SendButton.swift */; };
 		EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
@@ -85,6 +87,9 @@
 		EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollectionViewCell.swift; sourceTree = "<group>"; };
 		EB06FE66219EF150007DE1C9 /* SelectButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectButton.swift; sourceTree = "<group>"; };
 		EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatSingleSelectResponse.graphql; sourceTree = "<group>"; };
+		EB06FE6B21A03AE4007DE1C9 /* MarketingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingViewController.swift; sourceTree = "<group>"; };
+		EB06FE6D21A03B11007DE1C9 /* MarketingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingView.swift; sourceTree = "<group>"; };
+		EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenChatButton.swift; sourceTree = "<group>"; };
 		EB328E6821988E9A00CF0624 /* SendButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendButton.swift; sourceTree = "<group>"; };
 		EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
@@ -134,7 +139,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */,
-				19B76C7FFFF41BAF684C1629 /* Pods_Hedvig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +174,24 @@
 				EB06FE66219EF150007DE1C9 /* SelectButton.swift */,
 			);
 			path = SelectCollection;
+			sourceTree = "<group>";
+		};
+		EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */ = {
+			isa = PBXGroup;
+			children = (
+				EB06FE6F21A03DB8007DE1C9 /* Subviews */,
+				EB06FE6B21A03AE4007DE1C9 /* MarketingViewController.swift */,
+				EB06FE6D21A03B11007DE1C9 /* MarketingView.swift */,
+			);
+			path = MarketingScreen;
+			sourceTree = "<group>";
+		};
+		EB06FE6F21A03DB8007DE1C9 /* Subviews */ = {
+			isa = PBXGroup;
+			children = (
+				EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */,
+			);
+			path = Subviews;
 			sourceTree = "<group>";
 		};
 		EB328E6C21989BCB00CF0624 /* Generic */ = {
@@ -271,6 +293,7 @@
 		EB75E1852193328E006B5CE4 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */,
 				EB328E6C21989BCB00CF0624 /* Generic */,
 				EB75E18621933298006B5CE4 /* ChatScreen */,
 			);
@@ -639,9 +662,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */,
+				EB06FE6C21A03AE4007DE1C9 /* MarketingViewController.swift in Sources */,
 				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
+				EB06FE6E21A03B11007DE1C9 /* MarketingView.swift in Sources */,
 				EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */,
 				EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* ApolloClient.swift in Sources */,
@@ -661,6 +686,7 @@
 				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
 				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
 				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
+				EB06FE7121A03DCA007DE1C9 /* OpenChatButton.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
