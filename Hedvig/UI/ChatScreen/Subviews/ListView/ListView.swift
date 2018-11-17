@@ -170,7 +170,6 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         cell!.message = messages?[indexPath.item]
 
         cell!.update()
-        cell!.style()
 
         return cell!
     }

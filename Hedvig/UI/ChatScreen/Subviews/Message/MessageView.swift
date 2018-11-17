@@ -65,6 +65,7 @@ class MessageView: UITableViewCell, View {
     func update() {
         messageLabel.text = message?.body.text
         layout()
+        style()
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -107,7 +108,7 @@ class MessageView: UITableViewCell, View {
             sendingIndicator!.pin.bottom(0)
         }
     }
-    
+
     func setMessageBubbleRadius() {
         let hasOwnPreviousMessage = previousMessage?.header.fromMyself == message?.header.fromMyself
         let hasOwnNextMessage = nextMessage?.header.fromMyself == message?.header.fromMyself
@@ -115,7 +116,7 @@ class MessageView: UITableViewCell, View {
 
         let majorPadding: CGFloat = 21
         let minorPadding: CGFloat = 5
-        
+
         if hasOwnPreviousMessage {
             if hasOwnNextMessage {
                 if fromMyself {

@@ -11,17 +11,12 @@ import Foundation
 import PinLayout
 import Tempura
 import UIKit
-
-let blurEffect = UIBlurEffect(style: .extraLight)
-
 class InputFieldView: UIView, View, UITextViewDelegate {
     var textView = UITextView()
     var sendButton: SendButton!
-    var blurView = UIVisualEffectView(effect: blurEffect)
-    var borderView = UIView()
-    var safeAreaContainer = UIView()
-    var heightConstraint: NSLayoutConstraint?
-    var onSend: ((_ text: String) -> Void)!
+    var currentChatResponse: CurrentChatResponseSubscription.Data.CurrentChatResponse?
+    var safeAreaContainer = SafeAreaContainer()
+    var selectCollectionView = SelectCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -33,46 +28,57 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup() {
-        sendButton = SendButton(frame: .zero, onSend: onShouldSend)
+    func subscribeToCurrentResponse() {
+        apollo?.subscribe(subscription: CurrentChatResponseSubscription()) { result, _ in
+            self.currentChatResponse = result?.data?.currentChatResponse
+            self.update()
+        }
+    }
 
+    func setup() {
+        selectCollectionView.alpha = 0
+
+        subscribeToCurrentResponse()
+        sendButton = SendButton(frame: .zero, onSend: onShouldSend)
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        safeAreaContainer.translatesAutoresizingMaskIntoConstraints = false
 
         textView.addSubview(sendButton)
-        safeAreaContainer.addSubview(borderView)
-        safeAreaContainer.addSubview(textView)
-        blurView.contentView.addSubview(safeAreaContainer)
-        addSubview(blurView)
-
-        safeAreaContainer.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
-
-        safeAreaContainer.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
-        safeAreaContainer.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
-
-        safeAreaContainer.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
-
-        heightConstraint = safeAreaContainer.heightAnchor.constraint(equalToConstant: 60)
-        heightConstraint?.isActive = true
-
         textView.delegate = self
+
+        safeAreaContainer.safeAreaContainer.addSubview(textView)
+        safeAreaContainer.safeAreaContainer.addSubview(selectCollectionView)
+        addSubview(safeAreaContainer)
+
+        selectCollectionView.onSelect = onSelect
 
         handleButtonState()
     }
 
     func style() {
-        blurView.backgroundColor = HedvigColors.white.withAlphaComponent(0.7)
         textView.backgroundColor = HedvigColors.white.withAlphaComponent(0.5)
         textView.layer.cornerRadius = 20
         textView.layer.borderColor = HedvigColors.grayBorder.cgColor
         textView.layer.borderWidth = 1
         textView.font = HedvigFonts.circularStdBook?.withSize(15)
         textView.tintColor = HedvigColors.purple
-        borderView.backgroundColor = HedvigColors.grayBorder
     }
 
-    func update() {}
+    func update() {
+        if let currentChatResponse = self.currentChatResponse {
+            if let choices = currentChatResponse.body?.fragments.messageBodySingleSelectFragment?.choices {
+                UIView.animate(withDuration: 0.25) {
+                    self.textView.alpha = 0
+                    self.selectCollectionView.alpha = 1
+                    self.selectCollectionView.choices = choices
+                }
+            } else {
+                UIView.animate(withDuration: 0.25) {
+                    self.textView.alpha = 1
+                    self.selectCollectionView.alpha = 0
+                }
+            }
+        }
+    }
 
     override func layoutSubviews() {
         textView.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 35)
@@ -80,12 +86,10 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         textView.pin.height(max(textView.contentSize.height, 40))
         textView.pin.top(10)
         textView.pin.left(2.5%)
-        borderView.pin.width(100%)
-        borderView.pin.height(1)
-        borderView.pin.top(0)
         sendButton.pin.bottom(5)
         sendButton.pin.right(5)
         sendButton.pin.sizeToFit()
+        selectCollectionView.pin.top(0)
     }
 
     override var intrinsicContentSize: CGSize {
@@ -101,7 +105,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        heightConstraint?.constant = max(textView.contentSize.height + 20, 60)
+        safeAreaContainer.heightDidChange(height: max(textView.contentSize.height + 20, 60))
         textView.setContentOffset(CGPoint.zero, animated: false)
 
         layoutIfNeeded()
@@ -110,9 +114,25 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
 
     func onShouldSend() {
-        onSend(String(textView.text))
+        if let globalId = self.currentChatResponse?.globalId {
+            let body = ChatResponseBodyTextInput(text: String(textView.text))
+            let input = ChatResponseTextInput(globalId: globalId, body: body)
+            apollo?.perform(mutation: SendChatTextResponseMutation(input: input))
+        }
+
         textView.text = ""
         handleButtonState()
         textViewDidChange(textView)
+    }
+
+    func onSelect(_ choice: MessageBodySingleSelectFragment.Choice?) {
+        if let globalId = self.currentChatResponse?.globalId {
+            if let choiceValue = choice?.fragments.messageBodyChoicesSelectionFragment?.fragments.messageBodyChoicesCoreFragment.value {
+                let body = ChatResponseBodySingleSelectInput(selectedValue: choiceValue)
+                let input = ChatResponseSingleSelectInput(globalId: globalId, body: body)
+                let mutation = SendChatSingleSelectResponseMutation(input: input)
+                apollo?.perform(mutation: mutation)
+            }
+        }
     }
 }

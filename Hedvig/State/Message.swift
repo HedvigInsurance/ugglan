@@ -48,4 +48,16 @@ struct Message: Equatable {
 
         isSending = false
     }
+
+    init(fromApollo message: MessageSubscription.Data.Message) {
+        globalId = message.globalId
+
+        let header = MessageHeader(fromMyself: message.header.fromMyself)
+        self.header = header
+
+        let body = MessageBody(text: message.body.fragments.subscriptionMessageBodyCoreFragment.text)
+        self.body = body
+
+        isSending = false
+    }
 }

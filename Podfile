@@ -14,6 +14,7 @@ target 'Hedvig' do
   pod 'UIViewRoundedCorners'
   pod 'Apollo'
   pod 'Apollo/WebSocket'
+  pod 'Disk', '~> 0.4.0'
 
   target 'HedvigTests' do
     inherit! :search_paths

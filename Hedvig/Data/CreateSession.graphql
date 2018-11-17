@@ -1,0 +1,3 @@
+mutation CreateSession($campaign: CampaignInput, $trackingId: UUID) {
+    createSession(campaign: $campaign, trackingId: $trackingId)
+}

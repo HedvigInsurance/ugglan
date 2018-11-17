@@ -21,17 +21,6 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        inputFieldView.onSend = onSend
-
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(
-                title: "Fortsätt",
-                style: UIBarButtonItem.Style.plain,
-                target: nil,
-                action: nil
-            )
-        ]
-
         if let navigationBar = self.navigationController?.navigationBar {
             navigationBar.topItem?.titleView = wordmarkIocn
             navigationBar.tintColor = HedvigColors.purple
@@ -60,12 +49,11 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
             navigationBarBorder.backgroundColor = HedvigColors.grayBorder
         }
 
-        loadMessages()
-        // subscribeToMessages()
+        subscribeToMessages()
     }
 
     func loadMessages() {
-        apollo.fetch(query: MessagesQuery()) { result, _ in
+        apollo?.fetch(query: MessagesQuery()) { result, _ in
             if let apolloMessages = result?.data?.messages {
                 let messages = apolloMessages.map({ (message) -> Message in
                     Message(fromApollo: message!)
@@ -79,15 +67,12 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     }
 
     func subscribeToMessages() {
-        apollo.subscribe(subscription: MessageSubscription()) { result, _ in
+        apollo?.subscribe(subscription: MessageSubscription()) { result, _ in
             DispatchQueue.main.async {
-                let text = result?.data?.message?.body.fragments.subscriptionMessageBodyCoreFragment.text ?? ""
-                let globalId = ""
-
-                let header = MessageHeader(fromMyself: false)
-                let body = MessageBody(text: text)
-
-                self.dispatch(InsertMessage(globalId: globalId, header: header, body: body))
+                if let message = result?.data?.message {
+                    let stateMessage = Message(fromApollo: message)
+                    self.dispatch(InsertMessage(globalId: stateMessage.globalId, header: stateMessage.header, body: stateMessage.body))
+                }
             }
         }
     }
@@ -103,9 +88,5 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
 
     override var canBecomeFirstResponder: Bool {
         return true
-    }
-
-    func onSend(_ text: String) {
-        dispatch(SendMessage(text: text))
     }
 }

@@ -16,6 +16,6 @@ struct InsertMessage: AppAction {
 
     func updatedState(currentState: inout AppState) {
         let newMessage = Message(globalId: globalId, header: header, body: body, isSending: false)
-        currentState.messages.insert(newMessage, at: currentState.messages.count)
+        currentState.messages.insert(newMessage, at: 0)
     }
 }

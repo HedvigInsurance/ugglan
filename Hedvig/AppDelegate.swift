@@ -24,9 +24,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RootInstaller {
 
         window = UIWindow(frame: UIScreen.main.bounds)
 
+        #if DEBUG
+            Bundle(path: "/Applications/InjectionIII.app/Contents/Resources/iOSInjection10.bundle")?.load()
+        #endif
+
         if let dependenciesContainer = self.store!.dependencies as? DependenciesContainer {
             let navigator: Navigator! = dependenciesContainer.navigator
-            navigator.start(using: self, in: window!, at: Screen.chat)
+
+            CreateApolloClient(onCreate: { apolloClient in
+                apollo = apolloClient
+                navigator.start(using: self, in: self.window!, at: Screen.chat)
+            })
         }
 
         return true

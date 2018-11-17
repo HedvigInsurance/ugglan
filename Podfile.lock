@@ -5,6 +5,7 @@ PODS:
   - Apollo/WebSocket (0.9.4):
     - Apollo/Core
     - Starscream (~> 3.0.2)
+  - Disk (0.4.0)
   - DynamicColor (4.0.2)
   - Katana (2.0.0)
   - PinLayout (1.8.6)
@@ -20,6 +21,7 @@ PODS:
 DEPENDENCIES:
   - Apollo
   - Apollo/WebSocket
+  - Disk (~> 0.4.0)
   - DynamicColor (~> 4.0.2)
   - PinLayout
   - SwiftFormat/CLI
@@ -31,6 +33,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Apollo
+    - Disk
     - DynamicColor
     - Katana
     - PinLayout
@@ -43,6 +46,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Apollo: 450856adbdebcdf28c3c671f81732ac3f9944065
+  Disk: ef2956657d5bb56034b38b29b352170165226440
   DynamicColor: c7adcfe871781a2b39877a5774e452ba51b79eb3
   Katana: f624d693c272dac8e3a20c5049a34d0821f067c9
   PinLayout: fe2a2432d6982588e208572005c941aeeae417ab
@@ -53,6 +57,6 @@ SPEC CHECKSUMS:
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
   UIViewRoundedCorners: 51b74df8b6052e0488c71197951566aac632ee1a
 
-PODFILE CHECKSUM: e13a56d7f06c59429b849112b4d0b4b8c619b719
+PODFILE CHECKSUM: 2794c52c1e3dbbeaee8cb430c1261974a0f1a45e
 
 COCOAPODS: 1.5.3
