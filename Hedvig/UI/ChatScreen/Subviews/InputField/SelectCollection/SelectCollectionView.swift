@@ -15,9 +15,16 @@ private let cellReuseIdentifier = "SelectCollectionViewCell"
 
 class SelectCollectionView: UICollectionView, View, UICollectionViewDataSource {
     var choices: [MessageBodySingleSelectFragment.Choice?] = [] {
-        didSet {
-            DispatchQueue.main.async {
-                self.reloadData()
+        didSet(oldValue) {
+            if oldValue != nil {
+                performBatchUpdates({
+                    deleteItems(at: oldValue.enumerated().map({ (index, _) -> IndexPath in
+                        IndexPath(item: index, section: 0)
+                    }))
+                    insertItems(at: choices.enumerated().map({ (index, _) -> IndexPath in
+                        IndexPath(item: index, section: 0)
+                    }))
+                }, completion: nil)
             }
         }
     }
@@ -62,7 +69,11 @@ class SelectCollectionView: UICollectionView, View, UICollectionViewDataSource {
     }
 
     func update() {
-        layoutIfNeeded()
+        DispatchQueue.main.async {
+            self.reloadData()
+            self.collectionViewLayout.invalidateLayout()
+            self.layoutIfNeeded()
+        }
     }
 
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {

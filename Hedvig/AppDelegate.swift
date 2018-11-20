@@ -26,11 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RootInstaller {
 
         if let dependenciesContainer = self.store!.dependencies as? DependenciesContainer {
             let navigator: Navigator! = dependenciesContainer.navigator
-
-            CreateApolloClient.create(onCreate: { apolloClient in
-                apollo = apolloClient
+            HedvigApolloClient.initClient().onValue { _ in
                 navigator.start(using: self, in: self.window!, at: Screen.marketing)
-            })
+            }
         }
 
         return true

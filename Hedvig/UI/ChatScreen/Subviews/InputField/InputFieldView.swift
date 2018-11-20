@@ -29,7 +29,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
 
     func subscribeToCurrentResponse() {
-        apollo?.subscribe(subscription: CurrentChatResponseSubscription()) { result, _ in
+        HedvigApolloClient.client?.subscribe(subscription: CurrentChatResponseSubscription()) { result, _ in
             self.currentChatResponse = result?.data?.currentChatResponse
             self.update()
         }
@@ -74,9 +74,9 @@ class InputFieldView: UIView, View, UITextViewDelegate {
                     self.textView.alpha = 0
                     self.selectCollectionView.alpha = 1
                     self.selectCollectionView.transform = CGAffineTransform.identity
-                    self.selectCollectionView.choices = choices
-                    self.selectCollectionView.update()
                 }
+                selectCollectionView.choices = choices
+                selectCollectionView.update()
             } else {
                 UIView.animate(withDuration: 0.25) {
                     self.textView.alpha = 1
@@ -86,6 +86,8 @@ class InputFieldView: UIView, View, UITextViewDelegate {
                         y: -self.selectCollectionView.frame.height
                     )
                 }
+                selectCollectionView.choices = []
+                selectCollectionView.update()
             }
         }
     }
@@ -127,7 +129,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         if let globalId = self.currentChatResponse?.globalId {
             let body = ChatResponseBodyTextInput(text: String(textView.text))
             let input = ChatResponseTextInput(globalId: globalId, body: body)
-            apollo?.perform(mutation: SendChatTextResponseMutation(input: input))
+            HedvigApolloClient.client?.perform(mutation: SendChatTextResponseMutation(input: input))
         }
 
         textView.text = ""
@@ -145,7 +147,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
                 let body = ChatResponseBodySingleSelectInput(selectedValue: choiceValue)
                 let input = ChatResponseSingleSelectInput(globalId: globalId, body: body)
                 let mutation = SendChatSingleSelectResponseMutation(input: input)
-                apollo?.perform(mutation: mutation)
+                HedvigApolloClient.client?.perform(mutation: mutation)
             }
         }
     }

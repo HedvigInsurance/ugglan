@@ -15,6 +15,7 @@ target 'Hedvig' do
   pod 'Apollo'
   pod 'Apollo/WebSocket'
   pod 'Disk', '~> 0.4.0'
+  pod 'FlowFramework', '~> 1.0'
 
   target 'HedvigTests' do
     inherit! :search_paths

@@ -54,7 +54,7 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     }
 
     func loadMessages() {
-        apollo?.fetch(query: MessagesQuery()) { result, _ in
+        HedvigApolloClient.client?.fetch(query: MessagesQuery()) { result, _ in
             if let apolloMessages = result?.data?.messages {
                 let messages = apolloMessages.map({ (message) -> Message in
                     Message(fromApollo: message!)
@@ -68,7 +68,7 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     }
 
     func subscribeToMessages() {
-        apollo?.subscribe(subscription: MessageSubscription()) { result, _ in
+        HedvigApolloClient.client?.subscribe(subscription: MessageSubscription()) { result, _ in
             DispatchQueue.main.async {
                 if let message = result?.data?.message {
                     let stateMessage = Message(fromApollo: message)

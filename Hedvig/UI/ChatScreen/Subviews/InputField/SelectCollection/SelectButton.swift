@@ -58,6 +58,8 @@ class SelectButton: UIButton, View {
 
     func update() {
         style()
+        labelView.layoutIfNeeded()
+        layoutIfNeeded()
     }
 
     override func layoutSubviews() {

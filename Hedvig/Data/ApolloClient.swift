@@ -8,10 +8,13 @@
 
 import Apollo
 import Disk
+import Flow
 import Foundation
 
-class CreateApolloClient {
-    private static func createClient(token: String?) -> ApolloClient {
+class HedvigApolloClient {
+    static var client: ApolloClient?
+
+    static func createClient(token: String?) -> Future<ApolloClient> {
         let authPayloads = [
             "Authorization": token ?? ""
         ]
@@ -34,30 +37,76 @@ class CreateApolloClient {
             webSocketNetworkTransport: websocketNetworkTransport
         )
 
-        return ApolloClient(networkTransport: splitNetworkTransport)
+        return Future { completion in
+            let client = ApolloClient(networkTransport: splitNetworkTransport)
+            completion(Result.success(client))
+            return Disposer {}
+        }
     }
 
-    static func create(onCreate: @escaping (_ apolloClient: ApolloClient) -> Void) {
-        let tokenData = try? Disk.retrieve(
+    static func retreiveToken() -> AuthorizationToken? {
+        return try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
             as: AuthorizationToken.self
         )
+    }
 
-        let apolloClient = CreateApolloClient.createClient(token: tokenData?.token ?? nil)
+    static func createClientFromNewSession() -> Future<ApolloClient> {
+        let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
+        let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
-        if tokenData == nil {
-            let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
-            let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
-
-            apolloClient.perform(mutation: mutation) { result, _ in
-                let newApolloClient = CreateApolloClient.createClient(token: result?.data?.createSession)
-                onCreate(newApolloClient)
+        return Future { completion in
+            HedvigApolloClient.createClient(token: nil).onValue { client in
+                client.perform(mutation: mutation) { result, _ in
+                    HedvigApolloClient.createClient(token: result?.data?.createSession).onValue { clientWithSession in
+                        completion(Result.success(clientWithSession))
+                    }.onError { error in
+                        completion(Result.failure(error))
+                    }
+                }
             }
-        }
 
-        onCreate(apolloClient)
+            return Disposer {}
+        }
+    }
+
+    static func initClient() -> Future<ApolloClient> {
+        return Future { completion in
+            if self.client != nil {
+                completion(.success(self.client!))
+                return Disposer {}
+            }
+
+            let tokenData = retreiveToken()
+
+            if tokenData == nil {
+                createClientFromNewSession().onResult { result in
+                    switch result {
+                    case let .success(client): do {
+                        self.client = client
+                        completion(result)
+                    }
+                    case .failure: do {
+                        completion(result)
+                    }
+                    }
+                }
+            } else {
+                createClient(token: tokenData!.token).onResult { result in
+                    switch result {
+                    case let .success(client): do {
+                        self.client = client
+                        completion(result)
+                    }
+                    case .failure: do {
+                        completion(result)
+                    }
+                    }
+                }
+            }
+
+            return Disposer {}
+        }
     }
 }
-
-var apollo: ApolloClient?

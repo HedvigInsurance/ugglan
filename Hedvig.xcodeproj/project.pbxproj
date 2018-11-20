@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */; };
 		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
+		7D861438228D002C35A3D069 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
@@ -139,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */,
+				7D861438228D002C35A3D069 /* Pods_Hedvig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -530,6 +532,7 @@
 				"${BUILT_PRODUCTS_DIR}/Apollo/Apollo.framework",
 				"${BUILT_PRODUCTS_DIR}/Disk/Disk.framework",
 				"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework",
+				"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework",
 				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
 				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
@@ -541,6 +544,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Apollo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Disk.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
@@ -638,7 +642,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"${SRCROOT}\" --disable trailingCommas\n";
+			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"${SRCROOT}\" --disable trailingCommas --exclude Pods\n";
 		};
 		EBC049CD219C833B00AFC30F /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
