@@ -75,7 +75,9 @@ class HedvigApolloClient {
         return Future { completion in
             if self.client != nil {
                 completion(.success(self.client!))
-                return Disposer {}
+                return Disposer {
+                    self.client = nil
+                }
             }
 
             let tokenData = retreiveToken()
@@ -106,7 +108,9 @@ class HedvigApolloClient {
                 }
             }
 
-            return Disposer {}
+            return Disposer {
+                self.client = nil
+            }
         }
     }
 }
