@@ -196,6 +196,19 @@
 			path = Subviews;
 			sourceTree = "<group>";
 		};
+		EB1B4A9B21A44E8A00DA341C /* GraphQL */ = {
+			isa = PBXGroup;
+			children = (
+				EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */,
+				EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */,
+				EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */,
+				EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */,
+				EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */,
+				EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */,
+			);
+			path = GraphQL;
+			sourceTree = "<group>";
+		};
 		EB328E6C21989BCB00CF0624 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
@@ -380,15 +393,10 @@
 		EBC049D0219C87B300AFC30F /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				EB1B4A9B21A44E8A00DA341C /* GraphQL */,
 				EBC049D2219C87DF00AFC30F /* API.swift */,
 				EBC049D1219C87DF00AFC30F /* schema.json */,
-				EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */,
 				EBC049D7219C88EB00AFC30F /* ApolloClient.swift */,
-				EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */,
-				EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */,
-				EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */,
-				EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */,
-				EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */,
 			);
 			path = Data;
 			sourceTree = "<group>";
