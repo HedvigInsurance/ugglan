@@ -9,14 +9,10 @@
 import Foundation
 import Tempura
 
-// MARK: - Screens identifiers
-
 enum Screen: String {
     case marketing
     case chat
 }
-
-// MARK: - List Screen navigation
 
 extension ChatViewController: RoutableWithConfiguration {
     var routeIdentifier: RouteElementIdentifier {

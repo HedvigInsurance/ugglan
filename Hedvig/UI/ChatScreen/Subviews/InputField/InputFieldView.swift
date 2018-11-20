@@ -11,6 +11,7 @@ import Foundation
 import PinLayout
 import Tempura
 import UIKit
+
 class InputFieldView: UIView, View, UITextViewDelegate {
     var textView = UITextView()
     var sendButton: SendButton!

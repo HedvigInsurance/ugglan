@@ -12,7 +12,7 @@ import Tempura
 import UIKit
 
 class OpenChatButton: UIButton, View {
-    var onButtonPress: (() -> Void)?
+    var onButtonPress: Interaction?
 
     func setup() {
         addTarget(self, action: #selector(onTapRelease), for: .touchUpInside)

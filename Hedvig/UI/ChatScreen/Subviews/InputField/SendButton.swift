@@ -9,6 +9,20 @@
 import Foundation
 import Tempura
 
+private struct Styles {
+    static func backgroundColor(activated: Bool) -> UIColor {
+        if activated {
+            return HedvigColors.purple
+        } else {
+            return HedvigColors.darkGray
+        }
+    }
+
+    static func highlightedBackgroundColor(activated: Bool) -> UIColor {
+        return backgroundColor(activated: activated).darkened(amount: 0.25)
+    }
+}
+
 class SendButton: UIButton, View {
     let arrowUpIcon = Icon(frame: .zero, iconName: "ArrowUp", iconWidth: 10)
     var activated: Bool {
@@ -16,12 +30,11 @@ class SendButton: UIButton, View {
             update()
         }
     }
-
     var onSend: () -> Void
 
     init(frame: CGRect, onSend: @escaping () -> Void) {
         self.onSend = onSend
-        activated = true
+        activated = false
         super.init(frame: frame)
         setup()
         style()
@@ -37,13 +50,27 @@ class SendButton: UIButton, View {
         addTarget(self, action: #selector(onTapRelease), for: .touchUpInside)
     }
 
+    func style() {
+        backgroundColor = Styles.backgroundColor(activated: activated)
+        layer.cornerRadius = 15
+    }
+
+    func update() {
+        UIView.animate(withDuration: 0.25) {
+            self.backgroundColor = Styles.backgroundColor(activated: self.activated)
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        pin.width(30)
+        pin.height(30)
+        arrowUpIcon.pin.center()
+    }
+
     @objc func onTap() {
         UIView.animate(withDuration: 0.25) {
-            if self.activated {
-                self.backgroundColor = HedvigColors.purple.darkened(amount: 0.25)
-            } else {
-                self.backgroundColor = HedvigColors.darkGray.darkened(amount: 0.25)
-            }
+            self.backgroundColor = Styles.highlightedBackgroundColor(activated: self.activated)
         }
     }
 
@@ -58,33 +85,7 @@ class SendButton: UIButton, View {
         }
 
         UIView.animate(withDuration: 0.25) {
-            if self.activated {
-                self.backgroundColor = HedvigColors.purple
-            } else {
-                self.backgroundColor = HedvigColors.darkGray
-            }
+            self.backgroundColor = Styles.backgroundColor(activated: self.activated)
         }
-    }
-
-    func style() {
-        backgroundColor = HedvigColors.purple
-        layer.cornerRadius = 15
-    }
-
-    func update() {
-        UIView.animate(withDuration: 0.25) {
-            if self.activated {
-                self.backgroundColor = HedvigColors.purple
-            } else {
-                self.backgroundColor = HedvigColors.darkGray
-            }
-        }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        pin.width(30)
-        pin.height(30)
-        arrowUpIcon.pin.center()
     }
 }

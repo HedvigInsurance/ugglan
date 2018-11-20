@@ -13,11 +13,11 @@ import Tempura
 
 class MarketingView: UIView, ViewControllerModellableView {
     let openChatButton = OpenChatButton()
-    var onOpenChat: (() -> Void)?
+    var didTapOpenChat: Interaction?
 
     func setup() {
         openChatButton.onButtonPress = {
-            self.onOpenChat?()
+            self.didTapOpenChat?()
         }
 
         addSubview(openChatButton)

@@ -20,6 +20,12 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setupNavigationBar()
+
+        subscribeToMessages()
+    }
+
+    func setupNavigationBar() {
         navigationController?.setNavigationBarHidden(false, animated: true)
 
         if let navigationBar = self.navigationController?.navigationBar {
@@ -49,8 +55,6 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
             navigationBarBorder.pin.width(navigationBarBlurView.frame.width)
             navigationBarBorder.backgroundColor = HedvigColors.grayBorder
         }
-
-        subscribeToMessages()
     }
 
     func loadMessages() {
