@@ -30,6 +30,7 @@ class SendButton: UIButton, View {
             update()
         }
     }
+
     var onSend: () -> Void
 
     init(frame: CGRect, onSend: @escaping () -> Void) {

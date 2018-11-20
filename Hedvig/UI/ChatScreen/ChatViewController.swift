@@ -21,7 +21,6 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
-
         subscribeToMessages()
     }
 
@@ -73,14 +72,13 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
 
     func subscribeToMessages() {
         HedvigApolloClient.client?.subscribe(subscription: MessageSubscription()) { result, _ in
-            DispatchQueue.main.async {
-                if let message = result?.data?.message {
-                    let stateMessage = Message(fromApollo: message)
-                    let action = InsertMessage(
-                        globalId: stateMessage.globalId,
-                        header: stateMessage.header,
-                        body: stateMessage.body
-                    )
+            if let message = result?.data?.message {
+                let stateMessage = Message(fromApollo: message)
+                let action = InsertMessage(
+                    message: stateMessage
+                )
+
+                DispatchQueue.main.async {
                     self.dispatch(action)
                 }
             }

@@ -10,12 +10,9 @@ import Foundation
 import Katana
 
 struct InsertMessage: AppAction {
-    var globalId: String
-    var header: MessageHeader
-    var body: MessageBody
+    var message: Message
 
     func updatedState(currentState: inout AppState) {
-        let newMessage = Message(globalId: globalId, header: header, body: body, isSending: false)
-        currentState.messages.insert(newMessage, at: 0)
+        currentState.messages.insert(message, at: 0)
     }
 }
