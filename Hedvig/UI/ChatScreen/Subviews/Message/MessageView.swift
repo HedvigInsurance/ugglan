@@ -10,7 +10,6 @@ import Foundation
 import PinLayout
 import Tempura
 import UIKit
-import UIViewRoundedCorners
 
 class MessageView: UITableViewCell, View {
     let messageBubble = UIView()
