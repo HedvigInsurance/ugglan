@@ -24,12 +24,17 @@ class SafeAreaContainer: UIVisualEffectView, View {
         safeAreaContainer.addSubview(borderView)
         contentView.addSubview(safeAreaContainer)
 
-        safeAreaContainer.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
-
-        safeAreaContainer.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
-        safeAreaContainer.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
-
-        safeAreaContainer.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+        if #available(iOS 11.0, *) {
+            safeAreaContainer.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
+            safeAreaContainer.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+            safeAreaContainer.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
+            safeAreaContainer.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+        } else {
+            safeAreaContainer.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+            safeAreaContainer.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+            safeAreaContainer.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+            safeAreaContainer.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        }
 
         heightConstraint = safeAreaContainer.heightAnchor.constraint(equalToConstant: 60)
         heightConstraint?.isActive = true
