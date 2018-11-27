@@ -7,50 +7,33 @@
 //
 
 import Apollo
-import Katana
-import Tempura
+import Flow
+import Presentation
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, RootInstaller {
-    var window: UIWindow?
-    var store: Store<AppState>!
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    let bag = DisposeBag()
+    let navigationController = UINavigationController()
+    let window = UIWindow(frame: UIScreen.main.bounds)
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        store = Store<AppState>(middleware: [], dependencies: DependenciesContainer.self)
+        window.rootViewController = navigationController
 
-        window = UIWindow(frame: UIScreen.main.bounds)
+        let marketing = Marketing()
 
-        if let dependenciesContainer = self.store!.dependencies as? DependenciesContainer {
-            let navigator: Navigator! = dependenciesContainer.navigator
-            HedvigApolloClient.initClient().onValue { _ in
-                navigator.start(using: self, in: self.window!, at: Screen.marketing)
-            }
+        let compose = Presentation<Marketing>(marketing, style: .marketing, options: .unanimated) { (_: Marketing.Matter, _: DisposeBag) -> Void in
+            return ()
+        }
+
+        HedvigApolloClient.initClient().onValue { _ in
+            self.bag += self.navigationController.present(compose)
+            self.window.makeKeyAndVisible()
         }
 
         return true
-    }
-
-    func installRoot(
-        identifier: RouteElementIdentifier,
-        context _: Any?,
-        completion: () -> Void
-    ) {
-        if identifier == Screen.chat.rawValue {
-            let chatViewController = ChatViewController(store: store)
-            let navigationController = UINavigationController(rootViewController: chatViewController)
-            window?.rootViewController = navigationController
-            completion()
-        }
-
-        if identifier == Screen.marketing.rawValue {
-            let marketingViewController = MarketingViewController(store: store)
-            let navigationController = UINavigationController(rootViewController: marketingViewController)
-            window?.rootViewController = navigationController
-            completion()
-        }
     }
 }

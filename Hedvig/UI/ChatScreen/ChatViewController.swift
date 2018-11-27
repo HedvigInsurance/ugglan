@@ -6,6 +6,7 @@
 //  Copyright © 2018 Sam Pettersson. All rights reserved.
 //
 
+import Flow
 import Foundation
 import Katana
 import PinLayout
@@ -22,6 +23,7 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
         super.viewWillAppear(animated)
         setupNavigationBar()
         subscribeToMessages()
+        presentError()
     }
 
     func setupNavigationBar() {
@@ -56,6 +58,11 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
         }
     }
 
+    func presentError() {
+        let alert = UIAlertController(title: "Title", message: "Message", preferredStyle: .alert)
+        present(alert, animated: true)
+    }
+
     func loadMessages() {
         HedvigApolloClient.client?.fetch(query: MessagesQuery()) { result, _ in
             if let apolloMessages = result?.data?.messages {
@@ -66,6 +73,8 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
                 DispatchQueue.main.async {
                     self.dispatch(SetMessages(messages: messages))
                 }
+            } else {
+                self.presentError()
             }
         }
     }
@@ -81,6 +90,8 @@ class ChatViewController: ViewControllerWithLocalState<ChatView> {
                 DispatchQueue.main.async {
                     self.dispatch(action)
                 }
+            } else {
+                self.presentError()
             }
         }
     }

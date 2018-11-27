@@ -16,16 +16,14 @@ private let cellReuseIdentifier = "SelectCollectionViewCell"
 class SelectCollectionView: UICollectionView, View, UICollectionViewDataSource {
     var choices: [MessageBodySingleSelectFragment.Choice?] = [] {
         didSet(oldValue) {
-            if oldValue != nil {
-                performBatchUpdates({
-                    deleteItems(at: oldValue.enumerated().map({ (index, _) -> IndexPath in
-                        IndexPath(item: index, section: 0)
-                    }))
-                    insertItems(at: choices.enumerated().map({ (index, _) -> IndexPath in
-                        IndexPath(item: index, section: 0)
-                    }))
-                }, completion: nil)
-            }
+            performBatchUpdates({
+                deleteItems(at: oldValue.enumerated().map({ (index, _) -> IndexPath in
+                    IndexPath(item: index, section: 0)
+                }))
+                insertItems(at: choices.enumerated().map({ (index, _) -> IndexPath in
+                    IndexPath(item: index, section: 0)
+                }))
+            }, completion: nil)
         }
     }
 
