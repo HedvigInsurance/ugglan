@@ -64,7 +64,9 @@ class ListView: UITableView, View, UITableViewDataSource, UITableViewDelegate {
         estimatedRowHeight = 50
         register(MessageView.self, forCellReuseIdentifier: messageViewReuseIdentifier)
         contentInset = .zero
-        contentInsetAdjustmentBehavior = .never
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = .never
+        }
 
         NotificationCenter.default.addObserver(
             self,

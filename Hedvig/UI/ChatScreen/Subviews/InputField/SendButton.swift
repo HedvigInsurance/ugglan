@@ -74,15 +74,25 @@ class SendButton: UIButton, View {
             self.backgroundColor = Styles.highlightedBackgroundColor(activated: self.activated)
         }
     }
-
-    @objc func onTapRelease() {
+    
+    @available(iOS 10.0, *)
+    func generateFeedback() {
         if activated {
-            onSend()
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
         } else {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
+        }
+    }
+
+    @objc func onTapRelease() {
+        if activated {
+            onSend()
+        }
+        
+        if #available(iOS 10.0, *) {
+            generateFeedback()
         }
 
         UIView.animate(withDuration: 0.25) {

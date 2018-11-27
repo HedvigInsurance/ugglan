@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import DynamicColor
 
 struct HedvigColors {
     static let transparent = UIColor.white.withAlphaComponent(0)
