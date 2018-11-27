@@ -20,7 +20,6 @@
 		EB06FE7121A03DCA007DE1C9 /* OpenChatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */; };
 		EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6821988E9A00CF0624 /* SendButton.swift */; };
 		EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */; };
-		EB3A23D721A6BABE007F52B6 /* MarketingStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23D621A6BABE007F52B6 /* MarketingStory.swift */; };
 		EB3A23D921A6BF24007F52B6 /* StoriesCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23D821A6BF24007F52B6 /* StoriesCollectionView.swift */; };
 		EB3A23DC21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23DB21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift */; };
 		EB3A23DE21A6EA9A007F52B6 /* NewMemberButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23DD21A6EA9A007F52B6 /* NewMemberButtonView.swift */; };
@@ -97,7 +96,6 @@
 		EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenChatButton.swift; sourceTree = "<group>"; };
 		EB328E6821988E9A00CF0624 /* SendButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendButton.swift; sourceTree = "<group>"; };
 		EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
-		EB3A23D621A6BABE007F52B6 /* MarketingStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStory.swift; sourceTree = "<group>"; };
 		EB3A23D821A6BF24007F52B6 /* StoriesCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesCollectionView.swift; sourceTree = "<group>"; };
 		EB3A23DB21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesCollectionViewCell.swift; sourceTree = "<group>"; };
 		EB3A23DD21A6EA9A007F52B6 /* NewMemberButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMemberButtonView.swift; sourceTree = "<group>"; };
@@ -326,7 +324,6 @@
 				EB75E183219331B5006B5CE4 /* AppState.swift */,
 				EB75E1A42197572E006B5CE4 /* Message.swift */,
 				EB88DB5F219EB8C400D5C8E1 /* AuthorizationToken.swift */,
-				EB3A23D621A6BABE007F52B6 /* MarketingStory.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -724,7 +721,6 @@
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
-				EB3A23D721A6BABE007F52B6 /* MarketingStory.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EB3A23DC21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
