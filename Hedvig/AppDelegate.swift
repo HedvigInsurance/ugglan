@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         HedvigApolloClient.shared.initClient().onValue { client in
             let marketing = Marketing(client: client)
 
-            let compose = Presentation<Marketing>(
+            let marketingPresentation = Presentation(
                 marketing,
                 style: .marketing,
                 options: .unanimated
@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return ()
             }
 
-            self.bag += self.navigationController.present(compose)
+            self.bag += self.navigationController.present(marketingPresentation)
             self.window.makeKeyAndVisible()
         }
 
