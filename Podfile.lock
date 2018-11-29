@@ -36,8 +36,8 @@ DEPENDENCIES:
   - Disk (~> 0.4.0)
   - DynamicColor (~> 4.0.2)
   - FlowFramework (~> 1.0)
-  - FormFramework (from `../formFork`)
-  - FormFramework/Presentation (from `../formFork`)
+  - FormFramework (from `https://github.com/hedviginsurance/form.git`)
+  - FormFramework/Presentation (from `https://github.com/hedviginsurance/form.git`)
   - PinLayout
   - SnapKit (~> 4.0.0)
   - SwiftFormat/CLI
@@ -65,14 +65,19 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   FormFramework:
-    :path: "../formFork"
+    :git: https://github.com/hedviginsurance/form.git
+
+CHECKOUT OPTIONS:
+  FormFramework:
+    :commit: 6cdb1f47969292c7c577ab6c1fa00d7e8b14a980
+    :git: https://github.com/hedviginsurance/form.git
 
 SPEC CHECKSUMS:
   Apollo: 450856adbdebcdf28c3c671f81732ac3f9944065
   Disk: ef2956657d5bb56034b38b29b352170165226440
   DynamicColor: c7adcfe871781a2b39877a5774e452ba51b79eb3
   FlowFramework: dad5379307484c03e9065c633115c215333d5789
-  FormFramework: 80c1ac5f3ac38ae1c696c6f8841bd84197208074
+  FormFramework: e9eccd44f3d875e5f67ad8696a8e2bb4cd0e9b7d
   Katana: f624d693c272dac8e3a20c5049a34d0821f067c9
   PinLayout: fe2a2432d6982588e208572005c941aeeae417ab
   PresentationFramework: 1bcdf1fe215edb2ceccf5197dd5dfcbce878bdf5
@@ -84,6 +89,6 @@ SPEC CHECKSUMS:
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
   UIViewRoundedCorners: 51b74df8b6052e0488c71197951566aac632ee1a
 
-PODFILE CHECKSUM: 6ea7d7cbcf0e2a4a2a45086622e2ea1f06a33ab3
+PODFILE CHECKSUM: 06a9b93629a6e842646cc275ef2903038ff580a7
 
 COCOAPODS: 1.5.3
