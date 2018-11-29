@@ -51,7 +51,11 @@
 		EB7FEA8B21AED37A0027C9DE /* Marketing+Layouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8A21AED37A0027C9DE /* Marketing+Layouting.swift */; };
 		EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */; };
 		EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */; };
-		EB7FEA9321B014D50027C9DE /* MarketingStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9221B014D50027C9DE /* MarketingStoryView.swift */; };
+		EB7FEA9721B03DAE0027C9DE /* Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9621B03DAE0027C9DE /* Viewable.swift */; };
+		EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9821B03DF80027C9DE /* SkipToNextButton.swift */; };
+		EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9B21B03E410027C9DE /* UIView+Viewable.swift */; };
+		EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */; };
+		EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9F21B0417E0027C9DE /* SkipToPreviousButton.swift */; };
 		EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */; };
 		EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */; };
 		EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */; };
@@ -129,7 +133,11 @@
 		EB7FEA8A21AED37A0027C9DE /* Marketing+Layouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Marketing+Layouting.swift"; sourceTree = "<group>"; };
 		EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ApolloClient+Flow.swift"; sourceTree = "<group>"; };
 		EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = MarketingStories.graphql; sourceTree = "<group>"; };
-		EB7FEA9221B014D50027C9DE /* MarketingStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryView.swift; sourceTree = "<group>"; };
+		EB7FEA9621B03DAE0027C9DE /* Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Viewable.swift; sourceTree = "<group>"; };
+		EB7FEA9821B03DF80027C9DE /* SkipToNextButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipToNextButton.swift; sourceTree = "<group>"; };
+		EB7FEA9B21B03E410027C9DE /* UIView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Viewable.swift"; sourceTree = "<group>"; };
+		EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionKit+ScrollTo.swift"; sourceTree = "<group>"; };
+		EB7FEA9F21B0417E0027C9DE /* SkipToPreviousButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipToPreviousButton.swift; sourceTree = "<group>"; };
 		EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertMessage.swift; sourceTree = "<group>"; };
 		EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicator.swift; sourceTree = "<group>"; };
 		EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Messages.graphql; sourceTree = "<group>"; };
@@ -195,11 +203,13 @@
 		EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */ = {
 			isa = PBXGroup;
 			children = (
+				EB7FEA9A21B03DFF0027C9DE /* Viewables */,
 				EB06FE6F21A03DB8007DE1C9 /* Subviews */,
 				EB989BAA21AB212F00C6FFA5 /* Marketing.swift */,
 				EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */,
 				EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */,
 				EB7FEA8A21AED37A0027C9DE /* Marketing+Layouting.swift */,
+				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
 			);
 			path = MarketingScreen;
 			sourceTree = "<group>";
@@ -209,7 +219,6 @@
 			children = (
 				EB3A23DD21A6EA9A007F52B6 /* NewMemberButtonView.swift */,
 				EB3A23DF21A6FC1C007F52B6 /* ExistingMemberButtonView.swift */,
-				EB7FEA9221B014D50027C9DE /* MarketingStoryView.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -234,6 +243,8 @@
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
 				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
+				EB7FEA9621B03DAE0027C9DE /* Viewable.swift */,
+				EB7FEA9B21B03E410027C9DE /* UIView+Viewable.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -397,6 +408,15 @@
 				EB75E1AA21975CCC006B5CE4 /* ListView.swift */,
 			);
 			path = ListView;
+			sourceTree = "<group>";
+		};
+		EB7FEA9A21B03DFF0027C9DE /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EB7FEA9821B03DF80027C9DE /* SkipToNextButton.swift */,
+				EB7FEA9F21B0417E0027C9DE /* SkipToPreviousButton.swift */,
+			);
+			path = Viewables;
 			sourceTree = "<group>";
 		};
 		EBC049C1219B0F1B00AFC30F /* Actions */ = {
@@ -701,13 +721,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */,
 				EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */,
 				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
+				EB7FEA9721B03DAE0027C9DE /* Viewable.swift in Sources */,
 				EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */,
 				EB3A23E021A6FC1C007F52B6 /* ExistingMemberButtonView.swift in Sources */,
 				EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */,
+				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
@@ -718,9 +741,11 @@
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
+				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
 				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
+				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
 				EB3A23DE21A6EA9A007F52B6 /* NewMemberButtonView.swift in Sources */,
@@ -737,7 +762,6 @@
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
-				EB7FEA9321B014D50027C9DE /* MarketingStoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

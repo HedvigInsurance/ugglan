@@ -67,35 +67,11 @@ extension Marketing: Presentable {
         containerView.addSubview(existingMemberButtonView)
         Layouting.existingMemberButtonView(existingMemberButtonView, collectionKit.view)
 
-        let skipToPreviousButton = UIButton(title: "Tidigare", style: .invisible)
-        containerView.addSubview(skipToPreviousButton)
-        Layouting.skipToPreviousButton(skipToPreviousButton, collectionKit.view)
+        let skipToPreviousButton = SkipToPreviousButton(collectionKit: collectionKit)
+        bag += containerView.add(skipToPreviousButton)
 
-        bag += skipToPreviousButton.onValue {
-            let currentIndex = Int(collectionKit.view.contentOffset.x / collectionKit.view.frame.size.width)
-            let newIndexPath = IndexPath(row: currentIndex - 1, section: 0)
-
-            if newIndexPath.row >= 0 {
-                collectionKit.view.scrollToItem(at: newIndexPath, at: .left, animated: true)
-            }
-        }
-
-        let skipToNextButton = UIButton(title: "Nästa", style: .invisible)
-        containerView.addSubview(skipToNextButton)
-        Layouting.skipToNextButton(skipToNextButton, collectionKit.view)
-
-        bag += skipToNextButton.onValue {
-            let currentIndex = Int(collectionKit.view.contentOffset.x / collectionKit.view.frame.size.width)
-            let newIndexPath = IndexPath(row: currentIndex + 1, section: 0)
-            let numberOfItems = collectionKit.dataSource.collectionView(
-                collectionKit.view,
-                numberOfItemsInSection: 0
-            )
-
-            if numberOfItems > newIndexPath.row {
-                collectionKit.view.scrollToItem(at: newIndexPath, at: .centeredHorizontally, animated: true)
-            }
-        }
+        let skipToNextButton = SkipToNextButton(collectionKit: collectionKit)
+        bag += containerView.add(skipToNextButton)
 
         return (viewController, bag)
     }

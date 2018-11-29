@@ -45,29 +45,5 @@ extension Marketing {
                 make.bottom.equalTo(collectionView.snp.bottom).inset(15)
             }
         }
-
-        static func skipToPreviousButton(
-            _ skipToPreviousButton: UIButton,
-            _ collectionView: UICollectionView
-        ) {
-            skipToPreviousButton.snp.makeConstraints { make in
-                make.width.equalTo(50)
-                make.height.equalTo(collectionView.snp.height).inset(30)
-                make.top.equalTo(collectionView.snp.top)
-                make.left.equalTo(collectionView.snp.left)
-            }
-        }
-
-        static func skipToNextButton(
-            _ skipToNextButton: UIButton,
-            _ collectionView: UICollectionView
-        ) {
-            skipToNextButton.snp.makeConstraints { make in
-                make.width.equalTo(50)
-                make.height.equalTo(collectionView.snp.height).inset(30)
-                make.top.equalTo(collectionView.snp.top)
-                make.right.equalTo(collectionView.snp.right)
-            }
-        }
     }
 }
