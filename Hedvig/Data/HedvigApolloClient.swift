@@ -90,7 +90,6 @@ class HedvigApolloClient {
                     switch result {
                     case let .success(client): do {
                         self.client = client
-                        print("setting clientos")
                         completion(result)
                     }
                     case .failure: do {
