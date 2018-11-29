@@ -30,10 +30,10 @@ class SafeAreaContainer: UIVisualEffectView, View {
             safeAreaContainer.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
             safeAreaContainer.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
         } else {
-            safeAreaContainer.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-            safeAreaContainer.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-            safeAreaContainer.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-            safeAreaContainer.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+            safeAreaContainer.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            safeAreaContainer.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            safeAreaContainer.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+            safeAreaContainer.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         }
 
         heightConstraint = safeAreaContainer.heightAnchor.constraint(equalToConstant: 60)

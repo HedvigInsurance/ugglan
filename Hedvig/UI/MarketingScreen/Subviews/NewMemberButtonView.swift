@@ -20,6 +20,10 @@ class NewMemberButtonView: UIButton, View {
         label.text = "Ny här?"
         addTarget(self, action: #selector(onTapRelease), for: .touchUpInside)
         addTarget(self, action: #selector(onTap), for: .touchDown)
+
+        label.snp.makeConstraints { make in
+            make.center.equalTo(self.snp.center)
+        }
     }
 
     func style() {

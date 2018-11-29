@@ -20,7 +20,11 @@ class ExistingMemberButtonView: UIButton, View {
         label.text = "Logga in"
         addTarget(self, action: #selector(onTapRelease), for: .touchUpInside)
         addTarget(self, action: #selector(onTap), for: .touchDown)
-        backgroundColor = HedvigColors.black.withAlphaComponent(0.1)
+        backgroundColor = HedvigColors.black.withAlphaComponent(0.5)
+
+        label.snp.makeConstraints { make in
+            make.center.equalTo(self.snp.center)
+        }
     }
 
     func style() {
@@ -34,7 +38,7 @@ class ExistingMemberButtonView: UIButton, View {
 
     @objc func onTap() {
         UIView.animate(withDuration: 0.25) {
-            self.backgroundColor = HedvigColors.black.withAlphaComponent(0.3)
+            self.backgroundColor = HedvigColors.black.withAlphaComponent(0.7)
         }
     }
 
