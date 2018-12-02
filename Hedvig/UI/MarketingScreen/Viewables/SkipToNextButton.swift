@@ -22,7 +22,9 @@ extension SkipToNextButton: Viewable {
 
         let skipToNextButton = UIButton(title: "Nästa", style: .invisible)
 
-        bag += skipToNextButton.onValue {
+        bag += skipToNextButton.on(event: .touchDown).feedback(type: .impactLight)
+
+        bag += skipToNextButton.throttle(0.5).onValue {
             self.collectionKit.scrollToNextItem()
         }
 
@@ -30,9 +32,9 @@ extension SkipToNextButton: Viewable {
     }
 
     func makeConstraints(make: ConstraintMaker) {
-        make.width.equalTo(50)
-        make.height.equalTo(collectionKit.view.snp.height).inset(30)
-        make.top.equalTo(collectionKit.view.snp.top)
-        make.right.equalTo(collectionKit.view.snp.right)
+        make.width.equalToSuperview()
+        make.right.equalTo(0)
+        make.top.equalTo(0)
+        make.height.equalToSuperview().inset(30)
     }
 }

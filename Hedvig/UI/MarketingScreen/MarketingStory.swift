@@ -27,23 +27,31 @@ extension MarketingStory: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (MarketingStory) -> Disposable) {
         let view = UIView()
 
+        let videoPlayerLayer = AVPlayerLayer()
+        videoPlayerLayer.videoGravity = .resizeAspectFill
+
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+
         return (view, { marketingStory in
             let disposer = NilDisposer()
             guard let url = marketingStory.assetURL else { return disposer }
             guard let mimeType = marketingStory.assetMimeType else { return disposer }
 
             if mimeType.contains("video") {
+                imageView.removeFromSuperview()
+
                 let videoUrl = URL(string: url)
                 let videoPlayer = AVPlayer(url: videoUrl!)
-                let videoPlayerLayer = AVPlayerLayer(player: videoPlayer)
+                videoPlayerLayer.player = videoPlayer
                 videoPlayerLayer.frame = view.bounds
 
                 view.layer.addSublayer(videoPlayerLayer)
 
                 videoPlayer.play()
             } else if mimeType.contains("image") {
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFill
+                videoPlayerLayer.removeFromSuperlayer()
 
                 let imageUrl = URL(string: url)
                 let imageData = try? Data(contentsOf: imageUrl!)

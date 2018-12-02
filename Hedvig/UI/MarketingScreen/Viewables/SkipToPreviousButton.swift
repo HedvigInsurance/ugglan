@@ -22,9 +22,7 @@ extension SkipToPreviousButton: Viewable {
 
         let skipToPreviousButton = UIButton(title: "Tidigare", style: .invisible)
 
-        bag += skipToPreviousButton.onValue {
-            self.collectionKit.scrollToPreviousItem()
-        }
+        bag += skipToPreviousButton.on(event: .touchDown).feedback(type: .impactLight)
 
         return (skipToPreviousButton, bag)
     }

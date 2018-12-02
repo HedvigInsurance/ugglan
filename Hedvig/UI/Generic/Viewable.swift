@@ -7,6 +7,7 @@
 //
 
 import Flow
+import Form
 import Foundation
 import SnapKit
 import UIKit
@@ -14,4 +15,9 @@ import UIKit
 protocol Viewable {
     func materialize() -> (UIView, Disposable)
     func makeConstraints(make: ConstraintMaker)
+    func animateIn(view: UIView)
+}
+
+extension Viewable {
+    func animateIn(view _: UIView) {}
 }
