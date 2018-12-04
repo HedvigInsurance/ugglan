@@ -8,6 +8,8 @@
 
 import Form
 import Foundation
+import UICollectionView_AnimatedScroll
+import UIKit
 
 enum ScrollTo {
     case next, previous
@@ -30,7 +32,8 @@ extension CollectionKit {
             let newPoint = CGPoint(x: view.frame.size.width * CGFloat(newIndexPath.row), y: 0)
             view.setContentOffset(
                 offset: newPoint,
-                timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut), duration: 0.3
+                timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut),
+                duration: 0.3
             )
         }
     }
@@ -43,7 +46,8 @@ extension CollectionKit {
             let newPoint = CGPoint(x: view.frame.size.width * CGFloat(newIndexPath.row), y: 0)
             view.setContentOffset(
                 offset: newPoint,
-                timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut), duration: 0.3
+                timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut),
+                duration: 0.3
             )
         }
     }

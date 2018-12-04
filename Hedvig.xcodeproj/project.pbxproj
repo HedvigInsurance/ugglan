@@ -65,7 +65,6 @@
 		EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAB621B19B8B0027C9DE /* MemberActionButtons.swift */; };
 		EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAB921B441F50027C9DE /* StoriesCollection.swift */; };
 		EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */; };
-		EB7FEABE21B457B60027C9DE /* UICollectionView+ScrollViewAnimateable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEABD21B457B60027C9DE /* UICollectionView+ScrollViewAnimateable.swift */; };
 		EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */; };
 		EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC221B56B860027C9DE /* Logo.swift */; };
 		EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */; };
@@ -159,7 +158,6 @@
 		EB7FEAB621B19B8B0027C9DE /* MemberActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionButtons.swift; sourceTree = "<group>"; };
 		EB7FEAB921B441F50027C9DE /* StoriesCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesCollection.swift; sourceTree = "<group>"; };
 		EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Callbacker+Signal.swift"; sourceTree = "<group>"; };
-		EB7FEABD21B457B60027C9DE /* UICollectionView+ScrollViewAnimateable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+ScrollViewAnimateable.swift"; sourceTree = "<group>"; };
 		EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesIndicator.swift; sourceTree = "<group>"; };
 		EB7FEAC221B56B860027C9DE /* Logo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logo.swift; sourceTree = "<group>"; };
 		EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertMessage.swift; sourceTree = "<group>"; };
@@ -253,7 +251,6 @@
 			isa = PBXGroup;
 			children = (
 				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
-				EB7FEABD21B457B60027C9DE /* UICollectionView+ScrollViewAnimateable.swift */,
 				EB7FEAA921B13A3D0027C9DE /* TouchHandler */,
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
@@ -642,6 +639,7 @@
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
+				"${BUILT_PRODUCTS_DIR}/UICollectionView+AnimatedScroll/UICollectionView_AnimatedScroll.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -656,6 +654,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UICollectionView_AnimatedScroll.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -808,7 +807,6 @@
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
-				EB7FEABE21B457B60027C9DE /* UICollectionView+ScrollViewAnimateable.swift in Sources */,
 				EB7FEAA421B068760027C9DE /* NewMemberButton.swift in Sources */,
 				EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */,
 				EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */,

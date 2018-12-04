@@ -22,12 +22,13 @@ PODS:
     - FlowFramework (>= 1.3)
   - SnapKit (4.0.1)
   - Starscream (3.0.6)
-  - SwiftFormat/CLI (0.35.8)
-  - SwiftLint (0.29.0)
+  - SwiftFormat/CLI (0.35.9)
+  - SwiftLint (0.29.1)
   - Tempura (2.1.0):
     - Katana (< 3, >= 2.0)
   - TempuraTesting (2.1.0):
     - Tempura (< 3.0, >= 2.0)
+  - "UICollectionView+AnimatedScroll (1.0.4)"
 
 DEPENDENCIES:
   - Apollo
@@ -43,6 +44,7 @@ DEPENDENCIES:
   - SwiftLint
   - Tempura
   - TempuraTesting
+  - "UICollectionView+AnimatedScroll (from `https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git`)"
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -63,11 +65,16 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   FormFramework:
     :git: https://github.com/hedviginsurance/form.git
+  "UICollectionView+AnimatedScroll":
+    :git: https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git
 
 CHECKOUT OPTIONS:
   FormFramework:
     :commit: 6cdb1f47969292c7c577ab6c1fa00d7e8b14a980
     :git: https://github.com/hedviginsurance/form.git
+  "UICollectionView+AnimatedScroll":
+    :commit: b5a5e2b7f95713e74c0bfb623a99429b0489fa1f
+    :git: https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git
 
 SPEC CHECKSUMS:
   Apollo: 450856adbdebcdf28c3c671f81732ac3f9944065
@@ -80,11 +87,12 @@ SPEC CHECKSUMS:
   PresentationFramework: 1bcdf1fe215edb2ceccf5197dd5dfcbce878bdf5
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
-  SwiftFormat: 5af0a2c27175163c317c88b00ae7b6f971a7822a
-  SwiftLint: d4e7443d93e2bbe868dc302e6c7ac30b469d6a14
+  SwiftFormat: f1cf26ab5ce1f59aeaee018edc7e6d88e05bfb39
+  SwiftLint: 6772320e40b52049053a518c17db9b0634a0b45a
   Tempura: 819db8b32776dc68e628902da7119621fddb33bf
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
+  "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: 0f6e8fd7a7e4f67eef096ac64df5e09692a4195d
+PODFILE CHECKSUM: 1828e96a534e1ff33c79bb16a7dadb2ede1afb1e
 
 COCOAPODS: 1.5.3
