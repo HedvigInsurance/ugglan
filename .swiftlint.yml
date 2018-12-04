@@ -7,4 +7,8 @@ excluded:
   - Hedvig/Data/API.swift
   - Hedvig/UI/Generic/UICollectionView+ScrollViewAnimateable.swift
 type_name:
-  excluded: V
+  excluded:
+    - V
+identifier_name:
+  excluded:
+    - id
