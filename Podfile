@@ -19,16 +19,6 @@ target 'Hedvig' do
   pod 'SnapKit', '~> 4.0.0'
   pod 'UICollectionView+AnimatedScroll', git: 'https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git'
 
-  post_install do |installer|
-    installer.pods_project.build_configurations.each do |config|
-      if config.name == 'Release'
-        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Owholemodule'
-      else
-        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
-      end    
-    end
-  end
-
   target 'HedvigTests' do
     inherit! :search_paths
     # Pods for testing
