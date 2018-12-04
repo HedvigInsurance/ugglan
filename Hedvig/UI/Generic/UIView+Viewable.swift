@@ -14,14 +14,28 @@ private let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 
 extension UIView {
     func add(_ viewable: Viewable, onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure) -> Disposable {
-        let wasAddedSignal = Signal<Void>()
-        let (view, disposable) = viewable.materialize()
+        let wasAddedCallbacker = Callbacker<Void>()
+        let willRemoveCallbacker = Callbacker<Void>()
+        let viewableEvents = ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker,
+            willRemoveCallbacker: willRemoveCallbacker
+        )
+        let (view, disposable) = viewable.materialize(events: viewableEvents)
+
         addSubview(view)
-        view.snp.makeConstraints { make in
-            viewable.makeConstraints(make: make)
-        }
-        viewable.animateIn(view: view)
         onCreate(view)
-        return disposable
+
+        wasAddedCallbacker.callAll()
+
+        return Disposer {
+            let bag = DisposeBag()
+            let removeAfter = viewableEvents.removeAfter.call() ?? 0
+            willRemoveCallbacker.callAll()
+            bag += Signal(after: removeAfter).onValue {
+                view.removeFromSuperview()
+                bag.dispose()
+                disposable.dispose()
+            }
+        }
     }
 }

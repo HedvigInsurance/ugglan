@@ -1,8 +1,8 @@
 //
-//  StoriesCollection.swift
+//  Collection.swift
 //  Hedvig
 //
-//  Created by Sam Pettersson on 2018-11-30.
+//  Created by Sam Pettersson on 2018-12-02.
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
@@ -15,14 +15,12 @@ import UIKit
 
 struct StoriesCollection {
     let client: ApolloClient
-    let containerView: UIView
+    let scrollToSignal: Signal<ScrollTo>
 }
 
 extension StoriesCollection: Viewable {
-    func materialize() -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-
-        let view = UIView()
 
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
@@ -41,10 +39,51 @@ extension StoriesCollection: Viewable {
         collectionKit.view.showsHorizontalScrollIndicator = false
         collectionKit.view.layer.cornerRadius = 10
         collectionKit.view.isPrefetchingEnabled = true
+        collectionKit.view.alpha = 0
+        collectionKit.view.transform = CGAffineTransform(translationX: 0, y: 150)
+        collectionKit.view.contentInsetAdjustmentBehavior = .never
 
         bag += collectionKit.delegate.sizeForItemAt.set({ (_) -> CGSize in
             collectionKit.view.frame.size
         })
+
+        bag += scrollToSignal.onValue { direction in
+            switch direction {
+            case .previous:
+                let currentIndex = collectionKit.currentIndex()
+                let newItem = collectionKit.table.enumerated().first(where: { (offset, _) -> Bool in
+                    offset == currentIndex - 1
+                })?.element
+
+                if let newItem = newItem {
+                    let changeStep = ChangeStep<MarketingStory, TableIndex>.update(
+                        item: newItem,
+                        at: TableIndex(section: 0, row: currentIndex - 1)
+                    )
+                    let tableChange = TableChange<EmptySection, MarketingStory>.row(changeStep)
+                    collectionKit.apply(changes: [tableChange])
+                }
+
+                collectionKit.scrollToPreviousItem()
+            case .next:
+                let currentIndex = collectionKit.currentIndex()
+                let newItem = collectionKit.table.enumerated().first(where: { (offset, _) -> Bool in
+                    offset == currentIndex + 1
+                })?.element
+
+                if let newItem = newItem {
+                    let changeStep = ChangeStep<MarketingStory, TableIndex>.update(
+                        item: newItem,
+                        at: TableIndex(section: 0, row: currentIndex + 1)
+                    )
+                    let tableChange = TableChange<EmptySection, MarketingStory>.row(changeStep)
+
+                    collectionKit.apply(changes: [tableChange])
+                }
+
+                collectionKit.scrollToNextItem()
+            }
+        }
 
         bag += client.fetch(query: MarketingStoriesQuery()).onValue { result in
             guard let data = result.data else { return }
@@ -55,34 +94,21 @@ extension StoriesCollection: Viewable {
             collectionKit.set(Table(rows: rows))
         }
 
-        view.addSubview(collectionKit.view)
-        collectionKit.view.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
+        bag += events.wasAdded.delay(by: 0.5).animatedOnValue(
+            style: AnimationStyle.easeOut(duration: 0.25)
+        ) {
+            collectionKit.view.transform = CGAffineTransform.identity
+            collectionKit.view.alpha = 1
         }
 
-        let memberActionButtons = MemberActionButtons(collectionKit: collectionKit)
-        bag += view.add(memberActionButtons)
-
-        let skipToNextButton = SkipToNextButton(collectionKit: collectionKit)
-        bag += view.add(skipToNextButton)
-
-        let skipToPreviousButton = SkipToPreviousButton(collectionKit: collectionKit)
-        bag += view.add(skipToPreviousButton)
-
-        return (view, bag)
-    }
-
-    func makeConstraints(make: ConstraintMaker) {
-        make.width.equalTo(containerView.safeAreaLayoutGuide.snp.width).inset(10)
-        make.top.equalTo(containerView.safeAreaLayoutGuide.snp.top)
-        make.centerX.equalTo(containerView.safeAreaLayoutGuide.snp.centerX)
-
-        if containerView.safeAreaInsets.bottom > 0 {
-            make.height.equalTo(containerView.safeAreaLayoutGuide.snp.height)
-        } else {
-            make.height.equalTo(containerView.safeAreaLayoutGuide.snp.height).inset(5)
+        bag += events.wasAdded.onValue {
+            collectionKit.view.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+            }
         }
+
+        return (collectionKit.view, bag)
     }
 }

@@ -8,6 +8,7 @@
 
 import AVKit
 import CoreMedia
+import Disk
 import Flow
 import Form
 import Foundation
@@ -16,6 +17,43 @@ import UIKit
 struct MarketingStory: Decodable, Hashable {
     var assetURL: String?
     var assetMimeType: String?
+
+    func playerAsset() -> AVAsset? {
+        guard let url = assetURL else { return nil }
+        let cacheFileName = url + ".mp4"
+        let cached = Disk.exists(cacheFileName, in: .caches)
+
+        if !cached {
+            let data = try? Data(contentsOf: URL(string: url)!, options: [])
+
+            if let data = data {
+                try? Disk.save(data, to: .caches, as: cacheFileName)
+            }
+        }
+
+        let fileSystemUrl = try? Disk.url(for: cacheFileName, in: .caches)
+
+        return AVAsset(url: fileSystemUrl!)
+    }
+
+    func imageAsset() -> UIImage? {
+        guard let url = assetURL else { return nil }
+        let cached = Disk.exists(url, in: .caches)
+
+        if !cached {
+            let data = try? Data(contentsOf: URL(string: url)!, options: [])
+
+            if let data = data {
+                try? Disk.save(data, to: .caches, as: url)
+            }
+
+            return UIImage(data: data!)
+        }
+
+        let data = try? Disk.retrieve(url, from: .caches, as: Data.self)
+
+        return UIImage(data: data!)
+    }
 
     init(apollo marketingStoryData: MarketingStoriesQuery.Data.MarketingStory) {
         assetURL = marketingStoryData.asset?.url
@@ -26,6 +64,8 @@ struct MarketingStory: Decodable, Hashable {
 extension MarketingStory: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (MarketingStory) -> Disposable) {
         let view = UIView()
+        view.layer.shouldRasterize = true
+        view.layer.rasterizationScale = UIScreen.main.scale
 
         let videoPlayerLayer = AVPlayerLayer()
         videoPlayerLayer.videoGravity = .resizeAspectFill
@@ -35,29 +75,37 @@ extension MarketingStory: Reusable {
         imageView.clipsToBounds = true
 
         return (view, { marketingStory in
-            let disposer = NilDisposer()
-            guard let url = marketingStory.assetURL else { return disposer }
-            guard let mimeType = marketingStory.assetMimeType else { return disposer }
+            let bag = DisposeBag()
+            guard let mimeType = marketingStory.assetMimeType else { return bag }
 
             if mimeType.contains("video") {
                 imageView.removeFromSuperview()
 
-                let videoUrl = URL(string: url)
-                let videoPlayer = AVPlayer(url: videoUrl!)
-                videoPlayerLayer.player = videoPlayer
                 videoPlayerLayer.frame = view.bounds
-
                 view.layer.addSublayer(videoPlayerLayer)
 
-                videoPlayer.play()
+                DispatchQueue.global(qos: .background).async {
+                    guard let playerAsset = marketingStory.playerAsset() else { return }
+
+                    playerAsset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: {
+                        let playerItem = AVPlayerItem(asset: playerAsset)
+
+                        let videoPlayer = AVPlayer(playerItem: playerItem)
+                        videoPlayer.isMuted = true
+                        videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+                        videoPlayerLayer.player = videoPlayer
+
+                        videoPlayer.play()
+                    })
+                }
             } else if mimeType.contains("image") {
                 videoPlayerLayer.removeFromSuperlayer()
 
-                let imageUrl = URL(string: url)
-                let imageData = try? Data(contentsOf: imageUrl!)
-
-                if imageData != nil {
-                    imageView.image = UIImage(data: imageData!)
+                DispatchQueue.global(qos: .background).async {
+                    guard let image = marketingStory.imageAsset() else { return }
+                    DispatchQueue.main.async {
+                        imageView.image = image
+                    }
                 }
 
                 view.addSubview(imageView)
@@ -69,7 +117,7 @@ extension MarketingStory: Reusable {
                 }
             }
 
-            return disposer
+            return bag
         })
     }
 }

@@ -31,6 +31,7 @@ private struct Feedback {
 }
 
 extension CoreSignal {
+    /// Generate haptic feedback
     func feedback(type: FeedbackType) -> Disposable {
         let bag = DisposeBag()
 

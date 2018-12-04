@@ -28,7 +28,6 @@ PODS:
     - Katana (< 3, >= 2.0)
   - TempuraTesting (2.1.0):
     - Tempura (< 3.0, >= 2.0)
-  - UIViewRoundedCorners (1.0.0)
 
 DEPENDENCIES:
   - Apollo
@@ -44,7 +43,6 @@ DEPENDENCIES:
   - SwiftLint
   - Tempura
   - TempuraTesting
-  - UIViewRoundedCorners
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -61,7 +59,6 @@ SPEC REPOS:
     - SwiftLint
     - Tempura
     - TempuraTesting
-    - UIViewRoundedCorners
 
 EXTERNAL SOURCES:
   FormFramework:
@@ -87,8 +84,7 @@ SPEC CHECKSUMS:
   SwiftLint: d4e7443d93e2bbe868dc302e6c7ac30b469d6a14
   Tempura: 819db8b32776dc68e628902da7119621fddb33bf
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
-  UIViewRoundedCorners: 51b74df8b6052e0488c71197951566aac632ee1a
 
-PODFILE CHECKSUM: 06a9b93629a6e842646cc275ef2903038ff580a7
+PODFILE CHECKSUM: 0f6e8fd7a7e4f67eef096ac64df5e09692a4195d
 
 COCOAPODS: 1.5.3

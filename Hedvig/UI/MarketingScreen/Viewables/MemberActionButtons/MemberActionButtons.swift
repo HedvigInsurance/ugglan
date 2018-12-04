@@ -12,38 +12,37 @@ import Foundation
 import SnapKit
 import UIKit
 
-struct MemberActionButtons {
-    let collectionKit: CollectionKit<EmptySection, MarketingStory>
-}
+struct MemberActionButtons {}
 
 extension MemberActionButtons: Viewable {
-    func materialize() -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let view = UIView()
         view.alpha = 0
         view.transform = CGAffineTransform(translationX: 0, y: 15)
 
-        let existingMemberButton = ExistingMemberButton(collectionKit: collectionKit)
+        let existingMemberButton = ExistingMemberButton()
         bag += view.add(existingMemberButton)
 
-        let newMemberButton = NewMemberButton(collectionKit: collectionKit)
+        let newMemberButton = NewMemberButton()
         bag += view.add(newMemberButton)
 
-        return (view, bag)
-    }
-
-    func animateIn(view: UIView) {
-        UIView.animate(withDuration: 0.25, delay: 0.5, options: .curveEaseOut, animations: {
-            view.transform = CGAffineTransform.identity
+        bag += events.wasAdded.delay(by: 0.75).animatedOnValue(style: AnimationStyle.easeOut(duration: 0.25)) {
             view.alpha = 1
-        }, completion: nil)
-    }
+            view.transform = CGAffineTransform.identity
+        }
 
-    func makeConstraints(make: ConstraintMaker) {
-        make.width.equalTo(collectionKit.view).inset(10)
-        make.centerX.equalTo(collectionKit.view)
-        make.bottom.equalTo(collectionKit.view).inset(15)
-        make.height.equalTo(40)
+        bag += events.wasAdded.onValue {
+            view.snp.makeConstraints({ make in
+                guard let superview = view.superview else { return }
+                make.width.equalToSuperview().inset(10)
+                make.centerX.equalToSuperview()
+                make.bottom.equalTo(superview.safeAreaLayoutGuide.snp.bottom)
+                make.height.equalTo(40)
+            })
+        }
+
+        return (view, bag)
     }
 }

@@ -9,76 +9,12 @@
 import Form
 import Foundation
 
-class AnimationDriver {
-    let collectionView: UICollectionView
-
-    private var currentScrollDisplayLink: CADisplayLink?
-    private var currentScrollStartTime = Date()
-    private var currentScrollDuration: TimeInterval = 0
-    private var currentScrollStartContentOffset: CGFloat = 0.0
-    private var currentScrollEndContentOffset: CGFloat = 0.0
-
-    init(collectionView: UICollectionView) {
-        self.collectionView = collectionView
-    }
-
-    // The curve is hardcoded to linear for simplicity
-    func beginAnimatedScroll(toContentOffset contentOffset: CGPoint, animationDuration: TimeInterval) {
-        // Cancel previous scroll if needed
-        resetCurrentAnimatedScroll()
-
-        // Prevent non-animated scroll
-        guard animationDuration != 0 else {
-            collectionView.setContentOffset(contentOffset, animated: false)
-            return
-        }
-
-        // Setup new scroll properties
-        currentScrollStartTime = Date()
-        currentScrollDuration = animationDuration
-        currentScrollStartContentOffset = collectionView.contentOffset.x
-        currentScrollEndContentOffset = contentOffset.x
-
-        // Start new scroll
-        currentScrollDisplayLink = CADisplayLink(target: self, selector: #selector(handleScrollDisplayLinkTick))
-        currentScrollDisplayLink?.add(to: RunLoop.current, forMode: RunLoop.Mode.common)
-    }
-
-    @objc private func handleScrollDisplayLinkTick() {
-        let animationRatio = CGFloat(abs(currentScrollStartTime.timeIntervalSinceNow) / currentScrollDuration)
-
-        // Animation is finished
-        guard animationRatio < 1 else {
-            endAnimatedScroll()
-            return
-        }
-
-        // Animation running, update with incremental content offset
-        let deltaContentOffset = animationRatio * (currentScrollEndContentOffset - currentScrollStartContentOffset)
-
-        let newContentOffset = CGPoint(x: currentScrollStartContentOffset + deltaContentOffset, y: 0.0)
-        collectionView.setContentOffset(newContentOffset, animated: false)
-    }
-
-    private func endAnimatedScroll() {
-        let newContentOffset = CGPoint(x: currentScrollEndContentOffset, y: 0)
-        collectionView.setContentOffset(newContentOffset, animated: false)
-
-        resetCurrentAnimatedScroll()
-    }
-
-    private func resetCurrentAnimatedScroll() {
-        currentScrollDisplayLink?.invalidate()
-        currentScrollDisplayLink = nil
-    }
-}
-
 enum ScrollTo {
     case next, previous
 }
 
 extension CollectionKit {
-    private func currentIndex() -> Int {
+    func currentIndex() -> Int {
         return Int(view.contentOffset.x / view.frame.size.width)
     }
 
@@ -91,13 +27,10 @@ extension CollectionKit {
         )
 
         if numberOfItems > newIndexPath.row {
-            let animationDriver = AnimationDriver(collectionView: view)
-            animationDriver.beginAnimatedScroll(
-                toContentOffset: CGPoint(
-                    x: CGFloat(newIndexPath.row) * view.frame.size.width,
-                    y: 0
-                ),
-                animationDuration: 0.5
+            let newPoint = CGPoint(x: view.frame.size.width * CGFloat(newIndexPath.row), y: 0)
+            view.setContentOffset(
+                offset: newPoint,
+                timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut), duration: 0.3
             )
         }
     }
@@ -107,7 +40,11 @@ extension CollectionKit {
         let newIndexPath = IndexPath(row: currentIndex - 1, section: 0)
 
         if newIndexPath.row >= 0 {
-            view.scrollToItem(at: newIndexPath, at: .centeredHorizontally, animated: true)
+            let newPoint = CGPoint(x: view.frame.size.width * CGFloat(newIndexPath.row), y: 0)
+            view.setContentOffset(
+                offset: newPoint,
+                timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut), duration: 0.3
+            )
         }
     }
 }

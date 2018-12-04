@@ -13,11 +13,16 @@ import SnapKit
 import UIKit
 
 protocol Viewable {
-    func materialize() -> (UIView, Disposable)
-    func makeConstraints(make: ConstraintMaker)
-    func animateIn(view: UIView)
+    func materialize(events: ViewableEvents) -> (UIView, Disposable)
 }
 
-extension Viewable {
-    func animateIn(view _: UIView) {}
+struct ViewableEvents {
+    let wasAdded: Signal<Void>
+    let removeAfter = Delegate<Void, TimeInterval>()
+    let willRemove: Signal<Void>
+
+    init(wasAddedCallbacker: Callbacker<Void>, willRemoveCallbacker: Callbacker<Void>) {
+        wasAdded = wasAddedCallbacker.signal()
+        willRemove = willRemoveCallbacker.signal()
+    }
 }

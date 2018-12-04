@@ -44,4 +44,20 @@ extension SignalProvider {
 
         return bag
     }
+
+    func animatedOnValue(style: AnimationStyle, animateClosure: @escaping () -> Void) -> Disposable {
+        let bag = DisposeBag()
+
+        bag += onValue { _ in
+            UIView.animate(
+                withDuration: style.duration,
+                delay: style.delay,
+                options: style.options,
+                animations: animateClosure,
+                completion: nil
+            )
+        }
+
+        return bag
+    }
 }

@@ -26,11 +26,10 @@ extension Marketing: Presentable {
         containerView.backgroundColor = HedvigColors.white
         viewController.view = containerView
 
-        let storiesCollection = StoriesCollection(
-            client: client,
-            containerView: containerView
+        let stories = Stories(
+            client: client
         )
-        bag += containerView.add(storiesCollection)
+        bag += containerView.add(stories)
 
         return (viewController, bag)
     }

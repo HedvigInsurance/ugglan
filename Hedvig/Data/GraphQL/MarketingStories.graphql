@@ -1,5 +1,6 @@
 query MarketingStories {
     marketingStories(orderBy: importance_ASC) {
+        id
         asset {
             mimeType
             url

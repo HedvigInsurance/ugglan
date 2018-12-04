@@ -34,7 +34,8 @@ extension UIButton {
         }
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity
+    /// Adds an event handler for specified event
     func on(event: UIControl.Event) -> (Signal<UIButton>) {
         return Signal<UIButton> { callback in
             let completion = {
@@ -83,4 +84,6 @@ extension UIButton {
             }
         }
     }
+
+    // swiftlint:enable cyclomatic_complexity
 }

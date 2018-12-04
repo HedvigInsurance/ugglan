@@ -12,18 +12,14 @@ import Foundation
 import SnapKit
 import UIKit
 
-struct ExistingMemberButton {
-    let collectionKit: CollectionKit<EmptySection, MarketingStory>
-}
+struct ExistingMemberButton {}
 
 extension ExistingMemberButton: Viewable {
-    func materialize() -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let button = UIButton(title: "Logga in", style: .standardTransparentBlack)
-        button.transform = CGAffineTransform(translationX: 0, y: 15)
         button.adjustsImageWhenHighlighted = false
-        button.alpha = 0
 
         bag += button.on(event: .touchDown).map({ _ -> ButtonStyle in
             .standardTransparentBlackHighlighted
@@ -45,20 +41,15 @@ extension ExistingMemberButton: Viewable {
             \.style
         )
 
+        bag += events.wasAdded.onValue {
+            button.snp.makeConstraints({ make in
+                make.width.equalToSuperview().multipliedBy(0.5).inset(2.5)
+                make.left.equalTo(0)
+                make.bottom.equalTo(0)
+                make.height.equalTo(40)
+            })
+        }
+
         return (button, bag)
-    }
-
-    func animateIn(view: UIView) {
-        UIView.animate(withDuration: 0.25, delay: 0.5, options: .curveEaseOut, animations: {
-            view.transform = CGAffineTransform.identity
-            view.alpha = 1
-        }, completion: nil)
-    }
-
-    func makeConstraints(make: ConstraintMaker) {
-        make.width.equalToSuperview().multipliedBy(0.5).inset(2.5)
-        make.left.equalTo(0)
-        make.bottom.equalTo(0)
-        make.height.equalTo(40)
     }
 }
