@@ -14,44 +14,105 @@ import Form
 import Foundation
 import UIKit
 
+enum AssetType {
+    case video, image, unknown
+}
+
 struct MarketingStory: Decodable, Hashable {
     var assetURL: String?
     var assetMimeType: String?
 
-    func playerAsset() -> AVAsset? {
-        guard let url = assetURL else { return nil }
-        let cacheFileName = url + ".mp4"
-        let cached = Disk.exists(cacheFileName, in: .caches)
+    func cacheData() -> Future<Void> {
+        return Future<Void> { completion in
+            DispatchQueue.global(qos: .background).async {
+                let assetType = self.assetType()
 
-        if !cached {
-            let data = try? Data(contentsOf: URL(string: url)!, options: [])
+                if assetType == .video {
+                    self.cacheVideo()
+                }
 
-            if let data = data {
-                try? Disk.save(data, to: .caches, as: cacheFileName)
+                if assetType == .image {
+                    self.cacheImage()
+                }
+
+                completion(.success(Void()))
             }
+
+            return NilDisposer()
+        }
+    }
+
+    func assetType() -> AssetType {
+        guard let mimeType = assetMimeType else { return .unknown }
+
+        if mimeType.contains("video") {
+            return .video
+        } else if mimeType.contains("image") {
+            return .image
         }
 
-        let fileSystemUrl = try? Disk.url(for: cacheFileName, in: .caches)
+        return .unknown
+    }
 
+    func cacheFileName() -> String {
+        guard let url = assetURL else { return "" }
+        let assetType = self.assetType()
+
+        if assetType == .video {
+            return url + ".mp4"
+        }
+
+        return url
+    }
+
+    func cacheVideo() {
+        guard let url = assetURL else { return }
+        let cacheFileName = self.cacheFileName()
+        let isCached = Disk.exists(cacheFileName, in: .caches)
+
+        if isCached {
+            return
+        }
+
+        let data = try? Data(contentsOf: URL(string: url)!, options: [])
+
+        if let data = data {
+            try? Disk.save(data, to: .caches, as: cacheFileName)
+        }
+    }
+
+    func cacheImage() {
+        guard let url = assetURL else { return }
+        let cacheFileName = self.cacheFileName()
+
+        let isCached = Disk.exists(cacheFileName, in: .caches)
+
+        if isCached {
+            return
+        }
+
+        let data = try? Data(contentsOf: URL(string: url)!, options: [])
+
+        if let data = data {
+            try? Disk.save(data, to: .caches, as: cacheFileName)
+        }
+    }
+
+    func playerAsset() -> AVAsset? {
+        let cacheFileName = self.cacheFileName()
+
+        cacheVideo()
+
+        let fileSystemUrl = try? Disk.url(for: cacheFileName, in: .caches)
         return AVAsset(url: fileSystemUrl!)
     }
 
     func imageAsset() -> UIImage? {
-        guard let url = assetURL else { return nil }
-        let cached = Disk.exists(url, in: .caches)
+        let cacheFileName = self.cacheFileName()
 
-        if !cached {
-            let data = try? Data(contentsOf: URL(string: url)!, options: [])
+        cacheImage()
 
-            if let data = data {
-                try? Disk.save(data, to: .caches, as: url)
-            }
-
-            return UIImage(data: data!)
-        }
-
-        let data = try? Disk.retrieve(url, from: .caches, as: Data.self)
-
+        let data = try? Disk.retrieve(cacheFileName, from: .caches, as: Data.self)
         return UIImage(data: data!)
     }
 

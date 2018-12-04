@@ -72,7 +72,11 @@ extension StoriesCollection: Viewable {
                 MarketingStory(apollo: marketingStoryData!)
             })
 
-            collectionKit.set(Table(rows: rows))
+            rows.mapToFuture({ marketingStory in
+                marketingStory.cacheData()
+            }).onValue({ _ in
+                collectionKit.set(Table(rows: rows))
+            })
         }
 
         bag += events.wasAdded.delay(by: 0.5).animatedOnValue(
