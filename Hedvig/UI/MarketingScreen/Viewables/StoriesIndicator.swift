@@ -141,14 +141,7 @@ extension StoriesIndicator: Viewable {
             timerBag.dispose()
 
             if newIndex > rows.count - 1 || newIndex < 0 {
-                collectionKit.set(
-                    collectionKit.table,
-                    animation: .none,
-                    rowIdentifier: { $0 },
-                    rowNeedsUpdate: { (_, _) -> Bool in
-                        true
-                    }
-                )
+                collectionKit.updateCurrentRow()
 
                 timerBag += Signal(after: currentFocusedRow!.duration).onValue {
                     if newIndex < rows.count - 1 {
