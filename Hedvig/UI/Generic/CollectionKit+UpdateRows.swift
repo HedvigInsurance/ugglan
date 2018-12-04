@@ -25,7 +25,7 @@ extension CollectionKit {
                 at: TableIndex(section: 0, row: index)
             )
             let tableChange = TableChange<Section, Row>.row(changeStep)
-            apply(changes: [tableChange])
+            apply(changes: [tableChange], animation: .none)
         }
     }
 
