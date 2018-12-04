@@ -64,6 +64,7 @@
 		EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */; };
 		EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */; };
 		EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC221B56B860027C9DE /* Logo.swift */; };
+		EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateAt.swift */; };
 		EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */; };
 		EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */; };
 		EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */; };
@@ -154,6 +155,7 @@
 		EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Callbacker+Signal.swift"; sourceTree = "<group>"; };
 		EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesIndicator.swift; sourceTree = "<group>"; };
 		EB7FEAC221B56B860027C9DE /* Logo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logo.swift; sourceTree = "<group>"; };
+		EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionKit+UpdateAt.swift"; sourceTree = "<group>"; };
 		EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertMessage.swift; sourceTree = "<group>"; };
 		EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicator.swift; sourceTree = "<group>"; };
 		EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Messages.graphql; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				EB7FEAAC21B1459D0027C9DE /* TransitionStyle.swift */,
 				EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */,
 				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
+				EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateAt.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -797,6 +800,7 @@
 				EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */,
 				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
 				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
+				EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateAt.swift in Sources */,
 				EB7FEAB521B180600027C9DE /* Stories.swift in Sources */,
 				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,

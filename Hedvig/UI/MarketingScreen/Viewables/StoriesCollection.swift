@@ -50,38 +50,19 @@ extension StoriesCollection: Viewable {
         bag += scrollToSignal.onValue { direction in
             switch direction {
             case .previous:
-                let currentIndex = collectionKit.currentIndex()
-                let newItem = collectionKit.table.enumerated().first(where: { (offset, _) -> Bool in
-                    offset == currentIndex - 1
-                })?.element
-
-                if let newItem = newItem {
-                    let changeStep = ChangeStep<MarketingStory, TableIndex>.update(
-                        item: newItem,
-                        at: TableIndex(section: 0, row: currentIndex - 1)
-                    )
-                    let tableChange = TableChange<EmptySection, MarketingStory>.row(changeStep)
-                    collectionKit.apply(changes: [tableChange])
+                if collectionKit.hasPreviousRow() {
+                    collectionKit.updateRowBeforeCurrent()
+                    collectionKit.scrollToPreviousItem()
+                } else {
+                    collectionKit.updateCurrentRow()
                 }
-
-                collectionKit.scrollToPreviousItem()
             case .next:
-                let currentIndex = collectionKit.currentIndex()
-                let newItem = collectionKit.table.enumerated().first(where: { (offset, _) -> Bool in
-                    offset == currentIndex + 1
-                })?.element
-
-                if let newItem = newItem {
-                    let changeStep = ChangeStep<MarketingStory, TableIndex>.update(
-                        item: newItem,
-                        at: TableIndex(section: 0, row: currentIndex + 1)
-                    )
-                    let tableChange = TableChange<EmptySection, MarketingStory>.row(changeStep)
-
-                    collectionKit.apply(changes: [tableChange])
+                if collectionKit.hasNextRow() {
+                    collectionKit.updateRowAfterCurrent()
+                    collectionKit.scrollToNextItem()
+                } else {
+                    collectionKit.updateCurrentRow()
                 }
-
-                collectionKit.scrollToNextItem()
             }
         }
 
