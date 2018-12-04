@@ -13,11 +13,13 @@ target 'Hedvig' do
   pod 'Apollo'
   pod 'Apollo/WebSocket'
   pod 'Disk', '~> 0.4.0'
-  pod 'FlowFramework', '~> 1.0'
+  pod 'FlowFramework', '~> 1.3'
   pod 'FormFramework/Presentation', git: 'https://github.com/hedviginsurance/form.git'
   pod 'FormFramework', git: 'https://github.com/hedviginsurance/form.git'
   pod 'SnapKit', '~> 4.0.0'
   pod 'UICollectionView+AnimatedScroll', git: 'https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git'
+  pod 'FlowOn', git: 'https://github.com/HedvigInsurance/FlowOn.git'
+  pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
 
   target 'HedvigTests' do
     inherit! :search_paths

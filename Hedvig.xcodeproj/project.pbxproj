@@ -54,12 +54,9 @@
 		EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */; };
 		EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9F21B0417E0027C9DE /* SkipToPreviousButton.swift */; };
 		EB7FEAA421B068760027C9DE /* NewMemberButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAA321B068760027C9DE /* NewMemberButton.swift */; };
-		EB7FEAA621B12C990027C9DE /* UIButton+On.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAA521B12C990027C9DE /* UIButton+On.swift */; };
-		EB7FEAA821B139FE0027C9DE /* UIControlTouchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAA721B139FE0027C9DE /* UIControlTouchHandler.swift */; };
 		EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAAA21B145780027C9DE /* CoreSignal+Animation.swift */; };
 		EB7FEAAD21B1459D0027C9DE /* TransitionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAAC21B1459D0027C9DE /* TransitionStyle.swift */; };
 		EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */; };
-		EB7FEAB121B1603D0027C9DE /* CoreSignal+Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAB021B1603D0027C9DE /* CoreSignal+Feedback.swift */; };
 		EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAB221B17DBA0027C9DE /* ExistingMemberButton.swift */; };
 		EB7FEAB521B180600027C9DE /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAB421B180600027C9DE /* Stories.swift */; };
 		EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAB621B19B8B0027C9DE /* MemberActionButtons.swift */; };
@@ -147,12 +144,9 @@
 		EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionKit+ScrollTo.swift"; sourceTree = "<group>"; };
 		EB7FEA9F21B0417E0027C9DE /* SkipToPreviousButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipToPreviousButton.swift; sourceTree = "<group>"; };
 		EB7FEAA321B068760027C9DE /* NewMemberButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMemberButton.swift; sourceTree = "<group>"; };
-		EB7FEAA521B12C990027C9DE /* UIButton+On.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+On.swift"; sourceTree = "<group>"; };
-		EB7FEAA721B139FE0027C9DE /* UIControlTouchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIControlTouchHandler.swift; sourceTree = "<group>"; };
 		EB7FEAAA21B145780027C9DE /* CoreSignal+Animation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreSignal+Animation.swift"; sourceTree = "<group>"; };
 		EB7FEAAC21B1459D0027C9DE /* TransitionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionStyle.swift; sourceTree = "<group>"; };
 		EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationStyle.swift; sourceTree = "<group>"; };
-		EB7FEAB021B1603D0027C9DE /* CoreSignal+Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreSignal+Feedback.swift"; sourceTree = "<group>"; };
 		EB7FEAB221B17DBA0027C9DE /* ExistingMemberButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingMemberButton.swift; sourceTree = "<group>"; };
 		EB7FEAB421B180600027C9DE /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
 		EB7FEAB621B19B8B0027C9DE /* MemberActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionButtons.swift; sourceTree = "<group>"; };
@@ -251,7 +245,6 @@
 			isa = PBXGroup;
 			children = (
 				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
-				EB7FEAA921B13A3D0027C9DE /* TouchHandler */,
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
 				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
@@ -260,7 +253,6 @@
 				EB7FEAAA21B145780027C9DE /* CoreSignal+Animation.swift */,
 				EB7FEAAC21B1459D0027C9DE /* TransitionStyle.swift */,
 				EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */,
-				EB7FEAB021B1603D0027C9DE /* CoreSignal+Feedback.swift */,
 				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
 			);
 			path = Generic;
@@ -438,15 +430,6 @@
 				EB7FEAC221B56B860027C9DE /* Logo.swift */,
 			);
 			path = Viewables;
-			sourceTree = "<group>";
-		};
-		EB7FEAA921B13A3D0027C9DE /* TouchHandler */ = {
-			isa = PBXGroup;
-			children = (
-				EB7FEAA521B12C990027C9DE /* UIButton+On.swift */,
-				EB7FEAA721B139FE0027C9DE /* UIControlTouchHandler.swift */,
-			);
-			path = TouchHandler;
 			sourceTree = "<group>";
 		};
 		EB7FEAB821B19D120027C9DE /* MemberActionButtons */ = {
@@ -631,7 +614,9 @@
 				"${BUILT_PRODUCTS_DIR}/Apollo/Apollo.framework",
 				"${BUILT_PRODUCTS_DIR}/Disk/Disk.framework",
 				"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework",
+				"${BUILT_PRODUCTS_DIR}/FlowFeedback/FlowFeedback.framework",
 				"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework",
+				"${BUILT_PRODUCTS_DIR}/FlowOn/FlowOn.framework",
 				"${BUILT_PRODUCTS_DIR}/FormFramework/Form.framework",
 				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
 				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
@@ -646,7 +631,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Apollo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Disk.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowFeedback.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowOn.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Form.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
@@ -780,7 +767,6 @@
 				EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */,
 				EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
-				EB7FEAA621B12C990027C9DE /* UIButton+On.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */,
@@ -790,7 +776,6 @@
 				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
-				EB7FEAB121B1603D0027C9DE /* CoreSignal+Feedback.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */,
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
@@ -820,7 +805,6 @@
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,
-				EB7FEAA821B139FE0027C9DE /* UIControlTouchHandler.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
