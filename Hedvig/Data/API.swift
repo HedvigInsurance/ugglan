@@ -651,6 +651,136 @@ public final class CurrentChatResponseSubscription: GraphQLSubscription {
   }
 }
 
+public final class MarketingStoriesQuery: GraphQLQuery {
+  public let operationDefinition =
+    "query MarketingStories {\n  marketingStories(orderBy: importance_ASC) {\n    __typename\n    asset {\n      __typename\n      mimeType\n      url\n    }\n    duration\n  }\n}"
+
+  public init() {
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Query"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("marketingStories", arguments: ["orderBy": "importance_ASC"], type: .nonNull(.list(.object(MarketingStory.selections)))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(marketingStories: [MarketingStory?]) {
+      self.init(unsafeResultMap: ["__typename": "Query", "marketingStories": marketingStories.map { (value: MarketingStory?) -> ResultMap? in value.flatMap { (value: MarketingStory) -> ResultMap in value.resultMap } }])
+    }
+
+    public var marketingStories: [MarketingStory?] {
+      get {
+        return (resultMap["marketingStories"] as! [ResultMap?]).map { (value: ResultMap?) -> MarketingStory? in value.flatMap { (value: ResultMap) -> MarketingStory in MarketingStory(unsafeResultMap: value) } }
+      }
+      set {
+        resultMap.updateValue(newValue.map { (value: MarketingStory?) -> ResultMap? in value.flatMap { (value: MarketingStory) -> ResultMap in value.resultMap } }, forKey: "marketingStories")
+      }
+    }
+
+    public struct MarketingStory: GraphQLSelectionSet {
+      public static let possibleTypes = ["MarketingStory"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("asset", type: .object(Asset.selections)),
+        GraphQLField("duration", type: .scalar(Double.self)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(asset: Asset? = nil, duration: Double? = nil) {
+        self.init(unsafeResultMap: ["__typename": "MarketingStory", "asset": asset.flatMap { (value: Asset) -> ResultMap in value.resultMap }, "duration": duration])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var asset: Asset? {
+        get {
+          return (resultMap["asset"] as? ResultMap).flatMap { Asset(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "asset")
+        }
+      }
+
+      public var duration: Double? {
+        get {
+          return resultMap["duration"] as? Double
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "duration")
+        }
+      }
+
+      public struct Asset: GraphQLSelectionSet {
+        public static let possibleTypes = ["Asset"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("mimeType", type: .scalar(String.self)),
+          GraphQLField("url", type: .nonNull(.scalar(String.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(mimeType: String? = nil, url: String) {
+          self.init(unsafeResultMap: ["__typename": "Asset", "mimeType": mimeType, "url": url])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var mimeType: String? {
+          get {
+            return resultMap["mimeType"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "mimeType")
+          }
+        }
+
+        /// Get the url for the asset with provided transformations applied.
+        public var url: String {
+          get {
+            return resultMap["url"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "url")
+          }
+        }
+      }
+    }
+  }
+}
+
 public final class CreateSessionMutation: GraphQLMutation {
   public let operationDefinition =
     "mutation CreateSession($campaign: CampaignInput, $trackingId: UUID) {\n  createSession(campaign: $campaign, trackingId: $trackingId)\n}"

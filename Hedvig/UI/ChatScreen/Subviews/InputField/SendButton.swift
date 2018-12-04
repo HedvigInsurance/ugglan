@@ -74,7 +74,7 @@ class SendButton: UIButton, View {
             self.backgroundColor = Styles.highlightedBackgroundColor(activated: self.activated)
         }
     }
-    
+
     @available(iOS 10.0, *)
     func generateFeedback() {
         if activated {
@@ -90,7 +90,7 @@ class SendButton: UIButton, View {
         if activated {
             onSend()
         }
-        
+
         if #available(iOS 10.0, *) {
             generateFeedback()
         }

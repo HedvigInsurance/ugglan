@@ -30,7 +30,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
     }
 
     func subscribeToCurrentResponse() {
-        HedvigApolloClient.client?.subscribe(subscription: CurrentChatResponseSubscription()) { result, _ in
+        HedvigApolloClient.shared.client?.subscribe(subscription: CurrentChatResponseSubscription()) { result, _ in
             self.currentChatResponse = result?.data?.currentChatResponse
             self.update()
         }
@@ -130,7 +130,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
         if let globalId = self.currentChatResponse?.globalId {
             let body = ChatResponseBodyTextInput(text: String(textView.text))
             let input = ChatResponseTextInput(globalId: globalId, body: body)
-            HedvigApolloClient.client?.perform(mutation: SendChatTextResponseMutation(input: input))
+            HedvigApolloClient.shared.client?.perform(mutation: SendChatTextResponseMutation(input: input))
         }
 
         textView.text = ""
@@ -148,7 +148,7 @@ class InputFieldView: UIView, View, UITextViewDelegate {
                 let body = ChatResponseBodySingleSelectInput(selectedValue: choiceValue)
                 let input = ChatResponseSingleSelectInput(globalId: globalId, body: body)
                 let mutation = SendChatSingleSelectResponseMutation(input: input)
-                HedvigApolloClient.client?.perform(mutation: mutation)
+                HedvigApolloClient.shared.client?.perform(mutation: mutation)
             }
         }
     }

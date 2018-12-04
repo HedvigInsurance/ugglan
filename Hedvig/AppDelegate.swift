@@ -23,14 +23,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         window.rootViewController = navigationController
 
-        let marketing = Marketing()
+        HedvigApolloClient.shared.initClient().onValue { client in
+            let marketing = Marketing(client: client)
 
-        let compose = Presentation<Marketing>(marketing, style: .marketing, options: .unanimated) { (_: Marketing.Matter, _: DisposeBag) -> Void in
-            return ()
-        }
+            let marketingPresentation = Presentation(
+                marketing,
+                style: .marketing,
+                options: .unanimated
+            ) { (_: Marketing.Matter, _: DisposeBag) -> Void in
+                return ()
+            }
 
-        HedvigApolloClient.initClient().onValue { _ in
-            self.bag += self.navigationController.present(compose)
+            self.bag += self.navigationController.present(marketingPresentation)
             self.window.makeKeyAndVisible()
         }
 

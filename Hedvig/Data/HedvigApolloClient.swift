@@ -12,9 +12,12 @@ import Flow
 import Foundation
 
 class HedvigApolloClient {
-    static var client: ApolloClient?
+    static var shared = HedvigApolloClient()
+    var client: ApolloClient?
 
-    static func createClient(token: String?) -> Future<ApolloClient> {
+    private init() {}
+
+    func createClient(token: String?) -> Future<ApolloClient> {
         let authPayloads = [
             "Authorization": token ?? ""
         ]
@@ -44,7 +47,7 @@ class HedvigApolloClient {
         }
     }
 
-    static func retreiveToken() -> AuthorizationToken? {
+    func retreiveToken() -> AuthorizationToken? {
         return try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
@@ -52,14 +55,14 @@ class HedvigApolloClient {
         )
     }
 
-    static func createClientFromNewSession() -> Future<ApolloClient> {
+    func createClientFromNewSession() -> Future<ApolloClient> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            HedvigApolloClient.createClient(token: nil).onValue { client in
+            self.createClient(token: nil).onValue { client in
                 client.perform(mutation: mutation) { result, _ in
-                    HedvigApolloClient.createClient(token: result?.data?.createSession).onValue { clientWithSession in
+                    self.createClient(token: result?.data?.createSession).onValue { clientWithSession in
                         completion(Result.success(clientWithSession))
                     }.onError { error in
                         completion(Result.failure(error))
@@ -71,7 +74,7 @@ class HedvigApolloClient {
         }
     }
 
-    static func initClient() -> Future<ApolloClient> {
+    func initClient() -> Future<ApolloClient> {
         return Future { completion in
             if self.client != nil {
                 completion(.success(self.client!))
@@ -80,10 +83,10 @@ class HedvigApolloClient {
                 }
             }
 
-            let tokenData = retreiveToken()
+            let tokenData = self.retreiveToken()
 
             if tokenData == nil {
-                createClientFromNewSession().onResult { result in
+                self.createClientFromNewSession().onResult { result in
                     switch result {
                     case let .success(client): do {
                         self.client = client
@@ -95,7 +98,7 @@ class HedvigApolloClient {
                     }
                 }
             } else {
-                createClient(token: tokenData!.token).onResult { result in
+                self.createClient(token: tokenData!.token).onResult { result in
                     switch result {
                     case let .success(client): do {
                         self.client = client

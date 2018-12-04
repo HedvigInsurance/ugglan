@@ -16,8 +16,8 @@ target 'Hedvig' do
   pod 'Apollo/WebSocket'
   pod 'Disk', '~> 0.4.0'
   pod 'FlowFramework', '~> 1.0'
-  pod 'FormFramework/Presentation', '~> 1.0'
-  pod 'FormFramework', '~> 1.0'
+  pod 'FormFramework/Presentation', git: 'https://github.com/hedviginsurance/form.git'
+  pod 'FormFramework', git: 'https://github.com/hedviginsurance/form.git'
   pod 'SnapKit', '~> 4.0.0'
 
   target 'HedvigTests' do

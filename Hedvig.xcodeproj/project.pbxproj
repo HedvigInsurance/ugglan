@@ -17,14 +17,10 @@
 		EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */; };
 		EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE66219EF150007DE1C9 /* SelectButton.swift */; };
 		EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */; };
-		EB06FE7121A03DCA007DE1C9 /* OpenChatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */; };
 		EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6821988E9A00CF0624 /* SendButton.swift */; };
 		EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */; };
-		EB3A23D921A6BF24007F52B6 /* StoriesCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23D821A6BF24007F52B6 /* StoriesCollectionView.swift */; };
-		EB3A23DC21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23DB21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift */; };
 		EB3A23DE21A6EA9A007F52B6 /* NewMemberButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23DD21A6EA9A007F52B6 /* NewMemberButtonView.swift */; };
 		EB3A23E021A6FC1C007F52B6 /* ExistingMemberButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23DF21A6FC1C007F52B6 /* ExistingMemberButtonView.swift */; };
-		EB3A23E221A70EA7007F52B6 /* StoriesIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3A23E121A70EA7007F52B6 /* StoriesIndicator.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -50,6 +46,12 @@
 		EB75E1A52197572E006B5CE4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A42197572E006B5CE4 /* Message.swift */; };
 		EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A7219758E9006B5CE4 /* MessageView.swift */; };
 		EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1AA21975CCC006B5CE4 /* ListView.swift */; };
+		EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */; };
+		EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */; };
+		EB7FEA8B21AED37A0027C9DE /* Marketing+Layouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8A21AED37A0027C9DE /* Marketing+Layouting.swift */; };
+		EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */; };
+		EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */; };
+		EB7FEA9321B014D50027C9DE /* MarketingStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA9221B014D50027C9DE /* MarketingStoryView.swift */; };
 		EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */; };
 		EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */; };
 		EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */; };
@@ -64,7 +66,7 @@
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
 		EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */; };
-		EBC049D8219C88EB00AFC30F /* ApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D7219C88EB00AFC30F /* ApolloClient.swift */; };
+		EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,14 +95,10 @@
 		EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollectionViewCell.swift; sourceTree = "<group>"; };
 		EB06FE66219EF150007DE1C9 /* SelectButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectButton.swift; sourceTree = "<group>"; };
 		EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatSingleSelectResponse.graphql; sourceTree = "<group>"; };
-		EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenChatButton.swift; sourceTree = "<group>"; };
 		EB328E6821988E9A00CF0624 /* SendButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendButton.swift; sourceTree = "<group>"; };
 		EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
-		EB3A23D821A6BF24007F52B6 /* StoriesCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesCollectionView.swift; sourceTree = "<group>"; };
-		EB3A23DB21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesCollectionViewCell.swift; sourceTree = "<group>"; };
 		EB3A23DD21A6EA9A007F52B6 /* NewMemberButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMemberButtonView.swift; sourceTree = "<group>"; };
 		EB3A23DF21A6FC1C007F52B6 /* ExistingMemberButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingMemberButtonView.swift; sourceTree = "<group>"; };
-		EB3A23E121A70EA7007F52B6 /* StoriesIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesIndicator.swift; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -126,6 +124,12 @@
 		EB75E1A42197572E006B5CE4 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		EB75E1A7219758E9006B5CE4 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		EB75E1AA21975CCC006B5CE4 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStory.swift; sourceTree = "<group>"; };
+		EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
+		EB7FEA8A21AED37A0027C9DE /* Marketing+Layouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Marketing+Layouting.swift"; sourceTree = "<group>"; };
+		EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ApolloClient+Flow.swift"; sourceTree = "<group>"; };
+		EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = MarketingStories.graphql; sourceTree = "<group>"; };
+		EB7FEA9221B014D50027C9DE /* MarketingStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryView.swift; sourceTree = "<group>"; };
 		EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertMessage.swift; sourceTree = "<group>"; };
 		EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicator.swift; sourceTree = "<group>"; };
 		EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Messages.graphql; sourceTree = "<group>"; };
@@ -140,7 +144,7 @@
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MessageSubscription.graphql; sourceTree = "<group>"; };
-		EBC049D7219C88EB00AFC30F /* ApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClient.swift; sourceTree = "<group>"; };
+		EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigApolloClient.swift; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -194,6 +198,8 @@
 				EB06FE6F21A03DB8007DE1C9 /* Subviews */,
 				EB989BAA21AB212F00C6FFA5 /* Marketing.swift */,
 				EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */,
+				EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */,
+				EB7FEA8A21AED37A0027C9DE /* Marketing+Layouting.swift */,
 			);
 			path = MarketingScreen;
 			sourceTree = "<group>";
@@ -201,10 +207,9 @@
 		EB06FE6F21A03DB8007DE1C9 /* Subviews */ = {
 			isa = PBXGroup;
 			children = (
-				EB3A23DA21A6BF4D007F52B6 /* StoriesCollection */,
-				EB06FE7021A03DCA007DE1C9 /* OpenChatButton.swift */,
 				EB3A23DD21A6EA9A007F52B6 /* NewMemberButtonView.swift */,
 				EB3A23DF21A6FC1C007F52B6 /* ExistingMemberButtonView.swift */,
+				EB7FEA9221B014D50027C9DE /* MarketingStoryView.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -218,6 +223,7 @@
 				EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */,
 				EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */,
 				EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */,
+				EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -227,18 +233,9 @@
 			children = (
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
+				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
 			);
 			path = Generic;
-			sourceTree = "<group>";
-		};
-		EB3A23DA21A6BF4D007F52B6 /* StoriesCollection */ = {
-			isa = PBXGroup;
-			children = (
-				EB3A23D821A6BF24007F52B6 /* StoriesCollectionView.swift */,
-				EB3A23DB21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift */,
-				EB3A23E121A70EA7007F52B6 /* StoriesIndicator.swift */,
-			);
-			path = StoriesCollection;
 			sourceTree = "<group>";
 		};
 		EB5ED9CD21985D37004CE441 /* Assets */ = {
@@ -419,7 +416,8 @@
 				EB1B4A9B21A44E8A00DA341C /* GraphQL */,
 				EBC049D2219C87DF00AFC30F /* API.swift */,
 				EBC049D1219C87DF00AFC30F /* schema.json */,
-				EBC049D7219C88EB00AFC30F /* ApolloClient.swift */,
+				EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */,
+				EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -534,6 +532,7 @@
 				EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */,
 				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
 				EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */,
+				EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */,
 				EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 			);
@@ -702,7 +701,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB3A23E221A70EA7007F52B6 /* StoriesIndicator.swift in Sources */,
 				EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */,
 				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
@@ -710,7 +708,7 @@
 				EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */,
 				EB3A23E021A6FC1C007F52B6 /* ExistingMemberButtonView.swift in Sources */,
 				EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */,
-				EBC049D8219C88EB00AFC30F /* ApolloClient.swift in Sources */,
+				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
@@ -722,22 +720,24 @@
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
-				EB3A23DC21A6BFB9007F52B6 /* StoriesCollectionViewCell.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
 				EB3A23DE21A6EA9A007F52B6 /* NewMemberButtonView.swift in Sources */,
+				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
+				EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */,
+				EB7FEA8B21AED37A0027C9DE /* Marketing+Layouting.swift in Sources */,
 				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
 				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
 				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
-				EB06FE7121A03DCA007DE1C9 /* OpenChatButton.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
+				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
-				EB3A23D921A6BF24007F52B6 /* StoriesCollectionView.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
+				EB7FEA9321B014D50027C9DE /* MarketingStoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
