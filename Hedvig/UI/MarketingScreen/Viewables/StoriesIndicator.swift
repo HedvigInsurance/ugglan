@@ -138,6 +138,7 @@ extension StoriesIndicator: Viewable {
         }
 
         let timerBag = DisposeBag()
+        bag += timerBag
 
         bag += marketingStoryIndicatorsSignal
             .withLatestFrom(currentFocusedStorySignal)
