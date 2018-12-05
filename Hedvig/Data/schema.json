@@ -5545,6 +5545,62 @@
             "defaultValue": null
           },
           {
+            "name": "backgroundColor",
+            "description": "",
+            "type": {
+              "kind": "ENUM",
+              "name": "HedvigColor",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "backgroundColor_not",
+            "description": "All values that are not equal to given value.",
+            "type": {
+              "kind": "ENUM",
+              "name": "HedvigColor",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "backgroundColor_in",
+            "description": "All values that are contained in given list.",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "HedvigColor",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "backgroundColor_not_in",
+            "description": "All values that are not contained in given list.",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "HedvigColor",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null
+          },
+          {
             "name": "asset",
             "description": "",
             "type": {
@@ -5567,6 +5623,89 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "HedvigColor",
+        "description": "",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "Pink",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "Turquoise",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "Purple",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DarkPurple",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BlackPurple",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DarkGray",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LightGray",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "White",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "Black",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "OffBlack",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "OffWhite",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "Green",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -6903,6 +7042,18 @@
             "description": "",
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "backgroundColor_ASC",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "backgroundColor_DESC",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "possibleTypes": null
@@ -7019,6 +7170,22 @@
               "kind": "SCALAR",
               "name": "Int",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "backgroundColor",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "HedvigColor",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -14713,6 +14880,20 @@
               "ofType": null
             },
             "defaultValue": null
+          },
+          {
+            "name": "backgroundColor",
+            "description": "",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "HedvigColor",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
           }
         ],
         "interfaces": null,
@@ -16385,6 +16566,20 @@
             "defaultValue": null
           },
           {
+            "name": "backgroundColor",
+            "description": "",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "HedvigColor",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
             "name": "asset",
             "description": "",
             "type": {
@@ -16800,6 +16995,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "backgroundColor",
+            "description": "",
+            "type": {
+              "kind": "ENUM",
+              "name": "HedvigColor",
               "ofType": null
             },
             "defaultValue": null
@@ -19821,6 +20026,16 @@
             "defaultValue": null
           },
           {
+            "name": "backgroundColor",
+            "description": "",
+            "type": {
+              "kind": "ENUM",
+              "name": "HedvigColor",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "asset",
             "description": "",
             "type": {
@@ -22811,6 +23026,22 @@
               "kind": "SCALAR",
               "name": "Int",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "backgroundColor",
+            "description": "",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "HedvigColor",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null

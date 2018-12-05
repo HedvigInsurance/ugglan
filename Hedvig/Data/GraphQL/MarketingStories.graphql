@@ -6,5 +6,6 @@ query MarketingStories {
             url
         }
         duration
+        backgroundColor
     }
 }

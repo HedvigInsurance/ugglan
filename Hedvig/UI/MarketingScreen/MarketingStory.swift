@@ -18,11 +18,14 @@ enum AssetType {
     case video, image, unknown
 }
 
+extension HedvigColor: Decodable {}
+
 struct MarketingStory: Decodable, Hashable {
     var assetURL: String?
     var assetMimeType: String?
     var duration: TimeInterval
     var id: String
+    var backgroundColor: HedvigColor
 
     func cacheData() -> Future<Void> {
         return Future<Void> { completion in
@@ -123,6 +126,7 @@ struct MarketingStory: Decodable, Hashable {
         assetMimeType = marketingStoryData.asset?.mimeType
         duration = marketingStoryData.duration ?? 0
         id = marketingStoryData.id
+        backgroundColor = marketingStoryData.backgroundColor
     }
 }
 
@@ -142,6 +146,8 @@ extension MarketingStory: Reusable {
         return (view, { marketingStory in
             let bag = DisposeBag()
             guard let mimeType = marketingStory.assetMimeType else { return bag }
+
+            view.backgroundColor = HedvigColors.from(apollo: marketingStory.backgroundColor)
 
             if mimeType.contains("video") {
                 imageView.removeFromSuperview()

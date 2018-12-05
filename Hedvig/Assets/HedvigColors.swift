@@ -25,4 +25,35 @@ struct HedvigColors {
     static let green = UIColor(red: 0.11, green: 0.91, blue: 0.71, alpha: 1.0)
     static let pink = UIColor(red: 1.00, green: 0.54, blue: 0.50, alpha: 1.0)
     static let grayBorder = HedvigColors.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
+
+    static func from(apollo color: HedvigColor) -> UIColor {
+        switch color {
+        case .pink:
+            return HedvigColors.pink
+        case .black:
+            return HedvigColors.black
+        case .blackPurple:
+            return HedvigColors.blackPurple
+        case .offBlack:
+            return HedvigColors.offBlack
+        case .darkGray:
+            return HedvigColors.darkGray
+        case .turquoise:
+            return HedvigColors.turquoise
+        case .purple:
+            return HedvigColors.purple
+        case .lightGray:
+            return HedvigColors.lightGray
+        case .green:
+            return HedvigColors.green
+        case .darkPurple:
+            return HedvigColors.darkPurple
+        case .white:
+            return HedvigColors.white
+        case .offWhite:
+            return HedvigColors.offWhite
+        case .__unknown:
+            return UIColor.white
+        }
+    }
 }

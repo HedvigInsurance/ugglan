@@ -78,6 +78,79 @@ public enum MessageBodyChoicesLinkView: RawRepresentable, Equatable, Hashable, A
   }
 }
 
+public enum HedvigColor: RawRepresentable, Equatable, Hashable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case pink
+  case turquoise
+  case purple
+  case darkPurple
+  case blackPurple
+  case darkGray
+  case lightGray
+  case white
+  case black
+  case offBlack
+  case offWhite
+  case green
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "Pink": self = .pink
+      case "Turquoise": self = .turquoise
+      case "Purple": self = .purple
+      case "DarkPurple": self = .darkPurple
+      case "BlackPurple": self = .blackPurple
+      case "DarkGray": self = .darkGray
+      case "LightGray": self = .lightGray
+      case "White": self = .white
+      case "Black": self = .black
+      case "OffBlack": self = .offBlack
+      case "OffWhite": self = .offWhite
+      case "Green": self = .green
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .pink: return "Pink"
+      case .turquoise: return "Turquoise"
+      case .purple: return "Purple"
+      case .darkPurple: return "DarkPurple"
+      case .blackPurple: return "BlackPurple"
+      case .darkGray: return "DarkGray"
+      case .lightGray: return "LightGray"
+      case .white: return "White"
+      case .black: return "Black"
+      case .offBlack: return "OffBlack"
+      case .offWhite: return "OffWhite"
+      case .green: return "Green"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: HedvigColor, rhs: HedvigColor) -> Bool {
+    switch (lhs, rhs) {
+      case (.pink, .pink): return true
+      case (.turquoise, .turquoise): return true
+      case (.purple, .purple): return true
+      case (.darkPurple, .darkPurple): return true
+      case (.blackPurple, .blackPurple): return true
+      case (.darkGray, .darkGray): return true
+      case (.lightGray, .lightGray): return true
+      case (.white, .white): return true
+      case (.black, .black): return true
+      case (.offBlack, .offBlack): return true
+      case (.offWhite, .offWhite): return true
+      case (.green, .green): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+}
+
 public struct CampaignInput: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -653,7 +726,7 @@ public final class CurrentChatResponseSubscription: GraphQLSubscription {
 
 public final class MarketingStoriesQuery: GraphQLQuery {
   public let operationDefinition =
-    "query MarketingStories {\n  marketingStories(orderBy: importance_ASC) {\n    __typename\n    id\n    asset {\n      __typename\n      mimeType\n      url\n    }\n    duration\n  }\n}"
+    "query MarketingStories {\n  marketingStories(orderBy: importance_ASC) {\n    __typename\n    id\n    asset {\n      __typename\n      mimeType\n      url\n    }\n    duration\n    backgroundColor\n  }\n}"
 
   public init() {
   }
@@ -692,6 +765,7 @@ public final class MarketingStoriesQuery: GraphQLQuery {
         GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
         GraphQLField("asset", type: .object(Asset.selections)),
         GraphQLField("duration", type: .scalar(Double.self)),
+        GraphQLField("backgroundColor", type: .nonNull(.scalar(HedvigColor.self))),
       ]
 
       public private(set) var resultMap: ResultMap
@@ -700,8 +774,8 @@ public final class MarketingStoriesQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(id: GraphQLID, asset: Asset? = nil, duration: Double? = nil) {
-        self.init(unsafeResultMap: ["__typename": "MarketingStory", "id": id, "asset": asset.flatMap { (value: Asset) -> ResultMap in value.resultMap }, "duration": duration])
+      public init(id: GraphQLID, asset: Asset? = nil, duration: Double? = nil, backgroundColor: HedvigColor) {
+        self.init(unsafeResultMap: ["__typename": "MarketingStory", "id": id, "asset": asset.flatMap { (value: Asset) -> ResultMap in value.resultMap }, "duration": duration, "backgroundColor": backgroundColor])
       }
 
       public var __typename: String {
@@ -737,6 +811,15 @@ public final class MarketingStoriesQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "duration")
+        }
+      }
+
+      public var backgroundColor: HedvigColor {
+        get {
+          return resultMap["backgroundColor"]! as! HedvigColor
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "backgroundColor")
         }
       }
 
