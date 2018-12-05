@@ -26,10 +26,8 @@ struct MarketingPresentationStyle {
         )
 
         if let navigationBar = viewController.navigationController?.navigationBar {
-            let wordmarkIcon = Icon(frame: .zero, iconName: "Wordmark", iconWidth: 90)
-            navigationBar.topItem?.titleView = wordmarkIcon
-            navigationBar.isTranslucent = false
-            navigationBar.shadowImage = UIImage()
+            navigationBar.isHidden = true
+            navigationBar.barStyle = .black
         }
 
         return (present, dismiss)

@@ -29,4 +29,88 @@ extension ButtonStyle {
             )
         ]
     }
+
+    static let standardWhite = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.white,
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 20,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.black
+                )
+            )
+        ]
+    }
+
+    static let standardWhiteHighlighted = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.white.darkened(amount: 0.1),
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 20,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.black
+                )
+            )
+        ]
+    }
+
+    static let standardTransparentBlack = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.black.withAlphaComponent(0.3),
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 20,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.white
+                )
+            )
+        ]
+    }
+
+    static let standardTransparentBlackHighlighted = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.black.withAlphaComponent(0.6),
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 20,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.white
+                )
+            )
+        ]
+    }
 }

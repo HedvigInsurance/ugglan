@@ -1,9 +1,8 @@
-# Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+platform :ios, '9.0'
 
 target 'Hedvig' do
-  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
+  inhibit_all_warnings!
 
   # Pods for Hedvig
   pod 'Tempura'
@@ -11,14 +10,16 @@ target 'Hedvig' do
   pod 'SwiftLint'
   pod 'DynamicColor', '~> 4.0.2'
   pod 'SwiftFormat/CLI'
-  pod 'UIViewRoundedCorners'
   pod 'Apollo'
   pod 'Apollo/WebSocket'
   pod 'Disk', '~> 0.4.0'
-  pod 'FlowFramework', '~> 1.0'
+  pod 'FlowFramework', '~> 1.3'
   pod 'FormFramework/Presentation', git: 'https://github.com/hedviginsurance/form.git'
   pod 'FormFramework', git: 'https://github.com/hedviginsurance/form.git'
   pod 'SnapKit', '~> 4.0.0'
+  pod 'UICollectionView+AnimatedScroll', git: 'https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git'
+  pod 'FlowOn', git: 'https://github.com/HedvigInsurance/FlowOn.git'
+  pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
 
   target 'HedvigTests' do
     inherit! :search_paths

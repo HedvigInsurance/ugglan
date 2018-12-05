@@ -23,29 +23,8 @@ extension Marketing: Presentable {
         let bag = DisposeBag()
 
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.white
+        containerView.backgroundColor = HedvigColors.white
         viewController.view = containerView
-
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.scrollDirection = .horizontal
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
-        let collectionKit = CollectionKit<EmptySection, MarketingStory>(
-            table: Table(),
-            layout: flowLayout,
-            bag: bag
-        )
-
-        collectionKit.view.isPagingEnabled = true
-        collectionKit.view.bounces = false
-        collectionKit.view.showsHorizontalScrollIndicator = false
-        collectionKit.view.layer.cornerRadius = 10
-        collectionKit.view.isPrefetchingEnabled = true
-
-        bag += collectionKit.delegate.sizeForItemAt.set({ (_) -> CGSize in
-            collectionKit.view.frame.size
-        })
 
         bag += client.fetch(query: MarketingStoriesQuery()).onValue { result in
             guard let data = result.data else { return }
@@ -53,48 +32,16 @@ extension Marketing: Presentable {
                 MarketingStory(apollo: marketingStoryData!)
             })
 
-            collectionKit.set(Table(rows: rows))
-        }
+            let rowsSignal = ReadWriteSignal<[MarketingStory]>(rows)
 
-        containerView.addSubview(collectionKit.view)
-        Layouting.collectionView(collectionKit.view, containerView)
-
-        let newMemberButtonView = NewMemberButtonView()
-        containerView.addSubview(newMemberButtonView)
-        Layouting.newMemberButtonView(newMemberButtonView, collectionKit.view)
-
-        let existingMemberButtonView = ExistingMemberButtonView()
-        containerView.addSubview(existingMemberButtonView)
-        Layouting.existingMemberButtonView(existingMemberButtonView, collectionKit.view)
-
-        let skipToPreviousButton = UIButton(title: "Tidigare", style: .invisible)
-        containerView.addSubview(skipToPreviousButton)
-        Layouting.skipToPreviousButton(skipToPreviousButton, collectionKit.view)
-
-        bag += skipToPreviousButton.onValue {
-            let currentIndex = Int(collectionKit.view.contentOffset.x / collectionKit.view.frame.size.width)
-            let newIndexPath = IndexPath(row: currentIndex - 1, section: 0)
-
-            if newIndexPath.row >= 0 {
-                collectionKit.view.scrollToItem(at: newIndexPath, at: .left, animated: true)
-            }
-        }
-
-        let skipToNextButton = UIButton(title: "Nästa", style: .invisible)
-        containerView.addSubview(skipToNextButton)
-        Layouting.skipToNextButton(skipToNextButton, collectionKit.view)
-
-        bag += skipToNextButton.onValue {
-            let currentIndex = Int(collectionKit.view.contentOffset.x / collectionKit.view.frame.size.width)
-            let newIndexPath = IndexPath(row: currentIndex + 1, section: 0)
-            let numberOfItems = collectionKit.dataSource.collectionView(
-                collectionKit.view,
-                numberOfItemsInSection: 0
-            )
-
-            if numberOfItems > newIndexPath.row {
-                collectionKit.view.scrollToItem(at: newIndexPath, at: .centeredHorizontally, animated: true)
-            }
+            bag += rows.mapToFuture({ marketingStory in
+                marketingStory.cacheData()
+            }).onValue({ _ in
+                let stories = Stories(
+                    marketingStories: rowsSignal.readOnly()
+                )
+                bag += containerView.add(stories)
+            })
         }
 
         return (viewController, bag)

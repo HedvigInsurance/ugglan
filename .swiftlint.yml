@@ -6,4 +6,8 @@ excluded:
   - Pods
   - Hedvig/Data/API.swift
 type_name:
-  excluded: V
+  excluded:
+    - V
+identifier_name:
+  excluded:
+    - id

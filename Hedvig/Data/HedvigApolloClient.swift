@@ -27,8 +27,8 @@ class HedvigApolloClient {
 
         let authMap: GraphQLMap = authPayloads
 
-        let endpointURL = URL(string: "http://localhost:4000/graphql")!
-        let wsEndpointURL = URL(string: "ws://localhost:4000/subscriptions")!
+        let endpointURL = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
+        let wsEndpointURL = URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
         let httpNetworkTransport = HTTPNetworkTransport(url: endpointURL, configuration: configuration)
         let websocketNetworkTransport = WebSocketTransport(
             request: URLRequest(url: wsEndpointURL),
