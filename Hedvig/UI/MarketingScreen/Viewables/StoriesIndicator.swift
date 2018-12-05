@@ -139,17 +139,16 @@ extension StoriesIndicator: Viewable {
 
         let timerBag = DisposeBag()
 
-        bag += currentFocusedStorySignal
-            .withLatestFrom(marketingStoryIndicatorsSignal)
-            .filter { (currentFocusedStory, marketingStoryIndicators) -> Bool in
+        bag += marketingStoryIndicatorsSignal
+            .withLatestFrom(currentFocusedStorySignal)
+            .filter { (marketingStoryIndicators, currentFocusedStory) -> Bool in
                 guard let currentFocusedStory = currentFocusedStory else { return false }
                 guard let currentIndex = marketingStoryIndicators.firstIndex(
                     of: currentFocusedStory
                 ) else { return false }
                 return currentIndex < marketingStoryIndicators.count - 1
-            }.onValue { currentFocusedStory, _ in
-                guard let currentFocusedStory = currentFocusedStory else { return }
-                timerBag += Signal(after: currentFocusedStory.duration).onValue {
+            }.onValue { _, currentFocusedStory in
+                timerBag += Signal(after: currentFocusedStory!.duration).onValue {
                     self.scrollTo(.next)
                 }
             }
