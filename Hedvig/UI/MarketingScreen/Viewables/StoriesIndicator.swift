@@ -30,13 +30,6 @@ struct MarketingStoryIndicator: Decodable, Hashable {
         self.id = id
         self.shown = shown
     }
-
-    init(apollo marketingStoryData: MarketingStoriesQuery.Data.MarketingStory, focused: Bool) {
-        duration = marketingStoryData.duration ?? 0
-        id = String(marketingStoryData.id)
-        shown = false
-        self.focused = focused
-    }
 }
 
 extension MarketingStoryIndicator: Reusable {
