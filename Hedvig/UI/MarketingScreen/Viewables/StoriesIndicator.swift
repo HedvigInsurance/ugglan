@@ -14,8 +14,8 @@ import SnapKit
 import UIKit
 
 struct StoriesIndicator {
-    let client: ApolloClient
     let scrollToSignal: Signal<ScrollTo>
+    let marketingStories: ReadSignal<[MarketingStory]>
     let scrollTo: (_ direction: ScrollTo) -> Void
 }
 
@@ -127,65 +127,86 @@ extension StoriesIndicator: Viewable {
             )
         }
 
-        var rows: [MarketingStoryIndicator] = []
-        let timerBag = DisposeBag()
+        let marketingStoryIndicatorsCallbacker = Callbacker<[MarketingStoryIndicator]>()
+        let marketingStoryIndicatorsSignal = marketingStoryIndicatorsCallbacker.signal()
 
-        bag += scrollToSignal.onValue({ direction in
-            let currentFocusedRow = rows.filter({ marketingStoryIndicator -> Bool in
+        let currentFocusedStorySignal = marketingStoryIndicatorsSignal.map {
+            marketingStoryIndicators -> MarketingStoryIndicator? in
+            marketingStoryIndicators.filter({ marketingStoryIndicator -> Bool in
                 marketingStoryIndicator.focused
             }).first
+        }
 
-            let index = rows.firstIndex(of: currentFocusedRow!)!
-            let newIndex = direction == .next ? index + 1 : index - 1
+        let timerBag = DisposeBag()
 
-            timerBag.dispose()
-
-            if newIndex > rows.count - 1 || newIndex < 0 {
-                collectionKit.updateCurrentRow()
-
-                timerBag += Signal(after: currentFocusedRow!.duration).onValue {
-                    if newIndex < rows.count - 1 {
-                        self.scrollTo(.next)
-                    }
-                }
-
-                return
-            }
-
-            let newRows = rows.enumerated().map({ (offset, marketingStoryIndicator) -> MarketingStoryIndicator in
-                MarketingStoryIndicator(
-                    duration: marketingStoryIndicator.duration,
-                    focused: newIndex == offset,
-                    id: marketingStoryIndicator.id,
-                    shown: offset < newIndex
-                )
-            })
-
-            timerBag += Signal(after: newRows[newIndex].duration).onValue {
-                if newIndex + 1 <= rows.count - 1 {
+        bag += currentFocusedStorySignal
+            .withLatestFrom(marketingStoryIndicatorsSignal)
+            .filter { (currentFocusedStory, marketingStoryIndicators) -> Bool in
+                guard let currentFocusedStory = currentFocusedStory else { return false }
+                guard let currentIndex = marketingStoryIndicators.firstIndex(
+                    of: currentFocusedStory
+                ) else { return false }
+                return currentIndex < marketingStoryIndicators.count - 1
+            }.onValue { currentFocusedStory, _ in
+                guard let currentFocusedStory = currentFocusedStory else { return }
+                timerBag += Signal(after: currentFocusedStory.duration).onValue {
                     self.scrollTo(.next)
                 }
             }
 
-            rows = newRows
-
-            collectionKit.set(Table(rows: newRows))
-        })
-
-        bag += client.fetch(query: MarketingStoriesQuery()).onValue { result in
-            guard let data = result.data else { return }
-            let newRows = data.marketingStories.enumerated().map({
-                (offset, marketingStoryData) -> MarketingStoryIndicator in
-                MarketingStoryIndicator(apollo: marketingStoryData!, focused: offset == 0)
-            })
-
-            timerBag += Signal(after: newRows[0].duration).onValue {
-                self.scrollTo(.next)
+        bag += marketingStoryIndicatorsSignal
+            .onValue { marketingStoryIndicators in
+                collectionKit.set(Table(rows: marketingStoryIndicators), animation: .none)
             }
 
-            rows = newRows
+        bag += scrollToSignal
+            .withLatestFrom(
+                combineLatest(marketingStoryIndicatorsSignal, currentFocusedStorySignal)
+            ).onValue({ direction, latestFrom in
+                let (marketingStoryIndicators, currentFocusedStory) = latestFrom
+                let index = marketingStoryIndicators.firstIndex(of: currentFocusedStory!)!
+                let newIndex = direction == .next ? index + 1 : index - 1
 
-            collectionKit.set(Table(rows: rows), animation: .none)
+                timerBag.dispose()
+
+                if newIndex > marketingStoryIndicators.count - 1 || newIndex < 0 {
+                    collectionKit.updateCurrentRow()
+
+                    timerBag += Signal(after: currentFocusedStory!.duration).onValue {
+                        if newIndex < marketingStoryIndicators.count - 1 {
+                            self.scrollTo(.next)
+                        }
+                    }
+
+                    return
+                }
+
+                let newRows = marketingStoryIndicators.enumerated().map {
+                    (offset, marketingStoryIndicator) -> MarketingStoryIndicator in
+                    MarketingStoryIndicator(
+                        duration: marketingStoryIndicator.duration,
+                        focused: newIndex == offset,
+                        id: marketingStoryIndicator.id,
+                        shown: offset < newIndex
+                    )
+                }
+
+                marketingStoryIndicatorsCallbacker.callAll(with: newRows)
+            })
+
+        bag += marketingStories.atOnce().map {
+            (marketingStories: [MarketingStory]) -> [MarketingStoryIndicator] in
+            marketingStories.enumerated().map({
+                (offset, marketingStory) -> MarketingStoryIndicator in
+                MarketingStoryIndicator(
+                    duration: marketingStory.duration,
+                    focused: offset == 0,
+                    id: marketingStory.id,
+                    shown: offset == 0
+                )
+            })
+        }.onValue { marketingStoryIndicators in
+            marketingStoryIndicatorsCallbacker.callAll(with: marketingStoryIndicators)
         }
 
         bag += events.wasAdded.onValue {

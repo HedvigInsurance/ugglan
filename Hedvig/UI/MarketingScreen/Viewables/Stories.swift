@@ -14,7 +14,7 @@ import SnapKit
 import UIKit
 
 struct Stories {
-    let client: ApolloClient
+    let marketingStories: ReadSignal<[MarketingStory]>
 }
 
 extension Stories: Viewable {
@@ -27,14 +27,14 @@ extension Stories: Viewable {
         let scrollToSignal = scrollToCallbacker.signal()
 
         let storiesCollection = StoriesCollection(
-            client: client,
-            scrollToSignal: scrollToSignal
+            scrollToSignal: scrollToSignal,
+            marketingStories: marketingStories
         )
         bag += view.add(storiesCollection)
 
         let storiesIndicator = StoriesIndicator(
-            client: client,
-            scrollToSignal: scrollToSignal
+            scrollToSignal: scrollToSignal,
+            marketingStories: marketingStories
         ) { direction in
             scrollToCallbacker.callAll(with: direction)
         }

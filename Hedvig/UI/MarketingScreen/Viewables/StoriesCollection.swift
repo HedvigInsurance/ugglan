@@ -14,8 +14,8 @@ import SnapKit
 import UIKit
 
 struct StoriesCollection {
-    let client: ApolloClient
     let scrollToSignal: Signal<ScrollTo>
+    let marketingStories: ReadSignal<[MarketingStory]>
 }
 
 extension StoriesCollection: Viewable {
@@ -66,17 +66,8 @@ extension StoriesCollection: Viewable {
             }
         }
 
-        bag += client.fetch(query: MarketingStoriesQuery()).onValue { result in
-            guard let data = result.data else { return }
-            let rows = data.marketingStories.map({ (marketingStoryData) -> MarketingStory in
-                MarketingStory(apollo: marketingStoryData!)
-            })
-
-            rows.mapToFuture({ marketingStory in
-                marketingStory.cacheData()
-            }).onValue({ _ in
-                collectionKit.set(Table(rows: rows))
-            })
+        bag += marketingStories.atOnce().onValue { rows in
+            collectionKit.set(Table(rows: rows))
         }
 
         bag += events.wasAdded.delay(by: 0.5).animatedOnValue(

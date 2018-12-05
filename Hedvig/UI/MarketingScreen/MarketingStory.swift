@@ -21,6 +21,8 @@ enum AssetType {
 struct MarketingStory: Decodable, Hashable {
     var assetURL: String?
     var assetMimeType: String?
+    var duration: TimeInterval
+    var id: String
 
     func cacheData() -> Future<Void> {
         return Future<Void> { completion in
@@ -119,6 +121,8 @@ struct MarketingStory: Decodable, Hashable {
     init(apollo marketingStoryData: MarketingStoriesQuery.Data.MarketingStory) {
         assetURL = marketingStoryData.asset?.url
         assetMimeType = marketingStoryData.asset?.mimeType
+        duration = marketingStoryData.duration ?? 0
+        id = marketingStoryData.id
     }
 }
 

@@ -26,10 +26,23 @@ extension Marketing: Presentable {
         containerView.backgroundColor = HedvigColors.white
         viewController.view = containerView
 
-        let stories = Stories(
-            client: client
-        )
-        bag += containerView.add(stories)
+        bag += client.fetch(query: MarketingStoriesQuery()).onValue { result in
+            guard let data = result.data else { return }
+            let rows = data.marketingStories.map({ (marketingStoryData) -> MarketingStory in
+                MarketingStory(apollo: marketingStoryData!)
+            })
+
+            let rowsSignal = ReadWriteSignal<[MarketingStory]>(rows)
+
+            bag += rows.mapToFuture({ marketingStory in
+                marketingStory.cacheData()
+            }).onValue({ _ in
+                let stories = Stories(
+                    marketingStories: rowsSignal.readOnly()
+                )
+                bag += containerView.add(stories)
+            })
+        }
 
         return (viewController, bag)
     }
