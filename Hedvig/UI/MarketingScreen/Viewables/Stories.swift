@@ -6,7 +6,6 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
-import Apollo
 import Flow
 import Form
 import Foundation
