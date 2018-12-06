@@ -24,7 +24,7 @@ struct MarketingPresentationStyle {
             from: presentingViewController,
             options: .defaults
         )
-
+        
         if let navigationBar = viewController.navigationController?.navigationBar {
             navigationBar.isHidden = true
             navigationBar.barStyle = .black

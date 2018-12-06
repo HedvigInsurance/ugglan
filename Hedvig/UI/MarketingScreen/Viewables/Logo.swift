@@ -33,7 +33,11 @@ extension Logo: Viewable {
 
             view.snp.makeConstraints({ make in
                 guard let superview = view.superview else { return }
-                make.top.equalTo(superview.safeAreaLayoutGuide.snp.top).inset(5)
+                if #available(iOS 11.0, *) {
+                    make.top.equalTo(superview.safeAreaLayoutGuide.snp.top).inset(5)
+                } else {
+                    make.top.equalToSuperview().inset(5)
+                }
                 make.centerX.equalToSuperview()
                 make.width.equalToSuperview()
                 make.height.equalTo(50)

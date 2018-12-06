@@ -12,7 +12,9 @@ import Foundation
 import SnapKit
 import UIKit
 
-struct ExistingMemberButton {}
+struct ExistingMemberButton {
+    let onTap: () -> Void
+}
 
 extension ExistingMemberButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
@@ -40,6 +42,10 @@ extension ExistingMemberButton: Viewable {
             button,
             \.style
         )
+        
+        bag += button.on(event: .touchUpInside).onValue({ _ in
+            self.onTap()
+        })
 
         bag += events.wasAdded.onValue {
             button.snp.makeConstraints({ make in

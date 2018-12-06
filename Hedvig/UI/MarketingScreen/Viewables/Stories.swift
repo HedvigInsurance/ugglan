@@ -14,6 +14,7 @@ import UIKit
 
 struct Stories {
     let marketingStories: ReadSignal<[MarketingStory]>
+    let resultCallbacker: Callbacker<MarketingResult>
 }
 
 extension Stories: Viewable {
@@ -39,7 +40,9 @@ extension Stories: Viewable {
         }
         bag += view.add(storiesIndicator)
 
-        let memberActionButtons = MemberActionButtons()
+        let memberActionButtons = MemberActionButtons(
+            resultCallbacker: resultCallbacker
+        )
         bag += view.add(memberActionButtons)
 
         let skipToNextButton = SkipToNextButton {

@@ -204,11 +204,17 @@ extension StoriesIndicator: Viewable {
         bag += events.wasAdded.onValue {
             collectionKit.view.snp.makeConstraints({ make in
                 guard let superview = collectionKit.view.superview else { return }
-                let safeAreaLayoutGuide = superview.safeAreaLayoutGuide
+                
+                if #available(iOS 11.0, *) {
+                    let safeAreaLayoutGuide = superview.safeAreaLayoutGuide
+                    make.top.equalTo(safeAreaLayoutGuide.snp.top)
+                } else {
+                    make.top.equalToSuperview()
+                }
 
                 make.width.equalToSuperview()
                 make.height.equalTo(2.5)
-                make.top.equalTo(safeAreaLayoutGuide.snp.top)
+                
                 make.centerX.equalToSuperview().inset(2.5)
             })
         }

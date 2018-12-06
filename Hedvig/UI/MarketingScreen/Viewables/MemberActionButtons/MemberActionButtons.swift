@@ -12,7 +12,9 @@ import Foundation
 import SnapKit
 import UIKit
 
-struct MemberActionButtons {}
+struct MemberActionButtons {
+    let resultCallbacker: Callbacker<MarketingResult>
+}
 
 extension MemberActionButtons: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
@@ -22,10 +24,14 @@ extension MemberActionButtons: Viewable {
         view.alpha = 0
         view.transform = CGAffineTransform(translationX: 0, y: 15)
 
-        let existingMemberButton = ExistingMemberButton()
+        let existingMemberButton = ExistingMemberButton() {
+            self.resultCallbacker.callAll(with: .login)
+        }
         bag += view.add(existingMemberButton)
 
-        let newMemberButton = NewMemberButton()
+        let newMemberButton = NewMemberButton() {
+            self.resultCallbacker.callAll(with: .onboard)
+        }
         bag += view.add(newMemberButton)
 
         bag += events.wasAdded.delay(by: 0.75).animatedOnValue(style: AnimationStyle.easeOut(duration: 0.25)) {
@@ -38,7 +44,11 @@ extension MemberActionButtons: Viewable {
                 guard let superview = view.superview else { return }
                 make.width.equalToSuperview().inset(10)
                 make.centerX.equalToSuperview()
-                make.bottom.equalTo(superview.safeAreaLayoutGuide.snp.bottom)
+                if #available(iOS 11.0, *) {
+                    make.bottom.equalTo(superview.safeAreaLayoutGuide.snp.bottom)
+                } else {
+                    make.bottom.equalToSuperview()
+                }
                 make.height.equalTo(40)
             })
         }
