@@ -37,15 +37,15 @@ extension StoriesCollection: Viewable {
         collectionKit.view.bounces = false
         collectionKit.view.showsHorizontalScrollIndicator = false
         collectionKit.view.layer.cornerRadius = 10
-        
+
         if #available(iOS 10.0, *) {
             collectionKit.view.isPrefetchingEnabled = true
         }
-        
+
         if #available(iOS 11.0, *) {
             collectionKit.view.contentInsetAdjustmentBehavior = .never
         }
-        
+
         collectionKit.view.alpha = 0
         collectionKit.view.transform = CGAffineTransform(translationX: 0, y: 150)
 

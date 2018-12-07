@@ -42,7 +42,7 @@ extension ExistingMemberButton: Viewable {
             button,
             \.style
         )
-        
+
         bag += button.on(event: .touchUpInside).onValue({ _ in
             self.onTap()
         })

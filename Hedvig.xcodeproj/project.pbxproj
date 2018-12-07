@@ -80,6 +80,9 @@
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
 		EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */; };
 		EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */; };
+		EBECC26A21B9677800716BEA /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26921B9677800716BEA /* Chat.swift */; };
+		EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */; };
+		EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -171,6 +174,9 @@
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MessageSubscription.graphql; sourceTree = "<group>"; };
 		EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigApolloClient.swift; sourceTree = "<group>"; };
+		EBECC26921B9677800716BEA /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
+		EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPresentationStyle.swift; sourceTree = "<group>"; };
+		EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+addConstraint.swift"; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -257,6 +263,7 @@
 				EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */,
 				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
 				EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */,
+				EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -364,6 +371,8 @@
 				EB75E19521933BE3006B5CE4 /* Subviews */,
 				EB75E187219332AE006B5CE4 /* ChatViewController.swift */,
 				EB75E18B2193334F006B5CE4 /* ChatView.swift */,
+				EBECC26921B9677800716BEA /* Chat.swift */,
+				EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */,
 			);
 			path = ChatScreen;
 			sourceTree = "<group>";
@@ -779,9 +788,11 @@
 				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
+				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */,
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
+				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
@@ -808,6 +819,7 @@
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
+				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
 			);
@@ -969,6 +981,7 @@
 				DEVELOPMENT_TEAM = AW656G5PFM;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Hedvig/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -989,6 +1002,7 @@
 				DEVELOPMENT_TEAM = AW656G5PFM;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Hedvig/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

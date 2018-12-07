@@ -132,8 +132,7 @@ extension StoriesIndicator: Viewable {
         let timerBag = DisposeBag()
         bag += timerBag
 
-        bag += marketingStoryIndicatorsSignal
-            .withLatestFrom(currentFocusedStorySignal)
+        bag += combineLatest(marketingStoryIndicatorsSignal, currentFocusedStorySignal)
             .filter { (marketingStoryIndicators, currentFocusedStory) -> Bool in
                 guard let currentFocusedStory = currentFocusedStory else { return false }
                 guard let currentIndex = marketingStoryIndicators.firstIndex(
@@ -141,6 +140,7 @@ extension StoriesIndicator: Viewable {
                 ) else { return false }
                 return currentIndex < marketingStoryIndicators.count - 1
             }.onValue { _, currentFocusedStory in
+                timerBag.dispose()
                 timerBag += Signal(after: currentFocusedStory!.duration).onValue {
                     self.scrollTo(.next)
                 }
@@ -159,11 +159,10 @@ extension StoriesIndicator: Viewable {
                 let index = marketingStoryIndicators.firstIndex(of: currentFocusedStory!)!
                 let newIndex = direction == .next ? index + 1 : index - 1
 
-                timerBag.dispose()
-
                 if newIndex > marketingStoryIndicators.count - 1 || newIndex < 0 {
                     collectionKit.updateCurrentRow()
 
+                    timerBag.dispose()
                     timerBag += Signal(after: currentFocusedStory!.duration).onValue {
                         if newIndex < marketingStoryIndicators.count - 1 {
                             self.scrollTo(.next)
@@ -201,23 +200,12 @@ extension StoriesIndicator: Viewable {
             marketingStoryIndicatorsCallbacker.callAll(with: marketingStoryIndicators)
         }
 
-        bag += events.wasAdded.onValue {
-            collectionKit.view.snp.makeConstraints({ make in
-                guard let superview = collectionKit.view.superview else { return }
-                
-                if #available(iOS 11.0, *) {
-                    let safeAreaLayoutGuide = superview.safeAreaLayoutGuide
-                    make.top.equalTo(safeAreaLayoutGuide.snp.top)
-                } else {
-                    make.top.equalToSuperview()
-                }
-
-                make.width.equalToSuperview()
-                make.height.equalTo(2.5)
-                
-                make.centerX.equalToSuperview().inset(2.5)
-            })
-        }
+        bag += collectionKit.view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, safeArea in
+            make.top.equalTo(safeArea.snp.top)
+            make.width.equalToSuperview()
+            make.height.equalTo(2.5)
+            make.centerX.equalToSuperview().inset(2.5)
+        })
 
         return (collectionKit.view, bag)
     }

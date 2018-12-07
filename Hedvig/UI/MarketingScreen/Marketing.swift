@@ -34,16 +34,21 @@ extension Marketing: Presentable {
             let resultCallbacker = Callbacker<MarketingResult>()
             bag += resultCallbacker.signal().onValue({ marketingResult in
                 completion(.success(marketingResult))
+
+                let chat = Chat()
+                let chatPresentation = Presentation(chat, style: .chat, options: [.defaults, .prefersNavigationBarHidden(false)])
+
+                viewController.present(chatPresentation)
             })
-            
+
             bag += self.client.fetch(query: MarketingStoriesQuery()).onValue { result in
                 guard let data = result.data else { return }
                 let rows = data.marketingStories.map({ (marketingStoryData) -> MarketingStory in
                     MarketingStory(apollo: marketingStoryData!)
                 })
-                
+
                 let rowsSignal = ReadWriteSignal<[MarketingStory]>(rows)
-                
+
                 bag += rows.mapToFuture({ marketingStory in
                     marketingStory.cacheData()
                 }).onValue({ _ in
@@ -54,8 +59,8 @@ extension Marketing: Presentable {
                     bag += containerView.add(stories)
                 })
             }
-            
-            return bag
+
+            return NilDisposer()
         })
     }
 }

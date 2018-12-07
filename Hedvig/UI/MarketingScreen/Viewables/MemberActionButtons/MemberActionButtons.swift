@@ -24,12 +24,12 @@ extension MemberActionButtons: Viewable {
         view.alpha = 0
         view.transform = CGAffineTransform(translationX: 0, y: 15)
 
-        let existingMemberButton = ExistingMemberButton() {
+        let existingMemberButton = ExistingMemberButton {
             self.resultCallbacker.callAll(with: .login)
         }
         bag += view.add(existingMemberButton)
 
-        let newMemberButton = NewMemberButton() {
+        let newMemberButton = NewMemberButton {
             self.resultCallbacker.callAll(with: .onboard)
         }
         bag += view.add(newMemberButton)

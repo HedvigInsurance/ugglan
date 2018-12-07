@@ -29,10 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let marketingPresentation = Presentation(
                 marketing,
                 style: .marketing,
-                options: .unanimated
-            ) { (_: Marketing.Matter, _: DisposeBag) -> Void in
-                return ()
-            }
+                options: .defaults
+            ).onValue({ _ in
+                // self.bag += self.navigationController.present(chatPresentation)
+            })
 
             self.bag += self.navigationController.present(marketingPresentation)
             self.window.makeKeyAndVisible()
