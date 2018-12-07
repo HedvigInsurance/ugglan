@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/HedvigInsurance/ugglan.git' }
 
   s.ios.deployment_target = '9.0'
-  s.source_files = '**/*.swift'
+  s.source_files = 'Hedvig/**/*.swift'
   s.swift_version = '4.2'
   s.resources = "Hedvig/Assets/*.xcassets"
 
