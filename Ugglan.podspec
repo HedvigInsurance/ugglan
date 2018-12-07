@@ -10,6 +10,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '9.0'
   s.source_files = '**/*.swift'
   s.swift_version = '4.2'
+  s.resources = "Hedvig/Assets/*.xcassets"
 
   s.dependency 'Tempura'
   s.dependency 'PinLayout'
