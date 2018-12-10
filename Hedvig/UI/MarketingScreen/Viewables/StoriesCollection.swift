@@ -46,9 +46,6 @@ extension StoriesCollection: Viewable {
             collectionKit.view.contentInsetAdjustmentBehavior = .never
         }
 
-        collectionKit.view.alpha = 0
-        collectionKit.view.transform = CGAffineTransform(translationX: 0, y: 150)
-
         bag += collectionKit.delegate.sizeForItemAt.set({ (_) -> CGSize in
             collectionKit.view.frame.size
         })
@@ -74,13 +71,6 @@ extension StoriesCollection: Viewable {
 
         bag += marketingStories.atOnce().onValue { rows in
             collectionKit.set(Table(rows: rows))
-        }
-
-        bag += events.wasAdded.delay(by: 0.5).animatedOnValue(
-            style: AnimationStyle.easeOut(duration: 0.25)
-        ) {
-            collectionKit.view.transform = CGAffineTransform.identity
-            collectionKit.view.alpha = 1
         }
 
         bag += events.wasAdded.onValue {

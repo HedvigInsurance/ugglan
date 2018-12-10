@@ -26,6 +26,7 @@ struct HedvigColors {
     static let pink = UIColor(red: 1.00, green: 0.54, blue: 0.50, alpha: 1.0)
     static let grayBorder = HedvigColors.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
 
+    // swiftlint:disable cyclomatic_complexity
     static func from(apollo color: HedvigColor) -> UIColor {
         switch color {
         case .pink:
@@ -56,4 +57,6 @@ struct HedvigColors {
             return UIColor.white
         }
     }
+
+    // swiftlint:enable cyclomatic_complexity
 }

@@ -21,7 +21,10 @@ struct ViewableEvents {
     let removeAfter = Delegate<Void, TimeInterval>()
     let willRemove: Signal<Void>
 
-    init(wasAddedCallbacker: Callbacker<Void>, willRemoveCallbacker: Callbacker<Void>) {
+    init(
+        wasAddedCallbacker: Callbacker<Void>,
+        willRemoveCallbacker: Callbacker<Void>
+    ) {
         wasAdded = wasAddedCallbacker.signal()
         willRemove = willRemoveCallbacker.signal()
     }

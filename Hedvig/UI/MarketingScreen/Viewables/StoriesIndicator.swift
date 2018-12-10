@@ -15,6 +15,7 @@ import UIKit
 struct StoriesIndicator {
     let scrollToSignal: Signal<ScrollTo>
     let marketingStories: ReadSignal<[MarketingStory]>
+    let endScreenCallbacker: Callbacker<Void>
     let scrollTo: (_ direction: ScrollTo) -> Void
 }
 
@@ -158,6 +159,12 @@ extension StoriesIndicator: Viewable {
                 let (marketingStoryIndicators, currentFocusedStory) = latestFrom
                 let index = marketingStoryIndicators.firstIndex(of: currentFocusedStory!)!
                 let newIndex = direction == .next ? index + 1 : index - 1
+
+                if newIndex > marketingStoryIndicators.count - 1 {
+                    collectionKit.updateCurrentRow()
+                    self.endScreenCallbacker.callAll()
+                    return
+                }
 
                 if newIndex > marketingStoryIndicators.count - 1 || newIndex < 0 {
                     collectionKit.updateCurrentRow()

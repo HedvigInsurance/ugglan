@@ -5,6 +5,8 @@ target 'Hedvig' do
   inhibit_all_warnings!
 
   # Pods for Hedvig
+  pod 'INTUAnimationEngine'
+  pod 'lottie-ios'
   pod 'Tempura'
   pod 'PinLayout'
   pod 'SwiftLint'

@@ -23,6 +23,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         window.rootViewController = navigationController
 
+        let launch = Launch()
+
+        let launchPresentation = Presentation(
+            launch,
+            style: .modally(
+                presentationStyle: .overCurrentContext,
+                transitionStyle: .none,
+                capturesStatusBarAppearance: true
+            ),
+            options: [.unanimated, .prefersNavigationBarHidden(true)]
+        )
+
+        bag += navigationController.present(launchPresentation)
+        window.makeKeyAndVisible()
+
         HedvigApolloClient.shared.initClient().onValue { client in
             let marketing = Marketing(client: client)
 
@@ -35,7 +50,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             })
 
             self.bag += self.navigationController.present(marketingPresentation)
-            self.window.makeKeyAndVisible()
         }
 
         return true

@@ -34,7 +34,9 @@ extension MemberActionButtons: Viewable {
         }
         bag += view.add(newMemberButton)
 
-        bag += events.wasAdded.delay(by: 0.75).animatedOnValue(style: AnimationStyle.easeOut(duration: 0.25)) {
+        _ = view.didMoveToWindowSignal.delay(by: 0.75).animated(
+            style: AnimationStyle.easeOut(duration: 0.25)
+        ) {
             view.alpha = 1
             view.transform = CGAffineTransform.identity
         }

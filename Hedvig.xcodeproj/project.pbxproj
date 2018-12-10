@@ -83,6 +83,11 @@
 		EBECC26A21B9677800716BEA /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26921B9677800716BEA /* Chat.swift */; };
 		EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */; };
 		EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */; };
+		EBECC27421BA86F000716BEA /* MarketingEndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27321BA86F000716BEA /* MarketingEndScreen.swift */; };
+		EBECC27721BA8AB400716BEA /* End.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27621BA8AB400716BEA /* End.swift */; };
+		EBECC27921BAAACA00716BEA /* EndText.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27821BAAACA00716BEA /* EndText.swift */; };
+		EBECC27B21BD372B00716BEA /* Launch.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27A21BD372B00716BEA /* Launch.swift */; };
+		EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +182,11 @@
 		EBECC26921B9677800716BEA /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPresentationStyle.swift; sourceTree = "<group>"; };
 		EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+addConstraint.swift"; sourceTree = "<group>"; };
+		EBECC27321BA86F000716BEA /* MarketingEndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingEndScreen.swift; sourceTree = "<group>"; };
+		EBECC27621BA8AB400716BEA /* End.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = End.swift; sourceTree = "<group>"; };
+		EBECC27821BAAACA00716BEA /* EndText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndText.swift; sourceTree = "<group>"; };
+		EBECC27A21BD372B00716BEA /* Launch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Launch.swift; sourceTree = "<group>"; };
+		EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpringAnimationStyle.swift; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -231,6 +241,7 @@
 				EB989BAA21AB212F00C6FFA5 /* Marketing.swift */,
 				EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */,
 				EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */,
+				EBECC27321BA86F000716BEA /* MarketingEndScreen.swift */,
 			);
 			path = MarketingScreen;
 			sourceTree = "<group>";
@@ -264,6 +275,7 @@
 				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
 				EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */,
 				EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */,
+				EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -358,6 +370,7 @@
 		EB75E1852193328E006B5CE4 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				EBECC27C21BD373100716BEA /* LaunchScreen */,
 				EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */,
 				EB328E6C21989BCB00CF0624 /* Generic */,
 				EB75E18621933298006B5CE4 /* ChatScreen */,
@@ -440,6 +453,8 @@
 				EB7FEAB921B441F50027C9DE /* StoriesCollection.swift */,
 				EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */,
 				EB7FEAC221B56B860027C9DE /* Logo.swift */,
+				EBECC27621BA8AB400716BEA /* End.swift */,
+				EBECC27821BAAACA00716BEA /* EndText.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -484,6 +499,14 @@
 				EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		EBECC27C21BD373100716BEA /* LaunchScreen */ = {
+			isa = PBXGroup;
+			children = (
+				EBECC27A21BD372B00716BEA /* Launch.swift */,
+			);
+			path = LaunchScreen;
 			sourceTree = "<group>";
 		};
 		F42E0389CDD3147AF74CFD44 /* Frameworks */ = {
@@ -630,6 +653,7 @@
 				"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework",
 				"${BUILT_PRODUCTS_DIR}/FlowOn/FlowOn.framework",
 				"${BUILT_PRODUCTS_DIR}/FormFramework/Form.framework",
+				"${BUILT_PRODUCTS_DIR}/INTUAnimationEngine/INTUAnimationEngine.framework",
 				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
 				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/PresentationFramework/Presentation.framework",
@@ -637,6 +661,7 @@
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
 				"${BUILT_PRODUCTS_DIR}/UICollectionView+AnimatedScroll/UICollectionView_AnimatedScroll.framework",
+				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -647,6 +672,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowOn.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Form.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/INTUAnimationEngine.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Presentation.framework",
@@ -654,6 +680,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UICollectionView_AnimatedScroll.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -770,6 +797,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */,
+				EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */,
 				EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */,
 				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
@@ -797,6 +825,7 @@
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
+				EBECC27921BAAACA00716BEA /* EndText.swift in Sources */,
 				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
@@ -804,6 +833,7 @@
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
+				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EB7FEAA421B068760027C9DE /* NewMemberButton.swift in Sources */,
@@ -813,8 +843,10 @@
 				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
 				EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift in Sources */,
 				EB7FEAB521B180600027C9DE /* Stories.swift in Sources */,
+				EBECC27421BA86F000716BEA /* MarketingEndScreen.swift in Sources */,
 				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
+				EBECC27B21BD372B00716BEA /* Launch.swift in Sources */,
 				EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,

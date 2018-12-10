@@ -36,9 +36,29 @@ extension Marketing: Presentable {
                 completion(.success(marketingResult))
 
                 let chat = Chat()
-                let chatPresentation = Presentation(chat, style: .chat, options: [.defaults, .prefersNavigationBarHidden(false)])
+                let chatPresentation = Presentation(
+                    chat,
+                    style: .chat,
+                    options: [.defaults, .prefersNavigationBarHidden(false)]
+                )
 
                 viewController.present(chatPresentation)
+            })
+
+            let endScreenCallbacker = Callbacker<Void>()
+
+            bag += endScreenCallbacker.signal().onValue({ _ in
+                let marketingEnd = MarketingEnd()
+                let marketingEndPresentation = Presentation(
+                    marketingEnd,
+                    style: .modally(
+                        presentationStyle: .overCurrentContext,
+                        transitionStyle: .crossDissolve,
+                        capturesStatusBarAppearance: false
+                    ),
+                    options: [.defaults, .prefersNavigationBarHidden(true)]
+                )
+                bag += viewController.present(marketingEndPresentation)
             })
 
             bag += self.client.fetch(query: MarketingStoriesQuery()).onValue { result in
@@ -54,7 +74,8 @@ extension Marketing: Presentable {
                 }).onValue({ _ in
                     let stories = Stories(
                         marketingStories: rowsSignal.readOnly(),
-                        resultCallbacker: resultCallbacker
+                        resultCallbacker: resultCallbacker,
+                        endScreenCallbacker: endScreenCallbacker
                     )
                     bag += containerView.add(stories)
                 })

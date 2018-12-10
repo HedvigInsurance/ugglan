@@ -8,6 +8,7 @@
 
 import Flow
 import Foundation
+import INTUAnimationEngine
 
 extension SignalProvider {
     func bindTo<T>(
@@ -45,7 +46,12 @@ extension SignalProvider {
         return bag
     }
 
-    func animatedOnValue(style: AnimationStyle, animateClosure: @escaping () -> Void) -> Disposable {
+    func animated(
+        style: AnimationStyle,
+        animateClosure: @escaping () -> Void
+    ) -> Signal<Void> {
+        let callbacker = Callbacker<Void>()
+
         let bag = DisposeBag()
 
         bag += onValue { _ in
@@ -54,10 +60,38 @@ extension SignalProvider {
                 delay: style.delay,
                 options: style.options,
                 animations: animateClosure,
-                completion: nil
+                completion: { _ in
+                    bag.dispose()
+                    callbacker.callAll()
+                }
             )
         }
 
-        return bag
+        return callbacker.signal()
+    }
+
+    func animated(
+        style: SpringAnimationStyle,
+        animateClosure: @escaping (_ progress: CGFloat) -> Void
+    ) -> Signal<Void> {
+        let callbacker = Callbacker<Void>()
+
+        let bag = DisposeBag()
+
+        bag += onValue { _ in
+            INTUAnimationEngine.animate(
+                withDamping: style.damping,
+                stiffness: style.stiffness,
+                mass: style.mass,
+                delay: style.delay,
+                animations: animateClosure,
+                completion: { _ in
+                    bag.dispose()
+                    callbacker.callAll()
+                }
+            )
+        }
+
+        return callbacker.signal()
     }
 }

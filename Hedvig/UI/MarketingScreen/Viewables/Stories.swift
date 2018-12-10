@@ -15,6 +15,7 @@ import UIKit
 struct Stories {
     let marketingStories: ReadSignal<[MarketingStory]>
     let resultCallbacker: Callbacker<MarketingResult>
+    let endScreenCallbacker: Callbacker<Void>
 }
 
 extension Stories: Viewable {
@@ -34,7 +35,8 @@ extension Stories: Viewable {
 
         let storiesIndicator = StoriesIndicator(
             scrollToSignal: scrollToSignal,
-            marketingStories: marketingStories
+            marketingStories: marketingStories,
+            endScreenCallbacker: endScreenCallbacker
         ) { direction in
             scrollToCallbacker.callAll(with: direction)
         }
