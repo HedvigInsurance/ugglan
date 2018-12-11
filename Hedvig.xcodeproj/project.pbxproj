@@ -85,7 +85,6 @@
 		EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */; };
 		EBECC27421BA86F000716BEA /* MarketingEndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27321BA86F000716BEA /* MarketingEndScreen.swift */; };
 		EBECC27721BA8AB400716BEA /* End.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27621BA8AB400716BEA /* End.swift */; };
-		EBECC27921BAAACA00716BEA /* EndText.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27821BAAACA00716BEA /* EndText.swift */; };
 		EBECC27B21BD372B00716BEA /* Launch.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27A21BD372B00716BEA /* Launch.swift */; };
 		EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */; };
 /* End PBXBuildFile section */
@@ -184,7 +183,6 @@
 		EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+addConstraint.swift"; sourceTree = "<group>"; };
 		EBECC27321BA86F000716BEA /* MarketingEndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingEndScreen.swift; sourceTree = "<group>"; };
 		EBECC27621BA8AB400716BEA /* End.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = End.swift; sourceTree = "<group>"; };
-		EBECC27821BAAACA00716BEA /* EndText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndText.swift; sourceTree = "<group>"; };
 		EBECC27A21BD372B00716BEA /* Launch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Launch.swift; sourceTree = "<group>"; };
 		EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpringAnimationStyle.swift; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -454,7 +452,6 @@
 				EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */,
 				EB7FEAC221B56B860027C9DE /* Logo.swift */,
 				EBECC27621BA8AB400716BEA /* End.swift */,
-				EBECC27821BAAACA00716BEA /* EndText.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -653,7 +650,6 @@
 				"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework",
 				"${BUILT_PRODUCTS_DIR}/FlowOn/FlowOn.framework",
 				"${BUILT_PRODUCTS_DIR}/FormFramework/Form.framework",
-				"${BUILT_PRODUCTS_DIR}/INTUAnimationEngine/INTUAnimationEngine.framework",
 				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
 				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/PresentationFramework/Presentation.framework",
@@ -672,7 +668,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowOn.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Form.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/INTUAnimationEngine.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Presentation.framework",
@@ -825,7 +820,6 @@
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
-				EBECC27921BAAACA00716BEA /* EndText.swift in Sources */,
 				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,

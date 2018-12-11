@@ -8,7 +8,6 @@
 
 import Flow
 import Foundation
-import INTUAnimationEngine
 import UIKit
 
 struct End {}
@@ -49,10 +48,9 @@ extension End: Viewable {
 
         _ = view.didMoveToWindowSignal.delay(by: 0.1).animated(
             style: SpringAnimationStyle.lightBounce()
-        ) { progress in
-            view.alpha = INTUInterpolateCGFloat(0, 1, progress)
-            let translateY = INTUInterpolateCGFloat(250, 0, progress)
-            view.transform = CGAffineTransform(translationX: 0, y: translateY)
+        ) {
+            view.alpha = 1
+            view.transform = CGAffineTransform(translationX: 0, y: 0)
         }
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in

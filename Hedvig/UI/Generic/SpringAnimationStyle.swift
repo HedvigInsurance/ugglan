@@ -10,15 +10,15 @@ import Foundation
 import UIKit
 
 struct SpringAnimationStyle {
+    var duration: TimeInterval
     var damping: CGFloat
-    var stiffness: CGFloat
-    var mass: CGFloat
+    var velocity: CGFloat
     var delay: TimeInterval
 
-    init(damping: CGFloat, stiffness: CGFloat, mass: CGFloat, delay: TimeInterval) {
+    init(duration: TimeInterval, damping: CGFloat, velocity: CGFloat, delay: TimeInterval) {
+        self.duration = duration
         self.damping = damping
-        self.stiffness = stiffness
-        self.mass = mass
+        self.velocity = velocity
         self.delay = delay
     }
 }
@@ -26,9 +26,9 @@ struct SpringAnimationStyle {
 extension SpringAnimationStyle {
     static func lightBounce(delay: TimeInterval = 0) -> SpringAnimationStyle {
         return SpringAnimationStyle(
+            duration: 0.5,
             damping: 30,
-            stiffness: 300,
-            mass: 0.7,
+            velocity: 1,
             delay: delay
         )
     }

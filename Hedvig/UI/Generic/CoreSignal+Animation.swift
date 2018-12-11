@@ -8,7 +8,6 @@
 
 import Flow
 import Foundation
-import INTUAnimationEngine
 
 extension SignalProvider {
     func bindTo<T>(
@@ -72,18 +71,19 @@ extension SignalProvider {
 
     func animated(
         style: SpringAnimationStyle,
-        animateClosure: @escaping (_ progress: CGFloat) -> Void
+        animateClosure: @escaping () -> Void
     ) -> Signal<Void> {
         let callbacker = Callbacker<Void>()
 
         let bag = DisposeBag()
 
         bag += onValue { _ in
-            INTUAnimationEngine.animate(
-                withDamping: style.damping,
-                stiffness: style.stiffness,
-                mass: style.mass,
+            UIView.animate(
+                withDuration: style.duration,
                 delay: style.delay,
+                usingSpringWithDamping: style.damping,
+                initialSpringVelocity: style.velocity,
+                options: [],
                 animations: animateClosure,
                 completion: { _ in
                     bag.dispose()
