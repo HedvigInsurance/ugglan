@@ -43,16 +43,14 @@ extension Launch: Presentable {
             bag += containerView.didMoveToWindowSignal.delay(
                 by: 0.6
             ).animated(
-                style: SpringAnimationStyle.lightBounce()
-            ) { progress in
-                let scale = INTUInterpolateCGFloat(1, 0.9, progress)
-                animationView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                style: AnimationStyle.easeOut(duration: 0.5)
+            ) {
+                animationView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             }.animated(
-                style: SpringAnimationStyle.lightBounce()
-            ) { progress in
-                containerView.alpha = INTUInterpolateCGFloat(1, 0, progress)
-                let scale = INTUInterpolateCGFloat(0.9, 1.3, progress)
-                animationView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                style: AnimationStyle.easeOut(duration: 0.5)
+            ) {
+                containerView.alpha = 0
+                animationView.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
             }.onValue { _ in
                 completion(.success(()))
             }
