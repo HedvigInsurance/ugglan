@@ -130,65 +130,86 @@ struct MarketingStory: Decodable, Hashable {
     }
 }
 
-extension MarketingStory: Reusable {
-    static func makeAndConfigure() -> (make: UIView, configure: (MarketingStory) -> Disposable) {
-        let view = UIView()
-        view.layer.shouldRasterize = true
-        view.layer.rasterizationScale = UIScreen.main.scale
+class MarketingStoryVideoCell: UICollectionViewCell {
+    let videoPlayerLayer = AVPlayerLayer()
+    let videoPlayer = AVPlayer()
 
-        let videoPlayerLayer = AVPlayerLayer()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         videoPlayerLayer.videoGravity = .resizeAspectFill
+        videoPlayer.isMuted = true
+    }
 
-        let imageView = UIImageView()
+    func play(marketingStory: MarketingStory) {
+        backgroundColor = HedvigColors.from(
+            apollo: marketingStory.backgroundColor
+        )
+
+        videoPlayerLayer.frame = bounds
+        layer.addSublayer(videoPlayerLayer)
+
+        DispatchQueue.global(qos: .background).async {
+            guard let playerAsset = marketingStory.playerAsset() else { return }
+
+            let playerItem = AVPlayerItem(asset: playerAsset)
+            self.videoPlayer.replaceCurrentItem(with: playerItem)
+            self.videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+            self.videoPlayerLayer.player = self.videoPlayer
+
+            if #available(iOS 10.0, *) {
+                self.videoPlayer.playImmediately(atRate: 1)
+            } else {
+                self.videoPlayer.play()
+            }
+        }
+    }
+
+    func restart() {
+        videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+
+        if #available(iOS 10.0, *) {
+            self.videoPlayer.playImmediately(atRate: 1)
+        } else {
+            videoPlayer.play()
+        }
+    }
+
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class MarketingStoryImageCell: UICollectionViewCell {
+    let imageView = UIImageView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+    }
 
-        return (view, { marketingStory in
-            let bag = DisposeBag()
-            guard let mimeType = marketingStory.assetMimeType else { return bag }
+    func show(marketingStory: MarketingStory) {
+        backgroundColor = HedvigColors.from(
+            apollo: marketingStory.backgroundColor
+        )
 
-            view.backgroundColor = HedvigColors.from(apollo: marketingStory.backgroundColor)
-
-            if mimeType.contains("video") {
-                imageView.removeFromSuperview()
-
-                videoPlayerLayer.frame = view.bounds
-                view.layer.addSublayer(videoPlayerLayer)
-
-                DispatchQueue.global(qos: .background).async {
-                    guard let playerAsset = marketingStory.playerAsset() else { return }
-
-                    playerAsset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: {
-                        let playerItem = AVPlayerItem(asset: playerAsset)
-
-                        let videoPlayer = AVPlayer(playerItem: playerItem)
-                        videoPlayer.isMuted = true
-                        videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-                        videoPlayerLayer.player = videoPlayer
-
-                        videoPlayer.play()
-                    })
-                }
-            } else if mimeType.contains("image") {
-                videoPlayerLayer.removeFromSuperlayer()
-
-                DispatchQueue.global(qos: .background).async {
-                    guard let image = marketingStory.imageAsset() else { return }
-                    DispatchQueue.main.async {
-                        imageView.image = image
-                    }
-                }
-
-                view.addSubview(imageView)
-
-                imageView.snp.makeConstraints { make in
-                    make.width.equalTo(view)
-                    make.height.equalTo(view)
-                    make.center.equalTo(view)
-                }
+        DispatchQueue.global(qos: .background).async {
+            guard let image = marketingStory.imageAsset() else { return }
+            DispatchQueue.main.async {
+                self.imageView.image = image
             }
+        }
 
-            return bag
-        })
+        addSubview(imageView)
+
+        imageView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalToSuperview()
+            make.center.equalToSuperview()
+        }
+    }
+
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

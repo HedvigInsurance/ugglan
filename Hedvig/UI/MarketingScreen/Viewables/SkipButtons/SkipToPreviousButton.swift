@@ -29,8 +29,8 @@ extension SkipToPreviousButton: Viewable {
 
         bag += events.wasAdded.onValue {
             button.snp.makeConstraints({ make in
-                make.width.equalTo(50)
-                make.height.equalToSuperview().inset(30)
+                make.width.equalToSuperview().multipliedBy(0.25)
+                make.height.equalToSuperview().inset(50)
                 make.top.equalToSuperview()
                 make.left.equalToSuperview()
             })

@@ -33,21 +33,7 @@ extension CollectionKit {
         return currentIndex() != 0
     }
 
-    func hasNextRow() -> Bool {
-        return currentIndex() + 1 < table.count
-    }
-
     func updateCurrentRow() {
         updateRowAtIndex(index: currentIndex())
-    }
-
-    func updateRowBeforeCurrent() {
-        let index = currentIndex() - 1
-        updateRowAtIndex(index: index)
-    }
-
-    func updateRowAfterCurrent() {
-        let index = currentIndex() + 1
-        updateRowAtIndex(index: index)
     }
 }

@@ -161,7 +161,6 @@ extension StoriesIndicator: Viewable {
                 let newIndex = direction == .next ? index + 1 : index - 1
 
                 if newIndex > marketingStoryIndicators.count - 1 {
-                    collectionKit.updateCurrentRow()
                     self.endScreenCallbacker.callAll()
                     return
                 }

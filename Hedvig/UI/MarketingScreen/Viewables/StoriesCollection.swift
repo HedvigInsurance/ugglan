@@ -29,7 +29,38 @@ extension StoriesCollection: Viewable {
         let collectionKit = CollectionKit<EmptySection, MarketingStory>(
             table: Table(),
             layout: flowLayout,
-            bag: bag
+            bag: bag,
+            cellForRow: { collectionView, marketingStory, index in
+                if marketingStory.assetType() == .video {
+                    collectionView.register(
+                        MarketingStoryVideoCell.self,
+                        forCellWithReuseIdentifier: "MarketingStoryVideoCell"
+                    )
+
+                    let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: "MarketingStoryVideoCell",
+                        for: IndexPath(row: index.row, section: index.section)
+                    ) as? MarketingStoryVideoCell
+
+                    cell?.play(marketingStory: marketingStory)
+
+                    return cell ?? MarketingStoryVideoCell()
+                }
+
+                collectionView.register(
+                    MarketingStoryImageCell.self,
+                    forCellWithReuseIdentifier: "MarketingStoryImageCell"
+                )
+
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "MarketingStoryImageCell",
+                    for: IndexPath(row: index.row, section: index.section)
+                ) as? MarketingStoryImageCell
+
+                cell?.show(marketingStory: marketingStory)
+
+                return cell ?? MarketingStoryImageCell()
+            }
         )
 
         collectionKit.view.backgroundColor = HedvigColors.white
@@ -50,22 +81,25 @@ extension StoriesCollection: Viewable {
             collectionKit.view.frame.size
         })
 
+        bag += collectionKit.delegate.willDisplayCell.onValue({ cell in
+            if let cell = cell as? MarketingStoryVideoCell {
+                cell.restart()
+            }
+        })
+
         bag += scrollToSignal.onValue { direction in
             switch direction {
             case .previous:
                 if collectionKit.hasPreviousRow() {
-                    collectionKit.updateRowBeforeCurrent()
                     collectionKit.scrollToPreviousItem()
                 } else {
-                    collectionKit.updateCurrentRow()
+                    let cell = collectionKit.view.cellForItem(
+                        at: IndexPath(row: 0, section: 0)
+                    ) as? MarketingStoryVideoCell
+                    cell?.restart()
                 }
             case .next:
-                if collectionKit.hasNextRow() {
-                    collectionKit.updateRowAfterCurrent()
-                    collectionKit.scrollToNextItem()
-                } else {
-                    collectionKit.updateCurrentRow()
-                }
+                collectionKit.scrollToNextItem()
             }
         }
 
