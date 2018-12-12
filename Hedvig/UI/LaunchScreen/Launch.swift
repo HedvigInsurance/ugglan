@@ -8,9 +8,12 @@
 
 import Flow
 import Foundation
-import Lottie
 import Presentation
 import UIKit
+
+#if canImport(Lottie)
+    import Lottie
+#endif
 
 struct Launch {}
 
