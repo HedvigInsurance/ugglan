@@ -23,7 +23,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         window.rootViewController = navigationController
 
-        let launch = Launch()
+        
+        let hasLoadedCallbacker = Callbacker<Void>()
+        
+        let launch = Launch(
+            hasLoadedSignal: hasLoadedCallbacker.signal()
+        )
+        
+        hasLoadedCallbacker.callAll()
 
         let launchPresentation = Presentation(
             launch,
