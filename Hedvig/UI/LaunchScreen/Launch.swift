@@ -15,7 +15,9 @@ import UIKit
     import Lottie
 #endif
 
-struct Launch {}
+struct Launch {
+    let hasLoadedSignal: Signal<Void>
+}
 
 extension Launch: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
@@ -37,24 +39,28 @@ extension Launch: Presentable {
             make.centerX.equalToSuperview().offset(-1)
             make.centerY.equalToSuperview().offset(-21)
         }
-
-        animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
+        
+        animationView.play(fromProgress: 1, toProgress: 1, withCompletion: nil)
 
         return (viewController, Future { completion in
-
-            bag += containerView.didMoveToWindowSignal.delay(
+            
+            bag += self.hasLoadedSignal.onValue({ _ in
+                animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
+            })
+            
+            bag += self.hasLoadedSignal.delay(
                 by: 0.6
-            ).animated(
-                style: AnimationStyle.easeOut(duration: 0.5)
-            ) {
-                animationView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            }.animated(
-                style: AnimationStyle.easeOut(duration: 0.5)
-            ) {
-                containerView.alpha = 0
-                animationView.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            }.onValue { _ in
-                completion(.success(()))
+                ).animated(
+                    style: AnimationStyle.easeOut(duration: 0.5)
+                ) {
+                    animationView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+                }.animated(
+                    style: AnimationStyle.easeOut(duration: 0.5)
+                ) {
+                    containerView.alpha = 0
+                    animationView.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+                }.onValue { _ in
+                    completion(.success(()))
             }
 
             return bag
