@@ -89,7 +89,7 @@ CHECKOUT OPTIONS:
     :commit: da2791cefffed3d3157d5ab1e731956d4aa415ae
     :git: https://github.com/HedvigInsurance/FlowOn.git
   FormFramework:
-    :commit: 48c8a4d84b2d3ed8e256add046cb681d7e2b4073
+    :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
   "UICollectionView+AnimatedScroll":
     :commit: b5a5e2b7f95713e74c0bfb623a99429b0489fa1f

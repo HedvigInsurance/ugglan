@@ -81,7 +81,7 @@ extension StoriesCollection: Viewable {
             collectionKit.view.frame.size
         })
 
-        bag += collectionKit.delegate.willDisplayCell.onValue({ cell in
+        bag += collectionKit.delegate.willDisplayCell.onValue({ cell, _ in
             if let cell = cell as? MarketingStoryVideoCell {
                 cell.restart()
             }

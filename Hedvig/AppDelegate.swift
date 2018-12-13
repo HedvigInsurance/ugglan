@@ -23,14 +23,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         window.rootViewController = navigationController
 
-        
         let hasLoadedCallbacker = Callbacker<Void>()
-        
+
         let launch = Launch(
             hasLoadedSignal: hasLoadedCallbacker.signal()
         )
-        
-        hasLoadedCallbacker.callAll()
 
         let launchPresentation = Presentation(
             launch,
@@ -57,6 +54,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             })
 
             self.bag += self.navigationController.present(marketingPresentation)
+
+            hasLoadedCallbacker.callAll()
         }
 
         return true
