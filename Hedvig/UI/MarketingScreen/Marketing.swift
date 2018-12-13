@@ -29,20 +29,11 @@ extension Marketing: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = HedvigColors.white
         viewController.view = containerView
-
+        
         return (viewController, Future { completion in
             let resultCallbacker = Callbacker<MarketingResult>()
             bag += resultCallbacker.signal().onValue({ marketingResult in
                 completion(.success(marketingResult))
-
-                let chat = Chat()
-                let chatPresentation = Presentation(
-                    chat,
-                    style: .chat,
-                    options: [.defaults, .prefersNavigationBarHidden(false)]
-                )
-
-                viewController.present(chatPresentation)
             })
 
             let endScreenCallbacker = Callbacker<Void>()
@@ -81,7 +72,11 @@ extension Marketing: Presentable {
                 })
             }
 
-            return NilDisposer()
+            return Disposer {
+                bag += Signal(after: 1).onValue({ _ in
+                    bag.dispose()
+                })
+            }
         })
     }
 }
