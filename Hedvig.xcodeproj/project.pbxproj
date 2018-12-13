@@ -87,6 +87,8 @@
 		EBECC27721BA8AB400716BEA /* End.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27621BA8AB400716BEA /* End.swift */; };
 		EBECC27B21BD372B00716BEA /* Launch.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC27A21BD372B00716BEA /* Launch.swift */; };
 		EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */; };
+		EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC37B21C2B60400716BEA /* MarketingStoryIndicatorCell.swift */; };
+		EBECC37E21C2B62B00716BEA /* MarketingStoryIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC37D21C2B62B00716BEA /* MarketingStoryIndicator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -185,6 +187,8 @@
 		EBECC27621BA8AB400716BEA /* End.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = End.swift; sourceTree = "<group>"; };
 		EBECC27A21BD372B00716BEA /* Launch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Launch.swift; sourceTree = "<group>"; };
 		EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpringAnimationStyle.swift; sourceTree = "<group>"; };
+		EBECC37B21C2B60400716BEA /* MarketingStoryIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryIndicatorCell.swift; sourceTree = "<group>"; };
+		EBECC37D21C2B62B00716BEA /* MarketingStoryIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryIndicator.swift; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -240,6 +244,8 @@
 				EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */,
 				EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */,
 				EBECC27321BA86F000716BEA /* MarketingEndScreen.swift */,
+				EBECC37B21C2B60400716BEA /* MarketingStoryIndicatorCell.swift */,
+				EBECC37D21C2B62B00716BEA /* MarketingStoryIndicator.swift */,
 			);
 			path = MarketingScreen;
 			sourceTree = "<group>";
@@ -809,6 +815,7 @@
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
+				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
@@ -822,6 +829,7 @@
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
 				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
+				EBECC37E21C2B62B00716BEA /* MarketingStoryIndicator.swift in Sources */,
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,

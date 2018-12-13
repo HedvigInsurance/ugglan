@@ -15,6 +15,7 @@ import UIKit
 struct StoriesCollection {
     let scrollToSignal: Signal<ScrollTo>
     let marketingStories: ReadSignal<[MarketingStory]>
+    let pausedCallbacker: Callbacker<Bool>
 }
 
 extension StoriesCollection: Viewable {
@@ -76,6 +77,20 @@ extension StoriesCollection: Viewable {
         if #available(iOS 11.0, *) {
             collectionKit.view.contentInsetAdjustmentBehavior = .never
         }
+
+        bag += pausedCallbacker.signal().onValue({ paused in
+            let cell = collectionKit.view.cellForItem(
+                at: IndexPath(row: collectionKit.currentIndex(), section: 0)
+            )
+
+            if let cell = cell as? MarketingStoryVideoCell {
+                if paused {
+                    cell.pause()
+                } else {
+                    cell.resume()
+                }
+            }
+        })
 
         bag += collectionKit.delegate.sizeForItemAt.set({ (_) -> CGSize in
             collectionKit.view.frame.size

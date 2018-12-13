@@ -29,7 +29,7 @@ extension Marketing: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = HedvigColors.white
         viewController.view = containerView
-        
+
         return (viewController, Future { completion in
             let resultCallbacker = Callbacker<MarketingResult>()
             bag += resultCallbacker.signal().onValue({ marketingResult in

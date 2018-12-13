@@ -14,6 +14,7 @@ import SnapKit
 import UIKit
 
 struct SkipToNextButton {
+    let pausedCallbacker: Callbacker<Bool>
     let onScrollToNext: () -> Void
 }
 
@@ -25,7 +26,24 @@ extension SkipToNextButton: Viewable {
 
         bag += button.on(event: .touchDown).feedback(type: .impactLight)
 
-        bag += button.throttle(0.5).onValue(onScrollToNext)
+        bag += button.on(event: .touchDown).throttle(0.5).onValue({ _ in
+            self.pausedCallbacker.callAll(with: true)
+            let timeAtTouchDown = Date()
+
+            let pauseBag = DisposeBag()
+
+            pauseBag += button.on(event: .touchUpInside).onValue({ _ in
+                pauseBag.dispose()
+
+                if Date().timeIntervalSince(timeAtTouchDown) < 0.15 {
+                    self.onScrollToNext()
+                }
+
+                self.pausedCallbacker.callAll(with: false)
+            })
+
+            bag += pauseBag
+        })
 
         bag += events.wasAdded.onValue {
             button.snp.makeConstraints({ make in

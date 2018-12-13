@@ -164,6 +164,14 @@ class MarketingStoryVideoCell: UICollectionViewCell {
         }
     }
 
+    func resume() {
+        videoPlayer.play()
+    }
+
+    func pause() {
+        videoPlayer.pause()
+    }
+
     func restart() {
         videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
 

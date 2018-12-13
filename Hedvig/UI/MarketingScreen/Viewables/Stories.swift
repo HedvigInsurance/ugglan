@@ -24,19 +24,23 @@ extension Stories: Viewable {
 
         let view = UIView()
 
+        let pausedCallbacker = Callbacker<Bool>()
+
         let scrollToCallbacker = Callbacker<ScrollTo>()
         let scrollToSignal = scrollToCallbacker.signal()
 
         let storiesCollection = StoriesCollection(
             scrollToSignal: scrollToSignal,
-            marketingStories: marketingStories
+            marketingStories: marketingStories,
+            pausedCallbacker: pausedCallbacker
         )
         bag += view.add(storiesCollection)
 
         let storiesIndicator = StoriesIndicator(
             scrollToSignal: scrollToSignal,
             marketingStories: marketingStories,
-            endScreenCallbacker: endScreenCallbacker
+            endScreenCallbacker: endScreenCallbacker,
+            pausedCallbacker: pausedCallbacker
         ) { direction in
             scrollToCallbacker.callAll(with: direction)
         }
@@ -47,7 +51,7 @@ extension Stories: Viewable {
         )
         bag += view.add(memberActionButtons)
 
-        let skipToNextButton = SkipToNextButton {
+        let skipToNextButton = SkipToNextButton(pausedCallbacker: pausedCallbacker) {
             scrollToCallbacker.callAll(with: .next)
         }
         bag += view.add(skipToNextButton)

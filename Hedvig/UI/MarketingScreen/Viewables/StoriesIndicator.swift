@@ -16,77 +16,8 @@ struct StoriesIndicator {
     let scrollToSignal: Signal<ScrollTo>
     let marketingStories: ReadSignal<[MarketingStory]>
     let endScreenCallbacker: Callbacker<Void>
+    let pausedCallbacker: Callbacker<Bool>
     let scrollTo: (_ direction: ScrollTo) -> Void
-}
-
-struct MarketingStoryIndicator: Decodable, Hashable {
-    let duration: TimeInterval
-    let id: String
-    var focused: Bool
-    var shown: Bool
-
-    init(duration: TimeInterval, focused: Bool, id: String, shown: Bool) {
-        self.duration = duration
-        self.focused = focused
-        self.id = id
-        self.shown = shown
-    }
-}
-
-extension MarketingStoryIndicator: Reusable {
-    static func makeAndReconfigure() -> (
-        make: UIView,
-        reconfigure: (MarketingStoryIndicator?, MarketingStoryIndicator) -> Disposable
-    ) {
-        let view = UIView()
-        view.layer.cornerRadius = 1.25
-        view.clipsToBounds = true
-        view.backgroundColor = HedvigColors.white.withAlphaComponent(0.5)
-
-        let progressView = UIView()
-        view.addSubview(progressView)
-
-        progressView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-            make.center.equalToSuperview()
-        }
-
-        return (view, { _, current in
-            let bag = DisposeBag()
-
-            if current.focused {
-                progressView.backgroundColor = HedvigColors.white
-                progressView.transform = CGAffineTransform(translationX: -progressView.frame.width, y: 0)
-                progressView.alpha = 1
-
-                var progress: Double = 0.0
-                let progressChunk: Double = current.duration / 1000
-
-                bag += Signal(every: progressChunk).onValue {
-                    progress +=
-                        progressChunk
-                        / current.duration
-
-                    progressView.transform = CGAffineTransform(
-                        translationX: -(progressView.frame.width - (progressView.frame.width * CGFloat(progress))),
-                        y: 0
-                    )
-
-                    if progress > 1 {
-                        bag.dispose()
-                    }
-                }
-            } else if current.shown {
-                progressView.backgroundColor = UIColor.white
-                progressView.transform = CGAffineTransform.identity
-            } else {
-                progressView.backgroundColor = UIColor.clear
-            }
-
-            return bag
-        })
-    }
 }
 
 extension StoriesIndicator: Viewable {
@@ -103,7 +34,24 @@ extension StoriesIndicator: Viewable {
         let collectionKit = CollectionKit<EmptySection, MarketingStoryIndicator>(
             table: Table(),
             layout: flowLayout,
-            bag: bag
+            bag: bag,
+            cellForRow: { collectionView, marketingStoryIndicator, index in
+                collectionView.register(
+                    MarketingStoryIndicatorCell.self,
+                    forCellWithReuseIdentifier: "MarketingStoryIndicatorCell"
+                )
+
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: "MarketingStoryIndicatorCell",
+                    for: IndexPath(row: index.row, section: index.section)
+                ) as? MarketingStoryIndicatorCell
+
+                cell?.start(marketingStoryIndicator: marketingStoryIndicator) {
+                    self.scrollTo(.next)
+                }
+
+                return cell ?? MarketingStoryIndicatorCell()
+            }
         )
         collectionKit.view.backgroundColor = UIColor.clear
 
@@ -120,6 +68,25 @@ extension StoriesIndicator: Viewable {
             )
         }
 
+        bag += pausedCallbacker.signal().onValue { paused in
+            guard let storiesIndicator = collectionKit.table.enumerated().filter({ (_, indicator) -> Bool in
+                indicator.focused
+            }).first else { return }
+            guard let index = collectionKit.table.lastIndex(of: storiesIndicator.element) else { return }
+
+            let cell = collectionKit.view.cellForItem(
+                at: IndexPath(row: index.row, section: index.section)
+            )
+
+            if let cell = cell as? MarketingStoryIndicatorCell {
+                if paused {
+                    cell.pause()
+                } else {
+                    cell.resume()
+                }
+            }
+        }
+
         let marketingStoryIndicatorsCallbacker = Callbacker<[MarketingStoryIndicator]>()
         let marketingStoryIndicatorsSignal = marketingStoryIndicatorsCallbacker.signal()
 
@@ -129,23 +96,6 @@ extension StoriesIndicator: Viewable {
                 marketingStoryIndicator.focused
             }).first
         }
-
-        let timerBag = DisposeBag()
-        bag += timerBag
-
-        bag += combineLatest(marketingStoryIndicatorsSignal, currentFocusedStorySignal)
-            .filter { (marketingStoryIndicators, currentFocusedStory) -> Bool in
-                guard let currentFocusedStory = currentFocusedStory else { return false }
-                guard let currentIndex = marketingStoryIndicators.firstIndex(
-                    of: currentFocusedStory
-                ) else { return false }
-                return currentIndex < marketingStoryIndicators.count - 1
-            }.onValue { _, currentFocusedStory in
-                timerBag.dispose()
-                timerBag += Signal(after: currentFocusedStory!.duration).onValue {
-                    self.scrollTo(.next)
-                }
-            }
 
         bag += marketingStoryIndicatorsSignal
             .onValue { marketingStoryIndicators in
@@ -163,18 +113,8 @@ extension StoriesIndicator: Viewable {
                 if newIndex > marketingStoryIndicators.count - 1 {
                     self.endScreenCallbacker.callAll()
                     return
-                }
-
-                if newIndex > marketingStoryIndicators.count - 1 || newIndex < 0 {
+                } else if newIndex < 0 {
                     collectionKit.updateCurrentRow()
-
-                    timerBag.dispose()
-                    timerBag += Signal(after: currentFocusedStory!.duration).onValue {
-                        if newIndex < marketingStoryIndicators.count - 1 {
-                            self.scrollTo(.next)
-                        }
-                    }
-
                     return
                 }
 
