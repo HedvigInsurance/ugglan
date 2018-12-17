@@ -20,30 +20,34 @@ extension MemberActionButtons: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let view = UIView()
-        view.alpha = 0
-        view.transform = CGAffineTransform(translationX: 0, y: 15)
+        let stackView = UIStackView()
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        stackView.spacing = 20
+
+        stackView.alpha = 0
+        stackView.transform = CGAffineTransform(translationX: 0, y: 15)
+
+        let newMemberButton = NewMemberButton(style: .marketingScreen) {
+            self.resultCallbacker.callAll(with: .onboard)
+        }
+        bag += stackView.addArangedSubview(newMemberButton)
 
         let existingMemberButton = ExistingMemberButton {
             self.resultCallbacker.callAll(with: .login)
         }
-        bag += view.add(existingMemberButton)
+        bag += stackView.addArangedSubview(existingMemberButton)
 
-        let newMemberButton = NewMemberButton {
-            self.resultCallbacker.callAll(with: .onboard)
-        }
-        bag += view.add(newMemberButton)
-
-        _ = view.didMoveToWindowSignal.delay(by: 0.75).animated(
+        _ = stackView.didMoveToWindowSignal.delay(by: 0.75).animated(
             style: AnimationStyle.easeOut(duration: 0.25)
         ) {
-            view.alpha = 1
-            view.transform = CGAffineTransform.identity
+            stackView.alpha = 1
+            stackView.transform = CGAffineTransform.identity
         }
 
         bag += events.wasAdded.onValue {
-            view.snp.makeConstraints({ make in
-                guard let superview = view.superview else { return }
+            stackView.snp.makeConstraints({ make in
+                guard let superview = stackView.superview else { return }
                 make.width.equalToSuperview().inset(10)
                 make.centerX.equalToSuperview()
                 if #available(iOS 11.0, *) {
@@ -51,10 +55,9 @@ extension MemberActionButtons: Viewable {
                 } else {
                     make.bottom.equalToSuperview()
                 }
-                make.height.equalTo(40)
             })
         }
 
-        return (view, bag)
+        return (stackView, bag)
     }
 }

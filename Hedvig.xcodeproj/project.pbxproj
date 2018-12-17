@@ -10,6 +10,8 @@
 		57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */; };
 		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
 		99584174A936697DB0FF9E1A /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */; };
+		EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD421C7BFA000078D65 /* TextStyle.swift */; };
+		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
@@ -89,6 +91,13 @@
 		EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */; };
 		EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC37B21C2B60400716BEA /* MarketingStoryIndicatorCell.swift */; };
 		EBECC37E21C2B62B00716BEA /* MarketingStoryIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC37D21C2B62B00716BEA /* MarketingStoryIndicator.swift */; };
+		EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC41721C2BD7E00716BEA /* HappyAvatar.swift */; };
+		EBECC41C21C39C5200716BEA /* SharedElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC41B21C39C5100716BEA /* SharedElement.swift */; };
+		EBECC42021C40F8600716BEA /* UIView+RelativeFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */; };
+		EBECC42221C795E300716BEA /* Flow+PanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42121C795E300716BEA /* Flow+PanGesture.swift */; };
+		EBECC42521C7A03A00716BEA /* ClosureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42421C7A03A00716BEA /* ClosureHandler.swift */; };
+		EBECC42721C7A0A200716BEA /* GestureClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42621C7A0A200716BEA /* GestureClosure.swift */; };
+		EBECC42921C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42821C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +119,8 @@
 		D0BD1F44A8B0A6F955342C51 /* Pods-HedvigUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigUITests/Pods-HedvigUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D806B7D70CD966A5F5BE4DBC /* Pods-HedvigUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigUITests/Pods-HedvigUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HedvigTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB034BD421C7BFA000078D65 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
+		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaContainer.swift; sourceTree = "<group>"; };
@@ -189,6 +200,13 @@
 		EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpringAnimationStyle.swift; sourceTree = "<group>"; };
 		EBECC37B21C2B60400716BEA /* MarketingStoryIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryIndicatorCell.swift; sourceTree = "<group>"; };
 		EBECC37D21C2B62B00716BEA /* MarketingStoryIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryIndicator.swift; sourceTree = "<group>"; };
+		EBECC41721C2BD7E00716BEA /* HappyAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HappyAvatar.swift; sourceTree = "<group>"; };
+		EBECC41B21C39C5100716BEA /* SharedElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedElement.swift; sourceTree = "<group>"; };
+		EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RelativeFrame.swift"; sourceTree = "<group>"; };
+		EBECC42121C795E300716BEA /* Flow+PanGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Flow+PanGesture.swift"; sourceTree = "<group>"; };
+		EBECC42421C7A03A00716BEA /* ClosureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosureHandler.swift; sourceTree = "<group>"; };
+		EBECC42621C7A0A200716BEA /* GestureClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureClosure.swift; sourceTree = "<group>"; };
+		EBECC42821C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+Closures.swift"; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -267,6 +285,7 @@
 		EB328E6C21989BCB00CF0624 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
+				EBECC42321C7A02800716BEA /* GestureHandler */,
 				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
@@ -280,6 +299,10 @@
 				EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */,
 				EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */,
 				EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */,
+				EBECC41B21C39C5100716BEA /* SharedElement.swift */,
+				EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */,
+				EBECC42121C795E300716BEA /* Flow+PanGesture.swift */,
+				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -451,13 +474,14 @@
 		EB7FEA9A21B03DFF0027C9DE /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
+				EBECC41621C2BC1F00716BEA /* End */,
 				EB7FEABF21B51CFA0027C9DE /* SkipButtons */,
 				EB7FEAB821B19D120027C9DE /* MemberActionButtons */,
 				EB7FEAB421B180600027C9DE /* Stories.swift */,
 				EB7FEAB921B441F50027C9DE /* StoriesCollection.swift */,
 				EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */,
 				EB7FEAC221B56B860027C9DE /* Logo.swift */,
-				EBECC27621BA8AB400716BEA /* End.swift */,
+				EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -510,6 +534,25 @@
 				EBECC27A21BD372B00716BEA /* Launch.swift */,
 			);
 			path = LaunchScreen;
+			sourceTree = "<group>";
+		};
+		EBECC41621C2BC1F00716BEA /* End */ = {
+			isa = PBXGroup;
+			children = (
+				EBECC27621BA8AB400716BEA /* End.swift */,
+				EBECC41721C2BD7E00716BEA /* HappyAvatar.swift */,
+			);
+			path = End;
+			sourceTree = "<group>";
+		};
+		EBECC42321C7A02800716BEA /* GestureHandler */ = {
+			isa = PBXGroup;
+			children = (
+				EBECC42421C7A03A00716BEA /* ClosureHandler.swift */,
+				EBECC42621C7A0A200716BEA /* GestureClosure.swift */,
+				EBECC42821C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift */,
+			);
+			path = GestureHandler;
 			sourceTree = "<group>";
 		};
 		F42E0389CDD3147AF74CFD44 /* Frameworks */ = {
@@ -803,9 +846,13 @@
 				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
+				EBECC42021C40F8600716BEA /* UIView+RelativeFrame.swift in Sources */,
 				EB7FEA9721B03DAE0027C9DE /* Viewable.swift in Sources */,
 				EB7FEAAD21B1459D0027C9DE /* TransitionStyle.swift in Sources */,
 				EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */,
+				EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */,
+				EBECC42721C7A0A200716BEA /* GestureClosure.swift in Sources */,
+				EBECC42921C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift in Sources */,
 				EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
@@ -814,6 +861,7 @@
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
+				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
 				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
 				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
@@ -834,6 +882,7 @@
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
+				EBECC42521C7A03A00716BEA /* ClosureHandler.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
@@ -844,12 +893,15 @@
 				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
 				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
 				EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift in Sources */,
+				EBECC42221C795E300716BEA /* Flow+PanGesture.swift in Sources */,
 				EB7FEAB521B180600027C9DE /* Stories.swift in Sources */,
 				EBECC27421BA86F000716BEA /* MarketingEndScreen.swift in Sources */,
+				EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */,
 				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
 				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EBECC27B21BD372B00716BEA /* Launch.swift in Sources */,
 				EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */,
+				EBECC41C21C39C5200716BEA /* SharedElement.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,

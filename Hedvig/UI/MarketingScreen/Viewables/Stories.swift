@@ -15,6 +15,7 @@ import UIKit
 struct Stories {
     let marketingStories: ReadSignal<[MarketingStory]>
     let resultCallbacker: Callbacker<MarketingResult>
+    let pausedCallbacker: Callbacker<Bool>
     let endScreenCallbacker: Callbacker<Void>
 }
 
@@ -23,8 +24,6 @@ extension Stories: Viewable {
         let bag = DisposeBag()
 
         let view = UIView()
-
-        let pausedCallbacker = Callbacker<Bool>()
 
         let scrollToCallbacker = Callbacker<ScrollTo>()
         let scrollToSignal = scrollToCallbacker.signal()

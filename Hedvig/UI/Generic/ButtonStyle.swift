@@ -72,6 +72,48 @@ extension ButtonStyle {
         ]
     }
 
+    static let standardPurple = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.purple,
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 20,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.white
+                )
+            )
+        ]
+    }
+
+    static let standardPurpleHighlighted = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.purple.darkened(amount: 0.1),
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 20,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.white
+                )
+            )
+        ]
+    }
+
     static let standardTransparentBlack = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
         style.buttonType = .custom
         style.states = [
@@ -108,6 +150,48 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.white
+                )
+            )
+        ]
+    }
+
+    static let pillTransparentGray = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.darkGray.withAlphaComponent(0.6),
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 10,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(12),
+                    color: UIColor.white
+                )
+            )
+        ]
+    }
+
+    static let pillTransparentGrayHighlighted = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: HedvigColors.darkGray.withAlphaComponent(0.8),
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 10,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(12),
                     color: UIColor.white
                 )
             )

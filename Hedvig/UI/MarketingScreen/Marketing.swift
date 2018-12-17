@@ -37,20 +37,39 @@ extension Marketing: Presentable {
             })
 
             let endScreenCallbacker = Callbacker<Void>()
+            let pausedCallbacker = Callbacker<Bool>()
 
             bag += endScreenCallbacker.signal().onValue({ _ in
+                pausedCallbacker.callAll(with: true)
+
                 let marketingEnd = MarketingEnd()
                 let marketingEndPresentation = Presentation(
                     marketingEnd,
                     style: .modally(
                         presentationStyle: .overCurrentContext,
                         transitionStyle: .crossDissolve,
-                        capturesStatusBarAppearance: false
+                        capturesStatusBarAppearance: true
                     ),
                     options: [.defaults, .prefersNavigationBarHidden(true)]
                 )
                 bag += viewController.present(marketingEndPresentation)
             })
+
+            let rowsSignal = ReadWriteSignal<[MarketingStory]>([])
+
+            let stories = Stories(
+                marketingStories: rowsSignal.readOnly(),
+                resultCallbacker: resultCallbacker,
+                pausedCallbacker: pausedCallbacker,
+                endScreenCallbacker: endScreenCallbacker
+            )
+            bag += containerView.add(stories)
+
+            let loadingIndicator = LoadingIndicator(showAfter: 2)
+            let loadingIndicatorBag = DisposeBag()
+            bag += loadingIndicatorBag
+
+            loadingIndicatorBag += containerView.add(loadingIndicator)
 
             bag += self.client.fetch(query: MarketingStoriesQuery()).onValue { result in
                 guard let data = result.data else { return }
@@ -58,18 +77,9 @@ extension Marketing: Presentable {
                     MarketingStory(apollo: marketingStoryData!)
                 })
 
-                let rowsSignal = ReadWriteSignal<[MarketingStory]>(rows)
+                loadingIndicatorBag.dispose()
 
-                bag += rows.mapToFuture({ marketingStory in
-                    marketingStory.cacheData()
-                }).onValue({ _ in
-                    let stories = Stories(
-                        marketingStories: rowsSignal.readOnly(),
-                        resultCallbacker: resultCallbacker,
-                        endScreenCallbacker: endScreenCallbacker
-                    )
-                    bag += containerView.add(stories)
-                })
+                rowsSignal.value = rows
             }
 
             return Disposer {

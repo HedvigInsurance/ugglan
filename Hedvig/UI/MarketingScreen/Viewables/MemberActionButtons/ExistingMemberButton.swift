@@ -20,11 +20,11 @@ extension ExistingMemberButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let button = UIButton(title: "Logga in", style: .standardTransparentBlack)
+        let button = UIButton(title: "Redan medlem? Logga in", style: .pillTransparentGray)
         button.adjustsImageWhenHighlighted = false
 
         bag += button.on(event: .touchDown).map({ _ -> ButtonStyle in
-            .standardTransparentBlackHighlighted
+            .pillTransparentGrayHighlighted
         }).bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
@@ -34,8 +34,8 @@ extension ExistingMemberButton: Viewable {
 
         bag += button.on(event: .touchDown).feedback(type: .selection)
 
-        bag += button.on(event: .touchUpInside).map({ _ -> ButtonStyle in
-            .standardTransparentBlack
+        bag += combineLatest(button.on(event: .touchUpInside), button.on(event: .touchUpOutside)).map({ _ -> ButtonStyle in
+            .pillTransparentGray
         }).delay(by: 0.1).bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
@@ -49,10 +49,8 @@ extension ExistingMemberButton: Viewable {
 
         bag += events.wasAdded.onValue {
             button.snp.makeConstraints({ make in
-                make.width.equalToSuperview().multipliedBy(0.5).inset(2.5)
-                make.left.equalTo(0)
-                make.bottom.equalTo(0)
-                make.height.equalTo(40)
+                make.width.equalTo(button.intrinsicContentSize.width + 20)
+                make.height.equalTo(20)
             })
         }
 
