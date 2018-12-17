@@ -105,9 +105,15 @@ extension StoriesCollection: Viewable {
             collectionKit.view.frame.size
         })
 
-        bag += collectionKit.delegate.willDisplayCell.onValue({ cell, _ in
+        bag += collectionKit.delegate.willDisplayCell.onValue({ cell, index in
             if let cell = cell as? MarketingStoryVideoCell {
                 cell.restart()
+            }
+
+            if let nextRow = collectionKit.table.enumerated().first(where: { (offset, _) -> Bool in
+                offset == index.row + 1
+            }) {
+                bag += nextRow.element.cacheData()
             }
         })
 
