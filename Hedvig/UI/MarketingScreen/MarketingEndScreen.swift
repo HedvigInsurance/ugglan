@@ -104,7 +104,7 @@ extension MarketingEnd: Presentable {
 
             bag += containerView.add(end)
 
-            bag += dismissGesture.delay(by: 0.5).onValue { _ in
+            bag += dismissGesture.delay(by: 0.2).onValue { _ in
                 completion(.success(nil))
             }
 

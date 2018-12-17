@@ -133,6 +133,7 @@ struct MarketingStory: Decodable, Hashable {
 class MarketingStoryVideoCell: UICollectionViewCell {
     let videoPlayerLayer = AVPlayerLayer()
     let videoPlayer = AVPlayer()
+    var duration: TimeInterval = 0
     var cellDidLoad: () -> Void = {}
 
     override init(frame: CGRect) {
@@ -145,6 +146,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
         backgroundColor = HedvigColors.from(
             apollo: marketingStory.backgroundColor
         )
+        duration = marketingStory.duration
 
         videoPlayerLayer.frame = bounds
         layer.addSublayer(videoPlayerLayer)
@@ -159,6 +161,11 @@ class MarketingStoryVideoCell: UICollectionViewCell {
 
             if #available(iOS 10.0, *) {
                 self.videoPlayer.playImmediately(atRate: 1)
+                try? AVAudioSession.sharedInstance().setCategory(
+                    AVAudioSession.Category.playback,
+                    mode: .default,
+                    options: .mixWithOthers
+                )
             } else {
                 self.videoPlayer.play()
             }
@@ -173,6 +180,12 @@ class MarketingStoryVideoCell: UICollectionViewCell {
 
     func pause() {
         videoPlayer.pause()
+    }
+
+    func end() {
+        if let duration = videoPlayer.currentItem?.duration {
+            videoPlayer.seek(to: duration, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.positiveInfinity)
+        }
     }
 
     func restart() {

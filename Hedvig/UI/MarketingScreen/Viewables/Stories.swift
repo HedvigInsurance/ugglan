@@ -17,6 +17,7 @@ struct Stories {
     let resultCallbacker: Callbacker<MarketingResult>
     let pausedCallbacker: Callbacker<Bool>
     let endScreenCallbacker: Callbacker<Void>
+    let scrollToCallbacker: Callbacker<ScrollTo>
 }
 
 extension Stories: Viewable {
@@ -25,7 +26,6 @@ extension Stories: Viewable {
 
         let view = UIView()
 
-        let scrollToCallbacker = Callbacker<ScrollTo>()
         let scrollToSignal = scrollToCallbacker.signal()
 
         let storyDidLoadCallbacker = Callbacker<TableIndex>()
@@ -46,7 +46,7 @@ extension Stories: Viewable {
             pausedCallbacker: pausedCallbacker,
             storyDidLoadSignal: storyDidLoadSignal
         ) { direction in
-            scrollToCallbacker.callAll(with: direction)
+            self.scrollToCallbacker.callAll(with: direction)
         }
         bag += view.add(storiesIndicator)
 
@@ -56,12 +56,12 @@ extension Stories: Viewable {
         bag += view.add(memberActionButtons)
 
         let skipToNextButton = SkipToNextButton(pausedCallbacker: pausedCallbacker) {
-            scrollToCallbacker.callAll(with: .next)
+            self.scrollToCallbacker.callAll(with: .next)
         }
         bag += view.add(skipToNextButton)
 
         let skipToPreviousButton = SkipToPreviousButton {
-            scrollToCallbacker.callAll(with: .previous)
+            self.scrollToCallbacker.callAll(with: .previous)
         }
         bag += view.add(skipToPreviousButton)
 

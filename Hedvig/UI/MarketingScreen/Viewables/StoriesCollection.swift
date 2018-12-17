@@ -129,7 +129,18 @@ extension StoriesCollection: Viewable {
                     cell?.restart()
                 }
             case .next:
-                collectionKit.scrollToNextItem()
+                if collectionKit.hasNextRow() {
+                    collectionKit.scrollToNextItem()
+                } else {
+                    let currentIndex = collectionKit.currentIndex()
+                    let cell = collectionKit.view.cellForItem(
+                        at: IndexPath(row: currentIndex, section: 0)
+                    ) as? MarketingStoryVideoCell
+                    cell?.end()
+                }
+
+            case .first:
+                collectionKit.scrollToFirstItem()
             }
         }
 

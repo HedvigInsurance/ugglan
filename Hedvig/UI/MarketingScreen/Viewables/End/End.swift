@@ -91,6 +91,19 @@ extension End: Viewable {
         let newMemberButton = NewMemberButton(style: .endScreen) {}
         bag += view.addArangedSubview(newMemberButton)
 
+        let existingMemberButtonContainerView = UIView()
+        existingMemberButtonContainerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
+            make.bottom.equalTo(safeArea.snp.bottom)
+            make.width.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.height.equalTo(40)
+        }
+
+        let existingMemberButton = ExistingMemberButton {}
+        bag += existingMemberButtonContainerView.add(existingMemberButton)
+
+        view.addSubview(existingMemberButtonContainerView)
+
         bag += view.didLayoutSignal.take(first: 1).onValue { _ in
             let marketingScreenButton = SharedElement.retreive(
                 for: SharedElementIdentities.newMemberButtonMarketingScreen

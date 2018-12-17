@@ -38,6 +38,7 @@ extension Marketing: Presentable {
 
             let endScreenCallbacker = Callbacker<Void>()
             let pausedCallbacker = Callbacker<Bool>()
+            let scrollToCallbacker = Callbacker<ScrollTo>()
 
             bag += endScreenCallbacker.signal().onValue({ _ in
                 pausedCallbacker.callAll(with: true)
@@ -51,7 +52,10 @@ extension Marketing: Presentable {
                         capturesStatusBarAppearance: true
                     ),
                     options: [.defaults, .prefersNavigationBarHidden(true)]
-                )
+                ).onDismiss {
+                    scrollToCallbacker.callAll(with: .first)
+                }
+
                 bag += viewController.present(marketingEndPresentation)
             })
 
@@ -61,7 +65,8 @@ extension Marketing: Presentable {
                 marketingStories: rowsSignal.readOnly(),
                 resultCallbacker: resultCallbacker,
                 pausedCallbacker: pausedCallbacker,
-                endScreenCallbacker: endScreenCallbacker
+                endScreenCallbacker: endScreenCallbacker,
+                scrollToCallbacker: scrollToCallbacker
             )
             bag += containerView.add(stories)
 

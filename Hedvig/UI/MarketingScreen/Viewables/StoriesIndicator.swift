@@ -127,6 +127,24 @@ extension StoriesIndicator: Viewable {
                 combineLatest(marketingStoryIndicatorsSignal, currentFocusedStorySignal)
             ).onValue({ direction, latestFrom in
                 let (marketingStoryIndicators, currentFocusedStory) = latestFrom
+
+                if direction == .first {
+                    let newRows = marketingStoryIndicators.enumerated().map {
+                        (offset, marketingStoryIndicator) -> MarketingStoryIndicator in
+                        MarketingStoryIndicator(
+                            duration: marketingStoryIndicator.duration,
+                            focused: offset == 0,
+                            id: marketingStoryIndicator.id,
+                            shown: offset == 0,
+                            contentHasLoaded: marketingStoryIndicator.contentHasLoaded
+                        )
+                    }
+
+                    marketingStoryIndicatorsCallbacker.callAll(with: newRows)
+
+                    return
+                }
+
                 let index = marketingStoryIndicators.firstIndex(of: currentFocusedStory!)!
                 let newIndex = direction == .next ? index + 1 : index - 1
 
