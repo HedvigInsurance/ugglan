@@ -85,8 +85,8 @@ extension End: Viewable {
         let happyAvatar = HappyAvatar()
         bag += view.addArangedSubview(happyAvatar)
 
-        let sayHello = UILabel(value: "Säg hej till Hedvig", style: .body)
-        view.addArrangedSubview(sayHello)
+        let sayHello = SayHello()
+        bag += view.addArangedSubview(sayHello)
 
         let newMemberButton = NewMemberButton(style: .endScreen) {}
         bag += view.addArangedSubview(newMemberButton)
@@ -113,19 +113,19 @@ extension End: Viewable {
                     style: AnimationStyle.easeOut(duration: 0.5)
                 ) {
                     endScreenButton.alpha = 1
-                }.disposable()
+                }
 
                 bag += Signal(after: 0.1).animated(
                     style: SpringAnimationStyle.heavyBounce()
                 ) {
                     endScreenButton.transform = CGAffineTransform.identity
                     marketingScreenButton.transform = CGAffineTransform(translationX: 0, y: -transformFrame.origin.y)
-                }.disposable()
+                }
             }
         }
 
         _ = view.didMoveToWindowSignal.delay(by: 0.1).animated(
-            style: SpringAnimationStyle.lightBounce()
+            style: AnimationStyle.easeOut(duration: 0.5)
         ) {
             view.alpha = 1
         }

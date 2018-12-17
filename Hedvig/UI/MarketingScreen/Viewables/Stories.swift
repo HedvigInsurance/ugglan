@@ -28,10 +28,14 @@ extension Stories: Viewable {
         let scrollToCallbacker = Callbacker<ScrollTo>()
         let scrollToSignal = scrollToCallbacker.signal()
 
+        let storyDidLoadCallbacker = Callbacker<TableIndex>()
+        let storyDidLoadSignal = storyDidLoadCallbacker.signal()
+
         let storiesCollection = StoriesCollection(
             scrollToSignal: scrollToSignal,
             marketingStories: marketingStories,
-            pausedCallbacker: pausedCallbacker
+            pausedCallbacker: pausedCallbacker,
+            storyDidLoadCallbacker: storyDidLoadCallbacker
         )
         bag += view.add(storiesCollection)
 
@@ -39,7 +43,8 @@ extension Stories: Viewable {
             scrollToSignal: scrollToSignal,
             marketingStories: marketingStories,
             endScreenCallbacker: endScreenCallbacker,
-            pausedCallbacker: pausedCallbacker
+            pausedCallbacker: pausedCallbacker,
+            storyDidLoadSignal: storyDidLoadSignal
         ) { direction in
             scrollToCallbacker.callAll(with: direction)
         }

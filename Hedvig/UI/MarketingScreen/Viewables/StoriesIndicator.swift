@@ -17,6 +17,7 @@ struct StoriesIndicator {
     let marketingStories: ReadSignal<[MarketingStory]>
     let endScreenCallbacker: Callbacker<Void>
     let pausedCallbacker: Callbacker<Bool>
+    let storyDidLoadSignal: Signal<TableIndex>
     let scrollTo: (_ direction: ScrollTo) -> Void
 }
 
@@ -46,8 +47,12 @@ extension StoriesIndicator: Viewable {
                     for: IndexPath(row: index.row, section: index.section)
                 ) as? MarketingStoryIndicatorCell
 
-                cell?.start(marketingStoryIndicator: marketingStoryIndicator) {
-                    self.scrollTo(.next)
+                cell?.prepare(marketingStoryIndicator: marketingStoryIndicator)
+
+                if marketingStoryIndicator.contentHasLoaded {
+                    cell?.start {
+                        self.scrollTo(.next)
+                    }
                 }
 
                 return cell ?? MarketingStoryIndicatorCell()
@@ -102,6 +107,21 @@ extension StoriesIndicator: Viewable {
                 collectionKit.set(Table(rows: marketingStoryIndicators), animation: .none)
             }
 
+        bag += storyDidLoadSignal.onValue({ index in
+            let newRows = collectionKit.table.enumerated().map {
+                (offset, marketingStoryIndicator) -> MarketingStoryIndicator in
+                MarketingStoryIndicator(
+                    duration: marketingStoryIndicator.duration,
+                    focused: marketingStoryIndicator.focused,
+                    id: marketingStoryIndicator.id,
+                    shown: marketingStoryIndicator.shown,
+                    contentHasLoaded: offset == index.row || marketingStoryIndicator.contentHasLoaded
+                )
+            }
+
+            marketingStoryIndicatorsCallbacker.callAll(with: newRows)
+        })
+
         bag += scrollToSignal
             .withLatestFrom(
                 combineLatest(marketingStoryIndicatorsSignal, currentFocusedStorySignal)
@@ -124,7 +144,8 @@ extension StoriesIndicator: Viewable {
                         duration: marketingStoryIndicator.duration,
                         focused: newIndex == offset,
                         id: marketingStoryIndicator.id,
-                        shown: offset < newIndex
+                        shown: offset < newIndex,
+                        contentHasLoaded: marketingStoryIndicator.contentHasLoaded
                     )
                 }
 
@@ -139,7 +160,8 @@ extension StoriesIndicator: Viewable {
                     duration: marketingStory.duration,
                     focused: offset == 0,
                     id: marketingStory.id,
-                    shown: offset == 0
+                    shown: offset == 0,
+                    contentHasLoaded: false
                 )
             })
         }.onValue { marketingStoryIndicators in

@@ -13,7 +13,7 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
     let progressView = UIView()
     let bag = DisposeBag()
     var progress: Double = 0
-    var duration: TimeInterval = 0
+    var indicator: MarketingStoryIndicator!
     var onDone: (() -> Void)?
 
     override init(frame: CGRect) {
@@ -32,19 +32,16 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
         }
     }
 
-    func start(marketingStoryIndicator: MarketingStoryIndicator, onDone: @escaping () -> Void) {
+    func prepare(marketingStoryIndicator: MarketingStoryIndicator) {
         bag.dispose()
-        duration = marketingStoryIndicator.duration
         progress = 0
-        self.onDone = onDone
+        indicator = marketingStoryIndicator
 
-        if marketingStoryIndicator.focused {
+        if indicator.focused {
             progressView.backgroundColor = HedvigColors.white
             progressView.transform = CGAffineTransform(translationX: -progressView.frame.width, y: 0)
             progressView.alpha = 1
-
-            startTimer()
-        } else if marketingStoryIndicator.shown {
+        } else if indicator.shown {
             progressView.backgroundColor = UIColor.white
             progressView.transform = CGAffineTransform.identity
         } else {
@@ -52,13 +49,21 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
         }
     }
 
+    func start(onDone: @escaping () -> Void) {
+        self.onDone = onDone
+
+        if indicator.focused {
+            startTimer()
+        }
+    }
+
     private func startTimer() {
-        let progressChunk = duration / 1000
+        let progressChunk = indicator.duration / 1000
 
         bag += Signal(every: progressChunk).onValue {
             self.progress +=
                 progressChunk
-                / self.duration
+                / self.indicator.duration
 
             let frameWidth = self.progressView.frame.width
             let translationX = -(frameWidth - (frameWidth * CGFloat(self.progress)))

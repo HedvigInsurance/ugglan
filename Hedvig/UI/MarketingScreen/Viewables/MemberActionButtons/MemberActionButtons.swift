@@ -23,7 +23,7 @@ extension MemberActionButtons: Viewable {
         let stackView = UIStackView()
         stackView.alignment = .center
         stackView.axis = .vertical
-        stackView.spacing = 20
+        stackView.spacing = 10
 
         stackView.alpha = 0
         stackView.transform = CGAffineTransform(translationX: 0, y: 15)

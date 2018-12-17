@@ -32,7 +32,7 @@ extension LoadingIndicator: Viewable {
         bag += Signal(after: showAfter).animated(style: AnimationStyle.easeOut(duration: 0.5), animations: {
             loadingIndicator.alpha = 1
             loadingIndicator.startAnimating()
-        }).disposable()
+        })
 
         return (loadingIndicator, bag)
     }

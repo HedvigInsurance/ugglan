@@ -73,7 +73,7 @@ extension MarketingEnd: Presentable {
                     y: containerView.bounds.height
                 )
             )
-        }).disposable()
+        })
 
         bag += panGesture.filter(predicate: { $0.state != .ended }).map({ pan -> CGAffineTransform in
             let translation = pan.translation(in: containerView)

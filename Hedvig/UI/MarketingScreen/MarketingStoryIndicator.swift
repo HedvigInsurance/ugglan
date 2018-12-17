@@ -14,11 +14,13 @@ struct MarketingStoryIndicator: Decodable, Hashable {
     let id: String
     var focused: Bool
     var shown: Bool
+    var contentHasLoaded: Bool
 
-    init(duration: TimeInterval, focused: Bool, id: String, shown: Bool) {
+    init(duration: TimeInterval, focused: Bool, id: String, shown: Bool, contentHasLoaded: Bool) {
         self.duration = duration
         self.focused = focused
         self.id = id
         self.shown = shown
+        self.contentHasLoaded = contentHasLoaded
     }
 }

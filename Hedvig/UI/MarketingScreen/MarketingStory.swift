@@ -133,6 +133,7 @@ struct MarketingStory: Decodable, Hashable {
 class MarketingStoryVideoCell: UICollectionViewCell {
     let videoPlayerLayer = AVPlayerLayer()
     let videoPlayer = AVPlayer()
+    var cellDidLoad: () -> Void = {}
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -161,6 +162,8 @@ class MarketingStoryVideoCell: UICollectionViewCell {
             } else {
                 self.videoPlayer.play()
             }
+
+            self.cellDidLoad()
         }
     }
 
@@ -189,6 +192,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
 
 class MarketingStoryImageCell: UICollectionViewCell {
     let imageView = UIImageView()
+    var cellDidLoad: () -> Void = {}
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -205,6 +209,7 @@ class MarketingStoryImageCell: UICollectionViewCell {
             guard let image = marketingStory.imageAsset() else { return }
             DispatchQueue.main.async {
                 self.imageView.image = image
+                self.cellDidLoad()
             }
         }
 

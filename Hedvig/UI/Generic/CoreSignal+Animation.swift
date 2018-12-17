@@ -9,12 +9,12 @@
 import Flow
 import Foundation
 
-struct AnimatedSignal<Value>: SignalProvider {
+struct AnimatedSignal<Value>: SignalProvider, Disposable {
     let providedSignal: Signal<Value>
     let providedDisposable: Disposable
 
-    func disposable() -> Disposable {
-        return providedDisposable
+    func dispose() {
+        providedDisposable.dispose()
     }
 }
 
@@ -75,8 +75,7 @@ extension SignalProvider {
             )
         }
 
-        let animatedSignal = AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
-        return animatedSignal
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 
     func animated(
@@ -102,8 +101,7 @@ extension SignalProvider {
             )
         }
 
-        let animatedSignal = AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
-        return animatedSignal
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 
     func animated(
@@ -127,8 +125,7 @@ extension SignalProvider {
             )
         }
 
-        let animatedSignal = AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
-        return animatedSignal
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 
     func animated(
@@ -154,7 +151,6 @@ extension SignalProvider {
             )
         }
 
-        let animatedSignal = AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
-        return animatedSignal
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 }

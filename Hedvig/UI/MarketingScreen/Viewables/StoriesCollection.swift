@@ -16,6 +16,7 @@ struct StoriesCollection {
     let scrollToSignal: Signal<ScrollTo>
     let marketingStories: ReadSignal<[MarketingStory]>
     let pausedCallbacker: Callbacker<Bool>
+    let storyDidLoadCallbacker: Callbacker<TableIndex>
 }
 
 extension StoriesCollection: Viewable {
@@ -43,6 +44,10 @@ extension StoriesCollection: Viewable {
                         for: IndexPath(row: index.row, section: index.section)
                     ) as? MarketingStoryVideoCell
 
+                    cell?.cellDidLoad = {
+                        self.storyDidLoadCallbacker.callAll(with: index)
+                    }
+
                     cell?.play(marketingStory: marketingStory)
 
                     return cell ?? MarketingStoryVideoCell()
@@ -57,6 +62,10 @@ extension StoriesCollection: Viewable {
                     withReuseIdentifier: "MarketingStoryImageCell",
                     for: IndexPath(row: index.row, section: index.section)
                 ) as? MarketingStoryImageCell
+
+                cell?.cellDidLoad = {
+                    self.storyDidLoadCallbacker.callAll(with: index)
+                }
 
                 cell?.show(marketingStory: marketingStory)
 

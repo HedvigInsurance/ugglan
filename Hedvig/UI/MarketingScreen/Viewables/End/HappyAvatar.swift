@@ -35,7 +35,7 @@ extension HappyAvatar: Viewable {
         }
 
         containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(100)
+            make.height.equalTo(50)
             make.width.equalTo(100)
         }
 

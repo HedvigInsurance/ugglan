@@ -34,7 +34,10 @@ extension ExistingMemberButton: Viewable {
 
         bag += button.on(event: .touchDown).feedback(type: .selection)
 
-        bag += combineLatest(button.on(event: .touchUpInside), button.on(event: .touchUpOutside)).map({ _ -> ButtonStyle in
+        bag += combineLatest(
+            button.on(event: .touchUpInside),
+            button.on(event: .touchUpOutside)
+        ).map({ _ -> ButtonStyle in
             .pillTransparentGray
         }).delay(by: 0.1).bindTo(
             transition: button,
