@@ -51,7 +51,8 @@ extension Stories: Viewable {
         bag += view.add(storiesIndicator)
 
         let memberActionButtons = MemberActionButtons(
-            resultCallbacker: resultCallbacker
+            resultCallbacker: resultCallbacker,
+            pausedSignal: pausedCallbacker.signal()
         )
         bag += view.add(memberActionButtons)
 
@@ -65,7 +66,9 @@ extension Stories: Viewable {
         }
         bag += view.add(skipToPreviousButton)
 
-        let logo = Logo()
+        let logo = Logo(
+            pausedSignal: pausedCallbacker.signal()
+        )
         bag += view.add(logo)
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in

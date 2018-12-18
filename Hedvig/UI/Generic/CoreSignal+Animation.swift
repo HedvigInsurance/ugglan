@@ -56,7 +56,7 @@ extension SignalProvider {
 
     func animated(
         mapStyle: @escaping (_ value: Value) -> AnimationStyle,
-        animations: @escaping () -> Void
+        animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
@@ -67,7 +67,9 @@ extension SignalProvider {
                 withDuration: style.duration,
                 delay: style.delay,
                 options: style.options,
-                animations: animations,
+                animations: {
+                    animations(value)
+                },
                 completion: { _ in
                     bag.dispose()
                     callbacker.callAll(with: value)
@@ -80,7 +82,7 @@ extension SignalProvider {
 
     func animated(
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
-        animations: @escaping () -> Void
+        animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
@@ -93,7 +95,9 @@ extension SignalProvider {
                 usingSpringWithDamping: style.damping,
                 initialSpringVelocity: style.velocity,
                 options: [],
-                animations: animations,
+                animations: {
+                    animations(value)
+                },
                 completion: { _ in
                     bag.dispose()
                     callbacker.callAll(with: value)
@@ -106,7 +110,7 @@ extension SignalProvider {
 
     func animated(
         style: AnimationStyle,
-        animations: @escaping () -> Void
+        animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
 
@@ -117,7 +121,9 @@ extension SignalProvider {
                 withDuration: style.duration,
                 delay: style.delay,
                 options: style.options,
-                animations: animations,
+                animations: {
+                    animations(value)
+                },
                 completion: { _ in
                     bag.dispose()
                     callbacker.callAll(with: value)
@@ -130,7 +136,7 @@ extension SignalProvider {
 
     func animated(
         style: SpringAnimationStyle,
-        animations: @escaping () -> Void
+        animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
 
@@ -143,7 +149,9 @@ extension SignalProvider {
                 usingSpringWithDamping: style.damping,
                 initialSpringVelocity: style.velocity,
                 options: [],
-                animations: animations,
+                animations: {
+                    animations(value)
+                },
                 completion: { _ in
                     bag.dispose()
                     callbacker.callAll(with: value)

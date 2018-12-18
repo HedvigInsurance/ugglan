@@ -24,22 +24,24 @@ extension SkipToNextButton: Viewable {
 
         let button = UIButton(title: "Nästa", style: .invisible)
 
-        bag += button.on(event: .touchDown).feedback(type: .impactLight)
-
-        bag += button.on(event: .touchDown).throttle(0.5).onValue({ _ in
-            self.pausedCallbacker.callAll(with: true)
+        bag += button.on(event: .touchDown).onValue({ _ in
             let timeAtTouchDown = Date()
 
             let pauseBag = DisposeBag()
 
-            pauseBag += button.on(event: .touchUpInside).onValue({ _ in
-                pauseBag.dispose()
+            pauseBag += Signal(after: 0.15).onValue({ _ in
+                self.pausedCallbacker.callAll(with: true)
+            })
 
+            pauseBag += button.on(event: .touchUpInside).onValue({ _ in
                 if Date().timeIntervalSince(timeAtTouchDown) < 0.15 {
                     self.onScrollToNext()
+                    pauseBag += Signal(after: 0).feedback(type: .impactLight)
+                } else {
+                    self.pausedCallbacker.callAll(with: false)
                 }
 
-                self.pausedCallbacker.callAll(with: false)
+                pauseBag.dispose()
             })
 
             bag += pauseBag

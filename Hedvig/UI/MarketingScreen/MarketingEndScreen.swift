@@ -69,7 +69,7 @@ extension MarketingEnd: Presentable {
                 velocity: velocity.y / containerView.bounds.height,
                 delay: 0
             )
-        }, animations: {
+        }, animations: { _ in
             containerView.transform = containerView.transform.concatenating(
                 CGAffineTransform(
                     translationX: 0,

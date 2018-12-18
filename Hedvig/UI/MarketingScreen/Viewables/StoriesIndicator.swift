@@ -93,6 +93,12 @@ extension StoriesIndicator: Viewable {
             }
         }
 
+        bag += pausedCallbacker.signal().onValue({ paused in
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                collectionKit.view.alpha = paused ? 0 : 1
+            }, completion: nil)
+        })
+
         let marketingStoryIndicatorsCallbacker = Callbacker<[MarketingStoryIndicator]>()
         let marketingStoryIndicatorsSignal = marketingStoryIndicatorsCallbacker.signal()
 

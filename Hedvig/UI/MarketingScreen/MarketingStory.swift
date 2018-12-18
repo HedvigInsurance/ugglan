@@ -162,7 +162,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
             if #available(iOS 10.0, *) {
                 self.videoPlayer.playImmediately(atRate: 1)
                 try? AVAudioSession.sharedInstance().setCategory(
-                    AVAudioSession.Category.playback,
+                    AVAudioSession.Category.ambient,
                     mode: .default,
                     options: .mixWithOthers
                 )
@@ -175,7 +175,9 @@ class MarketingStoryVideoCell: UICollectionViewCell {
     }
 
     func resume() {
-        videoPlayer.play()
+        if #available(iOS 10.0, *) {
+            self.videoPlayer.playImmediately(atRate: 1)
+        }
     }
 
     func pause() {
