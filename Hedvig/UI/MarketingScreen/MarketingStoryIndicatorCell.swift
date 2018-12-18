@@ -15,6 +15,7 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
     var progress: Double = 0
     var indicator: MarketingStoryIndicator!
     var onDone: (() -> Void)?
+    var started = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,6 +37,7 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
         bag.dispose()
         progress = 0
         indicator = marketingStoryIndicator
+        started = false
 
         if indicator.focused {
             progressView.backgroundColor = HedvigColors.white
@@ -58,6 +60,12 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
     }
 
     private func startTimer() {
+        if started {
+            return
+        }
+        
+        started = true
+        
         let progressChunk = indicator.duration / 1000
 
         bag += Signal(every: progressChunk).onValue {
