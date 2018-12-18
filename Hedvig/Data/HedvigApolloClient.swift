@@ -11,13 +11,18 @@ import Disk
 import Flow
 import Foundation
 
+struct HedvigApolloEnvironmentConfig {
+    let endpointURL: URL
+    let wsEndpointURL: URL
+}
+
 class HedvigApolloClient {
     static var shared = HedvigApolloClient()
     var client: ApolloClient?
 
     private init() {}
 
-    func createClient(token: String?) -> Future<ApolloClient> {
+    func createClient(token: String?, environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
         let authPayloads = [
             "Authorization": token ?? ""
         ]
@@ -27,11 +32,9 @@ class HedvigApolloClient {
 
         let authMap: GraphQLMap = authPayloads
 
-        let endpointURL = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
-        let wsEndpointURL = URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
-        let httpNetworkTransport = HTTPNetworkTransport(url: endpointURL, configuration: configuration)
+        let httpNetworkTransport = HTTPNetworkTransport(url: environment.endpointURL, configuration: configuration)
         let websocketNetworkTransport = WebSocketTransport(
-            request: URLRequest(url: wsEndpointURL),
+            request: URLRequest(url: environment.wsEndpointURL),
             connectingPayload: authMap
         )
 
@@ -55,14 +58,17 @@ class HedvigApolloClient {
         )
     }
 
-    func createClientFromNewSession() -> Future<ApolloClient> {
+    func createClientFromNewSession(environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            self.createClient(token: nil).onValue { client in
-                client.perform(mutation: mutation) { result, _ in
-                    self.createClient(token: result?.data?.createSession).onValue { clientWithSession in
+            self.createClient(token: nil, environment: environment).onValue { client in
+                client.perform(mutation: mutation).onValue { result in
+                    self.createClient(
+                        token: result.data?.createSession,
+                        environment: environment
+                    ).onValue { clientWithSession in
                         completion(Result.success(clientWithSession))
                     }.onError { error in
                         completion(Result.failure(error))
@@ -70,11 +76,11 @@ class HedvigApolloClient {
                 }
             }
 
-            return Disposer {}
+            return NilDisposer()
         }
     }
 
-    func initClient() -> Future<ApolloClient> {
+    func initClient(environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
         return Future { completion in
             if self.client != nil {
                 completion(.success(self.client!))
@@ -86,7 +92,7 @@ class HedvigApolloClient {
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {
-                self.createClientFromNewSession().onResult { result in
+                self.createClientFromNewSession(environment: environment).onResult { result in
                     switch result {
                     case let .success(client): do {
                         self.client = client
@@ -98,7 +104,7 @@ class HedvigApolloClient {
                     }
                 }
             } else {
-                self.createClient(token: tokenData!.token).onResult { result in
+                self.createClient(token: tokenData!.token, environment: environment).onResult { result in
                     switch result {
                     case let .success(client): do {
                         self.client = client

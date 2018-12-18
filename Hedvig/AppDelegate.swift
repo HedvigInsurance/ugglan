@@ -42,7 +42,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += navigationController.present(launchPresentation)
         window.makeKeyAndVisible()
 
-        HedvigApolloClient.shared.initClient().onValue { client in
+        let apolloEnvironment = HedvigApolloEnvironmentConfig(
+            endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
+        )
+
+        HedvigApolloClient.shared.initClient(environment: apolloEnvironment).onValue { client in
             let marketing = Marketing(client: client)
 
             let marketingPresentation = Presentation(

@@ -35,4 +35,27 @@ extension ApolloClient {
             }
         }
     }
+
+    func perform<Mutation: GraphQLMutation>(
+        mutation: Mutation,
+        queue: DispatchQueue = DispatchQueue.main
+    ) -> Future<GraphQLResult<Mutation.Data>> {
+        return Future<GraphQLResult<Mutation.Data>> { completion in
+            let cancellable = self.perform(
+                mutation: mutation,
+                queue: queue,
+                resultHandler: { (result: GraphQLResult<Mutation.Data>?, error: Error?) in
+                    if result != nil {
+                        completion(.success(result!))
+                    } else {
+                        completion(.failure(error!))
+                    }
+                }
+            )
+
+            return Disposer {
+                cancellable.cancel()
+            }
+        }
+    }
 }
