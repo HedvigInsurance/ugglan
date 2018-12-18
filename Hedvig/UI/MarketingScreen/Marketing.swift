@@ -64,6 +64,7 @@ extension Marketing: Presentable {
 
                 bag += viewController.present(marketingEndPresentation).onValue { _ in
                     scrollToCallbacker.callAll(with: .first)
+                    pausedCallbacker.callAll(with: false)
                 }
             })
 
