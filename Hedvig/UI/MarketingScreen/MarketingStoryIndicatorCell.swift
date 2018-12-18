@@ -63,9 +63,9 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
         if started {
             return
         }
-        
+
         started = true
-        
+
         let progressChunk = indicator.duration / 1000
 
         bag += Signal(every: progressChunk).onValue {

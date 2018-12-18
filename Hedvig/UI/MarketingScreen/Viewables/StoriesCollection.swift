@@ -77,7 +77,6 @@ extension StoriesCollection: Viewable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.bounces = false
         collectionKit.view.showsHorizontalScrollIndicator = false
-        collectionKit.view.layer.cornerRadius = 10
 
         if #available(iOS 10.0, *) {
             collectionKit.view.isPrefetchingEnabled = true
