@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import DeviceKit
 import Flow
 import Foundation
 import UIKit
@@ -103,7 +104,12 @@ extension End: Viewable {
             bag += existingMemberButtonContainerView.makeConstraints(
                 wasAdded: events.wasAdded
             ).onValue { make, safeArea in
-                make.bottom.equalTo(safeArea)
+                if Device.hasRoundedCorners {
+                    make.bottom.equalTo(safeArea.layoutGuide)
+                } else {
+                    make.bottom.equalTo(safeArea.layoutGuide).inset(15)
+                }
+
                 make.centerX.equalToSuperview()
                 make.width.equalToSuperview()
                 make.height.equalTo(30)

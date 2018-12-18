@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import DeviceKit
 import Flow
 import Form
 import Foundation
@@ -23,24 +24,17 @@ extension Logo: Viewable {
         let wordmarkIcon = Icon(frame: .zero, iconName: "WordmarkWhite", iconWidth: 90)
         view.addSubview(wordmarkIcon)
 
-        bag += events.wasAdded.onValue {
-            wordmarkIcon.snp.makeConstraints({ make in
-                make.center.equalToSuperview()
-                make.width.equalToSuperview()
-                make.height.equalToSuperview()
-            })
+        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
+            if Device.hasRoundedCorners {
+                make.top.equalTo(safeArea.layoutGuide).offset(5)
+            } else {
+                make.top.equalTo(safeArea.layoutGuide).offset(10)
+            }
 
-            view.snp.makeConstraints({ make in
-                guard let superview = view.superview else { return }
-                if #available(iOS 11.0, *) {
-                    make.top.equalTo(superview.safeAreaLayoutGuide.snp.top).inset(5)
-                } else {
-                    make.top.equalToSuperview().inset(5)
-                }
-                make.centerX.equalToSuperview()
-                make.width.equalToSuperview()
-                make.height.equalTo(50)
-            })
+            make.centerX.equalToSuperview()
+            make.width.equalTo(90)
+            make.height.equalTo(40)
+            wordmarkIcon.layoutSubviews()
         }
 
         return (view, bag)

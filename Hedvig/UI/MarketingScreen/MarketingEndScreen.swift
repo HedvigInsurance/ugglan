@@ -7,6 +7,7 @@
 //
 
 import Apollo
+import DeviceKit
 import Flow
 import Form
 import Presentation
@@ -89,14 +90,16 @@ extension MarketingEnd: Presentable {
         }).bindTo(containerView, \.transform)
 
         bag += containerView.didMoveToWindowSignal.onValue { _ in
-            let maskLayer = CAShapeLayer()
-            maskLayer.path = UIBezierPath(
-                roundedRect: containerView.bounds,
-                byRoundingCorners: .allCorners,
-                cornerRadii: CGSize(width: 38.5, height: 38.5)
-            ).cgPath
+            if Device.hasRoundedCorners {
+                let maskLayer = CAShapeLayer()
+                maskLayer.path = UIBezierPath(
+                    roundedRect: containerView.bounds,
+                    byRoundingCorners: .allCorners,
+                    cornerRadii: CGSize(width: 38.5, height: 38.5)
+                ).cgPath
 
-            containerView.layer.mask = maskLayer
+                containerView.layer.mask = maskLayer
+            }
         }
 
         return (viewController, Future { completion in

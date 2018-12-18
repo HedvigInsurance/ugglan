@@ -5,6 +5,7 @@ target 'Hedvig' do
   inhibit_all_warnings!
 
   # Pods for Hedvig
+  pod 'DeviceKit', '~> 1.3'
   pod 'lottie-ios'
   pod 'Tempura'
   pod 'PinLayout'

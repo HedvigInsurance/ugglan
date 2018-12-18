@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import DeviceKit
 import Flow
 import Form
 import Foundation
@@ -187,7 +188,12 @@ extension StoriesIndicator: Viewable {
         }
 
         bag += collectionKit.view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, safeArea in
-            make.top.equalTo(safeArea.snp.top)
+            if Device.hasRoundedCorners {
+                make.top.equalTo(safeArea.layoutGuide)
+            } else {
+                make.top.equalTo(safeArea.layoutGuide).offset(5)
+            }
+
             make.width.equalToSuperview()
             make.height.equalTo(2.5)
             make.centerX.equalToSuperview().inset(2.5)

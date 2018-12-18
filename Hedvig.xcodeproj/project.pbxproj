@@ -15,6 +15,7 @@
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
 		EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */; };
 		EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CD921C9256C00078D65 /* DelayedDisposer.swift */; };
+		EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
@@ -127,6 +128,7 @@
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
 		EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterAllStackView.swift; sourceTree = "<group>"; };
 		EB034CD921C9256C00078D65 /* DelayedDisposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayedDisposer.swift; sourceTree = "<group>"; };
+		EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceKit+RoundedCorners.swift"; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaContainer.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
 				EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */,
 				EB034CD921C9256C00078D65 /* DelayedDisposer.swift */,
+				EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -702,6 +705,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Apollo/Apollo.framework",
+				"${BUILT_PRODUCTS_DIR}/DeviceKit/DeviceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Disk/Disk.framework",
 				"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework",
 				"${BUILT_PRODUCTS_DIR}/FlowFeedback/FlowFeedback.framework",
@@ -720,6 +724,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Apollo.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DeviceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Disk.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowFeedback.framework",
@@ -898,6 +903,7 @@
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
+				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EB7FEAA421B068760027C9DE /* NewMemberButton.swift in Sources */,
 				EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */,

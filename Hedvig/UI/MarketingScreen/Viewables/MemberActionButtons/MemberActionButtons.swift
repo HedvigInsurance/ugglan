@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import DeviceKit
 import Flow
 import Form
 import Foundation
@@ -48,7 +49,12 @@ extension MemberActionButtons: Viewable {
         bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
             make.width.equalToSuperview().inset(10)
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(safeArea)
+
+            if Device.hasRoundedCorners {
+                make.bottom.equalTo(safeArea.layoutGuide)
+            } else {
+                make.bottom.equalTo(safeArea.layoutGuide).inset(15)
+            }
         }
 
         return (stackView, bag)

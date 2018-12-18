@@ -5,6 +5,7 @@ PODS:
   - Apollo/WebSocket (0.9.4):
     - Apollo/Core
     - Starscream (~> 3.0.2)
+  - DeviceKit (1.11.0)
   - Disk (0.4.0)
   - DynamicColor (4.0.3)
   - FlowFeedback (1.0.1):
@@ -38,6 +39,7 @@ PODS:
 DEPENDENCIES:
   - Apollo
   - Apollo/WebSocket
+  - DeviceKit (~> 1.3)
   - Disk (~> 0.4.0)
   - DynamicColor (~> 4.0.2)
   - FlowFeedback (from `https://github.com/HedvigInsurance/FlowFeedback.git`)
@@ -57,6 +59,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Apollo
+    - DeviceKit
     - Disk
     - DynamicColor
     - FlowFramework
@@ -97,6 +100,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Apollo: 450856adbdebcdf28c3c671f81732ac3f9944065
+  DeviceKit: a3a86f8dddbe1317a9a243cdf9646858bf135dce
   Disk: ef2956657d5bb56034b38b29b352170165226440
   DynamicColor: bf19b33fe404c59a68e64af95cc6b017346e7e75
   FlowFeedback: 41fe84846ceaeca0cbf02a922222cc8b862986c0
@@ -115,6 +119,6 @@ SPEC CHECKSUMS:
   TempuraTesting: cf7d082d36a98e07291eefa5f7d302f4e7184b97
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: 35c154ddd1282f0eebfe25274b460d93c9ebefb1
+PODFILE CHECKSUM: b49e63ac2336004dcbfa58cc3e72ce9c4dcc1f1d
 
 COCOAPODS: 1.5.3
