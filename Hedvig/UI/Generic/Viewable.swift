@@ -21,6 +21,7 @@ protocol Viewable {
 
 struct ViewableEvents {
     let wasAdded: Signal<Void>
+    let removeAfter = Delegate<Void, TimeInterval>()
 
     init(
         wasAddedCallbacker: Callbacker<Void>

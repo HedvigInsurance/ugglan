@@ -14,6 +14,7 @@
 		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
 		EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */; };
+		EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CD921C9256C00078D65 /* DelayedDisposer.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
@@ -125,6 +126,7 @@
 		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
 		EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterAllStackView.swift; sourceTree = "<group>"; };
+		EB034CD921C9256C00078D65 /* DelayedDisposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayedDisposer.swift; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaContainer.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				EBECC42121C795E300716BEA /* Flow+PanGesture.swift */,
 				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
 				EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */,
+				EB034CD921C9256C00078D65 /* DelayedDisposer.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -879,6 +882,7 @@
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
+				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,

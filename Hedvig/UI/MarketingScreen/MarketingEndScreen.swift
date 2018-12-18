@@ -13,10 +13,12 @@ import Presentation
 import SnapKit
 import UIKit
 
-struct MarketingEnd {}
+struct MarketingEnd {
+    let didResult: Callbacker<MarketingResult>
+}
 
 extension MarketingEnd: Presentable {
-    func materialize() -> (UIViewController, Future<MarketingResult?>) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
 
         let bag = DisposeBag()
@@ -103,11 +105,11 @@ extension MarketingEnd: Presentable {
             )
 
             bag += containerView.add(end).onValue({ result in
-                completion(.success(result))
+                self.didResult.callAll(with: result)
             })
 
             bag += dismissGesture.delay(by: 0.2).onValue { _ in
-                completion(.success(nil))
+                completion(.success)
             }
 
             return bag

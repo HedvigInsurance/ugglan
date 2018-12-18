@@ -43,7 +43,15 @@ extension Marketing: Presentable {
             bag += endScreenCallbacker.signal().onValue({ _ in
                 pausedCallbacker.callAll(with: true)
 
-                let marketingEnd = MarketingEnd()
+                let marketingEndDidResultCallbacker = Callbacker<MarketingResult>()
+
+                bag += marketingEndDidResultCallbacker.signal().onValue({ marketingResult in
+                    completion(.success(marketingResult))
+                })
+
+                let marketingEnd = MarketingEnd(
+                    didResult: marketingEndDidResultCallbacker
+                )
                 let marketingEndPresentation = Presentation(
                     marketingEnd,
                     style: .modally(
@@ -54,13 +62,8 @@ extension Marketing: Presentable {
                     options: [.defaults, .prefersNavigationBarHidden(true)]
                 )
 
-                bag += viewController.present(marketingEndPresentation).onValue { marketingResult in
-                    guard let marketingResult = marketingResult else {
-                        scrollToCallbacker.callAll(with: .first)
-                        return
-                    }
-
-                    completion(.success(marketingResult))
+                bag += viewController.present(marketingEndPresentation).onValue { _ in
+                    scrollToCallbacker.callAll(with: .first)
                 }
             })
 
@@ -92,11 +95,7 @@ extension Marketing: Presentable {
                 rowsSignal.value = rows
             }
 
-            return Disposer {
-                bag += Signal(after: 1).onValue({ _ in
-                    bag.dispose()
-                })
-            }
+            return DelayedDisposer(bag, delay: 1)
         })
     }
 }

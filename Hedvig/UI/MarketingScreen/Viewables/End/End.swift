@@ -109,7 +109,11 @@ extension End: Viewable {
                 make.height.equalTo(30)
             }
 
-            return bag
+            bag += events.removeAfter.set({ _ -> TimeInterval in
+                2
+            })
+
+            return DelayedDisposer(bag, delay: 2)
         })
     }
 }
