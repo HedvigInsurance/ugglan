@@ -14,97 +14,27 @@ struct End {
     let dismissGesture: Signal<UIPanGestureRecognizer>
 }
 
-class CenterAllStackView: UIStackView {
-    let horizontalStackView = UIStackView()
-    let internalStackView = UIStackView()
-
-    override var alignment: UIStackView.Alignment {
-        get {
-            return internalStackView.alignment
-        }
-        set(newValue) {
-            internalStackView.alignment = newValue
-        }
-    }
-
-    override var axis: NSLayoutConstraint.Axis {
-        get {
-            return internalStackView.axis
-        }
-        set(newValue) {
-            internalStackView.axis = newValue
-        }
-    }
-
-    override var spacing: CGFloat {
-        get {
-            return internalStackView.spacing
-        }
-        set(newValue) {
-            internalStackView.spacing = newValue
-        }
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        super.alignment = .center
-        super.axis = .vertical
-
-        horizontalStackView.alignment = .center
-        horizontalStackView.axis = .horizontal
-
-        addArrangedSubview(horizontalStackView)
-
-        horizontalStackView.addArrangedSubview(internalStackView)
-    }
-
-    required init(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func addArrangedSubview(_ view: UIView) {
-        if view == horizontalStackView {
-            super.addArrangedSubview(view)
-            return
-        }
-
-        internalStackView.addArrangedSubview(view)
-    }
-}
-
 extension End: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = CenterAllStackView()
-        view.alignment = .center
-        view.axis = .vertical
-        view.spacing = 20
-        view.alpha = 0
+    func materialize(events: ViewableEvents) -> (UIView, Future<MarketingResult>) {
+        let view = UIView()
+
+        let stackView = CenterAllStackView()
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        stackView.alpha = 0
+
+        view.addSubview(stackView)
 
         let bag = DisposeBag()
 
         let happyAvatar = HappyAvatar()
-        bag += view.addArangedSubview(happyAvatar)
+        bag += stackView.addArangedSubview(happyAvatar)
 
         let sayHello = SayHello()
-        bag += view.addArangedSubview(sayHello)
+        bag += stackView.addArangedSubview(sayHello)
 
-        let newMemberButton = NewMemberButton(style: .endScreen) {}
-        bag += view.addArangedSubview(newMemberButton)
-
-        let existingMemberButtonContainerView = UIView()
-        existingMemberButtonContainerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
-            make.bottom.equalTo(safeArea.snp.bottom)
-            make.width.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.height.equalTo(40)
-        }
-
-        let existingMemberButton = ExistingMemberButton {}
-        bag += existingMemberButtonContainerView.add(existingMemberButton)
-
-        view.addSubview(existingMemberButtonContainerView)
-
-        bag += view.didLayoutSignal.take(first: 1).onValue { _ in
+        bag += stackView.didLayoutSignal.take(first: 1).onValue { _ in
             let marketingScreenButton = SharedElement.retreive(
                 for: SharedElementIdentities.newMemberButtonMarketingScreen
             )
@@ -137,11 +67,17 @@ extension End: Viewable {
             }
         }
 
-        _ = view.didMoveToWindowSignal.delay(by: 0.1).animated(
+        _ = stackView.didMoveToWindowSignal.delay(by: 0.1).animated(
             style: AnimationStyle.easeOut(duration: 0.5)
         ) {
-            view.alpha = 1
+            stackView.alpha = 1
         }
+
+        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in
+            make.center.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalToSuperview()
+        })
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in
             make.center.equalToSuperview()
@@ -149,6 +85,29 @@ extension End: Viewable {
             make.height.equalToSuperview()
         })
 
-        return (view, bag)
+        return (view, Future { completion in
+            let newMemberButton = NewMemberButton(style: .endScreen) {
+                completion(.success(.onboard))
+            }
+            bag += stackView.addArangedSubview(newMemberButton)
+
+            let existingMemberButtonContainerView = UIView()
+
+            let existingMemberButton = ExistingMemberButton {
+                completion(.success(.login))
+            }
+            bag += existingMemberButtonContainerView.add(existingMemberButton)
+
+            view.addSubview(existingMemberButtonContainerView)
+
+            bag += existingMemberButtonContainerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
+                make.bottom.equalTo(safeArea)
+                make.centerX.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalTo(30)
+            }
+
+            return bag
+        })
     }
 }

@@ -23,7 +23,7 @@ extension MemberActionButtons: Viewable {
         let stackView = UIStackView()
         stackView.alignment = .center
         stackView.axis = .vertical
-        stackView.spacing = 10
+        stackView.spacing = 15
 
         stackView.alpha = 0
         stackView.transform = CGAffineTransform(translationX: 0, y: 15)
@@ -39,23 +39,16 @@ extension MemberActionButtons: Viewable {
         bag += stackView.addArangedSubview(existingMemberButton)
 
         _ = stackView.didMoveToWindowSignal.delay(by: 0.75).animated(
-            style: AnimationStyle.easeOut(duration: 0.25)
+            style: SpringAnimationStyle.lightBounce()
         ) {
             stackView.alpha = 1
             stackView.transform = CGAffineTransform.identity
         }
 
-        bag += events.wasAdded.onValue {
-            stackView.snp.makeConstraints({ make in
-                guard let superview = stackView.superview else { return }
-                make.width.equalToSuperview().inset(10)
-                make.centerX.equalToSuperview()
-                if #available(iOS 11.0, *) {
-                    make.bottom.equalTo(superview.safeAreaLayoutGuide.snp.bottom)
-                } else {
-                    make.bottom.equalToSuperview()
-                }
-            })
+        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
+            make.width.equalToSuperview().inset(10)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeArea)
         }
 
         return (stackView, bag)

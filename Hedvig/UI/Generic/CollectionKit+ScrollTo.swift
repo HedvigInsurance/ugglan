@@ -24,7 +24,7 @@ extension CollectionKit {
         view.setContentOffset(
             offset: CGPoint(x: 0, y: 0),
             timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut),
-            duration: 0.3
+            duration: 0.8
         )
     }
 

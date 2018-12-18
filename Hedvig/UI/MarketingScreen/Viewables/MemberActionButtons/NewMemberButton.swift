@@ -82,8 +82,8 @@ extension NewMemberButton: Viewable {
 
         bag += events.wasAdded.onValue {
             button.snp.makeConstraints({ make in
-                make.width.equalTo(button.intrinsicContentSize.width + 40)
-                make.height.equalTo(40)
+                make.width.equalTo(button.intrinsicContentSize.width + 60)
+                make.height.equalTo(50)
             })
         }
 

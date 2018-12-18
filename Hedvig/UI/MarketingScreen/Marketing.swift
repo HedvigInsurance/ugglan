@@ -52,11 +52,16 @@ extension Marketing: Presentable {
                         capturesStatusBarAppearance: true
                     ),
                     options: [.defaults, .prefersNavigationBarHidden(true)]
-                ).onDismiss {
-                    scrollToCallbacker.callAll(with: .first)
-                }
+                )
 
-                bag += viewController.present(marketingEndPresentation)
+                bag += viewController.present(marketingEndPresentation).onValue { marketingResult in
+                    guard let marketingResult = marketingResult else {
+                        scrollToCallbacker.callAll(with: .first)
+                        return
+                    }
+
+                    completion(.success(marketingResult))
+                }
             })
 
             let rowsSignal = ReadWriteSignal<[MarketingStory]>([])

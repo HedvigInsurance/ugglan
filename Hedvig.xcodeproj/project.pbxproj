@@ -13,6 +13,7 @@
 		EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD421C7BFA000078D65 /* TextStyle.swift */; };
 		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
+		EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
@@ -123,6 +124,7 @@
 		EB034BD421C7BFA000078D65 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
+		EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterAllStackView.swift; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaContainer.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */,
 				EBECC42121C795E300716BEA /* Flow+PanGesture.swift */,
 				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
+				EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -885,6 +888,7 @@
 				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
+				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
 				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
 				EBECC42521C7A03A00716BEA /* ClosureHandler.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,

@@ -13,19 +13,18 @@ import SnapKit
 import UIKit
 
 protocol Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable)
+    associatedtype Matter
+    associatedtype Result
+
+    func materialize(events: ViewableEvents) -> (Matter, Result)
 }
 
 struct ViewableEvents {
     let wasAdded: Signal<Void>
-    let removeAfter = Delegate<Void, TimeInterval>()
-    let willRemove: Signal<Void>
 
     init(
-        wasAddedCallbacker: Callbacker<Void>,
-        willRemoveCallbacker: Callbacker<Void>
+        wasAddedCallbacker: Callbacker<Void>
     ) {
         wasAdded = wasAddedCallbacker.signal()
-        willRemove = willRemoveCallbacker.signal()
     }
 }

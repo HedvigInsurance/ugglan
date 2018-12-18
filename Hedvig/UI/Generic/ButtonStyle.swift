@@ -39,7 +39,7 @@ extension ButtonStyle {
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
-                        cornerRadius: 20,
+                        cornerRadius: 25,
                         borderEdges: UIRectEdge()
                     )
                 ),
@@ -60,7 +60,7 @@ extension ButtonStyle {
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
-                        cornerRadius: 20,
+                        cornerRadius: 25,
                         borderEdges: UIRectEdge()
                     )
                 ),
@@ -81,7 +81,7 @@ extension ButtonStyle {
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
-                        cornerRadius: 20,
+                        cornerRadius: 25,
                         borderEdges: UIRectEdge()
                     )
                 ),
@@ -102,7 +102,7 @@ extension ButtonStyle {
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
-                        cornerRadius: 20,
+                        cornerRadius: 25,
                         borderEdges: UIRectEdge()
                     )
                 ),
@@ -165,7 +165,7 @@ extension ButtonStyle {
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
-                        cornerRadius: 10,
+                        cornerRadius: 15,
                         borderEdges: UIRectEdge()
                     )
                 ),
@@ -186,7 +186,7 @@ extension ButtonStyle {
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
-                        cornerRadius: 10,
+                        cornerRadius: 15,
                         borderEdges: UIRectEdge()
                     )
                 ),
