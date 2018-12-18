@@ -13,36 +13,104 @@ import UIKit
 private let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 
 extension UIView {
-    func add<V: Viewable>(_ viewable: V, onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure) -> V.Result where V.Matter == UIView {
+    func materializeViewable<V: Viewable>(
+        viewable: V
+    ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
         )
-        let (view, matter) = viewable.materialize(events: viewableEvents)
+        let (matter, result) = viewable.materialize(events: viewableEvents)
 
-        addSubview(view)
-        onCreate(view)
+        addSubview(matter)
 
         wasAddedCallbacker.callAll()
 
-        return matter
+        return (matter, result, Disposer {
+            matter.removeFromSuperview()
+        })
+    }
+
+    func add<V: Viewable, FutureResult: Any>(
+        _ viewable: V,
+        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+    ) -> V.Result where V.Matter == UIView, V.Result == Future<FutureResult> {
+        let (matter, result, disposable) = materializeViewable(viewable: viewable)
+
+        onCreate(matter)
+
+        let bag = DisposeBag()
+
+        bag += result.onResult { _ in
+            disposable.dispose()
+            bag.dispose()
+        }
+
+        return result
+    }
+
+    func add<V: Viewable>(
+        _ viewable: V,
+        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+    ) -> V.Result where V.Matter == UIView, V.Result == Disposable {
+        let (matter, result, disposable) = materializeViewable(viewable: viewable)
+
+        onCreate(matter)
+
+        return Disposer {
+            result.dispose()
+            disposable.dispose()
+        }
+    }
+
+    func add<V: Viewable, SignalType: Any>(
+        _ viewable: V,
+        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+    ) -> V.Result where V.Matter == UIView, V.Result == Signal<SignalType> {
+        let (matter, result, disposable) = materializeViewable(viewable: viewable)
+
+        onCreate(matter)
+
+        let bag = DisposeBag()
+        bag += disposable
+
+        return Signal { callback in
+            bag += result.onValue(callback)
+            return bag
+        }
     }
 }
 
 extension UIStackView {
-    func addArangedSubview<V: Viewable>(_ viewable: V, onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure) -> V.Result where V.Matter == UIView {
+    func materializeArrangedViewable<V: Viewable>(
+        viewable: V
+    ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView {
         let wasAddedCallbacker = Callbacker<Void>()
-        let willRemoveCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
         )
-        let (view, matter) = viewable.materialize(events: viewableEvents)
+        let (matter, result) = viewable.materialize(events: viewableEvents)
 
-        addArrangedSubview(view)
-        onCreate(view)
+        addArrangedSubview(matter)
 
         wasAddedCallbacker.callAll()
 
-        return matter
+        return (matter, result, Disposer {
+            matter.removeFromSuperview()
+        })
+    }
+
+    func addArangedSubview<V: Viewable>(
+        _ viewable: V,
+        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+    ) -> V.Result where V.Matter == UIView, V.Result == Disposable {
+        let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
+
+        onCreate(matter)
+
+        return Disposer {
+            result.dispose()
+            disposable.dispose()
+        }
     }
 }
