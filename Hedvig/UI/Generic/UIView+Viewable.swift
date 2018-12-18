@@ -13,7 +13,8 @@ import UIKit
 private let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 
 extension UIView {
-    func materializeViewable<V: Viewable>(
+    // swiftlint:disable large-tuple
+    private func materializeViewable<V: Viewable>(
         viewable: V
     ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView {
         let wasAddedCallbacker = Callbacker<Void>()
@@ -30,6 +31,8 @@ extension UIView {
             matter.removeFromSuperview()
         })
     }
+
+    // swiftlint:enable large-tuple
 
     func add<V: Viewable, FutureResult: Any>(
         _ viewable: V,
@@ -82,7 +85,8 @@ extension UIView {
 }
 
 extension UIStackView {
-    func materializeArrangedViewable<V: Viewable>(
+    // swiftlint:disable large-tuple
+    private func materializeArrangedViewable<V: Viewable>(
         viewable: V
     ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView {
         let wasAddedCallbacker = Callbacker<Void>()
@@ -99,6 +103,8 @@ extension UIStackView {
             matter.removeFromSuperview()
         })
     }
+
+    // swiftlint:enable large-tuple
 
     func addArangedSubview<V: Viewable>(
         _ viewable: V,
