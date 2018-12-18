@@ -16,7 +16,7 @@ import UIKit
 struct MarketingEnd {}
 
 extension MarketingEnd: Presentable {
-    func materialize() -> (UIViewController, Signal<MarketingResult?>) {
+    func materialize() -> (UIViewController, Future<MarketingResult?>) {
         let viewController = UIViewController()
 
         let bag = DisposeBag()
@@ -97,17 +97,17 @@ extension MarketingEnd: Presentable {
             containerView.layer.mask = maskLayer
         }
 
-        return (viewController, Signal { callback in
+        return (viewController, Future { completion in
             let end = End(
                 dismissGesture: dismissGesture
             )
 
             bag += containerView.add(end).onValue({ result in
-                callback(result)
+                completion(.success(result))
             })
 
             bag += dismissGesture.delay(by: 0.2).onValue { _ in
-                callback(nil)
+                completion(.success(nil))
             }
 
             return bag

@@ -15,7 +15,7 @@ struct End {
 }
 
 extension End: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Signal<MarketingResult>) {
+    func materialize(events: ViewableEvents) -> (UIView, Future<MarketingResult>) {
         let view = UIView()
 
         let stackView = CenterAllStackView()
@@ -85,16 +85,16 @@ extension End: Viewable {
             make.height.equalToSuperview()
         })
 
-        return (view, Signal { callback in
+        return (view, Future { completion in
             let newMemberButton = NewMemberButton(style: .endScreen) {
-                callback(.onboard)
+                completion(.success(.onboard))
             }
             bag += stackView.addArangedSubview(newMemberButton)
 
             let existingMemberButtonContainerView = UIView()
 
             let existingMemberButton = ExistingMemberButton {
-                callback(.login)
+                completion(.success(.login))
             }
             bag += existingMemberButtonContainerView.add(existingMemberButton)
 
