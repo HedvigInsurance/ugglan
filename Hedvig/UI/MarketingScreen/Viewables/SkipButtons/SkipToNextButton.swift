@@ -52,7 +52,7 @@ extension SkipToNextButton: Viewable {
                 make.width.equalToSuperview()
                 make.right.equalTo(0)
                 make.top.equalTo(0)
-                make.height.equalToSuperview().inset(50)
+                make.height.equalToSuperview().inset(60)
             })
         }
 

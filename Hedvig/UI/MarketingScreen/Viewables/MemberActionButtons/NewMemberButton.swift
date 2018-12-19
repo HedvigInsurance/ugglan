@@ -36,15 +36,15 @@ extension NewMemberButton: Viewable {
 
         let button = UIButton()
         button.adjustsImageWhenHighlighted = false
+        
+        button.setTitle("Skaffa Hedvig")
 
         if style == .endScreen {
             bag += SharedElement.register(for: SharedElementIdentities.newMemberButtonEndScreen, view: button)
             button.style = .standardPurple
-            button.setTitle("Skaffa Hedvig")
         } else {
             bag += SharedElement.register(for: SharedElementIdentities.newMemberButtonMarketingScreen, view: button)
             button.style = .standardWhite
-            button.setTitle("Skaffa Hedvig")
         }
 
         bag += button.on(event: .touchDown).map({ _ -> ButtonStyle in
