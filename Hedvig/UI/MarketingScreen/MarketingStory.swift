@@ -160,12 +160,13 @@ class MarketingStoryVideoCell: UICollectionViewCell {
             self.videoPlayerLayer.player = self.videoPlayer
 
             if #available(iOS 10.0, *) {
-                self.videoPlayer.playImmediately(atRate: 1)
                 try? AVAudioSession.sharedInstance().setCategory(
                     AVAudioSession.Category.ambient,
                     mode: .default,
                     options: .mixWithOthers
                 )
+                try? AVAudioSession.sharedInstance().setActive(true)
+                self.videoPlayer.playImmediately(atRate: 1)
             } else {
                 self.videoPlayer.play()
             }
