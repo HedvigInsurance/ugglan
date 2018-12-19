@@ -23,7 +23,7 @@ extension SkipToPreviousButton: Viewable {
 
         let button = UIButton(title: "Tidigare", style: .invisible)
 
-        bag += button.on(event: .touchDown).feedback(type: .impactLight)
+        bag += button.on(event: .touchUpInside).feedback(type: .impactLight)
 
         bag += button.throttle(0.5).onValue(onScrollToPrevious)
 

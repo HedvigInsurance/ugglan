@@ -46,7 +46,7 @@ extension MemberActionButtons: Viewable {
         }
         bag += stackView.addArangedSubview(existingMemberButton)
 
-        _ = stackView.didMoveToWindowSignal.delay(by: 0.75).animated(
+        bag += stackView.didMoveToWindowSignal.animated(
             style: SpringAnimationStyle.lightBounce()
         ) {
             stackView.alpha = 1

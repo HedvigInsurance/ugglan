@@ -16,6 +16,7 @@
 		EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */; };
 		EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CD921C9256C00078D65 /* DelayedDisposer.swift */; };
 		EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */; };
+		EB034D6321CA63FC00078D65 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D6221CA63FB00078D65 /* Button.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
@@ -129,6 +130,7 @@
 		EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterAllStackView.swift; sourceTree = "<group>"; };
 		EB034CD921C9256C00078D65 /* DelayedDisposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayedDisposer.swift; sourceTree = "<group>"; };
 		EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceKit+RoundedCorners.swift"; sourceTree = "<group>"; };
+		EB034D6221CA63FB00078D65 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaContainer.swift; sourceTree = "<group>"; };
@@ -252,6 +254,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		EB034D6121CA63E600078D65 /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EB034D6221CA63FB00078D65 /* Button.swift */,
+			);
+			path = Viewables;
+			sourceTree = "<group>";
+		};
 		EB06FE65219EF131007DE1C9 /* SelectCollection */ = {
 			isa = PBXGroup;
 			children = (
@@ -293,6 +303,7 @@
 		EB328E6C21989BCB00CF0624 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
+				EB034D6121CA63E600078D65 /* Viewables */,
 				EBECC42321C7A02800716BEA /* GestureHandler */,
 				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
@@ -921,6 +932,7 @@
 				EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */,
 				EBECC41C21C39C5200716BEA /* SharedElement.swift in Sources */,
 				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
+				EB034D6321CA63FC00078D65 /* Button.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,

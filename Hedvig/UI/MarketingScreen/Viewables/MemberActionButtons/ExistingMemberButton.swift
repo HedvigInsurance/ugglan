@@ -20,45 +20,28 @@ extension ExistingMemberButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let button = UIButton(title: "Redan medlem? Logga in", style: .pillTransparentGray)
-        button.adjustsImageWhenHighlighted = false
+        let view = UIView()
 
-        bag += button.on(event: .touchDown).map({ _ -> ButtonStyle in
-            .pillTransparentGrayHighlighted
-        }).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
+        let button = Button(
+            title: "Redan medlem? Logga in",
+            type: .pillTransparent(backgroundColor: .darkGray, textColor: .white)
         )
 
-        bag += button.on(event: .touchDown).feedback(type: .selection)
-
-        bag += combineLatest(
-            button.on(event: .touchUpInside),
-            button.on(event: .touchUpOutside)
-        ).map({ _ -> ButtonStyle in
-            .pillTransparentGray
-        }).delay(by: 0.1).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
-
-        bag += button.on(event: .touchUpInside).onValue({ _ in
+        bag += button.onTapSignal.onValue {
             self.onTap()
-        })
+        }
+
+        bag += view.add(button)
 
         bag += events.wasAdded.onValue {
-            button.snp.makeConstraints({ make in
-                make.width.equalTo(button.intrinsicContentSize.width + 30)
-                make.height.equalTo(30)
+            view.snp.makeConstraints({ make in
                 make.bottom.equalToSuperview()
                 make.centerX.equalToSuperview()
+                make.height.equalTo(button.type.height())
+                make.width.equalToSuperview()
             })
         }
 
-        return (button, bag)
+        return (view, bag)
     }
 }

@@ -22,10 +22,10 @@ struct NewMemberButton {
 }
 
 extension SharedElementIdentities {
-    static let newMemberButtonEndScreen = SharedElementIdentity<UIButton>(
+    static let newMemberButtonEndScreen = SharedElementIdentity<UIView>(
         identifier: "newMemberButtonEndScreen"
     )
-    static let newMemberButtonMarketingScreen = SharedElementIdentity<UIButton>(
+    static let newMemberButtonMarketingScreen = SharedElementIdentity<UIView>(
         identifier: "newMemberButtonMarketingScreen"
     )
 }
@@ -34,59 +34,39 @@ extension NewMemberButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let button = UIButton()
-        button.adjustsImageWhenHighlighted = false
+        let view = UIView()
 
-        button.setTitle("Skaffa Hedvig")
+        let button = Button(
+            title: "Skaffa Hedvig",
+            type: .standard(
+                backgroundColor: style == .endScreen ? .purple : .white,
+                textColor: style == .endScreen ? .white : .black
+            )
+        )
 
         if style == .endScreen {
-            bag += SharedElement.register(for: SharedElementIdentities.newMemberButtonEndScreen, view: button)
-            button.style = .standardPurple
+            bag += SharedElement.register(
+                for: SharedElementIdentities.newMemberButtonEndScreen,
+                view: view
+            )
         } else {
-            bag += SharedElement.register(for: SharedElementIdentities.newMemberButtonMarketingScreen, view: button)
-            button.style = .standardWhite
+            bag += SharedElement.register(
+                for: SharedElementIdentities.newMemberButtonMarketingScreen,
+                view: view
+            )
         }
 
-        bag += button.on(event: .touchDown).map({ _ -> ButtonStyle in
-            self.style == .endScreen ? .standardPurpleHighlighted : .standardWhiteHighlighted
-        }).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
+        bag += view.add(button)
 
-        bag += button.on(event: .touchDown).feedback(type: .selection)
-
-        bag += button.on(event: .touchUpInside).map({ _ -> ButtonStyle in
-            self.style == .endScreen ? .standardPurple : .standardWhite
-        }).delay(by: 0.1).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
-
-        bag += button.on(event: .touchUpOutside).map({ _ -> ButtonStyle in
-            self.style == .endScreen ? .standardPurple : .standardWhite
-        }).delay(by: 0.1).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
-
-        bag += button.on(event: .touchUpInside).onValue({ _ in
+        bag += button.onTapSignal.onValue {
             self.onTap()
-        })
-
-        bag += events.wasAdded.onValue {
-            button.snp.makeConstraints({ make in
-                make.width.equalTo(button.intrinsicContentSize.width + 60)
-                make.height.equalTo(50)
-            })
         }
 
-        return (button, bag)
+        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+            make.width.equalToSuperview()
+            make.height.equalTo(button.type.height())
+        }
+
+        return (view, bag)
     }
 }
