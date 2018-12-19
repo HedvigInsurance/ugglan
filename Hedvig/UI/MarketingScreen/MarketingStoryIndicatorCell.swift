@@ -89,6 +89,7 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
     }
 
     func pause() {
+        started = false
         bag.dispose()
     }
 
