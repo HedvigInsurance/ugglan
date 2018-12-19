@@ -36,7 +36,7 @@ extension SkipToNextButton: Viewable {
             pauseBag += button.on(event: .touchUpInside).onValue({ _ in
                 if Date().timeIntervalSince(timeAtTouchDown) < 0.15 {
                     self.onScrollToNext()
-                    pauseBag += Signal(after: 0).feedback(type: .impactLight)
+                    bag += Signal(after: 0).feedback(type: .impactLight)
                 } else {
                     self.pausedCallbacker.callAll(with: false)
                 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina6_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -15,19 +15,21 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tBh-zb-z8w">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="Wordmark" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rbq-p4-rdJ">
-                                <rect key="frame" x="117" y="308" width="140" height="50"/>
+                                <rect key="frame" x="137" y="423" width="140" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="140" id="5xX-i0-ek1"/>
+                                    <constraint firstAttribute="height" constant="50" id="dUG-oJ-VIg"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Rbq-p4-rdJ" firstAttribute="top" secondItem="tBh-zb-z8w" secondAttribute="top" constant="308" id="GO8-2u-f9E"/>
-                            <constraint firstItem="Pky-kv-ePk" firstAttribute="bottom" secondItem="Rbq-p4-rdJ" secondAttribute="bottom" constant="309" id="g3i-sg-Bny"/>
-                            <constraint firstItem="Pky-kv-ePk" firstAttribute="trailing" secondItem="Rbq-p4-rdJ" secondAttribute="trailing" constant="118" id="mXo-Yr-SJQ"/>
-                            <constraint firstItem="Rbq-p4-rdJ" firstAttribute="leading" secondItem="tBh-zb-z8w" secondAttribute="leading" constant="117" id="nmP-7g-OzF"/>
+                            <constraint firstItem="Rbq-p4-rdJ" firstAttribute="centerY" secondItem="tBh-zb-z8w" secondAttribute="centerY" id="1D2-lJ-iEX"/>
+                            <constraint firstItem="Rbq-p4-rdJ" firstAttribute="centerX" secondItem="tBh-zb-z8w" secondAttribute="centerX" id="eei-iB-ocN"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Pky-kv-ePk"/>
                     </view>
@@ -38,6 +40,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Wordmark" width="71" height="23"/>
+        <image name="Wordmark" width="420" height="130"/>
     </resources>
 </document>

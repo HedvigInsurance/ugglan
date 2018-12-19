@@ -36,7 +36,7 @@ extension NewMemberButton: Viewable {
 
         let button = UIButton()
         button.adjustsImageWhenHighlighted = false
-        
+
         button.setTitle("Skaffa Hedvig")
 
         if style == .endScreen {

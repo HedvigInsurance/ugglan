@@ -37,7 +37,7 @@ extension Launch: Presentable {
             make.width.equalTo(210)
             make.height.equalTo(85)
             make.centerX.equalToSuperview().offset(-1)
-            make.centerY.equalToSuperview().offset(-21)
+            make.centerY.equalToSuperview().offset(-4)
         }
 
         animationView.play(fromProgress: 1, toProgress: 1, withCompletion: nil)
