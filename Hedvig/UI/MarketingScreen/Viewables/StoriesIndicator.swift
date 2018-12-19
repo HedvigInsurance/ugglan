@@ -132,7 +132,10 @@ extension StoriesIndicator: Viewable {
         bag += scrollToSignal
             .withLatestFrom(
                 combineLatest(marketingStoryIndicatorsSignal, currentFocusedStorySignal)
-            ).onValue({ direction, latestFrom in
+            )
+            .filter(predicate: { (_, latestFrom) -> Bool in
+                latestFrom.1 != nil
+            }).onValue({ direction, latestFrom in
                 let (marketingStoryIndicators, currentFocusedStory) = latestFrom
 
                 if direction == .first {
