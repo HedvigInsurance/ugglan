@@ -17,14 +17,10 @@
 		EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CD921C9256C00078D65 /* DelayedDisposer.swift */; };
 		EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */; };
 		EB034D6321CA63FC00078D65 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D6221CA63FB00078D65 /* Button.swift */; };
+		EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D6D21CCE59500078D65 /* AuthorizationToken.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
-		EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */; };
-		EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE61219EEB84007DE1C9 /* SelectCollectionView.swift */; };
-		EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */; };
-		EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB06FE66219EF150007DE1C9 /* SelectButton.swift */; };
 		EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */; };
-		EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6821988E9A00CF0624 /* SendButton.swift */; };
 		EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -42,15 +38,6 @@
 		EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15B21930A95006B5CE4 /* Assets.xcassets */; };
 		EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */; };
 		EB75E16A21930A95006B5CE4 /* ChatViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E16921930A95006B5CE4 /* ChatViewTest.swift */; };
-		EB75E184219331B5006B5CE4 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E183219331B5006B5CE4 /* AppState.swift */; };
-		EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E187219332AE006B5CE4 /* ChatViewController.swift */; };
-		EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E18B2193334F006B5CE4 /* ChatView.swift */; };
-		EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E190219337C2006B5CE4 /* DependenciesContainer.swift */; };
-		EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E19321933815006B5CE4 /* AppNavigation.swift */; };
-		EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E19721933BFD006B5CE4 /* InputFieldView.swift */; };
-		EB75E1A52197572E006B5CE4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A42197572E006B5CE4 /* Message.swift */; };
-		EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1A7219758E9006B5CE4 /* MessageView.swift */; };
-		EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB75E1AA21975CCC006B5CE4 /* ListView.swift */; };
 		EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */; };
 		EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */; };
 		EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */; };
@@ -72,16 +59,10 @@
 		EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */; };
 		EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC221B56B860027C9DE /* Logo.swift */; };
 		EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */; };
-		EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */; };
-		EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */; };
 		EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */; };
-		EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB5D219DC68700D5C8E1 /* SetMessages.swift */; };
-		EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB88DB5F219EB8C400D5C8E1 /* AuthorizationToken.swift */; };
 		EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */; };
 		EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAA21AB212F00C6FFA5 /* Marketing.swift */; };
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
-		EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C2219B0F2F00AFC30F /* SendMessage.swift */; };
-		EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049C4219B0F7E00AFC30F /* AppActions.swift */; };
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
@@ -99,10 +80,6 @@
 		EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC41721C2BD7E00716BEA /* HappyAvatar.swift */; };
 		EBECC41C21C39C5200716BEA /* SharedElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC41B21C39C5100716BEA /* SharedElement.swift */; };
 		EBECC42021C40F8600716BEA /* UIView+RelativeFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */; };
-		EBECC42221C795E300716BEA /* Flow+PanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42121C795E300716BEA /* Flow+PanGesture.swift */; };
-		EBECC42521C7A03A00716BEA /* ClosureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42421C7A03A00716BEA /* ClosureHandler.swift */; };
-		EBECC42721C7A0A200716BEA /* GestureClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42621C7A0A200716BEA /* GestureClosure.swift */; };
-		EBECC42921C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC42821C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,14 +108,10 @@
 		EB034CD921C9256C00078D65 /* DelayedDisposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayedDisposer.swift; sourceTree = "<group>"; };
 		EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceKit+RoundedCorners.swift"; sourceTree = "<group>"; };
 		EB034D6221CA63FB00078D65 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
+		EB034D6D21CCE59500078D65 /* AuthorizationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationToken.swift; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
-		EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaContainer.swift; sourceTree = "<group>"; };
-		EB06FE61219EEB84007DE1C9 /* SelectCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollectionView.swift; sourceTree = "<group>"; };
-		EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollectionViewCell.swift; sourceTree = "<group>"; };
-		EB06FE66219EF150007DE1C9 /* SelectButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectButton.swift; sourceTree = "<group>"; };
 		EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatSingleSelectResponse.graphql; sourceTree = "<group>"; };
-		EB328E6821988E9A00CF0624 /* SendButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendButton.swift; sourceTree = "<group>"; };
 		EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -155,16 +128,7 @@
 		EB75E16521930A95006B5CE4 /* HedvigTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HedvigTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB75E16921930A95006B5CE4 /* ChatViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewTest.swift; sourceTree = "<group>"; };
 		EB75E16B21930A95006B5CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EB75E183219331B5006B5CE4 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		EB75E187219332AE006B5CE4 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
-		EB75E18B2193334F006B5CE4 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
-		EB75E190219337C2006B5CE4 /* DependenciesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesContainer.swift; sourceTree = "<group>"; };
-		EB75E19321933815006B5CE4 /* AppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigation.swift; sourceTree = "<group>"; };
-		EB75E19721933BFD006B5CE4 /* InputFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputFieldView.swift; sourceTree = "<group>"; };
 		EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Hedvig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		EB75E1A42197572E006B5CE4 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		EB75E1A7219758E9006B5CE4 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
-		EB75E1AA21975CCC006B5CE4 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
 		EB7FEA8621AECA5B0027C9DE /* MarketingStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStory.swift; sourceTree = "<group>"; };
 		EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
 		EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ApolloClient+Flow.swift"; sourceTree = "<group>"; };
@@ -186,16 +150,10 @@
 		EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesIndicator.swift; sourceTree = "<group>"; };
 		EB7FEAC221B56B860027C9DE /* Logo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logo.swift; sourceTree = "<group>"; };
 		EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionKit+UpdateRows.swift"; sourceTree = "<group>"; };
-		EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertMessage.swift; sourceTree = "<group>"; };
-		EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicator.swift; sourceTree = "<group>"; };
 		EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Messages.graphql; sourceTree = "<group>"; };
-		EB88DB5D219DC68700D5C8E1 /* SetMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetMessages.swift; sourceTree = "<group>"; };
-		EB88DB5F219EB8C400D5C8E1 /* AuthorizationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationToken.swift; sourceTree = "<group>"; };
 		EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CreateSession.graphql; sourceTree = "<group>"; };
 		EB989BAA21AB212F00C6FFA5 /* Marketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketing.swift; sourceTree = "<group>"; };
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
-		EBC049C2219B0F2F00AFC30F /* SendMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessage.swift; sourceTree = "<group>"; };
-		EBC049C4219B0F7E00AFC30F /* AppActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActions.swift; sourceTree = "<group>"; };
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -213,10 +171,6 @@
 		EBECC41721C2BD7E00716BEA /* HappyAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HappyAvatar.swift; sourceTree = "<group>"; };
 		EBECC41B21C39C5100716BEA /* SharedElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedElement.swift; sourceTree = "<group>"; };
 		EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RelativeFrame.swift"; sourceTree = "<group>"; };
-		EBECC42121C795E300716BEA /* Flow+PanGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Flow+PanGesture.swift"; sourceTree = "<group>"; };
-		EBECC42421C7A03A00716BEA /* ClosureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosureHandler.swift; sourceTree = "<group>"; };
-		EBECC42621C7A0A200716BEA /* GestureClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureClosure.swift; sourceTree = "<group>"; };
-		EBECC42821C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+Closures.swift"; sourceTree = "<group>"; };
 		F3FFCEDFA7D852141148DF5A /* Pods-HedvigTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -262,16 +216,6 @@
 			path = Viewables;
 			sourceTree = "<group>";
 		};
-		EB06FE65219EF131007DE1C9 /* SelectCollection */ = {
-			isa = PBXGroup;
-			children = (
-				EB06FE61219EEB84007DE1C9 /* SelectCollectionView.swift */,
-				EB06FE63219EED29007DE1C9 /* SelectCollectionViewCell.swift */,
-				EB06FE66219EF150007DE1C9 /* SelectButton.swift */,
-			);
-			path = SelectCollection;
-			sourceTree = "<group>";
-		};
 		EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */ = {
 			isa = PBXGroup;
 			children = (
@@ -304,7 +248,6 @@
 			isa = PBXGroup;
 			children = (
 				EB034D6121CA63E600078D65 /* Viewables */,
-				EBECC42321C7A02800716BEA /* GestureHandler */,
 				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
 				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
@@ -320,7 +263,6 @@
 				EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */,
 				EBECC41B21C39C5100716BEA /* SharedElement.swift */,
 				EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */,
-				EBECC42121C795E300716BEA /* Flow+PanGesture.swift */,
 				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
 				EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */,
 				EB034CD921C9256C00078D65 /* DelayedDisposer.swift */,
@@ -383,13 +325,10 @@
 		EB75E15321930A94006B5CE4 /* Hedvig */ = {
 			isa = PBXGroup;
 			children = (
+				EB328E6C21989BCB00CF0624 /* Generic */,
 				EBC049D0219C87B300AFC30F /* Data */,
-				EBC049C1219B0F1B00AFC30F /* Actions */,
 				EB5ED9CD21985D37004CE441 /* Assets */,
-				EB75E19221933806006B5CE4 /* Navigation */,
-				EB75E18F219337B6006B5CE4 /* Dependencies */,
-				EB75E1852193328E006B5CE4 /* UI */,
-				EB75E182219331A8006B5CE4 /* State */,
+				EB75E1852193328E006B5CE4 /* Screens */,
 				EB75E15421930A94006B5CE4 /* AppDelegate.swift */,
 				EB75E15D21930A95006B5CE4 /* LaunchScreen.storyboard */,
 				EB75E16021930A95006B5CE4 /* Info.plist */,
@@ -406,91 +345,23 @@
 			path = HedvigTests;
 			sourceTree = "<group>";
 		};
-		EB75E182219331A8006B5CE4 /* State */ = {
-			isa = PBXGroup;
-			children = (
-				EB75E183219331B5006B5CE4 /* AppState.swift */,
-				EB75E1A42197572E006B5CE4 /* Message.swift */,
-				EB88DB5F219EB8C400D5C8E1 /* AuthorizationToken.swift */,
-			);
-			path = State;
-			sourceTree = "<group>";
-		};
-		EB75E1852193328E006B5CE4 /* UI */ = {
+		EB75E1852193328E006B5CE4 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
 				EBECC27C21BD373100716BEA /* LaunchScreen */,
 				EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */,
-				EB328E6C21989BCB00CF0624 /* Generic */,
 				EB75E18621933298006B5CE4 /* ChatScreen */,
 			);
-			path = UI;
+			path = Screens;
 			sourceTree = "<group>";
 		};
 		EB75E18621933298006B5CE4 /* ChatScreen */ = {
 			isa = PBXGroup;
 			children = (
-				EB75E19521933BE3006B5CE4 /* Subviews */,
-				EB75E187219332AE006B5CE4 /* ChatViewController.swift */,
-				EB75E18B2193334F006B5CE4 /* ChatView.swift */,
 				EBECC26921B9677800716BEA /* Chat.swift */,
 				EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */,
 			);
 			path = ChatScreen;
-			sourceTree = "<group>";
-		};
-		EB75E18F219337B6006B5CE4 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				EB75E190219337C2006B5CE4 /* DependenciesContainer.swift */,
-			);
-			path = Dependencies;
-			sourceTree = "<group>";
-		};
-		EB75E19221933806006B5CE4 /* Navigation */ = {
-			isa = PBXGroup;
-			children = (
-				EB75E19321933815006B5CE4 /* AppNavigation.swift */,
-			);
-			path = Navigation;
-			sourceTree = "<group>";
-		};
-		EB75E19521933BE3006B5CE4 /* Subviews */ = {
-			isa = PBXGroup;
-			children = (
-				EB75E1A921975CB9006B5CE4 /* ListView */,
-				EB75E1A6219758DC006B5CE4 /* Message */,
-				EB75E19621933BEB006B5CE4 /* InputField */,
-			);
-			path = Subviews;
-			sourceTree = "<group>";
-		};
-		EB75E19621933BEB006B5CE4 /* InputField */ = {
-			isa = PBXGroup;
-			children = (
-				EB06FE65219EF131007DE1C9 /* SelectCollection */,
-				EB75E19721933BFD006B5CE4 /* InputFieldView.swift */,
-				EB328E6821988E9A00CF0624 /* SendButton.swift */,
-				EB06FE5F219EE22E007DE1C9 /* SafeAreaContainer.swift */,
-			);
-			path = InputField;
-			sourceTree = "<group>";
-		};
-		EB75E1A6219758DC006B5CE4 /* Message */ = {
-			isa = PBXGroup;
-			children = (
-				EB75E1A7219758E9006B5CE4 /* MessageView.swift */,
-				EB88DB59219D63DF00D5C8E1 /* SendingIndicator.swift */,
-			);
-			path = Message;
-			sourceTree = "<group>";
-		};
-		EB75E1A921975CB9006B5CE4 /* ListView */ = {
-			isa = PBXGroup;
-			children = (
-				EB75E1AA21975CCC006B5CE4 /* ListView.swift */,
-			);
-			path = ListView;
 			sourceTree = "<group>";
 		};
 		EB7FEA9A21B03DFF0027C9DE /* Viewables */ = {
@@ -527,17 +398,6 @@
 			path = SkipButtons;
 			sourceTree = "<group>";
 		};
-		EBC049C1219B0F1B00AFC30F /* Actions */ = {
-			isa = PBXGroup;
-			children = (
-				EBC049C2219B0F2F00AFC30F /* SendMessage.swift */,
-				EBC049C4219B0F7E00AFC30F /* AppActions.swift */,
-				EB88DB57219D5F9D00D5C8E1 /* InsertMessage.swift */,
-				EB88DB5D219DC68700D5C8E1 /* SetMessages.swift */,
-			);
-			path = Actions;
-			sourceTree = "<group>";
-		};
 		EBC049D0219C87B300AFC30F /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -546,6 +406,7 @@
 				EBC049D1219C87DF00AFC30F /* schema.json */,
 				EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */,
 				EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */,
+				EB034D6D21CCE59500078D65 /* AuthorizationToken.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -566,16 +427,6 @@
 				EB034BD821C7DF0400078D65 /* SayHello.swift */,
 			);
 			path = End;
-			sourceTree = "<group>";
-		};
-		EBECC42321C7A02800716BEA /* GestureHandler */ = {
-			isa = PBXGroup;
-			children = (
-				EBECC42421C7A03A00716BEA /* ClosureHandler.swift */,
-				EBECC42621C7A0A200716BEA /* GestureClosure.swift */,
-				EBECC42821C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift */,
-			);
-			path = GestureHandler;
 			sourceTree = "<group>";
 		};
 		F42E0389CDD3147AF74CFD44 /* Frameworks */ = {
@@ -622,7 +473,6 @@
 				EB75E16121930A95006B5CE4 /* Sources */,
 				EB75E16221930A95006B5CE4 /* Frameworks */,
 				EB75E16321930A95006B5CE4 /* Resources */,
-				5B9E6CC4B380044A8158C4A4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -721,14 +571,10 @@
 				"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework",
 				"${BUILT_PRODUCTS_DIR}/FlowFeedback/FlowFeedback.framework",
 				"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework",
-				"${BUILT_PRODUCTS_DIR}/FlowOn/FlowOn.framework",
 				"${BUILT_PRODUCTS_DIR}/FormFramework/Form.framework",
-				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
-				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/PresentationFramework/Presentation.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
-				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
 				"${BUILT_PRODUCTS_DIR}/UICollectionView+AnimatedScroll/UICollectionView_AnimatedScroll.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 			);
@@ -740,44 +586,16 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowFeedback.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowOn.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Form.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Presentation.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UICollectionView_AnimatedScroll.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5B9E6CC4B380044A8158C4A4 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Katana/Katana.framework",
-				"${BUILT_PRODUCTS_DIR}/PinLayout/PinLayout.framework",
-				"${BUILT_PRODUCTS_DIR}/Tempura/Tempura.framework",
-				"${BUILT_PRODUCTS_DIR}/TempuraTesting/TempuraTesting.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Katana.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinLayout.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tempura.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TempuraTesting.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-HedvigTests/Pods-HedvigTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		660C5C5DFB5E6A4FFA6C9CD0 /* [CP] Check Pods Manifest.lock */ = {
@@ -867,74 +685,51 @@
 			files = (
 				EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */,
 				EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */,
-				EB88DB5E219DC68700D5C8E1 /* SetMessages.swift in Sources */,
-				EB75E184219331B5006B5CE4 /* AppState.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
 				EBECC42021C40F8600716BEA /* UIView+RelativeFrame.swift in Sources */,
 				EB7FEA9721B03DAE0027C9DE /* Viewable.swift in Sources */,
 				EB7FEAAD21B1459D0027C9DE /* TransitionStyle.swift in Sources */,
-				EB06FE62219EEB84007DE1C9 /* SelectCollectionView.swift in Sources */,
 				EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */,
-				EBECC42721C7A0A200716BEA /* GestureClosure.swift in Sources */,
-				EBECC42921C7A0DD00716BEA /* UIGestureRecognizer+Closures.swift in Sources */,
-				EB06FE67219EF150007DE1C9 /* SelectButton.swift in Sources */,
+				EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
-				EB06FE60219EE22E007DE1C9 /* SafeAreaContainer.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
-				EB75E188219332AE006B5CE4 /* ChatViewController.swift in Sources */,
 				EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */,
 				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
-				EB75E1AB21975CCC006B5CE4 /* ListView.swift in Sources */,
 				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
-				EB75E19421933815006B5CE4 /* AppNavigation.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
-				EB88DB58219D5F9D00D5C8E1 /* InsertMessage.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
-				EB88DB60219EB8C400D5C8E1 /* AuthorizationToken.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EBECC37E21C2B62B00716BEA /* MarketingStoryIndicator.swift in Sources */,
-				EB328E6921988E9A00CF0624 /* SendButton.swift in Sources */,
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
-				EBC049C5219B0F7E00AFC30F /* AppActions.swift in Sources */,
-				EBECC42521C7A03A00716BEA /* ClosureHandler.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
-				EB75E1A8219758E9006B5CE4 /* MessageView.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EB7FEAA421B068760027C9DE /* NewMemberButton.swift in Sources */,
 				EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */,
 				EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */,
-				EB75E18C2193334F006B5CE4 /* ChatView.swift in Sources */,
-				EB88DB5A219D63DF00D5C8E1 /* SendingIndicator.swift in Sources */,
 				EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift in Sources */,
-				EBECC42221C795E300716BEA /* Flow+PanGesture.swift in Sources */,
 				EB7FEAB521B180600027C9DE /* Stories.swift in Sources */,
 				EBECC27421BA86F000716BEA /* MarketingEndScreen.swift in Sources */,
 				EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */,
-				EBC049C3219B0F2F00AFC30F /* SendMessage.swift in Sources */,
-				EB75E191219337C2006B5CE4 /* DependenciesContainer.swift in Sources */,
 				EBECC27B21BD372B00716BEA /* Launch.swift in Sources */,
-				EB06FE64219EED29007DE1C9 /* SelectCollectionViewCell.swift in Sources */,
 				EBECC41C21C39C5200716BEA /* SharedElement.swift in Sources */,
-				EB75E1A52197572E006B5CE4 /* Message.swift in Sources */,
 				EB034D6321CA63FC00078D65 /* Button.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
-				EB75E19821933BFD006B5CE4 /* InputFieldView.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,

@@ -12,7 +12,7 @@ import Foundation
 import UIKit
 
 struct End {
-    let dismissGesture: Signal<UIPanGestureRecognizer>
+    let dismissSignal: Signal<Void>
 }
 
 extension End: Viewable {
@@ -44,7 +44,7 @@ extension End: Viewable {
             )
 
             if let marketingScreenButton = marketingScreenButton, let endScreenButton = endScreenButton {
-                bag += self.dismissGesture.map({ _ -> CGAffineTransform in
+                bag += self.dismissSignal.map({ _ -> CGAffineTransform in
                     CGAffineTransform.identity
                 }).bindTo(animate: AnimationStyle.easeOut(duration: 0.3), marketingScreenButton, \.transform)
 

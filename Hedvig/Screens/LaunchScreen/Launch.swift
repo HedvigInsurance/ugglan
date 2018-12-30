@@ -34,10 +34,10 @@ extension Launch: Presentable {
         containerView.addSubview(animationView)
 
         animationView.snp.makeConstraints { make in
-            make.width.equalTo(210)
-            make.height.equalTo(85)
-            make.centerX.equalToSuperview().offset(-1)
-            make.centerY.equalToSuperview().offset(-4)
+            make.width.equalTo(211)
+            make.height.equalTo(86)
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-3)
         }
 
         animationView.play(fromProgress: 1, toProgress: 1, withCompletion: nil)
@@ -48,18 +48,18 @@ extension Launch: Presentable {
                 animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
             })
 
-            bag += self.hasLoadedSignal.delay(
+            bag += self.hasLoadedSignal.debug().delay(
                 by: 0.6
             ).animated(
                 style: AnimationStyle.easeOut(duration: 0.5)
             ) {
                 animationView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            }.animated(
+            }.debug().animated(
                 style: AnimationStyle.easeOut(duration: 0.5)
             ) {
                 containerView.alpha = 0
                 animationView.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            }.onValue { _ in
+            }.debug().onValue { _ in
                 completion(.success(()))
             }
 

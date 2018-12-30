@@ -7,7 +7,6 @@
 //
 
 import Flow
-import FlowOn
 import Form
 import Foundation
 import SnapKit
@@ -24,7 +23,7 @@ extension SkipToNextButton: Viewable {
 
         let button = UIButton(title: "Nästa", style: .invisible)
 
-        bag += button.on(event: .touchDown).onValue({ _ in
+        bag += button.signal(for: .touchDown).onValue({ _ in
             let timeAtTouchDown = Date()
 
             let pauseBag = DisposeBag()
@@ -33,7 +32,7 @@ extension SkipToNextButton: Viewable {
                 self.pausedCallbacker.callAll(with: true)
             })
 
-            pauseBag += button.on(event: .touchUpInside).onValue({ _ in
+            pauseBag += button.signal(for: .touchUpInside).onValue({ _ in
                 if Date().timeIntervalSince(timeAtTouchDown) < 0.15 {
                     self.onScrollToNext()
                     bag += Signal(after: 0).feedback(type: .impactLight)

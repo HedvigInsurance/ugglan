@@ -7,10 +7,9 @@
 //
 
 import Foundation
-import Tempura
 import UIKit
 
-class Icon: UIView, View {
+class Icon: UIView {
     let image = UIImageView()
     let iconName: String!
     let iconWidth: CGFloat!
@@ -35,17 +34,16 @@ class Icon: UIView, View {
         if let icon = UIImage(named: iconName) {
             image.image = icon
             addSubview(image)
+
+            image.contentMode = .scaleAspectFit
+
+            image.snp.makeConstraints { make in
+                make.width.equalTo(iconWidth)
+            }
         }
     }
 
     func style() {}
 
     func update() {}
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        image.pin.width(iconWidth).aspectRatio()
-        pin.center()
-        pin.size(of: image)
-    }
 }

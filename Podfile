@@ -7,8 +7,6 @@ target 'Hedvig' do
   # Pods for Hedvig
   pod 'DeviceKit', '~> 1.3'
   pod 'lottie-ios'
-  pod 'Tempura'
-  pod 'PinLayout'
   pod 'SwiftLint'
   pod 'DynamicColor', '~> 4.0.2'
   pod 'SwiftFormat/CLI'
@@ -20,14 +18,10 @@ target 'Hedvig' do
   pod 'FormFramework', git: 'https://github.com/hedviginsurance/form.git'
   pod 'SnapKit', '~> 4.0.0'
   pod 'UICollectionView+AnimatedScroll', git: 'https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git'
-  pod 'FlowOn', git: 'https://github.com/HedvigInsurance/FlowOn.git'
   pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
 
   target 'HedvigTests' do
     inherit! :search_paths
     # Pods for testing
-    pod 'TempuraTesting'
-    pod 'Tempura'
-    pod 'PinLayout'
   end
 end

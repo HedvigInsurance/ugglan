@@ -149,7 +149,7 @@ extension Button: Viewable {
             button.setTitle(title)
         }
 
-        bag += button.on(event: .touchDown).debug().map({ _ -> ButtonStyle in
+        bag += button.signal(for: .touchDown).map({ _ -> ButtonStyle in
             highlightedStyle
         }).bindTo(
             transition: button,
@@ -158,14 +158,14 @@ extension Button: Viewable {
             \.style
         )
 
-        let touchUpInside = button.on(event: .touchUpInside)
+        let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
 
         bag += touchUpInside.map({ _ -> Void in
             ()
         }).bindTo(onTapReadWriteSignal)
 
-        bag += touchUpInside.debug().map({ _ -> ButtonStyle in
+        bag += touchUpInside.map({ _ -> ButtonStyle in
             style
         }).delay(by: 0.1).bindTo(
             transition: button,
@@ -174,7 +174,7 @@ extension Button: Viewable {
             \.style
         )
 
-        bag += button.on(event: .touchUpOutside).map({ _ -> ButtonStyle in
+        bag += button.signal(for: .touchUpOutside).map({ _ -> ButtonStyle in
             style
         }).bindTo(
             transition: button,
@@ -183,7 +183,7 @@ extension Button: Viewable {
             \.style
         )
 
-        bag += button.on(event: .touchCancel).map({ _ -> ButtonStyle in
+        bag += button.signal(for: .touchCancel).map({ _ -> ButtonStyle in
             style
         }).bindTo(
             transition: button,

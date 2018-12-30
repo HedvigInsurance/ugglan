@@ -61,7 +61,8 @@ extension SignalProvider {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
 
-        bag += onValue { value in
+        bag += onValueDisposePrevious { value in
+            let innerBag = bag.innerBag()
             let style = mapStyle(value)
             UIView.animate(
                 withDuration: style.duration,
@@ -71,10 +72,11 @@ extension SignalProvider {
                     animations(value)
                 },
                 completion: { _ in
-                    bag.dispose()
+                    innerBag.dispose()
                     callbacker.callAll(with: value)
                 }
             )
+            return innerBag
         }
 
         return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
@@ -87,7 +89,8 @@ extension SignalProvider {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
 
-        bag += onValue { value in
+        bag += onValueDisposePrevious { value in
+            let innerBag = bag.innerBag()
             let style = mapStyle(value)
             UIView.animate(
                 withDuration: style.duration,
@@ -99,10 +102,12 @@ extension SignalProvider {
                     animations(value)
                 },
                 completion: { _ in
-                    bag.dispose()
+                    innerBag.dispose()
                     callbacker.callAll(with: value)
                 }
             )
+
+            return innerBag
         }
 
         return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
@@ -116,7 +121,9 @@ extension SignalProvider {
 
         let bag = DisposeBag()
 
-        bag += onValue { value in
+        bag += onValueDisposePrevious { value in
+            let innerBag = bag.innerBag()
+
             UIView.animate(
                 withDuration: style.duration,
                 delay: style.delay,
@@ -125,10 +132,12 @@ extension SignalProvider {
                     animations(value)
                 },
                 completion: { _ in
-                    bag.dispose()
+                    innerBag.dispose()
                     callbacker.callAll(with: value)
                 }
             )
+
+            return innerBag
         }
 
         return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
@@ -142,7 +151,9 @@ extension SignalProvider {
 
         let bag = DisposeBag()
 
-        bag += onValue { value in
+        bag += onValueDisposePrevious { value in
+            let innerBag = bag.innerBag()
+
             UIView.animate(
                 withDuration: style.duration,
                 delay: style.delay,
@@ -153,10 +164,12 @@ extension SignalProvider {
                     animations(value)
                 },
                 completion: { _ in
-                    bag.dispose()
+                    innerBag.dispose()
                     callbacker.callAll(with: value)
                 }
             )
+
+            return innerBag
         }
 
         return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
