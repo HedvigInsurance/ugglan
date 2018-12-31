@@ -65,9 +65,16 @@ extension MarketingEnd: Presentable {
                     velocity.y > (containerView.bounds.height * 0.25)
             })
 
-        bag += cancelSignal.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            containerView.layer.mask = nil
-        }
+        bag += cancelSignal.animated(
+            mapStyle: {
+                Device.hasRoundedCorners ?
+                    AnimationStyle.easeOut(duration: 0, delay: 0.25) :
+                    AnimationStyle.easeOut(duration: 0.25)
+            },
+            animations: { _ in
+                containerView.layer.mask = nil
+            }
+        )
 
         bag += cancelSignal
             .map({ _ -> CGAffineTransform in
@@ -106,7 +113,8 @@ extension MarketingEnd: Presentable {
 
             if translation.y > 0 {
                 let targetCornerRadii: CGFloat = Device.hasRoundedCorners ? 38.5 : 15
-                let cornerRadii = min(translation.y / 50, 1) * targetCornerRadii
+                let targetTranslationY: CGFloat = Device.hasRoundedCorners ? 1 : 50
+                let cornerRadii = min(translation.y / targetTranslationY, 1) * targetCornerRadii
 
                 let maskLayer = CAShapeLayer()
                 maskLayer.path = UIBezierPath(
