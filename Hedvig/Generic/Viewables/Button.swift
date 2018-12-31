@@ -174,16 +174,10 @@ extension Button: Viewable {
             \.style
         )
 
-        bag += button.signal(for: .touchUpOutside).map({ _ -> ButtonStyle in
-            style
-        }).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
-
-        bag += button.signal(for: .touchCancel).map({ _ -> ButtonStyle in
+        bag += merge(
+            button.signal(for: .touchUpOutside),
+            button.signal(for: .touchCancel)
+        ).map({ _ -> ButtonStyle in
             style
         }).bindTo(
             transition: button,
