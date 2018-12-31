@@ -19,6 +19,41 @@ struct StoriesCollection {
     let storyDidLoadCallbacker: Callbacker<TableIndex>
 }
 
+extension StoriesCollection: CellForRow {
+    func registerCells(collectionView: UICollectionView) {
+        collectionView.registerCell(cellClass: MarketingStoryVideoCell.self)
+        collectionView.registerCell(cellClass: MarketingStoryImageCell.self)
+    }
+
+    func cellForRow(
+        collectionView: UICollectionView,
+        row: MarketingStory,
+        index: TableIndex
+    ) -> UICollectionViewCell {
+        if row.assetType() == .video {
+            let cell = collectionView.dequeueCell(cellType: MarketingStoryVideoCell.self, index: index)
+
+            cell.cellDidLoad = {
+                self.storyDidLoadCallbacker.callAll(with: index)
+            }
+
+            cell.play(marketingStory: row)
+
+            return cell
+        }
+
+        let cell = collectionView.dequeueCell(cellType: MarketingStoryImageCell.self, index: index)
+
+        cell.cellDidLoad = {
+            self.storyDidLoadCallbacker.callAll(with: index)
+        }
+
+        cell.show(marketingStory: row)
+
+        return cell
+    }
+}
+
 extension StoriesCollection: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
@@ -32,45 +67,7 @@ extension StoriesCollection: Viewable {
             table: Table(),
             layout: flowLayout,
             bag: bag,
-            cellForRow: { collectionView, marketingStory, index in
-                if marketingStory.assetType() == .video {
-                    collectionView.register(
-                        MarketingStoryVideoCell.self,
-                        forCellWithReuseIdentifier: "MarketingStoryVideoCell"
-                    )
-
-                    let cell = collectionView.dequeueReusableCell(
-                        withReuseIdentifier: "MarketingStoryVideoCell",
-                        for: IndexPath(row: index.row, section: index.section)
-                    ) as? MarketingStoryVideoCell
-
-                    cell?.cellDidLoad = {
-                        self.storyDidLoadCallbacker.callAll(with: index)
-                    }
-
-                    cell?.play(marketingStory: marketingStory)
-
-                    return cell ?? MarketingStoryVideoCell()
-                }
-
-                collectionView.register(
-                    MarketingStoryImageCell.self,
-                    forCellWithReuseIdentifier: "MarketingStoryImageCell"
-                )
-
-                let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: "MarketingStoryImageCell",
-                    for: IndexPath(row: index.row, section: index.section)
-                ) as? MarketingStoryImageCell
-
-                cell?.cellDidLoad = {
-                    self.storyDidLoadCallbacker.callAll(with: index)
-                }
-
-                cell?.show(marketingStory: marketingStory)
-
-                return cell ?? MarketingStoryImageCell()
-            }
+            cellForRow: self
         )
 
         collectionKit.view.backgroundColor = HedvigColors.darkGray

@@ -22,6 +22,30 @@ struct StoriesIndicator {
     let scrollTo: (_ direction: ScrollTo) -> Void
 }
 
+extension StoriesIndicator: CellForRow {
+    func registerCells(collectionView: UICollectionView) {
+        collectionView.registerCell(cellClass: MarketingStoryIndicatorCell.self)
+    }
+
+    func cellForRow(
+        collectionView: UICollectionView,
+        row: MarketingStoryIndicator,
+        index: TableIndex
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueCell(cellType: MarketingStoryIndicatorCell.self, index: index)
+
+        cell.prepare(marketingStoryIndicator: row)
+
+        if row.contentHasLoaded {
+            cell.start {
+                self.scrollTo(.next)
+            }
+        }
+
+        return cell
+    }
+}
+
 extension StoriesIndicator: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
@@ -37,27 +61,7 @@ extension StoriesIndicator: Viewable {
             table: Table(),
             layout: flowLayout,
             bag: bag,
-            cellForRow: { collectionView, marketingStoryIndicator, index in
-                collectionView.register(
-                    MarketingStoryIndicatorCell.self,
-                    forCellWithReuseIdentifier: "MarketingStoryIndicatorCell"
-                )
-
-                let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: "MarketingStoryIndicatorCell",
-                    for: IndexPath(row: index.row, section: index.section)
-                ) as? MarketingStoryIndicatorCell
-
-                cell?.prepare(marketingStoryIndicator: marketingStoryIndicator)
-
-                if marketingStoryIndicator.contentHasLoaded {
-                    cell?.start {
-                        self.scrollTo(.next)
-                    }
-                }
-
-                return cell ?? MarketingStoryIndicatorCell()
-            }
+            cellForRow: self
         )
         collectionKit.view.backgroundColor = UIColor.clear
 

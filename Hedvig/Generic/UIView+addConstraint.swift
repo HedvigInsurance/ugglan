@@ -24,12 +24,33 @@ extension UIView {
             bag += wasAdded.onValue({ _ in
                 self.snp.makeConstraints({ make in
                     if #available(iOS 11.0, *) {
-                        if let safeAreaLayoutGuide = self.superview?.safeAreaLayoutGuide, let safeAreaInsets = self.superview?.safeAreaInsets {
-                            completion(.success((make, SafeArea(insets: safeAreaInsets, layoutGuide: safeAreaLayoutGuide))))
+                        if let safeAreaLayoutGuide = self.superview?.safeAreaLayoutGuide,
+                            let safeAreaInsets = self.superview?.safeAreaInsets {
+                            completion(
+                                .success(
+                                    (
+                                        make,
+                                        SafeArea(
+                                            insets: safeAreaInsets,
+                                            layoutGuide: safeAreaLayoutGuide
+                                        )
+                                    )
+                                )
+                            )
                         }
                     }
 
-                    completion(.success((make, SafeArea(insets: self.layoutMargins, layoutGuide: self.layoutMarginsGuide))))
+                    completion(
+                        .success(
+                            (
+                                make,
+                                SafeArea(
+                                    insets: self.layoutMargins,
+                                    layoutGuide: self.layoutMarginsGuide
+                                )
+                            )
+                        )
+                    )
                 })
             })
 
