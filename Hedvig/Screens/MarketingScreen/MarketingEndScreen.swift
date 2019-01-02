@@ -47,13 +47,17 @@ extension MarketingEnd: Presentable {
         let panGestureRecognizer = UIPanGestureRecognizer()
         bag += containerView.install(panGestureRecognizer)
 
+        let getTargetHeight = {
+            containerView.bounds.height * 0.30
+        }
+
         let cancelSignal = panGestureRecognizer.signal(forState: .ended)
             .filter(predicate: { _ -> Bool in
                 let translation = panGestureRecognizer.translation(in: containerView)
                 let velocity = panGestureRecognizer.velocity(in: containerView)
 
-                return translation.y < (containerView.bounds.height * 0.25) &&
-                    velocity.y < (containerView.bounds.height * 0.25)
+                return translation.y < getTargetHeight() &&
+                    velocity.y < getTargetHeight()
             })
 
         let dismissSignal = panGestureRecognizer.signal(forState: .ended)
@@ -61,8 +65,8 @@ extension MarketingEnd: Presentable {
                 let translation = panGestureRecognizer.translation(in: containerView)
                 let velocity = panGestureRecognizer.velocity(in: containerView)
 
-                return translation.y > (containerView.bounds.height * 0.25) ||
-                    velocity.y > (containerView.bounds.height * 0.25)
+                return translation.y > getTargetHeight() ||
+                    velocity.y > getTargetHeight()
             })
 
         bag += cancelSignal.animated(
@@ -87,7 +91,7 @@ extension MarketingEnd: Presentable {
             return SpringAnimationStyle(
                 duration: 0.8,
                 damping: 20,
-                velocity: velocity.y / containerView.bounds.height,
+                velocity: max(velocity.y / containerView.bounds.height, 0.8),
                 delay: 0
             )
         }, animations: { _ in
