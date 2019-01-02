@@ -10,6 +10,8 @@ import DynamicColor
 import Foundation
 import UIKit
 
+extension HedvigColor: Decodable {}
+
 struct HedvigColors {
     static let transparent = UIColor.white.withAlphaComponent(0)
     static let white = UIColor.white

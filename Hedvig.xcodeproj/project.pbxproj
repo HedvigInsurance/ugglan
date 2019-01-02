@@ -19,6 +19,8 @@
 		EB034D6321CA63FC00078D65 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D6221CA63FB00078D65 /* Button.swift */; };
 		EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D6D21CCE59500078D65 /* AuthorizationToken.swift */; };
 		EB034D7021D9239100078D65 /* CellForRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D6F21D9239100078D65 /* CellForRow.swift */; };
+		EB034D7A21DCDCDD00078D65 /* MarketingStoryVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D7921DCDCDD00078D65 /* MarketingStoryVideoCell.swift */; };
+		EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D7B21DCDD3300078D65 /* MarketingStoryImageCell.swift */; };
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */; };
@@ -111,6 +113,8 @@
 		EB034D6221CA63FB00078D65 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		EB034D6D21CCE59500078D65 /* AuthorizationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationToken.swift; sourceTree = "<group>"; };
 		EB034D6F21D9239100078D65 /* CellForRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellForRow.swift; sourceTree = "<group>"; };
+		EB034D7921DCDCDD00078D65 /* MarketingStoryVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryVideoCell.swift; sourceTree = "<group>"; };
+		EB034D7B21DCDD3300078D65 /* MarketingStoryImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryImageCell.swift; sourceTree = "<group>"; };
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatSingleSelectResponse.graphql; sourceTree = "<group>"; };
@@ -218,9 +222,19 @@
 			path = Viewables;
 			sourceTree = "<group>";
 		};
+		EB034D7821DCDC8700078D65 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				EB034D7921DCDCDD00078D65 /* MarketingStoryVideoCell.swift */,
+				EB034D7B21DCDD3300078D65 /* MarketingStoryImageCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		EB06FE6A21A03AB2007DE1C9 /* MarketingScreen */ = {
 			isa = PBXGroup;
 			children = (
+				EB034D7821DCDC8700078D65 /* Cells */,
 				EB7FEA9A21B03DFF0027C9DE /* Viewables */,
 				EB989BAA21AB212F00C6FFA5 /* Marketing.swift */,
 				EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */,
@@ -696,10 +710,12 @@
 				EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */,
 				EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
+				EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
+				EB034D7A21DCDCDD00078D65 /* MarketingStoryVideoCell.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
 				EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */,
