@@ -19,8 +19,10 @@ extension Chat: Presentable {
 
         let viewController = UIViewController()
 
+        viewController.tabBarItem = UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
+
         let view = UIView()
-        view.backgroundColor = HedvigColors.white
+        view.backgroundColor = .purple
 
         viewController.view = view
 

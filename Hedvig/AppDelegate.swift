@@ -8,6 +8,7 @@
 
 import Apollo
 import Flow
+import Form
 import Presentation
 import UIKit
 
@@ -47,6 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
         )
 
+        DefaultStyling.installCustom()
+
         HedvigApolloClient.shared.initClient(environment: apolloEnvironment).onValue { client in
             let marketing = Marketing(client: client)
 
@@ -55,7 +58,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 style: .marketing,
                 options: .defaults
             ).onValue({ _ in
-                // self.bag += self.navigationController.present(chatPresentation)
+                let loggedIn = LoggedIn()
+
+                let loggedInPresentation = Presentation(
+                    loggedIn,
+                    style: .default,
+                    options: [.prefersNavigationBarHidden(true)]
+                )
+
+                self.bag += self.navigationController.present(loggedInPresentation)
             })
 
             self.bag += self.navigationController.present(marketingPresentation)

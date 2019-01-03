@@ -35,7 +35,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.white,
+                    color: UIColor.white,
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -56,7 +56,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.white.darkened(amount: 0.1),
+                    color: UIColor.white.darkened(amount: 0.1),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -77,7 +77,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.purple,
+                    color: UIColor.purple,
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -98,7 +98,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.purple.darkened(amount: 0.1),
+                    color: UIColor.purple.darkened(amount: 0.1),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -119,7 +119,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.black.withAlphaComponent(0.3),
+                    color: UIColor.black.withAlphaComponent(0.3),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -140,7 +140,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.black.withAlphaComponent(0.6),
+                    color: UIColor.black.withAlphaComponent(0.6),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -161,7 +161,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.darkGray.withAlphaComponent(0.6),
+                    color: UIColor.darkGray.withAlphaComponent(0.6),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -182,7 +182,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: HedvigColors.darkGray.withAlphaComponent(0.8),
+                    color: UIColor.darkGray.withAlphaComponent(0.8),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,

@@ -12,6 +12,6 @@ import Foundation
 extension TextStyle {
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
-        style.color = HedvigColors.black
+        style.color = .black
     }
 }

@@ -36,7 +36,7 @@ extension UIView {
 
     func add<V: Viewable, FutureResult: Any>(
         _ viewable: V,
-        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+        onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where V.Matter == UIView, V.Result == Future<FutureResult> {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
@@ -54,7 +54,7 @@ extension UIView {
 
     func add<V: Viewable>(
         _ viewable: V,
-        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+        onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where V.Matter == UIView, V.Result == Disposable {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
@@ -68,7 +68,7 @@ extension UIView {
 
     func add<V: Viewable, SignalType: Any>(
         _ viewable: V,
-        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+        onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where V.Matter == UIView, V.Result == Signal<SignalType> {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
@@ -108,7 +108,7 @@ extension UIStackView {
 
     func addArangedSubview<V: Viewable>(
         _ viewable: V,
-        onCreate: (_ view: UIView) -> Void = defaultOnCreateClosure
+        onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where V.Matter == UIView, V.Result == Disposable {
         let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
 

@@ -24,7 +24,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
     }
 
     func play(marketingStory: MarketingStory) {
-        backgroundColor = HedvigColors.from(
+        backgroundColor = UIColor.from(
             apollo: marketingStory.backgroundColor
         )
         duration = marketingStory.duration

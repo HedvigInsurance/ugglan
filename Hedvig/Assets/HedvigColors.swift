@@ -12,7 +12,7 @@ import UIKit
 
 extension HedvigColor: Decodable {}
 
-struct HedvigColors {
+extension UIColor {
     static let transparent = UIColor.white.withAlphaComponent(0)
     static let white = UIColor.white
     static let black = UIColor.black
@@ -26,37 +26,37 @@ struct HedvigColors {
     static let offWhite = UIColor(red: 0.98, green: 0.98, blue: 0.99, alpha: 1.0)
     static let green = UIColor(red: 0.11, green: 0.91, blue: 0.71, alpha: 1.0)
     static let pink = UIColor(red: 1.00, green: 0.54, blue: 0.50, alpha: 1.0)
-    static let grayBorder = HedvigColors.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
+    static let grayBorder = UIColor.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
 
     // swiftlint:disable cyclomatic_complexity
     static func from(apollo color: HedvigColor) -> UIColor {
         switch color {
         case .pink:
-            return HedvigColors.pink
+            return .pink
         case .black:
-            return HedvigColors.black
+            return .black
         case .blackPurple:
-            return HedvigColors.blackPurple
+            return .blackPurple
         case .offBlack:
-            return HedvigColors.offBlack
+            return .offBlack
         case .darkGray:
-            return HedvigColors.darkGray
+            return .darkGray
         case .turquoise:
-            return HedvigColors.turquoise
+            return .turquoise
         case .purple:
-            return HedvigColors.purple
+            return .purple
         case .lightGray:
-            return HedvigColors.lightGray
+            return .lightGray
         case .green:
-            return HedvigColors.green
+            return .green
         case .darkPurple:
-            return HedvigColors.darkPurple
+            return .darkPurple
         case .white:
-            return HedvigColors.white
+            return .white
         case .offWhite:
-            return HedvigColors.offWhite
+            return .offWhite
         case .__unknown:
-            return UIColor.white
+            return .white
         }
     }
 

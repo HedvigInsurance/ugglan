@@ -91,10 +91,10 @@ extension Button: Viewable {
         let style = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
             style.buttonType = .custom
 
-            let backgroundColor = HedvigColors.from(
+            let backgroundColor = UIColor.from(
                 apollo: self.type.backgroundColor()
             ).withAlphaComponent(self.type.backgroundOpacity())
-            let textColor = HedvigColors.from(apollo: self.type.textColor())
+            let textColor = UIColor.from(apollo: self.type.textColor())
 
             style.states = [
                 .normal: ButtonStateStyle(
@@ -118,10 +118,10 @@ extension Button: Viewable {
         let highlightedStyle = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
             style.buttonType = .custom
 
-            let backgroundColor = HedvigColors.from(
+            let backgroundColor = UIColor.from(
                 apollo: self.type.backgroundColor()
-            ).darkened(amount: 0.25).withAlphaComponent(self.type.backgroundOpacity())
-            let textColor = HedvigColors.from(apollo: self.type.textColor())
+            ).darkened(amount: 0.05).withAlphaComponent(self.type.backgroundOpacity())
+            let textColor = UIColor.from(apollo: self.type.textColor())
 
             style.states = [
                 .normal: ButtonStateStyle(

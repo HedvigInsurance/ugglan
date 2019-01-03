@@ -20,7 +20,7 @@ class MarketingStoryImageCell: UICollectionViewCell {
     }
 
     func show(marketingStory: MarketingStory) {
-        backgroundColor = HedvigColors.from(
+        backgroundColor = UIColor.from(
             apollo: marketingStory.backgroundColor
         )
 

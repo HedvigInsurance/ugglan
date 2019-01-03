@@ -22,7 +22,7 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
 
         layer.cornerRadius = 1.25
         clipsToBounds = true
-        backgroundColor = HedvigColors.white.withAlphaComponent(0.5)
+        backgroundColor = UIColor.white.withAlphaComponent(0.5)
 
         addSubview(progressView)
 
@@ -40,7 +40,7 @@ class MarketingStoryIndicatorCell: UICollectionViewCell {
         started = false
 
         if indicator.focused {
-            progressView.backgroundColor = HedvigColors.white
+            progressView.backgroundColor = UIColor.white
             progressView.transform = CGAffineTransform(translationX: -progressView.frame.width, y: 0)
             progressView.alpha = 1
         } else if indicator.shown {

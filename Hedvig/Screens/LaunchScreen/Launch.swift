@@ -25,7 +25,7 @@ extension Launch: Presentable {
 
         let viewController = UIViewController()
         let containerView = UIView()
-        containerView.backgroundColor = HedvigColors.white
+        containerView.backgroundColor = .white
         viewController.view = containerView
 
         let animationView = LOTAnimationView(name: "WordmarkAnimation")

@@ -70,7 +70,7 @@ extension StoriesCollection: Viewable {
             cellForRow: self
         )
 
-        collectionKit.view.backgroundColor = HedvigColors.darkGray
+        collectionKit.view.backgroundColor = UIColor.darkGray
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.bounces = false
         collectionKit.view.showsHorizontalScrollIndicator = false
