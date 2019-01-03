@@ -14,4 +14,14 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .black
     }
+
+    static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .black
+    }
+
+    static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
+        style.color = .darkGray
+    }
 }

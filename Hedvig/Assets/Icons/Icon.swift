@@ -11,16 +11,15 @@ import UIKit
 
 class Icon: UIView {
     let image = UIImageView()
-    let iconName: String!
+    let icon: ImageAsset!
     let iconWidth: CGFloat!
 
-    init(frame: CGRect, iconName: String!, iconWidth: CGFloat!) {
-        self.iconName = iconName
+    init(frame: CGRect, icon: ImageAsset, iconWidth: CGFloat) {
+        self.icon = icon
         self.iconWidth = iconWidth
         super.init(frame: frame)
 
         setup()
-        style()
     }
 
     required init?(coder _: NSCoder) {
@@ -31,19 +30,14 @@ class Icon: UIView {
         image.isUserInteractionEnabled = false
         isUserInteractionEnabled = false
 
-        if let icon = UIImage(named: iconName) {
-            image.image = icon
-            addSubview(image)
+        image.image = icon.image
+        addSubview(image)
 
-            image.contentMode = .scaleAspectFit
+        image.contentMode = .scaleAspectFit
 
-            image.snp.makeConstraints { make in
-                make.width.equalTo(iconWidth)
-            }
+        image.snp.makeConstraints { make in
+            make.width.equalTo(iconWidth)
+            make.center.equalToSuperview()
         }
     }
-
-    func style() {}
-
-    func update() {}
 }

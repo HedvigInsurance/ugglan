@@ -19,6 +19,7 @@ target 'Hedvig' do
   pod 'SnapKit', '~> 4.0.0'
   pod 'UICollectionView+AnimatedScroll', git: 'https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git'
   pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
+  pod 'SwiftGen'
 
   target 'HedvigTests' do
     inherit! :search_paths

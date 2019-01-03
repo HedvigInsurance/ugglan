@@ -14,9 +14,9 @@ private let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 
 extension UIView {
     // swiftlint:disable large_tuple
-    private func materializeViewable<V: Viewable>(
+    func materializeViewable<V: Viewable, VMatter: UIView>(
         viewable: V
-    ) -> (V.Matter, V.Result, DelayedDisposer) where V.Matter == UIView {
+    ) -> (V.Matter, V.Result, DelayedDisposer) where V.Matter == VMatter {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
@@ -34,10 +34,10 @@ extension UIView {
 
     // swiftlint:enable large_tuple
 
-    func add<V: Viewable, FutureResult: Any>(
+    func add<V: Viewable, VMatter: UIView, FutureResult: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == UIView, V.Result == Future<FutureResult> {
+    ) -> V.Result where V.Matter == VMatter, V.Result == Future<FutureResult> {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -52,10 +52,10 @@ extension UIView {
         return result
     }
 
-    func add<V: Viewable>(
+    func add<V: Viewable, VMatter: UIView>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == UIView, V.Result == Disposable {
+    ) -> V.Result where V.Matter == VMatter, V.Result == Disposable {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -66,10 +66,10 @@ extension UIView {
         }
     }
 
-    func add<V: Viewable, SignalType: Any>(
+    func add<V: Viewable, VMatter: UIView, SignalType: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == UIView, V.Result == Signal<SignalType> {
+    ) -> V.Result where V.Matter == VMatter, V.Result == Signal<SignalType> {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)

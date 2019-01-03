@@ -23,8 +23,12 @@ extension Logo: Viewable {
 
         let view = UIView()
 
-        let wordmarkIcon = Icon(frame: .zero, iconName: "WordmarkWhite", iconWidth: 90)
+        let wordmarkIcon = Icon(frame: .zero, icon: Asset.wordmarkWhite, iconWidth: 90)
         view.addSubview(wordmarkIcon)
+
+        wordmarkIcon.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
 
         bag += pausedSignal.onValue({ paused in
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {

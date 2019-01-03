@@ -13,6 +13,10 @@ import UIKit
 
 struct Profile {}
 
+enum ProfileRow {
+    case myInfo
+}
+
 extension Profile: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
@@ -26,12 +30,10 @@ extension Profile: Presentable {
         let form = FormView()
         let section = form.appendSection(header: nil, footer: nil, style: .default)
 
-        let row = RowView().prepend(
-            Icon(frame: .zero, iconName: "Wordmark", iconWidth: 50)
-        ).append(.chevron)
+        let myInfoRow = MyInfoRow()
 
-        bag += section.append(row).onValue {
-            print("row was selected")
+        bag += section.append(myInfoRow) { row in
+            bag += row.bindTo(myInfoRow)
         }
 
         let button = Button(

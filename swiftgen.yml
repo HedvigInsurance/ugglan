@@ -1,0 +1,6 @@
+xcassets:
+  inputs:
+    - Hedvig/Assets/Assets.xcassets
+  outputs:
+    - templateName: swift4
+      output: Hedvig/Assets/Assets.swift

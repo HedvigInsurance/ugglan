@@ -11,6 +11,10 @@
 		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
 		99584174A936697DB0FF9E1A /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */; };
 		EB00CBA221DE3DBC002A263B /* DefaultStyling.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */; };
+		EB00CBA421DE52FB002A263B /* IconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBA321DE52FB002A263B /* IconRow.swift */; };
+		EB00CBA621DE5392002A263B /* SectionView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBA521DE5392002A263B /* SectionView+Viewable.swift */; };
+		EB00CBA921DE6B07002A263B /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBA821DE6B07002A263B /* Assets.swift */; };
+		EB00CBAB21DE6E99002A263B /* MyInfoRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */; };
 		EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD421C7BFA000078D65 /* TextStyle.swift */; };
 		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
@@ -110,6 +114,10 @@
 		D806B7D70CD966A5F5BE4DBC /* Pods-HedvigUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigUITests/Pods-HedvigUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HedvigTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStyling.swift; sourceTree = "<group>"; };
+		EB00CBA321DE52FB002A263B /* IconRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconRow.swift; sourceTree = "<group>"; };
+		EB00CBA521DE5392002A263B /* SectionView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SectionView+Viewable.swift"; sourceTree = "<group>"; };
+		EB00CBA821DE6B07002A263B /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
+		EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyInfoRow.swift; sourceTree = "<group>"; };
 		EB034BD421C7BFA000078D65 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
@@ -228,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				EB034D6221CA63FB00078D65 /* Button.swift */,
+				EB00CBA321DE52FB002A263B /* IconRow.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -261,6 +270,7 @@
 		EB034D8721DE239300078D65 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
+				EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -321,6 +331,7 @@
 				EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */,
 				EB034D8521DE183800078D65 /* FormView+Viewable.swift */,
 				EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */,
+				EB00CBA521DE5392002A263B /* SectionView+Viewable.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -331,6 +342,7 @@
 				EB5ED9E021986666004CE441 /* Icons */,
 				EB5ED9D0219860A9004CE441 /* Fonts */,
 				EB75E15B21930A95006B5CE4 /* Assets.xcassets */,
+				EB00CBA821DE6B07002A263B /* Assets.swift */,
 				EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */,
 			);
 			path = Assets;
@@ -511,6 +523,7 @@
 				EBC049CA219B320400AFC30F /* Format Swift code */,
 				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
 				EBC049CD219C833B00AFC30F /* Run Script */,
+				EB00CBA721DE6A3F002A263B /* Swiftgen */,
 			);
 			buildRules = (
 			);
@@ -690,6 +703,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		EB00CBA721DE6A3F002A263B /* Swiftgen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Swiftgen;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$PODS_ROOT/SwiftGen/bin/swiftgen\n";
+		};
 		EB5ED9E5219874B3004CE441 /* Lint Swift code */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -754,8 +785,11 @@
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
+				EB00CBA621DE5392002A263B /* SectionView+Viewable.swift in Sources */,
+				EB00CBA421DE52FB002A263B /* IconRow.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
 				EB034D7A21DCDCDD00078D65 /* MarketingStoryVideoCell.swift in Sources */,
+				EB00CBA921DE6B07002A263B /* Assets.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
 				EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */,
@@ -770,6 +804,7 @@
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
+				EB00CBAB21DE6E99002A263B /* MyInfoRow.swift in Sources */,
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EBECC37E21C2B62B00716BEA /* MarketingStoryIndicator.swift in Sources */,
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,

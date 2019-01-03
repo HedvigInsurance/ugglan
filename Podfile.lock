@@ -25,6 +25,7 @@ PODS:
   - SnapKit (4.0.1)
   - Starscream (3.0.6)
   - SwiftFormat/CLI (0.35.9)
+  - SwiftGen (6.0.2)
   - SwiftLint (0.29.1)
   - "UICollectionView+AnimatedScroll (1.0.4)"
 
@@ -41,6 +42,7 @@ DEPENDENCIES:
   - lottie-ios
   - SnapKit (~> 4.0.0)
   - SwiftFormat/CLI
+  - SwiftGen
   - SwiftLint
   - "UICollectionView+AnimatedScroll (from `https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git`)"
 
@@ -56,6 +58,7 @@ SPEC REPOS:
     - SnapKit
     - Starscream
     - SwiftFormat
+    - SwiftGen
     - SwiftLint
 
 EXTERNAL SOURCES:
@@ -90,9 +93,10 @@ SPEC CHECKSUMS:
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftFormat: f1cf26ab5ce1f59aeaee018edc7e6d88e05bfb39
+  SwiftGen: e5b047067aa84082826a0c4f1c4c2ddc95bcf74c
   SwiftLint: 6772320e40b52049053a518c17db9b0634a0b45a
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: feeed0c1b34fcee3a6468023d95203dcb25a676d
+PODFILE CHECKSUM: be52209b0f5235d57a3f13c1159f7968d21e3f56
 
 COCOAPODS: 1.5.3
