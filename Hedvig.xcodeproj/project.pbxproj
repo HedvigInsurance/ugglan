@@ -33,7 +33,6 @@
 		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
 		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
 		EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */; };
-		EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -136,7 +135,6 @@
 		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
 		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
 		EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatSingleSelectResponse.graphql; sourceTree = "<group>"; };
-		EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -309,7 +307,6 @@
 			children = (
 				EB034D6121CA63E600078D65 /* Viewables */,
 				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
-				EB328E6A21989B7C00CF0624 /* CopyableLabel.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
 				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
 				EB7FEA9621B03DAE0027C9DE /* Viewable.swift */,
@@ -799,7 +796,6 @@
 				EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */,
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
-				EB328E6B21989B7C00CF0624 /* CopyableLabel.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
