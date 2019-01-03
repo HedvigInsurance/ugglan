@@ -13,18 +13,19 @@ import Foundation
 struct MyInfoRow {}
 
 extension MyInfoRow: Viewable {
-    func materialize(events: ViewableEvents) -> (RowView, Disposable) {
+    func materialize(events: ViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
         let myInfoRow = IconRow(
             title: "Min info",
-            subtitle: "blabla adam",
+            subtitle: "blabla",
             iconAsset: Asset.personalInformation
         )
 
-        let (rowView, innerBag) = myInfoRow.materialize(events: events)
-        bag += innerBag
+        bag += events.onSelect.onValue {
+            print("i was selected")
+        }
 
-        return (rowView, bag)
+        return (myInfoRow, bag)
     }
 }

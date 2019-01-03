@@ -15,11 +15,13 @@ private let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 extension UIView {
     // swiftlint:disable large_tuple
     func materializeViewable<V: Viewable, VMatter: UIView>(
-        viewable: V
+        viewable: V,
+        onSelectCallbacker: Callbacker<Void> = Callbacker<Void>()
     ) -> (V.Matter, V.Result, DelayedDisposer) where V.Matter == VMatter {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
-            wasAddedCallbacker: wasAddedCallbacker
+            wasAddedCallbacker: wasAddedCallbacker,
+            onSelectCallbacker: onSelectCallbacker
         )
         let (matter, result) = viewable.materialize(events: viewableEvents)
 
@@ -91,7 +93,8 @@ extension UIStackView {
     ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
-            wasAddedCallbacker: wasAddedCallbacker
+            wasAddedCallbacker: wasAddedCallbacker,
+            onSelectCallbacker: Callbacker<Void>()
         )
         let (matter, result) = viewable.materialize(events: viewableEvents)
 

@@ -32,9 +32,8 @@ extension Profile: Presentable {
 
         let myInfoRow = MyInfoRow()
 
-        bag += section.append(myInfoRow) { row in
-            bag += row.bindTo(myInfoRow)
-        }
+        bag += section.append(myInfoRow)
+        bag += section.append(myInfoRow)
 
         let button = Button(
             title: "I am a button",

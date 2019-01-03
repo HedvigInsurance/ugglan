@@ -23,9 +23,14 @@ struct ViewableEvents {
     let wasAdded: Signal<Void>
     let removeAfter = Delegate<Void, TimeInterval>()
 
+    /// signaled when viewable is selected, only used when inside a form
+    let onSelect: Signal<Void>
+
     init(
-        wasAddedCallbacker: Callbacker<Void>
+        wasAddedCallbacker: Callbacker<Void>,
+        onSelectCallbacker: Callbacker<Void>
     ) {
         wasAdded = wasAddedCallbacker.signal()
+        onSelect = onSelectCallbacker.signal()
     }
 }
