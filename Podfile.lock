@@ -79,7 +79,7 @@ CHECKOUT OPTIONS:
     :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
   PresentationFramework:
-    :commit: d19b7faf9a914c6756577f11ef540dc829572336
+    :commit: a8421b961b6a1d5cd1b43092bde1c4a977820048
     :git: https://github.com/hedviginsurance/presentation.git
   "UICollectionView+AnimatedScroll":
     :commit: b5a5e2b7f95713e74c0bfb623a99429b0489fa1f
