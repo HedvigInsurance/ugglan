@@ -17,6 +17,8 @@
 		EB00CBAB21DE6E99002A263B /* MyInfoRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */; };
 		EB00CBAE21DF63A7002A263B /* MyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBAD21DF63A7002A263B /* MyInfo.swift */; };
 		EB00CBB021DF8100002A263B /* UIWindow+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBAF21DF8100002A263B /* UIWindow+Presentation.swift */; };
+		EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBB121DFF144002A263B /* CircleLabel.swift */; };
+		EB00CBB421E026D9002A263B /* DynamicString.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBB321E026D9002A263B /* DynamicString.swift */; };
 		EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD421C7BFA000078D65 /* TextStyle.swift */; };
 		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
@@ -121,6 +123,8 @@
 		EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyInfoRow.swift; sourceTree = "<group>"; };
 		EB00CBAD21DF63A7002A263B /* MyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyInfo.swift; sourceTree = "<group>"; };
 		EB00CBAF21DF8100002A263B /* UIWindow+Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Presentation.swift"; sourceTree = "<group>"; };
+		EB00CBB121DFF144002A263B /* CircleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleLabel.swift; sourceTree = "<group>"; };
+		EB00CBB321E026D9002A263B /* DynamicString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicString.swift; sourceTree = "<group>"; };
 		EB034BD421C7BFA000078D65 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
@@ -247,6 +251,7 @@
 			children = (
 				EB034D6221CA63FB00078D65 /* Button.swift */,
 				EB00CBA321DE52FB002A263B /* IconRow.swift */,
+				EB00CBB121DFF144002A263B /* CircleLabel.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -343,6 +348,7 @@
 				EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */,
 				EB00CBA521DE5392002A263B /* SectionView+Viewable.swift */,
 				EB00CBAF21DF8100002A263B /* UIWindow+Presentation.swift */,
+				EB00CBB321E026D9002A263B /* DynamicString.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -811,6 +817,7 @@
 				EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */,
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
+				EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
@@ -825,6 +832,7 @@
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
+				EB00CBB421E026D9002A263B /* DynamicString.swift in Sources */,
 				EB7FEAA421B068760027C9DE /* NewMemberButton.swift in Sources */,
 				EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */,
 				EB034D8221DCFA9F00078D65 /* Profile.swift in Sources */,

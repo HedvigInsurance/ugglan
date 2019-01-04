@@ -27,4 +27,21 @@ extension FormView {
 
         return disposable
     }
+
+    func prepend<V: Viewable>(
+        _ viewable: V,
+        onCreate: @escaping (_ view: V.Matter, _ containerView: UIView) -> Void = { _, _ in }
+    ) -> Disposable where
+        V.Matter == UIView,
+        V.Result == Disposable,
+        V.Events == ViewableEvents {
+        let containerView = UIView()
+        prepend(containerView)
+
+        let disposable = containerView.add(viewable) { view in
+            onCreate(view, containerView)
+        }
+
+        return disposable
+    }
 }

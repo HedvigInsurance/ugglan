@@ -23,13 +23,27 @@ extension DefaultStyling {
         UINavigationBar.appearance().tintColor = .purple
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.black,
-            NSAttributedString.Key.font: HedvigFonts.soRayExtraBold!.withSize(16)
+            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
         ]
+
+        UIBarButtonItem.appearance().setTitleTextAttributes(
+            [
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
+            ],
+            for: .normal
+        )
+
+        UIBarButtonItem.appearance().setTitleTextAttributes(
+            [
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
+            ],
+            for: .highlighted
+        )
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: UIColor.black,
-                NSAttributedString.Key.font: HedvigFonts.soRayExtraBold!.withSize(30)
+                NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30)
             ]
         }
 

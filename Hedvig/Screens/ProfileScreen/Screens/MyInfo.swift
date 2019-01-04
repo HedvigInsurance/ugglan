@@ -20,22 +20,32 @@ extension MyInfo: Presentable {
         let viewController = UIViewController()
         viewController.displayableTitle = "Min info"
 
-        if #available(iOS 11.0, *) {
-            viewController.navigationItem.largeTitleDisplayMode = .never
+        let form = FormView()
+        let section = form.appendSection(header: "KONTAKTUPPGIFTER", footer: nil, style: .default)
+
+        let nameCircleText = DynamicString("Adam Pålsson")
+
+        let nameCircle = CircleLabel(
+            text: nameCircleText
+        )
+        bag += form.prepend(nameCircle) { _, containerView in
+            containerView.snp.makeConstraints({ make in
+                make.height.equalTo(200)
+            })
         }
 
-        let view = UIView()
-        view.backgroundColor = UIColor.black
-
-        let form = FormView()
-        let section = form.appendSection(header: nil, footer: nil, style: .default)
-
-        let myInfoRow = MyInfoRow(
-            presentingViewController: viewController
+        let nameTextField = UITextField(
+            value: "Adam Pålsson",
+            placeholder: "Namn",
+            style: .default
         )
+        nameTextField.isUserInteractionEnabled = false
+        nameTextField.textAlignment = .right
+        bag += nameTextField.bindTo(nameCircleText)
 
-        bag += section.append(myInfoRow)
-        bag += section.append(myInfoRow)
+        let nameRow = RowView().prepend("Namn").append(nameTextField)
+
+        section.append(nameRow)
 
         let button = Button(
             title: "Gå tillbaka",
@@ -52,7 +62,7 @@ extension MyInfo: Presentable {
         }
 
         bag += viewController.install(form) { scrollView in
-            bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
+            bag += scrollView.chainAllControlResponders(shouldLoop: false, returnKey: .next)
         }
 
         return (viewController, Future { completion in
