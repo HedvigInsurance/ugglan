@@ -14,7 +14,10 @@ extension SectionView {
     func append<V: Viewable>(
         _ viewable: V,
         onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
-    ) -> Disposable where V.Matter == RowView, V.Result == Disposable {
+    ) -> Disposable where
+        V.Matter == RowView,
+        V.Result == Disposable,
+        V.Events == SelectableViewableEvents {
         let onSelectCallbacker = Callbacker<Void>()
 
         let (matter, result, disposable) = materializeViewable(
@@ -46,11 +49,13 @@ extension SectionView {
         V.Matter == Matter,
         Matter.Matter == RowView,
         Matter.Result == Disposable,
-        V.Result == Disposable {
+        Matter.Events == SelectableViewableEvents,
+        V.Result == Disposable,
+        V.Events == SelectableViewableEvents {
         let onSelectCallbacker = Callbacker<Void>()
         let wasAddedCallbacker = Callbacker<Void>()
 
-        let (matter, result) = viewable.materialize(events: ViewableEvents(
+        let (matter, result) = viewable.materialize(events: SelectableViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker,
             onSelectCallbacker: onSelectCallbacker
         ))

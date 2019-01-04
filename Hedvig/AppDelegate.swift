@@ -59,14 +59,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 options: .defaults
             ).onValue({ _ in
                 let loggedIn = LoggedIn()
+                self.bag += self.window.present(loggedIn, options: [], animated: true)
 
-                let loggedInPresentation = Presentation(
-                    loggedIn,
-                    style: .default,
-                    options: [.prefersNavigationBarHidden(true)]
-                )
-
-                self.bag += self.navigationController.present(loggedInPresentation)
             })
 
             self.bag += self.navigationController.present(marketingPresentation)

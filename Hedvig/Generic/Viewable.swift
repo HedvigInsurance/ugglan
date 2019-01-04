@@ -15,15 +15,25 @@ import UIKit
 protocol Viewable {
     associatedtype Matter
     associatedtype Result
+    associatedtype Events
 
-    func materialize(events: ViewableEvents) -> (Matter, Result)
+    func materialize(events: Events) -> (Matter, Result)
 }
 
 struct ViewableEvents {
     let wasAdded: Signal<Void>
     let removeAfter = Delegate<Void, TimeInterval>()
 
-    /// signaled when viewable is selected, only used when inside a form
+    init(
+        wasAddedCallbacker: Callbacker<Void>
+    ) {
+        wasAdded = wasAddedCallbacker.signal()
+    }
+}
+
+struct SelectableViewableEvents {
+    let wasAdded: Signal<Void>
+    let removeAfter = Delegate<Void, TimeInterval>()
     let onSelect: Signal<Void>
 
     init(

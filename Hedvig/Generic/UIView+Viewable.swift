@@ -15,11 +15,33 @@ private let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 extension UIView {
     // swiftlint:disable large_tuple
     func materializeViewable<V: Viewable, VMatter: UIView>(
-        viewable: V,
-        onSelectCallbacker: Callbacker<Void> = Callbacker<Void>()
-    ) -> (V.Matter, V.Result, DelayedDisposer) where V.Matter == VMatter {
+        viewable: V
+    ) -> (V.Matter, V.Result, DelayedDisposer) where
+        V.Matter == VMatter,
+        V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker
+        )
+        let (matter, result) = viewable.materialize(events: viewableEvents)
+
+        addSubview(matter)
+
+        wasAddedCallbacker.callAll()
+
+        return (matter, result, DelayedDisposer(Disposer {
+            matter.removeFromSuperview()
+        }, delay: viewableEvents.removeAfter.call() ?? 0.0))
+    }
+
+    func materializeViewable<V: Viewable, VMatter: UIView>(
+        viewable: V,
+        onSelectCallbacker: Callbacker<Void>
+    ) -> (V.Matter, V.Result, DelayedDisposer) where
+        V.Matter == VMatter,
+        V.Events == SelectableViewableEvents {
+        let wasAddedCallbacker = Callbacker<Void>()
+        let viewableEvents = SelectableViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker,
             onSelectCallbacker: onSelectCallbacker
         )
@@ -39,7 +61,10 @@ extension UIView {
     func add<V: Viewable, VMatter: UIView, FutureResult: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == VMatter, V.Result == Future<FutureResult> {
+    ) -> V.Result where
+        V.Matter == VMatter,
+        V.Result == Future<FutureResult>,
+        V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -57,7 +82,10 @@ extension UIView {
     func add<V: Viewable, VMatter: UIView>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == VMatter, V.Result == Disposable {
+    ) -> V.Result where
+        V.Matter == VMatter,
+        V.Result == Disposable,
+        V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -71,7 +99,10 @@ extension UIView {
     func add<V: Viewable, VMatter: UIView, SignalType: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == VMatter, V.Result == Signal<SignalType> {
+    ) -> V.Result where
+        V.Matter == VMatter,
+        V.Result == Signal<SignalType>,
+        V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -90,11 +121,10 @@ extension UIStackView {
     // swiftlint:disable large_tuple
     private func materializeArrangedViewable<V: Viewable>(
         viewable: V
-    ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView {
+    ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView, V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
-            wasAddedCallbacker: wasAddedCallbacker,
-            onSelectCallbacker: Callbacker<Void>()
+            wasAddedCallbacker: wasAddedCallbacker
         )
         let (matter, result) = viewable.materialize(events: viewableEvents)
 
@@ -112,7 +142,7 @@ extension UIStackView {
     func addArangedSubview<V: Viewable>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == UIView, V.Result == Disposable {
+    ) -> V.Result where V.Matter == UIView, V.Result == Disposable, V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
 
         onCreate(matter)

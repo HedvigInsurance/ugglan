@@ -26,7 +26,7 @@ struct IconRow {
 }
 
 extension IconRow: Viewable {
-    func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
+    func materialize(events _: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
 
         let rowView = RowView()

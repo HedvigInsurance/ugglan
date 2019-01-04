@@ -14,7 +14,10 @@ extension FormView {
     func append<V: Viewable>(
         _ viewable: V,
         onCreate: @escaping (_ view: V.Matter, _ containerView: UIView) -> Void = { _, _ in }
-    ) -> Disposable where V.Matter == UIView, V.Result == Disposable {
+    ) -> Disposable where
+        V.Matter == UIView,
+        V.Result == Disposable,
+        V.Events == ViewableEvents {
         let containerView = UIView()
         append(containerView)
 

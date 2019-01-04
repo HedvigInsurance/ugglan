@@ -11,8 +11,8 @@ import Foundation
 import Presentation
 import UIKit
 
-struct MarketingPresentationStyle {
-    static let style = PresentationStyle(name: "marketing") {
+extension PresentationStyle {
+    static let marketing = PresentationStyle(name: "marketing") {
         (
             viewController,
             presentingViewController,
@@ -32,8 +32,4 @@ struct MarketingPresentationStyle {
 
         return (present, dismiss)
     }
-}
-
-extension PresentationStyle {
-    static let marketing = MarketingPresentationStyle.style
 }

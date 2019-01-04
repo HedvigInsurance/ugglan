@@ -1,8 +1,8 @@
 //
-//  Profile.swift
+//  MyInfo.swift
 //  Hedvig
 //
-//  Created by Sam Pettersson on 2019-01-02.
+//  Created by Sam Pettersson on 2019-01-04.
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
@@ -11,14 +11,14 @@ import Form
 import Presentation
 import UIKit
 
-struct Profile {}
+struct MyInfo {}
 
-extension Profile: Presentable {
+extension MyInfo: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.displayableTitle = "Profil"
+        viewController.displayableTitle = "Min info"
 
         let view = UIView()
         view.backgroundColor = UIColor.black
@@ -34,9 +34,9 @@ extension Profile: Presentable {
         bag += section.append(myInfoRow)
 
         let button = Button(
-            title: "I am a button",
+            title: "I am also a button but purple",
             type: .standard(
-                backgroundColor: .green,
+                backgroundColor: .purple,
                 textColor: .white
             )
         )

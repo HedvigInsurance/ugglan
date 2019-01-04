@@ -9,11 +9,14 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 
-struct MyInfoRow {}
+struct MyInfoRow {
+    let presentingViewController: UIViewController
+}
 
 extension MyInfoRow: Viewable {
-    func materialize(events: ViewableEvents) -> (IconRow, Disposable) {
+    func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
         let myInfoRow = IconRow(
@@ -23,7 +26,8 @@ extension MyInfoRow: Viewable {
         )
 
         bag += events.onSelect.onValue {
-            print("i was selected")
+            let myInfo = MyInfo()
+            self.presentingViewController.present(myInfo, style: .default, options: [])
         }
 
         return (myInfoRow, bag)
