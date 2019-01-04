@@ -11,9 +11,11 @@ import Foundation
 import Presentation
 
 extension UIWindow {
-    /// Presents `presentable` on `self` and set `self`'s `rootViewController` to the presented view controller and make `self` key and visible.
+    /// Presents `presentable` on `self` and set `self`'s `rootViewController` to the
+    /// presented view controller and make `self` key and visible.
     /// - Parameter options: Only `.embedInNavigationController` is supported, defaults to `[]`
-    /// - Parameter animated: Performs a slide in animation of the new view controller by snapshotting current window if true
+    /// - Parameter animated: Performs a slide in animation of the new view controller by
+    /// snapshotting current window if true
     func present<P: Presentable>(
         _ presentable: P,
         options: PresentationOptions = [],

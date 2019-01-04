@@ -81,6 +81,7 @@ extension LoggedIn: Presentable {
                 if #available(iOS 11.0, *) {
                     navigationController.navigationBar.prefersLargeTitles = true
                 }
+                
                 navigationController.tabBarItem = UITabBarItem(title: "Profile", image: nil, selectedImage: nil)
             }
         }

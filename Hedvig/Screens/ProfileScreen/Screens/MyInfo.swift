@@ -20,6 +20,10 @@ extension MyInfo: Presentable {
         let viewController = UIViewController()
         viewController.displayableTitle = "Min info"
 
+        if #available(iOS 11.0, *) {
+            viewController.navigationItem.largeTitleDisplayMode = .never
+        }
+
         let view = UIView()
         view.backgroundColor = UIColor.black
 

@@ -60,7 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             ).onValue({ _ in
                 let loggedIn = LoggedIn()
                 self.bag += self.window.present(loggedIn, options: [], animated: true)
-
             })
 
             self.bag += self.navigationController.present(marketingPresentation)
