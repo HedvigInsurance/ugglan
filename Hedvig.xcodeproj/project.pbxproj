@@ -246,6 +246,71 @@
 			path = Screens;
 			sourceTree = "<group>";
 		};
+		EB00CBB521E02736002A263B /* UIView */ = {
+			isa = PBXGroup;
+			children = (
+				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
+				EB7FEA9B21B03E410027C9DE /* UIView+Viewable.swift */,
+				EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */,
+				EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */,
+			);
+			path = UIView;
+			sourceTree = "<group>";
+		};
+		EB00CBB621E0274A002A263B /* Styling */ = {
+			isa = PBXGroup;
+			children = (
+				EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */,
+				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
+				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
+				EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */,
+			);
+			path = Styling;
+			sourceTree = "<group>";
+		};
+		EB00CBB721E02771002A263B /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				EB7FEAAA21B145780027C9DE /* CoreSignal+Animation.swift */,
+				EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */,
+				EBECC41B21C39C5100716BEA /* SharedElement.swift */,
+				EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */,
+				EB7FEAAC21B1459D0027C9DE /* TransitionStyle.swift */,
+			);
+			path = Animations;
+			sourceTree = "<group>";
+		};
+		EB00CBB921E027C4002A263B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				EB00CBB521E02736002A263B /* UIView */,
+				EB00CBAF21DF8100002A263B /* UIWindow+Presentation.swift */,
+				EB00CBA521DE5392002A263B /* SectionView+Viewable.swift */,
+				EB034D8521DE183800078D65 /* FormView+Viewable.swift */,
+				EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */,
+				EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */,
+				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
+				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		EB00CBBA21E027D9002A263B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		EB00CBBB21E027F7002A263B /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				EB034D6F21D9239100078D65 /* CellForRow.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
 		EB034D6121CA63E600078D65 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,31 +388,14 @@
 		EB328E6C21989BCB00CF0624 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
+				EB00CBBB21E027F7002A263B /* Protocols */,
+				EB00CBBA21E027D9002A263B /* Views */,
+				EB00CBB921E027C4002A263B /* Extensions */,
+				EB00CBB721E02771002A263B /* Animations */,
+				EB00CBB621E0274A002A263B /* Styling */,
 				EB034D6121CA63E600078D65 /* Viewables */,
-				EB7FEA9D21B041490027C9DE /* CollectionKit+ScrollTo.swift */,
-				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
-				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
 				EB7FEA9621B03DAE0027C9DE /* Viewable.swift */,
-				EB7FEA9B21B03E410027C9DE /* UIView+Viewable.swift */,
-				EB7FEAAA21B145780027C9DE /* CoreSignal+Animation.swift */,
-				EB7FEAAC21B1459D0027C9DE /* TransitionStyle.swift */,
-				EB7FEAAE21B145C20027C9DE /* AnimationStyle.swift */,
-				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
-				EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */,
-				EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */,
-				EBECC28021BE65B600716BEA /* SpringAnimationStyle.swift */,
-				EBECC41B21C39C5100716BEA /* SharedElement.swift */,
-				EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */,
-				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
-				EB034C5821C8F00E00078D65 /* CenterAllStackView.swift */,
 				EB034CD921C9256C00078D65 /* DelayedDisposer.swift */,
-				EB034CDD21C94A5200078D65 /* DeviceKit+RoundedCorners.swift */,
-				EB034D6F21D9239100078D65 /* CellForRow.swift */,
-				EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */,
-				EB034D8521DE183800078D65 /* FormView+Viewable.swift */,
-				EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */,
-				EB00CBA521DE5392002A263B /* SectionView+Viewable.swift */,
-				EB00CBAF21DF8100002A263B /* UIWindow+Presentation.swift */,
 				EB00CBB321E026D9002A263B /* DynamicString.swift */,
 			);
 			path = Generic;
