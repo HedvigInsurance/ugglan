@@ -19,7 +19,7 @@ extension MyInfoRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
-        let myInfoRow = IconRow(
+        let row = IconRow(
             title: "Min info",
             subtitle: "blabla",
             iconAsset: Asset.personalInformation
@@ -30,6 +30,6 @@ extension MyInfoRow: Viewable {
             self.presentingViewController.present(myInfo, style: .default, options: [.autoPop])
         }
 
-        return (myInfoRow, bag)
+        return (row, bag)
     }
 }
