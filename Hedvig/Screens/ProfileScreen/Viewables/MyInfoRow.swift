@@ -27,7 +27,7 @@ extension MyInfoRow: Viewable {
 
         bag += events.onSelect.onValue {
             let myInfo = MyInfo()
-            self.presentingViewController.present(myInfo, style: .default, options: [])
+            self.presentingViewController.present(myInfo, style: .default, options: [.autoPop])
         }
 
         return (myInfoRow, bag)

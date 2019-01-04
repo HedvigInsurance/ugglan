@@ -14,7 +14,7 @@ import UIKit
 struct MyInfo {}
 
 extension MyInfo: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
@@ -38,7 +38,7 @@ extension MyInfo: Presentable {
         bag += section.append(myInfoRow)
 
         let button = Button(
-            title: "I am also a button but purple",
+            title: "Gå tillbaka",
             type: .standard(
                 backgroundColor: .purple,
                 textColor: .white
@@ -55,6 +55,12 @@ extension MyInfo: Presentable {
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
         }
 
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            bag += button.onTapSignal.onValue {
+                completion(.success)
+            }
+
+            return DelayedDisposer(bag, delay: 1)
+        })
     }
 }

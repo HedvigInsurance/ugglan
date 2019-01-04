@@ -10,7 +10,7 @@ PODS:
   - DynamicColor (4.0.3)
   - FlowFeedback (1.0.1):
     - FlowFramework (~> 1.3)
-  - FlowFramework (1.4.2)
+  - FlowFramework (1.5.0)
   - FormFramework (1.5.0):
     - FlowFramework (~> 1.3)
     - FormFramework/Form (= 1.5.0)
@@ -24,9 +24,9 @@ PODS:
     - FlowFramework (>= 1.3)
   - SnapKit (4.0.1)
   - Starscream (3.0.6)
-  - SwiftFormat/CLI (0.35.9)
+  - SwiftFormat/CLI (0.37.2)
   - SwiftGen (6.0.2)
-  - SwiftLint (0.29.1)
+  - SwiftLint (0.29.2)
   - "UICollectionView+AnimatedScroll (1.0.4)"
 
 DEPENDENCIES:
@@ -40,6 +40,7 @@ DEPENDENCIES:
   - FormFramework (from `https://github.com/hedviginsurance/form.git`)
   - FormFramework/Presentation (from `https://github.com/hedviginsurance/form.git`)
   - lottie-ios
+  - PresentationFramework (from `https://github.com/hedviginsurance/presentation.git`)
   - SnapKit (~> 4.0.0)
   - SwiftFormat/CLI
   - SwiftGen
@@ -54,7 +55,6 @@ SPEC REPOS:
     - DynamicColor
     - FlowFramework
     - lottie-ios
-    - PresentationFramework
     - SnapKit
     - Starscream
     - SwiftFormat
@@ -66,6 +66,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/HedvigInsurance/FlowFeedback.git
   FormFramework:
     :git: https://github.com/hedviginsurance/form.git
+  PresentationFramework:
+    :git: https://github.com/hedviginsurance/presentation.git
   "UICollectionView+AnimatedScroll":
     :git: https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git
 
@@ -76,6 +78,9 @@ CHECKOUT OPTIONS:
   FormFramework:
     :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
+  PresentationFramework:
+    :commit: d19b7faf9a914c6756577f11ef540dc829572336
+    :git: https://github.com/hedviginsurance/presentation.git
   "UICollectionView+AnimatedScroll":
     :commit: b5a5e2b7f95713e74c0bfb623a99429b0489fa1f
     :git: https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git
@@ -86,17 +91,17 @@ SPEC CHECKSUMS:
   Disk: ef2956657d5bb56034b38b29b352170165226440
   DynamicColor: bf19b33fe404c59a68e64af95cc6b017346e7e75
   FlowFeedback: 41fe84846ceaeca0cbf02a922222cc8b862986c0
-  FlowFramework: 593983dc440c915457e728d26b9e9dba1c31f91b
+  FlowFramework: 4d85bf59082c36c107229396ae67981717ca1e76
   FormFramework: e9eccd44f3d875e5f67ad8696a8e2bb4cd0e9b7d
   lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
   PresentationFramework: 1bcdf1fe215edb2ceccf5197dd5dfcbce878bdf5
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
-  SwiftFormat: f1cf26ab5ce1f59aeaee018edc7e6d88e05bfb39
+  SwiftFormat: abbfb26dde4c6d683923cde153c88e10da9d7881
   SwiftGen: e5b047067aa84082826a0c4f1c4c2ddc95bcf74c
-  SwiftLint: 6772320e40b52049053a518c17db9b0634a0b45a
+  SwiftLint: 47df60bdea6e7e902b193b6596db8683aafd86a3
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: be52209b0f5235d57a3f13c1159f7968d21e3f56
+PODFILE CHECKSUM: b5871b0d3a6ac1a3ecc75d42924e8d13c23ab867
 
 COCOAPODS: 1.5.3
