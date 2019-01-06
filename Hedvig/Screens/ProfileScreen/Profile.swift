@@ -24,7 +24,7 @@ extension Profile: Presentable {
         view.backgroundColor = UIColor.black
 
         let form = FormView()
-        let section = form.appendSection(header: nil, footer: nil, style: .default)
+        let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
 
         let myInfoRow = MyInfoRow(
             presentingViewController: viewController

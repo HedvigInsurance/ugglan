@@ -21,7 +21,7 @@ extension MyInfo: Presentable {
         viewController.displayableTitle = "Min info"
 
         let form = FormView()
-        let section = form.appendSection(header: "KONTAKTUPPGIFTER", footer: nil, style: .default)
+        let section = form.appendSection(header: "KONTAKTUPPGIFTER", footer: nil, style: .sectionPlain)
 
         let nameCircleText = DynamicString("Adam Pålsson")
 

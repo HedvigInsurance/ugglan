@@ -65,7 +65,7 @@ extension DefaultStyling {
         switch: .default,
         segmentedControl: .default,
         sectionGrouped: .default,
-        sectionPlain: .default,
+        sectionPlain: .sectionPlain,
         formGrouped: .default,
         formPlain: .default,
         sectionBackground: .default,

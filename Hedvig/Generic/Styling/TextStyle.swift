@@ -15,6 +15,11 @@ extension TextStyle {
         style.color = .black
     }
 
+    static let sectionHeader = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.color = .darkGray
+    }
+
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .black

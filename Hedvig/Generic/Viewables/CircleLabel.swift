@@ -6,10 +6,10 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-import Form
-import UIKit
 import Flow
+import Form
 import Foundation
+import UIKit
 
 struct CircleLabel {
     let text: DynamicString
