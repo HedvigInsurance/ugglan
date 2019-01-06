@@ -27,6 +27,7 @@ case {{language["code"]}}
 
 enum Key {
 {% for key in document.data["data"]["keys"] %}
+/// {{key.description}}
 case {{key.value}}
 {% endfor %}
 }
