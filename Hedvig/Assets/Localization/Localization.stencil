@@ -93,11 +93,11 @@ struct Translations {
   {% endif %}
 {% endfilter %}{% endmacro %}
 
-// swiftlint:disable identifier_name type_body_length type_name line_length
+// swiftlint:disable identifier_name type_body_length type_name line_length nesting file_length
 public struct Localization {
   {% call fileBlock files.first %}
 }
-// swiftlint:enable identifier_name type_body_length type_name line_length
+// swiftlint:enable identifier_name type_body_length type_name line_length nesting file_length
 {% else %}
 // No files found
 {% endif %}

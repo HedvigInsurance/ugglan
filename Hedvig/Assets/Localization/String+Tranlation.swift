@@ -8,7 +8,7 @@
 
 import Foundation
 
-fileprivate let currentLanguage: Localization.Language = {
+private let currentLanguage: Localization.Language = {
     let currentLanguage = Locale.current.languageCode
 
     if currentLanguage?.contains("sv") ?? false {
