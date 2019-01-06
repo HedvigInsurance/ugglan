@@ -18,10 +18,14 @@ extension MyInfo: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.displayableTitle = "Min info"
+        viewController.title = String.translation(.MY_INFO_TITLE)
 
         let form = FormView()
-        let section = form.appendSection(header: "KONTAKTUPPGIFTER", footer: nil, style: .sectionPlain)
+        let section = form.appendSection(
+            header: String.translation(.MY_INFO_CONTACT_DETAILS_TITLE),
+            footer: nil,
+            style: .sectionPlain
+        )
 
         let nameCircleText = DynamicString("Adam Pålsson")
 

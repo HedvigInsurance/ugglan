@@ -20,6 +20,10 @@
 		EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBB121DFF144002A263B /* CircleLabel.swift */; };
 		EB00CBB421E026D9002A263B /* DynamicString.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBB321E026D9002A263B /* DynamicString.swift */; };
 		EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBBC21E0F692002A263B /* SectionStyle.swift */; };
+		EB00CBC021E1F079002A263B /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBBE21E1F079002A263B /* Localization.swift */; };
+		EB00CBC121E1F079002A263B /* Localization.json in Resources */ = {isa = PBXBuildFile; fileRef = EB00CBBF21E1F079002A263B /* Localization.json */; };
+		EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */ = {isa = PBXBuildFile; fileRef = EB00CBC221E1F14E002A263B /* Localization.stencil */; };
+		EB00CBC621E21D3A002A263B /* String+Tranlation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC521E21D3A002A263B /* String+Tranlation.swift */; };
 		EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD421C7BFA000078D65 /* TextStyle.swift */; };
 		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
@@ -127,6 +131,10 @@
 		EB00CBB121DFF144002A263B /* CircleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleLabel.swift; sourceTree = "<group>"; };
 		EB00CBB321E026D9002A263B /* DynamicString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicString.swift; sourceTree = "<group>"; };
 		EB00CBBC21E0F692002A263B /* SectionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionStyle.swift; sourceTree = "<group>"; };
+		EB00CBBE21E1F079002A263B /* Localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+		EB00CBBF21E1F079002A263B /* Localization.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Localization.json; sourceTree = "<group>"; };
+		EB00CBC221E1F14E002A263B /* Localization.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = Localization.stencil; sourceTree = "<group>"; };
+		EB00CBC521E21D3A002A263B /* String+Tranlation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Tranlation.swift"; sourceTree = "<group>"; };
 		EB034BD421C7BFA000078D65 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
@@ -314,6 +322,17 @@
 			path = Protocols;
 			sourceTree = "<group>";
 		};
+		EB00CBC421E21A23002A263B /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				EB00CBBF21E1F079002A263B /* Localization.json */,
+				EB00CBBE21E1F079002A263B /* Localization.swift */,
+				EB00CBC221E1F14E002A263B /* Localization.stencil */,
+				EB00CBC521E21D3A002A263B /* String+Tranlation.swift */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
 		EB034D6121CA63E600078D65 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
@@ -407,6 +426,7 @@
 		EB5ED9CD21985D37004CE441 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				EB00CBC421E21A23002A263B /* Localization */,
 				EB5ED9E021986666004CE441 /* Icons */,
 				EB5ED9D0219860A9004CE441 /* Fonts */,
 				EB75E15B21930A95006B5CE4 /* Assets.xcassets */,
@@ -664,6 +684,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB00CBC121E1F079002A263B /* Localization.json in Resources */,
 				EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */,
 				EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */,
 				EBC049D4219C87DF00AFC30F /* schema.json in Resources */,
@@ -676,6 +697,7 @@
 				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
 				EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */,
 				EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */,
+				EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */,
 				EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 			);
@@ -773,7 +795,7 @@
 		};
 		EB00CBA721DE6A3F002A263B /* Swiftgen */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -787,7 +809,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PODS_ROOT/SwiftGen/bin/swiftgen\n";
+			shellScript = "curl 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master' -H 'Accept-Encoding: gzip' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Connection: keep-alive' --data-binary '{\"query\":\"query AppTranslationsMeta {\\n    languages {\\n      code\\n      translations(where: { project: App }) {\\n        text\\n        key {\\n          value\\n        }\\n        language {\\n   code\\n        }\\n    \\t}\\n    }\\n  \\tkeys(where: { translations_every: { project: App } }) {\\n      value\\n    }\\n  }\",\"variables\":null,\"operationName\":\"AppTranslationsMeta\"}' --compressed -o Hedvig/Assets/Localization/Localization.json\n\n$PODS_ROOT/SwiftGen/bin/swiftgen\n";
 		};
 		EB5ED9E5219874B3004CE441 /* Lint Swift code */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -838,6 +860,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB00CBC021E1F079002A263B /* Localization.swift in Sources */,
 				EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */,
 				EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */,
 				EB034D8421DCFBD400078D65 /* LargeTitlesPresentationStyle.swift in Sources */,
@@ -879,6 +902,7 @@
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
+				EB00CBC621E21D3A002A263B /* String+Tranlation.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,

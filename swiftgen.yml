@@ -4,3 +4,8 @@ xcassets:
   outputs:
     - templateName: swift4
       output: Hedvig/Assets/Assets.swift
+json:
+  inputs: Hedvig/Assets/Localization/Localization.json
+  outputs:
+    templatePath: Hedvig/Assets/Localization/Localization.stencil
+    output: Hedvig/Assets/Localization/Localization.swift
