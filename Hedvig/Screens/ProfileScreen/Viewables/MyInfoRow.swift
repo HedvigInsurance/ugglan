@@ -20,8 +20,8 @@ extension MyInfoRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: "Min info",
-            subtitle: "blabla",
+            title: String.translation(.PROFILE_MY_INFO_ROW_TITLE),
+            subtitle: "",
             iconAsset: Asset.personalInformation
         )
 

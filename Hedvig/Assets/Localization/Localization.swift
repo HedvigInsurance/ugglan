@@ -196,6 +196,8 @@ case CHAT_GIPHY_TITLE
 case MY_INFO_CONTACT_DETAILS_TITLE
 /// Title for My Info screen.
 case MY_INFO_TITLE
+/// Row title for my info
+case PROFILE_MY_INFO_ROW_TITLE
 }
 
 struct Translations {
@@ -546,6 +548,10 @@ struct Translations {
                 """
 
                 case .MY_INFO_TITLE: return """
+                Min info
+                """
+
+                case .PROFILE_MY_INFO_ROW_TITLE: return """
                 Min info
                 """
                 default: return String(describing: key)
