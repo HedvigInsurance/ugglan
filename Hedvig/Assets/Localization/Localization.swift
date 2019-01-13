@@ -2,206 +2,218 @@
 
 import Foundation
 
+
 // swiftlint:disable identifier_name type_body_length type_name line_length nesting file_length
 public struct Localization {
-    enum Language {
-        case sv_SE
-        case en_SE
-    }
 
-    enum Key {
-        /// <null>
-        case OFFER_TITLE
-        /// <null>
-        case OFFER_BUBBLES_BINDING_PERIOD_TITLE
-        /// <null>
-        case OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE
-        /// <null>
-        case OFFER_BUBBLES_DEDUCTIBLE_TITLE
-        /// <null>
-        case OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE
-        /// <null>
-        case OFFER_BUBBLES_INSURED_TITLE
-        /// <null>
-        case OFFER_BUBBLES_INSURED_SUBTITLE
-        /// <null>
-        case OFFER_BUBBLES_START_DATE_TITLE
-        /// <null>
-        case OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER
-        /// <null>
-        case OFFER_BUBBLES_START_DATE_SUBTITLE_NEW
-        /// <null>
-        case OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE
-        /// <null>
-        case OFFER_BUBBLES_OWNED_ADDON_TITLE
-        /// <null>
-        case OFFER_SIGN_BUTTON
-        /// <null>
-        case OFFER_SCROLL_HEADER
-        /// <null>
-        case OFFER_CHAT_HEADER
-        /// <null>
-        case OFFER_GET_HEDVIG_TITLE
-        /// <null>
-        case OFFER_GET_HEDVIG_BODY
-        /// <null>
-        case HEDVIG_SAYS_HELLO
-        /// <null>
-        case OFFER_APARTMENT_PROTECTION_DESCRIPTION
-        /// <null>
-        case OFFER_APARTMENT_PROTECTION_TITLE
-        /// <null>
-        case OFFER_STUFF_PROTECTION_TITLE
-        /// <null>
-        case OFFER_STUFF_PROTECTION_DESCRIPTION
-        /// <null>
-        case STUFF_PROTECTION_AMOUNT
-        /// <null>
-        case STUFF_PROTECTION_AMOUNT_STUDENT
-        /// <null>
-        case OFFER_PERSONAL_PROTECTION_TITLE
-        /// <null>
-        case OFFER_PERSONAL_PROTECTION_DESCRIPTION
-        /// <null>
-        case OFFER_PERILS_EXPLAINER
-        /// <null>
-        case DOWNLOAD_INPUT_TITLE
-        /// <null>
-        case OFFER_SUMMARY_PRICE_LABEL
-        /// <null>
-        case SIGN_BANKID_USER_CANCEL
-        /// <null>
-        case SIGN_BANKID_WAITING_FOR_BANKID
-        /// <null>
-        case OFFER_SIGN_CTA_BOTTOM
-        /// <null>
-        case TRUSTLY_PAYMENT_SETUP_MESSAGE
-        /// <null>
-        case TRUSTLY_PAYMENT_SETUP_ACTION
-        /// <null>
-        case OFFER_TAB_INFO
-        /// <null>
-        case CASHBACK_NEEDS_SETUP_MESSAGE
-        /// <null>
-        case CASHBACK_NEEDS_SETUP_ACTION
-        /// <null>
-        case CASHBACK_NEEDS_SETUP_OVERLAY_TITLE
-        /// <null>
-        case CASHBACK_NEEDS_SETUP_OVERLAY_PARAGRAPH
-        /// <null>
-        case PAYMENT_SUCCESS_TITLE
-        /// <null>
-        case PAYMENT_SUCCESS_BODY
-        /// <null>
-        case PAYMENT_SUCCESS_BUTTON
-        /// <null>
-        case PAYMENT_FAILURE_TITLE
-        /// <null>
-        case PAYMENT_FAILURE_BODY
-        /// <null>
-        case PAYMENT_FAILURE_BUTTON
-        /// <null>
-        case DASHBOARD_BANNER_ACTIVE_TITLE
-        /// <null>
-        case DASHBOARD_BANNER_ACTIVE_INFO
-        /// <null>
-        case DASHBOARD_HAVE_START_DATE_BANNER_TITLE
-        /// <null>
-        case DASHBOARD_READMORE_HAVE_START_DATE_TEXT
-        /// <null>
-        case DASHBOARD_BANNER_MONTHS
-        /// <null>
-        case DASHBOARD_BANNER_DAYS
-        /// <null>
-        case DASHBOARD_BANNER_HOURS
-        /// <null>
-        case DASHBOARD_BANNER_MINUTES
-        /// <null>
-        case DASHBOARD_MORE_INFO_BUTTON_TEXT
-        /// <null>
-        case DASHBOARD_NOT_STARTED_BANNER_TITLE
-        /// <null>
-        case DASHBOARD_READMORE_NOT_STARTED_TEXT
-        /// <null>
-        case DASHBOARD_LESS_INFO_BUTTON_TEXT
-        /// <null>
-        case FILE_UPLOAD_ERROR
-        /// <null>
-        case FILE_UPLOAD_ERROR_RETRY_BUTTON
-        /// <null>
-        case DASHBOARD_BANNER_TERMINATED_INFO
-        /// <null>
-        case RESTART_OFFER_CHAT_TITLE
-        /// <null>
-        case RESTART_OFFER_CHAT_PARAGRAPH
-        /// <null>
-        case RESTART_OFFER_CHAT_BUTTON_CONFIRM
-        /// <null>
-        case RESTART_OFFER_CHAT_BUTTON_DISMISS
-        /// <null>
-        case DASHBOARD_DEDUCTIBLE_FOOTNOTE
-        /// <null>
-        case DASHBOARD_OWNER_FOOTNOTE
-        /// <null>
-        case DASHBOARD_PERILS_CATEGORY_INFO
-        /// <null>
-        case DASHBOARD_TRAVEL_FOOTNOTE
-        /// <null>
-        case PROFILE_CACHBACK_ROW
-        /// <null>
-        case PROFILE_INSURANCE_ADDRESS_ROW
-        /// <null>
-        case PROFILE_INSURANCE_CERTIFICATE_ROW_HEADER
-        /// <null>
-        case PROFILE_INSURANCE_CERTIFICATE_ROW_TEXT
-        /// <null>
-        case PROFILE_PAYMENT_ROW_HEADER
-        /// <null>
-        case PROFILE_PAYMENT_ROW_TEXT
-        /// <null>
-        case PROFILE_SAFETYINCREASERS_ROW_HEADER
-        /// <null>
-        case DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE
-        /// <null>
-        case CHAT_GIPHY_PICKER_NO_SEARCH_TEXT
-        /// <null>
-        case CHAT_GIPHY_PICKER_TEXT
-        /// <null>
-        case CHAT_COULD_NOT_LOAD_FILE
-        /// <null>
-        case CHAT_FILE_LOADING
-        /// <null>
-        case CHAT_FILE_DOWNLOAD
-        /// <null>
-        case AUDIO_INPUT_REDO
-        /// <null>
-        case AUDIO_INPUT_SAVE
-        /// <null>
-        case AUDIO_INPUT_PLAY
-        /// <null>
-        case CHAT_FILE_UPLOADED
-        /// <null>
-        case AUDIO_INPUT_RECORDING
-        /// <null>
-        case GIF_BUTTON_TITLE
-        /// <null>
-        case CHAT_UPLOAD_PRESEND
-        /// <null>
-        case CHAT_UPLOADING_ANIMATION_TEXT
-        /// <null>
-        case CHAT_GIPHY_TITLE
-        /// <null>
-        case MY_INFO_CONTACT_DETAILS_TITLE
-        /// Title for My Info screen.
-        case MY_INFO_TITLE
-        /// Row title for my info
-        case PROFILE_MY_INFO_ROW_TITLE
-    }
+enum Language {
+case sv_SE
+case en_SE
+}
 
-    struct Translations {
-        struct sv_SE {
-            static func `for`(key: Localization.Key) -> String {
-                switch key {
+enum Key {
+/// <null>
+case OFFER_TITLE
+/// <null>
+case OFFER_BUBBLES_BINDING_PERIOD_TITLE
+/// <null>
+case OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE
+/// <null>
+case OFFER_BUBBLES_DEDUCTIBLE_TITLE
+/// <null>
+case OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE
+/// <null>
+case OFFER_BUBBLES_INSURED_TITLE
+/// <null>
+case OFFER_BUBBLES_INSURED_SUBTITLE
+/// <null>
+case OFFER_BUBBLES_START_DATE_TITLE
+/// <null>
+case OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER
+/// <null>
+case OFFER_BUBBLES_START_DATE_SUBTITLE_NEW
+/// <null>
+case OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE
+/// <null>
+case OFFER_BUBBLES_OWNED_ADDON_TITLE
+/// <null>
+case OFFER_SIGN_BUTTON
+/// <null>
+case OFFER_SCROLL_HEADER
+/// <null>
+case OFFER_CHAT_HEADER
+/// <null>
+case OFFER_GET_HEDVIG_TITLE
+/// <null>
+case OFFER_GET_HEDVIG_BODY
+/// <null>
+case HEDVIG_SAYS_HELLO
+/// <null>
+case OFFER_APARTMENT_PROTECTION_DESCRIPTION
+/// <null>
+case OFFER_APARTMENT_PROTECTION_TITLE
+/// <null>
+case OFFER_STUFF_PROTECTION_TITLE
+/// <null>
+case OFFER_STUFF_PROTECTION_DESCRIPTION
+/// <null>
+case STUFF_PROTECTION_AMOUNT
+/// <null>
+case STUFF_PROTECTION_AMOUNT_STUDENT
+/// <null>
+case OFFER_PERSONAL_PROTECTION_TITLE
+/// <null>
+case OFFER_PERSONAL_PROTECTION_DESCRIPTION
+/// <null>
+case OFFER_PERILS_EXPLAINER
+/// <null>
+case DOWNLOAD_INPUT_TITLE
+/// <null>
+case OFFER_SUMMARY_PRICE_LABEL
+/// <null>
+case SIGN_BANKID_USER_CANCEL
+/// <null>
+case SIGN_BANKID_WAITING_FOR_BANKID
+/// <null>
+case OFFER_SIGN_CTA_BOTTOM
+/// <null>
+case TRUSTLY_PAYMENT_SETUP_MESSAGE
+/// <null>
+case TRUSTLY_PAYMENT_SETUP_ACTION
+/// <null>
+case OFFER_TAB_INFO
+/// <null>
+case CASHBACK_NEEDS_SETUP_MESSAGE
+/// <null>
+case CASHBACK_NEEDS_SETUP_ACTION
+/// <null>
+case CASHBACK_NEEDS_SETUP_OVERLAY_TITLE
+/// <null>
+case CASHBACK_NEEDS_SETUP_OVERLAY_PARAGRAPH
+/// <null>
+case PAYMENT_SUCCESS_TITLE
+/// <null>
+case PAYMENT_SUCCESS_BODY
+/// <null>
+case PAYMENT_SUCCESS_BUTTON
+/// <null>
+case PAYMENT_FAILURE_TITLE
+/// <null>
+case PAYMENT_FAILURE_BODY
+/// <null>
+case PAYMENT_FAILURE_BUTTON
+/// <null>
+case DASHBOARD_BANNER_ACTIVE_TITLE
+/// <null>
+case DASHBOARD_BANNER_ACTIVE_INFO
+/// <null>
+case DASHBOARD_HAVE_START_DATE_BANNER_TITLE
+/// <null>
+case DASHBOARD_READMORE_HAVE_START_DATE_TEXT
+/// <null>
+case DASHBOARD_BANNER_MONTHS
+/// <null>
+case DASHBOARD_BANNER_DAYS
+/// <null>
+case DASHBOARD_BANNER_HOURS
+/// <null>
+case DASHBOARD_BANNER_MINUTES
+/// <null>
+case DASHBOARD_MORE_INFO_BUTTON_TEXT
+/// <null>
+case DASHBOARD_NOT_STARTED_BANNER_TITLE
+/// <null>
+case DASHBOARD_READMORE_NOT_STARTED_TEXT
+/// <null>
+case DASHBOARD_LESS_INFO_BUTTON_TEXT
+/// <null>
+case FILE_UPLOAD_ERROR
+/// <null>
+case FILE_UPLOAD_ERROR_RETRY_BUTTON
+/// <null>
+case DASHBOARD_BANNER_TERMINATED_INFO
+/// <null>
+case RESTART_OFFER_CHAT_TITLE
+/// <null>
+case RESTART_OFFER_CHAT_PARAGRAPH
+/// <null>
+case RESTART_OFFER_CHAT_BUTTON_CONFIRM
+/// <null>
+case RESTART_OFFER_CHAT_BUTTON_DISMISS
+/// <null>
+case DASHBOARD_DEDUCTIBLE_FOOTNOTE
+/// <null>
+case DASHBOARD_OWNER_FOOTNOTE
+/// <null>
+case DASHBOARD_PERILS_CATEGORY_INFO
+/// <null>
+case DASHBOARD_TRAVEL_FOOTNOTE
+/// <null>
+case PROFILE_CACHBACK_ROW
+/// <null>
+case PROFILE_INSURANCE_ADDRESS_ROW
+/// <null>
+case PROFILE_INSURANCE_CERTIFICATE_ROW_HEADER
+/// <null>
+case PROFILE_INSURANCE_CERTIFICATE_ROW_TEXT
+/// <null>
+case PROFILE_PAYMENT_ROW_HEADER
+/// <null>
+case PROFILE_PAYMENT_ROW_TEXT
+/// <null>
+case PROFILE_SAFETYINCREASERS_ROW_HEADER
+/// <null>
+case DASHBOARD_INSURANCE_AMOUNT_FOOTNOTE
+/// <null>
+case CHAT_GIPHY_PICKER_NO_SEARCH_TEXT
+/// <null>
+case CHAT_GIPHY_PICKER_TEXT
+/// <null>
+case CHAT_COULD_NOT_LOAD_FILE
+/// <null>
+case CHAT_FILE_LOADING
+/// <null>
+case CHAT_FILE_DOWNLOAD
+/// <null>
+case AUDIO_INPUT_REDO
+/// <null>
+case AUDIO_INPUT_SAVE
+/// <null>
+case AUDIO_INPUT_PLAY
+/// <null>
+case CHAT_FILE_UPLOADED
+/// <null>
+case AUDIO_INPUT_RECORDING
+/// <null>
+case GIF_BUTTON_TITLE
+/// <null>
+case CHAT_UPLOAD_PRESEND
+/// <null>
+case CHAT_UPLOADING_ANIMATION_TEXT
+/// <null>
+case CHAT_GIPHY_TITLE
+/// <null>
+case MY_INFO_CONTACT_DETAILS_TITLE
+/// Title for My Info screen.
+case MY_INFO_TITLE
+/// Row title for my info
+case PROFILE_MY_INFO_ROW_TITLE
+/// Title of alert that is shown when a network error has occured.
+case NETWORK_ERROR_ALERT_TITLE
+/// Message of alert that is shown when a network error has occured.
+case NETWORK_ERROR_ALERT_MESSAGE
+/// Button that tries network request again.
+case NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION
+/// Button that cancels the current failed network requests.
+case NETWORK_ERROR_ALERT_CANCEL_ACTION
+}
+
+struct Translations {
+
+    struct sv_SE {
+        static func `for`(key: Localization.Key) -> String {
+            switch key {
+
                 case .OFFER_TITLE: return """
                 Försäkringsförslag
                 """
@@ -550,22 +562,39 @@ public struct Localization {
                 case .PROFILE_MY_INFO_ROW_TITLE: return """
                 Min info
                 """
+
+                case .NETWORK_ERROR_ALERT_TITLE: return """
+                Nätverksfel
+                """
+
+                case .NETWORK_ERROR_ALERT_MESSAGE: return """
+                Vi kunde inte nå Hedvig just nu, säker på att du har en internetuppkoppling?
+                """
+
+                case .NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION: return """
+                Försök igen
+                """
+
+                case .NETWORK_ERROR_ALERT_CANCEL_ACTION: return """
+                Avbryt
+                """
                 default: return String(describing: key)
-                }
             }
         }
+    }
 
-        struct en_SE {
-            static func `for`(key: Localization.Key) -> String {
-                switch key {
+    struct en_SE {
+        static func `for`(key: Localization.Key) -> String {
+            switch key {
+
                 case .OFFER_TITLE: return """
                 Your home insurance
                 """
                 default: return String(describing: key)
-                }
             }
         }
     }
 }
 
+}
 // swiftlint:enable identifier_name type_body_length type_name line_length nesting file_length

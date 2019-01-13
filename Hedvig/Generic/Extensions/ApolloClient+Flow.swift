@@ -9,6 +9,7 @@
 import Apollo
 import Flow
 import Foundation
+import Presentation
 
 extension ApolloClient {
     func fetch<Query: GraphQLQuery>(
@@ -21,11 +22,19 @@ extension ApolloClient {
                 query: query,
                 cachePolicy: cachePolicy,
                 queue: queue,
-                resultHandler: { (result: GraphQLResult<Query.Data>?, error: Error?) in
+                resultHandler: { (result: GraphQLResult<Query.Data>?, _: Error?) in
                     if result != nil {
                         completion(.success(result!))
                     } else {
-                        completion(.failure(error!))
+                        self.showNetworkErrorMessage { [unowned self] in
+                            self.fetch(
+                                query: query,
+                                cachePolicy: cachePolicy,
+                                queue: queue
+                            ).onResult({ result in
+                                completion(result)
+                            })
+                        }
                     }
                 }
             )
@@ -44,11 +53,15 @@ extension ApolloClient {
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
-                resultHandler: { (result: GraphQLResult<Mutation.Data>?, error: Error?) in
+                resultHandler: { (result: GraphQLResult<Mutation.Data>?, _: Error?) in
                     if result != nil {
                         completion(.success(result!))
                     } else {
-                        completion(.failure(error!))
+                        self.showNetworkErrorMessage {
+                            self.perform(mutation: mutation, queue: queue).onResult({ result in
+                                completion(result)
+                            })
+                        }
                     }
                 }
             )
