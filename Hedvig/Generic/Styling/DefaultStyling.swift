@@ -26,6 +26,8 @@ extension DefaultStyling {
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
         ]
 
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .purple
+
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
                 NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
