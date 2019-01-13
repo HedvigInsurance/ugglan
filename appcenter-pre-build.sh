@@ -1,4 +1,4 @@
-npm config delete prefix
+sudo rm /usr/local/bin/node
 
 echo "Installing NVM..."
 brew install nvm
