@@ -25,6 +25,7 @@
 		EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */ = {isa = PBXBuildFile; fileRef = EB00CBC221E1F14E002A263B /* Localization.stencil */; };
 		EB00CBC621E21D3A002A263B /* String+Tranlation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC521E21D3A002A263B /* String+Tranlation.swift */; };
 		EB00CBC821EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC721EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift */; };
+		EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC921EB7207002A263B /* UITabBarController+Presentation.swift */; };
 		EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD421C7BFA000078D65 /* TextStyle.swift */; };
 		EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */; };
 		EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034BD821C7DF0400078D65 /* SayHello.swift */; };
@@ -137,6 +138,7 @@
 		EB00CBC221E1F14E002A263B /* Localization.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = Localization.stencil; sourceTree = "<group>"; };
 		EB00CBC521E21D3A002A263B /* String+Tranlation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Tranlation.swift"; sourceTree = "<group>"; };
 		EB00CBC721EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ApolloClient+NetworkErrorMessage.swift"; sourceTree = "<group>"; };
+		EB00CBC921EB7207002A263B /* UITabBarController+Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Presentation.swift"; sourceTree = "<group>"; };
 		EB034BD421C7BFA000078D65 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		EB034BD621C7CF8C00078D65 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		EB034BD821C7DF0400078D65 /* SayHello.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 				EB7FEABB21B449C50027C9DE /* Callbacker+Signal.swift */,
 				EB00CBC721EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift */,
 				EB7FEA8C21AFE1DA0027C9DE /* ApolloClient+Flow.swift */,
+				EB00CBC921EB7207002A263B /* UITabBarController+Presentation.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -906,6 +909,7 @@
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
 				EB00CBC621E21D3A002A263B /* String+Tranlation.swift in Sources */,
+				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
