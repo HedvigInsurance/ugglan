@@ -30,8 +30,18 @@ extension Profile: Presentable {
             presentingViewController: viewController
         )
 
-        bag += section.append(myInfoRow)
-        bag += section.append(myInfoRow)
+        bag += section.append(myInfoRow) { rowAndProvider in
+            bag += viewController.registerForPreviewing(
+                sourceView: rowAndProvider.row,
+                presentable: MyInfo()
+            )
+        }
+        bag += section.append(myInfoRow) { rowAndProvider in
+            bag += viewController.registerForPreviewing(
+                sourceView: rowAndProvider.row,
+                presentable: MyInfo()
+            )
+        }
 
         let button = Button(
             title: "I am a button",

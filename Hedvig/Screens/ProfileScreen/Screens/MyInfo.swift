@@ -43,8 +43,10 @@ extension MyInfo: Presentable {
             placeholder: "Namn",
             style: .default
         )
-        nameTextField.isUserInteractionEnabled = false
+        nameTextField.isUserInteractionEnabled = true
         nameTextField.textAlignment = .right
+        bag += viewController.registerForPreviewing(sourceView: nameTextField, presentable: MyInfo())
+
         bag += nameTextField.bindTo(nameCircleText)
 
         let nameRow = RowView().prepend("Namn").append(nameTextField)
