@@ -724,6 +724,169 @@ public final class CurrentChatResponseSubscription: GraphQLSubscription {
   }
 }
 
+public final class TranslationsQuery: GraphQLQuery {
+  public let operationDefinition =
+    "query Translations($code: String) {\n  languages(where: {code: $code}) {\n    __typename\n    translations(where: {project: App}) {\n      __typename\n      key {\n        __typename\n        value\n      }\n      text\n    }\n  }\n}"
+
+  public var code: String?
+
+  public init(code: String? = nil) {
+    self.code = code
+  }
+
+  public var variables: GraphQLMap? {
+    return ["code": code]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Query"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("languages", arguments: ["where": ["code": GraphQLVariable("code")]], type: .nonNull(.list(.object(Language.selections)))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(languages: [Language?]) {
+      self.init(unsafeResultMap: ["__typename": "Query", "languages": languages.map { (value: Language?) -> ResultMap? in value.flatMap { (value: Language) -> ResultMap in value.resultMap } }])
+    }
+
+    public var languages: [Language?] {
+      get {
+        return (resultMap["languages"] as! [ResultMap?]).map { (value: ResultMap?) -> Language? in value.flatMap { (value: ResultMap) -> Language in Language(unsafeResultMap: value) } }
+      }
+      set {
+        resultMap.updateValue(newValue.map { (value: Language?) -> ResultMap? in value.flatMap { (value: Language) -> ResultMap in value.resultMap } }, forKey: "languages")
+      }
+    }
+
+    public struct Language: GraphQLSelectionSet {
+      public static let possibleTypes = ["Language"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("translations", arguments: ["where": ["project": "App"]], type: .list(.nonNull(.object(Translation.selections)))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(translations: [Translation]? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Language", "translations": translations.flatMap { (value: [Translation]) -> [ResultMap] in value.map { (value: Translation) -> ResultMap in value.resultMap } }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var translations: [Translation]? {
+        get {
+          return (resultMap["translations"] as? [ResultMap]).flatMap { (value: [ResultMap]) -> [Translation] in value.map { (value: ResultMap) -> Translation in Translation(unsafeResultMap: value) } }
+        }
+        set {
+          resultMap.updateValue(newValue.flatMap { (value: [Translation]) -> [ResultMap] in value.map { (value: Translation) -> ResultMap in value.resultMap } }, forKey: "translations")
+        }
+      }
+
+      public struct Translation: GraphQLSelectionSet {
+        public static let possibleTypes = ["Translation"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("key", type: .object(Key.selections)),
+          GraphQLField("text", type: .nonNull(.scalar(String.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(key: Key? = nil, text: String) {
+          self.init(unsafeResultMap: ["__typename": "Translation", "key": key.flatMap { (value: Key) -> ResultMap in value.resultMap }, "text": text])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var key: Key? {
+          get {
+            return (resultMap["key"] as? ResultMap).flatMap { Key(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "key")
+          }
+        }
+
+        public var text: String {
+          get {
+            return resultMap["text"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "text")
+          }
+        }
+
+        public struct Key: GraphQLSelectionSet {
+          public static let possibleTypes = ["Key"]
+
+          public static let selections: [GraphQLSelection] = [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("value", type: .nonNull(.scalar(String.self))),
+          ]
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(value: String) {
+            self.init(unsafeResultMap: ["__typename": "Key", "value": value])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var value: String {
+            get {
+              return resultMap["value"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "value")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 public final class MarketingStoriesQuery: GraphQLQuery {
   public let operationDefinition =
     "query MarketingStories {\n  marketingStories(orderBy: importance_ASC) {\n    __typename\n    id\n    asset {\n      __typename\n      mimeType\n      url\n    }\n    duration\n    backgroundColor\n  }\n}"

@@ -65,6 +65,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.bag += self.navigationController.present(marketingPresentation)
 
             hasLoadedCallbacker.callAll()
+
+            TranslationsRepo.fetch(client: client)
         }
 
         return true

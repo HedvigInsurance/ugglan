@@ -40,7 +40,12 @@ struct Translations {
             switch key {
                 {% for translation in language.translations %}
 
-                case .{{translation.key.value}}: return """
+                case .{{translation.key.value}}:
+                    if let text = TranslationsRepo.find(.{{translation.key.value}}) {
+                        return text
+                    }
+
+                    return """
 {% filter indent:16 %}
 {{translation.text}}
 {% endfilter %}

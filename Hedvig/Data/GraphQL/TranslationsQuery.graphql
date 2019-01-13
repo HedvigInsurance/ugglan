@@ -1,0 +1,10 @@
+query Translations($code: String) {
+    languages(where: { code: $code }) {
+        translations(where: { project: App }) {
+            key {
+                value
+            }
+            text
+        }
+    }
+}
