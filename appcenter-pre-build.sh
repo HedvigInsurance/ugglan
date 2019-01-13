@@ -1,8 +1,8 @@
-sudo rm /usr/local/bin/node
-
 echo "Installing NVM..."
 brew install nvm
 source $(brew --prefix nvm)/nvm.sh
+
+sudo rm /usr/local/bin/node
 
 echo "Installing v8.5..."
 nvm install v8.5.0
