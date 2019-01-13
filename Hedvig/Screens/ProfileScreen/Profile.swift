@@ -24,6 +24,7 @@ extension Profile: Presentable {
         view.backgroundColor = UIColor.black
 
         let form = FormView()
+
         let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
 
         let myInfoRow = MyInfoRow(
@@ -58,6 +59,15 @@ extension Profile: Presentable {
         }
 
         bag += viewController.install(form) { scrollView in
+            let refreshControl = UIRefreshControl()
+
+            bag += refreshControl.onValue({ _ in
+                bag += Signal(after: 2).onValue({ _ in
+                    refreshControl.endRefreshing()
+                })
+            })
+
+            scrollView.addRefreshControl(refreshControl)
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
         }
 

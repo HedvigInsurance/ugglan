@@ -20,6 +20,8 @@ extension DefaultStyling {
             view.appearance().backgroundColor = .offWhite
         }
 
+        UIRefreshControl.appearance().tintColor = .purple
+
         UINavigationBar.appearance().tintColor = .purple
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.black,
