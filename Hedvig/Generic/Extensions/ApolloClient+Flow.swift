@@ -57,7 +57,7 @@ extension ApolloClient {
                     if result != nil {
                         completion(.success(result!))
                     } else {
-                        self.showNetworkErrorMessage {
+                        self.showNetworkErrorMessage { [unowned self] in
                             self.perform(mutation: mutation, queue: queue).onResult({ result in
                                 completion(result)
                             })
