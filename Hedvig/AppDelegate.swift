@@ -7,6 +7,7 @@
 //
 
 import Apollo
+import Disk
 import Flow
 import Form
 import Presentation
@@ -50,7 +51,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         DefaultStyling.installCustom()
 
+        let token = AuthorizationToken(token: "a8Za/PaA2jQqsg==.Lt9hKLFD8+oFBg==.hEprAa/drNxv5g==")
+        try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
+
         HedvigApolloClient.shared.initClient(environment: apolloEnvironment).onValue { client in
+            HedvigApolloClient.shared.client = client
+
             let marketing = Marketing(client: client)
 
             let marketingPresentation = Presentation(
@@ -58,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 style: .marketing,
                 options: .defaults
             ).onValue({ _ in
-                let loggedIn = LoggedIn()
+                let loggedIn = LoggedIn(client: client)
                 self.bag += self.window.present(loggedIn, options: [], animated: true)
             })
 

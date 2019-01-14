@@ -90,6 +90,9 @@
 		EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAA21AB212F00C6FFA5 /* Marketing.swift */; };
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
+		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
+		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
+		EBAFAB0D21ECC2810083E795 /* NameCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0C21ECC2810083E795 /* NameCircle.swift */; };
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
@@ -208,6 +211,9 @@
 		EB989BAA21AB212F00C6FFA5 /* Marketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketing.swift; sourceTree = "<group>"; };
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
+		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
+		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
+		EBAFAB0C21ECC2810083E795 /* NameCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCircle.swift; sourceTree = "<group>"; };
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -265,7 +271,7 @@
 		EB00CBAC21DF639A002A263B /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				EB00CBAD21DF63A7002A263B /* MyInfo.swift */,
+				EBAFAB0A21ECC1F30083E795 /* MyInfo */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -394,6 +400,7 @@
 			isa = PBXGroup;
 			children = (
 				EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */,
+				EBAFAB0821EC9F930083E795 /* ProfileSection.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -424,6 +431,7 @@
 				EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */,
 				EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */,
 				EB00CBCF21EBAA53002A263B /* TranslationsQuery.graphql */,
+				EBAFAB0621EC9D7A0083E795 /* Profile.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -576,6 +584,24 @@
 			path = SkipButtons;
 			sourceTree = "<group>";
 		};
+		EBAFAB0A21ECC1F30083E795 /* MyInfo */ = {
+			isa = PBXGroup;
+			children = (
+				EBAFAB0B21ECC1FE0083E795 /* Viewables */,
+				EB00CBAD21DF63A7002A263B /* MyInfo.swift */,
+			);
+			path = MyInfo;
+			sourceTree = "<group>";
+		};
+		EBAFAB0B21ECC1FE0083E795 /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EBAFAB0C21ECC2810083E795 /* NameCircle.swift */,
+			);
+			name = Viewables;
+			path = ../../../../..;
+			sourceTree = "<group>";
+		};
 		EBC049D0219C87B300AFC30F /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -708,6 +734,7 @@
 				EB00CBC121E1F079002A263B /* Localization.json in Resources */,
 				EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */,
 				EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */,
+				EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */,
 				EBC049D4219C87DF00AFC30F /* schema.json in Resources */,
 				EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */,
 				EB5ED9D7219860DF004CE441 /* CircularStd-Book.ttf in Resources */,
@@ -831,7 +858,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "curl 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master' -H 'Accept-Encoding: gzip' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Connection: keep-alive' --data-binary '{\"query\":\"query AppTranslationsMeta {\\n    languages {\\n      code\\n      translations(where: { project: App }) {\\n        text\\n        key {\\n          value\\n        }\\n        language {\\n   code\\n        }\\n    \\t}\\n    }\\n  \\tkeys(where: { translations_every: { project: App } }) {\\n      value\\n description    }\\n  }\",\"variables\":null,\"operationName\":\"AppTranslationsMeta\"}' --compressed -o Hedvig/Assets/Localization/Localization.json\n\n$PODS_ROOT/SwiftGen/bin/swiftgen\n";
+			shellScript = "# curl 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master' -H 'Accept-Encoding: gzip' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Connection: keep-alive' --data-binary '{\"query\":\"query AppTranslationsMeta {\\n    languages {\\n      code\\n      translations(where: { project: App }) {\\n        text\\n        key {\\n          value\\n        }\\n        language {\\n   code\\n        }\\n    \\t}\\n    }\\n  \\tkeys(where: { translations_every: { project: App } }) {\\n      value\\n description    }\\n  }\",\"variables\":null,\"operationName\":\"AppTranslationsMeta\"}' --compressed -o Hedvig/Assets/Localization/Localization.json\n\n$PODS_ROOT/SwiftGen/bin/swiftgen\n";
 		};
 		EB5ED9E5219874B3004CE441 /* Lint Swift code */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -952,6 +979,8 @@
 				EB034D6321CA63FC00078D65 /* Button.swift in Sources */,
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
+				EBAFAB0D21ECC2810083E795 /* NameCircle.swift in Sources */,
+				EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,

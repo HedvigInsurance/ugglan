@@ -6,11 +6,14 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Foundation
 import Presentation
 
-struct LoggedIn {}
+struct LoggedIn {
+    let client: ApolloClient
+}
 
 extension LoggedIn: Presentable {
     func materialize() -> (UITabBarController, Disposable) {
@@ -19,7 +22,7 @@ extension LoggedIn: Presentable {
         let bag = DisposeBag()
 
         let chat = Chat()
-        let profile = Profile()
+        let profile = Profile(client: client)
 
         let chatPresentation = Presentation(
             chat,

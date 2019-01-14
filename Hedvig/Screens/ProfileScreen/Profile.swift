@@ -6,12 +6,15 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Form
 import Presentation
 import UIKit
 
-struct Profile {}
+struct Profile {
+    let client: ApolloClient
+}
 
 extension Profile: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -25,37 +28,16 @@ extension Profile: Presentable {
 
         let form = FormView()
 
-        let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
+        bag += client.fetch(query: ProfileQuery()).onValue { result in
+            if let member = result.data?.member {
+                let profileSection = ProfileSection(
+                    member: member,
+                    form: form,
+                    presentingViewController: viewController
+                )
 
-        let myInfoRow = MyInfoRow(
-            presentingViewController: viewController
-        )
-
-        bag += section.append(myInfoRow) { rowAndProvider in
-            bag += viewController.registerForPreviewing(
-                sourceView: rowAndProvider.row,
-                presentable: MyInfo()
-            )
-        }
-        bag += section.append(myInfoRow) { rowAndProvider in
-            bag += viewController.registerForPreviewing(
-                sourceView: rowAndProvider.row,
-                presentable: MyInfo()
-            )
-        }
-
-        let button = Button(
-            title: "I am a button",
-            type: .standard(
-                backgroundColor: .green,
-                textColor: .white
-            )
-        )
-
-        bag += form.append(button) { _, containerView in
-            containerView.snp.makeConstraints({ make in
-                make.height.equalTo(button.type.height())
-            })
+                bag += form.append(profileSection)
+            }
         }
 
         bag += viewController.install(form) { scrollView in

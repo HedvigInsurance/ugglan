@@ -36,6 +36,27 @@ extension UIView {
 
     func materializeViewable<V: Viewable, VMatter: UIView>(
         viewable: V,
+        addView: @escaping (_ view: VMatter) -> Void
+    ) -> (V.Matter, V.Result, DelayedDisposer) where
+        V.Matter == VMatter,
+        V.Events == ViewableEvents {
+        let wasAddedCallbacker = Callbacker<Void>()
+        let viewableEvents = ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker
+        )
+        let (matter, result) = viewable.materialize(events: viewableEvents)
+
+        addView(matter)
+
+        wasAddedCallbacker.callAll()
+
+        return (matter, result, DelayedDisposer(Disposer {
+            matter.removeFromSuperview()
+        }, delay: viewableEvents.removeAfter.call() ?? 0.0))
+    }
+
+    func materializeViewable<V: Viewable, VMatter: UIView>(
+        viewable: V,
         onSelectCallbacker: Callbacker<Void>
     ) -> (V.Matter, V.Result, DelayedDisposer) where
         V.Matter == VMatter,

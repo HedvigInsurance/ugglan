@@ -12,6 +12,8 @@ import Foundation
 import Presentation
 
 struct MyInfoRow {
+    let firstName: String
+    let lastName: String
     let presentingViewController: UIViewController
 }
 
@@ -21,7 +23,7 @@ extension MyInfoRow: Viewable {
 
         let row = IconRow(
             title: String.translation(.PROFILE_MY_INFO_ROW_TITLE),
-            subtitle: "",
+            subtitle: "\(firstName) \(lastName)",
             iconAsset: Asset.personalInformation
         )
 

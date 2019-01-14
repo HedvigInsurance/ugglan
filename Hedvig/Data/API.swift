@@ -514,6 +514,88 @@ public final class MessagesQuery: GraphQLQuery {
   }
 }
 
+public final class ProfileQuery: GraphQLQuery {
+  public let operationDefinition =
+    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n}"
+
+  public init() {
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Query"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("member", type: .nonNull(.object(Member.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(member: Member) {
+      self.init(unsafeResultMap: ["__typename": "Query", "member": member.resultMap])
+    }
+
+    public var member: Member {
+      get {
+        return Member(unsafeResultMap: resultMap["member"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "member")
+      }
+    }
+
+    public struct Member: GraphQLSelectionSet {
+      public static let possibleTypes = ["Member"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("firstName", type: .scalar(String.self)),
+        GraphQLField("lastName", type: .scalar(String.self)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(firstName: String? = nil, lastName: String? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Member", "firstName": firstName, "lastName": lastName])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var firstName: String? {
+        get {
+          return resultMap["firstName"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "firstName")
+        }
+      }
+
+      public var lastName: String? {
+        get {
+          return resultMap["lastName"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "lastName")
+        }
+      }
+    }
+  }
+}
+
 public final class SendChatTextResponseMutation: GraphQLMutation {
   public let operationDefinition =
     "mutation SendChatTextResponse($input: ChatResponseTextInput!) {\n  sendChatTextResponse(input: $input)\n}"
