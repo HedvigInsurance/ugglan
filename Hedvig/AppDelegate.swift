@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let token = AuthorizationToken(token: "a8Za/PaA2jQqsg==.Lt9hKLFD8+oFBg==.hEprAa/drNxv5g==")
         try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
 
-        HedvigApolloClient.shared.initClient(environment: apolloEnvironment).onValue { client in
+        HedvigApolloClient.shared.initClient(environment: apolloEnvironment).delay(by: 0.5).onValue { client in
             HedvigApolloClient.shared.client = client
 
             let marketing = Marketing(client: client)
