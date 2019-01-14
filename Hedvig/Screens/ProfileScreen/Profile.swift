@@ -23,11 +23,8 @@ extension Profile: Presentable {
         let viewController = UIViewController()
         viewController.displayableTitle = "Profil"
 
-        let view = UIView()
-        view.backgroundColor = UIColor.black
-
         let form = FormView()
-
+        
         bag += client.fetch(query: ProfileQuery()).onValue { result in
             let profileSection = ProfileSection(
                 data: result.data,
