@@ -21,7 +21,7 @@ extension BorderStyle {
 extension BackgroundStyle {
     static let white = BackgroundStyle(color: .white, border: .standard)
     static let purple = BackgroundStyle(
-        color: UIColor.green.withAlphaComponent(0.2),
+        color: UIColor.purple.withAlphaComponent(0.2),
         border: .standard
     )
 }
