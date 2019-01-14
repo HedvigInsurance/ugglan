@@ -24,8 +24,10 @@ extension Profile: Presentable {
         viewController.displayableTitle = "Profil"
 
         let form = FormView()
-        
-        bag += client.fetch(query: ProfileQuery()).onValue { result in
+
+        let query = ProfileQuery()
+
+        bag += client.fetch(query: query).onValue { result in
             let profileSection = ProfileSection(
                 data: result.data,
                 presentingViewController: viewController
@@ -36,12 +38,7 @@ extension Profile: Presentable {
 
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()
-
-            bag += refreshControl.onValue({ _ in
-                bag += Signal(after: 2).onValue({ _ in
-                    refreshControl.endRefreshing()
-                })
-            })
+            bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
             scrollView.addRefreshControl(refreshControl)
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)

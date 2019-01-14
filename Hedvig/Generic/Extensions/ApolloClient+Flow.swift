@@ -22,7 +22,7 @@ extension ApolloClient {
                 query: query,
                 cachePolicy: cachePolicy,
                 queue: queue,
-                resultHandler: { (result: GraphQLResult<Query.Data>?, _: Error?) in
+                resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, _: Error?) in
                     if result != nil {
                         completion(.success(result!))
                     } else {
@@ -45,6 +45,18 @@ extension ApolloClient {
         }
     }
 
+    func refetchOnRefresh<Query: GraphQLQuery>(
+        query: Query,
+        refreshControl: UIRefreshControl,
+        queue: DispatchQueue = DispatchQueue.main
+    ) -> Disposable {
+        return refreshControl.onValue { [unowned self] _ in
+            self.fetch(query: query, cachePolicy: .fetchIgnoringCacheData, queue: queue).onValue { _ in
+                refreshControl.endRefreshing()
+            }
+        }
+    }
+
     func perform<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
@@ -53,7 +65,7 @@ extension ApolloClient {
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
-                resultHandler: { (result: GraphQLResult<Mutation.Data>?, _: Error?) in
+                resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, _: Error?) in
                     if result != nil {
                         completion(.success(result!))
                     } else {
