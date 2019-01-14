@@ -24,7 +24,8 @@ extension MyInfoRow: Viewable {
         let row = IconRow(
             title: String.translation(.PROFILE_MY_INFO_ROW_TITLE),
             subtitle: "\(firstName) \(lastName)",
-            iconAsset: Asset.personalInformation
+            iconAsset: Asset.personalInformation,
+            options: [.withArrow]
         )
 
         bag += events.onSelect.onValue {

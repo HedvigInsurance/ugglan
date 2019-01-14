@@ -12,16 +12,29 @@ import Foundation
 import UIKit
 
 struct IconRow {
+    enum Options {
+        case defaults, withArrow
+    }
+
     let iconAsset: ImageAsset
     let iconWidth: CGFloat
     let title: ReadSignal<String>
     let subtitle: ReadSignal<String>
 
-    init(title: String, subtitle: String, iconAsset: ImageAsset, iconWidth: CGFloat = 50) {
+    let options: [IconRow.Options]
+
+    init(
+        title: String,
+        subtitle: String,
+        iconAsset: ImageAsset,
+        iconWidth: CGFloat = 50,
+        options: [IconRow.Options] = [.defaults]
+    ) {
         self.title = ReadWriteSignal(title).readOnly()
         self.subtitle = ReadWriteSignal(subtitle).readOnly()
         self.iconAsset = iconAsset
         self.iconWidth = iconWidth
+        self.options = options
     }
 }
 
@@ -47,7 +60,11 @@ extension IconRow: Viewable {
 
         let row = rowView.prepend(
             icon
-        ).append(labelsContainer).append(arrow)
+        ).append(labelsContainer)
+
+        if options.contains(.withArrow) {
+            row.append(arrow)
+        }
 
         icon.snp.makeConstraints { make in
             make.width.equalTo(50)

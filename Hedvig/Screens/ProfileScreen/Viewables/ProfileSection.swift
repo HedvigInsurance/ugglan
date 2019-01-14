@@ -11,8 +11,7 @@ import Form
 import Foundation
 
 struct ProfileSection {
-    let member: ProfileQuery.Data.Member
-    let form: FormView
+    let data: ProfileQuery.Data?
     let presentingViewController: UIViewController
 }
 
@@ -22,12 +21,23 @@ extension ProfileSection: Viewable {
         let section = SectionView(header: nil, footer: nil, style: .sectionPlain)
 
         let myInfoRow = MyInfoRow(
-            firstName: member.firstName ?? "",
-            lastName: member.lastName ?? "",
+            firstName: data?.member.firstName ?? "",
+            lastName: data?.member.lastName ?? "",
             presentingViewController: presentingViewController
         )
 
-        bag += section.append(myInfoRow)
+        bag += section.append(myInfoRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                presentable: MyInfo()
+            )
+        }
+
+        let myCharityRow = MyCharityRow(
+            charityName: data?.cashback.name ?? ""
+        )
+
+        bag += section.append(myCharityRow)
 
         return (section, bag)
     }

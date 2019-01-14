@@ -34,13 +34,17 @@ struct ViewableEvents {
 struct SelectableViewableEvents {
     let wasAdded: Signal<Void>
     let removeAfter = Delegate<Void, TimeInterval>()
-    let onSelect: Signal<Void>
+    private let onSelectCallbacker: Callbacker<Void>
+
+    var onSelect: Signal<Void> {
+        return onSelectCallbacker.signal()
+    }
 
     init(
         wasAddedCallbacker: Callbacker<Void>,
         onSelectCallbacker: Callbacker<Void>
     ) {
         wasAdded = wasAddedCallbacker.signal()
-        onSelect = onSelectCallbacker.signal()
+        self.onSelectCallbacker = onSelectCallbacker
     }
 }

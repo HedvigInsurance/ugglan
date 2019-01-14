@@ -516,7 +516,7 @@ public final class MessagesQuery: GraphQLQuery {
 
 public final class ProfileQuery: GraphQLQuery {
   public let operationDefinition =
-    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n}"
+    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n  cashback {\n    __typename\n    name\n  }\n}"
 
   public init() {
   }
@@ -526,6 +526,7 @@ public final class ProfileQuery: GraphQLQuery {
 
     public static let selections: [GraphQLSelection] = [
       GraphQLField("member", type: .nonNull(.object(Member.selections))),
+      GraphQLField("cashback", type: .nonNull(.object(Cashback.selections))),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -534,8 +535,8 @@ public final class ProfileQuery: GraphQLQuery {
       self.resultMap = unsafeResultMap
     }
 
-    public init(member: Member) {
-      self.init(unsafeResultMap: ["__typename": "Query", "member": member.resultMap])
+    public init(member: Member, cashback: Cashback) {
+      self.init(unsafeResultMap: ["__typename": "Query", "member": member.resultMap, "cashback": cashback.resultMap])
     }
 
     public var member: Member {
@@ -544,6 +545,15 @@ public final class ProfileQuery: GraphQLQuery {
       }
       set {
         resultMap.updateValue(newValue.resultMap, forKey: "member")
+      }
+    }
+
+    public var cashback: Cashback {
+      get {
+        return Cashback(unsafeResultMap: resultMap["cashback"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "cashback")
       }
     }
 
@@ -590,6 +600,43 @@ public final class ProfileQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "lastName")
+        }
+      }
+    }
+
+    public struct Cashback: GraphQLSelectionSet {
+      public static let possibleTypes = ["Cashback"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("name", type: .scalar(String.self)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(name: String? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Cashback", "name": name])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var name: String? {
+        get {
+          return resultMap["name"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "name")
         }
       }
     }

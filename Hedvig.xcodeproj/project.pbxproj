@@ -95,6 +95,7 @@
 		EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB1C21ECC9060083E795 /* NameCircle.swift */; };
 		EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */; };
 		EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */; };
+		EBAFAB2721ECE1E50083E795 /* MyCharityRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */; };
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
@@ -218,6 +219,7 @@
 		EBAFAB1C21ECC9060083E795 /* NameCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameCircle.swift; sourceTree = "<group>"; };
 		EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailsSection.swift; sourceTree = "<group>"; };
 		EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRow.swift; sourceTree = "<group>"; };
+		EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCharityRow.swift; sourceTree = "<group>"; };
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			children = (
 				EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */,
 				EBAFAB0821EC9F930083E795 /* ProfileSection.swift */,
+				EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -965,6 +968,7 @@
 				EB5ED9DE21986127004CE441 /* HedvigFonts.swift in Sources */,
 				EBECC37E21C2B62B00716BEA /* MarketingStoryIndicator.swift in Sources */,
 				EB7FEAA021B0417E0027C9DE /* SkipToPreviousButton.swift in Sources */,
+				EBAFAB2721ECE1E50083E795 /* MyCharityRow.swift in Sources */,
 				EB00CBCC21EB8C0B002A263B /* UIViewController+Previewing.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,

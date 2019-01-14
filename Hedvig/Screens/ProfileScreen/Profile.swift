@@ -29,15 +29,12 @@ extension Profile: Presentable {
         let form = FormView()
 
         bag += client.fetch(query: ProfileQuery()).onValue { result in
-            if let member = result.data?.member {
-                let profileSection = ProfileSection(
-                    member: member,
-                    form: form,
-                    presentingViewController: viewController
-                )
+            let profileSection = ProfileSection(
+                data: result.data,
+                presentingViewController: viewController
+            )
 
-                bag += form.append(profileSection)
-            }
+            bag += form.append(profileSection)
         }
 
         bag += viewController.install(form) { scrollView in

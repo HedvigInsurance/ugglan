@@ -210,6 +210,8 @@ case NETWORK_ERROR_ALERT_CANCEL_ACTION
 case PHONE_NUMBER_ROW_TITLE
 /// Empty message that is shown when we don't have a phone number for the user.
 case PHONE_NUMBER_ROW_EMPTY
+/// Row title for my charity on profile page
+case PROFILE_MY_CHARITY_ROW_TITLE
 }
 
 struct Translations {
@@ -1054,6 +1056,15 @@ struct Translations {
 
                     return """
                 Inget angett
+                """
+
+                case .PROFILE_MY_CHARITY_ROW_TITLE:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_CHARITY_ROW_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Min välgörenhet
                 """
                 default: return String(describing: key)
             }

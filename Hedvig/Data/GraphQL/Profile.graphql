@@ -3,4 +3,7 @@ query Profile {
         firstName
         lastName
     }
+    cashback {
+        name
+    }
 }

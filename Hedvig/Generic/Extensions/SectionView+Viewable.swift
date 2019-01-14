@@ -29,8 +29,10 @@ extension SectionView {
 
         let bag = DisposeBag()
 
-        bag += rowAndProvider.onValue {
-            onSelectCallbacker.callAll()
+        if !onSelectCallbacker.isEmpty {
+            bag += rowAndProvider.onValue {
+                onSelectCallbacker.callAll()
+            }
         }
 
         onCreate(rowAndProvider)
@@ -87,8 +89,10 @@ extension SectionView {
         let bag = DisposeBag()
 
         bag += append(matter) { row in
-            bag += row.onValue {
-                onSelectCallbacker.callAll()
+            if !onSelectCallbacker.isEmpty {
+                bag += row.onValue {
+                    onSelectCallbacker.callAll()
+                }
             }
 
             onCreate(row)
