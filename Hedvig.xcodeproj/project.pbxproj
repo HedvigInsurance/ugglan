@@ -96,6 +96,7 @@
 		EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */; };
 		EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */; };
 		EBAFAB2721ECE1E50083E795 /* MyCharityRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */; };
+		EBAFAB2921ED0E6F0083E795 /* Previewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2821ED0E6F0083E795 /* Previewable.swift */; };
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
@@ -220,6 +221,7 @@
 		EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailsSection.swift; sourceTree = "<group>"; };
 		EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRow.swift; sourceTree = "<group>"; };
 		EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCharityRow.swift; sourceTree = "<group>"; };
+		EBAFAB2821ED0E6F0083E795 /* Previewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Previewable.swift; sourceTree = "<group>"; };
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 			isa = PBXGroup;
 			children = (
 				EB034D6F21D9239100078D65 /* CellForRow.swift */,
+				EBAFAB2821ED0E6F0083E795 /* Previewable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -959,6 +962,7 @@
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */,
+				EBAFAB2921ED0E6F0083E795 /* Previewable.swift in Sources */,
 				EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,

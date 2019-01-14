@@ -92,6 +92,22 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
         }
     }
 
+    func registerForPreviewing<P: Previewable>(
+        sourceView: UIView,
+        previewable: P
+    ) -> Disposable where P.PreviewMatter.Matter == UIViewController, P.PreviewMatter.Result == Disposable {
+        let presentable = previewable.preview()
+        return registerForPreviewing(sourceView: sourceView, presentable: presentable)
+    }
+
+    func registerForPreviewing<P: Previewable, FutureResult: Any>(
+        sourceView: UIView,
+        previewable: P
+    ) -> Disposable where P.PreviewMatter.Matter == UIViewController, P.PreviewMatter.Result == Future<FutureResult> {
+        let presentable = previewable.preview()
+        return registerForPreviewing(sourceView: sourceView, presentable: presentable)
+    }
+
     func registerForPreviewing<P: Presentable>(
         sourceView: UIView,
         presentable: P

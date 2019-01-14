@@ -36,3 +36,9 @@ extension MyInfoRow: Viewable {
         return (row, bag)
     }
 }
+
+extension MyInfoRow: Previewable {
+    func preview() -> MyInfo {
+        return MyInfo()
+    }
+}
