@@ -32,21 +32,18 @@ extension MyInfo: Presentable {
         }
 
         let form = FormView()
-        
+
         let nameCircle = NameCircle()
-        
+
         bag += form.prepend(nameCircle) { _, containerView in
             containerView.snp.makeConstraints({ make in
                 make.height.equalTo(200)
             })
         }
-        
-        let section = form.appendSection(
-            header: String.translation(.MY_INFO_CONTACT_DETAILS_TITLE),
-            footer: nil,
-            style: .sectionPlain
-        )
-        
+
+        let contactDetailsSection = ContactDetailsSection()
+        bag += form.append(contactDetailsSection)
+
         bag += viewController.install(form) { scrollView in
             bag += scrollView.chainAllControlResponders(shouldLoop: false, returnKey: .next)
         }

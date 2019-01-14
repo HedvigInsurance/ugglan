@@ -206,6 +206,10 @@ case NETWORK_ERROR_ALERT_MESSAGE
 case NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION
 /// Button that cancels the current failed network requests.
 case NETWORK_ERROR_ALERT_CANCEL_ACTION
+/// Title for row that is displaying the phone number
+case PHONE_NUMBER_ROW_TITLE
+/// Empty message that is shown when we don't have a phone number for the user.
+case PHONE_NUMBER_ROW_EMPTY
 }
 
 struct Translations {
@@ -1032,6 +1036,24 @@ struct Translations {
 
                     return """
                 Avbryt
+                """
+
+                case .PHONE_NUMBER_ROW_TITLE:
+                    if let text = TranslationsRepo.find(.PHONE_NUMBER_ROW_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Telefonnummer
+                """
+
+                case .PHONE_NUMBER_ROW_EMPTY:
+                    if let text = TranslationsRepo.find(.PHONE_NUMBER_ROW_EMPTY) {
+                        return text
+                    }
+
+                    return """
+                Inget angett
                 """
                 default: return String(describing: key)
             }

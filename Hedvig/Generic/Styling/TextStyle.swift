@@ -25,8 +25,13 @@ extension TextStyle {
         style.color = .black
     }
 
+    static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .gray
+    }
+
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
-        style.color = .darkGray
+        style.color = .offBlack
     }
 }

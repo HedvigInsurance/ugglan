@@ -92,7 +92,9 @@
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
 		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
 		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
-		EBAFAB0D21ECC2810083E795 /* NameCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0C21ECC2810083E795 /* NameCircle.swift */; };
+		EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB1C21ECC9060083E795 /* NameCircle.swift */; };
+		EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */; };
+		EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */; };
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
@@ -213,7 +215,9 @@
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
-		EBAFAB0C21ECC2810083E795 /* NameCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCircle.swift; sourceTree = "<group>"; };
+		EBAFAB1C21ECC9060083E795 /* NameCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameCircle.swift; sourceTree = "<group>"; };
+		EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailsSection.swift; sourceTree = "<group>"; };
+		EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRow.swift; sourceTree = "<group>"; };
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -587,19 +591,28 @@
 		EBAFAB0A21ECC1F30083E795 /* MyInfo */ = {
 			isa = PBXGroup;
 			children = (
-				EBAFAB0B21ECC1FE0083E795 /* Viewables */,
+				EBAFAB1B21ECC8F30083E795 /* Viewables */,
 				EB00CBAD21DF63A7002A263B /* MyInfo.swift */,
 			);
 			path = MyInfo;
 			sourceTree = "<group>";
 		};
-		EBAFAB0B21ECC1FE0083E795 /* Viewables */ = {
+		EBAFAB1B21ECC8F30083E795 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
-				EBAFAB0C21ECC2810083E795 /* NameCircle.swift */,
+				EBAFAB1F21ECC9130083E795 /* ContactDetailsSection */,
+				EBAFAB1C21ECC9060083E795 /* NameCircle.swift */,
 			);
-			name = Viewables;
-			path = ../../../../..;
+			path = Viewables;
+			sourceTree = "<group>";
+		};
+		EBAFAB1F21ECC9130083E795 /* ContactDetailsSection */ = {
+			isa = PBXGroup;
+			children = (
+				EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */,
+				EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */,
+			);
+			path = ContactDetailsSection;
 			sourceTree = "<group>";
 		};
 		EBC049D0219C87B300AFC30F /* Data */ = {
@@ -858,7 +871,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# curl 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master' -H 'Accept-Encoding: gzip' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Connection: keep-alive' --data-binary '{\"query\":\"query AppTranslationsMeta {\\n    languages {\\n      code\\n      translations(where: { project: App }) {\\n        text\\n        key {\\n          value\\n        }\\n        language {\\n   code\\n        }\\n    \\t}\\n    }\\n  \\tkeys(where: { translations_every: { project: App } }) {\\n      value\\n description    }\\n  }\",\"variables\":null,\"operationName\":\"AppTranslationsMeta\"}' --compressed -o Hedvig/Assets/Localization/Localization.json\n\n$PODS_ROOT/SwiftGen/bin/swiftgen\n";
+			shellScript = "curl 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master' -H 'Accept-Encoding: gzip' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Connection: keep-alive' --data-binary '{\"query\":\"query AppTranslationsMeta {\\n    languages {\\n      code\\n      translations(where: { project: App }) {\\n        text\\n        key {\\n          value\\n        }\\n        language {\\n   code\\n        }\\n    \\t}\\n    }\\n  \\tkeys(where: { translations_every: { project: App } }) {\\n      value\\n description    }\\n  }\",\"variables\":null,\"operationName\":\"AppTranslationsMeta\"}' --compressed -o Hedvig/Assets/Localization/Localization.json\n\n$PODS_ROOT/SwiftGen/bin/swiftgen\n";
 		};
 		EB5ED9E5219874B3004CE441 /* Lint Swift code */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -943,6 +956,7 @@
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */,
+				EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
@@ -954,6 +968,7 @@
 				EB00CBCC21EB8C0B002A263B /* UIViewController+Previewing.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
+				EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */,
 				EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */,
 				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
@@ -979,7 +994,7 @@
 				EB034D6321CA63FC00078D65 /* Button.swift in Sources */,
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
-				EBAFAB0D21ECC2810083E795 /* NameCircle.swift in Sources */,
+				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,
 				EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,
