@@ -36,7 +36,7 @@ extension UIView {
 
     func materializeViewable<V: Viewable, VMatter: UIView>(
         viewable: V,
-        addView: @escaping (_ view: VMatter) -> Void
+        addView: (_ view: VMatter) -> Void
     ) -> (V.Matter, V.Result, DelayedDisposer) where
         V.Matter == VMatter,
         V.Events == ViewableEvents {
