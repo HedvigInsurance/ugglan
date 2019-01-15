@@ -16,7 +16,7 @@ protocol Previewable {
     var presentingViewController: UIViewController { get }
 
     associatedtype PreviewMatter: Presentable
-    func preview() -> PreviewMatter
+    func preview() -> (PreviewMatter, PresentationOptions)
 }
 
 extension Previewable where Self.PreviewMatter.Matter == UIViewController, Self.PreviewMatter.Result == Disposable {

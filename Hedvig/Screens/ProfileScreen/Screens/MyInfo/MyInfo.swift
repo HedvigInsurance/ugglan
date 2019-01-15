@@ -27,10 +27,6 @@ extension MyInfo: Presentable {
         let viewController = UIViewController()
         viewController.title = String.translation(.MY_INFO_TITLE)
 
-        if #available(iOS 11.0, *) {
-            viewController.navigationItem.largeTitleDisplayMode = .never
-        }
-
         let form = FormView()
 
         let nameCircle = NameCircle()

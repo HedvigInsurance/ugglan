@@ -47,7 +47,8 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
 
     func registerForPreviewing<P: Presentable, FutureResult: Any>(
         sourceView: UIView,
-        presentable: P
+        presentable: P,
+        options: PresentationOptions
     ) -> Disposable where P.Matter == UIViewController, P.Result == Future<FutureResult> {
         registerForPreviewing(with: self, sourceView: sourceView)
 
@@ -60,9 +61,12 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
             () -> AnyPresentable<UIViewController, Disposable> in
             return AnyPresentable {
                 let (viewController, future) = presentable.materialize()
+
                 let autoPopFuture = future.onValue { _ in
                     viewController.navigationController?.popViewController(animated: true)
                 }
+
+                viewController.setLargeTitleDisplayMode(options)
 
                 let innerBag = bag.innerBag()
 
@@ -96,21 +100,22 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
         sourceView: UIView,
         previewable: P
     ) -> Disposable where P.PreviewMatter.Matter == UIViewController, P.PreviewMatter.Result == Disposable {
-        let presentable = previewable.preview()
-        return registerForPreviewing(sourceView: sourceView, presentable: presentable)
+        let (presentable, options) = previewable.preview()
+        return registerForPreviewing(sourceView: sourceView, presentable: presentable, options: options)
     }
 
     func registerForPreviewing<P: Previewable, FutureResult: Any>(
         sourceView: UIView,
         previewable: P
     ) -> Disposable where P.PreviewMatter.Matter == UIViewController, P.PreviewMatter.Result == Future<FutureResult> {
-        let presentable = previewable.preview()
-        return registerForPreviewing(sourceView: sourceView, presentable: presentable)
+        let (presentable, options) = previewable.preview()
+        return registerForPreviewing(sourceView: sourceView, presentable: presentable, options: options)
     }
 
     func registerForPreviewing<P: Presentable>(
         sourceView: UIView,
-        presentable: P
+        presentable: P,
+        options: PresentationOptions
     ) -> Disposable where P.Matter == UIViewController, P.Result == Disposable {
         registerForPreviewing(with: self, sourceView: sourceView)
 
@@ -124,6 +129,8 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
             return AnyPresentable {
                 let (viewController, disposable) = presentable.materialize()
                 let innerBag = bag.innerBag()
+
+                viewController.setLargeTitleDisplayMode(options)
 
                 // dispose preview if it's left without a window for 500ms
                 innerBag += viewController.view.windowSignal
