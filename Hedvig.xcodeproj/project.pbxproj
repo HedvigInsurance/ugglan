@@ -216,6 +216,7 @@
 		EB989BAA21AB212F00C6FFA5 /* Marketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketing.swift; sourceTree = "<group>"; };
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
 		EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailRow.swift; sourceTree = "<group>"; };
+		EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = MyInfo.graphql; sourceTree = "<group>"; };
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
@@ -444,6 +445,7 @@
 				EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */,
 				EB00CBCF21EBAA53002A263B /* TranslationsQuery.graphql */,
 				EBAFAB0621EC9D7A0083E795 /* Profile.graphql */,
+				EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -771,6 +773,7 @@
 				EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 				EB00CBD021EBAA53002A263B /* TranslationsQuery.graphql in Resources */,
+				EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -880,7 +883,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "curl 'https://api-euwest.graphcms.com/v1/cjmawd9hw036a01cuzmjhplka/master' -H 'Accept-Encoding: gzip' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Connection: keep-alive' --data-binary '{\"query\":\"query AppTranslationsMeta {\\n    languages {\\n      code\\n      translations(where: { project: App }) {\\n        text\\n        key {\\n          value\\n        }\\n        language {\\n   code\\n        }\\n    \\t}\\n    }\\n  \\tkeys(where: { translations_every: { project: App } }) {\\n      value\\n description    }\\n  }\",\"variables\":null,\"operationName\":\"AppTranslationsMeta\"}' --compressed -o Hedvig/Assets/Localization/Localization.json\n\n$PODS_ROOT/SwiftGen/bin/swiftgen\n";
+			shellScript = "$PODS_ROOT/SwiftGen/bin/swiftgen\n";
 		};
 		EB5ED9E5219874B3004CE441 /* Lint Swift code */ = {
 			isa = PBXShellScriptBuildPhase;
