@@ -8,6 +8,7 @@
 
 import Apollo
 import Disk
+import Firebase
 import Flow
 import Form
 import Presentation
@@ -24,6 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         window.rootViewController = navigationController
+        viewControllerWasPresented = { viewController in
+            let mirror = Mirror(reflecting: viewController)
+            Analytics.setScreenName(
+                viewController.debugPresentationTitle,
+                screenClass: String(describing: mirror.subjectType)
+            )
+        }
 
         let hasLoadedCallbacker = Callbacker<Void>()
 
