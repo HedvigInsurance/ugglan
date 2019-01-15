@@ -83,4 +83,31 @@ extension ApolloClient {
             }
         }
     }
+
+    public func watch<Query: GraphQLQuery>(
+        query: Query,
+        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
+        queue: DispatchQueue = DispatchQueue.main
+    ) -> Signal<GraphQLResult<Query.Data>> {
+        return Signal { callbacker in
+            let bag = DisposeBag()
+
+            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, _ in
+                if let result = result {
+                    callbacker(result)
+                } else {
+                    self.showNetworkErrorMessage { [unowned self] in
+                        bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue({ result in
+                            callbacker(result)
+                        })
+                    }
+                }
+            }
+
+            return Disposer {
+                watcher.cancel()
+                bag.dispose()
+            }
+        }
+    }
 }
