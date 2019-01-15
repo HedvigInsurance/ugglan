@@ -11,9 +11,18 @@ import Foundation
 import Presentation
 import UIKit
 
+protocol Tabable {
+    func tabBarItem() -> UITabBarItem
+}
+
 extension UITabBarController {
     // swiftlint:disable identifier_name
-    func presentTabs<A: Presentable, AMatter: UIViewController, B: Presentable, BMatter: UIViewController>(
+    func presentTabs<
+        A: Presentable & Tabable,
+        AMatter: UIViewController,
+        B: Presentable & Tabable,
+        BMatter: UIViewController
+    >(
         _ a: Presentation<A>,
         _ b: Presentation<B>
     ) -> Disposable where
@@ -36,6 +45,14 @@ extension UITabBarController {
         b.configure(bMaterialized.0, bag)
 
         viewControllers = [aViewController, bViewController]
+
+        if let navigationController = aViewController as? UINavigationController {
+            navigationController.tabBarItem = a.presentable.tabBarItem()
+        }
+
+        if let navigationController = bViewController as? UINavigationController {
+            navigationController.tabBarItem = b.presentable.tabBarItem()
+        }
 
         return bag
     }

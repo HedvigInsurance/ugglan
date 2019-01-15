@@ -47,3 +47,9 @@ extension Profile: Presentable {
         return (viewController, bag)
     }
 }
+
+extension Profile: Tabable {
+    func tabBarItem() -> UITabBarItem {
+        return UITabBarItem(title: "Profile", image: nil, selectedImage: nil)
+    }
+}
