@@ -27,13 +27,13 @@ extension EmailRow: Viewable {
         let valueLabel = UILabel()
         row.append(valueLabel)
 
-        bag += client.watch(query: MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch).onValue { result in
+        bag += client.watch(query: MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch).map({ result -> StyledText in
             if let member = result.data?.member, let email = member.email {
-                valueLabel.styledText = StyledText(text: email, style: .rowTitle)
-            } else {
-                valueLabel.styledText = StyledText(text: String.translation(.EMAIL_ROW_EMPTY), style: .rowTitleDisabled)
+                return StyledText(text: email, style: .rowTitle)
             }
-        }
+
+            return StyledText(text: String.translation(.EMAIL_ROW_EMPTY), style: .rowTitleDisabled)
+        }).bindTo(valueLabel, \.styledText)
 
         return (row, bag)
     }
