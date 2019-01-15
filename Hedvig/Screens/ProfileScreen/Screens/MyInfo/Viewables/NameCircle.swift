@@ -22,7 +22,7 @@ extension NameCircle: Viewable {
     func materialize(events _: ViewableEvents) -> (CircleLabel, Disposable) {
         let bag = DisposeBag()
 
-        let nameCircleText = DynamicString("")
+        let nameCircleText = DynamicString()
 
         bag += client.fetch(query: ProfileQuery()).valueSignal.map({ result -> String in
             if let member = result.data?.member, let firstName = member.firstName, let lastName = member.lastName {

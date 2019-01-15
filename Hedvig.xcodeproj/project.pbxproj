@@ -89,6 +89,7 @@
 		EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */; };
 		EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAA21AB212F00C6FFA5 /* Marketing.swift */; };
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
+		EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */; };
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
 		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
 		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
@@ -214,6 +215,7 @@
 		EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CreateSession.graphql; sourceTree = "<group>"; };
 		EB989BAA21AB212F00C6FFA5 /* Marketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketing.swift; sourceTree = "<group>"; };
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
+		EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailRow.swift; sourceTree = "<group>"; };
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
@@ -617,6 +619,7 @@
 			children = (
 				EBAFAB2021ECC9250083E795 /* ContactDetailsSection.swift */,
 				EBAFAB2421ECC9440083E795 /* PhoneNumberRow.swift */,
+				EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */,
 			);
 			path = ContactDetailsSection;
 			sourceTree = "<group>";
@@ -1000,6 +1003,7 @@
 				EBECC41C21C39C5200716BEA /* SharedElement.swift in Sources */,
 				EB034D7021D9239100078D65 /* CellForRow.swift in Sources */,
 				EB034D6321CA63FC00078D65 /* Button.swift in Sources */,
+				EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */,
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,

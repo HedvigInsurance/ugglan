@@ -25,6 +25,9 @@ extension ContactDetailsSection: Viewable {
         let phoneNumberRow = PhoneNumberRow()
         bag += section.append(phoneNumberRow)
 
+        let emailRow = EmailRow()
+        bag += section.append(emailRow)
+
         return (section, bag)
     }
 }

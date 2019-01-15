@@ -22,7 +22,7 @@ struct DynamicString: SignalProvider {
         }
     }
 
-    init(_ value: String) {
+    init(_ value: String = "") {
         self.value = value
     }
 }

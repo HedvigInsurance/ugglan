@@ -212,6 +212,10 @@ case PHONE_NUMBER_ROW_TITLE
 case PHONE_NUMBER_ROW_EMPTY
 /// Row title for my charity on profile page
 case PROFILE_MY_CHARITY_ROW_TITLE
+/// Title for row where a user can see and change their email.
+case EMAIL_ROW_TITLE
+/// A value to show when the email row is empty.
+case EMAIL_ROW_EMPTY
 }
 
 struct Translations {
@@ -1065,6 +1069,24 @@ struct Translations {
 
                     return """
                 Min välgörenhet
+                """
+
+                case .EMAIL_ROW_TITLE:
+                    if let text = TranslationsRepo.find(.EMAIL_ROW_TITLE) {
+                        return text
+                    }
+
+                    return """
+                E-postadress
+                """
+
+                case .EMAIL_ROW_EMPTY:
+                    if let text = TranslationsRepo.find(.EMAIL_ROW_EMPTY) {
+                        return text
+                    }
+
+                    return """
+                Inget angett
                 """
                 default: return String(describing: key)
             }
