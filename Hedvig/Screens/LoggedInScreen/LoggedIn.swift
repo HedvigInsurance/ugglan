@@ -27,32 +27,23 @@ extension LoggedIn: Presentable {
         let chatPresentation = Presentation(
             chat,
             style: .default,
-            options: .defaults
+            options: [.defaults, .prefersLargeTitles(true)]
         )
 
         let profilePresentation = Presentation(
             profile,
             style: .default,
-            options: .defaults
+            options: [.defaults, .prefersLargeTitles(true)]
         )
 
         let newChatPresentation = chatPresentation.addConfiguration { viewController, _ in
-            viewController.title = "Fisk"
-
             if let navigationController = viewController.navigationController {
-                if #available(iOS 11.0, *) {
-                    navigationController.navigationBar.prefersLargeTitles = true
-                }
                 navigationController.tabBarItem = UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
             }
         }
 
         let configuredProfilePresentation = profilePresentation.addConfiguration { viewController, _ in
             if let navigationController = viewController.navigationController {
-                if #available(iOS 11.0, *) {
-                    navigationController.navigationBar.prefersLargeTitles = true
-                }
-
                 navigationController.tabBarItem = UITabBarItem(title: "Profile", image: nil, selectedImage: nil)
             }
         }

@@ -26,7 +26,7 @@ PODS:
   - Starscream (3.0.6)
   - SwiftFormat/CLI (0.37.2)
   - SwiftGen (6.0.2)
-  - SwiftLint (0.29.2)
+  - SwiftLint (0.29.3)
   - "UICollectionView+AnimatedScroll (1.0.4)"
 
 DEPENDENCIES:
@@ -79,7 +79,7 @@ CHECKOUT OPTIONS:
     :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
   PresentationFramework:
-    :commit: a8421b961b6a1d5cd1b43092bde1c4a977820048
+    :commit: d984000be8834617eb235c54324dbc645558ec3b
     :git: https://github.com/hedviginsurance/presentation.git
   "UICollectionView+AnimatedScroll":
     :commit: b5a5e2b7f95713e74c0bfb623a99429b0489fa1f
@@ -99,7 +99,7 @@ SPEC CHECKSUMS:
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftFormat: abbfb26dde4c6d683923cde153c88e10da9d7881
   SwiftGen: e5b047067aa84082826a0c4f1c4c2ddc95bcf74c
-  SwiftLint: 47df60bdea6e7e902b193b6596db8683aafd86a3
+  SwiftLint: bfa7ca7b4d170cfaf0d236ca3ffd969e88a2f002
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
 PODFILE CHECKSUM: b5871b0d3a6ac1a3ecc75d42924e8d13c23ab867
