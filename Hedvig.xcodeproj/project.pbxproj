@@ -45,9 +45,6 @@
 		EB034D8221DCFA9F00078D65 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8121DCFA9F00078D65 /* Profile.swift */; };
 		EB034D8421DCFBD400078D65 /* LargeTitlesPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */; };
 		EB034D8621DE183900078D65 /* FormView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8521DE183800078D65 /* FormView+Viewable.swift */; };
-		EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */; };
-		EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */; };
-		EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -85,11 +82,11 @@
 		EB7FEAC121B51D310027C9DE /* StoriesIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */; };
 		EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC221B56B860027C9DE /* Logo.swift */; };
 		EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */; };
-		EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */; };
 		EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */; };
 		EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAA21AB212F00C6FFA5 /* Marketing.swift */; };
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
 		EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */; };
+		EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */; };
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
 		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
 		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
@@ -101,7 +98,6 @@
 		EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */; };
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
-		EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */; };
 		EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */; };
 		EBECC26A21B9677800716BEA /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26921B9677800716BEA /* Chat.swift */; };
 		EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */; };
@@ -171,9 +167,6 @@
 		EB034D8121DCFA9F00078D65 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeTitlesPresentationStyle.swift; sourceTree = "<group>"; };
 		EB034D8521DE183800078D65 /* FormView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormView+Viewable.swift"; sourceTree = "<group>"; };
-		EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatTextResponse.graphql; sourceTree = "<group>"; };
-		EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CurrentChatResponseSubscription.graphql; sourceTree = "<group>"; };
-		EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendChatSingleSelectResponse.graphql; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -211,7 +204,6 @@
 		EB7FEAC021B51D310027C9DE /* StoriesIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesIndicator.swift; sourceTree = "<group>"; };
 		EB7FEAC221B56B860027C9DE /* Logo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logo.swift; sourceTree = "<group>"; };
 		EB7FEAC621B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionKit+UpdateRows.swift"; sourceTree = "<group>"; };
-		EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Messages.graphql; sourceTree = "<group>"; };
 		EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CreateSession.graphql; sourceTree = "<group>"; };
 		EB989BAA21AB212F00C6FFA5 /* Marketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketing.swift; sourceTree = "<group>"; };
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
@@ -228,7 +220,6 @@
 		EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RadiusMask.swift"; sourceTree = "<group>"; };
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
-		EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MessageSubscription.graphql; sourceTree = "<group>"; };
 		EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigApolloClient.swift; sourceTree = "<group>"; };
 		EBECC26921B9677800716BEA /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPresentationStyle.swift; sourceTree = "<group>"; };
@@ -436,12 +427,7 @@
 		EB1B4A9B21A44E8A00DA341C /* GraphQL */ = {
 			isa = PBXGroup;
 			children = (
-				EB06FE68219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql */,
 				EB88DB61219EBEE500D5C8E1 /* CreateSession.graphql */,
-				EB06FE5D219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql */,
-				EB06FE5B219EC9B8007DE1C9 /* SendChatTextResponse.graphql */,
-				EBC049D3219C87DF00AFC30F /* MessageSubscription.graphql */,
-				EB88DB5B219DBD4E00D5C8E1 /* Messages.graphql */,
 				EB7FEA8E21AFE76E0027C9DE /* MarketingStories.graphql */,
 				EB00CBCF21EBAA53002A263B /* TranslationsQuery.graphql */,
 				EBAFAB0621EC9D7A0083E795 /* Profile.graphql */,
@@ -757,20 +743,15 @@
 			files = (
 				EB00CBC121E1F079002A263B /* Localization.json in Resources */,
 				EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */,
-				EB06FE5C219EC9B8007DE1C9 /* SendChatTextResponse.graphql in Resources */,
 				EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */,
 				EBC049D4219C87DF00AFC30F /* schema.json in Resources */,
-				EBC049D6219C87DF00AFC30F /* MessageSubscription.graphql in Resources */,
 				EB5ED9D7219860DF004CE441 /* CircularStd-Book.ttf in Resources */,
 				EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */,
 				EB5ED9DB219860DF004CE441 /* CircularStd-Bold.ttf in Resources */,
-				EB06FE5E219ECD6F007DE1C9 /* CurrentChatResponseSubscription.graphql in Resources */,
 				EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */,
 				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
-				EB88DB5C219DBD4E00D5C8E1 /* Messages.graphql in Resources */,
 				EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */,
 				EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */,
-				EB06FE69219F1395007DE1C9 /* SendChatSingleSelectResponse.graphql in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 				EB00CBD021EBAA53002A263B /* TranslationsQuery.graphql in Resources */,
 				EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */,
