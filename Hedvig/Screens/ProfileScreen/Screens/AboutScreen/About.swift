@@ -52,6 +52,15 @@ extension About: Presentable {
         let versionRow = VersionRow()
         bag += versionSection.append(versionRow)
 
+        bag += form.append(Spacing(height: 15))
+
+        let year = Calendar.current.component(.year, from: Date())
+
+        let footerView = UILabel(value: "© Hedvig AB - \(year)", style: .sectionHeader)
+        footerView.textAlignment = .center
+
+        form.append(footerView)
+
         bag += viewController.install(form)
 
         return (viewController, bag)
