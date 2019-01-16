@@ -234,6 +234,8 @@ case LICENSES_SCREEN_TITLE
 case ABOUT_SCREEN_TITLE
 /// Title for other section on profile screen
 case OTHER_SECTION_TITLE
+/// Text shown in header under acknowledgements.
+case ACKNOWLEDGEMENT_HEADER_TITLE
 }
 
 struct Translations {
@@ -1168,6 +1170,15 @@ struct Translations {
 
                     return """
                 Annat
+                """
+
+                case .ACKNOWLEDGEMENT_HEADER_TITLE:
+                    if let text = TranslationsRepo.find(.ACKNOWLEDGEMENT_HEADER_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Hedvig tror starkt på open-source, här finner du en lista och tillhörande licenser för de biblioteken vi förlitar oss på 💕
                 """
                 default: return String(describing: key)
             }

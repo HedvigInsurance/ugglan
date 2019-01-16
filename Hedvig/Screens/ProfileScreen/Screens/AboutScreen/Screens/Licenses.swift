@@ -47,20 +47,49 @@ extension Licenses: Presentable {
 
         let acknowListViewController = AcknowListViewController()
 
-        let tableKit = TableKit<EmptySection, Acknow>(bag: bag)
-        
+        let tableKit = TableKit<EmptySection, Acknow>(
+            table: Table(),
+            style: .grouped,
+            bag: bag
+        )
+
         tableKit.set(
             Table(rows: acknowListViewController.acknowledgements!),
             rowIdentifier: { $0.title }
         )
 
-        bag += tableKit.delegate.didSelectRow.onValue { acknow in
-            let acknowViewPresentable = AnyPresentable<AcknowViewController, Disposable> {
-                let acknowViewController = AcknowViewController(acknowledgement: acknow)
-                return (acknowViewController, NilDisposer())
-            }
+        let headerView = UIView()
 
-            self.presentingViewController.present(acknowViewPresentable)
+        let headerLabel = UILabel(
+            value: String.translation(.ACKNOWLEDGEMENT_HEADER_TITLE),
+            style: .body
+        )
+        headerLabel.numberOfLines = 0
+        headerLabel.lineBreakMode = .byWordWrapping
+
+        bag += headerLabel.didLayoutSignal.onValue {
+            headerLabel.preferredMaxLayoutWidth = headerLabel.frame.size.width
+
+            headerView.snp.remakeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalTo(headerLabel.intrinsicContentSize.height + 40)
+            }
+        }
+
+        headerView.addSubview(headerLabel)
+
+        tableKit.headerView = headerView
+
+        headerLabel.snp.makeConstraints { make in
+            make.width.equalToSuperview().inset(15)
+            make.center.equalToSuperview()
+        }
+
+        headerLabel.sizeToFit()
+
+        bag += tableKit.delegate.didSelectRow.onValue { acknowledgement in
+            let license = License(acknowledgement: acknowledgement)
+            self.presentingViewController.present(license)
         }
 
         bag += viewController.install(tableKit)

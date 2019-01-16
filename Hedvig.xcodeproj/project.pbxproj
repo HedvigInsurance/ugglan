@@ -107,6 +107,8 @@
 		EBE09B3D21EF6DE900EC864E /* About.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3C21EF6DE900EC864E /* About.swift */; };
 		EBE09B4221EF6EC800EC864E /* AboutRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4121EF6EC800EC864E /* AboutRow.swift */; };
 		EBE09B4521EF73CE00EC864E /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4421EF73CE00EC864E /* VersionRow.swift */; };
+		EBE09B4921EF82EF00EC864E /* TableViewFormStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4821EF82EF00EC864E /* TableViewFormStyle.swift */; };
+		EBE09B4B21EF8C0200EC864E /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4A21EF8C0200EC864E /* License.swift */; };
 		EBECC26A21B9677800716BEA /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26921B9677800716BEA /* Chat.swift */; };
 		EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */; };
 		EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */; };
@@ -237,6 +239,8 @@
 		EBE09B3C21EF6DE900EC864E /* About.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = About.swift; sourceTree = "<group>"; };
 		EBE09B4121EF6EC800EC864E /* AboutRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutRow.swift; sourceTree = "<group>"; };
 		EBE09B4421EF73CE00EC864E /* VersionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionRow.swift; sourceTree = "<group>"; };
+		EBE09B4821EF82EF00EC864E /* TableViewFormStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewFormStyle.swift; sourceTree = "<group>"; };
+		EBE09B4A21EF8C0200EC864E /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
 		EBECC26921B9677800716BEA /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPresentationStyle.swift; sourceTree = "<group>"; };
 		EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+addConstraint.swift"; sourceTree = "<group>"; };
@@ -313,6 +317,7 @@
 				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
 				EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */,
 				EB00CBBC21E0F692002A263B /* SectionStyle.swift */,
+				EBE09B4821EF82EF00EC864E /* TableViewFormStyle.swift */,
 			);
 			path = Styling;
 			sourceTree = "<group>";
@@ -668,6 +673,7 @@
 			isa = PBXGroup;
 			children = (
 				EBE09B3121EF622E00EC864E /* Licenses.swift */,
+				EBE09B4A21EF8C0200EC864E /* License.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -983,6 +989,7 @@
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
 				EB00CBA621DE5392002A263B /* SectionView+Viewable.swift in Sources */,
+				EBE09B4B21EF8C0200EC864E /* License.swift in Sources */,
 				EB00CBA421DE52FB002A263B /* IconRow.swift in Sources */,
 				EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */,
 				EB00CBAE21DF63A7002A263B /* MyInfo.swift in Sources */,
@@ -1048,6 +1055,7 @@
 				EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */,
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
+				EBE09B4921EF82EF00EC864E /* TableViewFormStyle.swift in Sources */,
 				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,
 				EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
