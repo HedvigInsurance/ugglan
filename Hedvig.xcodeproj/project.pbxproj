@@ -43,7 +43,6 @@
 		EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D7B21DCDD3300078D65 /* MarketingStoryImageCell.swift */; };
 		EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D7F21DCE2CD00078D65 /* LoggedIn.swift */; };
 		EB034D8221DCFA9F00078D65 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8121DCFA9F00078D65 /* Profile.swift */; };
-		EB034D8421DCFBD400078D65 /* LargeTitlesPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */; };
 		EB034D8621DE183900078D65 /* FormView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8521DE183800078D65 /* FormView+Viewable.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -166,7 +165,6 @@
 		EB034D7B21DCDD3300078D65 /* MarketingStoryImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingStoryImageCell.swift; sourceTree = "<group>"; };
 		EB034D7F21DCE2CD00078D65 /* LoggedIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggedIn.swift; sourceTree = "<group>"; };
 		EB034D8121DCFA9F00078D65 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
-		EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeTitlesPresentationStyle.swift; sourceTree = "<group>"; };
 		EB034D8521DE183800078D65 /* FormView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormView+Viewable.swift"; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -294,7 +292,6 @@
 		EB00CBB621E0274A002A263B /* Styling */ = {
 			isa = PBXGroup;
 			children = (
-				EB034D8321DCFBD400078D65 /* LargeTitlesPresentationStyle.swift */,
 				EB034BD421C7BFA000078D65 /* TextStyle.swift */,
 				EB7FEA8821AECCBF0027C9DE /* ButtonStyle.swift */,
 				EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */,
@@ -922,7 +919,6 @@
 				EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */,
 				EBA9AD1D21EE03D700E4D6CD /* CharityImage.swift in Sources */,
 				EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */,
-				EB034D8421DCFBD400078D65 /* LargeTitlesPresentationStyle.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,
 				EBECC42021C40F8600716BEA /* UIView+RelativeFrame.swift in Sources */,

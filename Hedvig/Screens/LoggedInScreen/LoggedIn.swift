@@ -27,13 +27,13 @@ extension LoggedIn: Presentable {
         let chatPresentation = Presentation(
             chat,
             style: .default,
-            options: .defaults
+            options: [.defaults, .prefersLargeTitles(true)]
         )
 
         let profilePresentation = Presentation(
             profile,
             style: .default,
-            options: .defaults
+            options: [.defaults, .prefersLargeTitles(true)]
         )
 
         bag += tabBarController.presentTabs(
