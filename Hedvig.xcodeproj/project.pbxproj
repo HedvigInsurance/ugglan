@@ -86,8 +86,8 @@
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
 		EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */; };
 		EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */; };
-		EBA9AD2221EF273500E4D6CD /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD2121EF273500E4D6CD /* Dashboard.swift */; };
 		EBA9AD1D21EE03D700E4D6CD /* CharityImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1C21EE03D700E4D6CD /* CharityImage.swift */; };
+		EBA9AD2221EF273500E4D6CD /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD2121EF273500E4D6CD /* Dashboard.swift */; };
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
 		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
 		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
@@ -209,8 +209,8 @@
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
 		EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailRow.swift; sourceTree = "<group>"; };
 		EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = MyInfo.graphql; sourceTree = "<group>"; };
-		EBA9AD2121EF273500E4D6CD /* Dashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
 		EBA9AD1C21EE03D700E4D6CD /* CharityImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharityImage.swift; sourceTree = "<group>"; };
+		EBA9AD2121EF273500E4D6CD /* Dashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
@@ -671,15 +671,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EB75E17921930A95006B5CE4 /* Build configuration list for PBXNativeTarget "Hedvig" */;
 			buildPhases = (
+				EBC049CA219B320400AFC30F /* Format Swift code */,
+				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
+				EB00CBA721DE6A3F002A263B /* Swiftgen */,
+				EBC049CD219C833B00AFC30F /* Apollo */,
 				660C5C5DFB5E6A4FFA6C9CD0 /* [CP] Check Pods Manifest.lock */,
 				EB75E14D21930A94006B5CE4 /* Sources */,
 				EB75E14E21930A94006B5CE4 /* Frameworks */,
 				EB75E14F21930A94006B5CE4 /* Resources */,
 				255C099E949733C48A4322D1 /* [CP] Embed Pods Frameworks */,
-				EBC049CA219B320400AFC30F /* Format Swift code */,
-				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
-				EBC049CD219C833B00AFC30F /* Run Script */,
-				EB00CBA721DE6A3F002A263B /* Swiftgen */,
 			);
 			buildRules = (
 			);
@@ -905,14 +905,14 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"${SRCROOT}\" --disable trailingCommas --exclude Pods\n";
 		};
-		EBC049CD219C833B00AFC30F /* Run Script */ = {
+		EBC049CD219C833B00AFC30F /* Apollo */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = Apollo;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;

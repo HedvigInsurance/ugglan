@@ -16,21 +16,25 @@ struct Dashboard {}
 extension Dashboard: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
-        
+
         let viewController = UIViewController()
         viewController.title = "Dashboard"
-        
+
         let view = UIView()
         view.backgroundColor = .purple
-        
+
         viewController.view = view
-        
+
         return (viewController, bag)
     }
 }
 
 extension Dashboard: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(title: "Dashboard", image: nil, selectedImage: nil)
+        return UITabBarItem(
+            title: String.translation(.TAB_DASHBOARD_TITLE),
+            image: Asset.dashboardTab.image,
+            selectedImage: nil
+        )
     }
 }
