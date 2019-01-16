@@ -30,7 +30,11 @@ extension MyInfoRow: Viewable {
 
         bag += events.onSelect.onValue {
             let myInfo = MyInfo()
-            self.presentingViewController.present(myInfo, style: .default, options: [.autoPop])
+            self.presentingViewController.present(
+                myInfo,
+                style: .default,
+                options: [.autoPop, .largeTitleDisplayMode(.never)]
+            )
         }
 
         return (row, bag)
@@ -38,7 +42,7 @@ extension MyInfoRow: Viewable {
 }
 
 extension MyInfoRow: Previewable {
-    func preview() -> MyInfo {
-        return MyInfo()
+    func preview() -> (MyInfo, PresentationOptions) {
+        return (MyInfo(), [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

@@ -8,6 +8,26 @@ PODS:
   - DeviceKit (1.11.0)
   - Disk (0.4.0)
   - DynamicColor (4.0.3)
+  - Firebase/Core (5.15.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.4.0)
+  - Firebase/CoreOnly (5.15.0):
+    - FirebaseCore (= 5.1.10)
+  - FirebaseAnalytics (5.4.0):
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleAppMeasurement (= 5.4.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - FirebaseCore (5.1.10):
+    - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseInstanceID (3.3.0):
+    - FirebaseCore (~> 5.1)
+    - GoogleUtilities/Environment (~> 5.3)
+    - GoogleUtilities/UserDefaults (~> 5.3)
   - FlowFeedback (1.0.1):
     - FlowFramework (~> 1.3)
   - FlowFramework (1.5.0)
@@ -19,14 +39,43 @@ PODS:
   - FormFramework/Presentation (1.5.0):
     - FlowFramework (~> 1.3)
     - PresentationFramework (~> 1.1)
+  - GoogleAppMeasurement (5.4.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - GoogleUtilities/AppDelegateSwizzler (5.3.7):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.3.7)
+  - GoogleUtilities/Logger (5.3.7):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.3.7):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.3.7):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (5.3.7)"
+  - GoogleUtilities/Reachability (5.3.7):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (5.3.7):
+    - GoogleUtilities/Logger
   - lottie-ios (2.5.2)
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
   - PresentationFramework (1.3.0):
     - FlowFramework (>= 1.3)
   - SnapKit (4.0.1)
   - Starscream (3.0.6)
   - SwiftFormat/CLI (0.37.2)
   - SwiftGen (6.0.2)
-  - SwiftLint (0.29.2)
+  - SwiftLint (0.29.3)
   - "UICollectionView+AnimatedScroll (1.0.4)"
 
 DEPENDENCIES:
@@ -35,6 +84,7 @@ DEPENDENCIES:
   - DeviceKit (~> 1.3)
   - Disk (~> 0.4.0)
   - DynamicColor (~> 4.0.2)
+  - Firebase/Core
   - FlowFeedback (from `https://github.com/HedvigInsurance/FlowFeedback.git`)
   - FlowFramework (~> 1.3)
   - FormFramework (from `https://github.com/hedviginsurance/form.git`)
@@ -53,8 +103,15 @@ SPEC REPOS:
     - DeviceKit
     - Disk
     - DynamicColor
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseInstanceID
     - FlowFramework
+    - GoogleAppMeasurement
+    - GoogleUtilities
     - lottie-ios
+    - nanopb
     - SnapKit
     - Starscream
     - SwiftFormat
@@ -79,7 +136,7 @@ CHECKOUT OPTIONS:
     :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
   PresentationFramework:
-    :commit: a8421b961b6a1d5cd1b43092bde1c4a977820048
+    :commit: a809c2d89f05ba537810d28278cd641ddf1cccde
     :git: https://github.com/hedviginsurance/presentation.git
   "UICollectionView+AnimatedScroll":
     :commit: b5a5e2b7f95713e74c0bfb623a99429b0489fa1f
@@ -90,18 +147,25 @@ SPEC CHECKSUMS:
   DeviceKit: a3a86f8dddbe1317a9a243cdf9646858bf135dce
   Disk: ef2956657d5bb56034b38b29b352170165226440
   DynamicColor: bf19b33fe404c59a68e64af95cc6b017346e7e75
+  Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
+  FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
+  FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
+  FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   FlowFeedback: 41fe84846ceaeca0cbf02a922222cc8b862986c0
   FlowFramework: 4d85bf59082c36c107229396ae67981717ca1e76
   FormFramework: e9eccd44f3d875e5f67ad8696a8e2bb4cd0e9b7d
+  GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
+  GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
   lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   PresentationFramework: 1bcdf1fe215edb2ceccf5197dd5dfcbce878bdf5
   SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftFormat: abbfb26dde4c6d683923cde153c88e10da9d7881
   SwiftGen: e5b047067aa84082826a0c4f1c4c2ddc95bcf74c
-  SwiftLint: 47df60bdea6e7e902b193b6596db8683aafd86a3
+  SwiftLint: bfa7ca7b4d170cfaf0d236ca3ffd969e88a2f002
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: b5871b0d3a6ac1a3ecc75d42924e8d13c23ab867
+PODFILE CHECKSUM: 6b1357f80c39593b5e9deef1128ac75181e2f31c
 
 COCOAPODS: 1.5.3

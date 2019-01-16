@@ -19,8 +19,10 @@ struct NameCircle {
 }
 
 extension NameCircle: Viewable {
-    func materialize(events _: ViewableEvents) -> (CircleLabel, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
+
+        let containerView = UIView()
 
         let nameCircleText = DynamicString()
 
@@ -36,6 +38,12 @@ extension NameCircle: Viewable {
             text: nameCircleText
         )
 
-        return (nameCircle, bag)
+        bag += containerView.add(nameCircle)
+
+        containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+            make.height.equalTo(200)
+        }
+
+        return (containerView, bag)
     }
 }
