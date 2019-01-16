@@ -216,6 +216,12 @@ case PROFILE_MY_CHARITY_ROW_TITLE
 case EMAIL_ROW_TITLE
 /// A value to show when the email row is empty.
 case EMAIL_ROW_EMPTY
+/// Title for my payment row on profile page
+case PROFILE_MY_PAYMENT_ROW_TITLE
+/// Method used to pay fee
+case PROFILE_MY_PAYMENT_METHOD
+/// Title for "My payment" view
+case MY_PAYMENT_TITLE
 }
 
 struct Translations {
@@ -1087,6 +1093,24 @@ struct Translations {
 
                     return """
                 Inget angett
+                """
+
+                case .PROFILE_MY_PAYMENT_METHOD:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_PAYMENT_METHOD) {
+                        return text
+                    }
+
+                    return """
+                Betalas via autogiro
+                """
+
+                case .MY_PAYMENT_TITLE:
+                    if let text = TranslationsRepo.find(.MY_PAYMENT_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Min betalning
                 """
                 default: return String(describing: key)
             }

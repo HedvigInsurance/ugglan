@@ -22,6 +22,7 @@ internal enum Asset {
   internal static let charity = ImageAsset(name: "Charity")
   internal static let chevronRight = ImageAsset(name: "ChevronRight")
   internal static let happyAvatarAnimation = DataAsset(name: "HappyAvatarAnimation")
+  internal static let payment = ImageAsset(name: "Payment")
   internal static let personalInformation = ImageAsset(name: "PersonalInformation")
   internal static let wordmark = ImageAsset(name: "Wordmark")
   internal static let wordmarkAnimation = DataAsset(name: "WordmarkAnimation")

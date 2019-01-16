@@ -130,7 +130,7 @@ public struct CampaignInput: GraphQLMapConvertible {
 
 public final class ProfileQuery: GraphQLQuery {
   public let operationDefinition =
-    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n  cashback {\n    __typename\n    name\n  }\n}"
+    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n  cashback {\n    __typename\n    name\n  }\n  insurance {\n    __typename\n    monthlyCost\n  }\n}"
 
   public init() {
   }
@@ -141,6 +141,7 @@ public final class ProfileQuery: GraphQLQuery {
     public static let selections: [GraphQLSelection] = [
       GraphQLField("member", type: .nonNull(.object(Member.selections))),
       GraphQLField("cashback", type: .nonNull(.object(Cashback.selections))),
+      GraphQLField("insurance", type: .nonNull(.object(Insurance.selections))),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -149,8 +150,8 @@ public final class ProfileQuery: GraphQLQuery {
       self.resultMap = unsafeResultMap
     }
 
-    public init(member: Member, cashback: Cashback) {
-      self.init(unsafeResultMap: ["__typename": "Query", "member": member.resultMap, "cashback": cashback.resultMap])
+    public init(member: Member, cashback: Cashback, insurance: Insurance) {
+      self.init(unsafeResultMap: ["__typename": "Query", "member": member.resultMap, "cashback": cashback.resultMap, "insurance": insurance.resultMap])
     }
 
     public var member: Member {
@@ -168,6 +169,15 @@ public final class ProfileQuery: GraphQLQuery {
       }
       set {
         resultMap.updateValue(newValue.resultMap, forKey: "cashback")
+      }
+    }
+
+    public var insurance: Insurance {
+      get {
+        return Insurance(unsafeResultMap: resultMap["insurance"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "insurance")
       }
     }
 
@@ -251,6 +261,43 @@ public final class ProfileQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "name")
+        }
+      }
+    }
+
+    public struct Insurance: GraphQLSelectionSet {
+      public static let possibleTypes = ["Insurance"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("monthlyCost", type: .scalar(Int.self)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(monthlyCost: Int? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Insurance", "monthlyCost": monthlyCost])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var monthlyCost: Int? {
+        get {
+          return resultMap["monthlyCost"] as? Int
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "monthlyCost")
         }
       }
     }

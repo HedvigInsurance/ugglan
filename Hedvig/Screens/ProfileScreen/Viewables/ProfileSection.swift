@@ -36,6 +36,15 @@ extension ProfileSection: Viewable {
 
         bag += section.append(myCharityRow)
 
+        let myPaymentRow = MyPaymentRow(
+            monthlyCost: data?.insurance.monthlyCost ?? Int(0),
+            presentingViewController: presentingViewController
+        )
+
+        bag += section.append(myPaymentRow) { row in
+            bag += myPaymentRow.registerPreview(row.viewRepresentation)
+        }
+
         return (section, bag)
     }
 }
