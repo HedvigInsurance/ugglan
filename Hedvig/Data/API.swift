@@ -130,7 +130,7 @@ public struct CampaignInput: GraphQLMapConvertible {
 
 public final class ProfileQuery: GraphQLQuery {
   public let operationDefinition =
-    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n  cashback {\n    __typename\n    name\n  }\n}"
+    "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n  cashback {\n    __typename\n    name\n    imageUrl\n  }\n}"
 
   public init() {
   }
@@ -224,6 +224,7 @@ public final class ProfileQuery: GraphQLQuery {
       public static let selections: [GraphQLSelection] = [
         GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
         GraphQLField("name", type: .scalar(String.self)),
+        GraphQLField("imageUrl", type: .scalar(String.self)),
       ]
 
       public private(set) var resultMap: ResultMap
@@ -232,8 +233,8 @@ public final class ProfileQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(name: String? = nil) {
-        self.init(unsafeResultMap: ["__typename": "Cashback", "name": name])
+      public init(name: String? = nil, imageUrl: String? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Cashback", "name": name, "imageUrl": imageUrl])
       }
 
       public var __typename: String {
@@ -251,6 +252,15 @@ public final class ProfileQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "name")
+        }
+      }
+
+      public var imageUrl: String? {
+        get {
+          return resultMap["imageUrl"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "imageUrl")
         }
       }
     }

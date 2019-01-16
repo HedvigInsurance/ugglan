@@ -43,6 +43,7 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
     ) {
         UIViewController._didCommitPreviewingCallbackers[previewingContext.sourceView]?.callAll()
         navigationController?.pushViewController(viewController, animated: true)
+        viewControllerWasPresented(viewController)
     }
 
     func registerForPreviewing<P: Presentable, FutureResult: Any>(
