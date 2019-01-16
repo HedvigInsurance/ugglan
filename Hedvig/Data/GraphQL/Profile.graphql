@@ -5,6 +5,7 @@ query Profile {
     }
     cashback {
         name
+        imageUrl
     }
     insurance {
         monthlyCost
