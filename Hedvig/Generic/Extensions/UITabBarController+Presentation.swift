@@ -37,6 +37,9 @@ extension UITabBarController {
 
         viewControllers = [aViewController, bViewController]
 
+        viewControllerWasPresented(aViewController)
+        viewControllerWasPresented(bViewController)
+
         return bag
     }
 

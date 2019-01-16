@@ -21,6 +21,7 @@ target 'Hedvig' do
   pod 'UICollectionView+AnimatedScroll', git: 'https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git'
   pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
   pod 'SwiftGen'
+  pod 'Firebase/Core'
 
   target 'HedvigTests' do
     inherit! :search_paths
