@@ -87,6 +87,7 @@
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
 		EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */; };
 		EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */; };
+		EBA9AD2221EF273500E4D6CD /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD2121EF273500E4D6CD /* Dashboard.swift */; };
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
 		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
 		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
@@ -209,6 +210,7 @@
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
 		EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailRow.swift; sourceTree = "<group>"; };
 		EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = MyInfo.graphql; sourceTree = "<group>"; };
+		EBA9AD2121EF273500E4D6CD /* Dashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 		EB75E1852193328E006B5CE4 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				EBA9AD2021EF26EF00E4D6CD /* DashboardScreen */,
 				EB034D7E21DCE28A00078D65 /* LoggedInScreen */,
 				EB034D7D21DCE27F00078D65 /* ProfileScreen */,
 				EBECC27C21BD373100716BEA /* LaunchScreen */,
@@ -582,6 +585,14 @@
 				EB7FEA9821B03DF80027C9DE /* SkipToNextButton.swift */,
 			);
 			path = SkipButtons;
+			sourceTree = "<group>";
+		};
+		EBA9AD2021EF26EF00E4D6CD /* DashboardScreen */ = {
+			isa = PBXGroup;
+			children = (
+				EBA9AD2121EF273500E4D6CD /* Dashboard.swift */,
+			);
+			path = DashboardScreen;
 			sourceTree = "<group>";
 		};
 		EBAFAB0A21ECC1F30083E795 /* MyInfo */ = {
@@ -967,6 +978,7 @@
 				EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */,
 				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
+				EBA9AD2221EF273500E4D6CD /* Dashboard.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
