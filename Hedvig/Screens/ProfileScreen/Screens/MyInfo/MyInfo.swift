@@ -34,12 +34,7 @@ extension MyInfo: Presentable {
         let form = FormView()
 
         let nameCircle = NameCircle()
-
-        bag += form.prepend(nameCircle) { _, containerView in
-            containerView.snp.makeConstraints({ make in
-                make.height.equalTo(200)
-            })
-        }
+        bag += form.prepend(nameCircle)
 
         let contactDetailsSection = ContactDetailsSection()
         bag += form.append(contactDetailsSection)

@@ -53,6 +53,9 @@ extension UITabBarController {
         if let navigationController = bViewController as? UINavigationController {
             navigationController.tabBarItem = b.presentable.tabBarItem()
         }
+            
+        viewControllerWasPresented(aViewController)
+        viewControllerWasPresented(bViewController)
 
         return bag
     }

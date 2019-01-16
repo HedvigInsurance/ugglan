@@ -28,6 +28,12 @@ extension Profile: Presentable {
         let query = ProfileQuery()
 
         bag += client.fetch(query: query).onValue { result in
+            let charityImage = CharityImage(
+                imageUrl: result.data?.cashback.imageUrl ?? ""
+            )
+
+            bag += form.prepend(charityImage)
+
             let profileSection = ProfileSection(
                 data: result.data,
                 presentingViewController: viewController
