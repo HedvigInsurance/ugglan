@@ -37,6 +37,12 @@ extension Acknow: Reusable {
     }
 }
 
+extension Acknow: Previewable {
+    func preview() -> (License, PresentationOptions) {
+        return (License(acknowledgement: self), .defaults)
+    }
+}
+
 extension Licenses: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -90,6 +96,11 @@ extension Licenses: Presentable {
         bag += tableKit.delegate.didSelectRow.onValue { acknowledgement in
             let license = License(acknowledgement: acknowledgement)
             self.presentingViewController.present(license)
+        }
+
+        bag += tableKit.delegate.willDisplayCell.onValue { cell, index in
+            let acknow = tableKit.table[index]
+            bag += viewController.registerForPreviewing(sourceView: cell, previewable: acknow)
         }
 
         bag += viewController.install(tableKit)

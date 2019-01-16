@@ -35,7 +35,10 @@ extension About: Presentable {
         )
 
         bag += licensesSection.append(licensesRow) { row in
-            bag += licensesRow.registerPreview(row.viewRepresentation)
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: licensesRow
+            )
         }
 
         bag += form.append(Spacing(height: 20))
