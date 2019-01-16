@@ -40,6 +40,14 @@ extension Profile: Presentable {
             )
 
             bag += form.append(profileSection)
+
+            bag += form.append(Spacing(height: 20))
+
+            let otherSection = OtherSection(
+                presentingViewController: viewController
+            )
+
+            bag += form.append(otherSection)
         }
 
         bag += viewController.install(form) { scrollView in
