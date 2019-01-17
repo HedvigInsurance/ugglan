@@ -24,6 +24,10 @@ extension BackgroundStyle {
         color: UIColor.purple.withAlphaComponent(0.2),
         border: .standard
     )
+    static let pink = BackgroundStyle(
+        color: UIColor.pink.withAlphaComponent(0.2),
+        border: .standard
+    )
 }
 
 extension SeparatorStyle {
@@ -54,11 +58,18 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
+
+    static let pink = SectionBackgroundStyle(
+        background: .pink,
+        topSeparator: .inset,
+        bottomSeparator: .inset
+    )
 }
 
 extension SectionStyle.Background {
     static let standard = SectionStyle.Background(style: .white)
     static let selected = SectionStyle.Background(style: .purple)
+    static let selectedDanger = SectionStyle.Background(style: .pink)
 }
 
 extension HeaderFooterStyle {

@@ -76,7 +76,7 @@ PODS:
   - Starscream (3.0.6)
   - SwiftFormat/CLI (0.37.2)
   - SwiftGen (6.0.2)
-  - SwiftLint (0.29.3)
+  - SwiftLint (0.29.4)
   - "UICollectionView+AnimatedScroll (1.0.4)"
 
 DEPENDENCIES:
@@ -88,7 +88,7 @@ DEPENDENCIES:
   - DynamicColor (~> 4.0.2)
   - Firebase/Core
   - FlowFeedback (from `https://github.com/HedvigInsurance/FlowFeedback.git`)
-  - FlowFramework (~> 1.3)
+  - FlowFramework (from `https://github.com/hedviginsurance/flow.git`)
   - FormFramework (from `https://github.com/hedviginsurance/form.git`)
   - FormFramework/Presentation (from `https://github.com/hedviginsurance/form.git`)
   - lottie-ios
@@ -110,7 +110,6 @@ SPEC REPOS:
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseInstanceID
-    - FlowFramework
     - GoogleAppMeasurement
     - GoogleUtilities
     - lottie-ios
@@ -124,6 +123,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   FlowFeedback:
     :git: https://github.com/HedvigInsurance/FlowFeedback.git
+  FlowFramework:
+    :git: https://github.com/hedviginsurance/flow.git
   FormFramework:
     :git: https://github.com/hedviginsurance/form.git
   PresentationFramework:
@@ -135,6 +136,9 @@ CHECKOUT OPTIONS:
   FlowFeedback:
     :commit: f43392beeef74886e68a0f144204590514fd8cd8
     :git: https://github.com/HedvigInsurance/FlowFeedback.git
+  FlowFramework:
+    :commit: 883eb86dc541d940080337f877ab8a9c29204d4b
+    :git: https://github.com/hedviginsurance/flow.git
   FormFramework:
     :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
@@ -167,9 +171,9 @@ SPEC CHECKSUMS:
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftFormat: abbfb26dde4c6d683923cde153c88e10da9d7881
   SwiftGen: e5b047067aa84082826a0c4f1c4c2ddc95bcf74c
-  SwiftLint: bfa7ca7b4d170cfaf0d236ca3ffd969e88a2f002
+  SwiftLint: 73f2ecfd0f6d812c8cb9a73c00fe809bc2504585
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: 242730c60343839ef7f84e5ebe89ebb42f4c1108
+PODFILE CHECKSUM: e5e170459fd1d7a3d39948d379ef594b4db54aac
 
 COCOAPODS: 1.5.3

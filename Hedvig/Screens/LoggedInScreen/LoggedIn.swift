@@ -13,6 +13,10 @@ import Presentation
 
 struct LoggedIn {
     let client: ApolloClient
+
+    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+        self.client = client
+    }
 }
 
 extension LoggedIn: Presentable {

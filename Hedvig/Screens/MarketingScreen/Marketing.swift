@@ -14,6 +14,10 @@ import UIKit
 
 struct Marketing {
     let client: ApolloClient
+
+    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+        self.client = client
+    }
 }
 
 enum MarketingResult {

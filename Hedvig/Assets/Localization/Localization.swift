@@ -236,6 +236,14 @@ case ABOUT_SCREEN_TITLE
 case OTHER_SECTION_TITLE
 /// Text shown in header under acknowledgements.
 case ACKNOWLEDGEMENT_HEADER_TITLE
+/// Button that logs the user out.
+case LOGOUT_BUTTON
+/// Title for alert shown after a user has clicked the logout button.
+case LOGOUT_ALERT_TITLE
+/// Button that confirms the alert and then logs the user out.
+case LOGOUT_ALERT_ACTION_CONFIRM
+/// Button that cancels logging out.
+case LOGOUT_ALERT_ACTION_CANCEL
 }
 
 struct Translations {
@@ -1179,6 +1187,42 @@ struct Translations {
 
                     return """
                 Hedvig tror starkt på open-source, här finner du en lista och tillhörande licenser för de biblioteken vi förlitar oss på 💕
+                """
+
+                case .LOGOUT_BUTTON:
+                    if let text = TranslationsRepo.find(.LOGOUT_BUTTON) {
+                        return text
+                    }
+
+                    return """
+                Logga ut
+                """
+
+                case .LOGOUT_ALERT_TITLE:
+                    if let text = TranslationsRepo.find(.LOGOUT_ALERT_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Är du säker på att du vill logga ut?
+                """
+
+                case .LOGOUT_ALERT_ACTION_CONFIRM:
+                    if let text = TranslationsRepo.find(.LOGOUT_ALERT_ACTION_CONFIRM) {
+                        return text
+                    }
+
+                    return """
+                Ja
+                """
+
+                case .LOGOUT_ALERT_ACTION_CANCEL:
+                    if let text = TranslationsRepo.find(.LOGOUT_ALERT_ACTION_CANCEL) {
+                        return text
+                    }
+
+                    return """
+                Avbryt
                 """
                 default: return String(describing: key)
             }
