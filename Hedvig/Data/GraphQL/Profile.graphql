@@ -3,6 +3,10 @@ query Profile {
         firstName
         lastName
     }
+    insurance {
+        address
+        certificateUrl
+    }
     cashback {
         name
         imageUrl
