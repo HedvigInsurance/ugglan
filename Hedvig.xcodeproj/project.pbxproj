@@ -714,15 +714,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EB75E17921930A95006B5CE4 /* Build configuration list for PBXNativeTarget "Hedvig" */;
 			buildPhases = (
+				EBC049CD219C833B00AFC30F /* Apollo */,
+				EB00CBA721DE6A3F002A263B /* Swiftgen */,
+				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
+				EBC049CA219B320400AFC30F /* Format Swift code */,
 				660C5C5DFB5E6A4FFA6C9CD0 /* [CP] Check Pods Manifest.lock */,
 				EB75E14D21930A94006B5CE4 /* Sources */,
 				EB75E14E21930A94006B5CE4 /* Frameworks */,
 				EB75E14F21930A94006B5CE4 /* Resources */,
 				255C099E949733C48A4322D1 /* [CP] Embed Pods Frameworks */,
-				EBC049CA219B320400AFC30F /* Format Swift code */,
-				EB5ED9E5219874B3004CE441 /* Lint Swift code */,
-				EBC049CD219C833B00AFC30F /* Run Script */,
-				EB00CBA721DE6A3F002A263B /* Swiftgen */,
 			);
 			buildRules = (
 			);
@@ -951,14 +951,14 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftFormat/CommandLineTool/swiftformat\" \"${SRCROOT}\" --disable trailingCommas --exclude Pods\n";
 		};
-		EBC049CD219C833B00AFC30F /* Run Script */ = {
+		EBC049CD219C833B00AFC30F /* Apollo */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = Apollo;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
