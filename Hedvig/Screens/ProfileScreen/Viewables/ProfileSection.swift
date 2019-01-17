@@ -27,7 +27,10 @@ extension ProfileSection: Viewable {
         )
 
         bag += section.append(myInfoRow) { row in
-            bag += myInfoRow.registerPreview(row.viewRepresentation)
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: myInfoRow
+            )
         }
 
         let myCharityRow = MyCharityRow(

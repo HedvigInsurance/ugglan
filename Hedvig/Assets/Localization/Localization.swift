@@ -216,6 +216,26 @@ case PROFILE_MY_CHARITY_ROW_TITLE
 case EMAIL_ROW_TITLE
 /// A value to show when the email row is empty.
 case EMAIL_ROW_EMPTY
+/// Title for my payment row on profile page
+case PROFILE_MY_PAYMENT_ROW_TITLE
+/// Method used to pay fee
+case PROFILE_MY_PAYMENT_METHOD
+/// Title for "My payment" view
+case MY_PAYMENT_TITLE
+/// Text in deductible circle in my payment view
+case MY_PAYMENT_DEDUCTIBLE_CIRCLE_TEX
+/// Title of the profile tab
+case TAB_PROFILE_TITLE
+/// Title of the dashboard tab
+case TAB_DASHBOARD_TITLE
+/// Title for licenses screen
+case LICENSES_SCREEN_TITLE
+/// Title for about screen.
+case ABOUT_SCREEN_TITLE
+/// Title for other section on profile screen
+case OTHER_SECTION_TITLE
+/// Text shown in header under acknowledgements.
+case ACKNOWLEDGEMENT_HEADER_TITLE
 }
 
 struct Translations {
@@ -1087,6 +1107,78 @@ struct Translations {
 
                     return """
                 Inget angett
+                """
+
+                case .PROFILE_MY_PAYMENT_METHOD:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_PAYMENT_METHOD) {
+                        return text
+                    }
+
+                    return """
+                Betalas via autogiro
+                """
+
+                case .MY_PAYMENT_TITLE:
+                    if let text = TranslationsRepo.find(.MY_PAYMENT_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Min betalning
+                """
+
+                case .TAB_PROFILE_TITLE:
+                    if let text = TranslationsRepo.find(.TAB_PROFILE_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Profil
+                """
+
+                case .TAB_DASHBOARD_TITLE:
+                    if let text = TranslationsRepo.find(.TAB_DASHBOARD_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Min hemförsäkring
+                """
+
+                case .LICENSES_SCREEN_TITLE:
+                    if let text = TranslationsRepo.find(.LICENSES_SCREEN_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Licensrättigheter
+                """
+
+                case .ABOUT_SCREEN_TITLE:
+                    if let text = TranslationsRepo.find(.ABOUT_SCREEN_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Om appen
+                """
+
+                case .OTHER_SECTION_TITLE:
+                    if let text = TranslationsRepo.find(.OTHER_SECTION_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Annat
+                """
+
+                case .ACKNOWLEDGEMENT_HEADER_TITLE:
+                    if let text = TranslationsRepo.find(.ACKNOWLEDGEMENT_HEADER_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Hedvig tror starkt på open-source, här finner du en lista och tillhörande licenser för de biblioteken vi förlitar oss på 💕
                 """
                 default: return String(describing: key)
             }

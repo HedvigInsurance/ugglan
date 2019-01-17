@@ -1,4 +1,5 @@
 PODS:
+  - AcknowList (1.8)
   - Apollo (0.9.4):
     - Apollo/Core (= 0.9.4)
   - Apollo/Core (0.9.4)
@@ -79,6 +80,7 @@ PODS:
   - "UICollectionView+AnimatedScroll (1.0.4)"
 
 DEPENDENCIES:
+  - AcknowList
   - Apollo
   - Apollo/WebSocket
   - DeviceKit (~> 1.3)
@@ -99,6 +101,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - AcknowList
     - Apollo
     - DeviceKit
     - Disk
@@ -143,6 +146,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git
 
 SPEC CHECKSUMS:
+  AcknowList: 5b8820004d019d0a8d6a091ea2392dcb54bd3ad2
   Apollo: 450856adbdebcdf28c3c671f81732ac3f9944065
   DeviceKit: a3a86f8dddbe1317a9a243cdf9646858bf135dce
   Disk: ef2956657d5bb56034b38b29b352170165226440
@@ -166,6 +170,6 @@ SPEC CHECKSUMS:
   SwiftLint: bfa7ca7b4d170cfaf0d236ca3ffd969e88a2f002
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: 6b1357f80c39593b5e9deef1128ac75181e2f31c
+PODFILE CHECKSUM: 242730c60343839ef7f84e5ebe89ebb42f4c1108
 
 COCOAPODS: 1.5.3
