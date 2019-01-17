@@ -11,7 +11,7 @@ import Foundation
 
 extension BorderStyle {
     static let standard = BorderStyle(
-        width: 0.5,
+        width: 1 / UIScreen.main.scale,
         color: .grayBorder,
         cornerRadius: 0,
         borderEdges: [UIRectEdge.bottom, UIRectEdge.top]

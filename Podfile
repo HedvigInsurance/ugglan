@@ -22,6 +22,7 @@ target 'Hedvig' do
   pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
   pod 'SwiftGen'
   pod 'Firebase/Core'
+  pod 'AcknowList'
 
   target 'HedvigTests' do
     inherit! :search_paths

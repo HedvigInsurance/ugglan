@@ -40,6 +40,14 @@ extension Profile: Presentable {
             )
 
             bag += form.append(profileSection)
+
+            bag += form.append(Spacing(height: 20))
+
+            let otherSection = OtherSection(
+                presentingViewController: viewController
+            )
+
+            bag += form.append(otherSection)
         }
 
         bag += viewController.install(form) { scrollView in
@@ -51,5 +59,11 @@ extension Profile: Presentable {
         }
 
         return (viewController, bag)
+    }
+}
+
+extension Profile: Tabable {
+    func tabBarItem() -> UITabBarItem {
+        return UITabBarItem(title: "Profile", image: nil, selectedImage: nil)
     }
 }
