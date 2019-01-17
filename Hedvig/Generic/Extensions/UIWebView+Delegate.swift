@@ -11,26 +11,32 @@ import Foundation
 import UIKit
 
 extension UIWebView: UIWebViewDelegate {
-    private static var _didFinishLoadDelegate = [String: Delegate<UIWebView, Void>]()
+    private static var _didFinishLoadDelegate: UInt8 = 0
 
     var didFinishLoadDelegate: Delegate<UIWebView, Void> {
         get {
-            self.delegate = self
-            let tmpAddress = String(format: "%p", unsafeBitCast(self, to: Int.self))
+            delegate = self
 
-            if let delegate = UIWebView._didFinishLoadDelegate[tmpAddress] {
-                return delegate
+            guard let value = objc_getAssociatedObject(
+                self,
+                &UIWebView._didFinishLoadDelegate
+            ) as? Delegate<UIWebView, Void> else {
+                let value = Delegate<UIWebView, Void>()
+                self.didFinishLoadDelegate = value
+                return value
             }
 
-            let delegate = Delegate<UIWebView, Void>()
-            UIWebView._didFinishLoadDelegate[tmpAddress] = delegate
-
-            return delegate
+            return value
         }
         set(newValue) {
             delegate = self
-            let tmpAddress = String(format: "%p", unsafeBitCast(self, to: Int.self))
-            UIWebView._didFinishLoadDelegate[tmpAddress] = newValue
+
+            objc_setAssociatedObject(
+                self,
+                &UIWebView._didFinishLoadDelegate,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
         }
     }
 
