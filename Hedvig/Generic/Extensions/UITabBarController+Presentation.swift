@@ -11,9 +11,163 @@ import Foundation
 import Presentation
 import UIKit
 
+protocol Tabable {
+    func tabBarItem() -> UITabBarItem
+}
+
 extension UITabBarController {
+    private func materializeTab<
+        P: Presentable & Tabable,
+        Matter: UIViewController
+    >(_ presentation: Presentation<P>) -> (UIViewController, Disposable) where
+        P.Matter == Matter,
+        P.Result == Disposable {
+        let bag = DisposeBag()
+
+        let materialized = presentation.presentable.materialize()
+
+        bag += presentation.transform(materialized.1)
+
+        let viewController = materialized.0.embededInNavigationController(presentation.options)
+
+        presentation.configure(materialized.0, bag)
+
+        if let navigationController = viewController as? UINavigationController {
+            navigationController.tabBarItem = presentation.presentable.tabBarItem()
+        }
+
+        viewControllerWasPresented(viewController)
+
+        return (viewController, bag)
+    }
+
     // swiftlint:disable identifier_name
-    func presentTabs<A: Presentable, AMatter: UIViewController, B: Presentable, BMatter: UIViewController>(
+    func presentTabs<
+        A: Presentable & Tabable,
+        AMatter: UIViewController,
+        B: Presentable & Tabable,
+        BMatter: UIViewController,
+        C: Presentable & Tabable,
+        CMatter: UIViewController,
+        D: Presentable & Tabable,
+        DMatter: UIViewController,
+        E: Presentable & Tabable,
+        EMatter: UIViewController
+    >(
+        _ a: Presentation<A>,
+        _ b: Presentation<B>,
+        _ c: Presentation<C>,
+        _ d: Presentation<D>,
+        _ e: Presentation<E>
+    ) -> Disposable where
+        A.Matter == AMatter,
+        A.Result == Disposable,
+        B.Matter == BMatter,
+        B.Result == Disposable,
+        C.Matter == CMatter,
+        C.Result == Disposable,
+        D.Matter == DMatter,
+        D.Result == Disposable,
+        E.Matter == EMatter,
+        E.Result == Disposable {
+        let bag = DisposeBag()
+
+        let tabA = materializeTab(a)
+        let tabB = materializeTab(b)
+        let tabC = materializeTab(c)
+        let tabD = materializeTab(d)
+        let tabE = materializeTab(e)
+
+        bag += tabA.1
+        bag += tabB.1
+        bag += tabC.1
+        bag += tabD.1
+        bag += tabE.1
+
+        viewControllers = [tabA.0, tabB.0, tabC.0, tabD.0, tabE.0]
+
+        return bag
+    }
+
+    func presentTabs<
+        A: Presentable & Tabable,
+        AMatter: UIViewController,
+        B: Presentable & Tabable,
+        BMatter: UIViewController,
+        C: Presentable & Tabable,
+        CMatter: UIViewController,
+        D: Presentable & Tabable,
+        DMatter: UIViewController
+    >(
+        _ a: Presentation<A>,
+        _ b: Presentation<B>,
+        _ c: Presentation<C>,
+        _ d: Presentation<D>
+    ) -> Disposable where
+        A.Matter == AMatter,
+        A.Result == Disposable,
+        B.Matter == BMatter,
+        B.Result == Disposable,
+        C.Matter == CMatter,
+        C.Result == Disposable,
+        D.Matter == DMatter,
+        D.Result == Disposable {
+        let bag = DisposeBag()
+
+        let tabA = materializeTab(a)
+        let tabB = materializeTab(b)
+        let tabC = materializeTab(c)
+        let tabD = materializeTab(d)
+
+        bag += tabA.1
+        bag += tabB.1
+        bag += tabC.1
+        bag += tabD.1
+
+        viewControllers = [tabA.0, tabB.0, tabC.0, tabD.0]
+
+        return bag
+    }
+
+    func presentTabs<
+        A: Presentable & Tabable,
+        AMatter: UIViewController,
+        B: Presentable & Tabable,
+        BMatter: UIViewController,
+        C: Presentable & Tabable,
+        CMatter: UIViewController
+    >(
+        _ a: Presentation<A>,
+        _ b: Presentation<B>,
+        _ c: Presentation<C>
+    ) -> Disposable where
+        A.Matter == AMatter,
+        A.Result == Disposable,
+        B.Matter == BMatter,
+        B.Result == Disposable,
+        C.Matter == CMatter,
+        C.Result == Disposable {
+        let bag = DisposeBag()
+
+        let tabA = materializeTab(a)
+        let tabB = materializeTab(b)
+        let tabC = materializeTab(c)
+
+        bag += tabA.1
+        bag += tabB.1
+        bag += tabC.1
+
+        viewControllers = [tabA.0, tabB.0, tabC.0]
+
+        return bag
+    }
+
+    func presentTabs<
+        A: Presentable & Tabable,
+        AMatter: UIViewController,
+        B: Presentable & Tabable,
+        BMatter: UIViewController
+    >(
         _ a: Presentation<A>,
         _ b: Presentation<B>
     ) -> Disposable where
@@ -23,22 +177,31 @@ extension UITabBarController {
         B.Result == Disposable {
         let bag = DisposeBag()
 
-        let aMaterialized = a.presentable.materialize()
-        let bMaterialized = b.presentable.materialize()
+        let tabA = materializeTab(a)
+        let tabB = materializeTab(b)
 
-        bag += a.transform(aMaterialized.1)
-        bag += b.transform(bMaterialized.1)
+        bag += tabA.1
+        bag += tabB.1
 
-        let aViewController = aMaterialized.0.embededInNavigationController(a.options)
-        let bViewController = bMaterialized.0.embededInNavigationController(b.options)
+        viewControllers = [tabA.0, tabB.0]
 
-        a.configure(aMaterialized.0, bag)
-        b.configure(bMaterialized.0, bag)
+        return bag
+    }
 
-        viewControllers = [aViewController, bViewController]
+    func presentTabs<
+        A: Presentable & Tabable,
+        AMatter: UIViewController
+    >(
+        _ a: Presentation<A>
+    ) -> Disposable where
+        A.Matter == AMatter,
+        A.Result == Disposable {
+        let bag = DisposeBag()
 
-        viewControllerWasPresented(aViewController)
-        viewControllerWasPresented(bViewController)
+        let tabA = materializeTab(a)
+        bag += tabA.1
+
+        viewControllers = [tabA.0]
 
         return bag
     }

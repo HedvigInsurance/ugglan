@@ -19,13 +19,17 @@ extension Chat: Presentable {
 
         let viewController = UIViewController()
 
-        viewController.tabBarItem = UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
-
         let view = UIView()
         view.backgroundColor = .purple
 
         viewController.view = view
 
         return (viewController, bag)
+    }
+}
+
+extension Chat: Tabable {
+    func tabBarItem() -> UITabBarItem {
+        return UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
     }
 }
