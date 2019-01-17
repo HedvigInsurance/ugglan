@@ -20,11 +20,6 @@ extension ProfileSection: Viewable {
         let bag = DisposeBag()
         let section = SectionView(header: nil, footer: nil, style: .sectionPlain)
 
-        let myCharityRow = MyCharityRow(
-            charityName: data?.cashback.name ?? ""
-        )
-        bag += section.append(myCharityRow)
-
         let myInfoRow = MyInfoRow(
             firstName: data?.member.firstName ?? "",
             lastName: data?.member.lastName ?? "",
@@ -39,6 +34,11 @@ extension ProfileSection: Viewable {
 
         let homeRow = HomeRow(address: data?.insurance.address ?? "")
         bag += section.append(homeRow)
+
+        let myCharityRow = MyCharityRow(
+            charityName: data?.cashback.name ?? ""
+        )
+        bag += section.append(myCharityRow)
 
         let insuranceCertificateRow = InsuranceCertificateRow(
             certificateUrl: data?.insurance.certificateUrl,
