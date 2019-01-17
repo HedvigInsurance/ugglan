@@ -14,7 +14,7 @@ import SafariServices
 import UIKit
 
 struct InsuranceCertificate {
-    let certificateUrl: String
+    let certificateUrl: ReadWriteSignal<String?>
 }
 
 extension InsuranceCertificate: Presentable {
@@ -31,8 +31,11 @@ extension InsuranceCertificate: Presentable {
             webView.scrollView.contentOffset = CGPoint(x: 0, y: -webView.layoutMargins.top)
         }
 
-        let url = URL(string: certificateUrl)!
-        webView.loadRequest(URLRequest(url: url))
+        bag += certificateUrl.atOnce().onValue { value in
+            guard let value = value else { return }
+            let url = URL(string: value)!
+            webView.loadRequest(URLRequest(url: url))
+        }
 
         viewController.view = webView
 

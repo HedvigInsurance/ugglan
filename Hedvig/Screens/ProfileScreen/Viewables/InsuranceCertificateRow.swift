@@ -49,12 +49,12 @@ extension InsuranceCertificateRow: Viewable {
             [.withArrow]
         }).bindTo(row.options)
 
-        bag += certificateUrl.atOnce().filter(predicate: { $0 != nil }).onValueDisposePrevious { value in
+        bag += certificateUrl.atOnce().filter(predicate: { $0 != nil }).onValueDisposePrevious { _ in
             let innerBag = bag.innerBag()
 
             innerBag += events.onSelect.onValue { _ in
                 self.presentingViewController.present(
-                    InsuranceCertificate(certificateUrl: value!),
+                    InsuranceCertificate(certificateUrl: self.certificateUrl),
                     options: [.largeTitleDisplayMode(.never)]
                 )
             }
@@ -63,5 +63,11 @@ extension InsuranceCertificateRow: Viewable {
         }
 
         return (row, bag)
+    }
+}
+
+extension InsuranceCertificateRow: Previewable {
+    func preview() -> (InsuranceCertificate, PresentationOptions) {
+        return (InsuranceCertificate(certificateUrl: certificateUrl), [.largeTitleDisplayMode(.never)])
     }
 }

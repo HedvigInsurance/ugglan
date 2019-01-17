@@ -44,7 +44,12 @@ extension ProfileSection: Viewable {
             certificateUrl: data?.insurance.certificateUrl,
             presentingViewController: presentingViewController
         )
-        bag += section.append(insuranceCertificateRow)
+        bag += section.append(insuranceCertificateRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: insuranceCertificateRow
+            )
+        }
 
         return (section, bag)
     }
