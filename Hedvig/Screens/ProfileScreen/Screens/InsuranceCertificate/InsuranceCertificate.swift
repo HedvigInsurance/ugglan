@@ -17,20 +17,6 @@ struct InsuranceCertificate {
     let certificateUrl: String
 }
 
-extension PresentationStyle {
-    static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
-        let future = Future<Void> { completion in
-            from.present(viewController, animated: true) {
-                completion(.success)
-            }
-
-            return NilDisposer()
-        }
-
-        return (future, { Future() })
-    }
-}
-
 extension InsuranceCertificate: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
@@ -52,21 +38,18 @@ extension InsuranceCertificate: Presentable {
             UIBarButtonItem(system: .action),
             position: .right
         ).onValueDisposePrevious { _ -> Disposable? in
-            let shareSheet = AnyPresentable<UIActivityViewController, Disposable> {
-                let activitiyViewController = UIActivityViewController(
-                    activityItems: [self.certificateUrl],
-                    applicationActivities: nil
-                )
-                return (activitiyViewController, NilDisposer())
-            }
+            let activityView = ActivityView(
+                activityItems: [self.certificateUrl],
+                applicationActivities: nil
+            )
 
-            let sharePresentation = Presentation(
-                shareSheet,
+            let activityViewPresentation = Presentation(
+                activityView,
                 style: .activityView,
                 options: .defaults
             )
 
-            return viewController.present(sharePresentation).disposable
+            return viewController.present(activityViewPresentation).disposable
         }
 
         return (viewController, bag)

@@ -113,6 +113,7 @@
 		EBE09B5521F0B2E600EC864E /* InsuranceCertificateRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5421F0B2E600EC864E /* InsuranceCertificateRow.swift */; };
 		EBE09B5821F0BD6200EC864E /* InsuranceCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5721F0BD6200EC864E /* InsuranceCertificate.swift */; };
 		EBE09B5A21F0D29600EC864E /* UIWebView+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5921F0D29600EC864E /* UIWebView+Delegate.swift */; };
+		EBE09B5C21F0E74600EC864E /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5B21F0E74600EC864E /* ActivityView.swift */; };
 		EBECC26A21B9677800716BEA /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26921B9677800716BEA /* Chat.swift */; };
 		EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */; };
 		EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */; };
@@ -249,6 +250,7 @@
 		EBE09B5421F0B2E600EC864E /* InsuranceCertificateRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceCertificateRow.swift; sourceTree = "<group>"; };
 		EBE09B5721F0BD6200EC864E /* InsuranceCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceCertificate.swift; sourceTree = "<group>"; };
 		EBE09B5921F0D29600EC864E /* UIWebView+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWebView+Delegate.swift"; sourceTree = "<group>"; };
+		EBE09B5B21F0E74600EC864E /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		EBECC26921B9677800716BEA /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		EBECC26B21B96A0D00716BEA /* ChatPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPresentationStyle.swift; sourceTree = "<group>"; };
 		EBECC26D21BA70DA00716BEA /* UIView+addConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+addConstraint.swift"; sourceTree = "<group>"; };
@@ -486,6 +488,7 @@
 				EB034CD921C9256C00078D65 /* DelayedDisposer.swift */,
 				EB00CBB321E026D9002A263B /* DynamicString.swift */,
 				EB00CBD121EBAACF002A263B /* TranslationsRepo.swift */,
+				EBE09B5B21F0E74600EC864E /* ActivityView.swift */,
 			);
 			path = Generic;
 			sourceTree = "<group>";
@@ -1080,6 +1083,7 @@
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EBE09B4921EF82EF00EC864E /* TableViewFormStyle.swift in Sources */,
+				EBE09B5C21F0E74600EC864E /* ActivityView.swift in Sources */,
 				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,
 				EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
