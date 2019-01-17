@@ -25,6 +25,7 @@ extension InsuranceCertificate: Presentable {
         viewController.title = String.translation(.MY_INSURANCE_CERTIFICATE_TITLE)
 
         let webView = UIWebView()
+        webView.backgroundColor = .offWhite
         bag += webView.didFinishLoadDelegate.set { _ in
             webView.scrollView.contentOffset = CGPoint(x: 0, y: -webView.layoutMargins.top)
         }
