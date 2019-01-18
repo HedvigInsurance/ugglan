@@ -5,6 +5,7 @@
 ## Build generated
 build/
 DerivedData/
+Hedvig/Assets/Assets.swift
 Hedvig/Assets/Localization/Localization.json
 Hedvig/Assets/Localization/Localization.swift
 Hedvig/Data/schema.json
