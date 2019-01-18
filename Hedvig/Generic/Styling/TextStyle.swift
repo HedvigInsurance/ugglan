@@ -34,4 +34,9 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
     }
+
+    static let dangerButton = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.color = .pink
+    }
 }

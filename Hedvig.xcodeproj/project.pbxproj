@@ -109,6 +109,9 @@
 		EBE09B4521EF73CE00EC864E /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4421EF73CE00EC864E /* VersionRow.swift */; };
 		EBE09B4921EF82EF00EC864E /* TableViewFormStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4821EF82EF00EC864E /* TableViewFormStyle.swift */; };
 		EBE09B4B21EF8C0200EC864E /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4A21EF8C0200EC864E /* License.swift */; };
+		EBE09B4D21EFCCEF00EC864E /* ButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4C21EFCCEF00EC864E /* ButtonRow.swift */; };
+		EBE09B4F21F0740300EC864E /* SignalProvider+LazyBindTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B4E21F0740300EC864E /* SignalProvider+LazyBindTo.swift */; };
+		EBE09B5121F07FF200EC864E /* LogoutSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5021F07FF200EC864E /* LogoutSection.swift */; };
 		EBE09B5321F0AD9900EC864E /* HomeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5221F0AD9900EC864E /* HomeRow.swift */; };
 		EBE09B5521F0B2E600EC864E /* InsuranceCertificateRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5421F0B2E600EC864E /* InsuranceCertificateRow.swift */; };
 		EBE09B5821F0BD6200EC864E /* InsuranceCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B5721F0BD6200EC864E /* InsuranceCertificate.swift */; };
@@ -246,6 +249,9 @@
 		EBE09B4421EF73CE00EC864E /* VersionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionRow.swift; sourceTree = "<group>"; };
 		EBE09B4821EF82EF00EC864E /* TableViewFormStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewFormStyle.swift; sourceTree = "<group>"; };
 		EBE09B4A21EF8C0200EC864E /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
+		EBE09B4C21EFCCEF00EC864E /* ButtonRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonRow.swift; sourceTree = "<group>"; };
+		EBE09B4E21F0740300EC864E /* SignalProvider+LazyBindTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalProvider+LazyBindTo.swift"; sourceTree = "<group>"; };
+		EBE09B5021F07FF200EC864E /* LogoutSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutSection.swift; sourceTree = "<group>"; };
 		EBE09B5221F0AD9900EC864E /* HomeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRow.swift; sourceTree = "<group>"; };
 		EBE09B5421F0B2E600EC864E /* InsuranceCertificateRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceCertificateRow.swift; sourceTree = "<group>"; };
 		EBE09B5721F0BD6200EC864E /* InsuranceCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceCertificate.swift; sourceTree = "<group>"; };
@@ -363,6 +369,7 @@
 				EB00CBC921EB7207002A263B /* UITabBarController+Presentation.swift */,
 				EB00CBCB21EB8C0B002A263B /* UIViewController+Previewing.swift */,
 				EB00CBCD21EBA5A8002A263B /* UIScrollView+RefreshControl.swift */,
+				EBE09B4E21F0740300EC864E /* SignalProvider+LazyBindTo.swift */,
 				EBE09B5921F0D29600EC864E /* UIWebView+Signal.swift */,
 			);
 			path = Extensions;
@@ -402,6 +409,7 @@
 				EB00CBA321DE52FB002A263B /* IconRow.swift */,
 				EB00CBB121DFF144002A263B /* CircleLabel.swift */,
 				EBE09B3A21EF69DB00EC864E /* Spacing.swift */,
+				EBE09B4C21EFCCEF00EC864E /* ButtonRow.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -442,6 +450,7 @@
 				EBA9AD1C21EE03D700E4D6CD /* CharityImage.swift */,
 				EBE09B3821EF668B00EC864E /* OtherSection.swift */,
 				EBE09B4121EF6EC800EC864E /* AboutRow.swift */,
+				EBE09B5021F07FF200EC864E /* LogoutSection.swift */,
 				EBE09B5221F0AD9900EC864E /* HomeRow.swift */,
 				EBE09B5421F0B2E600EC864E /* InsuranceCertificateRow.swift */,
 			);
@@ -1009,6 +1018,7 @@
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
+				EBE09B4F21F0740300EC864E /* SignalProvider+LazyBindTo.swift in Sources */,
 				EBE09B5321F0AD9900EC864E /* HomeRow.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
@@ -1021,6 +1031,7 @@
 				EBE09B4221EF6EC800EC864E /* AboutRow.swift in Sources */,
 				EB034D7A21DCDCDD00078D65 /* MarketingStoryVideoCell.swift in Sources */,
 				EB00CBCE21EBA5A8002A263B /* UIScrollView+RefreshControl.swift in Sources */,
+				EBE09B5121F07FF200EC864E /* LogoutSection.swift in Sources */,
 				EB00CBA921DE6B07002A263B /* Assets.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
@@ -1033,6 +1044,7 @@
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */,
+				EBE09B4D21EFCCEF00EC864E /* ButtonRow.swift in Sources */,
 				EBAFAB2921ED0E6F0083E795 /* Previewable.swift in Sources */,
 				EBE09B5521F0B2E600EC864E /* InsuranceCertificateRow.swift in Sources */,
 				EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */,
