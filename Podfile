@@ -29,3 +29,9 @@ target 'Hedvig' do
     # Pods for testing
   end
 end
+
+post_install do |installer|
+  system("sh scripts/update-translations.sh")
+  system("sh scripts/update-graphql-schema.sh")
+  system("sh scripts/generate-apollo-files.sh")
+end
