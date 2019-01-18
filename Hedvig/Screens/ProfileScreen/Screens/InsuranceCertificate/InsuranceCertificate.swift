@@ -42,9 +42,11 @@ extension InsuranceCertificate: Presentable {
         bag += viewController.navigationItem.addItem(
             UIBarButtonItem(system: .action),
             position: .right
-        ).onValueDisposePrevious { _ -> Disposable? in
+        ).withLatestFrom(certificateUrl).onValueDisposePrevious { _, value -> Disposable? in
+            guard let value = value else { return NilDisposer() }
+
             let activityView = ActivityView(
-                activityItems: [self.certificateUrl],
+                activityItems: [value],
                 applicationActivities: nil
             )
 
