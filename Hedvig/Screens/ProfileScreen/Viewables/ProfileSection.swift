@@ -25,7 +25,6 @@ extension ProfileSection: Viewable {
             lastName: data?.member.lastName ?? "",
             presentingViewController: presentingViewController
         )
-
         bag += section.append(myInfoRow) { row in
             bag += self.presentingViewController.registerForPreviewing(
                 sourceView: row.viewRepresentation,
@@ -33,11 +32,24 @@ extension ProfileSection: Viewable {
             )
         }
 
+        let homeRow = HomeRow(address: data?.insurance.address ?? "")
+        bag += section.append(homeRow)
+
         let myCharityRow = MyCharityRow(
             charityName: data?.cashback.name ?? ""
         )
-
         bag += section.append(myCharityRow)
+
+        let insuranceCertificateRow = InsuranceCertificateRow(
+            certificateUrl: data?.insurance.certificateUrl,
+            presentingViewController: presentingViewController
+        )
+        bag += section.append(insuranceCertificateRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: insuranceCertificateRow
+            )
+        }
 
         return (section, bag)
     }

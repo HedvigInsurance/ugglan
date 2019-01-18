@@ -13,15 +13,15 @@ import UIKit
 
 struct IconRow {
     enum Options {
-        case defaults, withArrow
+        case defaults, withArrow, disabled
     }
 
     let iconAsset: ImageAsset
     let iconWidth: CGFloat
-    let title: ReadSignal<String>
-    let subtitle: ReadSignal<String>
+    let title: ReadWriteSignal<String>
+    let subtitle: ReadWriteSignal<String>
 
-    let options: [IconRow.Options]
+    let options: ReadWriteSignal<[IconRow.Options]>
 
     init(
         title: String,
@@ -30,11 +30,11 @@ struct IconRow {
         iconWidth: CGFloat = 50,
         options: [IconRow.Options] = [.defaults]
     ) {
-        self.title = ReadWriteSignal(title).readOnly()
-        self.subtitle = ReadWriteSignal(subtitle).readOnly()
+        self.title = ReadWriteSignal(title)
+        self.subtitle = ReadWriteSignal(subtitle)
         self.iconAsset = iconAsset
         self.iconWidth = iconWidth
-        self.options = options
+        self.options = ReadWriteSignal(options)
     }
 }
 
@@ -62,9 +62,17 @@ extension IconRow: Viewable {
             icon
         ).append(labelsContainer)
 
-        if options.contains(.withArrow) {
-            row.append(arrow)
-        }
+        bag += options.atOnce().animated(style: AnimationStyle.easeOut(duration: 5), animations: { newOptions in
+            arrow.removeFromSuperview()
+
+            if newOptions.contains(.withArrow) {
+                row.append(arrow)
+            }
+
+            if newOptions.contains(.disabled) {
+                row.alpha = 0.5
+            }
+        })
 
         icon.snp.makeConstraints { make in
             make.width.equalTo(50)
