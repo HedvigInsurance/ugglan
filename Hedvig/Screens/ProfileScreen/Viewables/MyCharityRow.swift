@@ -13,18 +13,33 @@ import Presentation
 
 struct MyCharityRow {
     let charityName: String
+    let presentingViewController: UIViewController
 }
 
 extension MyCharityRow: Viewable {
-    func materialize(events _: SelectableViewableEvents) -> (IconRow, Disposable) {
+    func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
         let row = IconRow(
             title: String.translation(.PROFILE_MY_CHARITY_ROW_TITLE),
             subtitle: charityName,
-            iconAsset: Asset.charity
+            iconAsset: Asset.charity,
+            options: [.withArrow]
         )
 
+        bag += events.onSelect.onValue { _ in
+            self.presentingViewController.present(
+                Charity(),
+                options: [.largeTitleDisplayMode(.never)]
+            )
+        }
+
         return (row, bag)
+    }
+}
+
+extension MyCharityRow: Previewable {
+    func preview() -> (Charity, PresentationOptions) {
+        return (Charity(), [.largeTitleDisplayMode(.never)])
     }
 }

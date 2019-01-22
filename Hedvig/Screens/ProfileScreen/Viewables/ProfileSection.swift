@@ -36,9 +36,15 @@ extension ProfileSection: Viewable {
         bag += section.append(homeRow)
 
         let myCharityRow = MyCharityRow(
-            charityName: data?.cashback.name ?? ""
+            charityName: data?.cashback.name ?? "",
+            presentingViewController: presentingViewController
         )
-        bag += section.append(myCharityRow)
+        bag += section.append(myCharityRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: myCharityRow
+            )
+        }
 
         let insuranceCertificateRow = InsuranceCertificateRow(
             certificateUrl: data?.insurance.certificateUrl,

@@ -44,6 +44,11 @@
 		EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D7F21DCE2CD00078D65 /* LoggedIn.swift */; };
 		EB034D8221DCFA9F00078D65 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8121DCFA9F00078D65 /* Profile.swift */; };
 		EB034D8621DE183900078D65 /* FormView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB034D8521DE183800078D65 /* FormView+Viewable.swift */; };
+		EB17E81B21F5C6DE00FAADB1 /* Charity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E81A21F5C6DE00FAADB1 /* Charity.swift */; };
+		EB17E81E21F5C96500FAADB1 /* CharityHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E81D21F5C96500FAADB1 /* CharityHeader.swift */; };
+		EB17E82021F5CD2F00FAADB1 /* MultilineLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E81F21F5CD2F00FAADB1 /* MultilineLabel.swift */; };
+		EB17E82221F5DEDC00FAADB1 /* CharityOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E82121F5DEDC00FAADB1 /* CharityOption.swift */; };
+		EB17E82421F5EDAE00FAADB1 /* CharityOptions.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -99,6 +104,8 @@
 		EBC049D4219C87DF00AFC30F /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = EBC049D1219C87DF00AFC30F /* schema.json */; };
 		EBC049D5219C87DF00AFC30F /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D2219C87DF00AFC30F /* API.swift */; };
 		EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */; };
+		EBD6727221F71BE100050E86 /* CharityOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E82121F5DEDC00FAADB1 /* CharityOption.swift */; };
+		EBD6727421F71CC700050E86 /* SelectCharity.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBD6727321F71CC700050E86 /* SelectCharity.graphql */; };
 		EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3121EF622E00EC864E /* Licenses.swift */; };
 		EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3321EF628B00EC864E /* LicensesRow.swift */; };
 		EBE09B3721EF649200EC864E /* Pods-Hedvig-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */; };
@@ -184,6 +191,11 @@
 		EB034D7F21DCE2CD00078D65 /* LoggedIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggedIn.swift; sourceTree = "<group>"; };
 		EB034D8121DCFA9F00078D65 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		EB034D8521DE183800078D65 /* FormView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormView+Viewable.swift"; sourceTree = "<group>"; };
+		EB17E81A21F5C6DE00FAADB1 /* Charity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Charity.swift; sourceTree = "<group>"; };
+		EB17E81D21F5C96500FAADB1 /* CharityHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharityHeader.swift; sourceTree = "<group>"; };
+		EB17E81F21F5CD2F00FAADB1 /* MultilineLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineLabel.swift; sourceTree = "<group>"; };
+		EB17E82121F5DEDC00FAADB1 /* CharityOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharityOption.swift; sourceTree = "<group>"; };
+		EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CharityOptions.graphql; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -239,6 +251,7 @@
 		EBC049D1219C87DF00AFC30F /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		EBC049D2219C87DF00AFC30F /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		EBC049D7219C88EB00AFC30F /* HedvigApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigApolloClient.swift; sourceTree = "<group>"; };
+		EBD6727321F71CC700050E86 /* SelectCharity.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = SelectCharity.graphql; sourceTree = "<group>"; };
 		EBE09B3121EF622E00EC864E /* Licenses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Licenses.swift; sourceTree = "<group>"; };
 		EBE09B3321EF628B00EC864E /* LicensesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesRow.swift; sourceTree = "<group>"; };
 		EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Pods-Hedvig-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -309,6 +322,7 @@
 		EB00CBAC21DF639A002A263B /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				EB17E81921F5C6CA00FAADB1 /* CharityScreen */,
 				EBE09B5621F0BD5200EC864E /* InsuranceCertificate */,
 				EBE09B3021EF622200EC864E /* AboutScreen */,
 				EBAFAB0A21ECC1F30083E795 /* MyInfo */,
@@ -410,6 +424,7 @@
 				EB00CBB121DFF144002A263B /* CircleLabel.swift */,
 				EBE09B3A21EF69DB00EC864E /* Spacing.swift */,
 				EBE09B4C21EFCCEF00EC864E /* ButtonRow.swift */,
+				EB17E81F21F5CD2F00FAADB1 /* MultilineLabel.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -472,6 +487,24 @@
 			path = MarketingScreen;
 			sourceTree = "<group>";
 		};
+		EB17E81921F5C6CA00FAADB1 /* CharityScreen */ = {
+			isa = PBXGroup;
+			children = (
+				EB17E81C21F5C95500FAADB1 /* Viewables */,
+				EB17E81A21F5C6DE00FAADB1 /* Charity.swift */,
+				EB17E82121F5DEDC00FAADB1 /* CharityOption.swift */,
+			);
+			path = CharityScreen;
+			sourceTree = "<group>";
+		};
+		EB17E81C21F5C95500FAADB1 /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EB17E81D21F5C96500FAADB1 /* CharityHeader.swift */,
+			);
+			path = Viewables;
+			sourceTree = "<group>";
+		};
 		EB1B4A9B21A44E8A00DA341C /* GraphQL */ = {
 			isa = PBXGroup;
 			children = (
@@ -480,6 +513,8 @@
 				EB00CBCF21EBAA53002A263B /* TranslationsQuery.graphql */,
 				EBAFAB0621EC9D7A0083E795 /* Profile.graphql */,
 				EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */,
+				EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */,
+				EBD6727321F71CC700050E86 /* SelectCharity.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -827,6 +862,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB17E82421F5EDAE00FAADB1 /* CharityOptions.graphql in Resources */,
 				EB00CBC121E1F079002A263B /* Localization.json in Resources */,
 				EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */,
 				EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */,
@@ -839,6 +875,7 @@
 				EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */,
 				EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
+				EBD6727421F71CC700050E86 /* SelectCharity.graphql in Resources */,
 				EB00CBD021EBAA53002A263B /* TranslationsQuery.graphql in Resources */,
 				EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */,
 				EBE09B3721EF649200EC864E /* Pods-Hedvig-acknowledgements.plist in Resources */,
@@ -1039,6 +1076,7 @@
 				EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */,
 				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
+				EB17E81E21F5C96500FAADB1 /* CharityHeader.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
 				EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */,
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
@@ -1071,6 +1109,7 @@
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
+				EB17E81B21F5C6DE00FAADB1 /* Charity.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EBE09B3921EF668B00EC864E /* OtherSection.swift in Sources */,
 				EB00CBB421E026D9002A263B /* DynamicString.swift in Sources */,
@@ -1083,6 +1122,7 @@
 				EB034D8621DE183900078D65 /* FormView+Viewable.swift in Sources */,
 				EB00CBA221DE3DBC002A263B /* DefaultStyling.swift in Sources */,
 				EB00CBC821EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift in Sources */,
+				EB17E82021F5CD2F00FAADB1 /* MultilineLabel.swift in Sources */,
 				EBECC27421BA86F000716BEA /* MarketingEndScreen.swift in Sources */,
 				EB034BD721C7CF8C00078D65 /* LoadingIndicator.swift in Sources */,
 				EB00CBB021DF8100002A263B /* UIWindow+Presentation.swift in Sources */,
@@ -1094,6 +1134,7 @@
 				EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */,
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
+				EB17E82221F5DEDC00FAADB1 /* CharityOption.swift in Sources */,
 				EBE09B4921EF82EF00EC864E /* TableViewFormStyle.swift in Sources */,
 				EBE09B5C21F0E74600EC864E /* ActivityView.swift in Sources */,
 				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,
@@ -1109,6 +1150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBD6727221F71BE100050E86 /* CharityOption.swift in Sources */,
 				EB75E16A21930A95006B5CE4 /* ChatViewTest.swift in Sources */,
 				EB5ED9DF21986127004CE441 /* HedvigFonts.swift in Sources */,
 			);
