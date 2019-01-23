@@ -12,7 +12,15 @@ import Foundation
 import UIKit
 
 struct CircleLabel {
-    let text: DynamicString
+    let labelText: DynamicString
+    let backgroundColor: UIColor?
+    let textColor: UIColor?
+
+    init(labelText: DynamicString, backgroundColor: UIColor? = .lightGray, textColor: UIColor? = .white) {
+        self.labelText = labelText
+        self.backgroundColor = backgroundColor
+        self.textColor = textColor
+    }
 }
 
 extension CircleLabel: Viewable {
@@ -21,13 +29,13 @@ extension CircleLabel: Viewable {
         let bag = DisposeBag()
 
         let label = UILabel()
-        bag += label.setDynamicText(text)
+        bag += label.setDynamicText(labelText)
 
-        label.backgroundColor = .purple
+        label.backgroundColor = backgroundColor
         label.clipsToBounds = true
         label.textAlignment = .center
         label.font = HedvigFonts.circularStdBold?.withSize(30)
-        label.textColor = .white
+        label.textColor = textColor
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.adjustsFontSizeToFitWidth = true

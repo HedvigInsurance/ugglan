@@ -11,6 +11,10 @@
 		5FC3285921EE2E1B0091CFD7 /* MyPaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3285821EE2E1B0091CFD7 /* MyPaymentRow.swift */; };
 		5FC3285B21EE31850091CFD7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5FC3285A21EE31850091CFD7 /* Assets.xcassets */; };
 		5FC3285E21EF24EB0091CFD7 /* MyPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3285D21EF24EB0091CFD7 /* MyPayment.swift */; };
+		5FC3287321EF2F310091CFD7 /* MonthlyPaymentCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3287221EF2F310091CFD7 /* MonthlyPaymentCircle.swift */; };
+		5FC3287621EF2F5D0091CFD7 /* PaymentDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3287521EF2F5D0091CFD7 /* PaymentDetailsSection.swift */; };
+		5FC3287821EF2F6A0091CFD7 /* PaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3287721EF2F6A0091CFD7 /* PaymentRow.swift */; };
+		5FC3287C21EF83B20091CFD7 /* CircleLabelWithSubLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3287B21EF83B20091CFD7 /* CircleLabelWithSubLabel.swift */; };
 		635AFDC9FFEC447FED3E344A /* Pods_HedvigTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1ECB8C55B64C4626A844526 /* Pods_HedvigTests.framework */; };
 		99584174A936697DB0FF9E1A /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB75E1A221973638006B5CE4 /* Pods_Hedvig.framework */; };
 		EB00CBA221DE3DBC002A263B /* DefaultStyling.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBA121DE3DBC002A263B /* DefaultStyling.swift */; };
@@ -133,6 +137,10 @@
 		5FC3285821EE2E1B0091CFD7 /* MyPaymentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPaymentRow.swift; sourceTree = "<group>"; };
 		5FC3285A21EE31850091CFD7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5FC3285D21EF24EB0091CFD7 /* MyPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPayment.swift; sourceTree = "<group>"; };
+		5FC3287221EF2F310091CFD7 /* MonthlyPaymentCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthlyPaymentCircle.swift; sourceTree = "<group>"; };
+		5FC3287521EF2F5D0091CFD7 /* PaymentDetailsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentDetailsSection.swift; sourceTree = "<group>"; };
+		5FC3287721EF2F6A0091CFD7 /* PaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentRow.swift; sourceTree = "<group>"; };
+		5FC3287B21EF83B20091CFD7 /* CircleLabelWithSubLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleLabelWithSubLabel.swift; sourceTree = "<group>"; };
 		64746E2464ADFE0A14A3B61C /* Pods-Hedvig.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hedvig.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig.release.xcconfig"; sourceTree = "<group>"; };
 		9066419AE4DCAF8731CA72D7 /* Pods_HedvigUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HedvigUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0BD1F44A8B0A6F955342C51 /* Pods-HedvigUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HedvigUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-HedvigUITests/Pods-HedvigUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -279,9 +287,28 @@
 		5FC3285C21EF24BF0091CFD7 /* MyPayment */ = {
 			isa = PBXGroup;
 			children = (
+				5FC3287121EF2F1B0091CFD7 /* Viewables */,
 				5FC3285D21EF24EB0091CFD7 /* MyPayment.swift */,
 			);
 			path = MyPayment;
+			sourceTree = "<group>";
+		};
+		5FC3287121EF2F1B0091CFD7 /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				5FC3287421EF2F500091CFD7 /* PaymentDetailsSection */,
+				5FC3287221EF2F310091CFD7 /* MonthlyPaymentCircle.swift */,
+			);
+			path = Viewables;
+			sourceTree = "<group>";
+		};
+		5FC3287421EF2F500091CFD7 /* PaymentDetailsSection */ = {
+			isa = PBXGroup;
+			children = (
+				5FC3287721EF2F6A0091CFD7 /* PaymentRow.swift */,
+				5FC3287521EF2F5D0091CFD7 /* PaymentDetailsSection.swift */,
+			);
+			path = PaymentDetailsSection;
 			sourceTree = "<group>";
 		};
 		EB00CBAC21DF639A002A263B /* Screens */ = {
@@ -383,6 +410,7 @@
 				EB034D6221CA63FB00078D65 /* Button.swift */,
 				EB00CBA321DE52FB002A263B /* IconRow.swift */,
 				EB00CBB121DFF144002A263B /* CircleLabel.swift */,
+				5FC3287B21EF83B20091CFD7 /* CircleLabelWithSubLabel.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -965,7 +993,9 @@
 				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
+				5FC3287621EF2F5D0091CFD7 /* PaymentDetailsSection.swift in Sources */,
 				EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */,
+				5FC3287821EF2F6A0091CFD7 /* PaymentRow.swift in Sources */,
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */,
@@ -996,6 +1026,7 @@
 				EB034D8221DCFA9F00078D65 /* Profile.swift in Sources */,
 				EB7FEA8D21AFE1DA0027C9DE /* ApolloClient+Flow.swift in Sources */,
 				EB7FEAC721B6CEEB0027C9DE /* CollectionKit+UpdateRows.swift in Sources */,
+				5FC3287321EF2F310091CFD7 /* MonthlyPaymentCircle.swift in Sources */,
 				EB7FEAB521B180600027C9DE /* Stories.swift in Sources */,
 				EB034D8621DE183900078D65 /* FormView+Viewable.swift in Sources */,
 				EB00CBA221DE3DBC002A263B /* DefaultStyling.swift in Sources */,
@@ -1011,6 +1042,7 @@
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
 				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,
+				5FC3287C21EF83B20091CFD7 /* CircleLabelWithSubLabel.swift in Sources */,
 				EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,

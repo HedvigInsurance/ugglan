@@ -222,6 +222,8 @@ case PROFILE_MY_PAYMENT_ROW_TITLE
 case PROFILE_MY_PAYMENT_METHOD
 /// Title for "My payment" view
 case MY_PAYMENT_TITLE
+/// Text in deductible circle in my payment view
+case MY_PAYMENT_DEDUCTIBLE_CIRCLE_TEX
 }
 
 struct Translations {

@@ -24,7 +24,7 @@ extension MyPayment: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = ""
+        viewController.title = String.translation(.MY_PAYMENT_TITLE)
 
         if #available(iOS 11.0, *) {
             viewController.navigationItem.largeTitleDisplayMode = .never
@@ -34,6 +34,13 @@ extension MyPayment: Presentable {
 
         bag += viewController.install(form) { scrollView in
             bag += scrollView.chainAllControlResponders(shouldLoop: false, returnKey: .next)
+        }
+
+        bag += client.fetch(query: ProfileQuery()).onValue { result in
+            if let insurance = result.data?.insurance {
+                let monthlyPaymentCircle = MonthlyPaymentCircle(monthlyCost: insurance.monthlyCost ?? Int(0))
+                bag += form.prepend(monthlyPaymentCircle)
+            }
         }
 
         return (viewController, bag)
