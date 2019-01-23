@@ -10,28 +10,29 @@ import Flow
 import Foundation
 import UIKit
 
-struct MonthlyPaymentCircle {
-    let monthlyCost: Int
-}
+struct DeductibleCircle {}
 
-extension MonthlyPaymentCircle: Viewable {
+extension DeductibleCircle: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let containerView = UIView()
 
-        let monthlyPaymentCircle = CircleLabelWithSubLabel(
-            labelText: DynamicString(String(monthlyCost)),
-            subLabelText: DynamicString("kr/mån"),
-            color: "turquoise"
+        let deductibleCircleText = DynamicString(
+            "\(String.translation(.OFFER_BUBBLES_DEDUCTIBLE_TITLE)) \n 1500 kr"
         )
-        bag += containerView.add(monthlyPaymentCircle)
 
-        let deductibleCircle = DeductibleCircle()
+        let deductibleCircle = CircleLabelSmall(
+            labelText: deductibleCircleText,
+            color: "green"
+        )
+
         bag += containerView.add(deductibleCircle)
 
         containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(200)
+            make.height.equalTo(80)
+            make.centerX.equalToSuperview().inset(80)
+            make.bottom.equalTo(0)
         }
 
         return (containerView, bag)

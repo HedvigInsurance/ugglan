@@ -1,5 +1,5 @@
 //
-//  CircleLabelWithSubLabel.swift
+//  CircleLabelSmall.swift
 //  Hedvig
 //
 //  Created by Sam Pettersson on 2019-01-04.
@@ -11,19 +11,17 @@ import Form
 import Foundation
 import UIKit
 
-struct CircleLabelWithSubLabel {
+struct CircleLabelSmall {
     let labelText: DynamicString
-    let subLabelText: DynamicString
     let color: String
 
-    init(labelText: DynamicString, subLabelText: DynamicString, color: String) {
+    init(labelText: DynamicString, color: String) {
         self.labelText = labelText
-        self.subLabelText = subLabelText
         self.color = color
     }
 }
 
-extension CircleLabelWithSubLabel: Viewable {
+extension CircleLabelSmall: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let circleView = UIView()
         let bag = DisposeBag()
@@ -32,20 +30,12 @@ extension CircleLabelWithSubLabel: Viewable {
         labelsContainer.axis = .vertical
 
         let titleLabel = UILabel()
-        titleLabel.font = HedvigFonts.circularStdBold?.withSize(48)
+        titleLabel.font = HedvigFonts.circularStdBook?.withSize(14)
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 0
         titleLabel.adjustsFontSizeToFitWidth = true
         bag += titleLabel.setDynamicText(labelText)
-
-        let subLabel = UILabel()
-        subLabel.font = HedvigFonts.circularStdBook?.withSize(18)
-        subLabel.lineBreakMode = .byWordWrapping
-        subLabel.numberOfLines = 0
-        subLabel.textAlignment = .center
-        subLabel.adjustsFontSizeToFitWidth = true
-        bag += subLabel.setDynamicText(subLabelText)
 
         circleView.layer.shadowOpacity = 0.2
         circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
@@ -53,18 +43,15 @@ extension CircleLabelWithSubLabel: Viewable {
         circleView.layer.shadowColor = UIColor.darkGray.cgColor
 
         switch color {
-        case "turquoise":
-            circleView.backgroundColor = UIColor.turquoise
-            titleLabel.textColor = UIColor.blackPurple
-            subLabel.textColor = UIColor.blackPurple
+        case "green":
+            circleView.backgroundColor = UIColor.green
+            titleLabel.textColor = UIColor.white
         default:
             circleView.backgroundColor = UIColor.gray
             titleLabel.textColor = UIColor.white
-            subLabel.textColor = UIColor.white
         }
 
         labelsContainer.addArrangedSubview(titleLabel)
-        labelsContainer.addArrangedSubview(subLabel)
 
         circleView.addSubview(labelsContainer)
 
