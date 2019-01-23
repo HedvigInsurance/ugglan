@@ -27,10 +27,7 @@ extension MyPayment: Presentable {
         viewController.title = String.translation(.MY_PAYMENT_TITLE)
 
         let form = FormView()
-
-        bag += viewController.install(form) { scrollView in
-            bag += scrollView.chainAllControlResponders(shouldLoop: false, returnKey: .next)
-        }
+        bag += viewController.install(form)
 
         bag += client.fetch(query: ProfileQuery()).onValue { result in
             if let insurance = result.data?.insurance {
