@@ -31,7 +31,7 @@ extension MyPayment: Presentable {
 
         bag += client.fetch(query: ProfileQuery()).onValue { result in
             if let insurance = result.data?.insurance {
-                let monthlyPaymentCircle = MonthlyPaymentCircle(monthlyCost: insurance.monthlyCost ?? Int(0))
+                let monthlyPaymentCircle = MonthlyPaymentCircle(monthlyCost: insurance.monthlyCost ?? 0)
                 bag += form.prepend(monthlyPaymentCircle)
             }
         }
