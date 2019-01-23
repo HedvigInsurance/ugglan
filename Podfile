@@ -13,7 +13,7 @@ target 'Hedvig' do
   pod 'Apollo'
   pod 'Apollo/WebSocket'
   pod 'Disk', '~> 0.4.0'
-  pod 'FlowFramework', '~> 1.3'
+  pod 'FlowFramework', git: 'https://github.com/hedviginsurance/flow.git'
   pod 'PresentationFramework', git: 'https://github.com/hedviginsurance/presentation.git'
   pod 'FormFramework/Presentation', git: 'https://github.com/hedviginsurance/form.git'
   pod 'FormFramework', git: 'https://github.com/hedviginsurance/form.git'
@@ -22,9 +22,16 @@ target 'Hedvig' do
   pod 'FlowFeedback', git: 'https://github.com/HedvigInsurance/FlowFeedback.git'
   pod 'SwiftGen'
   pod 'Firebase/Core'
+  pod 'AcknowList'
 
   target 'HedvigTests' do
     inherit! :search_paths
     # Pods for testing
   end
+end
+
+post_install do |installer|
+  system("sh scripts/update-translations.sh")
+  system("sh scripts/update-graphql-schema.sh")
+  system("sh scripts/generate-apollo-files.sh")
 end

@@ -13,14 +13,6 @@ import Presentation
 
 /// Something that can preview something that is a presentable 👀
 protocol Previewable {
-    var presentingViewController: UIViewController { get }
-
     associatedtype PreviewMatter: Presentable
-    func preview() -> PreviewMatter
-}
-
-extension Previewable where Self.PreviewMatter.Matter == UIViewController, Self.PreviewMatter.Result == Disposable {
-    func registerPreview(_ view: UIView) -> Disposable {
-        return presentingViewController.registerForPreviewing(sourceView: view, previewable: self)
-    }
+    func preview() -> (PreviewMatter, PresentationOptions)
 }

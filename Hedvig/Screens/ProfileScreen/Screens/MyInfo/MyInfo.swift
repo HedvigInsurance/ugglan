@@ -27,10 +27,6 @@ extension MyInfo: Presentable {
         let viewController = UIViewController()
         viewController.title = String.translation(.MY_INFO_TITLE)
 
-        if #available(iOS 11.0, *) {
-            viewController.navigationItem.largeTitleDisplayMode = .never
-        }
-
         let form = FormView()
 
         let nameCircle = NameCircle()
@@ -40,6 +36,10 @@ extension MyInfo: Presentable {
         bag += form.append(contactDetailsSection)
 
         bag += viewController.install(form) { scrollView in
+            let refreshControl = UIRefreshControl()
+            bag += self.client.refetchOnRefresh(query: MyInfoQuery(), refreshControl: refreshControl)
+
+            scrollView.addRefreshControl(refreshControl)
             bag += scrollView.chainAllControlResponders(shouldLoop: false, returnKey: .next)
         }
 

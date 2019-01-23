@@ -6,6 +6,3 @@ sudo installer -store -pkg "$HOME/Downloads/node-installer.pkg" -target "/"
 
 echo "Installing Apollo"
 npm install apollo@1.9 -g
-
-sh scripts/update-graphql-schema.sh
-sh scripts/update-translations.sh

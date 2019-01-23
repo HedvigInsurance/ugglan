@@ -224,6 +224,38 @@ case PROFILE_MY_PAYMENT_METHOD
 case MY_PAYMENT_TITLE
 /// Text in deductible circle in my payment view
 case MY_PAYMENT_DEDUCTIBLE_CIRCLE_TEX
+/// Title of the profile tab
+case TAB_PROFILE_TITLE
+/// Title of the dashboard tab
+case TAB_DASHBOARD_TITLE
+/// Title for licenses screen
+case LICENSES_SCREEN_TITLE
+/// Title for about screen.
+case ABOUT_SCREEN_TITLE
+/// Title for other section on profile screen
+case OTHER_SECTION_TITLE
+/// Text shown in header under acknowledgements.
+case ACKNOWLEDGEMENT_HEADER_TITLE
+/// Button that logs the user out.
+case LOGOUT_BUTTON
+/// Title for alert shown after a user has clicked the logout button.
+case LOGOUT_ALERT_TITLE
+/// Button that confirms the alert and then logs the user out.
+case LOGOUT_ALERT_ACTION_CONFIRM
+/// Button that cancels logging out.
+case LOGOUT_ALERT_ACTION_CANCEL
+/// Title of my home row on profile screen.
+case PROFILE_MY_HOME_ROW_TITLE
+/// Title for insurance certificate row on profile page.
+case PROFILE_MY_INSURANCE_CERTIFICATE_ROW_TITLE
+/// My insurance certificate row subtitle on profile page.
+case PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE
+/// Subtitle of my insurance certificate row when it's disabled.
+case PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE
+/// Title for page displaying the users insurance certificate.
+case MY_INSURANCE_CERTIFICATE_TITLE
+/// Info that is shown as a header on the charity screen.
+case CHARITY_SCREEN_HEADER_MESSAGE
 }
 
 struct Translations {
@@ -1113,6 +1145,150 @@ struct Translations {
 
                     return """
                 Min betalning
+                """
+
+                case .TAB_PROFILE_TITLE:
+                    if let text = TranslationsRepo.find(.TAB_PROFILE_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Profil
+                """
+
+                case .TAB_DASHBOARD_TITLE:
+                    if let text = TranslationsRepo.find(.TAB_DASHBOARD_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Min hemförsäkring
+                """
+
+                case .LICENSES_SCREEN_TITLE:
+                    if let text = TranslationsRepo.find(.LICENSES_SCREEN_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Licensrättigheter
+                """
+
+                case .ABOUT_SCREEN_TITLE:
+                    if let text = TranslationsRepo.find(.ABOUT_SCREEN_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Om appen
+                """
+
+                case .OTHER_SECTION_TITLE:
+                    if let text = TranslationsRepo.find(.OTHER_SECTION_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Annat
+                """
+
+                case .ACKNOWLEDGEMENT_HEADER_TITLE:
+                    if let text = TranslationsRepo.find(.ACKNOWLEDGEMENT_HEADER_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Hedvig tror starkt på open-source, här finner du en lista och tillhörande licenser för de biblioteken vi förlitar oss på 💕
+                """
+
+                case .LOGOUT_BUTTON:
+                    if let text = TranslationsRepo.find(.LOGOUT_BUTTON) {
+                        return text
+                    }
+
+                    return """
+                Logga ut
+                """
+
+                case .LOGOUT_ALERT_TITLE:
+                    if let text = TranslationsRepo.find(.LOGOUT_ALERT_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Är du säker på att du vill logga ut?
+                """
+
+                case .LOGOUT_ALERT_ACTION_CONFIRM:
+                    if let text = TranslationsRepo.find(.LOGOUT_ALERT_ACTION_CONFIRM) {
+                        return text
+                    }
+
+                    return """
+                Ja
+                """
+
+                case .LOGOUT_ALERT_ACTION_CANCEL:
+                    if let text = TranslationsRepo.find(.LOGOUT_ALERT_ACTION_CANCEL) {
+                        return text
+                    }
+
+                    return """
+                Avbryt
+                """
+
+                case .PROFILE_MY_HOME_ROW_TITLE:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_HOME_ROW_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Mitt hem
+                """
+
+                case .PROFILE_MY_INSURANCE_CERTIFICATE_ROW_TITLE:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Mitt försäkringsbrev
+                """
+
+                case .PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE) {
+                        return text
+                    }
+
+                    return """
+                Tryck för att läsa
+                """
+
+                case .PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE) {
+                        return text
+                    }
+
+                    return """
+                Blir tillgängligt när din försäkring aktiveras
+                """
+
+                case .MY_INSURANCE_CERTIFICATE_TITLE:
+                    if let text = TranslationsRepo.find(.MY_INSURANCE_CERTIFICATE_TITLE) {
+                        return text
+                    }
+
+                    return """
+                Mitt försäkringsbrev
+                """
+
+                case .CHARITY_SCREEN_HEADER_MESSAGE:
+                    if let text = TranslationsRepo.find(.CHARITY_SCREEN_HEADER_MESSAGE) {
+                        return text
+                    }
+
+                    return """
+                Du har ännu inte valt vilken välgörenhetsorganisation som din andel av årets överskott ska gå till.
                 """
                 default: return String(describing: key)
             }

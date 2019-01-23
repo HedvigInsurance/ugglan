@@ -29,11 +29,7 @@ extension SectionView {
 
         let bag = DisposeBag()
 
-        if !onSelectCallbacker.isEmpty {
-            bag += rowAndProvider.onValue {
-                onSelectCallbacker.callAll()
-            }
-        }
+        bag += rowAndProvider.lazyBindTo(callbacker: onSelectCallbacker)
 
         onCreate(rowAndProvider)
 
@@ -89,12 +85,7 @@ extension SectionView {
         let bag = DisposeBag()
 
         bag += append(matter) { row in
-            if !onSelectCallbacker.isEmpty {
-                bag += row.onValue {
-                    onSelectCallbacker.callAll()
-                }
-            }
-
+            bag += row.lazyBindTo(callbacker: onSelectCallbacker)
             onCreate(row)
         }
 
