@@ -10,6 +10,8 @@
 		57D07232D22F1372F2ABF923 /* Pods_Hedvig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DEC312CE2CB0FAF35DC4885 /* Pods_Hedvig.framework */; };
 		5F31574821F87AF40073F4EE /* CircleLabelSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F31574721F87AF40073F4EE /* CircleLabelSmall.swift */; };
 		5F31574A21F87C9D0073F4EE /* DeductibleCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F31574921F87C9D0073F4EE /* DeductibleCircle.swift */; };
+		5F31574E21F8C9A40073F4EE /* BankRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F31574D21F8C9A30073F4EE /* BankRow.swift */; };
+		5F31575021F8CAE30073F4EE /* BankDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F31574F21F8CAE30073F4EE /* BankDetailsSection.swift */; };
 		5FC3285921EE2E1B0091CFD7 /* MyPaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3285821EE2E1B0091CFD7 /* MyPaymentRow.swift */; };
 		5FC3285B21EE31850091CFD7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5FC3285A21EE31850091CFD7 /* Assets.xcassets */; };
 		5FC3285E21EF24EB0091CFD7 /* MyPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC3285D21EF24EB0091CFD7 /* MyPayment.swift */; };
@@ -155,6 +157,8 @@
 		2F6B2B05E8EFE56C572BA222 /* Pods-Hedvig.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hedvig.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Hedvig/Pods-Hedvig.debug.xcconfig"; sourceTree = "<group>"; };
 		5F31574721F87AF40073F4EE /* CircleLabelSmall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
 		5F31574921F87C9D0073F4EE /* DeductibleCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeductibleCircle.swift; sourceTree = "<group>"; };
+		5F31574D21F8C9A30073F4EE /* BankRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankRow.swift; sourceTree = "<group>"; };
+		5F31574F21F8CAE30073F4EE /* BankDetailsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankDetailsSection.swift; sourceTree = "<group>"; };
 		5FC3285821EE2E1B0091CFD7 /* MyPaymentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPaymentRow.swift; sourceTree = "<group>"; };
 		5FC3285A21EE31850091CFD7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5FC3285D21EF24EB0091CFD7 /* MyPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPayment.swift; sourceTree = "<group>"; };
@@ -346,6 +350,8 @@
 			children = (
 				5FC3287721EF2F6A0091CFD7 /* PaymentRow.swift */,
 				5FC3287521EF2F5D0091CFD7 /* PaymentDetailsSection.swift */,
+				5F31574D21F8C9A30073F4EE /* BankRow.swift */,
+				5F31574F21F8CAE30073F4EE /* BankDetailsSection.swift */,
 			);
 			path = PaymentDetailsSection;
 			sourceTree = "<group>";
@@ -1063,6 +1069,7 @@
 				EB7FEA9721B03DAE0027C9DE /* Viewable.swift in Sources */,
 				EB7FEAAD21B1459D0027C9DE /* TransitionStyle.swift in Sources */,
 				EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */,
+				5F31574E21F8C9A40073F4EE /* BankRow.swift in Sources */,
 				EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */,
@@ -1089,6 +1096,7 @@
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
 				EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */,
 				EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */,
+				5F31575021F8CAE30073F4EE /* BankDetailsSection.swift in Sources */,
 				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,

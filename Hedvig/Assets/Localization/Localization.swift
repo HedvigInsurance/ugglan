@@ -254,6 +254,10 @@ public struct Localization {
         case MY_INSURANCE_CERTIFICATE_TITLE
         /// Info that is shown as a header on the charity screen.
         case CHARITY_SCREEN_HEADER_MESSAGE
+        /// Label for payment row in "My payment"
+        case MY_PAYMENT_PAYMENT_ROW_LABEL
+        /// Label for Bank row in "My payment" view
+        case MY_PAYMENT_BANK_ROW_LABEL
     }
 
     struct Translations {
@@ -1285,6 +1289,24 @@ public struct Localization {
 
                     return """
                     Du har ännu inte valt vilken välgörenhetsorganisation som din andel av årets överskott ska gå till.
+                    """
+
+                case .MY_PAYMENT_PAYMENT_ROW_LABEL:
+                    if let text = TranslationsRepo.find(.MY_PAYMENT_PAYMENT_ROW_LABEL) {
+                        return text
+                    }
+
+                    return """
+                    Betalning
+                    """
+
+                case .MY_PAYMENT_BANK_ROW_LABEL:
+                    if let text = TranslationsRepo.find(.MY_PAYMENT_BANK_ROW_LABEL) {
+                        return text
+                    }
+
+                    return """
+                    Bank
                     """
                 default: return String(describing: key)
                 }

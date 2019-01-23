@@ -33,6 +33,12 @@ extension MyPayment: Presentable {
             if let insurance = result.data?.insurance {
                 let monthlyPaymentCircle = MonthlyPaymentCircle(monthlyCost: insurance.monthlyCost ?? 0)
                 bag += form.prepend(monthlyPaymentCircle)
+
+                let paymentDetailsSection = PaymentDetailsSection(insurance: insurance)
+                bag += form.append(paymentDetailsSection)
+
+                let bankDetailsSection = BankDetailsSection(insurance: insurance)
+                bag += form.append(bankDetailsSection)
             }
         }
 
