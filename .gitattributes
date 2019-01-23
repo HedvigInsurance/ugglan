@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-*.pbxproj merge=union
-=======
-*.pbxproj binary merge=union
->>>>>>> master
+.pbxproj binary merge=union
