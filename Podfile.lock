@@ -88,7 +88,7 @@ DEPENDENCIES:
   - DynamicColor (~> 4.0.2)
   - Firebase/Core
   - FlowFeedback (from `https://github.com/HedvigInsurance/FlowFeedback.git`)
-  - FlowFramework (~> 1.3)
+  - FlowFramework (from `https://github.com/hedviginsurance/flow.git`)
   - FormFramework (from `https://github.com/hedviginsurance/form.git`)
   - FormFramework/Presentation (from `https://github.com/hedviginsurance/form.git`)
   - lottie-ios
@@ -110,7 +110,6 @@ SPEC REPOS:
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseInstanceID
-    - FlowFramework
     - GoogleAppMeasurement
     - GoogleUtilities
     - lottie-ios
@@ -124,6 +123,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   FlowFeedback:
     :git: https://github.com/HedvigInsurance/FlowFeedback.git
+  FlowFramework:
+    :git: https://github.com/hedviginsurance/flow.git
   FormFramework:
     :git: https://github.com/hedviginsurance/form.git
   PresentationFramework:
@@ -135,6 +136,9 @@ CHECKOUT OPTIONS:
   FlowFeedback:
     :commit: f43392beeef74886e68a0f144204590514fd8cd8
     :git: https://github.com/HedvigInsurance/FlowFeedback.git
+  FlowFramework:
+    :commit: 883eb86dc541d940080337f877ab8a9c29204d4b
+    :git: https://github.com/hedviginsurance/flow.git
   FormFramework:
     :commit: 1b5f3d845b8ebfd67b8d25504d21a986097775fc
     :git: https://github.com/hedviginsurance/form.git
@@ -170,6 +174,6 @@ SPEC CHECKSUMS:
   SwiftLint: bfa7ca7b4d170cfaf0d236ca3ffd969e88a2f002
   "UICollectionView+AnimatedScroll": b5dc2786f0a0bc778c0c6ca36c5904e46a4463d2
 
-PODFILE CHECKSUM: 9b0c56eebc3d4d266c5712e0a5b4f52c0edda0b3
+PODFILE CHECKSUM: 82f9a691457d2d5310ebe974b4633adb42e5adde
 
 COCOAPODS: 1.5.3

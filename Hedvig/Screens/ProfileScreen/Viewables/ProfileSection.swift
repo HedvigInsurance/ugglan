@@ -39,7 +39,7 @@ extension ProfileSection: Viewable {
             charityName: data?.cashback.name ?? ""
         )
         bag += section.append(myCharityRow)
-        
+
         let insuranceCertificateRow = InsuranceCertificateRow(
             certificateUrl: data?.insurance.certificateUrl,
             presentingViewController: presentingViewController
@@ -48,7 +48,7 @@ extension ProfileSection: Viewable {
             bag += self.presentingViewController.registerForPreviewing(
                 sourceView: row.viewRepresentation,
                 previewable: insuranceCertificateRow
-                )
+            )
         }
 
         let myPaymentRow = MyPaymentRow(
@@ -56,7 +56,10 @@ extension ProfileSection: Viewable {
             presentingViewController: presentingViewController
         )
         bag += section.append(myPaymentRow) { row in
-            bag += myPaymentRow.registerPreview(row.viewRepresentation)
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: myPaymentRow
+            )
         }
 
         return (section, bag)
