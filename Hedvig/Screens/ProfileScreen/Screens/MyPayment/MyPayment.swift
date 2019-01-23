@@ -26,10 +26,6 @@ extension MyPayment: Presentable {
         let viewController = UIViewController()
         viewController.title = String.translation(.MY_PAYMENT_TITLE)
 
-        if #available(iOS 11.0, *) {
-            viewController.navigationItem.largeTitleDisplayMode = .never
-        }
-
         let form = FormView()
 
         bag += viewController.install(form) { scrollView in

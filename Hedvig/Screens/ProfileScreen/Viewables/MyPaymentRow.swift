@@ -28,7 +28,7 @@ extension MyPaymentRow: Viewable {
 
         bag += events.onSelect.onValue {
             let myPayment = MyPayment()
-            self.presentingViewController.present(myPayment, style: .default, options: .defaults)
+            self.presentingViewController.present(myPayment, style: .default, options: [.largeTitleDisplayMode(.never)])
         }
 
         return (row, bag)
@@ -37,6 +37,6 @@ extension MyPaymentRow: Viewable {
 
 extension MyPaymentRow: Previewable {
     func preview() -> (MyPayment, PresentationOptions) {
-        return (MyPayment(), .defaults)
+        return (MyPayment(), [.largeTitleDisplayMode(.never)])
     }
 }
