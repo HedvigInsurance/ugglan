@@ -119,6 +119,9 @@
 		EBD6729321FA185400050E86 /* PaymentDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728E21FA185400050E86 /* PaymentDetailsSection.swift */; };
 		EBD6729421FA185400050E86 /* PaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728F21FA185400050E86 /* PaymentRow.swift */; };
 		EBD6729521FA185400050E86 /* MyPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729021FA185400050E86 /* MyPayment.swift */; };
+		EBD6729821FA191000050E86 /* CircleLabelSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729621FA191000050E86 /* CircleLabelSmall.swift */; };
+		EBD6729921FA191000050E86 /* CircleLabelWithSubLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */; };
+		EBD6729B21FA193300050E86 /* MyPaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729A21FA193300050E86 /* MyPaymentRow.swift */; };
 		EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3121EF622E00EC864E /* Licenses.swift */; };
 		EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3321EF628B00EC864E /* LicensesRow.swift */; };
 		EBE09B3721EF649200EC864E /* Pods-Hedvig-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */; };
@@ -279,6 +282,9 @@
 		EBD6728E21FA185400050E86 /* PaymentDetailsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentDetailsSection.swift; sourceTree = "<group>"; };
 		EBD6728F21FA185400050E86 /* PaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentRow.swift; sourceTree = "<group>"; };
 		EBD6729021FA185400050E86 /* MyPayment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPayment.swift; sourceTree = "<group>"; };
+		EBD6729621FA191000050E86 /* CircleLabelSmall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
+		EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelWithSubLabel.swift; sourceTree = "<group>"; };
+		EBD6729A21FA193300050E86 /* MyPaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPaymentRow.swift; sourceTree = "<group>"; };
 		EBE09B3121EF622E00EC864E /* Licenses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Licenses.swift; sourceTree = "<group>"; };
 		EBE09B3321EF628B00EC864E /* LicensesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesRow.swift; sourceTree = "<group>"; };
 		EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Pods-Hedvig-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -451,6 +457,8 @@
 		EB034D6121CA63E600078D65 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
+				EBD6729621FA191000050E86 /* CircleLabelSmall.swift */,
+				EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */,
 				EB034D6221CA63FB00078D65 /* Button.swift */,
 				EB00CBA321DE52FB002A263B /* IconRow.swift */,
 				EB00CBB121DFF144002A263B /* CircleLabel.swift */,
@@ -495,6 +503,7 @@
 			children = (
 				EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */,
 				EBAFAB0821EC9F930083E795 /* ProfileSection.swift */,
+				EBD6729A21FA193300050E86 /* MyPaymentRow.swift */,
 				EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */,
 				EBE09B3821EF668B00EC864E /* OtherSection.swift */,
 				EBE09B4121EF6EC800EC864E /* AboutRow.swift */,
@@ -1099,6 +1108,7 @@
 				EB00CBA921DE6B07002A263B /* Assets.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EBD6728121F9C6E000050E86 /* Disposable+Array.swift in Sources */,
+				EBD6729B21FA193300050E86 /* MyPaymentRow.swift in Sources */,
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
 				EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */,
 				EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */,
@@ -1118,6 +1128,7 @@
 				EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
+				EBD6729921FA191000050E86 /* CircleLabelWithSubLabel.swift in Sources */,
 				EBE09B4521EF73CE00EC864E /* VersionRow.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
@@ -1132,6 +1143,7 @@
 				EB00CBCC21EB8C0B002A263B /* UIViewController+Previewing.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
+				EBD6729821FA191000050E86 /* CircleLabelSmall.swift in Sources */,
 				EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */,
 				EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */,
 				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
