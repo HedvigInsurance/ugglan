@@ -34,19 +34,39 @@ extension Charity: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = .offWhite
 
-        let charityPicker = CharityPicker(presentingViewController: presentingViewController)
-        bag += containerView.add(charityPicker) { view in
-            view.snp.makeConstraints({ make in
-                make.edges.equalToSuperview()
-            })
-        }.onValue({ _ in
-            let selectedCharity = SelectedCharity(animateEntry: true)
-            bag += containerView.add(selectedCharity) { view in
-                view.snp.makeConstraints({ make in
-                    make.edges.equalToSuperview()
-                })
+        bag += client.watch(query: SelectedCharityQuery())
+            .compactMap { $0.data?.cashback }
+            .buffer()
+            .onValue { cashbacks in
+                guard let cashback = cashbacks.last else { return }
+
+                for view in containerView.subviews {
+                    view.removeFromSuperview()
+                }
+
+                if cashback.name != nil {
+                    let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1)
+                    bag += containerView.add(selectedCharity) { view in
+                        view.snp.makeConstraints({ make in
+                            make.edges.equalToSuperview()
+                        })
+                    }
+                } else {
+                    let charityPicker = CharityPicker(
+                        presentingViewController: self.presentingViewController
+                    )
+                    bag += containerView.add(charityPicker) { view in
+                        view.snp.makeConstraints({ make in
+                            make.edges.equalToSuperview()
+                        })
+                    }.onValue({ _ in
+                        bag += self.client.fetch(
+                            query: SelectedCharityQuery(),
+                            cachePolicy: .fetchIgnoringCacheData
+                        ).disposable
+                    })
+                }
             }
-        })
 
         viewController.view = containerView
 
