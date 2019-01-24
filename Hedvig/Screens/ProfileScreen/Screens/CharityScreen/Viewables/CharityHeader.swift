@@ -22,27 +22,24 @@ extension CharityHeader: Viewable {
         stackView.spacing = 15
 
         stackView.edgeInsets = UIEdgeInsets(
-            top: 0,
+            top: 30,
             left: 20,
             bottom: 0,
             right: 20
         )
         stackView.isLayoutMarginsRelativeArrangement = true
 
-        let icon = Icon(frame: .zero, icon: Asset.charity, iconWidth: 40)
+        let icon = Icon(frame: .zero, icon: Asset.charityWhiteCircle, iconWidth: 40)
         stackView.addArrangedSubview(icon)
 
         let multilineLabel = MultilineLabel(
             styledText: StyledText(
                 text: String.translation(.CHARITY_SCREEN_HEADER_MESSAGE),
-                style: .centeredBody
+                style: .centeredBodyOffBlack
             )
         )
 
         bag += stackView.addArangedSubview(multilineLabel)
-
-        let sectionHeaderLabel = UILabel(value: "Välgörenhetsorganisationer", style: .sectionHeader)
-        stackView.addArrangedSubview(sectionHeaderLabel)
 
         return (stackView, bag)
     }

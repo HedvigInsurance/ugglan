@@ -20,6 +20,7 @@ extension UIView {
         V.Matter == VMatter,
         V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
+
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
         )

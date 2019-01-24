@@ -29,7 +29,7 @@ extension MyCharityRow: Viewable {
 
         bag += events.onSelect.onValue { _ in
             self.presentingViewController.present(
-                Charity(),
+                Charity(presentingViewController: self.presentingViewController),
                 options: [.largeTitleDisplayMode(.never)]
             )
         }
@@ -40,6 +40,7 @@ extension MyCharityRow: Viewable {
 
 extension MyCharityRow: Previewable {
     func preview() -> (Charity, PresentationOptions) {
-        return (Charity(), [.largeTitleDisplayMode(.never)])
+        let charity = Charity(presentingViewController: presentingViewController)
+        return (charity, [.largeTitleDisplayMode(.never)])
     }
 }

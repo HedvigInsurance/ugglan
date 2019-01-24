@@ -27,7 +27,7 @@ struct IconRow {
         title: String,
         subtitle: String,
         iconAsset: ImageAsset,
-        iconWidth: CGFloat = 50,
+        iconWidth: CGFloat = 40,
         options: [IconRow.Options] = [.defaults]
     ) {
         self.title = ReadWriteSignal(title)

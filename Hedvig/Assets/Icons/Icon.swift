@@ -41,6 +41,7 @@ class Icon: UIView {
 
         image.snp.makeConstraints { make in
             make.width.equalTo(iconWidth)
+            make.height.equalToSuperview()
             make.center.equalToSuperview()
         }
     }

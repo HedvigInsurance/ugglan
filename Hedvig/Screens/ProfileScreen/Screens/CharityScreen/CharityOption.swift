@@ -18,8 +18,8 @@ struct CharityOption {
     let description: String
     let paragraph: String
 
-    private let onSelectCallbacker = Callbacker<Void>()
-    let onSelectSignal: Signal<Void>
+    private let onSelectCallbacker = Callbacker<UIView>()
+    let onSelectSignal: Signal<UIView>
 
     init(
         id: GraphQLID,
@@ -94,57 +94,8 @@ extension CharityOption: Reusable {
             )
 
             bag += buttonContainer.add(button) { buttonView in
-                bag += button.onTapSignal.onFirstValue {
-                    charityOption.onSelectCallbacker.callAll()
-                }
-
-                bag += button.onTapSignal.map { _ -> UIView in
-                    let testView = UIView()
-                    testView.frame = CGRect(x: 0, y: 0, width: 5, height: 5)
-                    testView.backgroundColor = .purple
-                    testView.layer.cornerRadius = 2.5
-
-                    let activityIndicator = UIActivityIndicatorView()
-                    activityIndicator.startAnimating()
-                    activityIndicator.style = .whiteLarge
-
-                    testView.addSubview(activityIndicator)
-
-                    activityIndicator.snp.makeConstraints({ make in
-                        make.height.equalToSuperview()
-                        make.width.equalToSuperview()
-                        make.center.equalToSuperview()
-                    })
-
-                    let mainWindow = UIApplication.shared.keyWindow!
-                    mainWindow.addSubview(testView)
-
-                    let origin = buttonView.convert(
-                        CGPoint(x: buttonView.frame.width / 2, y: buttonView.frame.height / 2),
-                        to: testView
-                    )
-
-                    testView.frame = CGRect(
-                        x: origin.x,
-                        y: origin.y,
-                        width: 5,
-                        height: 5
-                    )
-
-                    return testView
-                }.animated(
-                    style: AnimationStyle.easeOut(duration: 0.3)
-                ) { testView in
-                    let scaleX = (UIScreen.main.bounds.height / testView.frame.width) * 2
-                    let scaleY = (UIScreen.main.bounds.height / testView.frame.height) * 2
-
-                    testView.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-                }.delay(by: 5).animated(style: AnimationStyle.easeOut(duration: 0.25)) { testView in
-                    testView.backgroundColor = .white
-                }.animated(style: AnimationStyle.easeOut(duration: 0.25)) { testView in
-                    testView.alpha = 0
-                }.onValue { testView in
-                    testView.removeFromSuperview()
+                bag += button.onTapSignal.onValue {
+                    charityOption.onSelectCallbacker.callAll(with: buttonView)
                 }
             }
 

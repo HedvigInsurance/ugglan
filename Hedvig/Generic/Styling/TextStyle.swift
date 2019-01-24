@@ -15,7 +15,15 @@ extension TextStyle {
         style.color = .black
     }
 
+    static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
+        style.color = .offBlack
+    }
+
     static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in
+        style.alignment = .center
+    }
+
+    static let centeredBodyOffBlack = TextStyle.bodyOffBlack.restyled { (style: inout TextStyle) in
         style.alignment = .center
     }
 
