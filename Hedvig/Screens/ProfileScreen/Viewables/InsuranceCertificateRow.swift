@@ -12,14 +12,12 @@ import Foundation
 import Presentation
 
 struct InsuranceCertificateRow {
-    let certificateUrl: ReadWriteSignal<String?>
+    let certificateUrlSignal = ReadWriteSignal<String?>(nil)
     let presentingViewController: UIViewController
 
     init(
-        certificateUrl: String?,
         presentingViewController: UIViewController
     ) {
-        self.certificateUrl = ReadWriteSignal(certificateUrl)
         self.presentingViewController = presentingViewController
     }
 }
@@ -35,26 +33,26 @@ extension InsuranceCertificateRow: Viewable {
             options: []
         )
 
-        bag += certificateUrl.atOnce().filter(predicate: { $0 == nil }).map({ _ -> [IconRow.Options] in
+        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 == nil }).map({ _ -> [IconRow.Options] in
             [.disabled]
         }).bindTo(row.options)
 
-        bag += certificateUrl.atOnce().map({ value -> String in
+        bag += certificateUrlSignal.atOnce().map({ value -> String in
             value != nil ?
                 String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE) :
                 String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE)
         }).bindTo(row.subtitle)
 
-        bag += certificateUrl.atOnce().filter(predicate: { $0 != nil }).map({ _ -> [IconRow.Options] in
+        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 != nil }).map({ _ -> [IconRow.Options] in
             [.withArrow]
         }).bindTo(row.options)
 
-        bag += certificateUrl.atOnce().filter(predicate: { $0 != nil }).onValueDisposePrevious { _ in
+        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 != nil }).onValueDisposePrevious { _ in
             let innerBag = bag.innerBag()
 
             innerBag += events.onSelect.onValue { _ in
                 self.presentingViewController.present(
-                    InsuranceCertificate(certificateUrl: self.certificateUrl),
+                    InsuranceCertificate(certificateUrl: self.certificateUrlSignal),
                     options: [.largeTitleDisplayMode(.never)]
                 )
             }
@@ -68,6 +66,6 @@ extension InsuranceCertificateRow: Viewable {
 
 extension InsuranceCertificateRow: Previewable {
     func preview() -> (InsuranceCertificate, PresentationOptions) {
-        return (InsuranceCertificate(certificateUrl: certificateUrl), [.largeTitleDisplayMode(.never)])
+        return (InsuranceCertificate(certificateUrl: certificateUrlSignal), [.largeTitleDisplayMode(.never)])
     }
 }

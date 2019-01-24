@@ -91,7 +91,6 @@
 		EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */; };
 		EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */; };
 		EBA9AD1B21EDE75000E4D6CD /* MyInfo.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */; };
-		EBA9AD1D21EE03D700E4D6CD /* CharityImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA9AD1C21EE03D700E4D6CD /* CharityImage.swift */; };
 		EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */; };
 		EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBAFAB0621EC9D7A0083E795 /* Profile.graphql */; };
 		EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAB0821EC9F930083E795 /* ProfileSection.swift */; };
@@ -245,7 +244,6 @@
 		EB989BAC21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingPresentationStyle.swift; sourceTree = "<group>"; };
 		EBA9AD1821EDE4D200E4D6CD /* EmailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailRow.swift; sourceTree = "<group>"; };
 		EBA9AD1A21EDE75000E4D6CD /* MyInfo.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = MyInfo.graphql; sourceTree = "<group>"; };
-		EBA9AD1C21EE03D700E4D6CD /* CharityImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharityImage.swift; sourceTree = "<group>"; };
 		EBAFAB0321EBAF330083E795 /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		EBAFAB0621EC9D7A0083E795 /* Profile.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		EBAFAB0821EC9F930083E795 /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
@@ -479,7 +477,6 @@
 				EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */,
 				EBAFAB0821EC9F930083E795 /* ProfileSection.swift */,
 				EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */,
-				EBA9AD1C21EE03D700E4D6CD /* CharityImage.swift */,
 				EBE09B3821EF668B00EC864E /* OtherSection.swift */,
 				EBE09B4121EF6EC800EC864E /* AboutRow.swift */,
 				EBE09B5021F07FF200EC864E /* LogoutSection.swift */,
@@ -1073,7 +1070,6 @@
 			files = (
 				EB00CBC021E1F079002A263B /* Localization.swift in Sources */,
 				EB7FEA9E21B041490027C9DE /* CollectionKit+ScrollTo.swift in Sources */,
-				EBA9AD1D21EE03D700E4D6CD /* CharityImage.swift in Sources */,
 				EBECC28121BE65B600716BEA /* SpringAnimationStyle.swift in Sources */,
 				EBC049D5219C87DF00AFC30F /* API.swift in Sources */,
 				EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */,

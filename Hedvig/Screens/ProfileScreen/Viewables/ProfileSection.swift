@@ -11,7 +11,7 @@ import Form
 import Foundation
 
 struct ProfileSection {
-    let data: ProfileQuery.Data?
+    let dataSignal: ReadWriteSignal<ProfileQuery.Data?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
 }
 
@@ -21,10 +21,9 @@ extension ProfileSection: Viewable {
         let section = SectionView(header: nil, footer: nil, style: .sectionPlain)
 
         let myInfoRow = MyInfoRow(
-            firstName: data?.member.firstName ?? "",
-            lastName: data?.member.lastName ?? "",
             presentingViewController: presentingViewController
         )
+
         bag += section.append(myInfoRow) { row in
             bag += self.presentingViewController.registerForPreviewing(
                 sourceView: row.viewRepresentation,
@@ -32,11 +31,20 @@ extension ProfileSection: Viewable {
             )
         }
 
-        let homeRow = HomeRow(address: data?.insurance.address ?? "")
+        bag += dataSignal.atOnce()
+            .compactMap { $0?.member }
+            .filter { $0.firstName != nil && $0.lastName != nil }
+            .map { (firstName: $0.firstName!, lastName: $0.lastName!) }
+            .bindTo(myInfoRow.nameSignal)
+
+        let homeRow = HomeRow()
         bag += section.append(homeRow)
 
+        bag += dataSignal.atOnce()
+            .compactMap { $0?.insurance.address }
+            .bindTo(homeRow.address)
+
         let myCharityRow = MyCharityRow(
-            charityName: data?.cashback.name ?? "",
             presentingViewController: presentingViewController
         )
         bag += section.append(myCharityRow) { row in
@@ -46,16 +54,26 @@ extension ProfileSection: Viewable {
             )
         }
 
+        bag += dataSignal
+            .atOnce()
+            .map { $0?.cashback.name }
+            .bindTo(myCharityRow.charityNameSignal)
+
         let insuranceCertificateRow = InsuranceCertificateRow(
-            certificateUrl: data?.insurance.certificateUrl,
             presentingViewController: presentingViewController
         )
+
         bag += section.append(insuranceCertificateRow) { row in
             bag += self.presentingViewController.registerForPreviewing(
                 sourceView: row.viewRepresentation,
                 previewable: insuranceCertificateRow
             )
         }
+
+        bag += dataSignal
+            .atOnce()
+            .map { $0?.insurance.certificateUrl }
+            .bindTo(insuranceCertificateRow.certificateUrlSignal)
 
         return (section, bag)
     }

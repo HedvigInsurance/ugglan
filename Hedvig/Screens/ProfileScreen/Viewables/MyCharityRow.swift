@@ -12,7 +12,7 @@ import Foundation
 import Presentation
 
 struct MyCharityRow {
-    let charityName: String
+    let charityNameSignal = ReadWriteSignal<String?>(nil)
     let presentingViewController: UIViewController
 }
 
@@ -22,10 +22,14 @@ extension MyCharityRow: Viewable {
 
         let row = IconRow(
             title: String.translation(.PROFILE_MY_CHARITY_ROW_TITLE),
-            subtitle: charityName,
+            subtitle: "",
             iconAsset: Asset.charity,
             options: [.withArrow]
         )
+
+        bag += charityNameSignal.atOnce().map({ charityName -> String in
+            charityName ?? String.translation(.PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE)
+        }).bindTo(row.subtitle)
 
         bag += events.onSelect.onValue { _ in
             self.presentingViewController.present(
