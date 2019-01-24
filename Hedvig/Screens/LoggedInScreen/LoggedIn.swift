@@ -25,11 +25,11 @@ extension LoggedIn: Presentable {
 
         let bag = DisposeBag()
 
-        let chat = Chat()
+        let dashboard = Dashboard()
         let profile = Profile(client: client)
 
-        let chatPresentation = Presentation(
-            chat,
+        let dashboardPresentation = Presentation(
+            dashboard,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
@@ -41,7 +41,7 @@ extension LoggedIn: Presentable {
         )
 
         bag += tabBarController.presentTabs(
-            chatPresentation,
+            dashboardPresentation,
             profilePresentation
         )
 

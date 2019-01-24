@@ -28,6 +28,26 @@ extension DefaultStyling {
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
         ]
 
+        if #available(iOS 10.0, *) {
+            UITabBar.appearance().unselectedItemTintColor = .offBlack
+            UITabBar.appearance().tintColor = .purple
+        } else {
+            UITabBar.appearance().tintColor = .offBlack
+        }
+
+        UITabBarItem.appearance().setTitleTextAttributes(
+            [
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11)
+            ],
+            for: .normal
+        )
+        UITabBarItem.appearance().setTitleTextAttributes(
+            [
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11)
+            ],
+            for: .selected
+        )
+
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .purple
 
         UIBarButtonItem.appearance().setTitleTextAttributes(

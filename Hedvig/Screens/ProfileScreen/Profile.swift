@@ -67,6 +67,10 @@ extension Profile: Presentable {
 
 extension Profile: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(title: "Profile", image: nil, selectedImage: nil)
+        return UITabBarItem(
+            title: String.translation(.TAB_PROFILE_TITLE),
+            image: Asset.profileTab.image,
+            selectedImage: nil
+        )
     }
 }
