@@ -20,6 +20,7 @@ extension UIView {
         V.Matter == VMatter,
         V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
+
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
         )
@@ -140,9 +141,9 @@ extension UIView {
 
 extension UIStackView {
     // swiftlint:disable large_tuple
-    private func materializeArrangedViewable<V: Viewable>(
+    private func materializeArrangedViewable<V: Viewable, MatterView: UIView>(
         viewable: V
-    ) -> (V.Matter, V.Result, Disposable) where V.Matter == UIView, V.Events == ViewableEvents {
+    ) -> (V.Matter, V.Result, Disposable) where V.Matter == MatterView, V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
@@ -160,10 +161,10 @@ extension UIStackView {
 
     // swiftlint:enable large_tuple
 
-    func addArangedSubview<V: Viewable>(
+    func addArangedSubview<V: Viewable, MatterView: UIView>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == UIView, V.Result == Disposable, V.Events == ViewableEvents {
+    ) -> V.Result where V.Matter == MatterView, V.Result == Disposable, V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
 
         onCreate(matter)

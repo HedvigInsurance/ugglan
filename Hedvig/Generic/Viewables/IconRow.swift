@@ -27,7 +27,7 @@ struct IconRow {
         title: String,
         subtitle: String,
         iconAsset: ImageAsset,
-        iconWidth: CGFloat = 50,
+        iconWidth: CGFloat = 40,
         options: [IconRow.Options] = [.defaults]
     ) {
         self.title = ReadWriteSignal(title)
@@ -62,17 +62,19 @@ extension IconRow: Viewable {
             icon
         ).append(labelsContainer)
 
-        bag += options.atOnce().animated(style: AnimationStyle.easeOut(duration: 5), animations: { newOptions in
-            arrow.removeFromSuperview()
-
+        bag += options.atOnce().onValue { newOptions in
             if newOptions.contains(.withArrow) {
                 row.append(arrow)
+            } else {
+                arrow.removeFromSuperview()
             }
 
             if newOptions.contains(.disabled) {
                 row.alpha = 0.5
+            } else {
+                row.alpha = 1
             }
-        })
+        }
 
         icon.snp.makeConstraints { make in
             make.width.equalTo(50)
