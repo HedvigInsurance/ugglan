@@ -33,15 +33,15 @@ extension InsuranceCertificateRow: Viewable {
             options: []
         )
 
-        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 == nil }).map({ _ -> [IconRow.Options] in
-            [.disabled]
-        }).bindTo(row.options)
-
         bag += certificateUrlSignal.atOnce().map({ value -> String in
             value != nil ?
                 String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE) :
                 String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE)
         }).bindTo(row.subtitle)
+
+        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 == nil }).map({ _ -> [IconRow.Options] in
+            [.disabled]
+        }).bindTo(row.options)
 
         bag += certificateUrlSignal.atOnce().filter(predicate: { $0 != nil }).map({ _ -> [IconRow.Options] in
             [.withArrow]
