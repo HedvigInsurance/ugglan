@@ -20,6 +20,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
 
+    func logout() {
+        let token = AuthorizationToken(token: "")
+        try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
+
+        window.rootViewController = navigationController
+
+        presentMarketing()
+    }
+
+    func presentMarketing() {
+        let marketing = Marketing()
+
+        let marketingPresentation = Presentation(
+            marketing,
+            style: .marketing,
+            options: .defaults
+        ).onValue({ _ in
+            let loggedIn = LoggedIn()
+            self.bag += self.window.present(loggedIn, options: [], animated: true)
+        })
+
+        bag += navigationController.present(marketingPresentation)
+    }
+
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
@@ -65,18 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         HedvigApolloClient.shared.initClient(environment: apolloEnvironment).delay(by: 0.5).onValue { client in
             HedvigApolloClient.shared.client = client
 
-            let marketing = Marketing(client: client)
-
-            let marketingPresentation = Presentation(
-                marketing,
-                style: .marketing,
-                options: .defaults
-            ).onValue({ _ in
-                let loggedIn = LoggedIn(client: client)
-                self.bag += self.window.present(loggedIn, options: [], animated: true)
-            })
-
-            self.bag += self.navigationController.present(marketingPresentation)
+            self.presentMarketing()
 
             hasLoadedCallbacker.callAll()
 

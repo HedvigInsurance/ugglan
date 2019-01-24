@@ -85,7 +85,7 @@ struct Button {
 }
 
 extension Button: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
 
         let style = ButtonStyle.default.restyled { (style: inout ButtonStyle) in

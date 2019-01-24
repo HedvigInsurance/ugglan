@@ -25,22 +25,33 @@ extension Profile: Presentable {
 
         let form = FormView()
 
+        let profileSection = ProfileSection(
+            presentingViewController: viewController
+        )
+
+        bag += form.append(profileSection)
+
+        bag += form.append(Spacing(height: 20))
+
+        let otherSection = OtherSection(
+            presentingViewController: viewController
+        )
+
+        bag += form.append(otherSection)
+
+        bag += form.append(Spacing(height: 20))
+
+        let logoutSection = LogoutSection(
+            presentingViewController: viewController
+        )
+
+        bag += form.append(logoutSection)
+
         let query = ProfileQuery()
 
-        bag += client.fetch(query: query).onValue { result in
-            let charityImage = CharityImage(
-                imageUrl: result.data?.cashback.imageUrl ?? ""
-            )
-
-            bag += form.prepend(charityImage)
-
-            let profileSection = ProfileSection(
-                data: result.data,
-                presentingViewController: viewController
-            )
-
-            bag += form.append(profileSection)
-        }
+        bag += client.watch(query: query)
+            .compactMap { $0.data }
+            .bindTo(profileSection.dataSignal)
 
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()

@@ -15,9 +15,31 @@ extension TextStyle {
         style.color = .black
     }
 
+    static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
+        style.color = .offBlack
+    }
+
+    static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in
+        style.alignment = .center
+    }
+
+    static let centeredBodyOffBlack = TextStyle.bodyOffBlack.restyled { (style: inout TextStyle) in
+        style.alignment = .center
+    }
+
     static let sectionHeader = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .darkGray
+    }
+
+    static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(19)
+        style.color = .black
+    }
+
+    static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(13)
+        style.color = .offBlack
     }
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -33,5 +55,10 @@ extension TextStyle {
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
+    }
+
+    static let dangerButton = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.color = .pink
     }
 }

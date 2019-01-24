@@ -1,0 +1,9 @@
+query CharityOptions {
+    cashbackOptions {
+        id
+        name
+        title
+        description
+        paragraph
+    }
+}
