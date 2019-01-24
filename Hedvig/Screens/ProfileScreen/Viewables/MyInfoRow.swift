@@ -12,8 +12,7 @@ import Foundation
 import Presentation
 
 struct MyInfoRow {
-    let firstName: String
-    let lastName: String
+    let nameSignal = ReadWriteSignal<((firstName: String, lastName: String)?)>(nil)
     let presentingViewController: UIViewController
 }
 
@@ -23,10 +22,14 @@ extension MyInfoRow: Viewable {
 
         let row = IconRow(
             title: String.translation(.PROFILE_MY_INFO_ROW_TITLE),
-            subtitle: "\(firstName) \(lastName)",
+            subtitle: "",
             iconAsset: Asset.personalInformation,
             options: [.withArrow]
         )
+
+        bag += nameSignal.atOnce().compactMap { $0 }.map { firstName, lastName -> String in
+            "\(firstName) \(lastName)"
+        }.bindTo(row.subtitle)
 
         bag += events.onSelect.onValue {
             let myInfo = MyInfo()

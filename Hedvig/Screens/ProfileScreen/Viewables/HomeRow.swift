@@ -12,11 +12,7 @@ import Foundation
 import Presentation
 
 struct HomeRow {
-    let address: ReadWriteSignal<String>
-
-    init(address: String) {
-        self.address = ReadWriteSignal(address)
-    }
+    let address: ReadWriteSignal<String> = ReadWriteSignal("")
 }
 
 extension HomeRow: Viewable {
