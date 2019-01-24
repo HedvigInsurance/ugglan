@@ -1,0 +1,10 @@
+query SelectedCharity {
+    cashback {
+        id
+        name
+        title
+        imageUrl
+        description
+        paragraph
+    }
+}

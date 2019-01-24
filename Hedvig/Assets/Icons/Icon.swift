@@ -26,6 +26,10 @@ class Icon: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: iconWidth, height: iconWidth)
+    }
+
     func setup() {
         image.isUserInteractionEnabled = false
         isUserInteractionEnabled = false
@@ -37,6 +41,7 @@ class Icon: UIView {
 
         image.snp.makeConstraints { make in
             make.width.equalTo(iconWidth)
+            make.height.equalToSuperview()
             make.center.equalToSuperview()
         }
     }
