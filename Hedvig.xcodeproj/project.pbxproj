@@ -122,6 +122,10 @@
 		EBD6729821FA191000050E86 /* CircleLabelSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729621FA191000050E86 /* CircleLabelSmall.swift */; };
 		EBD6729921FA191000050E86 /* CircleLabelWithSubLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */; };
 		EBD6729B21FA193300050E86 /* MyPaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729A21FA193300050E86 /* MyPaymentRow.swift */; };
+		EBD6729E21FA1CFB00050E86 /* DirectDebitSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729D21FA1CFB00050E86 /* DirectDebitSetup.swift */; };
+		EBD672A221FB03FA00050E86 /* StartDirectDebitRegistration.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBD672A121FB03FA00050E86 /* StartDirectDebitRegistration.graphql */; };
+		EBD672A521FB2B2900050E86 /* DirectDebitResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672A421FB2B2900050E86 /* DirectDebitResult.swift */; };
+		EBD672A721FB5F7700050E86 /* WKWebView+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672A621FB5F7700050E86 /* WKWebView+Signal.swift */; };
 		EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3121EF622E00EC864E /* Licenses.swift */; };
 		EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3321EF628B00EC864E /* LicensesRow.swift */; };
 		EBE09B3721EF649200EC864E /* Pods-Hedvig-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */; };
@@ -285,6 +289,10 @@
 		EBD6729621FA191000050E86 /* CircleLabelSmall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
 		EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelWithSubLabel.swift; sourceTree = "<group>"; };
 		EBD6729A21FA193300050E86 /* MyPaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPaymentRow.swift; sourceTree = "<group>"; };
+		EBD6729D21FA1CFB00050E86 /* DirectDebitSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitSetup.swift; sourceTree = "<group>"; };
+		EBD672A121FB03FA00050E86 /* StartDirectDebitRegistration.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = StartDirectDebitRegistration.graphql; sourceTree = "<group>"; };
+		EBD672A421FB2B2900050E86 /* DirectDebitResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitResult.swift; sourceTree = "<group>"; };
+		EBD672A621FB5F7700050E86 /* WKWebView+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKWebView+Signal.swift"; sourceTree = "<group>"; };
 		EBE09B3121EF622E00EC864E /* Licenses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Licenses.swift; sourceTree = "<group>"; };
 		EBE09B3321EF628B00EC864E /* LicensesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesRow.swift; sourceTree = "<group>"; };
 		EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Pods-Hedvig-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -423,6 +431,7 @@
 				EB17E81721F518A700FAADB1 /* UIViewController+Viewable.swift */,
 				EBD6728021F9C6E000050E86 /* Disposable+Array.swift */,
 				EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */,
+				EBD672A621FB5F7700050E86 /* WKWebView+Signal.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -560,6 +569,7 @@
 				EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */,
 				EBD6727321F71CC700050E86 /* SelectCharity.graphql */,
 				EBD6727C21F8CB3900050E86 /* SelectedCharity.graphql */,
+				EBD672A121FB03FA00050E86 /* StartDirectDebitRegistration.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -775,6 +785,7 @@
 		EBD6728921FA185400050E86 /* MyPayment */ = {
 			isa = PBXGroup;
 			children = (
+				EBD6729C21FA1CD800050E86 /* Screens */,
 				EBD6728A21FA185400050E86 /* Viewables */,
 				EBD6729021FA185400050E86 /* MyPayment.swift */,
 			);
@@ -798,6 +809,23 @@
 				EBD6728F21FA185400050E86 /* PaymentRow.swift */,
 			);
 			path = PaymentDetailsSection;
+			sourceTree = "<group>";
+		};
+		EBD6729C21FA1CD800050E86 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				EBD672A321FB2B1700050E86 /* Viewables */,
+				EBD6729D21FA1CFB00050E86 /* DirectDebitSetup.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		EBD672A321FB2B1700050E86 /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EBD672A421FB2B2900050E86 /* DirectDebitResult.swift */,
+			);
+			path = Viewables;
 			sourceTree = "<group>";
 		};
 		EBE09B3021EF622200EC864E /* AboutScreen */ = {
@@ -950,6 +978,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB17E82421F5EDAE00FAADB1 /* CharityOptions.graphql in Resources */,
+				EBD672A221FB03FA00050E86 /* StartDirectDebitRegistration.graphql in Resources */,
 				EB00CBC121E1F079002A263B /* Localization.json in Resources */,
 				EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */,
 				EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */,
@@ -1083,11 +1112,13 @@
 				EBD6728321F9CB9500050E86 /* UITableView+Viewable.swift in Sources */,
 				EB7FEAAD21B1459D0027C9DE /* TransitionStyle.swift in Sources */,
 				EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */,
+				EBD672A721FB5F7700050E86 /* WKWebView+Signal.swift in Sources */,
 				EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */,
 				EBD6727B21F8C7E000050E86 /* SelectedCharity.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
+				EBD672A521FB2B2900050E86 /* DirectDebitResult.swift in Sources */,
 				EBE09B4F21F0740300EC864E /* SignalProvider+LazyBindTo.swift in Sources */,
 				EBD6729221FA185400050E86 /* MonthlyPaymentCircle.swift in Sources */,
 				EBD6729421FA185400050E86 /* PaymentRow.swift in Sources */,
@@ -1147,6 +1178,7 @@
 				EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */,
 				EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */,
 				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
+				EBD6729E21FA1CFB00050E86 /* DirectDebitSetup.swift in Sources */,
 				EBE09B5A21F0D29600EC864E /* UIWebView+Signal.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBA9AD2221EF273500E4D6CD /* Dashboard.swift in Sources */,

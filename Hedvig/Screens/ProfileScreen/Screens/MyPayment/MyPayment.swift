@@ -13,9 +13,14 @@ import Presentation
 
 struct MyPayment {
     let client: ApolloClient
+    let presentingViewController: UIViewController
 
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+    init(
+        client: ApolloClient = HedvigApolloClient.shared.client!,
+        presentingViewController: UIViewController
+    ) {
         self.client = client
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -34,6 +39,17 @@ extension MyPayment: Presentable {
                 let monthlyPaymentCircle = MonthlyPaymentCircle(monthlyCost: insurance.monthlyCost ?? 0)
                 bag += form.prepend(monthlyPaymentCircle)
             }
+            
+            let section = SectionView(headerView: nil, footerView: nil)
+            
+            let button = ButtonRow(text: "Ändra bankkonto", style: .normalButton)
+            bag += section.append(button)
+            
+            bag += button.onSelect.onValue {
+                self.presentingViewController.present(DirectDebitSetup(), options: [.autoPop])
+            }
+            
+            form.append(section)
         }
 
         return (viewController, bag)

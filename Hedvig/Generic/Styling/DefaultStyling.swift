@@ -63,6 +63,8 @@ extension DefaultStyling {
             ],
             for: .highlighted
         )
+        
+        UIBarButtonItem.appearance().tintColor = .purple
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [
