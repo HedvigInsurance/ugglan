@@ -38,23 +38,23 @@ extension LogoutSection: Viewable {
         )
 
         let logoutButton = ButtonRow(
-            text: String.translation(.LOGOUT_BUTTON),
+            text: String(.LOGOUT_BUTTON),
             style: .dangerButton
         )
         bag += section.append(logoutButton)
 
         bag += logoutButton.onSelect.onValue({ _ in
             let alert = Alert<Bool>(
-                title: String.translation(.LOGOUT_ALERT_TITLE),
+                title: String(.LOGOUT_ALERT_TITLE),
                 message: nil,
                 tintColor: nil,
                 actions: [
                     Alert.Action(
-                        title: String.translation(.LOGOUT_ALERT_ACTION_CANCEL),
+                        title: String(.LOGOUT_ALERT_ACTION_CANCEL),
                         style: UIAlertAction.Style.cancel
                     ) { false },
                     Alert.Action(
-                        title: String.translation(.LOGOUT_ALERT_ACTION_CONFIRM),
+                        title: String(.LOGOUT_ALERT_ACTION_CONFIRM),
                         style: UIAlertAction.Style.destructive
                     ) { true }
                 ]

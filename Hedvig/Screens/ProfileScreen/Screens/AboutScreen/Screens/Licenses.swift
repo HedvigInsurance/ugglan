@@ -49,7 +49,7 @@ extension Licenses: Presentable {
 
         let bag = DisposeBag()
 
-        viewController.title = String.translation(.LICENSES_SCREEN_TITLE)
+        viewController.title = String(.LICENSES_SCREEN_TITLE)
 
         let acknowListViewController = AcknowListViewController()
 
@@ -67,7 +67,7 @@ extension Licenses: Presentable {
         let headerView = UIView()
 
         let headerLabel = UILabel(
-            value: String.translation(.ACKNOWLEDGEMENT_HEADER_TITLE),
+            value: String(.ACKNOWLEDGEMENT_HEADER_TITLE),
             style: .body
         )
         headerLabel.numberOfLines = 0

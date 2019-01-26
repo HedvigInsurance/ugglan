@@ -22,7 +22,7 @@ struct PhoneNumberRow {
 extension PhoneNumberRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
-        let row = RowView(title: String.translation(.PHONE_NUMBER_ROW_TITLE), style: .rowTitle)
+        let row = RowView(title: String(.PHONE_NUMBER_ROW_TITLE), style: .rowTitle)
 
         let valueLabel = UILabel()
         row.append(valueLabel)
@@ -35,7 +35,7 @@ extension PhoneNumberRow: Viewable {
                 return StyledText(text: phoneNumber, style: .rowTitle)
             }
 
-            return StyledText(text: String.translation(.PHONE_NUMBER_ROW_EMPTY), style: .rowTitleDisabled)
+            return StyledText(text: String(.PHONE_NUMBER_ROW_EMPTY), style: .rowTitleDisabled)
         }.bindTo(valueLabel, \.styledText)
 
         return (row, bag)

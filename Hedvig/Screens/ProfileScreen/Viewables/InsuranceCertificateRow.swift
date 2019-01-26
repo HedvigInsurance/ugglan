@@ -27,7 +27,7 @@ extension InsuranceCertificateRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_TITLE),
+            title: String(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_TITLE),
             subtitle: "",
             iconAsset: Asset.insuranceCertificate,
             options: []
@@ -35,8 +35,8 @@ extension InsuranceCertificateRow: Viewable {
 
         bag += certificateUrlSignal.atOnce().map({ value -> String in
             value != nil ?
-                String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE) :
-                String.translation(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE)
+                String(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE) :
+                String(.PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE)
         }).bindTo(row.subtitle)
 
         bag += certificateUrlSignal.atOnce().filter(predicate: { $0 == nil }).map({ _ -> [IconRow.Options] in
