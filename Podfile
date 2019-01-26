@@ -31,6 +31,12 @@ target 'Hedvig' do
 end
 
 post_install do |installer|
+  installer.pods_project.build_configurations.each do |config|
+    if config.name == 'Release'
+      config.build_settings['SWIFT_COMPILATION_MODE'] = 'wholemodule'
+    end    
+  end
+
   system("sh scripts/update-translations.sh")
   system("sh scripts/update-graphql-schema.sh")
   system("sh scripts/generate-apollo-files.sh")
