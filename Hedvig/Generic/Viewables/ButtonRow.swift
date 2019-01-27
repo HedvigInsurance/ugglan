@@ -23,6 +23,12 @@ struct ButtonRow {
         self.style = ReadWriteSignal(style)
         onSelect = onSelectCallbacker.signal()
     }
+    
+    init(text: ReadWriteSignal<String>, style: ReadWriteSignal<TextStyle>) {
+        self.text = text
+        self.style = style
+        onSelect = onSelectCallbacker.signal()
+    }
 }
 
 extension ButtonRow: Viewable {

@@ -16,34 +16,17 @@ struct LogoutSection {
 }
 
 extension LogoutSection: Viewable {
-    func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (ButtonSection, Disposable) {
         let bag = DisposeBag()
-
-        let dangerSectionPlain = DynamicSectionStyle { _ -> SectionStyle in
-            SectionStyle(
-                rowInsets: SectionStyle.sectionPlain.rowInsets,
-                itemSpacing: SectionStyle.sectionPlain.itemSpacing,
-                minRowHeight: SectionStyle.sectionPlain.minRowHeight,
-                background: SectionStyle.sectionPlain.background,
-                selectedBackground: .selectedDanger,
-                header: SectionStyle.sectionPlain.header,
-                footer: SectionStyle.sectionPlain.footer
-            )
-        }
-
-        let section = SectionView(
-            header: nil,
-            footer: nil,
-            style: dangerSectionPlain
-        )
-
-        let logoutButton = ButtonRow(
+        
+        let logoutButtonSection = ButtonSection(
             text: String(.LOGOUT_BUTTON),
-            style: .dangerButton
+            textStyle: .dangerButton,
+            sectionStyle: .sectionPlain,
+            selectedBackground: .selectedDanger
         )
-        bag += section.append(logoutButton)
 
-        bag += logoutButton.onSelect.onValue({ _ in
+        bag += logoutButtonSection.onSelect.onValue({ _ in
             let alert = Alert<Bool>(
                 title: String(.LOGOUT_ALERT_TITLE),
                 message: nil,
@@ -68,6 +51,6 @@ extension LogoutSection: Viewable {
             })
         })
 
-        return (section, bag)
+        return (logoutButtonSection, bag)
     }
 }

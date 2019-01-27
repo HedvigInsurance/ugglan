@@ -77,4 +77,33 @@ extension FormView {
             bag.dispose()
         }
     }
+    
+    func append<V: Viewable, Matter: Viewable, View: UIView>(
+        _ viewable: V,
+        onCreate: @escaping (_ view: Matter.Matter) -> Void = { _ in }
+    ) -> Disposable where
+        V.Matter == Matter,
+        V.Result == Disposable,
+        V.Events == ViewableEvents,
+        Matter.Matter == View,
+        Matter.Result == Disposable,
+        Matter.Events == ViewableEvents {
+            let wasAddedCallbacker = Callbacker<Void>()
+            
+            let (matter, result) = viewable.materialize(events: ViewableEvents(
+                wasAddedCallbacker: wasAddedCallbacker
+            ))
+            
+            let bag = DisposeBag()
+            
+            bag += append(matter) { view in
+                wasAddedCallbacker.callAll()
+                onCreate(view)
+            }
+            
+            return Disposer {
+                result.dispose()
+                bag.dispose()
+            }
+    }
 }
