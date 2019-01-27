@@ -1,4 +1,5 @@
-const translations = require("../Hedvig/Assets/Localization/Localization.json");
+const translations = require(__dirname +
+  "/../Hedvig/Assets/Localization/Localization.json");
 
 let indent = (string, numberOfIndents) =>
   [...Array(numberOfIndents)].map(() => ` `).join("") + string;
@@ -191,7 +192,8 @@ public struct Localization {
 }
 `;
 
-const swiftFileLocation = "Hedvig/Assets/Localization/Localization.swift";
+const swiftFileLocation =
+  __dirname + "/../Hedvig/Assets/Localization/Localization.swift";
 
 const fs = require("fs");
 fs.writeFile(swiftFileLocation, output, function(err) {
@@ -203,4 +205,7 @@ fs.writeFile(swiftFileLocation, output, function(err) {
 });
 
 const { exec } = require("child_process");
-exec(`Pods/SwiftFormat/CommandLineTool/swiftformat ${swiftFileLocation}`);
+exec(
+  __dirname +
+    `/../Pods/SwiftFormat/CommandLineTool/swiftformat ${swiftFileLocation}`
+);
