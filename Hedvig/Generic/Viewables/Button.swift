@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Firebase
 
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
@@ -173,6 +174,14 @@ extension Button: Viewable {
             button,
             \.style
         )
+        
+        bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
+            return self.title.atOnce()
+        }.onValue { title in
+            if let localizationKey = title.localizationKey?.toString() {
+                Analytics.logEvent("button_tap_\(localizationKey)", parameters: nil)
+            }
+        }
 
         bag += merge(
             button.signal(for: .touchUpOutside),

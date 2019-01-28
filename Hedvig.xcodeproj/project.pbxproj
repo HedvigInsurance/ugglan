@@ -114,6 +114,7 @@
 		EBD6728121F9C6E000050E86 /* Disposable+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728021F9C6E000050E86 /* Disposable+Array.swift */; };
 		EBD6728321F9CB9500050E86 /* UITableView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */; };
 		EBD672A921FDECC100050E86 /* ButtonSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672A821FDECC100050E86 /* ButtonSection.swift */; };
+		EBD672AB21FE226900050E86 /* LocalizationKey+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672AA21FE226900050E86 /* LocalizationKey+String.swift */; };
 		EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3121EF622E00EC864E /* Licenses.swift */; };
 		EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3321EF628B00EC864E /* LicensesRow.swift */; };
 		EBE09B3721EF649200EC864E /* Pods-Hedvig-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */; };
@@ -269,6 +270,7 @@
 		EBD6728021F9C6E000050E86 /* Disposable+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disposable+Array.swift"; sourceTree = "<group>"; };
 		EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Viewable.swift"; sourceTree = "<group>"; };
 		EBD672A821FDECC100050E86 /* ButtonSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSection.swift; sourceTree = "<group>"; };
+		EBD672AA21FE226900050E86 /* LocalizationKey+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocalizationKey+String.swift"; sourceTree = "<group>"; };
 		EBE09B3121EF622E00EC864E /* Licenses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Licenses.swift; sourceTree = "<group>"; };
 		EBE09B3321EF628B00EC864E /* LicensesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesRow.swift; sourceTree = "<group>"; };
 		EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Pods-Hedvig-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -406,6 +408,7 @@
 				EB17E81721F518A700FAADB1 /* UIViewController+Viewable.swift */,
 				EBD6728021F9C6E000050E86 /* Disposable+Array.swift */,
 				EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */,
+				EBD672AA21FE226900050E86 /* LocalizationKey+String.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1099,6 +1102,7 @@
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB17E81B21F5C6DE00FAADB1 /* Charity.swift in Sources */,
+				EBD672AB21FE226900050E86 /* LocalizationKey+String.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EBD6727921F8C02700050E86 /* CharityPicker.swift in Sources */,
 				EBE09B3921EF668B00EC864E /* OtherSection.swift in Sources */,

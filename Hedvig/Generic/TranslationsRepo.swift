@@ -31,11 +31,7 @@ struct TranslationsRepo {
     }
     
     static func findWithReplacements(_ key: Localization.Key, replacements: [String: String]) -> String? {
-        var stringifiedKey = String(describing: key)
-        
-        if let parenthesisRange = stringifiedKey.range(of: "(") {
-            stringifiedKey.removeSubrange(parenthesisRange.lowerBound..<stringifiedKey.endIndex)
-        }
+        let stringifiedKey = key.toString()
         
         if var textValue = TranslationsRepo.translations[stringifiedKey] {
             replacements.forEach { (key, value) in
