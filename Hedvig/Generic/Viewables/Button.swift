@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import Firebase
 import Flow
 import Form
 import Foundation
@@ -173,6 +174,14 @@ extension Button: Viewable {
             button,
             \.style
         )
+
+        bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
+            return self.title.atOnce()
+        }.onValue { title in
+            if let localizationKey = title.localizationKey?.toString() {
+                Analytics.logEvent("button_tap_\(localizationKey)", parameters: nil)
+            }
+        }
 
         bag += merge(
             button.signal(for: .touchUpOutside),

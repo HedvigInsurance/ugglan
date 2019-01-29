@@ -18,7 +18,7 @@ struct LogoutSection {
 extension LogoutSection: Viewable {
     func materialize(events _: ViewableEvents) -> (ButtonSection, Disposable) {
         let bag = DisposeBag()
-        
+
         let logoutButtonSection = ButtonSection(
             text: String(.LOGOUT_BUTTON),
             textStyle: .dangerButton,

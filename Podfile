@@ -37,6 +37,7 @@ post_install do |installer|
     end    
   end
 
+  system("git config --local core.hooksPath .githooks/")
   system("Pods/SwiftGen/bin/swiftgen")
   system("sh scripts/update-translations.sh")
   system("sh scripts/update-graphql-schema.sh")
