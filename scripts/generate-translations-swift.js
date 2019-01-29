@@ -95,8 +95,7 @@ let generateSwitchCase = language => {
   return switchCase;
 };
 
-let output = `
-// Generated automagically, don't edit yourself
+let output = `// Generated automagically, don't edit yourself
 
 import Foundation
 

@@ -9,13 +9,13 @@
 import Foundation
 
 extension String {
-    static var _localizationKey: UInt8 = 0
+    static var localizationKey: UInt8 = 0
 
     var localizationKey: Localization.Key? {
         get {
             guard let value = objc_getAssociatedObject(
                 self,
-                &String._localizationKey
+                &String.localizationKey
             ) as? Localization.Key? else {
                 return nil
             }
@@ -25,7 +25,7 @@ extension String {
         set(newValue) {
             objc_setAssociatedObject(
                 self,
-                &String._localizationKey,
+                &String.localizationKey,
                 newValue,
                 objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
