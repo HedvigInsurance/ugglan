@@ -11,11 +11,11 @@ import Foundation
 extension Localization.Key {
     func toString() -> String {
         var stringifiedKey = String(describing: self)
-        
+
         if let parenthesisRange = stringifiedKey.range(of: "(") {
-            stringifiedKey.removeSubrange(parenthesisRange.lowerBound..<stringifiedKey.endIndex)
+            stringifiedKey.removeSubrange(parenthesisRange.lowerBound ..< stringifiedKey.endIndex)
         }
-        
+
         return stringifiedKey
     }
 }

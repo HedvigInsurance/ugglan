@@ -16,10 +16,10 @@ struct ButtonSection {
     let textStyle: ReadWriteSignal<TextStyle>
     let sectionStyle: ReadWriteSignal<SectionStyle>
     let selectedBackground: ReadWriteSignal<SectionStyle.Background>
-    
+
     private let onSelectCallbacker = Callbacker<Void>()
     let onSelect: Signal<Void>
-    
+
     init(
         text: String,
         textStyle: TextStyle,
@@ -35,23 +35,23 @@ struct ButtonSection {
 }
 
 extension ButtonSection: Viewable {
-    func materialize(events: ViewableEvents) -> (SectionView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(headerView: nil, footerView: nil)
-        
-        bag += sectionStyle.atOnce().withLatestFrom(selectedBackground.atOnce()).onValue({ sectionStyle, selectedBackground in
+
+        bag += sectionStyle.atOnce().withLatestFrom(selectedBackground.atOnce()).onValue({ sectionStyle, _ in
             section.dynamicStyle = DynamicSectionStyle { _ -> SectionStyle in
                 sectionStyle.restyled({ (style: inout SectionStyle) in
                     style.selectedBackground = .selectedDanger
                 })
             }
         })
-        
+
         let buttonRow = ButtonRow(text: text, style: textStyle)
         bag += buttonRow.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
-        
+
         bag += section.append(buttonRow)
-        
+
         return (section, bag)
     }
 }

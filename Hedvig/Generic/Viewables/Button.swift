@@ -6,11 +6,11 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import Firebase
 import Flow
 import Form
 import Foundation
 import UIKit
-import Firebase
 
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
@@ -174,7 +174,7 @@ extension Button: Viewable {
             button,
             \.style
         )
-        
+
         bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
             return self.title.atOnce()
         }.onValue { title in
