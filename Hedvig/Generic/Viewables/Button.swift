@@ -176,7 +176,7 @@ extension Button: Viewable {
         )
 
         bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
-            return self.title.atOnce()
+            self.title.atOnce()
         }.onValue { title in
             if let localizationKey = title.localizationKey?.toString() {
                 Analytics.logEvent("button_tap_\(localizationKey)", parameters: nil)

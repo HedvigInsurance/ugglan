@@ -45,7 +45,7 @@ extension CharityPicker: Viewable {
         )
 
         let dynamicSectionStyle = DynamicSectionStyle { _ in
-            return sectionStyle
+            sectionStyle
         }
 
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
