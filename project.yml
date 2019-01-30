@@ -18,3 +18,4 @@ targets:
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
       SWIFT_VERSION: "4.2"
       PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"
+      DEVELOPMENT_TEAM: "AW656G5PFM"
