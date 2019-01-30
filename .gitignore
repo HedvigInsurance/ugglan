@@ -5,11 +5,11 @@
 ## Build generated
 build/
 DerivedData/
-Hedvig/Assets/Assets.swift
-Hedvig/Assets/Localization/Localization.json
-Hedvig/Assets/Localization/Localization.swift
-Hedvig/Data/schema.json
-Hedvig/Data/API.swift
+Src/Assets/Assets.swift
+Src/Assets/Localization/Localization.json
+Src/Assets/Localization/Localization.swift
+Src/Data/schema.json
+Src/Data/API.swift
 
 ## Various settings
 *.pbxuser

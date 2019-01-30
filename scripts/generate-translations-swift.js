@@ -1,5 +1,5 @@
 const translations = require(__dirname +
-  "/../Hedvig/Assets/Localization/Localization.json");
+  "/../Src/Assets/Localization/Localization.json");
 
 let indent = (string, numberOfIndents) =>
   [...Array(numberOfIndents)].map(() => ` `).join("") + string;
@@ -192,7 +192,7 @@ public struct Localization {
 `;
 
 const swiftFileLocation =
-  __dirname + "/../Hedvig/Assets/Localization/Localization.swift";
+  __dirname + "/../Src/Assets/Localization/Localization.swift";
 
 const fs = require("fs");
 fs.writeFile(swiftFileLocation, output, function(err) {

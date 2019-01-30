@@ -1,6 +1,6 @@
 platform :ios, '9.0'
 
-target 'Hedvig' do
+target 'ugglan' do
   use_frameworks!
   inhibit_all_warnings!
 
@@ -23,11 +23,6 @@ target 'Hedvig' do
   pod 'SwiftGen'
   pod 'Firebase/Core'
   pod 'AcknowList'
-
-  target 'HedvigTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
 end
 
 post_install do |installer|
