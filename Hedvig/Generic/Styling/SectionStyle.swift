@@ -28,6 +28,11 @@ extension BackgroundStyle {
         color: UIColor.pink.withAlphaComponent(0.2),
         border: .standard
     )
+
+    static let invisible = BackgroundStyle(
+        color: UIColor.clear,
+        border: BorderStyle.none
+    )
 }
 
 extension SeparatorStyle {
@@ -64,12 +69,19 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
+
+    static let invisible = SectionBackgroundStyle(
+        background: .invisible,
+        topSeparator: .none,
+        bottomSeparator: .none
+    )
 }
 
 extension SectionStyle.Background {
     static let standard = SectionStyle.Background(style: .white)
     static let selected = SectionStyle.Background(style: .purple)
     static let selectedDanger = SectionStyle.Background(style: .pink)
+    static let invisible = SectionStyle.Background(style: .invisible)
 }
 
 extension HeaderFooterStyle {
@@ -105,6 +117,6 @@ extension SectionStyle {
 
 extension DynamicSectionStyle {
     static let sectionPlain = DynamicSectionStyle { _ -> SectionStyle in
-        return .sectionPlain
+        .sectionPlain
     }
 }

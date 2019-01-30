@@ -19,7 +19,7 @@ extension PaymentDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String.translation(.MY_PAYMENT_PAYMENT_ROW_LABEL),
+            header: String(.MY_PAYMENT_PAYMENT_ROW_LABEL),
             footer: nil,
             style: .sectionPlain
         )

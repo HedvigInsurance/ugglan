@@ -1,0 +1,5 @@
+mutation SelectCharity($id: ID!) {
+    selectCashbackOption(id: $id) {
+        id
+    }
+}

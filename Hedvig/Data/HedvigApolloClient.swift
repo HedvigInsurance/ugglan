@@ -58,6 +58,15 @@ class HedvigApolloClient {
         )
     }
 
+    func saveToken(token: String) {
+        let authorizationToken = AuthorizationToken(token: token)
+        try? Disk.save(
+            authorizationToken,
+            to: .applicationSupport,
+            as: "authorization-token.json"
+        )
+    }
+
     func createClientFromNewSession(environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
@@ -65,6 +74,10 @@ class HedvigApolloClient {
         return Future { completion in
             self.createClient(token: nil, environment: environment).onValue { client in
                 client.perform(mutation: mutation).onValue { result in
+                    if let token = result.data?.createSession {
+                        self.saveToken(token: token)
+                    }
+
                     self.createClient(
                         token: result.data?.createSession,
                         environment: environment

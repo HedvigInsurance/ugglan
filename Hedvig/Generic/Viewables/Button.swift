@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import Firebase
 import Flow
 import Form
 import Foundation
@@ -85,7 +86,7 @@ struct Button {
 }
 
 extension Button: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
 
         let style = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
@@ -174,6 +175,14 @@ extension Button: Viewable {
             \.style
         )
 
+        bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
+            self.title.atOnce()
+        }.onValue { title in
+            if let localizationKey = title.localizationKey?.toString() {
+                Analytics.logEvent("button_tap_\(localizationKey)", parameters: nil)
+            }
+        }
+
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
@@ -189,7 +198,7 @@ extension Button: Viewable {
         button.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
             make.height.equalTo(self.type.height())
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
         }
 
         return (button, bag)

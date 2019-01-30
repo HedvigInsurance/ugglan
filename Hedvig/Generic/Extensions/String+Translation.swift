@@ -9,13 +9,38 @@
 import Foundation
 
 extension String {
-    static func translation(_ key: Localization.Key) -> String {
+    static var localizationKey: UInt8 = 0
+
+    var localizationKey: Localization.Key? {
+        get {
+            guard let value = objc_getAssociatedObject(
+                self,
+                &String.localizationKey
+            ) as? Localization.Key? else {
+                return nil
+            }
+
+            return value
+        }
+        set(newValue) {
+            objc_setAssociatedObject(
+                self,
+                &String.localizationKey,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+
+    init(_ key: Localization.Key) {
         switch Localization.Language.currentLanguage {
         case .sv_SE:
-            return Localization.Translations.sv_SE.for(key: key)
+            self = Localization.Translations.sv_SE.for(key: key)
         case .en_SE:
             // as we don't have things translated into english yet, just return sv_SE
-            return Localization.Translations.sv_SE.for(key: key)
+            self = Localization.Translations.sv_SE.for(key: key)
         }
+
+        localizationKey = key
     }
 }

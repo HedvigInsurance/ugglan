@@ -29,4 +29,18 @@ struct TranslationsRepo {
         let stringifiedKey = String(describing: key)
         return TranslationsRepo.translations[stringifiedKey]
     }
+
+    static func findWithReplacements(_ key: Localization.Key, replacements: [String: String]) -> String? {
+        let stringifiedKey = key.toString()
+
+        if var textValue = TranslationsRepo.translations[stringifiedKey] {
+            replacements.forEach { key, value in
+                textValue = textValue.replacingOccurrences(of: "{\(key)}", with: value)
+            }
+
+            return textValue
+        }
+
+        return nil
+    }
 }

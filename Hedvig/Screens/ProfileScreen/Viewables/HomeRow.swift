@@ -12,11 +12,7 @@ import Foundation
 import Presentation
 
 struct HomeRow {
-    let address: ReadWriteSignal<String>
-
-    init(address: String) {
-        self.address = ReadWriteSignal(address)
-    }
+    let address: ReadWriteSignal<String> = ReadWriteSignal("")
 }
 
 extension HomeRow: Viewable {
@@ -24,7 +20,7 @@ extension HomeRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String.translation(.PROFILE_MY_HOME_ROW_TITLE),
+            title: String(.PROFILE_MY_HOME_ROW_TITLE),
             subtitle: "",
             iconAsset: Asset.home
         )

@@ -22,27 +22,20 @@ extension InsuranceCertificate: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String.translation(.MY_INSURANCE_CERTIFICATE_TITLE)
+        viewController.title = String(.MY_INSURANCE_CERTIFICATE_TITLE)
 
-        let webView = UIWebView()
-        webView.backgroundColor = .offWhite
+        let pdfViewer = PDFViewer()
+        bag += viewController.install(pdfViewer)
 
-        bag += webView.didFinishLoadSignal.onValue {
-            webView.scrollView.contentOffset = CGPoint(x: 0, y: -webView.layoutMargins.top)
-        }
-
-        bag += certificateUrl.atOnce().onValue { value in
-            guard let value = value else { return }
-            let url = URL(string: value)!
-            webView.loadRequest(URLRequest(url: url))
-        }
-
-        viewController.view = webView
+        bag += certificateUrl.atOnce().map { value -> URL? in
+            guard let value = value, let url = URL(string: value) else { return nil }
+            return url
+        }.bindTo(pdfViewer.url)
 
         bag += viewController.navigationItem.addItem(
             UIBarButtonItem(system: .action),
             position: .right
-        ).withLatestFrom(certificateUrl).onValueDisposePrevious { _, value -> Disposable? in
+        ).withLatestFrom(pdfViewer.data).onValueDisposePrevious { _, value -> Disposable? in
             guard let value = value else { return NilDisposer() }
 
             let activityView = ActivityView(

@@ -21,14 +21,14 @@ extension MyPaymentRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String.translation(.PROFILE_PAYMENT_ROW_HEADER),
-            subtitle: "\(monthlyCost) \(String.translation(.PAYMENT_CURRENCY_OCCURRENCE)) · \(String.translation(.PROFILE_MY_PAYMENT_METHOD))",
+            title: String(.PROFILE_PAYMENT_ROW_HEADER),
+            subtitle: "\(monthlyCost) \(String(.PAYMENT_CURRENCY_OCCURRENCE)) · \(String(.PROFILE_MY_PAYMENT_METHOD))",
             iconAsset: Asset.payment,
             options: [.withArrow]
         )
 
         bag += events.onSelect.onValue {
-            let myPayment = MyPayment()
+            let myPayment = MyPayment(presentingViewController: self.presentingViewController)
             self.presentingViewController.present(myPayment, style: .default, options: [.largeTitleDisplayMode(.never)])
         }
 
@@ -38,6 +38,6 @@ extension MyPaymentRow: Viewable {
 
 extension MyPaymentRow: Previewable {
     func preview() -> (MyPayment, PresentationOptions) {
-        return (MyPayment(), [.largeTitleDisplayMode(.never)])
+        return (MyPayment(presentingViewController: presentingViewController), [.largeTitleDisplayMode(.never)])
     }
 }

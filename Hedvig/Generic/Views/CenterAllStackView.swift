@@ -39,6 +39,15 @@ class CenterAllStackView: UIStackView {
             internalStackView.spacing = newValue
         }
     }
+    
+    override var distribution: UIStackView.Distribution {
+        get {
+            return internalStackView.distribution
+        }
+        set(newValue) {
+            internalStackView.distribution = newValue
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)

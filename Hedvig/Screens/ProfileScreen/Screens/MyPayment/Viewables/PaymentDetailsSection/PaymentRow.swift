@@ -15,8 +15,8 @@ struct PaymentRow {}
 extension PaymentRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
-        let row = RowView(title: "Autogiro", style: .rowTitle)
 
+        let row = RowView(title: "Autogiro", style: .rowTitle)
         row.append("Den 27:e varje månad", style: .rowTitleDisabled)
 
         return (row, bag)
