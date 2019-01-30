@@ -49,6 +49,17 @@
 		EB17E82021F5CD2F00FAADB1 /* MultilineLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E81F21F5CD2F00FAADB1 /* MultilineLabel.swift */; };
 		EB17E82221F5DEDC00FAADB1 /* CharityOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB17E82121F5DEDC00FAADB1 /* CharityOption.swift */; };
 		EB17E82421F5EDAE00FAADB1 /* CharityOptions.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */; };
+		EB4695D62201A0C90004C75D /* MyPaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695D52201A0C90004C75D /* MyPaymentRow.swift */; };
+		EB4695E22201A0F70004C75D /* DeductibleCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695D82201A0F70004C75D /* DeductibleCircle.swift */; };
+		EB4695E32201A0F70004C75D /* MonthlyPaymentCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695D92201A0F70004C75D /* MonthlyPaymentCircle.swift */; };
+		EB4695E42201A0F70004C75D /* PaymentDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695DB2201A0F70004C75D /* PaymentDetailsSection.swift */; };
+		EB4695E52201A0F70004C75D /* PaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695DC2201A0F70004C75D /* PaymentRow.swift */; };
+		EB4695E62201A0F70004C75D /* MyPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695DD2201A0F70004C75D /* MyPayment.swift */; };
+		EB4695E72201A0F70004C75D /* DirectDebitSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695DF2201A0F70004C75D /* DirectDebitSetup.swift */; };
+		EB4695E82201A0F70004C75D /* DirectDebitResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695E12201A0F70004C75D /* DirectDebitResult.swift */; };
+		EB4695EB2201A1200004C75D /* CircleLabelSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695E92201A11F0004C75D /* CircleLabelSmall.swift */; };
+		EB4695EC2201A1200004C75D /* CircleLabelWithSubLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695EA2201A1200004C75D /* CircleLabelWithSubLabel.swift */; };
+		EB4695EE2201A16C0004C75D /* WKWebView+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695ED2201A16C0004C75D /* WKWebView+Signal.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -206,6 +217,17 @@
 		EB17E81F21F5CD2F00FAADB1 /* MultilineLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineLabel.swift; sourceTree = "<group>"; };
 		EB17E82121F5DEDC00FAADB1 /* CharityOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharityOption.swift; sourceTree = "<group>"; };
 		EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = CharityOptions.graphql; sourceTree = "<group>"; };
+		EB4695D52201A0C90004C75D /* MyPaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPaymentRow.swift; sourceTree = "<group>"; };
+		EB4695D82201A0F70004C75D /* DeductibleCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeductibleCircle.swift; sourceTree = "<group>"; };
+		EB4695D92201A0F70004C75D /* MonthlyPaymentCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthlyPaymentCircle.swift; sourceTree = "<group>"; };
+		EB4695DB2201A0F70004C75D /* PaymentDetailsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentDetailsSection.swift; sourceTree = "<group>"; };
+		EB4695DC2201A0F70004C75D /* PaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentRow.swift; sourceTree = "<group>"; };
+		EB4695DD2201A0F70004C75D /* MyPayment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPayment.swift; sourceTree = "<group>"; };
+		EB4695DF2201A0F70004C75D /* DirectDebitSetup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectDebitSetup.swift; sourceTree = "<group>"; };
+		EB4695E12201A0F70004C75D /* DirectDebitResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectDebitResult.swift; sourceTree = "<group>"; };
+		EB4695E92201A11F0004C75D /* CircleLabelSmall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
+		EB4695EA2201A1200004C75D /* CircleLabelWithSubLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelWithSubLabel.swift; sourceTree = "<group>"; };
+		EB4695ED2201A16C0004C75D /* WKWebView+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "WKWebView+Signal.swift"; path = "Hedvig/Generic/Extensions/WKWebView+Signal.swift"; sourceTree = SOURCE_ROOT; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -354,6 +376,7 @@
 		EB00CBB521E02736002A263B /* UIView */ = {
 			isa = PBXGroup;
 			children = (
+				EB4695ED2201A16C0004C75D /* WKWebView+Signal.swift */,
 				EBC049CB219B58F900AFC30F /* UIView+RadiusMask.swift */,
 				EB7FEA9B21B03E410027C9DE /* UIView+Viewable.swift */,
 				EBECC41F21C40F8600716BEA /* UIView+RelativeFrame.swift */,
@@ -443,8 +466,8 @@
 		EB034D6121CA63E600078D65 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
-				EBD6729621FA191000050E86 /* CircleLabelSmall.swift */,
-				EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */,
+				EB4695E92201A11F0004C75D /* CircleLabelSmall.swift */,
+				EB4695EA2201A1200004C75D /* CircleLabelWithSubLabel.swift */,
 				EB034D6221CA63FB00078D65 /* Button.swift */,
 				EB00CBA321DE52FB002A263B /* IconRow.swift */,
 				EB00CBB121DFF144002A263B /* CircleLabel.swift */,
@@ -488,9 +511,9 @@
 		EB034D8721DE239300078D65 /* Viewables */ = {
 			isa = PBXGroup;
 			children = (
+				EB4695D52201A0C90004C75D /* MyPaymentRow.swift */,
 				EB00CBAA21DE6E99002A263B /* MyInfoRow.swift */,
 				EBAFAB0821EC9F930083E795 /* ProfileSection.swift */,
-				EBD6729A21FA193300050E86 /* MyPaymentRow.swift */,
 				EBAFAB2621ECE1E50083E795 /* MyCharityRow.swift */,
 				EBE09B3821EF668B00EC864E /* OtherSection.swift */,
 				EBE09B4121EF6EC800EC864E /* AboutRow.swift */,
@@ -547,7 +570,6 @@
 				EB17E82321F5EDAE00FAADB1 /* CharityOptions.graphql */,
 				EBD6727321F71CC700050E86 /* SelectCharity.graphql */,
 				EBD6727C21F8CB3900050E86 /* SelectedCharity.graphql */,
-				EBD672A121FB03FA00050E86 /* StartDirectDebitRegistration.graphql */,
 			);
 			path = GraphQL;
 			sourceTree = "<group>";
@@ -568,6 +590,42 @@
 				EBE09B5B21F0E74600EC864E /* ActivityView.swift */,
 			);
 			path = Generic;
+			sourceTree = "<group>";
+		};
+		EB4695D72201A0F70004C75D /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EB4695D82201A0F70004C75D /* DeductibleCircle.swift */,
+				EB4695D92201A0F70004C75D /* MonthlyPaymentCircle.swift */,
+				EB4695DA2201A0F70004C75D /* PaymentDetailsSection */,
+			);
+			path = Viewables;
+			sourceTree = "<group>";
+		};
+		EB4695DA2201A0F70004C75D /* PaymentDetailsSection */ = {
+			isa = PBXGroup;
+			children = (
+				EB4695DB2201A0F70004C75D /* PaymentDetailsSection.swift */,
+				EB4695DC2201A0F70004C75D /* PaymentRow.swift */,
+			);
+			path = PaymentDetailsSection;
+			sourceTree = "<group>";
+		};
+		EB4695DE2201A0F70004C75D /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				EB4695DF2201A0F70004C75D /* DirectDebitSetup.swift */,
+				EB4695E02201A0F70004C75D /* Viewables */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		EB4695E02201A0F70004C75D /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				EB4695E12201A0F70004C75D /* DirectDebitResult.swift */,
+			);
+			path = Viewables;
 			sourceTree = "<group>";
 		};
 		EB5ED9CD21985D37004CE441 /* Assets */ = {
@@ -763,47 +821,11 @@
 		EBD6728921FA185400050E86 /* MyPayment */ = {
 			isa = PBXGroup;
 			children = (
-				EBD6729C21FA1CD800050E86 /* Screens */,
-				EBD6728A21FA185400050E86 /* Viewables */,
-				EBD6729021FA185400050E86 /* MyPayment.swift */,
+				EB4695DD2201A0F70004C75D /* MyPayment.swift */,
+				EB4695DE2201A0F70004C75D /* Screens */,
+				EB4695D72201A0F70004C75D /* Viewables */,
 			);
 			path = MyPayment;
-			sourceTree = "<group>";
-		};
-		EBD6728A21FA185400050E86 /* Viewables */ = {
-			isa = PBXGroup;
-			children = (
-				EBD6728B21FA185400050E86 /* DeductibleCircle.swift */,
-				EBD6728C21FA185400050E86 /* MonthlyPaymentCircle.swift */,
-				EBD6728D21FA185400050E86 /* PaymentDetailsSection */,
-			);
-			path = Viewables;
-			sourceTree = "<group>";
-		};
-		EBD6728D21FA185400050E86 /* PaymentDetailsSection */ = {
-			isa = PBXGroup;
-			children = (
-				EBD6728E21FA185400050E86 /* PaymentDetailsSection.swift */,
-				EBD6728F21FA185400050E86 /* PaymentRow.swift */,
-			);
-			path = PaymentDetailsSection;
-			sourceTree = "<group>";
-		};
-		EBD6729C21FA1CD800050E86 /* Screens */ = {
-			isa = PBXGroup;
-			children = (
-				EBD672A321FB2B1700050E86 /* Viewables */,
-				EBD6729D21FA1CFB00050E86 /* DirectDebitSetup.swift */,
-			);
-			path = Screens;
-			sourceTree = "<group>";
-		};
-		EBD672A321FB2B1700050E86 /* Viewables */ = {
-			isa = PBXGroup;
-			children = (
-				EBD672A421FB2B2900050E86 /* DirectDebitResult.swift */,
-			);
-			path = Viewables;
 			sourceTree = "<group>";
 		};
 		EBE09B3021EF622200EC864E /* AboutScreen */ = {
@@ -958,7 +980,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB17E82421F5EDAE00FAADB1 /* CharityOptions.graphql in Resources */,
-				EBD672A221FB03FA00050E86 /* StartDirectDebitRegistration.graphql in Resources */,
 				EB00CBC121E1F079002A263B /* Localization.json in Resources */,
 				EB88DB62219EBEE500D5C8E1 /* CreateSession.graphql in Resources */,
 				EBAFAB0721EC9D7A0083E795 /* Profile.graphql in Resources */,
@@ -1121,18 +1142,16 @@
 				EBECC42021C40F8600716BEA /* UIView+RelativeFrame.swift in Sources */,
 				EB7FEA9721B03DAE0027C9DE /* Viewable.swift in Sources */,
 				EBD6728321F9CB9500050E86 /* UITableView+Viewable.swift in Sources */,
+				EB4695E22201A0F70004C75D /* DeductibleCircle.swift in Sources */,
 				EB7FEAAD21B1459D0027C9DE /* TransitionStyle.swift in Sources */,
 				EBECC41821C2BD7E00716BEA /* HappyAvatar.swift in Sources */,
-				EBD672A721FB5F7700050E86 /* WKWebView+Signal.swift in Sources */,
 				EB034D6E21CCE59500078D65 /* AuthorizationToken.swift in Sources */,
 				EB7FEA9921B03DF80027C9DE /* SkipToNextButton.swift in Sources */,
 				EB034D7C21DCDD3300078D65 /* MarketingStoryImageCell.swift in Sources */,
+				EB4695E32201A0F70004C75D /* MonthlyPaymentCircle.swift in Sources */,
 				EBD6727B21F8C7E000050E86 /* SelectedCharity.swift in Sources */,
 				EB7FEAB721B19B8B0027C9DE /* MemberActionButtons.swift in Sources */,
-				EBD672A521FB2B2900050E86 /* DirectDebitResult.swift in Sources */,
 				EBE09B4F21F0740300EC864E /* SignalProvider+LazyBindTo.swift in Sources */,
-				EBD6729221FA185400050E86 /* MonthlyPaymentCircle.swift in Sources */,
-				EBD6729421FA185400050E86 /* PaymentRow.swift in Sources */,
 				EBE09B5321F0AD9900EC864E /* HomeRow.swift in Sources */,
 				EBC049D8219C88EB00AFC30F /* HedvigApolloClient.swift in Sources */,
 				EB989BAB21AB212F00C6FFA5 /* Marketing.swift in Sources */,
@@ -1142,21 +1161,22 @@
 				EBAFAB0421EBAF330083E795 /* Localization+CurrentLanguage.swift in Sources */,
 				EB00CBAE21DF63A7002A263B /* MyInfo.swift in Sources */,
 				EB5ED9E421986A6C004CE441 /* Icon.swift in Sources */,
-				EBD6729521FA185400050E86 /* MyPayment.swift in Sources */,
 				EBE09B4221EF6EC800EC864E /* AboutRow.swift in Sources */,
 				EB034D7A21DCDCDD00078D65 /* MarketingStoryVideoCell.swift in Sources */,
 				EB00CBCE21EBA5A8002A263B /* UIScrollView+RefreshControl.swift in Sources */,
+				EB4695EE2201A16C0004C75D /* WKWebView+Signal.swift in Sources */,
 				EBE09B5121F07FF200EC864E /* LogoutSection.swift in Sources */,
 				EB00CBA921DE6B07002A263B /* Assets.swift in Sources */,
+				EB4695D62201A0C90004C75D /* MyPaymentRow.swift in Sources */,
 				EB7FEAAF21B145C20027C9DE /* AnimationStyle.swift in Sources */,
 				EBD6728121F9C6E000050E86 /* Disposable+Array.swift in Sources */,
-				EBD6729B21FA193300050E86 /* MyPaymentRow.swift in Sources */,
 				EB034BD521C7BFA000078D65 /* TextStyle.swift in Sources */,
 				EB034BD921C7DF0400078D65 /* SayHello.swift in Sources */,
 				EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */,
 				EBECC37C21C2B60400716BEA /* MarketingStoryIndicatorCell.swift in Sources */,
 				EB7FEAB321B17DBA0027C9DE /* ExistingMemberButton.swift in Sources */,
 				EB17E81E21F5C96500FAADB1 /* CharityHeader.swift in Sources */,
+				EB4695E52201A0F70004C75D /* PaymentRow.swift in Sources */,
 				EB7FEABA21B441F50027C9DE /* StoriesCollection.swift in Sources */,
 				EB034D8021DCE2CD00078D65 /* LoggedIn.swift in Sources */,
 				EBD6727721F8646E00050E86 /* BubbleLoading.swift in Sources */,
@@ -1167,10 +1187,10 @@
 				EBAFAB2921ED0E6F0083E795 /* Previewable.swift in Sources */,
 				EBE09B5521F0B2E600EC864E /* InsuranceCertificateRow.swift in Sources */,
 				EBAFAB2521ECC9440083E795 /* PhoneNumberRow.swift in Sources */,
+				EB4695E82201A0F70004C75D /* DirectDebitResult.swift in Sources */,
 				EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */,
 				EBECC26C21B96A0D00716BEA /* ChatPresentationStyle.swift in Sources */,
 				EB034CDA21C9256C00078D65 /* DelayedDisposer.swift in Sources */,
-				EBD6729921FA191000050E86 /* CircleLabelWithSubLabel.swift in Sources */,
 				EBE09B4521EF73CE00EC864E /* VersionRow.swift in Sources */,
 				EB7FEABC21B449C50027C9DE /* Callbacker+Signal.swift in Sources */,
 				EB7FEA9C21B03E410027C9DE /* UIView+Viewable.swift in Sources */,
@@ -1189,14 +1209,14 @@
 				EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */,
 				EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */,
 				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
-				EBD6729E21FA1CFB00050E86 /* DirectDebitSetup.swift in Sources */,
 				EBE09B5A21F0D29600EC864E /* UIWebView+Signal.swift in Sources */,
+				EB4695E72201A0F70004C75D /* DirectDebitSetup.swift in Sources */,
 				EB7FEA8921AECCBF0027C9DE /* ButtonStyle.swift in Sources */,
 				EBA9AD2221EF273500E4D6CD /* Dashboard.swift in Sources */,
 				EBECC27721BA8AB400716BEA /* End.swift in Sources */,
+				EB4695EB2201A1200004C75D /* CircleLabelSmall.swift in Sources */,
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB17E81B21F5C6DE00FAADB1 /* Charity.swift in Sources */,
-				EBD6729121FA185400050E86 /* DeductibleCircle.swift in Sources */,
 				EBD672AB21FE226900050E86 /* LocalizationKey+String.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EBD6727921F8C02700050E86 /* CharityPicker.swift in Sources */,
@@ -1224,17 +1244,19 @@
 				EBA9AD1921EDE4D200E4D6CD /* EmailRow.swift in Sources */,
 				EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */,
 				EB7FEA8721AECA5B0027C9DE /* MarketingStory.swift in Sources */,
+				EB4695E62201A0F70004C75D /* MyPayment.swift in Sources */,
 				EB17E82221F5DEDC00FAADB1 /* CharityOption.swift in Sources */,
 				EBE09B4921EF82EF00EC864E /* TableViewFormStyle.swift in Sources */,
 				EBE09B5C21F0E74600EC864E /* ActivityView.swift in Sources */,
 				EBAFAB1D21ECC9070083E795 /* NameCircle.swift in Sources */,
-				EBD6729321FA185400050E86 /* PaymentDetailsSection.swift in Sources */,
 				EBAFAB0921EC9F930083E795 /* ProfileSection.swift in Sources */,
 				EBECC26E21BA70DA00716BEA /* UIView+addConstraint.swift in Sources */,
 				EB7FEAC321B56B860027C9DE /* Logo.swift in Sources */,
 				EBE09B5F21F4A38E00EC864E /* PDFViewer.swift in Sources */,
+				EB4695EC2201A1200004C75D /* CircleLabelWithSubLabel.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
 				EB00CBD221EBAACF002A263B /* TranslationsRepo.swift in Sources */,
+				EB4695E42201A0F70004C75D /* PaymentDetailsSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

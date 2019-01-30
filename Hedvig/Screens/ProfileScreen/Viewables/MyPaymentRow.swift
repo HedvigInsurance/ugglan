@@ -21,8 +21,8 @@ extension MyPaymentRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String.translation(.PROFILE_PAYMENT_ROW_HEADER),
-            subtitle: "\(monthlyCost) kr/XYZ • \(String.translation(.PROFILE_MY_PAYMENT_METHOD))",
+            title: String(.PROFILE_PAYMENT_ROW_HEADER),
+            subtitle: "\(monthlyCost) kr/XYZ • \(String(.PROFILE_MY_PAYMENT_METHOD))",
             iconAsset: Asset.payment
         )
 

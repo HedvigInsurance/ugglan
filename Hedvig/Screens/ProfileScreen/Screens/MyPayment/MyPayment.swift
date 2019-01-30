@@ -29,7 +29,7 @@ extension MyPayment: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String.translation(.MY_PAYMENT_TITLE)
+        viewController.title = String(.MY_PAYMENT_TITLE)
 
         let form = FormView()
         bag += viewController.install(form)

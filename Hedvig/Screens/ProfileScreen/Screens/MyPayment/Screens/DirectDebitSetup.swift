@@ -25,10 +25,10 @@ extension DirectDebitSetup: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
-        viewController.title = String.translation(.DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
+        viewController.title = String(.DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
         
         let dismissButton = UIBarButtonItem(
-            title: String.translation(.DIRECT_DEBIT_DISMISS_BUTTON),
+            title: String(.DIRECT_DEBIT_DISMISS_BUTTON),
             style: .navigationBarButton
         )
         bag += viewController.installDismissBarItem(dismissButton)
@@ -81,13 +81,13 @@ extension DirectDebitSetup: Presentable {
         return (viewController, Future { completion in
             bag += dismissButton.onValue {
                 let alert = Alert<Bool>.init(
-                    title: String.translation(.DIRECT_DEBIT_DISMISS_ALERT_TITLE),
-                    message: String.translation(.DIRECT_DEBIT_DISMISS_ALERT_MESSAGE),
+                    title: String(.DIRECT_DEBIT_DISMISS_ALERT_TITLE),
+                    message: String(.DIRECT_DEBIT_DISMISS_ALERT_MESSAGE),
                     actions: [
-                        Alert.Action(title: String.translation(.DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION)) {
+                        Alert.Action(title: String(.DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION)) {
                             true
                         },
-                        Alert.Action(title: String.translation(.DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION)) {
+                        Alert.Action(title: String(.DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION)) {
                             false
                         }
                     ]
