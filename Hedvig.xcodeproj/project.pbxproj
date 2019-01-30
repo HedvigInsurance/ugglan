@@ -60,6 +60,8 @@
 		EB4695EB2201A1200004C75D /* CircleLabelSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695E92201A11F0004C75D /* CircleLabelSmall.swift */; };
 		EB4695EC2201A1200004C75D /* CircleLabelWithSubLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695EA2201A1200004C75D /* CircleLabelWithSubLabel.swift */; };
 		EB4695EE2201A16C0004C75D /* WKWebView+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4695ED2201A16C0004C75D /* WKWebView+Signal.swift */; };
+		EB547C662201A312001E6BEB /* BankDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB547C642201A312001E6BEB /* BankDetailsSection.swift */; };
+		EB547C672201A312001E6BEB /* BankRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB547C652201A312001E6BEB /* BankRow.swift */; };
 		EB5ED9CF21985D4B004CE441 /* HedvigColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */; };
 		EB5ED9D5219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
 		EB5ED9D6219860DF004CE441 /* SoRay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */; };
@@ -228,6 +230,8 @@
 		EB4695E92201A11F0004C75D /* CircleLabelSmall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
 		EB4695EA2201A1200004C75D /* CircleLabelWithSubLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelWithSubLabel.swift; sourceTree = "<group>"; };
 		EB4695ED2201A16C0004C75D /* WKWebView+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "WKWebView+Signal.swift"; path = "Hedvig/Generic/Extensions/WKWebView+Signal.swift"; sourceTree = SOURCE_ROOT; };
+		EB547C642201A312001E6BEB /* BankDetailsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BankDetailsSection.swift; sourceTree = "<group>"; };
+		EB547C652201A312001E6BEB /* BankRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BankRow.swift; sourceTree = "<group>"; };
 		EB5ED9CE21985D4B004CE441 /* HedvigColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		EB5ED9D1219860DE004CE441 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		EB5ED9D2219860DE004CE441 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
@@ -605,6 +609,8 @@
 		EB4695DA2201A0F70004C75D /* PaymentDetailsSection */ = {
 			isa = PBXGroup;
 			children = (
+				EB547C642201A312001E6BEB /* BankDetailsSection.swift */,
+				EB547C652201A312001E6BEB /* BankRow.swift */,
 				EB4695DB2201A0F70004C75D /* PaymentDetailsSection.swift */,
 				EB4695DC2201A0F70004C75D /* PaymentRow.swift */,
 			);
@@ -1183,6 +1189,7 @@
 				EBECC26A21B9677800716BEA /* Chat.swift in Sources */,
 				EBC049CC219B58F900AFC30F /* UIView+RadiusMask.swift in Sources */,
 				EB00CBB221DFF144002A263B /* CircleLabel.swift in Sources */,
+				EB547C672201A312001E6BEB /* BankRow.swift in Sources */,
 				EBE09B4D21EFCCEF00EC864E /* ButtonRow.swift in Sources */,
 				EBAFAB2921ED0E6F0083E795 /* Previewable.swift in Sources */,
 				EBE09B5521F0B2E600EC864E /* InsuranceCertificateRow.swift in Sources */,
@@ -1256,6 +1263,7 @@
 				EB4695EC2201A1200004C75D /* CircleLabelWithSubLabel.swift in Sources */,
 				EB75E15521930A94006B5CE4 /* AppDelegate.swift in Sources */,
 				EB00CBD221EBAACF002A263B /* TranslationsRepo.swift in Sources */,
+				EB547C662201A312001E6BEB /* BankDetailsSection.swift in Sources */,
 				EB4695E42201A0F70004C75D /* PaymentDetailsSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
