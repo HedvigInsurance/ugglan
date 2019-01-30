@@ -7,6 +7,9 @@ project.name = "ugglan"
 project.class_prefix = "CMN"
 project.organization = "Hedvig AB"
 
+project.debug_configuration :Debug
+project.release_configuration :Release
+
 project.all_configurations.each do |configuration|
     configuration.settings["ENABLE_BITCODE"] = "YES"
 
@@ -47,7 +50,7 @@ project.all_configurations.each do |configuration|
 
     configuration.settings["SWIFT_VERSION"] = currentSwiftVersion
 
-    if configuration.name == "RC" || configuration.name == "AppStore"
+    if configuration.name == "Release"
 
         configuration.settings["DEBUG_INFORMATION_FORMAT"] = "dwarf-with-dsym"
         configuration.settings["SWIFT_OPTIMIZATION_LEVEL"] = "-Owholemodule" # Xcode 8
