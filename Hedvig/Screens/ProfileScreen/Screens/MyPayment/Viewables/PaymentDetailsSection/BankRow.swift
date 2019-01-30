@@ -10,14 +10,14 @@ import Flow
 import Form
 import Foundation
 
-struct PaymentRow {}
+struct BankRow {}
 
-extension PaymentRow: Viewable {
+extension BankRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
+        let row = RowView(title: "SEB", style: .rowTitle)
 
-        let row = RowView(title: "Autogiro", style: .rowTitle)
-        row.append("Den 27:e varje månad", style: .rowTitleDisabled)
+        row.append("*** 8672", style: .rowTitleDisabled)
 
         return (row, bag)
     }

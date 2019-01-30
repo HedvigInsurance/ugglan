@@ -10,22 +10,22 @@ import Flow
 import Form
 import Foundation
 
-struct PaymentDetailsSection {
+struct BankDetailsSection {
     let insurance: ProfileQuery.Data.Insurance
 }
 
-extension PaymentDetailsSection: Viewable {
+extension BankDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String.translation(.MY_PAYMENT_PAYMENT_ROW_LABEL),
+            header: String.translation(.MY_PAYMENT_BANK_ROW_LABEL),
             footer: nil,
             style: .sectionPlain
         )
 
-        let paymentRow = PaymentRow()
-        bag += section.append(paymentRow)
+        let bankRow = BankRow()
+        bag += section.append(bankRow)
 
         return (section, bag)
     }
