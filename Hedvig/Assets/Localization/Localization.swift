@@ -66,8 +66,8 @@ public struct Localization {
         case OFFER_PERILS_EXPLAINER
         /// <null>
         case DOWNLOAD_INPUT_TITLE
-        /// <null>
-        case OFFER_SUMMARY_PRICE_LABEL
+        /// Shows currency and interval
+        case PAYMENT_CURRENCY_OCCURRENCE
         /// <null>
         case SIGN_BANKID_USER_CANCEL
         /// <null>
@@ -258,6 +258,36 @@ public struct Localization {
         case MY_PAYMENT_PAYMENT_ROW_LABEL
         /// Label for Bank row in "My payment" view
         case MY_PAYMENT_BANK_ROW_LABEL
+        /// Title for section showing all available charity options
+        case CHARITY_OPTIONS_HEADER_TITLE
+        /// Title of my charity screen
+        case MY_CHARITY_SCREEN_TITLE
+        /// Row subtitle to show when the user hasn't selected a charity
+        case PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE
+        /// Heading that is shown when setting up direct debit has failed.
+        case DIRECT_DEBIT_FAIL_HEADING
+        /// Message that is shown when direct debit setup failed.
+        case DIRECT_DEBIT_FAIL_MESSAGE
+        /// Button on direct debit fail screen that takes you back to my payment.
+        case DIRECT_DEBIT_FAIL_BUTTON
+        /// Heading on direct debit success view.
+        case DIRECT_DEBIT_SUCCESS_HEADING
+        /// Success message that is shown to a user who has just nominated their bank account.
+        case DIRECT_DEBIT_SUCCESS_MESSAGE
+        /// Button that takes you back to my payment that is shown after a user has successfully nominated their bank account.
+        case DIRECT_DEBIT_SUCCESS_BUTTON
+        /// Button that cancels direct debit flow.
+        case DIRECT_DEBIT_DISMISS_BUTTON
+        /// Title of direct debit setup screen when a user already has a bank account.
+        case DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE
+        /// Title of alert after user has clicked the dismiss button.
+        case DIRECT_DEBIT_DISMISS_ALERT_TITLE
+        /// Message that is shown inside an alert when the user clicked the dismiss button.
+        case DIRECT_DEBIT_DISMISS_ALERT_MESSAGE
+        /// Action that confirms that the user want's to dismiss.
+        case DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION
+        /// Button that cancels the alert and keeps the user on the same screen.
+        case DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION
     }
 
     struct Translations {
@@ -273,8 +303,8 @@ public struct Localization {
                     Försäkringsförslag
                     """
 
-                case .OFFER_SUMMARY_PRICE_LABEL:
-                    if let text = TranslationsRepo.find(.OFFER_SUMMARY_PRICE_LABEL) {
+                case .PAYMENT_CURRENCY_OCCURRENCE:
+                    if let text = TranslationsRepo.find(.PAYMENT_CURRENCY_OCCURRENCE) {
                         return text
                     }
 
@@ -306,7 +336,7 @@ public struct Localization {
                     }
 
                     return """
-                    Självrisk
+                    Självrisk 1500 kr
                     """
 
                 case .OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE:
@@ -1308,6 +1338,141 @@ public struct Localization {
                     return """
                     Bank
                     """
+
+                case .CHARITY_OPTIONS_HEADER_TITLE:
+                    if let text = TranslationsRepo.find(.CHARITY_OPTIONS_HEADER_TITLE) {
+                        return text
+                    }
+
+                    return """
+                    Välgörenhetsorganisationer
+                    """
+
+                case .MY_CHARITY_SCREEN_TITLE:
+                    if let text = TranslationsRepo.find(.MY_CHARITY_SCREEN_TITLE) {
+                        return text
+                    }
+
+                    return """
+                    Min välgörenhetsorganisation
+                    """
+
+                case .PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE:
+                    if let text = TranslationsRepo.find(.PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE) {
+                        return text
+                    }
+
+                    return """
+                    Ingen välgörenhet vald
+                    """
+
+                case .DIRECT_DEBIT_FAIL_HEADING:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_FAIL_HEADING) {
+                        return text
+                    }
+
+                    return """
+                    Något gick snett!
+                    """
+
+                case .DIRECT_DEBIT_FAIL_MESSAGE:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_FAIL_MESSAGE) {
+                        return text
+                    }
+
+                    return """
+                    På grund av ett tekniskt fel kunde inte ditt bankkonto uppdateras. Försök igen eller skriv till Hedvig i chatten.
+                    """
+
+                case .DIRECT_DEBIT_FAIL_BUTTON:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_FAIL_BUTTON) {
+                        return text
+                    }
+
+                    return """
+                    Tillbaka
+                    """
+
+                case .DIRECT_DEBIT_SUCCESS_HEADING:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_SUCCESS_HEADING) {
+                        return text
+                    }
+
+                    return """
+                    Kontobyte klart!
+                    """
+
+                case .DIRECT_DEBIT_SUCCESS_MESSAGE:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_SUCCESS_MESSAGE) {
+                        return text
+                    }
+
+                    return """
+                    Ditt bankkonto är nu uppdaterat och kommer synas inom kort. Nästa betalning kommer att dras från ditt nya bankkonto.
+                    """
+
+                case .DIRECT_DEBIT_SUCCESS_BUTTON:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_SUCCESS_BUTTON) {
+                        return text
+                    }
+
+                    return """
+                    Tillbaka
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_BUTTON:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_BUTTON) {
+                        return text
+                    }
+
+                    return """
+                    Avbryt
+                    """
+
+                case .DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE) {
+                        return text
+                    }
+
+                    return """
+                    Ändra bankkonto
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_ALERT_TITLE:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_ALERT_TITLE) {
+                        return text
+                    }
+
+                    return """
+                    Är du säker?
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_ALERT_MESSAGE:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_ALERT_MESSAGE) {
+                        return text
+                    }
+
+                    return """
+                    Du har ännu inte satt upp din betalning.
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION) {
+                        return text
+                    }
+
+                    return """
+                    Ja
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION) {
+                        return text
+                    }
+
+                    return """
+                    Nej
+                    """
                 default: return String(describing: key)
                 }
             }
@@ -1323,6 +1488,24 @@ public struct Localization {
 
                     return """
                     Your home insurance
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION) {
+                        return text
+                    }
+
+                    return """
+                    No
+                    """
+
+                case .DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION:
+                    if let text = TranslationsRepo.find(.DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION) {
+                        return text
+                    }
+
+                    return """
+                    Yes
                     """
                 default: return String(describing: key)
                 }

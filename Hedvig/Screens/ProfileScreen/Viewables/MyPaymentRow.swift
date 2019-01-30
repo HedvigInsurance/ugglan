@@ -22,8 +22,9 @@ extension MyPaymentRow: Viewable {
 
         let row = IconRow(
             title: String.translation(.PROFILE_PAYMENT_ROW_HEADER),
-            subtitle: "\(monthlyCost) kr/XYZ • \(String.translation(.PROFILE_MY_PAYMENT_METHOD))",
-            iconAsset: Asset.payment
+            subtitle: "\(monthlyCost) \(String.translation(.PAYMENT_CURRENCY_OCCURRENCE)) · \(String.translation(.PROFILE_MY_PAYMENT_METHOD))",
+            iconAsset: Asset.payment,
+            options: [.withArrow]
         )
 
         bag += events.onSelect.onValue {
