@@ -29,7 +29,7 @@ extension Charity: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = String.translation(.MY_CHARITY_SCREEN_TITLE)
+        viewController.title = String(.MY_CHARITY_SCREEN_TITLE)
 
         let containerView = UIView()
         containerView.backgroundColor = .offWhite

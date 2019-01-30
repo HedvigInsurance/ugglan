@@ -60,7 +60,7 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
 
         bag += UIViewController._previewingContextDelegates[sourceView]!.set {
             () -> AnyPresentable<UIViewController, Disposable> in
-            return AnyPresentable {
+            AnyPresentable {
                 let (viewController, future) = presentable.materialize()
 
                 let autoPopFuture = future.onValue { _ in
@@ -127,7 +127,7 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
 
         bag += UIViewController._previewingContextDelegates[sourceView]!.set {
             () -> AnyPresentable<UIViewController, Disposable> in
-            return AnyPresentable {
+            AnyPresentable {
                 let (viewController, disposable) = presentable.materialize()
                 let innerBag = bag.innerBag()
 

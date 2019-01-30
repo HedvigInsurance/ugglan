@@ -18,7 +18,7 @@ struct About {
 extension About: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String.translation(.ABOUT_SCREEN_TITLE)
+        viewController.title = String(.ABOUT_SCREEN_TITLE)
 
         let bag = DisposeBag()
 

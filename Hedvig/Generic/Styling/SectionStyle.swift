@@ -117,6 +117,6 @@ extension SectionStyle {
 
 extension DynamicSectionStyle {
     static let sectionPlain = DynamicSectionStyle { _ -> SectionStyle in
-        return .sectionPlain
+        .sectionPlain
     }
 }

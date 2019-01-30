@@ -22,7 +22,7 @@ struct EmailRow {
 extension EmailRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
-        let row = RowView(title: String.translation(.EMAIL_ROW_TITLE), style: .rowTitle)
+        let row = RowView(title: String(.EMAIL_ROW_TITLE), style: .rowTitle)
 
         let valueLabel = UILabel()
         row.append(valueLabel)
@@ -32,7 +32,7 @@ extension EmailRow: Viewable {
                 return StyledText(text: email, style: .rowTitle)
             }
 
-            return StyledText(text: String.translation(.EMAIL_ROW_EMPTY), style: .rowTitleDisabled)
+            return StyledText(text: String(.EMAIL_ROW_EMPTY), style: .rowTitleDisabled)
         }).bindTo(valueLabel, \.styledText)
 
         return (row, bag)

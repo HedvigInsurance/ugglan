@@ -18,7 +18,7 @@ extension Dashboard: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = "Dashboard"
+        viewController.title = String(.DASHBOARD_BANNER_ACTIVE_TITLE(firstName: "hej"))
 
         let view = UIView()
         view.backgroundColor = .purple
@@ -32,7 +32,7 @@ extension Dashboard: Presentable {
 extension Dashboard: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String.translation(.TAB_DASHBOARD_TITLE),
+            title: String(.TAB_DASHBOARD_TITLE),
             image: Asset.dashboardTab.image,
             selectedImage: nil
         )

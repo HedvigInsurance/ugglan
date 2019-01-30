@@ -25,7 +25,7 @@ extension MyInfo: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String.translation(.MY_INFO_TITLE)
+        viewController.title = String(.MY_INFO_TITLE)
 
         let form = FormView()
 

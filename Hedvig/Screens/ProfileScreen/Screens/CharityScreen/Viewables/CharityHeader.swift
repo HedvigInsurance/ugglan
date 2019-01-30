@@ -34,7 +34,7 @@ extension CharityHeader: Viewable {
 
         let multilineLabel = MultilineLabel(
             styledText: StyledText(
-                text: String.translation(.CHARITY_SCREEN_HEADER_MESSAGE),
+                text: String(.CHARITY_SCREEN_HEADER_MESSAGE),
                 style: .centeredBodyOffBlack
             )
         )

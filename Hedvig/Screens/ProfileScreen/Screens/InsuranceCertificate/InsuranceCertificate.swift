@@ -22,7 +22,7 @@ extension InsuranceCertificate: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String.translation(.MY_INSURANCE_CERTIFICATE_TITLE)
+        viewController.title = String(.MY_INSURANCE_CERTIFICATE_TITLE)
 
         let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)

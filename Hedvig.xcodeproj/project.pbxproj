@@ -22,7 +22,6 @@
 		EB00CBBD21E0F692002A263B /* SectionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBBC21E0F692002A263B /* SectionStyle.swift */; };
 		EB00CBC021E1F079002A263B /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBBE21E1F079002A263B /* Localization.swift */; };
 		EB00CBC121E1F079002A263B /* Localization.json in Resources */ = {isa = PBXBuildFile; fileRef = EB00CBBF21E1F079002A263B /* Localization.json */; };
-		EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */ = {isa = PBXBuildFile; fileRef = EB00CBC221E1F14E002A263B /* Localization.stencil */; };
 		EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC521E21D3A002A263B /* String+Translation.swift */; };
 		EB00CBC821EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC721EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift */; };
 		EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB00CBC921EB7207002A263B /* UITabBarController+Presentation.swift */; };
@@ -114,18 +113,8 @@
 		EBD6727F21F9B35B00050E86 /* CircleIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6727E21F9B35B00050E86 /* CircleIcon.swift */; };
 		EBD6728121F9C6E000050E86 /* Disposable+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728021F9C6E000050E86 /* Disposable+Array.swift */; };
 		EBD6728321F9CB9500050E86 /* UITableView+Viewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */; };
-		EBD6729121FA185400050E86 /* DeductibleCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728B21FA185400050E86 /* DeductibleCircle.swift */; };
-		EBD6729221FA185400050E86 /* MonthlyPaymentCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728C21FA185400050E86 /* MonthlyPaymentCircle.swift */; };
-		EBD6729321FA185400050E86 /* PaymentDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728E21FA185400050E86 /* PaymentDetailsSection.swift */; };
-		EBD6729421FA185400050E86 /* PaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6728F21FA185400050E86 /* PaymentRow.swift */; };
-		EBD6729521FA185400050E86 /* MyPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729021FA185400050E86 /* MyPayment.swift */; };
-		EBD6729821FA191000050E86 /* CircleLabelSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729621FA191000050E86 /* CircleLabelSmall.swift */; };
-		EBD6729921FA191000050E86 /* CircleLabelWithSubLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */; };
-		EBD6729B21FA193300050E86 /* MyPaymentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729A21FA193300050E86 /* MyPaymentRow.swift */; };
-		EBD6729E21FA1CFB00050E86 /* DirectDebitSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD6729D21FA1CFB00050E86 /* DirectDebitSetup.swift */; };
-		EBD672A221FB03FA00050E86 /* StartDirectDebitRegistration.graphql in Resources */ = {isa = PBXBuildFile; fileRef = EBD672A121FB03FA00050E86 /* StartDirectDebitRegistration.graphql */; };
-		EBD672A521FB2B2900050E86 /* DirectDebitResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672A421FB2B2900050E86 /* DirectDebitResult.swift */; };
-		EBD672A721FB5F7700050E86 /* WKWebView+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672A621FB5F7700050E86 /* WKWebView+Signal.swift */; };
+		EBD672A921FDECC100050E86 /* ButtonSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672A821FDECC100050E86 /* ButtonSection.swift */; };
+		EBD672AB21FE226900050E86 /* LocalizationKey+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD672AA21FE226900050E86 /* LocalizationKey+String.swift */; };
 		EBE09B3221EF622E00EC864E /* Licenses.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3121EF622E00EC864E /* Licenses.swift */; };
 		EBE09B3421EF628B00EC864E /* LicensesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE09B3321EF628B00EC864E /* LicensesRow.swift */; };
 		EBE09B3721EF649200EC864E /* Pods-Hedvig-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */; };
@@ -190,7 +179,6 @@
 		EB00CBBC21E0F692002A263B /* SectionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionStyle.swift; sourceTree = "<group>"; };
 		EB00CBBE21E1F079002A263B /* Localization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		EB00CBBF21E1F079002A263B /* Localization.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Localization.json; sourceTree = "<group>"; };
-		EB00CBC221E1F14E002A263B /* Localization.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = Localization.stencil; sourceTree = "<group>"; };
 		EB00CBC521E21D3A002A263B /* String+Translation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Translation.swift"; sourceTree = "<group>"; };
 		EB00CBC721EB7053002A263B /* ApolloClient+NetworkErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ApolloClient+NetworkErrorMessage.swift"; sourceTree = "<group>"; };
 		EB00CBC921EB7207002A263B /* UITabBarController+Presentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Presentation.swift"; sourceTree = "<group>"; };
@@ -281,18 +269,8 @@
 		EBD6727E21F9B35B00050E86 /* CircleIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleIcon.swift; sourceTree = "<group>"; };
 		EBD6728021F9C6E000050E86 /* Disposable+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Disposable+Array.swift"; sourceTree = "<group>"; };
 		EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Viewable.swift"; sourceTree = "<group>"; };
-		EBD6728B21FA185400050E86 /* DeductibleCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeductibleCircle.swift; sourceTree = "<group>"; };
-		EBD6728C21FA185400050E86 /* MonthlyPaymentCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthlyPaymentCircle.swift; sourceTree = "<group>"; };
-		EBD6728E21FA185400050E86 /* PaymentDetailsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentDetailsSection.swift; sourceTree = "<group>"; };
-		EBD6728F21FA185400050E86 /* PaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentRow.swift; sourceTree = "<group>"; };
-		EBD6729021FA185400050E86 /* MyPayment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPayment.swift; sourceTree = "<group>"; };
-		EBD6729621FA191000050E86 /* CircleLabelSmall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
-		EBD6729721FA191000050E86 /* CircleLabelWithSubLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleLabelWithSubLabel.swift; sourceTree = "<group>"; };
-		EBD6729A21FA193300050E86 /* MyPaymentRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPaymentRow.swift; sourceTree = "<group>"; };
-		EBD6729D21FA1CFB00050E86 /* DirectDebitSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitSetup.swift; sourceTree = "<group>"; };
-		EBD672A121FB03FA00050E86 /* StartDirectDebitRegistration.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = StartDirectDebitRegistration.graphql; sourceTree = "<group>"; };
-		EBD672A421FB2B2900050E86 /* DirectDebitResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitResult.swift; sourceTree = "<group>"; };
-		EBD672A621FB5F7700050E86 /* WKWebView+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKWebView+Signal.swift"; sourceTree = "<group>"; };
+		EBD672A821FDECC100050E86 /* ButtonSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSection.swift; sourceTree = "<group>"; };
+		EBD672AA21FE226900050E86 /* LocalizationKey+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocalizationKey+String.swift"; sourceTree = "<group>"; };
 		EBE09B3121EF622E00EC864E /* Licenses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Licenses.swift; sourceTree = "<group>"; };
 		EBE09B3321EF628B00EC864E /* LicensesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesRow.swift; sourceTree = "<group>"; };
 		EBE09B3621EF649000EC864E /* Pods-Hedvig-acknowledgements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Pods-Hedvig-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -431,7 +409,7 @@
 				EB17E81721F518A700FAADB1 /* UIViewController+Viewable.swift */,
 				EBD6728021F9C6E000050E86 /* Disposable+Array.swift */,
 				EBD6728221F9CB9500050E86 /* UITableView+Viewable.swift */,
-				EBD672A621FB5F7700050E86 /* WKWebView+Signal.swift */,
+				EBD672AA21FE226900050E86 /* LocalizationKey+String.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -458,7 +436,6 @@
 			children = (
 				EB00CBBF21E1F079002A263B /* Localization.json */,
 				EB00CBBE21E1F079002A263B /* Localization.swift */,
-				EB00CBC221E1F14E002A263B /* Localization.stencil */,
 			);
 			path = Localization;
 			sourceTree = "<group>";
@@ -476,6 +453,7 @@
 				EBE09B4C21EFCCEF00EC864E /* ButtonRow.swift */,
 				EB17E81F21F5CD2F00FAADB1 /* MultilineLabel.swift */,
 				EBD6727E21F9B35B00050E86 /* CircleIcon.swift */,
+				EBD672A821FDECC100050E86 /* ButtonSection.swift */,
 			);
 			path = Viewables;
 			sourceTree = "<group>";
@@ -901,6 +879,8 @@
 			buildConfigurationList = EB75E17921930A95006B5CE4 /* Build configuration list for PBXNativeTarget "Hedvig" */;
 			buildPhases = (
 				660C5C5DFB5E6A4FFA6C9CD0 /* [CP] Check Pods Manifest.lock */,
+				EB4695C4220065880004C75D /* Lint Swift */,
+				EB4695C6220067720004C75D /* Swiftgen */,
 				EB75E14D21930A94006B5CE4 /* Sources */,
 				EB75E14E21930A94006B5CE4 /* Frameworks */,
 				EB75E14F21930A94006B5CE4 /* Resources */,
@@ -989,7 +969,6 @@
 				EB75E15F21930A95006B5CE4 /* LaunchScreen.storyboard in Resources */,
 				EB75E15C21930A95006B5CE4 /* Assets.xcassets in Resources */,
 				EB7FEA8F21AFE76E0027C9DE /* MarketingStories.graphql in Resources */,
-				EB00CBC321E1F14E002A263B /* Localization.stencil in Resources */,
 				EB5ED9D9219860DF004CE441 /* Merriweather-Light.ttf in Resources */,
 				EBD6727421F71CC700050E86 /* SelectCharity.graphql in Resources */,
 				EB00CBD021EBAA53002A263B /* TranslationsQuery.graphql in Resources */,
@@ -1095,6 +1074,38 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		EB4695C4220065880004C75D /* Lint Swift */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Lint Swift";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint\n";
+		};
+		EB4695C6220067720004C75D /* Swiftgen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Swiftgen;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$PODS_ROOT/SwiftGen/bin/swiftgen\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1174,7 +1185,7 @@
 				EB00CBCC21EB8C0B002A263B /* UIViewController+Previewing.swift in Sources */,
 				EB989BAD21ABE62D00C6FFA5 /* MarketingPresentationStyle.swift in Sources */,
 				EB034C5921C8F00E00078D65 /* CenterAllStackView.swift in Sources */,
-				EBD6729821FA191000050E86 /* CircleLabelSmall.swift in Sources */,
+				EBD672A921FDECC100050E86 /* ButtonSection.swift in Sources */,
 				EBAFAB2121ECC9250083E795 /* ContactDetailsSection.swift in Sources */,
 				EB00CBC621E21D3A002A263B /* String+Translation.swift in Sources */,
 				EB00CBCA21EB7207002A263B /* UITabBarController+Presentation.swift in Sources */,
@@ -1186,6 +1197,7 @@
 				EB034CDE21C94A5200078D65 /* DeviceKit+RoundedCorners.swift in Sources */,
 				EB17E81B21F5C6DE00FAADB1 /* Charity.swift in Sources */,
 				EBD6729121FA185400050E86 /* DeductibleCircle.swift in Sources */,
+				EBD672AB21FE226900050E86 /* LocalizationKey+String.swift in Sources */,
 				EB7FEAAB21B145780027C9DE /* CoreSignal+Animation.swift in Sources */,
 				EBD6727921F8C02700050E86 /* CharityPicker.swift in Sources */,
 				EBE09B3921EF668B00EC864E /* OtherSection.swift in Sources */,
