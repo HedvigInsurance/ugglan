@@ -12,7 +12,6 @@ configurations:
       PROVISIONING_PROFILE_SPECIFIER: "Ugglan - AdHoc 2"
 targets:
   ugglan:
-    includes_cocoapods: true
     type: ":application"
     platform: ios
     sources: Src
@@ -24,7 +23,6 @@ targets:
       DEVELOPMENT_TEAM: "AW656G5PFM"
 schemes:
   Debug:
-    target: "ugglan"
     archive:
       name: ugglan.xcarchive
       reveal: true

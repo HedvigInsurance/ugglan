@@ -1,6 +1,8 @@
 platform :ios, '9.0'
 project 'project.xcodeproj'
 
+install! 'cocoapods', :integrate_targets => false 
+
 target 'ugglan' do
   use_frameworks!
   inhibit_all_warnings!
