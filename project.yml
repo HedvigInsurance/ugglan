@@ -1,0 +1,20 @@
+---
+version: 2.2.0
+configurations:
+  debug:
+    overrides:
+      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+  release:
+    overrides:
+      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+targets:
+  ugglan:
+    includes_cocoapods: true
+    type: ":application"
+    platform: ios
+    sources: Src
+    configuration:
+      INFOPLIST_FILE: Src/Info.plist
+      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      SWIFT_VERSION: "4.2"
+      PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"

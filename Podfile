@@ -1,4 +1,5 @@
 platform :ios, '9.0'
+project 'project.xcodeproj'
 
 target 'ugglan' do
   use_frameworks!
