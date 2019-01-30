@@ -29,6 +29,16 @@ schemes:
       name: ugglan.xcarchive
       reveal: true
       build_configuration: debug
+    build:
+      parallel: true
+      build_implicit: true
+      targets:
+        ugglan:
+          archiving_enabled: true
+          running_enabled: true
+          profiling_enabled: true
+          testing_enabled: false
+          analyzing_enabled: true
     launch:
       build_configuration: debug
       target: ugglan
@@ -40,6 +50,16 @@ schemes:
       name: ugglan.xcarchive
       reveal: true
       build_configuration: release
+    build:
+      parallel: true
+      build_implicit: true
+      targets:
+        ugglan:
+          archiving_enabled: true
+          running_enabled: true
+          profiling_enabled: true
+          testing_enabled: false
+          analyzing_enabled: true
     launch:
       build_configuration: release
       target: ugglan
