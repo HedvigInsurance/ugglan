@@ -9,6 +9,7 @@ configurations:
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
       CODE_SIGN_IDENTITY: "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution: Hedvig AB (AW656G5PFM)"
+      PROVISIONING_PROFILE_SPECIFIER: "Ugglan - AdHoc 2"
 targets:
   ugglan:
     includes_cocoapods: true
