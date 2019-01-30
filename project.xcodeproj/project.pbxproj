@@ -119,7 +119,7 @@
 		BCA6093EE3BF4A83CD38EF58 /* CenterAllStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0EBCA1566775C1DED45DC /* CenterAllStackView.swift */; };
 		C060307EAF6D1583D6C1348E /* CreateSession.graphql in Resources */ = {isa = PBXBuildFile; fileRef = E986B0859FBCF96373660C22 /* CreateSession.graphql */; };
 		C235988145596E84ABBACB26 /* Localization+CurrentLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A85DFD8F9AC5E451D6BE7C /* Localization+CurrentLanguage.swift */; };
-		C2B203DE2F4786E03BCCCF9B /* Pods-ugglan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA565E4685C0AB99793D3DC /* Pods-ugglan.framework */; };
+		C2B203DE2F4786E03BCCCF9B /* Pods_ugglan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA565E4685C0AB99793D3DC /* Pods_ugglan.framework */; };
 		C442DB62AB6E7F755B699D97 /* Launch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8751A2C067AC622A1C6AE1A5 /* Launch.swift */; };
 		C5A07C9192C32CD35C1A036B /* HomeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6664F3C67A20C10F892EB7 /* HomeRow.swift */; };
 		C6AE90AE13CBA01F684358C5 /* AboutRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7068914CCE4174FBD997B6 /* AboutRow.swift */; };
@@ -304,7 +304,7 @@
 		0D5A315B240D93DFE372B429 /* API.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		10ACDE84F4FF875465B80F4A /* Dashboard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
 		115EF9350BD7F83D98536208 /* MarketingStory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarketingStory.swift; sourceTree = "<group>"; };
-		119A4C3C713E0F0E2BF6706E /* TranslationsQuery.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = TranslationsQuery.graphql; sourceTree = "<group>"; };
+		119A4C3C713E0F0E2BF6706E /* TranslationsQuery.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = TranslationsQuery.graphql; sourceTree = "<group>"; };
 		151B5F5E23F7F30F8DAAC29C /* ApolloClient+NetworkErrorMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ApolloClient+NetworkErrorMessage.swift"; sourceTree = "<group>"; };
 		15F3780B496898142AA7AC06 /* MonthlyPaymentCircle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonthlyPaymentCircle.swift; sourceTree = "<group>"; };
 		17C019E91C1DCCBEDA77D9E0 /* DirectDebitResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitResult.swift; sourceTree = "<group>"; };
@@ -318,8 +318,8 @@
 		1CE31B043DD3CF7F0FB8017C /* Marketing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Marketing.swift; sourceTree = "<group>"; };
 		1F4CE3AF02F7BB9DB4DD29FE /* Assets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		20553440714B6EDAB5ADF4FA /* SignalProvider+LazyBindTo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "SignalProvider+LazyBindTo.swift"; sourceTree = "<group>"; };
-		23F15162C0208B58AF680406 /* MyInfo.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = MyInfo.graphql; sourceTree = "<group>"; };
-		26E9AC2BA6B650ED70BF120D /* Localization.json */ = {isa = PBXFileReference; includeInIndex = 1; path = Localization.json; sourceTree = "<group>"; };
+		23F15162C0208B58AF680406 /* MyInfo.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = MyInfo.graphql; sourceTree = "<group>"; };
+		26E9AC2BA6B650ED70BF120D /* Localization.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = Localization.json; sourceTree = "<group>"; };
 		27AE3E41F4CF0ABBA9CD9FC1 /* ChatPresentationStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatPresentationStyle.swift; sourceTree = "<group>"; };
 		27CE55E2794E379020E3ED13 /* SayHello.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SayHello.swift; sourceTree = "<group>"; };
 		2A0CA1468279004B89EA1062 /* EmailRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmailRow.swift; sourceTree = "<group>"; };
@@ -328,7 +328,7 @@
 		2B7E4A4A73A1DAE1B9551720 /* DelayedDisposer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DelayedDisposer.swift; sourceTree = "<group>"; };
 		2C235BF3560FB14F57763FC4 /* MyPayment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyPayment.swift; sourceTree = "<group>"; };
 		2DD5B0D55C06FB2799F6F847 /* LoggedIn.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoggedIn.swift; sourceTree = "<group>"; };
-		2DEC2F1C0B306A41C8972AD5 /* MarketingStories.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = MarketingStories.graphql; sourceTree = "<group>"; };
+		2DEC2F1C0B306A41C8972AD5 /* MarketingStories.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = MarketingStories.graphql; sourceTree = "<group>"; };
 		2E6A4DD898D64267DBB75F81 /* SkipToNextButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkipToNextButton.swift; sourceTree = "<group>"; };
 		2F58EA5AB0C14F1BDCD202EE /* UITableView+Viewable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "UITableView+Viewable.swift"; sourceTree = "<group>"; };
 		32015F894C2C5903A44D96A4 /* ProfileSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileSection.swift; sourceTree = "<group>"; };
@@ -340,7 +340,7 @@
 		42861AAC7505D63D546B84E0 /* SectionView+Viewable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "SectionView+Viewable.swift"; sourceTree = "<group>"; };
 		46A85DFD8F9AC5E451D6BE7C /* Localization+CurrentLanguage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Localization+CurrentLanguage.swift"; sourceTree = "<group>"; };
 		475902171912E19726748BB2 /* MultilineLabel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultilineLabel.swift; sourceTree = "<group>"; };
-		49AC16F6ADAF731C08363593 /* SelectCharity.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = SelectCharity.graphql; sourceTree = "<group>"; };
+		49AC16F6ADAF731C08363593 /* SelectCharity.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = SelectCharity.graphql; sourceTree = "<group>"; };
 		4ADDCB4C8B7EA0E2868A5A65 /* DynamicString.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DynamicString.swift; sourceTree = "<group>"; };
 		4D14C4358E5887F7E16ADDED /* Callbacker+Signal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Callbacker+Signal.swift"; sourceTree = "<group>"; };
 		4D542CB9994567AAF8E301EF /* MarketingStoryIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarketingStoryIndicator.swift; sourceTree = "<group>"; };
@@ -359,7 +359,7 @@
 		6410E45F2BD344418DD35225 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		64C99DCE4CAFC4CA6D22B67D /* TextStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		72B88B6EE553A92939E7973C /* UIViewController+Viewable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "UIViewController+Viewable.swift"; sourceTree = "<group>"; };
-		73D5A1F5E3BA10E230D58089 /* CircularStd-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "CircularStd-Bold.ttf"; sourceTree = "<group>"; };
+		73D5A1F5E3BA10E230D58089 /* CircularStd-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "CircularStd-Bold.ttf"; sourceTree = "<group>"; };
 		73DBD2F5C8B954A113385938 /* Disposable+Array.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Disposable+Array.swift"; sourceTree = "<group>"; };
 		74F9D35F1B9A615C62681FC0 /* AnimationStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnimationStyle.swift; sourceTree = "<group>"; };
 		75D3A3F9484346486BCA353A /* ButtonStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
@@ -389,9 +389,9 @@
 		98D121F6D51B245168C9BEAC /* CellForRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CellForRow.swift; sourceTree = "<group>"; };
 		9AB2D1AA07C7863F709EA3CE /* SectionStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SectionStyle.swift; sourceTree = "<group>"; };
 		9CD1D2B93C83E15F88C8EBFF /* CharityOption.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CharityOption.swift; sourceTree = "<group>"; };
-		A059EC7706AD52A9ACDB35D0 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
+		A059EC7706AD52A9ACDB35D0 /* CircularStd-Book.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "CircularStd-Book.ttf"; sourceTree = "<group>"; };
 		A22995D6917DA75814AAFA3E /* End.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = End.swift; sourceTree = "<group>"; };
-		A295F57DD6236C503BE9F81A /* schema.json */ = {isa = PBXFileReference; includeInIndex = 1; path = schema.json; sourceTree = "<group>"; };
+		A295F57DD6236C503BE9F81A /* schema.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		A5A23DBC8761B62A4E2729ED /* HedvigColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HedvigColors.swift; sourceTree = "<group>"; };
 		A60591BCA986095990ACE186 /* UIView+RelativeFrame.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "UIView+RelativeFrame.swift"; sourceTree = "<group>"; };
 		A8DFB2033525009CF63CA75B /* CollectionKit+ScrollTo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CollectionKit+ScrollTo.swift"; sourceTree = "<group>"; };
@@ -411,31 +411,31 @@
 		C6C0CE0036C73C0D16ABED5A /* ButtonRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButtonRow.swift; sourceTree = "<group>"; };
 		CB093A661AB4AD3B9DF4971D /* VersionRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VersionRow.swift; sourceTree = "<group>"; };
 		CC6664F3C67A20C10F892EB7 /* HomeRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeRow.swift; sourceTree = "<group>"; };
-		CE73E30203125886B80A97EC /* CharityOptions.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = CharityOptions.graphql; sourceTree = "<group>"; };
+		CE73E30203125886B80A97EC /* CharityOptions.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = CharityOptions.graphql; sourceTree = "<group>"; };
 		CEB34001CB21FDAA4916CE75 /* About.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = About.swift; sourceTree = "<group>"; };
 		CEEB146B152A226DED462C2A /* DirectDebitSetup.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitSetup.swift; sourceTree = "<group>"; };
-		CF4652D2E5387BED1C121A33 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
+		CF4652D2E5387BED1C121A33 /* SoRay-ExtraBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "SoRay-ExtraBold.ttf"; sourceTree = "<group>"; };
 		D096790CCBC66E832E2FF26D /* SharedElement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedElement.swift; sourceTree = "<group>"; };
 		D101EB20C3F5C7AF13EA8EDE /* Stories.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
 		D4069C80880D7664F2EDB59D /* MemberActionButtons.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MemberActionButtons.swift; sourceTree = "<group>"; };
 		D4FA23FE1432486952168012 /* InsuranceCertificate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsuranceCertificate.swift; sourceTree = "<group>"; };
 		D543278F43F05046B9D172E5 /* InsuranceCertificateRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsuranceCertificateRow.swift; sourceTree = "<group>"; };
-		DACED6A3D1CD2D99EFCC90A8 /* Profile.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = Profile.graphql; sourceTree = "<group>"; };
+		DACED6A3D1CD2D99EFCC90A8 /* Profile.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = Profile.graphql; sourceTree = "<group>"; };
 		DCE6EF5A7293778B7F7D7A4E /* Localization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		E41D23E0017D2F004CBEE818 /* MyCharityRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyCharityRow.swift; sourceTree = "<group>"; };
-		E4BC48D64DE84AC27B3CB928 /* Merriweather-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "Merriweather-Light.ttf"; sourceTree = "<group>"; };
+		E4BC48D64DE84AC27B3CB928 /* Merriweather-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; path = "Merriweather-Light.ttf"; sourceTree = "<group>"; };
 		E4CF3E524ACDB7A430C3EB54 /* ApolloClient+Flow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ApolloClient+Flow.swift"; sourceTree = "<group>"; };
 		E5489EDB6344A798FA643A66 /* SpringAnimationStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpringAnimationStyle.swift; sourceTree = "<group>"; };
 		E64D9E27E3CAE1D05885DA37 /* HappyAvatar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HappyAvatar.swift; sourceTree = "<group>"; };
 		E7FE91B576FD9431A69F630E /* ActivityView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
-		E82F931DFFDFA61545DC83BC /* StartDirectDebitRegistration.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = StartDirectDebitRegistration.graphql; sourceTree = "<group>"; };
+		E82F931DFFDFA61545DC83BC /* StartDirectDebitRegistration.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = StartDirectDebitRegistration.graphql; sourceTree = "<group>"; };
 		E84236C27AE571A421BBDC61 /* Charity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Charity.swift; sourceTree = "<group>"; };
 		E88F17793062AF7BEAEAD0CE /* Spacing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
-		E986B0859FBCF96373660C22 /* CreateSession.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = CreateSession.graphql; sourceTree = "<group>"; };
+		E986B0859FBCF96373660C22 /* CreateSession.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = CreateSession.graphql; sourceTree = "<group>"; };
 		ED179DBE33A06E6D34235E68 /* Pods-ugglan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Pods-ugglan.framework"; path = "Pods/Pods-ugglan.framework"; sourceTree = "<group>"; };
 		F05623C25CC6B0FB760BDA05 /* MyInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyInfo.swift; sourceTree = "<group>"; };
 		F566022A79247D3E070A7BCE /* CircleLabelSmall.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CircleLabelSmall.swift; sourceTree = "<group>"; };
-		F612D2A1EDD72167F4479279 /* SelectedCharity.graphql */ = {isa = PBXFileReference; includeInIndex = 1; path = SelectedCharity.graphql; sourceTree = "<group>"; };
+		F612D2A1EDD72167F4479279 /* SelectedCharity.graphql */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = SelectedCharity.graphql; sourceTree = "<group>"; };
 		F814909EDB9A2343CC242753 /* ContactDetailsSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContactDetailsSection.swift; sourceTree = "<group>"; };
 		FAEB8A2A7DD7704BDD096A13 /* UIViewController+Previewing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "UIViewController+Previewing.swift"; sourceTree = "<group>"; };
 		FB1B50E34BC7F8CB0C0E4BF3 /* Viewable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Viewable.swift; sourceTree = "<group>"; };
@@ -452,7 +452,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2B4E56C752E554E325F8ECE /* Foundation.framework in Frameworks */,
-				C2B203DE2F4786E03BCCCF9B /* Pods-ugglan.framework in Frameworks */,
+				C2B203DE2F4786E03BCCCF9B /* Pods_ugglan.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,7 +465,6 @@
 				CEEB146B152A226DED462C2A /* DirectDebitSetup.swift */,
 				1E31AD24ED954CE31A71C937 /* Viewables */,
 			);
-			name = Screens;
 			path = Screens;
 			sourceTree = "<group>";
 		};
@@ -475,7 +474,6 @@
 				CB093A661AB4AD3B9DF4971D /* VersionRow.swift */,
 				5F8F9926484AEF9E0EFB6A1C /* LicensesRow.swift */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -486,7 +484,6 @@
 				86A77199B119D5A596F2DC2D /* Profile.swift */,
 				9BE9EC1B75657F76A13A352C /* Screens */,
 			);
-			name = ProfileScreen;
 			path = ProfileScreen;
 			sourceTree = "<group>";
 		};
@@ -495,7 +492,7 @@
 			children = (
 				ED179DBE33A06E6D34235E68 /* Pods-ugglan.framework */,
 			);
-			name = "$local";
+			name = $local;
 			sourceTree = "<group>";
 		};
 		182532EACABDDA8F41DD7533 /* Data */ = {
@@ -507,7 +504,6 @@
 				0D5A315B240D93DFE372B429 /* API.swift */,
 				98A1C0F15059D040730436E6 /* HedvigApolloClient.swift */,
 			);
-			name = Data;
 			path = Data;
 			sourceTree = "<group>";
 		};
@@ -516,7 +512,6 @@
 			children = (
 				17C019E91C1DCCBEDA77D9E0 /* DirectDebitResult.swift */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -527,7 +522,6 @@
 				E84236C27AE571A421BBDC61 /* Charity.swift */,
 				9CD1D2B93C83E15F88C8EBFF /* CharityOption.swift */,
 			);
-			name = CharityScreen;
 			path = CharityScreen;
 			sourceTree = "<group>";
 		};
@@ -537,7 +531,6 @@
 				98D121F6D51B245168C9BEAC /* CellForRow.swift */,
 				C64D7393AF9177AA57574CC6 /* Previewable.swift */,
 			);
-			name = Protocols;
 			path = Protocols;
 			sourceTree = "<group>";
 		};
@@ -550,7 +543,6 @@
 				182532EACABDDA8F41DD7533 /* Data */,
 				B0C0FF14E151BAD27EE2EE26 /* Assets */,
 			);
-			name = Src;
 			path = Src;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -561,7 +553,6 @@
 				CEB34001CB21FDAA4916CE75 /* About.swift */,
 				C38560D22E9A579CBC6FD5C8 /* Screens */,
 			);
-			name = AboutScreen;
 			path = AboutScreen;
 			sourceTree = "<group>";
 		};
@@ -570,7 +561,6 @@
 			children = (
 				FD84EAEC38A5A3629C5E3452 /* Icon.swift */,
 			);
-			name = Icons;
 			path = Icons;
 			sourceTree = "<group>";
 		};
@@ -579,7 +569,6 @@
 			children = (
 				764F3F87AC9D476FCD633D0F /* BubbleLoading.swift */,
 			);
-			name = BubbleLoadingScreen;
 			path = BubbleLoadingScreen;
 			sourceTree = "<group>";
 		};
@@ -606,7 +595,6 @@
 				CE73E30203125886B80A97EC /* CharityOptions.graphql */,
 				E986B0859FBCF96373660C22 /* CreateSession.graphql */,
 			);
-			name = GraphQL;
 			path = GraphQL;
 			sourceTree = "<group>";
 		};
@@ -616,7 +604,6 @@
 				5FC264BEE2BF3E2411F0DD89 /* Viewables */,
 				F05623C25CC6B0FB760BDA05 /* MyInfo.swift */,
 			);
-			name = MyInfo;
 			path = MyInfo;
 			sourceTree = "<group>";
 		};
@@ -625,7 +612,6 @@
 			children = (
 				B5B0EBCA1566775C1DED45DC /* CenterAllStackView.swift */,
 			);
-			name = Views;
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -636,7 +622,6 @@
 				2C235BF3560FB14F57763FC4 /* MyPayment.swift */,
 				00FD34DB568A08C051952C13 /* Screens */,
 			);
-			name = MyPayment;
 			path = MyPayment;
 			sourceTree = "<group>";
 		};
@@ -645,7 +630,6 @@
 			children = (
 				10ACDE84F4FF875465B80F4A /* Dashboard.swift */,
 			);
-			name = DashboardScreen;
 			path = DashboardScreen;
 			sourceTree = "<group>";
 		};
@@ -656,7 +640,6 @@
 				15F3780B496898142AA7AC06 /* MonthlyPaymentCircle.swift */,
 				BDB4EFB62A66B807EA124ABC /* PaymentDetailsSection */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -673,7 +656,6 @@
 				D543278F43F05046B9D172E5 /* InsuranceCertificateRow.swift */,
 				CC6664F3C67A20C10F892EB7 /* HomeRow.swift */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -686,7 +668,6 @@
 				9AB2D1AA07C7863F709EA3CE /* SectionStyle.swift */,
 				75D3A3F9484346486BCA353A /* ButtonStyle.swift */,
 			);
-			name = Styling;
 			path = Styling;
 			sourceTree = "<group>";
 		};
@@ -696,7 +677,6 @@
 				A8963387E2A3481F5F7692EB /* ContactDetailsSection */,
 				56FEF58C234247BB8EC5E20C /* NameCircle.swift */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -712,7 +692,6 @@
 				867DF3DE36B4A53CAF7B8956 /* LoadingIndicator.swift */,
 				C47A4B2386A7C111B61317D9 /* SkipButtons */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -722,7 +701,6 @@
 				FB21F1485EB19C1C8A973B67 /* Chat.swift */,
 				27AE3E41F4CF0ABBA9CD9FC1 /* ChatPresentationStyle.swift */,
 			);
-			name = ChatScreen;
 			path = ChatScreen;
 			sourceTree = "<group>";
 		};
@@ -731,7 +709,6 @@
 			children = (
 				D4FA23FE1432486952168012 /* InsuranceCertificate.swift */,
 			);
-			name = InsuranceCertificate;
 			path = InsuranceCertificate;
 			sourceTree = "<group>";
 		};
@@ -744,7 +721,6 @@
 				D096790CCBC66E832E2FF26D /* SharedElement.swift */,
 				E5489EDB6344A798FA643A66 /* SpringAnimationStyle.swift */,
 			);
-			name = Animations;
 			path = Animations;
 			sourceTree = "<group>";
 		};
@@ -753,7 +729,6 @@
 			children = (
 				8751A2C067AC622A1C6AE1A5 /* Launch.swift */,
 			);
-			name = LaunchScreen;
 			path = LaunchScreen;
 			sourceTree = "<group>";
 		};
@@ -777,7 +752,6 @@
 				4D542CB9994567AAF8E301EF /* MarketingStoryIndicator.swift */,
 				1CE31B043DD3CF7F0FB8017C /* Marketing.swift */,
 			);
-			name = MarketingScreen;
 			path = MarketingScreen;
 			sourceTree = "<group>";
 		};
@@ -790,7 +764,6 @@
 				280335365513470B891755DA /* AboutScreen */,
 				6A224737AC74F795FDDCFDA4 /* InsuranceCertificate */,
 			);
-			name = Screens;
 			path = Screens;
 			sourceTree = "<group>";
 		};
@@ -801,7 +774,6 @@
 				B813B2FDBE5F0B5159CBA735 /* PhoneNumberRow.swift */,
 				F814909EDB9A2343CC242753 /* ContactDetailsSection.swift */,
 			);
-			name = ContactDetailsSection;
 			path = ContactDetailsSection;
 			sourceTree = "<group>";
 		};
@@ -822,7 +794,6 @@
 				78F6265B6E1F076F60EEFC39 /* NewMemberButton.swift */,
 				87B6EE3C50CC54C3C0CA11C3 /* ExistingMemberButton.swift */,
 			);
-			name = MemberActionButtons;
 			path = MemberActionButtons;
 			sourceTree = "<group>";
 		};
@@ -837,7 +808,6 @@
 				F5D56D4F44CE2FC3CD1873DF /* Fonts */,
 				C12F3002D6D732CB90E440DB /* Localization */,
 			);
-			name = Assets;
 			path = Assets;
 			sourceTree = "<group>";
 		};
@@ -860,7 +830,6 @@
 				2C76E7FF214B8AC7B68539E5 /* BubbleLoadingScreen */,
 				629D1C9D4CDAD059292F9F0E /* ChatScreen */,
 			);
-			name = Screens;
 			path = Screens;
 			sourceTree = "<group>";
 		};
@@ -872,7 +841,6 @@
 				00B4863F9AE6DB303CD35592 /* PaymentDetailsSection.swift */,
 				FFCC4D32FB34D333C86C27A0 /* PaymentRow.swift */,
 			);
-			name = PaymentDetailsSection;
 			path = PaymentDetailsSection;
 			sourceTree = "<group>";
 		};
@@ -882,7 +850,6 @@
 				26E9AC2BA6B650ED70BF120D /* Localization.json */,
 				DCE6EF5A7293778B7F7D7A4E /* Localization.swift */,
 			);
-			name = Localization;
 			path = Localization;
 			sourceTree = "<group>";
 		};
@@ -892,7 +859,6 @@
 				1BBE78B78D8517284C44C666 /* License.swift */,
 				568E79DC02F2A8187FB7D08C /* Licenses.swift */,
 			);
-			name = Screens;
 			path = Screens;
 			sourceTree = "<group>";
 		};
@@ -903,7 +869,6 @@
 				4E9603BC52DA4F616558DC44 /* SelectedCharity.swift */,
 				C3CCE55D79EF4159003ED947 /* CharityPicker.swift */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -913,7 +878,6 @@
 				2E6A4DD898D64267DBB75F81 /* SkipToNextButton.swift */,
 				B9545C052C66CC7E72A7E6B3 /* SkipToPreviousButton.swift */,
 			);
-			name = SkipButtons;
 			path = SkipButtons;
 			sourceTree = "<group>";
 		};
@@ -930,7 +894,7 @@
 			children = (
 				870C33C9992881C64F861543 /* Pods.xcodeproj */,
 			);
-			name = "$subproj";
+			name = $subproj;
 			sourceTree = "<group>";
 		};
 		D66AF71B590DB4F5D766D749 /* LoggedInScreen */ = {
@@ -938,7 +902,6 @@
 			children = (
 				2DD5B0D55C06FB2799F6F847 /* LoggedIn.swift */,
 			);
-			name = LoggedInScreen;
 			path = LoggedInScreen;
 			sourceTree = "<group>";
 		};
@@ -968,7 +931,6 @@
 				5A5B68531984BA8A691047C4 /* String+Translation.swift */,
 				1C694952F922F96C671D2BC4 /* DeviceKit+RoundedCorners.swift */,
 			);
-			name = Extensions;
 			path = Extensions;
 			sourceTree = "<group>";
 		};
@@ -979,7 +941,6 @@
 				27CE55E2794E379020E3ED13 /* SayHello.swift */,
 				A22995D6917DA75814AAFA3E /* End.swift */,
 			);
-			name = End;
 			path = End;
 			sourceTree = "<group>";
 		};
@@ -992,17 +953,17 @@
 				75AA3AEE75CBCBBA63C75B13 /* Disk.framework */,
 				590DEEFF00B33527A9469CB0 /* DynamicColor.framework */,
 				2BE8F2E34674452FB83F0F47 /* FirebaseCore.framework */,
-				4C47EB991E6243AF819D6D84 /* FlowFramework.framework */,
 				0E7D78F071D0F54C08C511E1 /* FlowFeedback.framework */,
-				BFBFBF59E5EA9ADE492C6709 /* FormFramework.framework */,
+				4C47EB991E6243AF819D6D84 /* Flow.framework */,
+				BFBFBF59E5EA9ADE492C6709 /* Form.framework */,
 				FB05D40F20073A27AEF8DE4A /* GoogleUtilities.framework */,
-				EC90FE3EEDFD5F68D4719A93 /* lottie-ios.framework */,
+				EC90FE3EEDFD5F68D4719A93 /* Lottie.framework */,
 				83D8E12B120D712D1E4765CE /* nanopb.framework */,
-				DDA565E4685C0AB99793D3DC /* Pods-ugglan.framework */,
-				31004AB3EDCB4FCDF446C58D /* PresentationFramework.framework */,
+				DDA565E4685C0AB99793D3DC /* Pods_ugglan.framework */,
+				31004AB3EDCB4FCDF446C58D /* Presentation.framework */,
 				20E6494FB6960B04FBC6252A /* SnapKit.framework */,
 				A18BFD21E42C651DDB3CB7EB /* Starscream.framework */,
-				F722773AE233E596D4A4ACA5 /* UICollectionView+AnimatedScroll.framework */,
+				F722773AE233E596D4A4ACA5 /* UICollectionView_AnimatedScroll.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1022,7 +983,6 @@
 				BFE8AF010DB336E78AF4ADF1 /* Button.swift */,
 				B94F4CA33A27D78BBB1B8A88 /* CircleIcon.swift */,
 			);
-			name = Viewables;
 			path = Viewables;
 			sourceTree = "<group>";
 		};
@@ -1034,7 +994,6 @@
 				BF41A819FE4248A70A7E87D0 /* UIView+addConstraint.swift */,
 				A60591BCA986095990ACE186 /* UIView+RelativeFrame.swift */,
 			);
-			name = UIView;
 			path = UIView;
 			sourceTree = "<group>";
 		};
@@ -1047,7 +1006,6 @@
 				A059EC7706AD52A9ACDB35D0 /* CircularStd-Book.ttf */,
 				73D5A1F5E3BA10E230D58089 /* CircularStd-Bold.ttf */,
 			);
-			name = Fonts;
 			path = Fonts;
 			sourceTree = "<group>";
 		};
@@ -1066,7 +1024,6 @@
 				24062BDC4027DC7DF7F5AAC9 /* Protocols */,
 				6A6FAEE13C15B8B978335814 /* Animations */,
 			);
-			name = Generic;
 			path = Generic;
 			sourceTree = "<group>";
 		};
@@ -1076,7 +1033,6 @@
 				1A5E32AFD77CBCE9238C8BAA /* MarketingStoryImageCell.swift */,
 				C3E9C5128E2A9FE242F1451C /* MarketingStoryVideoCell.swift */,
 			);
-			name = Cells;
 			path = Cells;
 			sourceTree = "<group>";
 		};
@@ -1114,6 +1070,11 @@
 				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0930;
 				Struct.Version = 2.2.0;
+				TargetAttributes = {
+					62191C119445191FC58F72CA = {
+						DevelopmentTeam = AW656G5PFM;
+					};
+				};
 			};
 			buildConfigurationList = 02CA21B468DD1F7E72CD8199 /* Build configuration list for PBXProject "project" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1167,17 +1128,17 @@
 			remoteRef = DEF337FD3A8629FB3336D0D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		31004AB3EDCB4FCDF446C58D /* PresentationFramework.framework */ = {
+		31004AB3EDCB4FCDF446C58D /* Presentation.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = PresentationFramework.framework;
+			path = Presentation.framework;
 			remoteRef = 99AAE753D03B05DA9AFE2D50 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4C47EB991E6243AF819D6D84 /* FlowFramework.framework */ = {
+		4C47EB991E6243AF819D6D84 /* Flow.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = FlowFramework.framework;
+			path = Flow.framework;
 			remoteRef = 94A2226C0FDC36194438A7CF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1223,31 +1184,31 @@
 			remoteRef = A9FB2F3075930461F7977DFF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		BFBFBF59E5EA9ADE492C6709 /* FormFramework.framework */ = {
+		BFBFBF59E5EA9ADE492C6709 /* Form.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = FormFramework.framework;
+			path = Form.framework;
 			remoteRef = 2BCD8C2C070C606341146540 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		DDA565E4685C0AB99793D3DC /* Pods-ugglan.framework */ = {
+		DDA565E4685C0AB99793D3DC /* Pods_ugglan.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = "Pods-ugglan.framework";
+			path = Pods_ugglan.framework;
 			remoteRef = 66CAF3E28BBA5785F8468093 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		EC90FE3EEDFD5F68D4719A93 /* lottie-ios.framework */ = {
+		EC90FE3EEDFD5F68D4719A93 /* Lottie.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = "lottie-ios.framework";
+			path = Lottie.framework;
 			remoteRef = 9350AB7CD4E5730653C22717 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F722773AE233E596D4A4ACA5 /* UICollectionView+AnimatedScroll.framework */ = {
+		F722773AE233E596D4A4ACA5 /* UICollectionView_AnimatedScroll.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = "UICollectionView+AnimatedScroll.framework";
+			path = UICollectionView_AnimatedScroll.framework;
 			remoteRef = 85AFC6807BDE6C8CF3024593 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1302,7 +1263,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/sh\nset -e\nset -u\nset -o pipefail\n\nif [ -z ${UNLOCALIZED_RESOURCES_FOLDER_PATH+x} ]; then\n    # If UNLOCALIZED_RESOURCES_FOLDER_PATH is not set, then there's nowhere for us to copy\n    # resources to, so exit 0 (signalling the script phase was successful).\n    exit 0\nfi\n\nmkdir -p \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\n\nRESOURCES_TO_COPY=${PODS_ROOT}/resources-to-copy-${TARGETNAME}.txt\n> \"$RESOURCES_TO_COPY\"\n\nXCASSET_FILES=()\n\n# This protects against multiple targets copying the same framework dependency at the same time. The solution\n# was originally proposed here: https://lists.samba.org/archive/rsync/2008-February/020158.html\nRSYNC_PROTECT_TMP_FILES=(--filter \"P .*.??????\")\n\ncase \"${TARGETED_DEVICE_FAMILY:-}\" in\n  1,2)\n    TARGET_DEVICE_ARGS=\"--target-device ipad --target-device iphone\"\n    ;;\n  1)\n    TARGET_DEVICE_ARGS=\"--target-device iphone\"\n    ;;\n  2)\n    TARGET_DEVICE_ARGS=\"--target-device ipad\"\n    ;;\n  3)\n    TARGET_DEVICE_ARGS=\"--target-device tv\"\n    ;;\n  4)\n    TARGET_DEVICE_ARGS=\"--target-device watch\"\n    ;;\n  *)\n    TARGET_DEVICE_ARGS=\"--target-device mac\"\n    ;;\nesac\n\ninstall_resource()\n{\n  if [[ \"$1\" = /* ]] ; then\n    RESOURCE_PATH=\"$1\"\n  else\n    RESOURCE_PATH=\"${PODS_ROOT}/$1\"\n  fi\n  if [[ ! -e \"$RESOURCE_PATH\" ]] ; then\n    cat << EOM\nerror: Resource \"$RESOURCE_PATH\" not found. Run 'pod install' to update the copy resources script.\nEOM\n    exit 1\n  fi\n  case $RESOURCE_PATH in\n    *.storyboard)\n      echo \"ibtool --reference-external-strings-file --errors --warnings --notices --minimum-deployment-target ${!DEPLOYMENT_TARGET_SETTING_NAME} --output-format human-readable-text --compile ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \\\"$RESOURCE_PATH\\\" .storyboard`.storyboardc $RESOURCE_PATH --sdk ${SDKROOT} ${TARGET_DEVICE_ARGS}\" || true\n      ibtool --reference-external-strings-file --errors --warnings --notices --minimum-deployment-target ${!DEPLOYMENT_TARGET_SETTING_NAME} --output-format human-readable-text --compile \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \\\"$RESOURCE_PATH\\\" .storyboard`.storyboardc\" \"$RESOURCE_PATH\" --sdk \"${SDKROOT}\" ${TARGET_DEVICE_ARGS}\n      ;;\n    *.xib)\n      echo \"ibtool --reference-external-strings-file --errors --warnings --notices --minimum-deployment-target ${!DEPLOYMENT_TARGET_SETTING_NAME} --output-format human-readable-text --compile ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \\\"$RESOURCE_PATH\\\" .xib`.nib $RESOURCE_PATH --sdk ${SDKROOT} ${TARGET_DEVICE_ARGS}\" || true\n      ibtool --reference-external-strings-file --errors --warnings --notices --minimum-deployment-target ${!DEPLOYMENT_TARGET_SETTING_NAME} --output-format human-readable-text --compile \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \\\"$RESOURCE_PATH\\\" .xib`.nib\" \"$RESOURCE_PATH\" --sdk \"${SDKROOT}\" ${TARGET_DEVICE_ARGS}\n      ;;\n    *.framework)\n      echo \"mkdir -p ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" || true\n      mkdir -p \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n      echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" $RESOURCE_PATH ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" || true\n      rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" \"$RESOURCE_PATH\" \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n      ;;\n    *.xcdatamodel)\n      echo \"xcrun momc \\\"$RESOURCE_PATH\\\" \\\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \"$RESOURCE_PATH\"`.mom\\\"\" || true\n      xcrun momc \"$RESOURCE_PATH\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \"$RESOURCE_PATH\" .xcdatamodel`.mom\"\n      ;;\n    *.xcdatamodeld)\n      echo \"xcrun momc \\\"$RESOURCE_PATH\\\" \\\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \"$RESOURCE_PATH\" .xcdatamodeld`.momd\\\"\" || true\n      xcrun momc \"$RESOURCE_PATH\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \"$RESOURCE_PATH\" .xcdatamodeld`.momd\"\n      ;;\n    *.xcmappingmodel)\n      echo \"xcrun mapc \\\"$RESOURCE_PATH\\\" \\\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \"$RESOURCE_PATH\" .xcmappingmodel`.cdm\\\"\" || true\n      xcrun mapc \"$RESOURCE_PATH\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename \"$RESOURCE_PATH\" .xcmappingmodel`.cdm\"\n      ;;\n    *.xcassets)\n      ABSOLUTE_XCASSET_FILE=\"$RESOURCE_PATH\"\n      XCASSET_FILES+=(\"$ABSOLUTE_XCASSET_FILE\")\n      ;;\n    *)\n      echo \"$RESOURCE_PATH\" || true\n      echo \"$RESOURCE_PATH\" >> \"$RESOURCES_TO_COPY\"\n      ;;\n  esac\n}\n\nmkdir -p \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nrsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from=\"$RESOURCES_TO_COPY\" / \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nif [[ \"${ACTION}\" == \"install\" ]] && [[ \"${SKIP_INSTALL}\" == \"NO\" ]]; then\n  mkdir -p \"${INSTALL_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\n  rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from=\"$RESOURCES_TO_COPY\" / \"${INSTALL_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nfi\nrm -f \"$RESOURCES_TO_COPY\"\n\nif [[ -n \"${WRAPPER_EXTENSION}\" ]] && [ \"`xcrun --find actool`\" ] && [ -n \"${XCASSET_FILES:-}\" ]\nthen\n  # Find all other xcassets (this unfortunately includes those of path pods and other targets).\n  OTHER_XCASSETS=$(find \"$PWD\" -iname \"*.xcassets\" -type d)\n  while read line; do\n    if [[ $line != \"${PODS_ROOT}*\" ]]; then\n      XCASSET_FILES+=(\"$line\")\n    fi\n  done <<<\"$OTHER_XCASSETS\"\n\n  if [ -z ${ASSETCATALOG_COMPILER_APPICON_NAME+x} ]; then\n    printf \"%s\\0\" \"${XCASSET_FILES[@]}\" | xargs -0 xcrun actool --output-format human-readable-text --notices --warnings --platform \"${PLATFORM_NAME}\" --minimum-deployment-target \"${!DEPLOYMENT_TARGET_SETTING_NAME}\" ${TARGET_DEVICE_ARGS} --compress-pngs --compile \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\n  else\n    printf \"%s\\0\" \"${XCASSET_FILES[@]}\" | xargs -0 xcrun actool --output-format human-readable-text --notices --warnings --platform \"${PLATFORM_NAME}\" --minimum-deployment-target \"${!DEPLOYMENT_TARGET_SETTING_NAME}\" ${TARGET_DEVICE_ARGS} --compress-pngs --compile \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\" --app-icon \"${ASSETCATALOG_COMPILER_APPICON_NAME}\" --output-partial-info-plist \"${TARGET_TEMP_DIR}/assetcatalog_generated_info_cocoapods.plist\"\n  fi\nfi\n";
-			showEnvVarsInLog = 1;
 		};
 		C08B8CF7A4226478D799CABB /* Pods-ugglan-frameworks.sh */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1317,7 +1277,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/sh\nset -e\nset -u\nset -o pipefail\n\nif [ -z ${FRAMEWORKS_FOLDER_PATH+x} ]; then\n    # If FRAMEWORKS_FOLDER_PATH is not set, then there's nowhere for us to copy\n    # frameworks to, so exit 0 (signalling the script phase was successful).\n    exit 0\nfi\n\necho \"mkdir -p ${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\nmkdir -p \"${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\nCOCOAPODS_PARALLEL_CODE_SIGN=\"${COCOAPODS_PARALLEL_CODE_SIGN:-false}\"\nSWIFT_STDLIB_PATH=\"${DT_TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"\n\n# Used as a return value for each invocation of `strip_invalid_archs` function.\nSTRIP_BINARY_RETVAL=0\n\n# This protects against multiple targets copying the same framework dependency at the same time. The solution\n# was originally proposed here: https://lists.samba.org/archive/rsync/2008-February/020158.html\nRSYNC_PROTECT_TMP_FILES=(--filter \"P .*.??????\")\n\n# Copies and strips a vendored framework\ninstall_framework()\n{\n  if [ -r \"${BUILT_PRODUCTS_DIR}/$1\" ]; then\n    local source=\"${BUILT_PRODUCTS_DIR}/$1\"\n  elif [ -r \"${BUILT_PRODUCTS_DIR}/$(basename \"$1\")\" ]; then\n    local source=\"${BUILT_PRODUCTS_DIR}/$(basename \"$1\")\"\n  elif [ -r \"$1\" ]; then\n    local source=\"$1\"\n  fi\n\n  local destination=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\n  if [ -L \"${source}\" ]; then\n      echo \"Symlinked...\"\n      source=\"$(readlink \"${source}\")\"\n  fi\n\n  # Use filter instead of exclude so missing patterns don't throw errors.\n  echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${source}\\\" \\\"${destination}\\\"\"\n  rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${destination}\"\n\n  local basename\n  basename=\"$(basename -s .framework \"$1\")\"\n  binary=\"${destination}/${basename}.framework/${basename}\"\n  if ! [ -r \"$binary\" ]; then\n    binary=\"${destination}/${basename}\"\n  fi\n\n  # Strip invalid architectures so \"fat\" simulator / device frameworks work on device\n  if [[ \"$(file \"$binary\")\" == *\"dynamically linked shared library\"* ]]; then\n    strip_invalid_archs \"$binary\"\n  fi\n\n  # Resign the code if required by the build settings to avoid unstable apps\n  code_sign_if_enabled \"${destination}/$(basename \"$1\")\"\n\n  # Embed linked Swift runtime libraries. No longer necessary as of Xcode 7.\n  if [ \"${XCODE_VERSION_MAJOR}\" -lt 7 ]; then\n    local swift_runtime_libs\n    swift_runtime_libs=$(xcrun otool -LX \"$binary\" | grep --color=never @rpath/libswift | sed -E s/@rpath\\\\/\\(.+dylib\\).*/\\\\1/g | uniq -u  && exit ${PIPESTATUS[0]})\n    for lib in $swift_runtime_libs; do\n      echo \"rsync -auv \\\"${SWIFT_STDLIB_PATH}/${lib}\\\" \\\"${destination}\\\"\"\n      rsync -auv \"${SWIFT_STDLIB_PATH}/${lib}\" \"${destination}\"\n      code_sign_if_enabled \"${destination}/${lib}\"\n    done\n  fi\n}\n\n# Copies and strips a vendored dSYM\ninstall_dsym() {\n  local source=\"$1\"\n  if [ -r \"$source\" ]; then\n    # Copy the dSYM into a the targets temp dir.\n    echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${source}\\\" \\\"${DERIVED_FILES_DIR}\\\"\"\n    rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${DERIVED_FILES_DIR}\"\n\n    local basename\n    basename=\"$(basename -s .framework.dSYM \"$source\")\"\n    binary=\"${DERIVED_FILES_DIR}/${basename}.framework.dSYM/Contents/Resources/DWARF/${basename}\"\n\n    # Strip invalid architectures so \"fat\" simulator / device frameworks work on device\n    if [[ \"$(file \"$binary\")\" == *\"Mach-O dSYM companion\"* ]]; then\n      strip_invalid_archs \"$binary\"\n    fi\n\n    if [[ $STRIP_BINARY_RETVAL == 1 ]]; then\n      # Move the stripped file into its final destination.\n      echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${DERIVED_FILES_DIR}/${basename}.framework.dSYM\\\" \\\"${DWARF_DSYM_FOLDER_PATH}\\\"\"\n      rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${DERIVED_FILES_DIR}/${basename}.framework.dSYM\" \"${DWARF_DSYM_FOLDER_PATH}\"\n    else\n      # The dSYM was not stripped at all, in this case touch a fake folder so the input/output paths from Xcode do not reexecute this script because the file is missing.\n      touch \"${DWARF_DSYM_FOLDER_PATH}/${basename}.framework.dSYM\"\n    fi\n  fi\n}\n\n# Signs a framework with the provided identity\ncode_sign_if_enabled() {\n  if [ -n \"${EXPANDED_CODE_SIGN_IDENTITY}\" -a \"${CODE_SIGNING_REQUIRED:-}\" != \"NO\" -a \"${CODE_SIGNING_ALLOWED}\" != \"NO\" ]; then\n    # Use the current code_sign_identitiy\n    echo \"Code Signing $1 with Identity ${EXPANDED_CODE_SIGN_IDENTITY_NAME}\"\n    local code_sign_cmd=\"/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements '$1'\"\n\n    if [ \"${COCOAPODS_PARALLEL_CODE_SIGN}\" == \"true\" ]; then\n      code_sign_cmd=\"$code_sign_cmd &\"\n    fi\n    echo \"$code_sign_cmd\"\n    eval \"$code_sign_cmd\"\n  fi\n}\n\n# Strip invalid architectures\nstrip_invalid_archs() {\n  binary=\"$1\"\n  # Get architectures for current target binary\n  binary_archs=\"$(lipo -info \"$binary\" | rev | cut -d ':' -f1 | awk '{$1=$1;print}' | rev)\"\n  # Intersect them with the architectures we are building for\n  intersected_archs=\"$(echo ${ARCHS[@]} ${binary_archs[@]} | tr ' ' '\\n' | sort | uniq -d)\"\n  # If there are no archs supported by this binary then warn the user\n  if [[ -z \"$intersected_archs\" ]]; then\n    echo \"warning: [CP] Vendored binary '$binary' contains architectures ($binary_archs) none of which match the current build architectures ($ARCHS).\"\n    STRIP_BINARY_RETVAL=0\n    return\n  fi\n  stripped=\"\"\n  for arch in $binary_archs; do\n    if ! [[ \"${ARCHS}\" == *\"$arch\"* ]]; then\n      # Strip non-valid architectures in-place\n      lipo -remove \"$arch\" -output \"$binary\" \"$binary\" || exit 1\n      stripped=\"$stripped $arch\"\n    fi\n  done\n  if [[ \"$stripped\" ]]; then\n    echo \"Stripped $binary of architectures:$stripped\"\n  fi\n  STRIP_BINARY_RETVAL=1\n}\n\n\nif [[ \"$CONFIGURATION\" == \"debug\" ]]; then\n  install_framework \"${BUILT_PRODUCTS_DIR}/AcknowList/AcknowList.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/Apollo/Apollo.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/DeviceKit/DeviceKit.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/Disk/Disk.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/FlowFeedback/FlowFeedback.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/FormFramework/Form.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/PresentationFramework/Presentation.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/UICollectionView+AnimatedScroll/UICollectionView_AnimatedScroll.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework\"\nfi\nif [[ \"$CONFIGURATION\" == \"release\" ]]; then\n  install_framework \"${BUILT_PRODUCTS_DIR}/AcknowList/AcknowList.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/Apollo/Apollo.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/DeviceKit/DeviceKit.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/Disk/Disk.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/FlowFeedback/FlowFeedback.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/FlowFramework/Flow.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/FormFramework/Form.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/PresentationFramework/Presentation.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/UICollectionView+AnimatedScroll/UICollectionView_AnimatedScroll.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework\"\n  install_framework \"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework\"\nfi\nif [ \"${COCOAPODS_PARALLEL_CODE_SIGN}\" == \"true\" ]; then\n  wait\nfi\n";
-			showEnvVarsInLog = 1;
 		};
 		C318E9F532D6DF088DFCD087 /* cp_check_pods_manifest.lock.sh */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1332,7 +1291,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 1;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1682,6 +1640,7 @@
 				PODS_ROOT = "${SRCROOT}/Pods";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.ugglan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "Ugglan - AdHoc 2";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.2;
 			};
