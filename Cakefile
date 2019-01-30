@@ -1,10 +1,7 @@
 iOSdeploymentTarget = "9.0"
 currentSwiftVersion = "4.2"
 companyIdentifier = "com.hedvig"
-developmentTeamId = "XYZXYZ"
-
-provProfAdHoc = "XXX"
-provProfAppStore = "YYY"
+developmentTeamId = "AW656G5PFM"
 
 project.name = "ugglan"
 project.class_prefix = "CMN"
