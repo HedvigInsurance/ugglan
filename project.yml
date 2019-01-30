@@ -19,3 +19,27 @@ targets:
       SWIFT_VERSION: "4.2"
       PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"
       DEVELOPMENT_TEAM: "AW656G5PFM"
+schemes:
+  Debug:
+    target: "ugglan"
+    archive:
+      name: ugglan.xcarchive
+      reveal: true
+      build_configuration: debug
+    launch:
+      build_configuration: debug
+      target: ugglan
+      arguments: -AppleLanguages (en-GB)
+      environment:
+        OS_ACTIVITY_MODE: disable
+  Release:
+    archive:
+      name: ugglan.xcarchive
+      reveal: true
+      build_configuration: release
+    launch:
+      build_configuration: release
+      target: ugglan
+      arguments: -AppleLanguages (en-GB)
+      environment:
+        OS_ACTIVITY_MODE: disable
