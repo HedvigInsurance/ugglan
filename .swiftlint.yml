@@ -5,7 +5,7 @@ disabled_rules:
   - cyclomatic_complexity
 excluded:
   - Pods
-  - Hedvig/Data/API.swift
+  - Src/Data/API.swift
 type_name:
   excluded:
     - V
