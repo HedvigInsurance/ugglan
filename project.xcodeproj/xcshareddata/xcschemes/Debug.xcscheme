@@ -57,7 +57,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "17B9675F168B096F9E8BDC41"
+            BlueprintIdentifier = "62191C119445191FC58F72CA"
             BlueprintName = "ugglan"
             ReferencedContainer = "container:project.xcodeproj"
             BuildableName = "ugglan.app">
