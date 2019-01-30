@@ -41,6 +41,15 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(13)
         style.color = .offBlack
     }
+    
+    static let headingOne = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(40)
+        style.color = .blackPurple
+    }
+    
+    static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
+        style.alignment = .center
+    }
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
@@ -60,5 +69,15 @@ extension TextStyle {
     static let dangerButton = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .pink
+    }
+    
+    static let normalButton = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.color = .purple
+    }
+    
+    static let navigationBarButton = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .purple
     }
 }

@@ -198,7 +198,7 @@ extension Button: Viewable {
         button.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
             make.height.equalTo(self.type.height())
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
         }
 
         return (button, bag)

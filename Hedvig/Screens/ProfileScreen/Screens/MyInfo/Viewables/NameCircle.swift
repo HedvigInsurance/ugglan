@@ -35,7 +35,8 @@ extension NameCircle: Viewable {
         }).bindTo(nameCircleText)
 
         let nameCircle = CircleLabel(
-            text: nameCircleText
+            labelText: nameCircleText,
+            backgroundColor: .purple
         )
 
         bag += containerView.add(nameCircle)

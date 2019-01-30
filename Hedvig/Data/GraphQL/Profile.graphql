@@ -11,4 +11,7 @@ query Profile {
         name
         imageUrl
     }
+    insurance {
+        monthlyCost
+    }
 }

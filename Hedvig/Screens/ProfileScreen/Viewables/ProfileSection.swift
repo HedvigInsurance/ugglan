@@ -72,11 +72,22 @@ extension ProfileSection: Viewable {
                 previewable: insuranceCertificateRow
             )
         }
-
+        
         bag += dataSignal
             .atOnce()
             .map { $0?.insurance.certificateUrl }
             .bindTo(insuranceCertificateRow.certificateUrlSignal)
+
+        let myPaymentRow = MyPaymentRow(
+            monthlyCost: 0,
+            presentingViewController: presentingViewController
+        )
+        bag += section.append(myPaymentRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: myPaymentRow
+            )
+        }
 
         return (section, bag)
     }

@@ -48,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        window.backgroundColor = .offWhite
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
             let mirror = Mirror(reflecting: viewController)
