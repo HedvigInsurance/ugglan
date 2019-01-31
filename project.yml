@@ -15,12 +15,39 @@ targets:
     type: ":application"
     platform: ios
     sources: Src
+    references:
+        - location: Carthage/Build/iOS/DeviceKit.framework
+        - location: Carthage/Build/iOS/Apollo.framework
+        - location: Carthage/Build/iOS/ApolloSQLite.framework
+        - location: Carthage/Build/iOS/ApolloWebSocket.framework
+        - location: Carthage/Build/iOS/Firebase.framework
+        - location: Carthage/Build/iOS/FirebaseAnalytics.framework
+        - location: Carthage/Build/iOS/FirebaseCore.framework
+        - location: Carthage/Build/iOS/FirebaseCoreDiagnostics.framework
+        - location: Carthage/Build/iOS/FirebaseInstanceID.framework
+        - location: Carthage/Build/iOS/Flow.framework
+        - location: Carthage/Build/iOS/Form.framework
+        - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
+        - location: Carthage/Build/iOS/GoogleUtilities.framework
+        - location: Carthage/Build/iOS/Lottie.framework
+        - location: Carthage/Build/iOS/Presentation.framework
+        - location: Carthage/Build/iOS/SQLite.framework
+        - location: Carthage/Build/iOS/SWXMLHash.framework
+        - location: Carthage/Build/iOS/SnapKit.framework
+        - location: Carthage/Build/iOS/Starscream.framework
+        - location: Carthage/Build/iOS/Yams.framework
+        - location: Carthage/Build/iOS/nanopb.framework
+        - location: Carthage/Build/iOS/FlowFeedback.framework
+        - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
     configuration:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
       SWIFT_VERSION: "4.2"
       PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"
       DEVELOPMENT_TEAM: "AW656G5PFM"
+      FRAMEWORK_SEARCH_PATHS:
+        - $(inherited)
+        - Carthage/Build/iOS
 schemes:
   Debug:
     archive:
