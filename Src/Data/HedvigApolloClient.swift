@@ -7,6 +7,7 @@
 //
 
 import Apollo
+import ApolloWebSocket
 import Disk
 import Flow
 import Foundation

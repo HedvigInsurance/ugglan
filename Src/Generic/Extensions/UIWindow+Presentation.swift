@@ -9,6 +9,7 @@
 import Flow
 import Foundation
 import Presentation
+import UIKit
 
 extension UIWindow {
     /// Presents `presentable` on `self` and set `self`'s `rootViewController` to the

@@ -10,6 +10,7 @@ import AcknowList
 import Flow
 import Foundation
 import Presentation
+import UIKit
 
 struct License {
     let acknowledgement: Acknow

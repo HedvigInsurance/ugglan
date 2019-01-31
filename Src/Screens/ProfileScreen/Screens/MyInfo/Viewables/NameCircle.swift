@@ -9,6 +9,7 @@
 import Apollo
 import Flow
 import Foundation
+import UIKit
 
 struct NameCircle {
     let client: ApolloClient

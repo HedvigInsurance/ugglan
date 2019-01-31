@@ -8,6 +8,7 @@
 
 import Flow
 import Foundation
+import UIKit
 
 struct AnimatedSignal<Value>: SignalProvider, Disposable {
     let providedSignal: Signal<Value>

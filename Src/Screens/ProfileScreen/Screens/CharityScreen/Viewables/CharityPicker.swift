@@ -10,6 +10,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import UIKit
 
 struct CharityPicker {
     let client: ApolloClient

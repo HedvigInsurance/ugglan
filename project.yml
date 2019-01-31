@@ -16,6 +16,7 @@ targets:
     platform: ios
     sources: Src
     references:
+        - sdkroot:UIKit.framework
         - location: Carthage/Build/iOS/DeviceKit.framework
         - location: Carthage/Build/iOS/Apollo.framework
         - location: Carthage/Build/iOS/ApolloSQLite.framework

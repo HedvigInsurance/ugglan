@@ -10,6 +10,7 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import UIKit
 
 extension ApolloClient {
     static var isShowingNetworkErrorMessage = false
