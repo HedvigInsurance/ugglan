@@ -206,5 +206,5 @@ fs.writeFile(swiftFileLocation, output, function(err) {
 const { exec } = require("child_process");
 exec(
   __dirname +
-    `/../Pods/SwiftFormat/CommandLineTool/swiftformat ${swiftFileLocation}`
+    `swiftformat ${swiftFileLocation}`
 );
