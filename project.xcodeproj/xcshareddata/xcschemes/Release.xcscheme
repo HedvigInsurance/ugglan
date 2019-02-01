@@ -32,7 +32,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "11B82A8FB1F2047714A0EDCA"
+               BlueprintIdentifier = "2D541C98A0878163DC97CDF6"
                BlueprintName = "ugglan"
                ReferencedContainer = "container:project.xcodeproj"
                BuildableName = "ugglan.app">
@@ -73,7 +73,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "11B82A8FB1F2047714A0EDCA"
+            BlueprintIdentifier = "2D541C98A0878163DC97CDF6"
             BlueprintName = "ugglan"
             ReferencedContainer = "container:project.xcodeproj"
             BuildableName = "ugglan.app">

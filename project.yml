@@ -15,69 +15,71 @@ targets:
     type: ":application"
     platform: ios
     sources: Src
+    scripts:
+      - scripts/clean-frameworks.sh
     references:
       - sdkroot:UIKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Apollo.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/ApolloSQLite.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/FirebaseAnalytics.framework
       - location: Carthage/Build/iOS/FirebaseCore.framework
       - location: Carthage/Build/iOS/FirebaseCoreDiagnostics.framework
       - location: Carthage/Build/iOS/FirebaseInstanceID.framework
       - location: Carthage/Build/iOS/Flow.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Form.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Presentation.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/SQLite.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/SWXMLHash.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/SnapKit.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Starscream.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Yams.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/nanopb.framework
       - location: Carthage/Build/iOS/FlowFeedback.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/AcknowList.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Disk.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/DynamicColor.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
       - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
         copy: true
-        codeSignOnCopy: false
+        codeSignOnCopy: true
     configuration:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
