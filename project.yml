@@ -63,8 +63,6 @@ targets:
         copy: true
         codeSignOnCopy: true
       - location: Carthage/Build/iOS/nanopb.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/FlowFeedback.framework
         copy: true
         codeSignOnCopy: true
