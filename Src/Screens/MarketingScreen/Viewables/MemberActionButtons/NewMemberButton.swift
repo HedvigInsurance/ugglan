@@ -37,7 +37,7 @@ extension NewMemberButton: Viewable {
         let view = UIView()
 
         let button = Button(
-            title: "Skaffa Hedvig",
+            title: "Skaffa TEST",
             type: .standard(
                 backgroundColor: style == .endScreen ? .purple : .white,
                 textColor: style == .endScreen ? .white : .black
