@@ -138,3 +138,5 @@ schemes:
       arguments: -AppleLanguages (en-GB)
       environment:
         OS_ACTIVITY_MODE: disable
+scripts:
+  pre-generate: scripts/pre-generate.rb
