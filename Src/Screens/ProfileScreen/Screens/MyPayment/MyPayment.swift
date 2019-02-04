@@ -45,16 +45,16 @@ extension MyPayment: Presentable {
                 let bankDetailsSection = BankDetailsSection(insurance: insurance)
                 bag += form.append(bankDetailsSection)
             }
-            
+
             let section = SectionView(headerView: nil, footerView: nil)
-            
+
             let button = ButtonRow(text: "Ändra bankkonto", style: .normalButton)
             bag += section.append(button)
-            
+
             bag += button.onSelect.onValue {
                 self.presentingViewController.present(DirectDebitSetup(), options: [.autoPop])
             }
-            
+
             form.append(section)
         }
 
