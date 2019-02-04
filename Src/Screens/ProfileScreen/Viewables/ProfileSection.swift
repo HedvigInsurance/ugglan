@@ -72,7 +72,7 @@ extension ProfileSection: Viewable {
                 previewable: insuranceCertificateRow
             )
         }
-        
+
         bag += dataSignal
             .atOnce()
             .map { $0?.insurance.certificateUrl }

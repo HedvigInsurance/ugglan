@@ -16,11 +16,11 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
         UIView: Delegate<
             Void,
             AnyPresentable<UIViewController, Disposable>
-        >
+        >,
     ]()
 
     private static var _didCommitPreviewingCallbackers = [
-        UIView: Callbacker<Void>
+        UIView: Callbacker<Void>,
     ]()
 
     public func previewingContext(

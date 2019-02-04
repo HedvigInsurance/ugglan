@@ -25,7 +25,7 @@ class HedvigApolloClient {
 
     func createClient(token: String?, environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
         let authPayloads = [
-            "Authorization": token ?? ""
+            "Authorization": token ?? "",
         ]
 
         let configuration = URLSessionConfiguration.default

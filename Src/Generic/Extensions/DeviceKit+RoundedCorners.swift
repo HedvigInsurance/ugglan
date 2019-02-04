@@ -20,6 +20,6 @@ extension Device {
         Device.simulator(Device.iPhoneXs),
         Device.simulator(Device.iPhoneXsMax),
         Device.simulator(Device.iPhoneXr),
-        Device.simulator(Device.iPadPro12Inch3)
+        Device.simulator(Device.iPadPro12Inch3),
     ])
 }

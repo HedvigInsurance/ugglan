@@ -26,7 +26,7 @@ extension ButtonStyle {
                     font: UIFont.systemFont(ofSize: 20),
                     color: UIColor.clear
                 )
-            )
+            ),
         ]
     }
 
@@ -47,7 +47,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(15),
                     color: UIColor.black
                 )
-            )
+            ),
         ]
     }
 
@@ -68,7 +68,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(15),
                     color: UIColor.black
                 )
-            )
+            ),
         ]
     }
 
@@ -89,7 +89,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(15),
                     color: UIColor.white
                 )
-            )
+            ),
         ]
     }
 
@@ -110,7 +110,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(15),
                     color: UIColor.white
                 )
-            )
+            ),
         ]
     }
 
@@ -131,7 +131,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(15),
                     color: UIColor.white
                 )
-            )
+            ),
         ]
     }
 
@@ -152,7 +152,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(15),
                     color: UIColor.white
                 )
-            )
+            ),
         ]
     }
 
@@ -173,7 +173,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(12),
                     color: UIColor.white
                 )
-            )
+            ),
         ]
     }
 
@@ -194,7 +194,7 @@ extension ButtonStyle {
                     font: HedvigFonts.circularStdBook!.withSize(12),
                     color: UIColor.white
                 )
-            )
+            ),
         ]
     }
 }

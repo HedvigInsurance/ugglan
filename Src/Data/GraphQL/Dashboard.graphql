@@ -1,0 +1,5 @@
+query Dashboard {
+    member {
+        firstName
+    }
+}

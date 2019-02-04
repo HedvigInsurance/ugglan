@@ -25,7 +25,7 @@ extension DefaultStyling {
         UINavigationBar.appearance().tintColor = .purple
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.black,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
+            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
 
         if #available(iOS 10.0, *) {
@@ -37,13 +37,13 @@ extension DefaultStyling {
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11)
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11),
             ],
             for: .normal
         )
         UITabBarItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11)
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11),
             ],
             for: .selected
         )
@@ -52,24 +52,24 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
             ],
             for: .normal
         )
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16)
+                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
             ],
             for: .highlighted
         )
-        
+
         UIBarButtonItem.appearance().tintColor = .purple
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: UIColor.black,
-                NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30)
+                NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
             ]
         }
 

@@ -39,7 +39,7 @@ extension LogoutSection: Viewable {
                     Alert.Action(
                         title: String(.LOGOUT_ALERT_ACTION_CONFIRM),
                         style: UIAlertAction.Style.destructive
-                    ) { true }
+                    ) { true },
                 ]
             )
 

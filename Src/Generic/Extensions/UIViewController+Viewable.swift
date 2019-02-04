@@ -26,7 +26,7 @@ extension UIViewController {
 
         return result
     }
-    
+
     func install<V: Viewable, View: UIView, FutureResult: Any>(
         _ viewable: V
     ) -> Future<FutureResult> where V.Matter == View, V.Result == Future<FutureResult>, V.Events == ViewableEvents {
@@ -35,11 +35,11 @@ extension UIViewController {
             wasAddedCallbacker: wasAddedCallbacker
         )
         let (matter, result) = viewable.materialize(events: viewableEvents)
-        
+
         view = matter
-        
+
         wasAddedCallbacker.callAll()
-        
+
         return result
     }
 }

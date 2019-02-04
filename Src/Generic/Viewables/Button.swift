@@ -112,7 +112,7 @@ extension Button: Viewable {
                         font: HedvigFonts.circularStdBook!.withSize(self.type.fontSize()),
                         color: textColor
                     )
-                )
+                ),
             ]
         }
 
@@ -139,7 +139,7 @@ extension Button: Viewable {
                         font: HedvigFonts.circularStdBook!.withSize(self.type.fontSize()),
                         color: textColor
                     )
-                )
+                ),
             ]
         }
 

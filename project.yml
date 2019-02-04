@@ -4,12 +4,18 @@ configurations:
   debug:
     overrides:
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      FRAMEWORK_SEARCH_PATHS:
+        - $(inherited)
+        - $(PROJECT_DIR)/Carthage/Build/iOS
   release:
     overrides:
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
       CODE_SIGN_IDENTITY: "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       PROVISIONING_PROFILE_SPECIFIER: "Ugglan - AdHoc 2"
+      FRAMEWORK_SEARCH_PATHS:
+        - $(inherited)
+        - $(PROJECT_DIR)/Carthage/Build/iOS
 targets:
   ugglan:
     type: ":application"
@@ -89,7 +95,6 @@ targets:
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
-        - Carthage/Build/iOS
 schemes:
   Debug:
     archive:
