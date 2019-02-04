@@ -11,6 +11,7 @@ Src/Assets/Localization/Localization.swift
 Src/Data/schema.json
 Src/Data/API.swift
 Carthage
+project.xcodeproj
 
 ## Various settings
 *.pbxuser
