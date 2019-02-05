@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Lottie
 import Presentation
 import UIKit
 
@@ -45,6 +46,35 @@ extension MyCoinsured: Presentable {
         bag += client.watch(query: MyCoinsuredQuery()).compactMap {
             $0.data?.insurance.personsInHousehold
         }.map { String($0) }.bindTo(circleLabel.labelText)
+
+        bag += form.append(Spacing(height: 20))
+
+        let lottieContainerView = UIView()
+
+        let lottieView = LOTAnimationView(name: Asset.buildingAnimation.name)
+
+        lottieContainerView.snp.makeConstraints { make in
+            make.height.equalTo(60)
+        }
+
+        lottieView.play()
+        lottieView.loopAnimation = true
+        lottieView.contentMode = .scaleAspectFit
+
+        lottieContainerView.addSubview(lottieView)
+
+        lottieView.snp.makeConstraints { make in
+            make.width.equalTo(189)
+            make.height.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+
+        form.append(lottieContainerView)
+
+        bag += form.append(Spacing(height: 20))
+
+        let coinsuredComingSoonText = CoinsuredComingSoonText()
+        bag += form.append(coinsuredComingSoonText)
 
         bag += viewController.install(form)
 
