@@ -26,13 +26,13 @@ extension Dashboard: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        
+
         bag += client.watch(
             query: DashboardQuery()
         ).compactMap { $0.data?.member.firstName }.map {
             String(.DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
         }.bindTo(viewController, \.navigationItem.title)
-        
+
         let view = UIView()
         view.backgroundColor = .purple
 

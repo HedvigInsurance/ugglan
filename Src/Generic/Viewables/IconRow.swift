@@ -13,7 +13,7 @@ import UIKit
 
 struct IconRow {
     enum Options {
-        case defaults, withArrow, disabled
+        case defaults, withArrow, disabled, hidden
     }
 
     let iconAsset: ImageAsset
@@ -73,6 +73,12 @@ extension IconRow: Viewable {
                 row.alpha = 0.5
             } else {
                 row.alpha = 1
+            }
+
+            if newOptions.contains(.hidden) {
+                row.isHidden = true
+            } else {
+                row.isHidden = false
             }
         }
 

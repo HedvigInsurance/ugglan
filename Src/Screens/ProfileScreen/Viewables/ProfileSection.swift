@@ -89,6 +89,22 @@ extension ProfileSection: Viewable {
             )
         }
 
+        let myCoinsuredRow = MyCoinsuredRow(
+            presentingViewController: presentingViewController
+        )
+        bag += section.append(myCoinsuredRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: myCoinsuredRow
+            )
+        }
+
+        bag += dataSignal
+            .atOnce()
+            .map { $0?.insurance.personsInHousehold }
+            .map { 3 }
+            .bindTo(myCoinsuredRow.amountOfCoinsuredSignal)
+
         return (section, bag)
     }
 }
