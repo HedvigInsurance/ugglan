@@ -23,69 +23,71 @@ targets:
     sources: Src
     scripts:
       - scripts/clean-frameworks.sh
+      - script: scripts/copy-frameworks.sh
+        shell: /bin/bash
+        inputs:
+          - $(SRCROOT)/Carthage/Build/iOS/DeviceKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Apollo.framework
+          - $(SRCROOT)/Carthage/Build/iOS/ApolloSQLite.framework
+          - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Form.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
+          - $(SRCROOT)/Carthage/Build/iOS/SQLite.framework
+          - $(SRCROOT)/Carthage/Build/iOS/SWXMLHash.framework
+          - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Yams.framework
+          - $(SRCROOT)/Carthage/Build/iOS/FlowFeedback.framework
+          - $(SRCROOT)/Carthage/Build/iOS/AcknowList.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Disk.framework
+          - $(SRCROOT)/Carthage/Build/iOS/DynamicColor.framework
+          - $(SRCROOT)/Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+        outputs:
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloSQLite.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SQLite.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SWXMLHash.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Yams.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FlowFeedback.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AcknowList.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Disk.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
     references:
       - sdkroot:UIKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Apollo.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/ApolloSQLite.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
-        copy: true
-        codeSignOnCopy: true
-      - location: Carthage/Build/iOS/FirebaseAnalytics.framework
-      - location: Carthage/Build/iOS/FirebaseCore.framework
-      - location: Carthage/Build/iOS/FirebaseCoreDiagnostics.framework
-      - location: Carthage/Build/iOS/FirebaseInstanceID.framework
       - location: Carthage/Build/iOS/Flow.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Form.framework
-        copy: true
-        codeSignOnCopy: true
+      - location: Carthage/Build/iOS/FirebaseCore.framework
+      - location: Carthage/Build/iOS/FirebaseAnalytics.framework
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Presentation.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/SQLite.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/SWXMLHash.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/SnapKit.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Starscream.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Yams.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/nanopb.framework
       - location: Carthage/Build/iOS/FlowFeedback.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/AcknowList.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/Disk.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/DynamicColor.framework
-        copy: true
-        codeSignOnCopy: true
       - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
-        copy: true
-        codeSignOnCopy: true
     configuration:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
@@ -95,6 +97,7 @@ targets:
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
+        - $(PROJECT_DIR)/Carthage/Build/iOS
 schemes:
   Debug:
     archive:
