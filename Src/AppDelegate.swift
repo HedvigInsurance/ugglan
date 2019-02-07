@@ -8,7 +8,7 @@
 
 import Apollo
 import Disk
-import Firebase
+import FirebaseAnalytics
 import Flow
 import Form
 import Presentation

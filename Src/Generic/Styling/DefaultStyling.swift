@@ -82,7 +82,7 @@ extension DefaultStyling {
             text: .default,
             placeholder: .default,
             disabled: .default,
-            cursorColor: .green
+            cursorColor: .turquoise
         ),
         detailText: .default,
         titleSubtitle: .default,

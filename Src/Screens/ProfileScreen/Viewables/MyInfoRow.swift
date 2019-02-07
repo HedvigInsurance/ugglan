@@ -23,7 +23,7 @@ extension MyInfoRow: Viewable {
         let row = IconRow(
             title: String(.PROFILE_MY_INFO_ROW_TITLE),
             subtitle: "",
-            iconAsset: Asset.personalInformation,
+            iconAsset: Asset.myInfo,
             options: [.withArrow]
         )
 
