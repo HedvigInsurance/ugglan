@@ -26,13 +26,14 @@ extension CoinsuredComingSoonText: Viewable {
         title.text = String(.MY_COINSURED_COMING_SOON_TITLE)
 
         bag += title.didLayoutSignal.onValue {
+            title.setContentHuggingPriority(
+                UILayoutPriority.defaultLow,
+                for: .horizontal
+            )
             title.snp.remakeConstraints { make in
-                if view.frame.width > 450 {
-                    make.width.equalTo(450)
-                } else {
-                    make.width.lessThanOrEqualTo(450)
-                }
-
+                make.width.equalTo(450).priority(.high)
+                make.width.lessThanOrEqualToSuperview()
+                    .inset(25).priority(.required)
                 make.height.equalTo(title.intrinsicContentSize.height)
                 make.center.equalToSuperview()
             }
@@ -56,13 +57,15 @@ extension CoinsuredComingSoonText: Viewable {
 
         bag += bodyContainer.add(body) { label in
             bag += body.intrinsicContentSizeSignal.onValue { contentSize in
+                label.setContentHuggingPriority(
+                    UILayoutPriority.defaultLow,
+                    for: .horizontal
+                )
                 label.snp.remakeConstraints { make in
-                    if view.frame.width > 450 {
-                        make.width.equalTo(450)
-                    } else {
-                        make.width.lessThanOrEqualTo(450)
-                    }
-
+                    make.width.equalTo(450).priority(.high)
+                    make.width.lessThanOrEqualToSuperview()
+                        .inset(25).priority(.required)
+                    
                     make.height.equalTo(contentSize.height)
                     make.center.equalToSuperview()
                 }
