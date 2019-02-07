@@ -102,7 +102,6 @@ extension ProfileSection: Viewable {
         bag += dataSignal
             .atOnce()
             .map { $0?.insurance.personsInHousehold }
-            .map { 3 }
             .bindTo(myCoinsuredRow.amountOfCoinsuredSignal)
 
         return (section, bag)

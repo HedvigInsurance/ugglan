@@ -44,7 +44,7 @@ extension CircleLabelSmall: Viewable {
 
         switch color {
         case "green":
-            circleView.backgroundColor = UIColor.green
+            circleView.backgroundColor = UIColor.darkGreen
             titleLabel.textColor = UIColor.white
         default:
             circleView.backgroundColor = UIColor.gray
