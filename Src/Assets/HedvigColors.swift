@@ -47,8 +47,6 @@ extension UIColor {
             return .purple
         case .lightGray:
             return .lightGray
-        case .green:
-            return .turquoise
         case .darkPurple:
             return .darkPurple
         case .white:
