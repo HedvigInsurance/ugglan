@@ -9,7 +9,9 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Lottie
+#if canImport(Lottie)
+    import Lottie
+#endif
 import Presentation
 import UIKit
 

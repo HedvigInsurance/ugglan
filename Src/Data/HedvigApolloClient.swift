@@ -7,7 +7,9 @@
 //
 
 import Apollo
-import ApolloWebSocket
+#if canImport(ApolloWebSocket)
+    import ApolloWebSocket
+#endif
 import Disk
 import Flow
 import Foundation
