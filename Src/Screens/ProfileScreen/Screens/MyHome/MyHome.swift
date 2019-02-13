@@ -42,15 +42,18 @@ extension MyHome: Presentable {
                 let adressRow = KeyValueRow()
                 adressRow.keySignal.value = String(.MY_HOME_ADDRESS_ROW_KEY)
                 adressRow.valueSignal.value = insurance.address ?? ""
+                adressRow.valueStyleSignal.value = .rowTitleDisabled
                 bag += section.append(adressRow)
 
                 let postalCodeRow = KeyValueRow()
                 postalCodeRow.keySignal.value = String(.MY_HOME_ROW_POSTAL_CODE_KEY)
                 postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
+                postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
                 bag += section.append(postalCodeRow)
 
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = String(.MY_HOME_ROW_TYPE_KEY)
+                apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
 
                 if let insuranceType = insurance.type {
                     switch insuranceType {

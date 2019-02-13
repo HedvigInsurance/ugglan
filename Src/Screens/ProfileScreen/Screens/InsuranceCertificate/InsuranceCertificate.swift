@@ -31,16 +31,20 @@ extension InsuranceCertificate: Presentable {
             guard let value = value, let url = URL(string: value) else { return nil }
             return url
         }.bindTo(pdfViewer.url)
+        
+        let activityButton = UIBarButtonItem(system: .action)
 
         bag += viewController.navigationItem.addItem(
-            UIBarButtonItem(system: .action),
+            activityButton,
             position: .right
         ).withLatestFrom(pdfViewer.data).onValueDisposePrevious { _, value -> Disposable? in
             guard let value = value else { return NilDisposer() }
 
             let activityView = ActivityView(
                 activityItems: [value],
-                applicationActivities: nil
+                applicationActivities: nil,
+                sourceView: activityButton.view,
+                sourceRect: activityButton.bounds
             )
 
             let activityViewPresentation = Presentation(

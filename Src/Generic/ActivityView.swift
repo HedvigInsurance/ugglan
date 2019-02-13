@@ -28,6 +28,8 @@ extension PresentationStyle {
 struct ActivityView {
     let activityItems: [Any]
     let applicationActivities: [UIActivity]?
+    let sourceView: UIView?
+    let sourceRect: CGRect?
 }
 
 extension ActivityView: Presentable {
@@ -36,6 +38,11 @@ extension ActivityView: Presentable {
             activityItems: activityItems,
             applicationActivities: applicationActivities
         )
+        
+        if let popover = viewController.popoverPresentationController, let sourceRect = sourceRect {
+            popover.sourceView = sourceView
+            popover.sourceRect = sourceRect
+        }
 
         return (viewController, NilDisposer())
     }

@@ -13,6 +13,7 @@ struct KeyValueRow {
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
     let keySignal = ReadWriteSignal<String>("")
     let valueSignal = ReadWriteSignal<String>("")
+    let valueStyleSignal = ReadWriteSignal<TextStyle>(.rowTitle)
 }
 
 extension KeyValueRow: Viewable {
@@ -28,9 +29,11 @@ extension KeyValueRow: Viewable {
 
         let valueLabel = UILabel()
         row.append(valueLabel)
-
-        bag += valueSignal.atOnce().bindTo(valueLabel, \.text)
-
+        
+        bag += valueSignal.atOnce().withLatestFrom(valueStyleSignal.atOnce()).map {
+            StyledText(text: $0, style: $1)
+        }.bindTo(valueLabel, \.styledText)
+        
         return (row, bag)
     }
 }
