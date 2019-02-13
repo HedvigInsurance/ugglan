@@ -14,8 +14,17 @@ import WebKit
 
 struct DirectDebitSetup {
     let client: ApolloClient
+    let setupType: SetupType
 
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+    enum SetupType {
+        case initial, replacement
+    }
+
+    init(
+        setupType: SetupType = .initial,
+        client: ApolloClient = HedvigApolloClient.shared.client!
+    ) {
+        self.setupType = setupType
         self.client = client
     }
 }
@@ -25,7 +34,8 @@ extension DirectDebitSetup: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
-        viewController.title = String(.DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
+        viewController.title = setupType == .initial ? String(.DIRECT_DEBIT_SETUP_SCREEN_TITLE) :
+            String(.DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
 
         let dismissButton = UIBarButtonItem(
             title: String(.DIRECT_DEBIT_DISMISS_BUTTON),

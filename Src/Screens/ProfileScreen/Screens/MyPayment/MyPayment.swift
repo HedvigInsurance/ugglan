@@ -31,28 +31,34 @@ extension MyPayment: Presentable {
         let form = FormView()
         bag += viewController.install(form)
 
-        bag += client.fetch(query: ProfileQuery()).onValue { result in
-            if let insurance = result.data?.insurance {
-                let monthlyPaymentCircle = MonthlyPaymentCircle(monthlyCost: insurance.monthlyCost ?? 0)
-                bag += form.prepend(monthlyPaymentCircle)
+        bag += client.fetch(query: MyPaymentQuery()).onValue { result in
+            let monthlyPaymentCircle = MonthlyPaymentCircle(
+                monthlyCost: result.data?.insurance.monthlyCost ?? 0
+            )
+            bag += form.prepend(monthlyPaymentCircle)
 
-                let paymentDetailsSection = PaymentDetailsSection(insurance: insurance)
-                bag += form.append(paymentDetailsSection)
+            let paymentDetailsSection = PaymentDetailsSection()
+            bag += form.append(paymentDetailsSection)
 
-                let bankDetailsSection = BankDetailsSection(insurance: insurance)
-                bag += form.append(bankDetailsSection)
-            }
+            let bankDetailsSection = BankDetailsSection()
+            bag += form.append(bankDetailsSection)
 
             bag += form.append(Spacing(height: 20))
 
+            let hasAlreadyConnected = result.data?.bankAccount != nil
+
+            let buttonText = hasAlreadyConnected ? String(.MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(.MY_PAYMENT_DIRECT_DEBIT_BUTTON)
             let buttonSection = ButtonSection(
-                text: "Ändra bankkonto",
+                text: buttonText,
                 style: .normal
             )
             bag += form.append(buttonSection)
 
             bag += buttonSection.onSelect.onValue {
-                viewController.present(DirectDebitSetup(), options: [.autoPop])
+                let directDebitSetup = DirectDebitSetup(
+                    setupType: hasAlreadyConnected ? .replacement : .initial
+                )
+                viewController.present(directDebitSetup, options: [.autoPop])
             }
         }
 

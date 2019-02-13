@@ -7,14 +7,18 @@ SWIFT_LINT=Pods/Swiftlint/swiftlint
 if [[ -e "${SWIFT_LINT}" ]]; then
     count=0
     for file_path in $(git ls-files -m --exclude-from=.gitignore | grep ".swift$"); do
-        export SCRIPT_INPUT_FILE_$count=$file_path
-        count=$((count + 1))
+        if [ -f $file_path ]; then
+            export SCRIPT_INPUT_FILE_$count=$file_path
+            count=$((count + 1))
+        fi
     done
 
 ##### Check for modified files in unstaged/Staged area #####
     for file_path in $(git diff --name-only --cached | grep ".swift$"); do
-        export SCRIPT_INPUT_FILE_$count=$file_path
-        count=$((count + 1))
+        if [ -f $file_path ]; then
+            export SCRIPT_INPUT_FILE_$count=$file_path
+            count=$((count + 1))
+        fi
     done
 
 ##### Make the count avilable as global variable #####

@@ -6,12 +6,17 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 
 struct PaymentDetailsSection {
-    let insurance: ProfileQuery.Data.Insurance
+    let client: ApolloClient
+
+    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+        self.client = client
+    }
 }
 
 extension PaymentDetailsSection: Viewable {
@@ -24,8 +29,18 @@ extension PaymentDetailsSection: Viewable {
             style: .sectionPlain
         )
 
-        let paymentRow = PaymentRow()
-        bag += section.append(paymentRow)
+        let row = KeyValueRow()
+        row.keySignal.value = String(.MY_PAYMENT_TYPE)
+
+        let dataValueSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+
+        bag += dataValueSignal.compactMap {
+            $0.data?.chargeDate
+        }.map { paymentDate in
+            return String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
+        }.bindTo(row.valueSignal)
+
+        bag += section.append(row)
 
         return (section, bag)
     }

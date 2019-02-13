@@ -10,6 +10,7 @@ import Form
 import Foundation
 
 struct KeyValueRow {
+    let isHiddenSignal = ReadWriteSignal<Bool>(false)
     let keySignal = ReadWriteSignal<String>("")
     let valueSignal = ReadWriteSignal<String>("")
 }
@@ -19,6 +20,7 @@ extension KeyValueRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView(title: "", style: .rowTitle)
+        bag += isHiddenSignal.atOnce().bindTo(row, \.isHidden)
 
         bag += keySignal.atOnce().onValue { value in
             row.title = value

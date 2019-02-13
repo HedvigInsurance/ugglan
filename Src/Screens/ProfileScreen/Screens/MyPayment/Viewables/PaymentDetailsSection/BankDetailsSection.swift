@@ -6,12 +6,17 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 
 struct BankDetailsSection {
-    let insurance: ProfileQuery.Data.Insurance
+    let client: ApolloClient
+
+    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+        self.client = client
+    }
 }
 
 extension BankDetailsSection: Viewable {
@@ -24,8 +29,25 @@ extension BankDetailsSection: Viewable {
             style: .sectionPlain
         )
 
-        let bankRow = BankRow()
-        bag += section.append(bankRow)
+        let row = KeyValueRow()
+        bag += section.append(row)
+
+        let dataValueSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+        let noBankAccountSignal = dataValueSignal.filter {
+            $0.data?.bankAccount == nil
+        }
+
+        bag += noBankAccountSignal.map { _ in "Ej kopplat" }.bindTo(row.keySignal)
+
+        let dataSignal = dataValueSignal.compactMap { $0.data }
+
+        bag += dataSignal.compactMap {
+            $0.bankAccount?.bankName
+        }.bindTo(row.keySignal)
+
+        bag += dataSignal.compactMap {
+            $0.bankAccount?.descriptor
+        }.bindTo(row.valueSignal)
 
         return (section, bag)
     }

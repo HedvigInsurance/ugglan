@@ -1,0 +1,11 @@
+query MyPayment {
+    insurance {
+        monthlyCost
+    }
+    bankAccount {
+        bankName
+        descriptor
+        directDebitStatus
+    }
+    chargeDate
+}

@@ -135,9 +135,9 @@ public struct Localization {
         );
 
         if (replacementArguments.length) {
-          const argumentNames = getReplacementArgumentNames(
-            replacementArguments
-          );
+          const argumentNames = [
+            ...new Set(getReplacementArgumentNames(replacementArguments))
+          ];
 
           let result =
             description +
@@ -204,7 +204,4 @@ fs.writeFile(swiftFileLocation, output, function(err) {
 });
 
 const { exec } = require("child_process");
-exec(
-  __dirname +
-    `swiftformat ${swiftFileLocation}`
-);
+exec(__dirname + `swiftformat ${swiftFileLocation}`);
