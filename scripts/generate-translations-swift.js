@@ -204,4 +204,4 @@ fs.writeFile(swiftFileLocation, output, function(err) {
 });
 
 const { exec } = require("child_process");
-exec(__dirname + `swiftformat ${swiftFileLocation}`);
+exec(`swiftformat ${swiftFileLocation}`);
