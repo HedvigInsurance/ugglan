@@ -31,7 +31,6 @@ extension CircleLabel: Viewable {
         let label = UILabel()
         bag += label.setDynamicText(labelText)
 
-        label.backgroundColor = backgroundColor
         label.clipsToBounds = true
         label.textAlignment = .center
         label.font = HedvigFonts.circularStdBold?.withSize(30)
@@ -40,15 +39,27 @@ extension CircleLabel: Viewable {
         label.numberOfLines = 0
         label.adjustsFontSizeToFitWidth = true
 
-        view.addSubview(label)
+        let labelContainer = UIView()
+        labelContainer.backgroundColor = backgroundColor
 
-        bag += label.didLayoutSignal.onValue { _ in
-            label.layer.cornerRadius = label.frame.height * 0.5
+        labelContainer.addSubview(label)
+
+        bag += labelContainer.didLayoutSignal.onValue { _ in
+            labelContainer.layer.cornerRadius = labelContainer.frame.height * 0.5
         }
 
-        label.snp.makeConstraints { make in
-            make.width.equalTo(label.snp.height)
-            make.height.equalToSuperview()
+        bag += label.didLayoutSignal.onValue { _ in
+            label.snp.remakeConstraints { make in
+                make.width.equalToSuperview().inset(20)
+                make.height.equalToSuperview().inset(20)
+                make.center.equalToSuperview()
+            }
+        }
+
+        view.addSubview(labelContainer)
+
+        labelContainer.snp.makeConstraints { make in
+            make.height.width.equalTo(view.snp.height)
             make.center.equalToSuperview()
         }
 

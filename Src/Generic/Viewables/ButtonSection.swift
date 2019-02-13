@@ -13,23 +13,21 @@ import UIKit
 
 struct ButtonSection {
     let text: ReadWriteSignal<String>
-    let textStyle: ReadWriteSignal<TextStyle>
-    let sectionStyle: ReadWriteSignal<SectionStyle>
-    let selectedBackground: ReadWriteSignal<SectionStyle.Background>
+    let style: Style
+
+    enum Style {
+        case normal, danger
+    }
 
     private let onSelectCallbacker = Callbacker<Void>()
     let onSelect: Signal<Void>
 
     init(
         text: String,
-        textStyle: TextStyle,
-        sectionStyle: SectionStyle,
-        selectedBackground: SectionStyle.Background
+        style: Style
     ) {
         self.text = ReadWriteSignal(text)
-        self.textStyle = ReadWriteSignal(textStyle)
-        self.sectionStyle = ReadWriteSignal(sectionStyle)
-        self.selectedBackground = ReadWriteSignal(selectedBackground)
+        self.style = style
         onSelect = onSelectCallbacker.signal()
     }
 }
@@ -39,15 +37,36 @@ extension ButtonSection: Viewable {
         let bag = DisposeBag()
         let section = SectionView(headerView: nil, footerView: nil)
 
-        bag += sectionStyle.atOnce().withLatestFrom(selectedBackground.atOnce()).onValue({ sectionStyle, _ in
-            section.dynamicStyle = DynamicSectionStyle { _ -> SectionStyle in
-                sectionStyle.restyled({ (style: inout SectionStyle) in
-                    style.selectedBackground = .selectedDanger
-                })
-            }
-        })
+        section.dynamicStyle = DynamicSectionStyle { trait -> SectionStyle in
+            SectionStyle.sectionPlain.restyled({ (style: inout SectionStyle) in
+                if trait.isPad {
+                    style.background = .standardRoundedBorder
 
-        let buttonRow = ButtonRow(text: text, style: textStyle)
+                    if self.style == .normal {
+                        style.selectedBackground = .selectedRoundedBorder
+                    } else {
+                        style.selectedBackground = .selectedDangerRoundedBorder
+                    }
+                } else {
+                    style.background = .standard
+                    style.selectedBackground = .selectedDanger
+
+                    if self.style == .normal {
+                        style.selectedBackground = .selectedRoundedBorder
+                    } else {
+                        style.selectedBackground = .selectedDangerRoundedBorder
+                    }
+                }
+            })
+        }
+
+        let buttonRow = ButtonRow(
+            text: "",
+            style: style == .normal ? .normalButton : .dangerButton
+        )
+
+        bag += text.atOnce().bindTo(buttonRow.text)
+
         bag += buttonRow.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
 
         bag += section.append(buttonRow)

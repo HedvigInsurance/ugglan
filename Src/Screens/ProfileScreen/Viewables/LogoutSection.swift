@@ -21,9 +21,7 @@ extension LogoutSection: Viewable {
 
         let logoutButtonSection = ButtonSection(
             text: String(.LOGOUT_BUTTON),
-            textStyle: .dangerButton,
-            sectionStyle: .sectionPlain,
-            selectedBackground: .selectedDanger
+            style: .danger
         )
 
         bag += logoutButtonSection.onSelect.onValue({ _ in

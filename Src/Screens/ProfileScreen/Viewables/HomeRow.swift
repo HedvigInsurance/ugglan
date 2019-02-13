@@ -13,20 +13,37 @@ import Presentation
 
 struct HomeRow {
     let address: ReadWriteSignal<String> = ReadWriteSignal("")
+    let presentingViewController: UIViewController
 }
 
 extension HomeRow: Viewable {
-    func materialize(events _: SelectableViewableEvents) -> (IconRow, Disposable) {
+    func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
         let row = IconRow(
             title: String(.PROFILE_MY_HOME_ROW_TITLE),
             subtitle: "",
-            iconAsset: Asset.home
+            iconAsset: Asset.home,
+            options: [.withArrow]
         )
 
         bag += address.atOnce().bindTo(row.subtitle)
 
+        bag += events.onSelect.onValue { _ in
+            let myHome = MyHome()
+            self.presentingViewController.present(
+                myHome,
+                style: .default,
+                options: [.autoPop, .largeTitleDisplayMode(.never)]
+            )
+        }
+
         return (row, bag)
+    }
+}
+
+extension HomeRow: Previewable {
+    func preview() -> (MyInfo, PresentationOptions) {
+        return (MyInfo(), [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

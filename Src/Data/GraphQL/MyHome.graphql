@@ -1,0 +1,7 @@
+query MyHome {
+    insurance {
+        address
+        postalNumber
+        type
+    }
+}

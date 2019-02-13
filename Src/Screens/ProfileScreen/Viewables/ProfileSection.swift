@@ -40,7 +40,9 @@ extension ProfileSection: Viewable {
             .map { (firstName: $0.firstName!, lastName: $0.lastName!) }
             .bindTo(myInfoRow.nameSignal)
 
-        let homeRow = HomeRow()
+        let homeRow = HomeRow(
+            presentingViewController: presentingViewController
+        )
         bag += section.append(homeRow)
 
         bag += dataSignal.atOnce()
