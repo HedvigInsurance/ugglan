@@ -64,6 +64,30 @@ extension SectionView {
         }
     }
 
+    func append<V: Viewable>(
+        _ viewable: V,
+        onCreate: @escaping (_ row: SubviewOrderable) -> Void = { _ in }
+    ) -> Disposable where
+        V.Matter == UIView,
+        V.Result == Disposable,
+        V.Events == ViewableEvents {
+        let (matter, result, disposable) = materializeViewable(
+            viewable: viewable
+        )
+
+        let subviewOrderable = append(matter)
+
+        let bag = DisposeBag()
+
+        onCreate(subviewOrderable)
+
+        return Disposer {
+            bag.dispose()
+            result.dispose()
+            disposable.dispose()
+        }
+    }
+
     func append<V: Viewable, Matter: Viewable>(
         _ viewable: V,
         onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }

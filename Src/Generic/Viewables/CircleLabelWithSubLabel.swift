@@ -14,12 +14,16 @@ import UIKit
 struct CircleLabelWithSubLabel {
     let labelText: DynamicString
     let subLabelText: DynamicString
-    let color: String
+    let appearance: Appearance
 
-    init(labelText: DynamicString, subLabelText: DynamicString, color: String) {
+    enum Appearance {
+        case purple, turquoise
+    }
+
+    init(labelText: DynamicString, subLabelText: DynamicString, appearance: Appearance) {
         self.labelText = labelText
         self.subLabelText = subLabelText
-        self.color = color
+        self.appearance = appearance
     }
 }
 
@@ -52,13 +56,13 @@ extension CircleLabelWithSubLabel: Viewable {
         circleView.layer.shadowRadius = 16
         circleView.layer.shadowColor = UIColor.darkGray.cgColor
 
-        switch color {
-        case "turquoise":
+        switch appearance {
+        case .turquoise:
             circleView.backgroundColor = UIColor.turquoise
             titleLabel.textColor = UIColor.blackPurple
             subLabel.textColor = UIColor.blackPurple
-        default:
-            circleView.backgroundColor = UIColor.gray
+        case .purple:
+            circleView.backgroundColor = UIColor.purple
             titleLabel.textColor = UIColor.white
             subLabel.textColor = UIColor.white
         }

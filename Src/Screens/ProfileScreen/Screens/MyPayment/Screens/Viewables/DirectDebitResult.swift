@@ -52,7 +52,7 @@ enum DirectDebitResultType {
     var buttonType: ButtonType {
         switch self {
         case .success:
-            return .standard(backgroundColor: .green, textColor: .white)
+            return .standard(backgroundColor: .turquoise, textColor: .white)
         case .failure:
             return .standard(backgroundColor: .pink, textColor: .white)
         }
