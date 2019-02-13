@@ -37,7 +37,9 @@ extension BankDetailsSection: Viewable {
             $0.data?.bankAccount == nil
         }
 
-        bag += noBankAccountSignal.map { _ in "Ej kopplat" }.bindTo(row.keySignal)
+        bag += noBankAccountSignal.map {
+            _ in String(.MY_PAYMENT_NOT_CONNECTED)
+        }.bindTo(row.keySignal)
 
         let dataSignal = dataValueSignal.compactMap { $0.data }
 
