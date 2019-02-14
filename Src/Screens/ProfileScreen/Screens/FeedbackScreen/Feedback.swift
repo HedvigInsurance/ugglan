@@ -17,12 +17,19 @@ struct Feedback {
 
 extension Feedback: Presentable {
     func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        viewController.title = String("Feedback")
-        
         let bag = DisposeBag()
         
-        let form = FormView()
+        let viewController = UIViewController()
+
+        viewController.title = String("Feedback")
+        
+        let form = FormView(sections: [], style: .zeroInsets)
+        
+        
+        let feedbackLabel = FeedbackLabel()
+        bag += form.prepend(feedbackLabel)
+        
+        bag += form.append(Spacing(height: 20))
         
         let feedbackSection = form.appendSection(
             headerView: nil,
@@ -33,8 +40,8 @@ extension Feedback: Presentable {
         let reportBugRow = ReportBugRow()
         bag += feedbackSection.append(reportBugRow)
         
-        let rateAppRow = RateAppRow()
-        bag += feedbackSection.append(rateAppRow)
+        let reviewAppRow = ReviewAppRow()
+        bag += feedbackSection.append(reviewAppRow)
 
         bag += viewController.install(form)
         
