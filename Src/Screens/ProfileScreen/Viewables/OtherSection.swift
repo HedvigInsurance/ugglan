@@ -32,7 +32,12 @@ extension OtherSection: Viewable {
         }
         
         let feedbackRow = FeedbackRow(presentingViewController: presentingViewController)
-        bag += section.append(feedbackRow)
+        bag += section.append(feedbackRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: feedbackRow
+            )
+        }
 
         return (section, bag)
     }

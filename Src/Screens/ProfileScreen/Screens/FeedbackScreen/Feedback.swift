@@ -30,6 +30,12 @@ extension Feedback: Presentable {
             style: .sectionPlain
         )
         
+        let reportBugRow = ReportBugRow()
+        bag += feedbackSection.append(reportBugRow)
+        
+        let rateAppRow = RateAppRow()
+        bag += feedbackSection.append(rateAppRow)
+
         bag += viewController.install(form)
         
         return (viewController, bag)

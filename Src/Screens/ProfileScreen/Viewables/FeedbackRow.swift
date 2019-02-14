@@ -43,3 +43,10 @@ extension FeedbackRow: Viewable {
     }
 }
 
+extension FeedbackRow: Previewable {
+    func preview() -> (Feedback, PresentationOptions) {
+        let feedback = Feedback(presentingViewController: presentingViewController)
+        return (feedback, [.autoPop, .largeTitleDisplayMode(.never)])
+    }
+}
+
