@@ -14,15 +14,27 @@ import Presentation
 struct ReportBugRow {}
 
 extension ReportBugRow: Viewable {
-    func materialize(events _: SelectableViewableEvents) -> (KeyValueRow, Disposable) {
+    func materialize(events: SelectableViewableEvents) -> (KeyValueRow, Disposable) {
         let bag = DisposeBag()
         
         let row = KeyValueRow()
         
-        row.keySignal.value = "Rapportera bugg"
-        row.valueSignal.value = "ios@hedvig.com"
+        let emailAddress = "ios@hedvig.com"
         
-        row.valueStyleSignal.value = .rowTitleDisabled
+        row.keySignal.value = "Rapportera bugg"
+        row.valueSignal.value = emailAddress
+        
+        row.valueStyleSignal.value = .rowTitlePurple
+    
+        bag += events.onSelect.onValue { _ in
+            if let url = URL(string: "mailto:\(emailAddress)") {
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(url)
+                } else {
+                    UIApplication.shared.openURL(url)
+                }
+            }
+        }
         
         return (row, bag)
     }

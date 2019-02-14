@@ -60,7 +60,12 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .gray
     }
-
+    
+    static let rowTitlePurple = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .purple
+    }
+    
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack

@@ -22,7 +22,8 @@ extension RateAppRow: Viewable {
         row.keySignal.value = "Betygsätt appen"
         row.valueSignal.value = "App Store"
         
-        row.valueStyleSignal.value = .rowTitleDisabled
+        row.valueStyleSignal.value = .rowTitlePurple
+        
         
         return (row, bag)
     }
