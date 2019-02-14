@@ -1,8 +1,9 @@
 //
 //  FormStyle.swift
-//  ugglan
+//  Hedvig
 //
 //  Created by Gustaf Gunér on 2019-02-14.
+//  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
 import Foundation

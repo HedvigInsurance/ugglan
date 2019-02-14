@@ -27,8 +27,23 @@ struct BackgroundWithLabel {
 
 extension BackgroundWithLabel: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
         let bag = DisposeBag()
+        
+        let view = UIView()
+        view.backgroundColor = backgroundColor
+        
+        if backgroundImage != nil {
+            let imageView = UIImageView()
+            imageView.image = backgroundImage
+            imageView.contentMode = .scaleAspectFit
+            
+            view.addSubview(imageView)
+            
+            imageView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+            }
+        }
         
         let label = UILabel()
         bag += label.setDynamicText(labelText)
@@ -42,8 +57,6 @@ extension BackgroundWithLabel: Viewable {
         label.adjustsFontSizeToFitWidth = true
         
         let labelContainer = UIView()
-        view.backgroundColor = backgroundColor
-        
         labelContainer.addSubview(label)
         
         bag += label.didLayoutSignal.onValue { _ in

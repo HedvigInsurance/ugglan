@@ -25,7 +25,6 @@ extension Feedback: Presentable {
         
         let form = FormView(sections: [], style: .zeroInsets)
         
-        
         let feedbackLabel = FeedbackLabel()
         bag += form.prepend(feedbackLabel)
         
