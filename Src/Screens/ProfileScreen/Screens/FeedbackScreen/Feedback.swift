@@ -36,7 +36,7 @@ extension Feedback: Presentable {
             style: .sectionPlain
         )
         
-        let reportBugRow = ReportBugRow()
+        let reportBugRow = ReportBugRow(presentingViewController: self.presentingViewController)
         bag += feedbackSection.append(reportBugRow)
         
         let reviewAppRow = ReviewAppRow()

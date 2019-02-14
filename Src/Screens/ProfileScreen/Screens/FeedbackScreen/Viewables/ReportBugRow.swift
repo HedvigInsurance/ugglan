@@ -10,15 +10,18 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import MessageUI
 
-struct ReportBugRow {}
+struct ReportBugRow {
+    let presentingViewController: UIViewController
+}
 
 extension ReportBugRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (KeyValueRow, Disposable) {
         let bag = DisposeBag()
         
         let row = KeyValueRow()
-        
+                
         let emailAddress = "ios@hedvig.com"
         
         row.keySignal.value = "Rapportera bugg"
@@ -27,12 +30,18 @@ extension ReportBugRow: Viewable {
         row.valueStyleSignal.value = .rowTitlePurple
     
         bag += events.onSelect.onValue { _ in
-            if let url = URL(string: "mailto:\(emailAddress)") {
-                if #available(iOS 10.0, *) {
-                    UIApplication.shared.open(url)
-                } else {
-                    UIApplication.shared.openURL(url)
-                }
+            if MFMailComposeViewController.canSendMail() {
+                let mailView = MailView(
+                    recipients: [emailAddress]
+                )
+                
+                let activityViewPresentation = Presentation(
+                    mailView,
+                    style: .activityView,
+                    options: .defaults
+                )
+                
+                self.presentingViewController.present(activityViewPresentation)
             }
         }
         
