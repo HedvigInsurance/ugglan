@@ -51,6 +51,9 @@ extension About: Presentable {
 
         let versionRow = VersionRow()
         bag += versionSection.append(versionRow)
+        
+        let memberIdRow = MemberIdRow()
+        bag += versionSection.append(memberIdRow)
 
         bag += form.append(Spacing(height: 15))
 
