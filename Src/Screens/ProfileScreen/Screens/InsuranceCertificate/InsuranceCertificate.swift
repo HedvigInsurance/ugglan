@@ -31,7 +31,7 @@ extension InsuranceCertificate: Presentable {
             guard let value = value, let url = URL(string: value) else { return nil }
             return url
         }.bindTo(pdfViewer.url)
-        
+
         let activityButton = UIBarButtonItem(system: .action)
 
         bag += viewController.navigationItem.addItem(

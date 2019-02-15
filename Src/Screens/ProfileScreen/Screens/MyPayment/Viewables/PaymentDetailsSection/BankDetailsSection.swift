@@ -31,7 +31,7 @@ extension BankDetailsSection: Viewable {
 
         let row = KeyValueRow()
         row.valueStyleSignal.value = .rowTitleDisabled
-        
+
         bag += section.append(row)
 
         let dataValueSignal = client.fetch(query: MyPaymentQuery()).valueSignal
