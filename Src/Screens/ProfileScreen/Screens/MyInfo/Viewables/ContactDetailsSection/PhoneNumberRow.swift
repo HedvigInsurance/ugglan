@@ -75,10 +75,10 @@ extension PhoneNumberRow: Viewable {
             })
         }
 
-        bag += client.fetch(
+        bag += client.watch(
             query: MyInfoQuery(),
             cachePolicy: .returnCacheDataAndFetch
-        ).valueSignal.compactMap { $0.data?.member.phoneNumber }.map { phoneNumber in
+        ).compactMap { $0.data?.member.phoneNumber }.map { phoneNumber in
             StyledText(text: phoneNumber, style: .rowTitle)
         }.bindTo(valueTextField, \.styledText)
 

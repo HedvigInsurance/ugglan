@@ -68,10 +68,10 @@ extension EmailRow: Viewable {
             })
         }
 
-        bag += client.fetch(
+        bag += client.watch(
             query: MyInfoQuery(),
             cachePolicy: .returnCacheDataAndFetch
-        ).valueSignal.compactMap { $0.data?.member.email }.map { email in
+        ).compactMap { $0.data?.member.email }.map { email in
             StyledText(text: email, style: .rowTitle)
         }.bindTo(valueTextField, \.styledText)
 
