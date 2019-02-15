@@ -30,15 +30,11 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
 `brew install swiftlint`
 
-7. Generate Xcode project
-
-`struct generate`
-
-8. Install dependencies
+7. Install dependencies
 
 `carthage update --platform iOS`
 
-9. Add aliases to your bash/zsh config
+8. Add aliases to your bash/zsh config
 
    1. open ~/.bashrc or ~/.zshrc
 
@@ -46,13 +42,17 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
    `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="sh scripts/update-translations.sh" alias assets="swiftgen"`
 
-10. Install Apollo CLI
+9. Install Apollo CLI
 
 `npm install -g apollo`
 
-11. Run file generation scripts
+10. Run file generation scripts
 
 `graphqlSchema graphql translations assets`
+
+11. Generate Xcode project
+
+`struct generate`
 
 12. Open the projext
 
