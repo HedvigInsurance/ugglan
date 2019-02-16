@@ -11,23 +11,7 @@ import Form
 import Foundation
 
 struct ContactDetailsSection {
-    let isEditingSignal: ReadWriteSignal<Bool>
-    let shouldSaveSignal: Signal<Void>
-    let saveResultSignal: Signal<SaveResult>
-    private let saveResultCallbacker = Callbacker<SaveResult>()
-
-    init(
-        isEditingSignal: ReadWriteSignal<Bool>,
-        shouldSaveSignal: Signal<Void>
-    ) {
-        self.isEditingSignal = isEditingSignal
-        self.shouldSaveSignal = shouldSaveSignal
-        saveResultSignal = saveResultCallbacker.signal()
-    }
-}
-
-enum SaveResult {
-    case success, failure(reason: String)
+    let state: MyInfoState
 }
 
 extension ContactDetailsSection: Viewable {
@@ -41,33 +25,13 @@ extension ContactDetailsSection: Viewable {
         )
 
         let phoneNumberRow = PhoneNumberRow(
-            isEditingSignal: isEditingSignal,
-            shouldSaveSignal: shouldSaveSignal
+            state: state
         )
         bag += section.append(phoneNumberRow)
 
         let emailRow = EmailRow(
-            isEditingSignal: isEditingSignal,
-            shouldSaveSignal: shouldSaveSignal
+            state: state
         )
-
-        bag += isEditingSignal.filter { $0 }.onValueDisposePrevious { _ -> Disposable? in
-            return join(
-                emailRow.saveResultSignal.future,
-                phoneNumberRow.saveResultSignal.future
-            ).onValue { emailResult, phoneResult in
-                switch emailResult {
-                case .failure:
-                    self.saveResultCallbacker.callAll(with: emailResult)
-                    return
-                case .success:
-                    break
-                }
-
-                self.saveResultCallbacker.callAll(with: phoneResult)
-            }.disposable
-        }
-
         bag += section.append(emailRow)
 
         return (section, bag)

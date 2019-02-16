@@ -6,20 +6,12 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-import Apollo
 import Flow
 import Form
 import Presentation
 import UIKit
 
-struct MyInfo {
-    let client: ApolloClient
-    let isEditingSignal = ReadWriteSignal<Bool>(false)
-
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
-        self.client = client
-    }
-}
+struct MyInfo {}
 
 extension MyInfo: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
@@ -28,56 +20,50 @@ extension MyInfo: Presentable {
         let viewController = UIViewController()
         viewController.title = String(.MY_INFO_TITLE)
 
+        let state = MyInfoState(presentingViewController: viewController)
+        bag += state.loadData()
+
         let form = FormView()
 
         let saveButton = ActivityBarButton(
-            item: UIBarButtonItem(title: "Spara", style: .navigationBarButton),
+            item: UIBarButtonItem(title: "Spara", style: .navigationBarButtonPrimary),
             position: .right
         )
         bag += saveButton.onValue { _ in
-            saveButton.startAnimating()
+            bag += state.save()
+        }
+        
+        bag += state.isSavingSignal.onValue { saving in
+            if saving {
+                 saveButton.startAnimating()
+            } else {
+                saveButton.stopAnimating()
+            }
         }
 
         let nameCircle = NameCircle()
         bag += form.prepend(nameCircle)
 
         let contactDetailsSection = ContactDetailsSection(
-            isEditingSignal: isEditingSignal,
-            shouldSaveSignal: saveButton.toVoid().plain()
+            state: state
         )
         bag += form.append(contactDetailsSection)
-
-        bag += contactDetailsSection.saveResultSignal.onValue { result in
-            switch result {
-            case .success:
-                return
-            case let .failure(reason):
-                let alert = Alert<Void>(
-                    title: String(.MY_INFO_ALERT_SAVE_FAILURE_TITLE),
-                    message: reason,
-                    actions: [
-                        Alert.Action(title: String(.MY_INFO_ALERT_SAVE_FAILURE_BUTTON)) {
-                            ()
-                        },
-                    ]
-                )
-                viewController.present(alert)
-            }
-        }
 
         let cancelButton = UIBarButtonItem(
             title: String(.MY_INFO_CANCEL_BUTTON),
             style: .navigationBarButton
         )
 
-        bag += isEditingSignal.atOnce().filter { $0 }.onValue { _ in
+        bag += state.isEditingSignal.atOnce().filter { $0 }.onValue { _ in
             saveButton.attachTo(viewController.navigationItem)
             viewController.navigationItem.setLeftBarButtonItems([cancelButton], animated: true)
         }
 
-        bag += contactDetailsSection.saveResultSignal.onValue { _ in
-            saveButton.remove()
-            viewController.navigationItem.setLeftBarButtonItems([], animated: true)
+        bag += state.onSaveSignal.onValue { result in
+            if result.isSuccess() {
+                saveButton.remove()
+                viewController.navigationItem.setLeftBarButtonItems([], animated: true)
+            }
         }
 
         bag += viewController.install(form)
