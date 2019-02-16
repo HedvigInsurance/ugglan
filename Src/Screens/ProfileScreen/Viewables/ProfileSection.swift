@@ -18,7 +18,7 @@ struct ProfileSection {
 extension ProfileSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
-        let section = SectionView(header: nil, footer: nil, style: .sectionPlain)
+        let section = SectionView(header: nil, footer: nil, style: .sectionPlainLargeIcons)
         section.isHidden = true
 
         bag += dataSignal.map { $0 == nil }.bindTo(section, \.isHidden)
