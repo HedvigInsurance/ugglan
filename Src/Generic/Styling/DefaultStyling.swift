@@ -8,6 +8,7 @@
 
 import Form
 import Foundation
+import UIKit
 
 extension DefaultStyling {
     static func installCustom() {
@@ -65,6 +66,11 @@ extension DefaultStyling {
         )
 
         UIBarButtonItem.appearance().tintColor = .purple
+        
+        UINavigationBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
+        //UINavigationBar.appearance().setBackgroundImage(UIColor.white.as1ptImage(), for: .default)
+        
+        UINavigationBar.appearance().barTintColor = UIColor.white
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [
