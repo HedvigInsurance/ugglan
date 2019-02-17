@@ -68,7 +68,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance().tintColor = .purple
         
         UINavigationBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
-        //UINavigationBar.appearance().setBackgroundImage(UIColor.white.as1ptImage(), for: .default)
+        UINavigationBar.appearance().isTranslucent = false
         
         UINavigationBar.appearance().barTintColor = UIColor.white
 
