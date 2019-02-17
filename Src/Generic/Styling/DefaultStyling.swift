@@ -28,8 +28,6 @@ extension DefaultStyling {
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
         
-        UITextField.appearance().tintColor = .turquoise
-
         if #available(iOS 10.0, *) {
             UITabBar.appearance().unselectedItemTintColor = .offBlack
             UITabBar.appearance().tintColor = .purple

@@ -64,7 +64,7 @@ extension InsettedStyle where Style == SeparatorStyle {
         style: .darkGray,
         insets: UIEdgeInsets(
             top: 0,
-            left: 0,
+            left: SectionStyle.sectionPlainRowInsets.left,
             bottom: 0,
             right: 0
         )
@@ -74,7 +74,7 @@ extension InsettedStyle where Style == SeparatorStyle {
         style: .darkGray,
         insets: UIEdgeInsets(
             top: 0,
-            left: 75,
+            left: SectionStyle.sectionPlainRowInsets.left + 60,
             bottom: 0,
             right: 0
         )
@@ -155,24 +155,29 @@ extension HeaderFooterStyle {
         backgroundImage: nil,
         insets: UIEdgeInsets(
             top: 15,
-            left: 15,
+            left: 20,
             bottom: 10,
-            right: 15
+            right: 20
         ),
         emptyHeight: 0
     )
 }
 
 extension SectionStyle {
+    static let sectionPlainRowInsets = UIEdgeInsets(
+        top: 15,
+        left: 20,
+        bottom: 15,
+        right: 20
+    )
+    
+    static let sectionPlainItemSpacing: CGFloat = 10
+    static let sectionPlainMinRowHeight: CGFloat = 0
+    
     static let sectionPlain = SectionStyle(
-        rowInsets: UIEdgeInsets(
-            top: 15,
-            left: 15,
-            bottom: 15,
-            right: 15
-        ),
-        itemSpacing: 10,
-        minRowHeight: 0,
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standard,
         selectedBackground: .selected,
         header: .standard,
@@ -180,14 +185,9 @@ extension SectionStyle {
     )
     
     static let sectionPlainLargeIcons = SectionStyle(
-        rowInsets: UIEdgeInsets(
-            top: 15,
-            left: 15,
-            bottom: 15,
-            right: 15
-        ),
-        itemSpacing: 10,
-        minRowHeight: 0,
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standardLargeIcons,
         selectedBackground: .selectedLargeIcons,
         header: .standard,
