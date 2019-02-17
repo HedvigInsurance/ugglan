@@ -30,6 +30,10 @@ extension EmailRow: Viewable {
             placeholder: "",
             style: textFieldStyle
         )
+        
+        if #available(iOS 10.0, *) {
+            valueTextField.textContentType = .emailAddress
+        }
 
         row.append(valueTextField)
         

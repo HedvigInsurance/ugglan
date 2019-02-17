@@ -30,6 +30,10 @@ extension PhoneNumberRow: Viewable {
             placeholder: "",
             style: textFieldStyle
         )
+        
+        if #available(iOS 10.0, *) {
+            valueTextField.textContentType = .telephoneNumber
+        }
 
         row.append(valueTextField)
         
