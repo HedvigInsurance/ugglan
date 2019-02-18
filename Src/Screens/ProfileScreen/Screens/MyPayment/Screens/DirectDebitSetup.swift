@@ -125,11 +125,7 @@ extension DirectDebitSetup: Presentable {
                 
                 if type == .success {
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-                        data.bankAccount = MyPaymentQuery.Data.BankAccount(
-                            bankName: "",
-                            descriptor: "",
-                            directDebitStatus: .pending
-                        )
+                        data.registerAccountProcessingStatus = .requested
                     })
                 }
 
