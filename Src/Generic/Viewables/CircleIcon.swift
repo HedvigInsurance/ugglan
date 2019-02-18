@@ -32,6 +32,11 @@ extension CircleIcon: Viewable {
 
         let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
         circleView.addSubview(icon)
+        
+        circleView.layer.shadowOpacity = 0.2
+        circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
+        circleView.layer.shadowRadius = 16
+        circleView.layer.shadowColor = UIColor.darkGray.cgColor
 
         view.addSubview(circleView)
 
