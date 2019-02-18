@@ -107,6 +107,7 @@ extension DirectDebitSetup: Presentable {
 
                 bag += viewController.present(alert).onValue { shouldDismiss in
                     if shouldDismiss {
+                        self.client.perform(mutation: CancelDirectDebitRequestMutation()).onValue { _ in }
                         completion(.success)
                     }
                 }

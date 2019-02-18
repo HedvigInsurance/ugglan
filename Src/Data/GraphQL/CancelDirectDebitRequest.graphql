@@ -1,0 +1,3 @@
+mutation CancelDirectDebitRequest {
+    cancelDirectDebitRequest
+}
