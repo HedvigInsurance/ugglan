@@ -26,7 +26,7 @@ extension MyInfo: Presentable {
         let form = FormView()
 
         let saveButton = ActivityBarButton(
-            item: UIBarButtonItem(title: "Spara", style: .navigationBarButtonPrimary),
+            item: UIBarButtonItem(title: String(.MY_INFO_SAVE_BUTTON), style: .navigationBarButtonPrimary),
             position: .right
         )
         bag += saveButton.onValue { _ in
