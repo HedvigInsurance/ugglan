@@ -83,7 +83,7 @@ extension MyHome: Presentable {
             bag += form.append(buttonSection)
 
             bag += buttonSection.onSelect.onValue {
-                viewController.present(Chat(), style: .modally(), options: [.defaults])
+                MyHomeRouting.openChat(viewController: viewController)
             }
         }
 
