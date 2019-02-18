@@ -13,6 +13,7 @@ import Foundation
 
 struct BankDetailsSection {
     let client: ApolloClient
+    let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
     init(client: ApolloClient = HedvigApolloClient.shared.client!) {
         self.client = client
@@ -28,13 +29,14 @@ extension BankDetailsSection: Viewable {
             footer: nil,
             style: .sectionPlain
         )
+        bag += isHiddenSignal.bindTo(section, \.isHidden)
 
         let row = KeyValueRow()
         row.valueStyleSignal.value = .rowTitleDisabled
 
         bag += section.append(row)
 
-        let dataValueSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+        let dataValueSignal = client.watch(query: MyPaymentQuery())
         let noBankAccountSignal = dataValueSignal.filter {
             $0.data?.bankAccount == nil
         }

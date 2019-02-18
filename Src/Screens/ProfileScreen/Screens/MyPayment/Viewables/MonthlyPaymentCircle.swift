@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 struct MonthlyPaymentCircle {
-    let monthlyCost: Int
+    let monthlyCostSignal = ReadWriteSignal<Int?>(nil)
 }
 
 extension MonthlyPaymentCircle: Viewable {
@@ -21,11 +21,17 @@ extension MonthlyPaymentCircle: Viewable {
         let containerView = UIView()
 
         let monthlyPaymentCircle = CircleLabelWithSubLabel(
-            labelText: DynamicString(String(monthlyCost)),
+            labelText: DynamicString(""),
             subLabelText: DynamicString(String(.PAYMENT_CURRENCY_OCCURRENCE)),
             appearance: .turquoise
         )
         bag += containerView.add(monthlyPaymentCircle)
+        
+        bag += monthlyCostSignal.compactMap {
+            $0
+        }.map {
+            String($0)
+        }.bindTo(monthlyPaymentCircle.labelText)
 
         let deductibleCircle = DeductibleCircle()
         bag += containerView.add(deductibleCircle)

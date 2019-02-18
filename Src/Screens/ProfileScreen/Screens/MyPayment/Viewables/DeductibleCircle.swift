@@ -18,11 +18,11 @@ extension DeductibleCircle: Viewable {
 
         let containerView = UIView()
 
-        let deductibleCircleText = DynamicString(String(.OFFER_BUBBLES_DEDUCTIBLE_TITLE))
+        let deductibleCircleText = DynamicString(String(.MY_PAYMENT_DEDUCTIBLE_CIRCLE))
 
         let deductibleCircle = CircleLabelSmall(
             labelText: deductibleCircleText,
-            color: "green"
+            color: .green
         )
 
         bag += containerView.add(deductibleCircle)

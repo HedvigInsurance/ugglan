@@ -13,6 +13,7 @@ import UIKit
 
 struct ButtonSection {
     let text: ReadWriteSignal<String>
+    let isHiddenSignal = ReadWriteSignal<Bool>(false)
     let style: Style
 
     enum Style {
@@ -36,6 +37,8 @@ extension ButtonSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(headerView: nil, footerView: nil)
+        
+        bag += isHiddenSignal.bindTo(section, \.isHidden)
 
         section.dynamicStyle = DynamicSectionStyle { trait -> SectionStyle in
             SectionStyle.sectionPlain.restyled({ (style: inout SectionStyle) in

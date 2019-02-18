@@ -14,6 +14,7 @@ import WebKit
 
 struct DirectDebitSetup {
     let client: ApolloClient
+    let store: ApolloStore
     let setupType: SetupType
 
     enum SetupType {
@@ -22,10 +23,12 @@ struct DirectDebitSetup {
 
     init(
         setupType: SetupType = .initial,
-        client: ApolloClient = HedvigApolloClient.shared.client!
+        client: ApolloClient = HedvigApolloClient.shared.client!,
+        store: ApolloStore = HedvigApolloClient.shared.store!
     ) {
         self.setupType = setupType
         self.client = client
+        self.store = store
     }
 }
 
@@ -118,6 +121,16 @@ extension DirectDebitSetup: Presentable {
                 let directDebitResult = DirectDebitResult(
                     type: type
                 )
+                
+                if type == .success {
+                    self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                        data.bankAccount = MyPaymentQuery.Data.BankAccount(
+                            bankName: "",
+                            descriptor: "",
+                            directDebitStatus: .pending
+                        )
+                    })
+                }
 
                 bag += containerView.add(directDebitResult) { view in
                     view.snp.makeConstraints({ make in
