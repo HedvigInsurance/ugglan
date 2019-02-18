@@ -43,7 +43,7 @@ extension HomeRow: Viewable {
 }
 
 extension HomeRow: Previewable {
-    func preview() -> (MyInfo, PresentationOptions) {
-        return (MyInfo(), [.autoPop, .largeTitleDisplayMode(.never)])
+    func preview() -> (MyHome, PresentationOptions) {
+        return (MyHome(), [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

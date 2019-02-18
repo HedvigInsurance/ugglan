@@ -43,7 +43,12 @@ extension ProfileSection: Viewable {
         let homeRow = HomeRow(
             presentingViewController: presentingViewController
         )
-        bag += section.append(homeRow)
+        bag += section.append(homeRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: homeRow
+            )
+        }
 
         bag += dataSignal.atOnce()
             .compactMap { $0?.insurance.address }
