@@ -69,8 +69,13 @@ extension DefaultStyling {
         
         UINavigationBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
         UINavigationBar.appearance().isTranslucent = false
+        UINavigationBar.appearance().barTintColor = UIColor.offWhite
         
-        UINavigationBar.appearance().barTintColor = UIColor.white
+        UITabBar.appearance().isTranslucent = false
+        UITabBar.appearance().barTintColor = UIColor.offWhite
+        UITabBar.appearance().backgroundImage = UIColor.offWhite.as1ptImage()
+        UITabBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
+        
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [
