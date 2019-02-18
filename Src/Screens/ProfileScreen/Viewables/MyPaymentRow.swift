@@ -12,20 +12,24 @@ import Foundation
 import Presentation
 
 struct MyPaymentRow {
-    let monthlyCost: Int
+    let monthlyCostSignal = ReadWriteSignal<Int?>(nil)
     let presentingViewController: UIViewController
 }
 
 extension MyPaymentRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
-
+        
         let row = IconRow(
             title: String(.PROFILE_PAYMENT_ROW_HEADER),
-            subtitle: "\(monthlyCost) \(String(.PAYMENT_CURRENCY_OCCURRENCE)) · \(String(.PROFILE_MY_PAYMENT_METHOD))",
+            subtitle: "",
             iconAsset: Asset.payment,
             options: [.withArrow]
         )
+        
+        bag += monthlyCostSignal.atOnce().compactMap { $0 }.map { monthlyCost in
+            "\(monthlyCost) \(String(.PAYMENT_CURRENCY_OCCURRENCE)) · \(String(.PROFILE_MY_PAYMENT_METHOD))"
+        }.bindTo(row.subtitle)
 
         bag += events.onSelect.onValue {
             let myPayment = MyPayment()
