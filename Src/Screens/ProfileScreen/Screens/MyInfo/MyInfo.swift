@@ -33,12 +33,8 @@ extension MyInfo: Presentable {
             bag += state.save()
         }
         
-        bag += state.isSavingSignal.onValue { saving in
-            if saving {
-                 saveButton.startAnimating()
-            } else {
-                saveButton.stopAnimating()
-            }
+        bag += state.isSavingSignal.filter { $0 }.onValue { _ in
+            saveButton.startAnimating()
         }
 
         let nameCircle = NameCircle()
@@ -63,6 +59,8 @@ extension MyInfo: Presentable {
             if result.isSuccess() {
                 saveButton.remove()
                 viewController.navigationItem.setLeftBarButtonItems([], animated: true)
+            } else {
+                saveButton.stopAnimating()
             }
         }
 
