@@ -47,7 +47,7 @@ extension MyCoinsured: Presentable {
 
         bag += client.watch(query: MyCoinsuredQuery()).compactMap {
             $0.data?.insurance.personsInHousehold
-        }.map { String($0) }.bindTo(circleLabel.labelText)
+        }.map { String($0 - 1) }.bindTo(circleLabel.labelText)
 
         bag += form.append(Spacing(height: 20))
 

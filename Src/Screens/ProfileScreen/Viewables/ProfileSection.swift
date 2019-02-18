@@ -86,7 +86,6 @@ extension ProfileSection: Viewable {
             .bindTo(insuranceCertificateRow.certificateUrlSignal)
 
         let myPaymentRow = MyPaymentRow(
-            monthlyCost: 0,
             presentingViewController: presentingViewController
         )
         bag += section.append(myPaymentRow) { row in
@@ -95,6 +94,11 @@ extension ProfileSection: Viewable {
                 previewable: myPaymentRow
             )
         }
+        
+        bag += dataSignal
+            .atOnce()
+            .map { $0?.insurance.monthlyCost }
+            .bindTo(myPaymentRow.monthlyCostSignal)
 
         let myCoinsuredRow = MyCoinsuredRow(
             presentingViewController: presentingViewController
