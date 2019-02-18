@@ -122,7 +122,7 @@ extension DirectDebitSetup: Presentable {
                 let directDebitResult = DirectDebitResult(
                     type: type
                 )
-                
+
                 if type == .success {
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                         data.registerAccountProcessingStatus = .requested

@@ -38,7 +38,7 @@ extension PaymentDetailsSection: Viewable {
         bag += dataValueSignal.compactMap {
             $0.data?.chargeDate
         }.map { paymentDate in
-            return String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
+            String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
         }.bindTo(row.valueSignal)
 
         bag += section.append(row)

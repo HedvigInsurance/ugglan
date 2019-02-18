@@ -14,7 +14,7 @@ import UIKit
 struct CircleLabelSmall {
     let labelText: DynamicString
     let color: Color
-    
+
     enum Color {
         case green
     }

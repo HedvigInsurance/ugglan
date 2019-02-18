@@ -69,7 +69,7 @@ extension InsettedStyle where Style == SeparatorStyle {
             right: 0
         )
     )
-    
+
     static let insetLargeIcons = InsettedStyle(
         style: .darkGray,
         insets: UIEdgeInsets(
@@ -87,7 +87,7 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
-    
+
     static let whiteLargeIcons = SectionBackgroundStyle(
         background: .white,
         topSeparator: .insetLargeIcons,
@@ -105,7 +105,7 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
-    
+
     static let purpleLargeIcons = SectionBackgroundStyle(
         background: .purple,
         topSeparator: .insetLargeIcons,
@@ -170,10 +170,10 @@ extension SectionStyle {
         bottom: 15,
         right: 20
     )
-    
+
     static let sectionPlainItemSpacing: CGFloat = 10
     static let sectionPlainMinRowHeight: CGFloat = 0
-    
+
     static let sectionPlain = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
@@ -183,7 +183,7 @@ extension SectionStyle {
         header: .standard,
         footer: .standard
     )
-    
+
     static let sectionPlainLargeIcons = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
@@ -199,7 +199,7 @@ extension DynamicSectionStyle {
     static let sectionPlain = DynamicSectionStyle { _ -> SectionStyle in
         .sectionPlain
     }
-    
+
     static let sectionPlainLargeIcons = DynamicSectionStyle { _ -> SectionStyle in
         .sectionPlainLargeIcons
     }

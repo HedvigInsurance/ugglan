@@ -28,7 +28,7 @@ extension DefaultStyling {
             NSAttributedString.Key.foregroundColor: UIColor.black,
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
-        
+
         if #available(iOS 10.0, *) {
             UITabBar.appearance().unselectedItemTintColor = .offBlack
             UITabBar.appearance().tintColor = .purple
@@ -66,14 +66,13 @@ extension DefaultStyling {
         )
 
         UIBarButtonItem.appearance().tintColor = .purple
-        
+
         UINavigationBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
         UINavigationBar.appearance().barTintColor = UIColor.offWhite
-        
+
         UITabBar.appearance().barTintColor = UIColor.offWhite
         UITabBar.appearance().backgroundImage = UIColor.offWhite.as1ptImage()
         UITabBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
-        
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [

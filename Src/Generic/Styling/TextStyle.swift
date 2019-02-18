@@ -65,12 +65,12 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
     }
-    
+
     static let rowValueEditable = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .purple
     }
-    
+
     static let rowValueEditableRight = TextStyle.rowValueEditable.restyled { (style: inout TextStyle) in
         style.alignment = .right
     }
@@ -89,7 +89,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .purple
     }
-    
+
     static let navigationBarButtonPrimary = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .purple

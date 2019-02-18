@@ -37,7 +37,7 @@ extension ButtonSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(headerView: nil, footerView: nil)
-        
+
         bag += isHiddenSignal.bindTo(section, \.isHidden)
 
         section.dynamicStyle = DynamicSectionStyle { trait -> SectionStyle in

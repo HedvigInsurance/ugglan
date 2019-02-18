@@ -18,7 +18,7 @@ extension PhoneNumberRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
         let row = RowView(title: String(.PHONE_NUMBER_ROW_TITLE), style: .rowTitle)
-        
+
         let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
             style.autocorrection = .no
             style.autocapitalization = .none
@@ -30,13 +30,13 @@ extension PhoneNumberRow: Viewable {
             placeholder: "",
             style: textFieldStyle
         )
-        
+
         if #available(iOS 10.0, *) {
             valueTextField.textContentType = .telephoneNumber
         }
 
         row.append(valueTextField)
-        
+
         valueTextField.snp.makeConstraints { make in
             make.width.equalToSuperview().multipliedBy(0.5)
         }
@@ -44,11 +44,11 @@ extension PhoneNumberRow: Viewable {
         bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
         bag += state.phoneNumberSignal.bindTo(valueTextField, \.value)
         bag += valueTextField.bindTo(state.phoneNumberInputValueSignal)
-        
+
         bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in
             valueTextField.endEditing(true)
         }
-        
+
         return (row, bag)
     }
 }

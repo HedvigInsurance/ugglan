@@ -31,7 +31,7 @@ struct MyInfoState {
 
     func save() -> Disposable {
         let bag = DisposeBag()
-        
+
         isSavingSignal.value = true
 
         let phoneNumberFuture = phoneNumberInputValueSignal.atOnce().mapLatestToFuture { phoneNumber in
@@ -83,7 +83,7 @@ struct MyInfoState {
                 return innerBag
             }
         }.future
-        
+
         join(phoneNumberFuture, emailFuture).onValue { _, _ in
             self.onSaveCallbacker.callAll(with: .success)
         }.onError { error in
@@ -127,6 +127,6 @@ struct MyInfoState {
         self.presentingViewController = presentingViewController
         self.client = client
         self.store = store
-        self.onSaveSignal = onSaveCallbacker.signal()
+        onSaveSignal = onSaveCallbacker.signal()
     }
 }
