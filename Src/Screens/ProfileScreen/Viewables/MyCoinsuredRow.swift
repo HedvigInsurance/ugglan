@@ -27,7 +27,7 @@ extension MyCoinsuredRow: Viewable {
         )
 
         bag += amountOfCoinsuredSignal.atOnce().compactMap { $0 }.map {
-            String(.PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: String($0)))
+            String(.PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: String($0 - 1)))
         }.bindTo(row.subtitle)
 
         bag += amountOfCoinsuredSignal.atOnce().map {
