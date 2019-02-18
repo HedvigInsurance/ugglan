@@ -24,7 +24,7 @@ extension Spacing: Viewable {
         view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(self.height)
         }
-        
+
         bag += isHiddenSignal.bindTo(view, \.isHidden)
 
         return (view, bag)

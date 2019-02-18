@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-02-16.
 //
 
-import Foundation
-import Form
 import Flow
+import Form
+import Foundation
 import UIKit
 
 extension FieldStyle {

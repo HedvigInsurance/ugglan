@@ -26,7 +26,7 @@ extension MonthlyPaymentCircle: Viewable {
             appearance: .turquoise
         )
         bag += containerView.add(monthlyPaymentCircle)
-        
+
         bag += monthlyCostSignal.compactMap {
             $0
         }.map {

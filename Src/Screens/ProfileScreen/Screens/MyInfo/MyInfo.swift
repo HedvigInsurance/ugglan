@@ -32,7 +32,7 @@ extension MyInfo: Presentable {
         bag += saveButton.onValue { _ in
             bag += state.save()
         }
-        
+
         bag += state.isSavingSignal.filter { $0 }.onValue { _ in
             saveButton.startAnimating()
         }

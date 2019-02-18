@@ -57,7 +57,7 @@ extension SelectedCharity: Viewable {
                 backgroundColor: .white
             )
             bag += stackView.addArangedSubview(circleIcon)
-            
+
             let infoContainer = UIView()
             infoContainer.backgroundColor = .white
             infoContainer.layer.cornerRadius = 15
@@ -65,7 +65,7 @@ extension SelectedCharity: Viewable {
             infoContainer.layer.shadowOffset = CGSize(width: 0, height: 10)
             infoContainer.layer.shadowRadius = 16
             infoContainer.layer.shadowColor = UIColor.darkGray.cgColor
-            
+
             let infoContainerStackView = UIStackView()
             infoContainerStackView.axis = .vertical
             infoContainerStackView.spacing = 5
@@ -84,17 +84,17 @@ extension SelectedCharity: Viewable {
                 styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
             )
             bag += infoContainerStackView.addArangedSubview(descriptionLabel)
-            
+
             infoContainer.addSubview(infoContainerStackView)
             stackView.addArrangedSubview(infoContainer)
-            
+
             infoContainerStackView.snp.makeConstraints({ make in
                 make.width.height.centerX.centerY.equalToSuperview()
             })
-            
+
             bag += infoContainerStackView.didLayoutSignal.onValue({ _ in
                 let size = infoContainerStackView.systemLayoutSizeFitting(CGSize.zero)
-                
+
                 infoContainer.snp.remakeConstraints({ make in
                     make.height.equalTo(size.height)
                     make.width.equalToSuperview().inset(20)

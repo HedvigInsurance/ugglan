@@ -131,7 +131,7 @@ extension DirectDebitResult: Viewable {
         }
 
         bag += events.removeAfter.set { _ in
-            return 1
+            1
         }
 
         return (containerView, Future { completion in

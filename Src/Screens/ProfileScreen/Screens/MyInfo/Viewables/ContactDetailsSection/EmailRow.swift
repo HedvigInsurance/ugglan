@@ -18,7 +18,7 @@ extension EmailRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
         let row = RowView(title: String(.EMAIL_ROW_TITLE), style: .rowTitle)
-        
+
         let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
             style.autocorrection = .no
             style.autocapitalization = .none
@@ -30,17 +30,17 @@ extension EmailRow: Viewable {
             placeholder: "",
             style: textFieldStyle
         )
-        
+
         if #available(iOS 10.0, *) {
             valueTextField.textContentType = .emailAddress
         }
 
         row.append(valueTextField)
-        
+
         valueTextField.snp.makeConstraints { make in
             make.width.equalToSuperview().multipliedBy(0.5)
         }
-        
+
         bag += valueTextField.shouldReturn.set { _ in
             bag += self.state.save()
             return true

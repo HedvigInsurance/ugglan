@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-02-16.
 //
 
-import Foundation
 import Flow
+import Foundation
 
 extension Flow.Result {
     func isSuccess() -> Bool {
