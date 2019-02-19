@@ -44,7 +44,7 @@ extension PhoneNumberRow: Viewable {
         bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
         bag += state.phoneNumberSignal.bindTo(valueTextField, \.value)
         bag += valueTextField.bindTo(state.phoneNumberInputValueSignal)
-        
+
         bag += valueTextField
             .withLatestFrom(state.phoneNumberSignal)
             .skip(first: 1)

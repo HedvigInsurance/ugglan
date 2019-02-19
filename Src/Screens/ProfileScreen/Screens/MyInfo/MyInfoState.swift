@@ -40,67 +40,67 @@ struct MyInfoState {
             .atOnce()
             .withLatestFrom(phoneNumberInputPristineSignal)
             .mapLatestToFuture { phoneNumber, isPristine in
-            Future<Void> { completion in
-                if isPristine {
-                    completion(.success)
-                    return NilDisposer()
-                }
-                
-                if phoneNumber.count == 0 {
-                    completion(.failure(MyInfoSaveError.phoneNumberEmpty))
-                    return NilDisposer()
-                }
-
-                let innerBag = bag.innerBag()
-
-                innerBag += self.client.perform(
-                    mutation: UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
-                ).onValue({ result in
-                    if result.errors?.count != nil {
-                        completion(.failure(MyInfoSaveError.phoneNumberMalformed))
-                        return
+                Future<Void> { completion in
+                    if isPristine {
+                        completion(.success)
+                        return NilDisposer()
                     }
 
-                    completion(.success)
-                })
+                    if phoneNumber.count == 0 {
+                        completion(.failure(MyInfoSaveError.phoneNumberEmpty))
+                        return NilDisposer()
+                    }
 
-                return innerBag
-            }
-        }.future
+                    let innerBag = bag.innerBag()
+
+                    innerBag += self.client.perform(
+                        mutation: UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
+                    ).onValue({ result in
+                        if result.errors?.count != nil {
+                            completion(.failure(MyInfoSaveError.phoneNumberMalformed))
+                            return
+                        }
+
+                        completion(.success)
+                    })
+
+                    return innerBag
+                }
+            }.future
 
         let emailFuture = emailInputValueSignal
             .atOnce()
             .withLatestFrom(emailInputPristineSignal)
             .mapLatestToFuture { email, isPristine in
-            Future<Void> { completion in                
-                if isPristine {
-                    completion(.success)
-                    return NilDisposer()
-                }
-                
-                if email.count == 0 {
-                    completion(.failure(MyInfoSaveError.emailEmpty))
-                    return NilDisposer()
-                }
-
-                let innerBag = bag.innerBag()
-
-                innerBag += self.client.perform(mutation: UpdateEmailMutation(email: email)).onValue({ result in
-                    if result.errors?.count != nil {
-                        completion(.failure(MyInfoSaveError.emailMalformed))
-                        return
+                Future<Void> { completion in
+                    if isPristine {
+                        completion(.success)
+                        return NilDisposer()
                     }
 
-                    completion(.success)
-
-                    self.store.update(query: MyInfoQuery()) { (data: inout MyInfoQuery.Data) in
-                        data.member.email = email
+                    if email.count == 0 {
+                        completion(.failure(MyInfoSaveError.emailEmpty))
+                        return NilDisposer()
                     }
-                })
 
-                return innerBag
-            }
-        }.future
+                    let innerBag = bag.innerBag()
+
+                    innerBag += self.client.perform(mutation: UpdateEmailMutation(email: email)).onValue({ result in
+                        if result.errors?.count != nil {
+                            completion(.failure(MyInfoSaveError.emailMalformed))
+                            return
+                        }
+
+                        completion(.success)
+
+                        self.store.update(query: MyInfoQuery()) { (data: inout MyInfoQuery.Data) in
+                            data.member.email = email
+                        }
+                    })
+
+                    return innerBag
+                }
+            }.future
 
         join(phoneNumberFuture, emailFuture).onValue { _, _ in
             self.onSaveCallbacker.callAll(with: .success)
