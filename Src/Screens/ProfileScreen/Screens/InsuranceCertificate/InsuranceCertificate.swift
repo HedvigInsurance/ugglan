@@ -6,17 +6,17 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import Presentation
 import SafariServices
 import UIKit
-import Apollo
 
 struct InsuranceCertificate {
     let client: ApolloClient
-    
+
     init(client: ApolloClient = HedvigApolloClient.shared.client!) {
         self.client = client
     }
@@ -31,7 +31,7 @@ extension InsuranceCertificate: Presentable {
 
         let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)
-        
+
         bag += client.fetch(
             query: InsuranceCertificateQuery(),
             cachePolicy: .fetchIgnoringCacheData
