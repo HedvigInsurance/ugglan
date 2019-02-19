@@ -27,6 +27,7 @@ extension MyCoinsured: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        viewController.title = String(.MY_COINSURED_TITLE)
 
         let form = FormView()
 
