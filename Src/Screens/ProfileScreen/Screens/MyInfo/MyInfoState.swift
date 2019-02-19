@@ -23,7 +23,9 @@ struct MyInfoState {
     let emailSignal = ReadWriteSignal<String>("")
     let phoneNumberSignal = ReadWriteSignal<String>("")
 
+    let emailInputPristineSignal = ReadWriteSignal<Bool>(true)
     let emailInputValueSignal = ReadWriteSignal<String>("")
+    let phoneNumberInputPristineSignal = ReadWriteSignal<Bool>(true)
     let phoneNumberInputValueSignal = ReadWriteSignal<String>("")
 
     private let onSaveCallbacker = Callbacker<Flow.Result<Void>>()
@@ -34,8 +36,16 @@ struct MyInfoState {
 
         isSavingSignal.value = true
 
-        let phoneNumberFuture = phoneNumberInputValueSignal.atOnce().mapLatestToFuture { phoneNumber in
+        let phoneNumberFuture = phoneNumberInputValueSignal
+            .atOnce()
+            .withLatestFrom(phoneNumberInputPristineSignal)
+            .mapLatestToFuture { phoneNumber, isPristine in
             Future<Void> { completion in
+                if isPristine {
+                    completion(.success)
+                    return NilDisposer()
+                }
+                
                 if phoneNumber.count == 0 {
                     completion(.failure(MyInfoSaveError.phoneNumberEmpty))
                     return NilDisposer()
@@ -58,8 +68,16 @@ struct MyInfoState {
             }
         }.future
 
-        let emailFuture = emailInputValueSignal.atOnce().mapLatestToFuture { email in
-            Future<Void> { completion in
+        let emailFuture = emailInputValueSignal
+            .atOnce()
+            .withLatestFrom(emailInputPristineSignal)
+            .mapLatestToFuture { email, isPristine in
+            Future<Void> { completion in                
+                if isPristine {
+                    completion(.success)
+                    return NilDisposer()
+                }
+                
                 if email.count == 0 {
                     completion(.failure(MyInfoSaveError.emailEmpty))
                     return NilDisposer()

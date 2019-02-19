@@ -48,6 +48,14 @@ extension EmailRow: Viewable {
 
         bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
         bag += state.emailSignal.bindTo(valueTextField, \.value)
+        
+        bag += valueTextField
+            .withLatestFrom(state.emailSignal)
+            .skip(first: 1)
+            .filter { $0 != $1 }
+            .map { _ in false }
+            .bindTo(state.emailInputPristineSignal)
+        
         bag += valueTextField.bindTo(state.emailInputValueSignal)
 
         bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in

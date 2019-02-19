@@ -44,6 +44,13 @@ extension PhoneNumberRow: Viewable {
         bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
         bag += state.phoneNumberSignal.bindTo(valueTextField, \.value)
         bag += valueTextField.bindTo(state.phoneNumberInputValueSignal)
+        
+        bag += valueTextField
+            .withLatestFrom(state.phoneNumberSignal)
+            .skip(first: 1)
+            .filter { $0 != $1 }
+            .map { _ in false }
+            .bindTo(state.phoneNumberInputPristineSignal)
 
         bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in
             valueTextField.endEditing(true)
