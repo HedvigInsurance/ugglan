@@ -12,16 +12,14 @@ import Presentation
 import UIKit
 import MessageUI
 
-
 struct MailView {
     let recipients: [String]
 }
 
 extension MailView: Presentable {
     func materialize() -> (MFMailComposeViewController, Disposable) {
-        let mailComposeViewController = MFMailComposeViewController()
-        mailComposeViewController.setToRecipients(self.recipients)
+        let mailComposeViewController = MFMailComposeViewController.create(to: self.recipients)
         
         return (mailComposeViewController, NilDisposer())
-    }
+    }    
 }

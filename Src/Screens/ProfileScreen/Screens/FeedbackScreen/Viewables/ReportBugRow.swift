@@ -28,7 +28,7 @@ extension ReportBugRow: Viewable {
         row.valueSignal.value = emailAddress
         
         row.valueStyleSignal.value = .rowTitlePurple
-    
+        
         bag += events.onSelect.onValue { _ in
             if MFMailComposeViewController.canSendMail() {
                 let mailView = MailView(
@@ -44,7 +44,7 @@ extension ReportBugRow: Viewable {
                 self.presentingViewController.present(activityViewPresentation)
             }
         }
-        
+       
         return (row, bag)
     }
 }
