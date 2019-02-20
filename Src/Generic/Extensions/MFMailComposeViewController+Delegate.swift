@@ -3,7 +3,7 @@
 //  Hedvig
 //
 //  Created by Gustaf Gunér on 2019-02-20.
-//  Copyright © 2019 Hedvig. All rights reserved.
+//  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
 import Foundation
