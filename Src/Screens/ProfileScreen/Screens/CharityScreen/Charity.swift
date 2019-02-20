@@ -35,7 +35,7 @@ extension Charity: Presentable {
         containerView.backgroundColor = .offWhite
 
         bag += client.watch(query: SelectedCharityQuery())
-            .compactMap { $0.data?.cashback }
+            .map { $0.data?.cashback }
             .buffer()
             .onValue { cashbacks in
                 guard let cashback = cashbacks.last else { return }
@@ -44,7 +44,7 @@ extension Charity: Presentable {
                     view.removeFromSuperview()
                 }
 
-                if cashback.name != nil {
+                if cashback != nil {
                     let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1)
                     bag += containerView.add(selectedCharity) { view in
                         view.snp.makeConstraints({ make in
