@@ -35,16 +35,23 @@ extension ReportBugRow: Viewable {
         row.keySignal.value = String(.FEEDBACK_SCREEN_REPORT_BUG_TITLE)
         row.valueSignal.value = emailAddress
         
-        row.valueStyleSignal.value = .rowTitlePurple
+        row.valueStyleSignal.value = .rowValueLink
     
         let device = Device()
         let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String
         
         bag += events.onSelect.onValue { _ in
             if MFMailComposeViewController.canSendMail() {
-                self.client.fetch(query: MemberIdQuery()) { (result, error) in
-                    if let memberId = result?.data?.member.id {
-                        let deviceInfo = "Device: \(device)\nSystem: \(device.systemName) \(device.systemVersion)\nApp Version: \(appVersion ?? "")\nMember ID: \(memberId)"
+                
+                bag += self.client.fetch(query: MemberIdQuery())
+                    .valueSignal
+                    .compactMap { $0.data?.member.id }
+                    .onValue { memberId in
+                        let deviceInfo = String(.FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
+                            device: device.description,
+                            system: "\(device.systemName) \(device.systemVersion)",
+                            appVersion: appVersion ?? "",
+                            memberId: memberId))
                         
                         var attachments: [MFMailComposeViewControllerAttachment] = []
                         
@@ -64,7 +71,6 @@ extension ReportBugRow: Viewable {
                         )
                         
                         self.presentingViewController.present(activityViewPresentation)
-                    }
                 }
             }
         }

@@ -17,7 +17,12 @@ struct BackgroundWithLabel {
     let backgroundImage: UIImage?
     let textColor: UIColor?
     
-    init(labelText: DynamicString, backgroundColor: UIColor? = .purple, backgroundImage: UIImage? = nil, textColor: UIColor? = .white) {
+    init(
+        labelText: DynamicString,
+        backgroundColor: UIColor? = .purple,
+        backgroundImage: UIImage? = nil,
+        textColor: UIColor? = .white
+    ) {
         self.labelText = labelText
         self.backgroundColor = backgroundColor
         self.backgroundImage = backgroundImage

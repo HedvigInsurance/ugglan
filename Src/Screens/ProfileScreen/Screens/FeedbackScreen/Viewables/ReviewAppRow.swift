@@ -22,18 +22,18 @@ extension ReviewAppRow: Viewable {
         row.keySignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_TITLE)
         row.valueSignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_VALUE)
         
-        row.valueStyleSignal.value = .rowTitlePurple
+        row.valueStyleSignal.value = .rowValueLink
         
         let appID = "1303668531"
         let reviewURL = "itms-apps://itunes.apple.com/app/\(appID)?action=write-review"
         
         bag += events.onSelect.onValue { _ in
-            if let url = URL(string: reviewURL), UIApplication.shared.canOpenURL(url) {
-                if #available(iOS 10.0, *) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                } else {
-                    UIApplication.shared.openURL(url)
-                }
+            guard let url = URL(string: reviewURL), UIApplication.shared.canOpenURL(url) else { return }
+            
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                UIApplication.shared.openURL(url)
             }
         }
         
