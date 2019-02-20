@@ -7,5 +7,6 @@ query MyPayment {
         descriptor
         directDebitStatus
     }
+    registerAccountProcessingStatus
     chargeDate
 }

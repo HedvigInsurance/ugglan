@@ -6,6 +6,7 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
@@ -14,7 +15,11 @@ import SafariServices
 import UIKit
 
 struct InsuranceCertificate {
-    let certificateUrl: ReadWriteSignal<String?>
+    let client: ApolloClient
+
+    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+        self.client = client
+    }
 }
 
 extension InsuranceCertificate: Presentable {
@@ -27,11 +32,14 @@ extension InsuranceCertificate: Presentable {
         let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)
 
-        bag += certificateUrl.atOnce().map { value -> URL? in
-            guard let value = value, let url = URL(string: value) else { return nil }
+        bag += client.fetch(
+            query: InsuranceCertificateQuery(),
+            cachePolicy: .fetchIgnoringCacheData
+        ).valueSignal.compactMap { $0.data?.insurance.certificateUrl }.map { certificateUrl -> URL? in
+            guard let url = URL(string: certificateUrl) else { return nil }
             return url
         }.bindTo(pdfViewer.url)
-        
+
         let activityButton = UIBarButtonItem(system: .action)
 
         bag += viewController.navigationItem.addItem(

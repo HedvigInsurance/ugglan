@@ -6,17 +6,12 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-import Apollo
 import Flow
 import Form
 import Foundation
 
 struct PhoneNumberRow {
-    let client: ApolloClient
-
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
-        self.client = client
-    }
+    let state: MyInfoState
 }
 
 extension PhoneNumberRow: Viewable {
@@ -24,19 +19,42 @@ extension PhoneNumberRow: Viewable {
         let bag = DisposeBag()
         let row = RowView(title: String(.PHONE_NUMBER_ROW_TITLE), style: .rowTitle)
 
-        let valueLabel = UILabel()
-        row.append(valueLabel)
+        let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
+            style.autocorrection = .no
+            style.autocapitalization = .none
+            style.keyboard = .phonePad
+        }
 
-        bag += client.watch(
-            query: MyInfoQuery(),
-            cachePolicy: .returnCacheDataAndFetch
-        ).map { $0.data?.member.phoneNumber }.map { phoneNumber -> StyledText in
-            if let phoneNumber = phoneNumber {
-                return StyledText(text: phoneNumber, style: .rowTitle)
-            }
+        let valueTextField = UITextField(
+            value: "",
+            placeholder: "",
+            style: textFieldStyle
+        )
 
-            return StyledText(text: String(.PHONE_NUMBER_ROW_EMPTY), style: .rowTitleDisabled)
-        }.bindTo(valueLabel, \.styledText)
+        if #available(iOS 10.0, *) {
+            valueTextField.textContentType = .telephoneNumber
+        }
+
+        row.append(valueTextField)
+
+        valueTextField.snp.makeConstraints { make in
+            make.width.equalToSuperview().multipliedBy(0.5)
+        }
+
+        bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
+        bag += state.phoneNumberSignal.bindTo(valueTextField, \.value)
+        bag += valueTextField.bindTo(state.phoneNumberInputValueSignal)
+
+        bag += valueTextField
+            .withLatestFrom(state.phoneNumberSignal)
+            .skip(first: 1)
+            .filter { $0 != $1 }
+            .map { _ in false }
+            .bindTo(state.phoneNumberInputPristineSignal)
+
+        bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in
+            valueTextField.endEditing(true)
+        }
 
         return (row, bag)
     }

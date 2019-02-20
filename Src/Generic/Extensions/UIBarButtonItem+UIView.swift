@@ -15,7 +15,7 @@ extension UIBarButtonItem {
         }
         return view.bounds
     }
-    
+
     var view: UIView? {
         guard let view = self.value(forKey: "view") as? UIView else {
             return nil

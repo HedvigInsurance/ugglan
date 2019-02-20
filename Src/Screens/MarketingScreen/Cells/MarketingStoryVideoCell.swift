@@ -32,6 +32,15 @@ class MarketingStoryVideoCell: UICollectionViewCell {
         videoPlayerLayer.frame = bounds
         layer.addSublayer(videoPlayerLayer)
 
+        if #available(iOS 10.0, *) {
+            try? AVAudioSession.sharedInstance().setCategory(
+                AVAudioSession.Category.ambient,
+                mode: .default,
+                options: .mixWithOthers
+            )
+            try? AVAudioSession.sharedInstance().setActive(true)
+        }
+
         DispatchQueue.global(qos: .background).async {
             guard let playerAsset = marketingStory.playerAsset() else { return }
 
@@ -41,12 +50,6 @@ class MarketingStoryVideoCell: UICollectionViewCell {
             self.videoPlayerLayer.player = self.videoPlayer
 
             if #available(iOS 10.0, *) {
-                try? AVAudioSession.sharedInstance().setCategory(
-                    AVAudioSession.Category.ambient,
-                    mode: .default,
-                    options: .mixWithOthers
-                )
-                try? AVAudioSession.sharedInstance().setActive(true)
                 self.videoPlayer.playImmediately(atRate: 1)
             } else {
                 self.videoPlayer.play()

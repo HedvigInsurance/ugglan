@@ -64,7 +64,17 @@ extension InsettedStyle where Style == SeparatorStyle {
         style: .darkGray,
         insets: UIEdgeInsets(
             top: 0,
-            left: 0,
+            left: SectionStyle.sectionPlainRowInsets.left,
+            bottom: 0,
+            right: 0
+        )
+    )
+
+    static let insetLargeIcons = InsettedStyle(
+        style: .darkGray,
+        insets: UIEdgeInsets(
+            top: 0,
+            left: SectionStyle.sectionPlainRowInsets.left + 60,
             bottom: 0,
             right: 0
         )
@@ -78,6 +88,12 @@ extension SectionBackgroundStyle {
         bottomSeparator: .inset
     )
 
+    static let whiteLargeIcons = SectionBackgroundStyle(
+        background: .white,
+        topSeparator: .insetLargeIcons,
+        bottomSeparator: .insetLargeIcons
+    )
+
     static let whiteRoundedBorder = SectionBackgroundStyle(
         background: .whiteRoundedBorder,
         topSeparator: .inset,
@@ -88,6 +104,12 @@ extension SectionBackgroundStyle {
         background: .purple,
         topSeparator: .inset,
         bottomSeparator: .inset
+    )
+
+    static let purpleLargeIcons = SectionBackgroundStyle(
+        background: .purple,
+        topSeparator: .insetLargeIcons,
+        bottomSeparator: .insetLargeIcons
     )
 
     static let purpleRoundedBorder = SectionBackgroundStyle(
@@ -117,8 +139,10 @@ extension SectionBackgroundStyle {
 
 extension SectionStyle.Background {
     static let standard = SectionStyle.Background(style: .white)
+    static let standardLargeIcons = SectionStyle.Background(style: .whiteLargeIcons)
     static let standardRoundedBorder = SectionStyle.Background(style: .whiteRoundedBorder)
     static let selected = SectionStyle.Background(style: .purple)
+    static let selectedLargeIcons = SectionStyle.Background(style: .purpleLargeIcons)
     static let selectedRoundedBorder = SectionStyle.Background(style: .purpleRoundedBorder)
     static let selectedDanger = SectionStyle.Background(style: .pink)
     static let selectedDangerRoundedBorder = SectionStyle.Background(style: .pinkRoundedBorder)
@@ -131,26 +155,41 @@ extension HeaderFooterStyle {
         backgroundImage: nil,
         insets: UIEdgeInsets(
             top: 15,
-            left: 15,
+            left: 20,
             bottom: 10,
-            right: 15
+            right: 20
         ),
         emptyHeight: 0
     )
 }
 
 extension SectionStyle {
+    static let sectionPlainRowInsets = UIEdgeInsets(
+        top: 15,
+        left: 20,
+        bottom: 15,
+        right: 20
+    )
+
+    static let sectionPlainItemSpacing: CGFloat = 10
+    static let sectionPlainMinRowHeight: CGFloat = 0
+
     static let sectionPlain = SectionStyle(
-        rowInsets: UIEdgeInsets(
-            top: 15,
-            left: 15,
-            bottom: 15,
-            right: 15
-        ),
-        itemSpacing: 10,
-        minRowHeight: 0,
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standard,
         selectedBackground: .selected,
+        header: .standard,
+        footer: .standard
+    )
+
+    static let sectionPlainLargeIcons = SectionStyle(
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
+        background: .standardLargeIcons,
+        selectedBackground: .selectedLargeIcons,
         header: .standard,
         footer: .standard
     )
@@ -159,5 +198,9 @@ extension SectionStyle {
 extension DynamicSectionStyle {
     static let sectionPlain = DynamicSectionStyle { _ -> SectionStyle in
         .sectionPlain
+    }
+
+    static let sectionPlainLargeIcons = DynamicSectionStyle { _ -> SectionStyle in
+        .sectionPlainLargeIcons
     }
 }

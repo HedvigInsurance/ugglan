@@ -23,10 +23,14 @@ extension ApolloClient {
                 query: query,
                 cachePolicy: cachePolicy,
                 queue: queue,
-                resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, _: Error?) in
+                resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, error: Error?) in
                     if result != nil {
                         completion(.success(result!))
                     } else {
+                        if error?.localizedDescription == "cancelled" {
+                            return
+                        }
+
                         self.showNetworkErrorMessage { [unowned self] in
                             self.fetch(
                                 query: query,
@@ -66,10 +70,14 @@ extension ApolloClient {
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
-                resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, _: Error?) in
+                resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, error: Error?) in
                     if result != nil {
                         completion(.success(result!))
                     } else {
+                        if error?.localizedDescription == "cancelled" {
+                            return
+                        }
+
                         self.showNetworkErrorMessage { [unowned self] in
                             self.perform(mutation: mutation, queue: queue).onResult({ result in
                                 completion(result)
@@ -93,10 +101,14 @@ extension ApolloClient {
         return Signal { callbacker in
             let bag = DisposeBag()
 
-            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, _ in
+            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, error in
                 if let result = result {
                     callbacker(result)
                 } else {
+                    if error?.localizedDescription == "cancelled" {
+                        return
+                    }
+
                     self.showNetworkErrorMessage { [unowned self] in
                         bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue({ result in
                             callbacker(result)

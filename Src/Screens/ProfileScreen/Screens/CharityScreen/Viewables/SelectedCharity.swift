@@ -34,7 +34,7 @@ extension SelectedCharity: Viewable {
         let stackView = UIStackView()
         stackView.distribution = .equalSpacing
         stackView.axis = .vertical
-        stackView.spacing = 15
+        stackView.spacing = 30
         stackView.edgeInsets = UIEdgeInsets(
             top: 20,
             left: 20,
@@ -58,13 +58,48 @@ extension SelectedCharity: Viewable {
             )
             bag += stackView.addArangedSubview(circleIcon)
 
+            let infoContainer = UIView()
+            infoContainer.backgroundColor = .white
+            infoContainer.layer.cornerRadius = 15
+            infoContainer.layer.shadowOpacity = 0.2
+            infoContainer.layer.shadowOffset = CGSize(width: 0, height: 10)
+            infoContainer.layer.shadowRadius = 16
+            infoContainer.layer.shadowColor = UIColor.darkGray.cgColor
+
+            let infoContainerStackView = UIStackView()
+            infoContainerStackView.axis = .vertical
+            infoContainerStackView.spacing = 5
+            infoContainerStackView.edgeInsets = UIEdgeInsets(
+                top: 20,
+                left: 20,
+                bottom: 20,
+                right: 20
+            )
+            infoContainerStackView.isLayoutMarginsRelativeArrangement = true
+
             let titleLabel = UILabel(value: cashback.name ?? "", style: .blockRowTitle)
-            stackView.addArrangedSubview(titleLabel)
+            infoContainerStackView.addArrangedSubview(titleLabel)
 
             let descriptionLabel = MultilineLabel(
                 styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
             )
-            bag += stackView.addArangedSubview(descriptionLabel)
+            bag += infoContainerStackView.addArangedSubview(descriptionLabel)
+
+            infoContainer.addSubview(infoContainerStackView)
+            stackView.addArrangedSubview(infoContainer)
+
+            infoContainerStackView.snp.makeConstraints({ make in
+                make.width.height.centerX.centerY.equalToSuperview()
+            })
+
+            bag += infoContainerStackView.didLayoutSignal.onValue({ _ in
+                let size = infoContainerStackView.systemLayoutSizeFitting(CGSize.zero)
+
+                infoContainer.snp.remakeConstraints({ make in
+                    make.height.equalTo(size.height)
+                    make.width.equalToSuperview().inset(20)
+                })
+            })
         }
 
         if animateEntry {

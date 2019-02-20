@@ -6,17 +6,12 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-import Apollo
 import Flow
 import Form
 import Foundation
 
 struct EmailRow {
-    let client: ApolloClient
-
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
-        self.client = client
-    }
+    let state: MyInfoState
 }
 
 extension EmailRow: Viewable {
@@ -24,16 +19,48 @@ extension EmailRow: Viewable {
         let bag = DisposeBag()
         let row = RowView(title: String(.EMAIL_ROW_TITLE), style: .rowTitle)
 
-        let valueLabel = UILabel()
-        row.append(valueLabel)
+        let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
+            style.autocorrection = .no
+            style.autocapitalization = .none
+            style.keyboard = .emailAddress
+        }
 
-        bag += client.watch(query: MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch).map({ result -> StyledText in
-            if let member = result.data?.member, let email = member.email {
-                return StyledText(text: email, style: .rowTitle)
-            }
+        let valueTextField = UITextField(
+            value: "",
+            placeholder: "",
+            style: textFieldStyle
+        )
 
-            return StyledText(text: String(.EMAIL_ROW_EMPTY), style: .rowTitleDisabled)
-        }).bindTo(valueLabel, \.styledText)
+        if #available(iOS 10.0, *) {
+            valueTextField.textContentType = .emailAddress
+        }
+
+        row.append(valueTextField)
+
+        valueTextField.snp.makeConstraints { make in
+            make.width.equalToSuperview().multipliedBy(0.5)
+        }
+
+        bag += valueTextField.shouldReturn.set { _ in
+            bag += self.state.save()
+            return true
+        }
+
+        bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
+        bag += state.emailSignal.bindTo(valueTextField, \.value)
+
+        bag += valueTextField
+            .withLatestFrom(state.emailSignal)
+            .skip(first: 1)
+            .filter { $0 != $1 }
+            .map { _ in false }
+            .bindTo(state.emailInputPristineSignal)
+
+        bag += valueTextField.bindTo(state.emailInputValueSignal)
+
+        bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in
+            valueTextField.endEditing(true)
+        }
 
         return (row, bag)
     }

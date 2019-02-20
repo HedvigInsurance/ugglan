@@ -83,7 +83,20 @@ extension MyHome: Presentable {
             bag += form.append(buttonSection)
 
             bag += buttonSection.onSelect.onValue {
-                viewController.present(Chat(), style: .modally(), options: [.defaults])
+                let alert = Alert<Bool>(
+                    title: String(.MY_HOME_CHANGE_ALERT_TITLE),
+                    message: String(.MY_HOME_CHANGE_ALERT_MESSAGE),
+                    actions: [
+                        Alert.Action(title: String(.MY_HOME_CHANGE_ALERT_ACTION_CANCEL)) { false },
+                        Alert.Action(title: String(.MY_HOME_CHANGE_ALERT_ACTION_CONFIRM)) { true }
+                    ]
+                )
+                
+                viewController.present(alert).onValue { shouldContinue in
+                    if shouldContinue {
+                        MyHomeRouting.openChat(viewController: viewController)
+                    }
+                }
             }
         }
 

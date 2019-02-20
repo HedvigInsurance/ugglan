@@ -22,10 +22,11 @@ struct HedvigApolloEnvironmentConfig {
 class HedvigApolloClient {
     static var shared = HedvigApolloClient()
     var client: ApolloClient?
+    var store: ApolloStore?
 
     private init() {}
 
-    func createClient(token: String?, environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
+    func createClient(token: String?, environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
         let authPayloads = [
             "Authorization": token ?? "",
         ]
@@ -47,8 +48,10 @@ class HedvigApolloClient {
         )
 
         return Future { completion in
-            let client = ApolloClient(networkTransport: splitNetworkTransport)
-            completion(Result.success(client))
+            let cache = InMemoryNormalizedCache()
+            let store = ApolloStore(cache: cache)
+            let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+            completion(Result.success((client, store)))
             return Disposer {}
         }
     }
@@ -70,12 +73,12 @@ class HedvigApolloClient {
         )
     }
 
-    func createClientFromNewSession(environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
+    func createClientFromNewSession(environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            self.createClient(token: nil, environment: environment).onValue { client in
+            self.createClient(token: nil, environment: environment).onValue { client, _ in
                 client.perform(mutation: mutation).onValue { result in
                     if let token = result.data?.createSession {
                         self.saveToken(token: token)
@@ -84,8 +87,8 @@ class HedvigApolloClient {
                     self.createClient(
                         token: result.data?.createSession,
                         environment: environment
-                    ).onValue { clientWithSession in
-                        completion(Result.success(clientWithSession))
+                    ).onValue { clientWithSession, store in
+                        completion(Result.success((clientWithSession, store)))
                     }.onError { error in
                         completion(Result.failure(error))
                     }
@@ -96,12 +99,13 @@ class HedvigApolloClient {
         }
     }
 
-    func initClient(environment: HedvigApolloEnvironmentConfig) -> Future<ApolloClient> {
+    func initClient(environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
         return Future { completion in
-            if self.client != nil {
-                completion(.success(self.client!))
+            if let client = self.client, let store = self.store {
+                completion(.success((client, store)))
                 return Disposer {
                     self.client = nil
+                    self.store = nil
                 }
             }
 
@@ -110,8 +114,9 @@ class HedvigApolloClient {
             if tokenData == nil {
                 self.createClientFromNewSession(environment: environment).onResult { result in
                     switch result {
-                    case let .success(client): do {
+                    case let .success((client, store)): do {
                         self.client = client
+                        self.store = store
                         completion(result)
                     }
                     case .failure: do {
@@ -122,8 +127,9 @@ class HedvigApolloClient {
             } else {
                 self.createClient(token: tokenData!.token, environment: environment).onResult { result in
                     switch result {
-                    case let .success(client): do {
+                    case let .success((client, store)): do {
                         self.client = client
+                        self.store = store
                         completion(result)
                     }
                     case .failure: do {
@@ -135,6 +141,7 @@ class HedvigApolloClient {
 
             return Disposer {
                 self.client = nil
+                self.store = nil
             }
         }
     }

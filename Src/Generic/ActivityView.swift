@@ -38,7 +38,7 @@ extension ActivityView: Presentable {
             activityItems: activityItems,
             applicationActivities: applicationActivities
         )
-        
+
         if let popover = viewController.popoverPresentationController, let sourceRect = sourceRect {
             popover.sourceView = sourceView
             popover.sourceRect = sourceRect

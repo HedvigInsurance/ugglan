@@ -33,12 +33,12 @@ extension PaymentDetailsSection: Viewable {
         row.keySignal.value = String(.MY_PAYMENT_TYPE)
         row.valueStyleSignal.value = .rowTitleDisabled
 
-        let dataValueSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+        let dataValueSignal = client.watch(query: MyPaymentQuery())
 
         bag += dataValueSignal.compactMap {
             $0.data?.chargeDate
         }.map { paymentDate in
-            return String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
+            String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
         }.bindTo(row.valueSignal)
 
         bag += section.append(row)

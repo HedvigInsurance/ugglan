@@ -18,7 +18,7 @@ struct ProfileSection {
 extension ProfileSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
-        let section = SectionView(header: nil, footer: nil, style: .sectionPlain)
+        let section = SectionView(header: nil, footer: nil, style: .sectionPlainLargeIcons)
         section.isHidden = true
 
         bag += dataSignal.map { $0 == nil }.bindTo(section, \.isHidden)
@@ -43,7 +43,12 @@ extension ProfileSection: Viewable {
         let homeRow = HomeRow(
             presentingViewController: presentingViewController
         )
-        bag += section.append(homeRow)
+        bag += section.append(homeRow) { row in
+            bag += self.presentingViewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: homeRow
+            )
+        }
 
         bag += dataSignal.atOnce()
             .compactMap { $0?.insurance.address }
@@ -81,7 +86,6 @@ extension ProfileSection: Viewable {
             .bindTo(insuranceCertificateRow.certificateUrlSignal)
 
         let myPaymentRow = MyPaymentRow(
-            monthlyCost: 0,
             presentingViewController: presentingViewController
         )
         bag += section.append(myPaymentRow) { row in
@@ -90,6 +94,11 @@ extension ProfileSection: Viewable {
                 previewable: myPaymentRow
             )
         }
+
+        bag += dataSignal
+            .atOnce()
+            .map { $0?.insurance.monthlyCost }
+            .bindTo(myPaymentRow.monthlyCostSignal)
 
         let myCoinsuredRow = MyCoinsuredRow(
             presentingViewController: presentingViewController

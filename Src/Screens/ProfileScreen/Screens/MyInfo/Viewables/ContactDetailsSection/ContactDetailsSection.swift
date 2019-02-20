@@ -10,7 +10,9 @@ import Flow
 import Form
 import Foundation
 
-struct ContactDetailsSection {}
+struct ContactDetailsSection {
+    let state: MyInfoState
+}
 
 extension ContactDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
@@ -22,10 +24,14 @@ extension ContactDetailsSection: Viewable {
             style: .sectionPlain
         )
 
-        let phoneNumberRow = PhoneNumberRow()
+        let phoneNumberRow = PhoneNumberRow(
+            state: state
+        )
         bag += section.append(phoneNumberRow)
 
-        let emailRow = EmailRow()
+        let emailRow = EmailRow(
+            state: state
+        )
         bag += section.append(emailRow)
 
         return (section, bag)
