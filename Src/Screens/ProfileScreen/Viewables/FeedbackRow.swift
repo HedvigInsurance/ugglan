@@ -31,9 +31,9 @@ extension FeedbackRow: Viewable {
         }
         
         bag += events.onSelect.onValue {
-            let about = Feedback(presentingViewController: self.presentingViewController)
+            let feedback = Feedback()
             self.presentingViewController.present(
-                about,
+                feedback,
                 style: .default,
                 options: [.autoPop, .largeTitleDisplayMode(.never)]
             )
@@ -45,7 +45,7 @@ extension FeedbackRow: Viewable {
 
 extension FeedbackRow: Previewable {
     func preview() -> (Feedback, PresentationOptions) {
-        let feedback = Feedback(presentingViewController: presentingViewController)
+        let feedback = Feedback()
         return (feedback, [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

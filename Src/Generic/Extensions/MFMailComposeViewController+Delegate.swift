@@ -9,7 +9,6 @@
 import Foundation
 import MessageUI
 
-
 public struct MFMailComposeViewControllerAttachment {
     let data: Data
     let mimeType: String

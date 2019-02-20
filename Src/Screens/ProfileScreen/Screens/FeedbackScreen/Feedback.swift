@@ -11,9 +11,7 @@ import Form
 import Presentation
 import UIKit
 
-struct Feedback {
-    let presentingViewController: UIViewController
-}
+struct Feedback {}
 
 extension Feedback: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -36,7 +34,7 @@ extension Feedback: Presentable {
             style: .sectionPlain
         )
         
-        let reportBugRow = ReportBugRow(presentingViewController: self.presentingViewController)
+        let reportBugRow = ReportBugRow(presentingViewController: viewController)
         bag += feedbackSection.append(reportBugRow)
         
         let reviewAppRow = ReviewAppRow()
