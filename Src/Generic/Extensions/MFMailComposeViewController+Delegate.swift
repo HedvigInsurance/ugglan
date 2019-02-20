@@ -23,12 +23,12 @@ public struct MFMailComposeViewControllerAttachment {
 }
 
 public extension MFMailComposeViewController {
-    public static func create(to: [String], subject: String = "", attachments: [MFMailComposeViewControllerAttachment] = []) -> MFMailComposeViewController {
+    public static func create(recipients: [String], subject: String = "", attachments: [MFMailComposeViewControllerAttachment] = []) -> MFMailComposeViewController {
         let viewController = MFMailComposeViewController()
         
         viewController.mailComposeDelegate = viewController
         
-        viewController.setToRecipients(to)
+        viewController.setToRecipients(recipients)
         viewController.setSubject(subject)
         
         for attachment in attachments {

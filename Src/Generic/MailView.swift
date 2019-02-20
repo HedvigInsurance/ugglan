@@ -14,21 +14,12 @@ import MessageUI
 
 struct MailView {
     let recipients: [String]
+    let attachments: [MFMailComposeViewControllerAttachment]
 }
 
 extension MailView: Presentable {
     func materialize() -> (MFMailComposeViewController, Disposable) {
-        var attachments: [MFMailComposeViewControllerAttachment] = []
-        
-        let deviceInfo = "Device name: \(UIDevice.current.name)\nSystem: \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)\nModel \(UIDevice.current.model)"
-        
-        print(deviceInfo)
-        
-        if let data = deviceInfo.data(using: .utf8) {
-            attachments.append(MFMailComposeViewControllerAttachment(data, mimeType: "text/txt", fileName: "device-info.txt"))
-        }
-        
-        let mailComposeViewController = MFMailComposeViewController.create(to: self.recipients, attachments: attachments)
+        let mailComposeViewController = MFMailComposeViewController.create(recipients: self.recipients, attachments: self.attachments)
         
         return (mailComposeViewController, NilDisposer())
     }    

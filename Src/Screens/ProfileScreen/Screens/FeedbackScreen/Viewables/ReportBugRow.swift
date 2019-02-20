@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import MessageUI
+import DeviceKit
 
 struct ReportBugRow {
     let presentingViewController: UIViewController
@@ -28,11 +29,22 @@ extension ReportBugRow: Viewable {
         row.valueSignal.value = emailAddress
         
         row.valueStyleSignal.value = .rowTitlePurple
+    
+        let device = Device()
+    
+        let deviceInfo = "Device: \(device)\nSystem: \(device.systemName) \(device.systemVersion)"
+        
+        var attachments: [MFMailComposeViewControllerAttachment] = []
+        
+        if let data = deviceInfo.data(using: .utf8) {
+            attachments.append(MFMailComposeViewControllerAttachment(data, mimeType: "text/txt", fileName: "device-info.txt"))
+        }
         
         bag += events.onSelect.onValue { _ in
             if MFMailComposeViewController.canSendMail() {
                 let mailView = MailView(
-                    recipients: [emailAddress]
+                    recipients: [emailAddress],
+                    attachments: attachments
                 )
                 
                 let activityViewPresentation = Presentation(
