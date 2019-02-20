@@ -19,7 +19,7 @@ extension FeedbackLabel: Viewable {
         let containerView = UIView()
         
         let backgroundWithLabel = BackgroundWithLabel(
-            labelText: DynamicString("Hjälp oss bli\nbättre!"),
+            labelText: DynamicString(String(.FEEDBACK_SCREEN_LABEL)),
             backgroundColor: .purple,
             backgroundImage: Asset.feedbackLabelBackground.image
         )

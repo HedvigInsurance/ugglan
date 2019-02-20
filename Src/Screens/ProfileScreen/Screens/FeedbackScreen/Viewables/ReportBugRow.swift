@@ -30,9 +30,9 @@ extension ReportBugRow: Viewable {
         
         let row = KeyValueRow()
                 
-        let emailAddress = "ios@hedvig.com"
+        let emailAddress = String(.FEEDBACK_IOS_EMAIL)
         
-        row.keySignal.value = "Rapportera bugg"
+        row.keySignal.value = String(.FEEDBACK_SCREEN_REPORT_BUG_TITLE)
         row.valueSignal.value = emailAddress
         
         row.valueStyleSignal.value = .rowTitlePurple

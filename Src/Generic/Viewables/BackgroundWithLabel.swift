@@ -54,7 +54,7 @@ extension BackgroundWithLabel: Viewable {
         label.textColor = textColor
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
-        label.adjustsFontSizeToFitWidth = true
+        label.adjustsFontSizeToFitWidth = false
         
         let labelContainer = UIView()
         labelContainer.addSubview(label)

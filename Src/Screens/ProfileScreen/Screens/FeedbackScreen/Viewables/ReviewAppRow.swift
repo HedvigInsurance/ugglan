@@ -19,8 +19,8 @@ extension ReviewAppRow: Viewable {
         
         let row = KeyValueRow()
         
-        row.keySignal.value = "Betygsätt appen"
-        row.valueSignal.value = "App Store"
+        row.keySignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_TITLE)
+        row.valueSignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_VALUE)
         
         row.valueStyleSignal.value = .rowTitlePurple
         

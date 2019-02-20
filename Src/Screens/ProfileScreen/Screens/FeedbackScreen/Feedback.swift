@@ -19,7 +19,7 @@ extension Feedback: Presentable {
         
         let viewController = UIViewController()
 
-        viewController.title = String("Feedback")
+        viewController.title = String(.FEEDBACK_SCREEN_TITLE)
         
         let form = FormView(sections: [], style: .zeroInsets)
         
