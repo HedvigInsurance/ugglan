@@ -66,7 +66,7 @@ extension ProfileSection: Viewable {
 
         bag += dataSignal
             .atOnce()
-            .map { $0?.cashback.name }
+            .map { $0?.cashback?.name }
             .bindTo(myCharityRow.charityNameSignal)
 
         let insuranceCertificateRow = InsuranceCertificateRow(
