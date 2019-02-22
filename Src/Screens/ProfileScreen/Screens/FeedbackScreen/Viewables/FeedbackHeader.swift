@@ -1,5 +1,5 @@
 //
-//  FeedbackImage.swift
+//  FeedbackHeader.swift
 //  Hedvig
 //
 //  Created by Gustaf Gunér on 2019-02-14.
@@ -11,9 +11,11 @@ import Flow
 import Foundation
 import UIKit
 
-struct FeedbackLabel {}
+struct FeedbackHeader {
+    let height: Float = 200
+}
 
-extension FeedbackLabel: Viewable {
+extension FeedbackHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let containerView = UIView()
@@ -28,7 +30,9 @@ extension FeedbackLabel: Viewable {
         
         containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalToSuperview()
-            make.height.equalTo(200)
+            make.right.equalToSuperview()
+            make.top.equalToSuperview()
+            make.height.equalTo(self.height)
         }
         
         return (containerView, bag)

@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import StoreKit
 
 struct ReviewAppRow {}
 
@@ -24,15 +25,13 @@ extension ReviewAppRow: Viewable {
         
         row.valueStyleSignal.value = .rowValueLink
         
-        let appID = "1303668531"
-        let reviewURL = "itms-apps://itunes.apple.com/app/\(appID)?action=write-review"
-        
+        let reviewURL = String(.APP_STORE_REVIEW_URL)
+                
         bag += events.onSelect.onValue { _ in
-            guard let url = URL(string: reviewURL), UIApplication.shared.canOpenURL(url) else { return }
-            
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            if #available(iOS 10.3, *) {
+                SKStoreReviewController.requestReview()
             } else {
+                guard let url = URL(string: reviewURL), UIApplication.shared.canOpenURL(url) else { return }
                 UIApplication.shared.openURL(url)
             }
         }

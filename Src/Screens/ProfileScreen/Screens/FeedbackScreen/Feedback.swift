@@ -21,12 +21,12 @@ extension Feedback: Presentable {
 
         viewController.title = String(.FEEDBACK_SCREEN_TITLE)
         
-        let form = FormView(sections: [], style: .zeroInsets)
+        let form = FormView()
         
-        let feedbackLabel = FeedbackLabel()
-        bag += form.prepend(feedbackLabel)
+        let feedbackHeader = FeedbackHeader()
+        bag += form.add(feedbackHeader)
         
-        bag += form.append(Spacing(height: 20))
+        bag += form.prepend(Spacing(height: feedbackHeader.height))
         
         let feedbackSection = form.appendSection(
             headerView: nil,

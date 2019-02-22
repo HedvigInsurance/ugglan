@@ -40,39 +40,37 @@ extension ReportBugRow: Viewable {
         let device = Device()
         let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String
         
-        bag += events.onSelect.onValue { _ in
-            if MFMailComposeViewController.canSendMail() {
-                
-                bag += self.client.fetch(query: MemberIdQuery())
-                    .valueSignal
-                    .compactMap { $0.data?.member.id }
-                    .onValue { memberId in
-                        let deviceInfo = String(.FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
-                            device: device.description,
-                            system: "\(device.systemName) \(device.systemVersion)",
-                            appVersion: appVersion ?? "",
-                            memberId: memberId))
-                        
-                        var attachments: [MFMailComposeViewControllerAttachment] = []
-                        
-                        if let data = deviceInfo.data(using: .utf8) {
-                            attachments.append(MFMailComposeViewControllerAttachment(data, mimeType: "text/txt", fileName: "device-info.txt"))
-                        }
-                        
-                        let mailView = MailView(
-                            recipients: [emailAddress],
-                            attachments: attachments
-                        )
-                        
-                        let activityViewPresentation = Presentation(
-                            mailView,
-                            style: .activityView,
-                            options: .defaults
-                        )
-                        
-                        self.presentingViewController.present(activityViewPresentation)
-                }
+        let memberIdSignal = self.client.fetch(query: MemberIdQuery())
+            .valueSignal
+            .compactMap { $0.data?.member.id }.plain()
+        
+        bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
+            let deviceInfo = String(.FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
+                    device: device.description,
+                    systemName: device.systemName,
+                    systemVersion: device.systemVersion,
+                    appVersion: appVersion ?? "",
+                    memberId: memberId
+                )
+            )
+            
+            var attachments: [MailViewAttachment] = []
+            
+            if let data = deviceInfo.data(using: .utf8) {
+                attachments.append(MailViewAttachment(data, mimeType: "text/txt", fileName: "device-info.txt"))
             }
+            
+            let mailView = MailView(
+                recipients: [emailAddress],
+                subject: "",
+                attachments: attachments
+            )
+            
+            self.presentingViewController.present(
+                mailView,
+                style: .modally(),
+                options: .defaults
+            )
         }
        
         return (row, bag)
