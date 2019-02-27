@@ -40,7 +40,7 @@ extension Logo: Viewable {
             if Device.hasRoundedCorners {
                 make.top.equalTo(safeArea.layoutGuide).offset(5)
             } else {
-                make.top.equalTo(safeArea.layoutGuide).offset(10)
+                make.top.equalTo(25)
             }
 
             make.centerX.equalToSuperview()

@@ -97,7 +97,11 @@ extension End: Viewable {
             let existingMemberButton = ExistingMemberButton {
                 completion(.success(.login))
             }
-            bag += existingMemberButtonContainerView.add(existingMemberButton)
+            bag += existingMemberButtonContainerView.add(existingMemberButton) { buttonView in
+                buttonView.snp.makeConstraints({ make in
+                    make.center.equalToSuperview()
+                })
+            }
 
             view.addSubview(existingMemberButtonContainerView)
 
@@ -107,7 +111,7 @@ extension End: Viewable {
                 if Device.hasRoundedCorners {
                     make.bottom.equalTo(safeArea.layoutGuide)
                 } else {
-                    make.bottom.equalTo(safeArea.layoutGuide).inset(15)
+                    make.bottom.equalTo(-15)
                 }
 
                 make.centerX.equalToSuperview()

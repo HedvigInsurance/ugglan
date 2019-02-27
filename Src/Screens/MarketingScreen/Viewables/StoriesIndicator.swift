@@ -204,7 +204,7 @@ extension StoriesIndicator: Viewable {
             if Device.hasRoundedCorners {
                 make.top.equalTo(safeArea.layoutGuide)
             } else {
-                make.top.equalTo(safeArea.layoutGuide).offset(5)
+                make.top.equalTo(20)
             }
 
             make.width.equalToSuperview()
