@@ -16,6 +16,7 @@ struct DirectDebitSetup {
     let client: ApolloClient
     let store: ApolloStore
     let setupType: SetupType
+    let applicationWillTerminateSignal: Signal<Void>
 
     enum SetupType {
         case initial, replacement
@@ -24,11 +25,13 @@ struct DirectDebitSetup {
     init(
         setupType: SetupType = .initial,
         client: ApolloClient = HedvigApolloClient.shared.client!,
-        store: ApolloStore = HedvigApolloClient.shared.store!
+        store: ApolloStore = HedvigApolloClient.shared.store!,
+        applicationWillTerminateSignal: Signal<Void> = UIApplication.shared.appDelegate.applicationWillTerminateSignal
     ) {
         self.setupType = setupType
         self.client = client
         self.store = store
+        self.applicationWillTerminateSignal = applicationWillTerminateSignal
     }
 }
 
@@ -128,7 +131,7 @@ extension DirectDebitSetup: Presentable {
 
                 if type == .success {
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-                        data.registerAccountProcessingStatus = .requested
+                        data.directDebitStatus = .pending
                     })
                 }
 
@@ -155,6 +158,11 @@ extension DirectDebitSetup: Presentable {
 
                 return .allow
             })
+            
+            // if user is closing app in the middle of process make sure to inform backend
+            bag += self.applicationWillTerminateSignal.onValue {
+                self.client.perform(mutation: CancelDirectDebitRequestMutation()).onValue { _ in }
+            }
 
             return DelayedDisposer(bag, delay: 1)
         })

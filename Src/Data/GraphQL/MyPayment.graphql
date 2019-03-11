@@ -5,8 +5,7 @@ query MyPayment {
     bankAccount {
         bankName
         descriptor
-        directDebitStatus
     }
-    registerAccountProcessingStatus
-    chargeDate
+    nextChargeDate
+    directDebitStatus
 }
