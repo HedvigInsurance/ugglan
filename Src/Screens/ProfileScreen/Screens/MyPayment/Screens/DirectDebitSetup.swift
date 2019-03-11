@@ -127,6 +127,13 @@ extension DirectDebitSetup: Presentable {
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                         data.registerAccountProcessingStatus = .requested
                     })
+
+                    if objc_getClass("ReactNativeNavigation") != nil {
+                        let bridge = ReactNativeNavigation.getBridge()
+                        let nativeRouting = bridge?.module(forName: "NativeRouting") as! NativeRouting
+
+                        nativeRouting.sendClearDirectDebitStatus()
+                    }
                 }
 
                 bag += containerView.add(directDebitResult) { view in
