@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import FirebaseAnalytics
 
 struct ButtonRow {
     let text: ReadWriteSignal<String>
@@ -52,6 +53,12 @@ extension ButtonRow: Viewable {
 
         bag += label.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(20)
+        }
+        
+        bag += events.onSelect.flatMapLatest { self.text.atOnce() }.onValue { title in
+            if let localizationKey = title.localizationKey?.toString() {
+                Analytics.logEvent("button_tap_\(localizationKey)", parameters: nil)
+            }
         }
 
         row.append(label)
