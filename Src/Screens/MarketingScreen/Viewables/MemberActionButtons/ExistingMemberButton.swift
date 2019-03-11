@@ -31,12 +31,14 @@ extension ExistingMemberButton: Viewable {
             self.onTap()
         }
 
-        bag += view.add(button)
+        bag += view.add(button) { buttonView in
+            buttonView.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+            }
+        }
 
         bag += events.wasAdded.onValue {
             view.snp.makeConstraints({ make in
-                make.bottom.equalToSuperview()
-                make.centerX.equalToSuperview()
                 make.height.equalTo(button.type.height())
                 make.width.equalToSuperview()
             })

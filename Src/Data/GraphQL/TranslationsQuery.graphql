@@ -1,6 +1,6 @@
 query Translations($code: String) {
     languages(where: { code: $code }) {
-        translations(where: { project: App }) {
+        translations(where: { project_in: [IOS, App] }) {
             key {
                 value
             }

@@ -56,15 +56,19 @@ extension NewMemberButton: Viewable {
             )
         }
 
-        bag += view.add(button)
+        bag += view.add(button) { buttonView in
+            buttonView.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+            }
+        }
 
         bag += button.onTapSignal.onValue {
             self.onTap()
         }
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalToSuperview()
             make.height.equalTo(button.type.height())
+            make.width.equalToSuperview()
         }
 
         return (view, bag)

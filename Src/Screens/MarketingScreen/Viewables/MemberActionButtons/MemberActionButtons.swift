@@ -56,11 +56,11 @@ extension MemberActionButtons: Viewable {
         bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
             make.width.equalToSuperview().inset(10)
             make.centerX.equalToSuperview()
-
+            
             if Device.hasRoundedCorners {
                 make.bottom.equalTo(safeArea.layoutGuide)
             } else {
-                make.bottom.equalTo(safeArea.layoutGuide).inset(15)
+                make.bottom.equalTo(-15)
             }
         }
 

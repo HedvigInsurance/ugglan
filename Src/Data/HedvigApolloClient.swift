@@ -36,12 +36,16 @@ class HedvigApolloClient {
 
         let authMap: GraphQLMap = authPayloads
 
-        let httpNetworkTransport = HTTPNetworkTransport(url: environment.endpointURL, configuration: configuration)
+        let httpNetworkTransport = HTTPNetworkTransport(
+            url: environment.endpointURL,
+            configuration: configuration
+        )
+        
         let websocketNetworkTransport = WebSocketTransport(
             request: URLRequest(url: environment.wsEndpointURL),
             connectingPayload: authMap
         )
-
+        
         let splitNetworkTransport = SplitNetworkTransport(
             httpNetworkTransport: httpNetworkTransport,
             webSocketNetworkTransport: websocketNetworkTransport
