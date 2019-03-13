@@ -16,7 +16,7 @@ struct BackgroundWithLabel {
     let backgroundColor: UIColor?
     let backgroundImage: UIImage?
     let textColor: UIColor?
-    
+
     init(
         labelText: DynamicString,
         backgroundColor: UIColor? = .purple,
@@ -33,26 +33,26 @@ struct BackgroundWithLabel {
 extension BackgroundWithLabel: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        
+
         let view = UIView()
         view.backgroundColor = backgroundColor
-        
+
         if backgroundImage != nil {
             let imageView = UIImageView()
             imageView.image = backgroundImage
             imageView.contentMode = .scaleAspectFit
-            
+
             view.addSubview(imageView)
-            
+
             imageView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalToSuperview()
             }
         }
-        
+
         let label = UILabel()
         bag += label.setDynamicText(labelText)
-        
+
         label.clipsToBounds = true
         label.textAlignment = .center
         label.font = HedvigFonts.soRayExtraBold?.withSize(44)
@@ -60,10 +60,10 @@ extension BackgroundWithLabel: Viewable {
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.adjustsFontSizeToFitWidth = false
-        
+
         let labelContainer = UIView()
         labelContainer.addSubview(label)
-        
+
         bag += label.didLayoutSignal.onValue { _ in
             label.snp.remakeConstraints { make in
                 make.width.equalToSuperview().inset(20)
@@ -71,21 +71,21 @@ extension BackgroundWithLabel: Viewable {
                 make.center.equalToSuperview()
             }
         }
-        
+
         view.addSubview(labelContainer)
-        
+
         labelContainer.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalToSuperview()
             make.center.equalToSuperview()
         }
-        
+
         view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalToSuperview()
             make.height.equalToSuperview()
             make.center.equalToSuperview()
         }
-        
+
         return (view, bag)
     }
 }

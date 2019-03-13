@@ -12,7 +12,7 @@ import Foundation
 import Presentation
 
 struct MyInfoRow {
-    let nameSignal = ReadWriteSignal<((firstName: String, lastName: String)?)>(nil)
+    let nameSignal = ReadWriteSignal<(firstName: String, lastName: String)?>(nil)
     let presentingViewController: UIViewController
 }
 

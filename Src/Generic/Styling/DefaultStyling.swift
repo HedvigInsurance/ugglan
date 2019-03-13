@@ -8,8 +8,8 @@
 
 import Form
 import Foundation
-import UIKit
 import StoreKit
+import UIKit
 
 extension DefaultStyling {
     static func installCustom() {
@@ -51,7 +51,7 @@ extension DefaultStyling {
         )
 
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .purple
-        
+
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
                 NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),

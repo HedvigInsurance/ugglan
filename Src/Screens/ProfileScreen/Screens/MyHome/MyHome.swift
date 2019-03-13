@@ -91,7 +91,7 @@ extension MyHome: Presentable {
                         Alert.Action(title: String(.MY_HOME_CHANGE_ALERT_ACTION_CONFIRM)) { true }
                     ]
                 )
-                
+
                 viewController.present(alert).onValue { shouldContinue in
                     if shouldContinue {
                         MyHomeRouting.openChat(viewController: viewController)

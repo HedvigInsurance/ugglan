@@ -48,10 +48,10 @@ extension DirectDebitSetup: Presentable {
             style: .navigationBarButton
         )
         bag += viewController.installDismissBarItem(dismissButton)
-        
+
         let webViewConfiguration = WKWebViewConfiguration()
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
-        
+
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
         webView.backgroundColor = .offWhite
         webView.isOpaque = false
@@ -153,7 +153,7 @@ extension DirectDebitSetup: Presentable {
 
                 viewController.view = containerView
             }
-            
+
             bag += webView.decidePolicyForNavigationAction.set({ _, navigationAction in
                 guard let url = navigationAction.request.url else { return .allow }
                 let urlString = String(describing: url)
@@ -165,7 +165,7 @@ extension DirectDebitSetup: Presentable {
 
                 return .allow
             })
-            
+
             // if user is closing app in the middle of process make sure to inform backend
             bag += self.applicationWillTerminateSignal.onValue {
                 self.client.perform(mutation: CancelDirectDebitRequestMutation()).onValue { _ in }

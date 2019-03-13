@@ -14,7 +14,7 @@ import UIKit
 
 extension ApolloClient {
     static var isShowingNetworkErrorMessage = false
-    static var retryQueue: [(() -> Void)] = []
+    static var retryQueue: [() -> Void] = []
 
     func showNetworkErrorMessage(onRetry: @escaping () -> Void) {
         ApolloClient.retryQueue.append(onRetry)

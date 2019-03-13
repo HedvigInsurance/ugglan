@@ -19,22 +19,22 @@ extension FeedbackHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let containerView = UIView()
-        
+
         let backgroundWithLabel = BackgroundWithLabel(
             labelText: DynamicString(String(.FEEDBACK_SCREEN_LABEL)),
             backgroundColor: .purple,
             backgroundImage: Asset.feedbackLabelBackground.image
         )
-        
+
         bag += containerView.add(backgroundWithLabel)
-        
+
         containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalToSuperview()
             make.right.equalToSuperview()
             make.top.equalToSuperview()
             make.height.equalTo(self.height)
         }
-        
+
         return (containerView, bag)
     }
 }

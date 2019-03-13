@@ -34,14 +34,14 @@ extension PaymentDetailsSection: Viewable {
         row.valueStyleSignal.value = .rowTitleDisabled
 
         let dataValueSignal = client.watch(query: MyPaymentQuery())
-        
+
         bag += dataValueSignal.map {
             $0.data?.nextChargeDate
         }.map { paymentDate in
             if let paymentDate = paymentDate {
                 return String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
             }
-            
+
             return ""
         }.bindTo(row.valueSignal)
 

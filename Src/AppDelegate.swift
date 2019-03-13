@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let window = UIWindow(frame: UIScreen.main.bounds)
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
-    
+
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
@@ -50,8 +50,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         bag += navigationController.present(marketingPresentation)
     }
-    
-    func applicationWillTerminate(_ application: UIApplication) {
+
+    func applicationWillTerminate(_: UIApplication) {
         applicationWillTerminateCallbacker.callAll()
     }
 

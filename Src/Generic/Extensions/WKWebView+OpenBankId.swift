@@ -6,18 +6,18 @@
 //
 
 import Foundation
-import WebKit
 import Presentation
+import WebKit
 
 class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
     let presentingViewController: UIViewController
-    
+
     @available(iOS 11.0, *)
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else { return }
-        
+
         webView.stopLoading()
-        
+
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.openURL(url)
         } else {
@@ -30,16 +30,16 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
                     ) { () }
                 ]
             )
-            
+
             presentingViewController.present(alert)
         }
     }
-    
+
     @available(iOS 11.0, *)
-    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
+    func webView(_: WKWebView, stop _: WKURLSchemeTask) {
         // do nothing
     }
-    
+
     init(_ presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
     }

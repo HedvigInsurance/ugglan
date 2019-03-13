@@ -17,16 +17,16 @@ struct ReviewAppRow {}
 extension ReviewAppRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (KeyValueRow, Disposable) {
         let bag = DisposeBag()
-        
+
         let row = KeyValueRow()
-        
+
         row.keySignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_TITLE)
         row.valueSignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_VALUE)
-        
+
         row.valueStyleSignal.value = .rowValueLink
-        
+
         let reviewURL = String(.APP_STORE_REVIEW_URL)
-                
+
         bag += events.onSelect.onValue { _ in
             if #available(iOS 10.3, *) {
                 SKStoreReviewController.requestReview()
@@ -35,7 +35,7 @@ extension ReviewAppRow: Viewable {
                 UIApplication.shared.openURL(url)
             }
         }
-        
+
         return (row, bag)
     }
 }

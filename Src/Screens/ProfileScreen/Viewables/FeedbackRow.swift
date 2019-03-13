@@ -18,18 +18,18 @@ struct FeedbackRow {
 extension FeedbackRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
-        
+
         let row = RowView()
         row.append(UILabel(value: "Feedback", style: .rowTitle))
-        
+
         let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
-        
+
         row.append(arrow)
-        
+
         arrow.snp.makeConstraints { make in
             make.width.equalTo(20)
         }
-        
+
         bag += events.onSelect.onValue {
             let feedback = Feedback()
             self.presentingViewController.present(
@@ -38,7 +38,7 @@ extension FeedbackRow: Viewable {
                 options: [.autoPop, .largeTitleDisplayMode(.never)]
             )
         }
-        
+
         return (row, bag)
     }
 }
@@ -49,4 +49,3 @@ extension FeedbackRow: Previewable {
         return (feedback, [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }
-
