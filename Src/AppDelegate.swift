@@ -19,6 +19,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
+    private let applicationWillTerminateCallbacker = Callbacker<Void>()
+    let applicationWillTerminateSignal: Signal<Void>
+    
+    override init() {
+        applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
+        super.init()
+    }
 
     func logout() {
         let token = AuthorizationToken(token: "")
@@ -42,6 +49,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
 
         bag += navigationController.present(marketingPresentation)
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        applicationWillTerminateCallbacker.callAll()
     }
 
     func application(

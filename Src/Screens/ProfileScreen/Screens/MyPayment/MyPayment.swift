@@ -76,7 +76,7 @@ extension MyPayment: Presentable {
                 viewController.present(directDebitSetup, options: [.autoPop])
             }
 
-            if result.data?.isSwitchingBankAccount() ?? false {
+            if result.data?.directDebitStatus == .pending {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true
