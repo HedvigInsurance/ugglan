@@ -134,12 +134,7 @@ extension DirectDebitSetup: Presentable {
                         data.directDebitStatus = .pending
                     })
 
-                    if objc_getClass("ReactNativeNavigation") != nil {
-                        let bridge = ReactNativeNavigation.getBridge()
-                        let nativeRouting = bridge?.module(forName: "NativeRouting") as! NativeRouting
-
-                        nativeRouting.sendClearDirectDebitStatus()
-                    }
+                    ClearDirectDebitStatus.clear()
                 }
 
                 bag += containerView.add(directDebitResult) { view in
