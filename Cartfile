@@ -10,5 +10,6 @@ github "SnapKit/SnapKit" >= 4.0.0
 github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
 github "vtourraine/AcknowList" "master"
+github "AugustRush/Stellar"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

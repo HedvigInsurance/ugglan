@@ -1,4 +1,5 @@
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" "5.18.2"
+github "AugustRush/Stellar" "0.67"
 github "SnapKit/SnapKit" "4.2.0"
 github "airbnb/lottie-ios" "65402f3cf81e9148bc6daad1d6e5f8e310169711"
 github "apollographql/apollo-ios" "0.9.5"
