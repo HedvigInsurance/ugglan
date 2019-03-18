@@ -38,7 +38,7 @@ struct Referrals {
             let incentive = remoteConfigContainer.referralsIncentive()
 
             guard let link = URL(
-                string: "https://hedvig.com/referrals?memberId=\(memberId)&incentive=\(incentive)"
+                string: "https://hedvig.com/referrals?invitedBy=\(memberId)&incentive=\(incentive)"
             ) else {
                 return NilDisposer()
             }
