@@ -58,33 +58,16 @@ struct Referrals {
                 packageName: remoteConfigContainer.dynamicLinkAndroidPackageName()
             )
 
+            linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+            linkBuilder?.socialMetaTagParameters?.title = String(.REFERRAL_SHARE_SOCIAL_TITLE)
+            linkBuilder?.socialMetaTagParameters?.descriptionText = String(.REFERRAL_SHARE_SOCIAL_DESCRIPTION)
+            linkBuilder?.socialMetaTagParameters?.imageURL = String(.REFERRAL_SHARE_SOCIAL_IMAGE_URL)
+
             linkBuilder?.shorten { url, _, error in
                 if error != nil {
                     completion(.failure(ReferralsFailure.failedToCreateLink))
                 } else if let url = url {
                     completion(.success(url.absoluteString))
-                }
-            }
-
-            return NilDisposer()
-        }
-    }
-
-    func writeReferralToStore(
-        invitedByMmemberId: String,
-        memberId: String
-    ) -> Future<Void> {
-        let db = Firestore.firestore()
-
-        return Future { completion in
-            db.collection("referrals").addDocument(data: [
-                "invitedByMemberId": invitedByMmemberId,
-                "memberId": memberId
-            ]) { error in
-                if let error = error {
-                    completion(.failure(error))
-                } else {
-                    completion(.success)
                 }
             }
 
