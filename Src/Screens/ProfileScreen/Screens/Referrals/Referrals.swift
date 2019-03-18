@@ -61,7 +61,10 @@ struct Referrals {
             linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
             linkBuilder?.socialMetaTagParameters?.title = String(.REFERRAL_SHARE_SOCIAL_TITLE)
             linkBuilder?.socialMetaTagParameters?.descriptionText = String(.REFERRAL_SHARE_SOCIAL_DESCRIPTION)
-            linkBuilder?.socialMetaTagParameters?.imageURL = String(.REFERRAL_SHARE_SOCIAL_IMAGE_URL)
+
+            if let imageUrl = URL(string: String(.REFERRAL_SHARE_SOCIAL_IMAGE_URL)) {
+                linkBuilder?.socialMetaTagParameters?.imageURL = imageUrl
+            }
 
             linkBuilder?.shorten { url, _, error in
                 if error != nil {
