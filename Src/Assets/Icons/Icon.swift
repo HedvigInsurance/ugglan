@@ -14,7 +14,7 @@ class Icon: UIView {
     let icon: ImageAsset!
     let iconWidth: CGFloat!
 
-    init(frame: CGRect, icon: ImageAsset, iconWidth: CGFloat) {
+    init(frame: CGRect = .zero, icon: ImageAsset, iconWidth: CGFloat) {
         self.icon = icon
         self.iconWidth = iconWidth
         super.init(frame: frame)

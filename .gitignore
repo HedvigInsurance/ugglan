@@ -12,6 +12,7 @@ Src/Data/schema.json
 Src/Data/API.swift
 Carthage
 project.xcodeproj
+Src/GoogleService-Info.plist
 
 ## Various settings
 *.pbxuser

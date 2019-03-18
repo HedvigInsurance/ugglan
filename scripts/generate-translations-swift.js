@@ -13,6 +13,8 @@ const concat = (x, y) => x.concat(y);
 
 const flatMap = (f, xs) => xs.map(f).reduce(concat, []);
 
+const onlyUnique = (value, index, self) => self.indexOf(value) === index;
+
 const findReplacements = text =>
   text
     .split(placeholderRegex)
@@ -35,9 +37,9 @@ let generateSwitchCase = language => {
 
         const translationsRepoClosingBracket = indent("}", 14);
         const translationsRepo = indent(
-          `if let text = TranslationsRepo.findWithReplacements(key, replacements: [${argumentNames.map(
-            name => `"${name}": ${name}`
-          )}]) {\n${indent(
+          `if let text = TranslationsRepo.findWithReplacements(key, replacements: [${argumentNames
+            .map(name => `"${name}": ${name}`)
+            .filter(onlyUnique)}]) {\n${indent(
             "return text",
             16
           )}\n${translationsRepoClosingBracket}\n`,
@@ -54,9 +56,12 @@ let generateSwitchCase = language => {
           indent("\n", 12) +
           indent(`return """\n${indent(text, 14)}\n${indent('"""', 14)}`, 14);
 
-        return `case let .${translation.key.value}(${argumentNames.map(
-          name => `${name}`
-        )}):\n${indent(translationsRepo, 12)}${returnStatement}`;
+        return `case let .${translation.key.value}(${argumentNames
+          .map(name => `${name}`)
+          .filter(onlyUnique)}):\n${indent(
+          translationsRepo,
+          12
+        )}${returnStatement}`;
       }
 
       const translationsRepoClosingBracket = indent("}", 14);
@@ -119,6 +124,8 @@ public struct Localization {
     enum Key {
     ${translations.data.keys
       .map((key, i) => {
+        console.log(`Generating: ${key.value}\n${key.description}\n\n`);
+
         let description = key.description
           ? indent(`/// ${key.description}`, 6) + "\n"
           : "";

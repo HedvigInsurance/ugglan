@@ -38,6 +38,7 @@ extension ActivityView: Presentable {
             activityItems: activityItems,
             applicationActivities: applicationActivities
         )
+        viewController.preferredPresentationStyle = .activityView
 
         if let popover = viewController.popoverPresentationController, let sourceRect = sourceRect {
             popover.sourceView = sourceView

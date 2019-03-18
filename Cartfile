@@ -1,5 +1,5 @@
 github "dennisweissmann/DeviceKit" ~> 1.3
-github "airbnb/lottie-ios" "master"
+github "airbnb/lottie-ios" "lottie/objectiveC"
 github "yannickl/DynamicColor" >= 4.0.3
 github "apollographql/apollo-ios" >= 0.9.5
 github "saoudrizwan/Disk" >= 0.4.0
@@ -12,3 +12,7 @@ github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
 github "vtourraine/AcknowList" "master"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.json"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json"
+

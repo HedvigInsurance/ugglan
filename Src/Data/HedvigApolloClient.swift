@@ -13,6 +13,7 @@ import Apollo
 import Disk
 import Flow
 import Foundation
+import FirebaseRemoteConfig
 
 struct HedvigApolloEnvironmentConfig {
     let endpointURL: URL
@@ -23,8 +24,10 @@ class HedvigApolloClient {
     static var shared = HedvigApolloClient()
     var client: ApolloClient?
     var store: ApolloStore?
+    var remoteConfig: RemoteConfig?
 
-    private init() {}
+    private init() {
+    }
 
     func createClient(token: String?, environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
         let authPayloads = [
