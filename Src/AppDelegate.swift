@@ -56,20 +56,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_: UIApplication) {
         applicationWillTerminateCallbacker.callAll()
     }
-    
+
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         FirebaseApp.configure()
-        
+
         let remoteConfig = RemoteConfig.remoteConfig()
         let fetchDuration: TimeInterval = 0
-        
+
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
             remoteConfig.activateFetched()
         })
-        
+
         window.backgroundColor = .offWhite
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in

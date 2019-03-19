@@ -31,7 +31,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .darkGray
     }
-    
+
     static let standaloneLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.color = .black
@@ -55,7 +55,7 @@ extension TextStyle {
     static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
         style.alignment = .center
     }
-    
+
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
