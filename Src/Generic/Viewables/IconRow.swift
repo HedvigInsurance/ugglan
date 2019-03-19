@@ -80,7 +80,7 @@ extension IconRow: Viewable {
             } else {
                 row.isHidden = false
             }
-            
+
             if newOptions.contains(.whiteContent) {
                 titleLabel.styledText = StyledText(
                     text: titleLabel.text ?? "",

@@ -18,11 +18,11 @@ extension ReferralRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
-        let incentive = RemoteConfigContainer().referralsIncentive()
+        let incentive = String(RemoteConfigContainer().referralsIncentive())
 
         let row = IconRow(
-            title: String(.REFERRALS_ROW_TITLE),
-            subtitle: String(.REFERRALS_ROW_SUBTITLE(incentive: String(incentive))),
+            title: String(.REFERRALS_ROW_TITLE(incentive: incentive)),
+            subtitle: String(.REFERRALS_ROW_SUBTITLE),
             iconAsset: Asset.share,
             options: [.withArrow, .whiteContent]
         )

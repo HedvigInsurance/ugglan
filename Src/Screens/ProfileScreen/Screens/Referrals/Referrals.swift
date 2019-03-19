@@ -155,8 +155,12 @@ extension Referrals: Presentable {
             bag += button.onTapSignal.withLatestFrom(
                 linkSignal.plain()
             ).compactMap { $1 }.onValue { link in
+
+                let incentive = String(RemoteConfigContainer().referralsIncentive())
+                let shareMessage = String(.REFERRALS_SHARE_MESSAGE(incentive: incentive, link: link))
+
                 let activityView = ActivityView(
-                    activityItems: [String(.REFERRALS_SHARE_MESSAGE(link: link))],
+                    activityItems: [shareMessage],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds

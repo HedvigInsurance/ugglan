@@ -88,7 +88,7 @@ extension MyHome: Presentable {
                     message: String(.MY_HOME_CHANGE_ALERT_MESSAGE),
                     actions: [
                         Alert.Action(title: String(.MY_HOME_CHANGE_ALERT_ACTION_CANCEL)) { false },
-                        Alert.Action(title: String(.MY_HOME_CHANGE_ALERT_ACTION_CONFIRM)) { true }
+                        Alert.Action(title: String(.MY_HOME_CHANGE_ALERT_ACTION_CONFIRM)) { true },
                     ]
                 )
 

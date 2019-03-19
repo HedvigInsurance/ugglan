@@ -23,7 +23,7 @@ extension ReferralsTitle: Viewable {
 
         let title = MultilineLabel(
             styledText: StyledText(
-                text: String(.REFERRALS_TITLE(incentive: String(incentive))),
+                text: String(.REFERRALS_TITLE),
                 style: .standaloneLargeTitle
             )
         )

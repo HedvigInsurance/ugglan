@@ -29,7 +29,7 @@ extension BackgroundStyle {
     static let white = BackgroundStyle(color: .white, border: .standard)
     static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
     static let whiteRoundedBorder = BackgroundStyle(color: .white, border: .standardRounded)
-    
+
     static let purple = BackgroundStyle(
         color: UIColor.purple,
         border: .standard
@@ -93,7 +93,7 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
-    
+
     static let whiteLargeIcons = SectionBackgroundStyle(
         background: .white,
         topSeparator: .insetLargeIcons,
@@ -105,7 +105,7 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
-    
+
     static let purple = SectionBackgroundStyle(
         background: .purple,
         topSeparator: .inset,

@@ -24,13 +24,13 @@ extension Profile: Presentable {
         viewController.displayableTitle = "Profil"
 
         let form = FormView()
-        
+
         let referralSectionStyle = DynamicSectionStyle.sectionPlain.restyled { (style: inout SectionStyle) in
             style.background = .highlighted
         }
-        
+
         let referralSection = SectionView(rows: [], style: referralSectionStyle)
-        
+
         let referralRow = ReferralRow(
             presentingViewController: viewController
         )

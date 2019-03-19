@@ -65,7 +65,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .black
     }
-    
+
     static let rowTitleWhite = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
         style.color = .white
     }
@@ -84,7 +84,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
     }
-    
+
     static let rowSubtitleWhite = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
         style.color = .white
     }
