@@ -110,7 +110,7 @@ extension Referrals: Presentable {
         let referralsIllustration = ReferralsIllustration()
         bag += formView.prepend(referralsIllustration) { view in
             view.snp.makeConstraints { make in
-                make.height.equalTo(300)
+                make.height.equalTo(210)
             }
         }
         

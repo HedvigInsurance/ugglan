@@ -17,7 +17,7 @@ extension ReferralsIllustration: Viewable {
         
         let imageView = UIImageView()
         imageView.image = Asset.referralsIllustration.image
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         
         view.addSubview(imageView)
         
