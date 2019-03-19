@@ -38,7 +38,12 @@ struct Referrals {
             let incentive = remoteConfigContainer.referralsIncentive()
 
             guard let link = URL(
-                string: "https://hedvig.com/referrals?invitedBy=\(memberId)&incentive=\(incentive)"
+                string: String(
+                    .REFERRALS_DYNAMIC_LINK_LANDING(
+                        memberId: memberId,
+                        incentive: String(incentive)
+                    )
+                )
             ) else {
                 return NilDisposer()
             }
