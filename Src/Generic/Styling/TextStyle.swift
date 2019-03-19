@@ -65,6 +65,10 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .black
     }
+    
+    static let rowTitleWhite = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
+        style.color = .white
+    }
 
     static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
@@ -79,6 +83,10 @@ extension TextStyle {
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
+    }
+    
+    static let rowSubtitleWhite = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
+        style.color = .white
     }
 
     static let rowValueEditable = TextStyle.default.restyled { (style: inout TextStyle) in

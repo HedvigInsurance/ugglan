@@ -24,7 +24,7 @@ extension ReferralRow: Viewable {
             title: String(.REFERRALS_ROW_TITLE),
             subtitle: String(.REFERRALS_ROW_SUBTITLE(incentive: String(incentive))),
             iconAsset: Asset.share,
-            options: [.withArrow]
+            options: [.withArrow, .whiteContent]
         )
 
         bag += events.onSelect.onValue { _ in
