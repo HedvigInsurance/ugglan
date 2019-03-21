@@ -91,6 +91,15 @@ enum ButtonType {
             return nil
         }
     }
+    
+    func iconDistance() -> CGFloat {
+        switch self {
+        case .information((_, _)):
+            return 7
+        default:
+            return 0
+        }
+    }
 }
 
 struct Button {
@@ -170,8 +179,10 @@ extension Button: Viewable {
         
         if let icon = self.type.icon() {
             button.setImage(icon.image, for: [])
-            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 7)
-            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 7, bottom: 0, right: 0)
+            
+            let iconDistance = self.type.iconDistance()
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
 
         bag += title.atOnce().onValue { title in
