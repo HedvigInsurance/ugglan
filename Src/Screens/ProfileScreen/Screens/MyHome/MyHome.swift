@@ -29,7 +29,10 @@ extension MyHome: Presentable {
 
         let form = FormView()
         bag += viewController.install(form)
-
+        
+        let addressCircle = AddressCircle()
+        bag += form.prepend(addressCircle)
+        
         bag += client.fetch(query: MyHomeQuery()).onValue { result in
             if let insurance = result.data?.insurance {
                 let rowTitle = UILabel(value: String(.MY_HOME_SECTION_TITLE), style: .rowTitle)
