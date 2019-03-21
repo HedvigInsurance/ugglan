@@ -15,6 +15,7 @@ import UIKit
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case information(textColor: HedvigColor)
 
     func backgroundOpacity() -> CGFloat {
         switch self {
@@ -22,6 +23,8 @@ enum ButtonType {
             return 1
         case .pillTransparent:
             return 0.6
+        default:
+            return 0.0
         }
     }
 
@@ -31,6 +34,8 @@ enum ButtonType {
             return backgroundColor
         case let .pillTransparent((backgroundColor, _)):
             return backgroundColor
+        default:
+            return .purple
         }
     }
 
@@ -39,6 +44,8 @@ enum ButtonType {
         case let .standard((_, textColor)):
             return textColor
         case let .pillTransparent((_, textColor)):
+            return textColor
+        case let .information((textColor)):
             return textColor
         }
     }
@@ -49,6 +56,8 @@ enum ButtonType {
             return 50
         case .pillTransparent:
             return 30
+        case .information:
+            return 30
         }
     }
 
@@ -58,6 +67,8 @@ enum ButtonType {
             return 15
         case .pillTransparent:
             return 13
+        case .information:
+            return 14
         }
     }
 
@@ -66,6 +77,8 @@ enum ButtonType {
         case .standard:
             return 50
         case .pillTransparent:
+            return 35
+        case .information:
             return 35
         }
     }

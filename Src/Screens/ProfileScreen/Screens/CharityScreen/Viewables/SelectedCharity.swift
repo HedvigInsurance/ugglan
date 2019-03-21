@@ -99,6 +99,13 @@ extension SelectedCharity: Viewable {
                     make.width.equalToSuperview().inset(20)
                 })
             })
+            
+            let button = Button(
+                title: String(.PROFILE_MY_CHARITY_INFO_BUTTON),
+                type: .information(textColor: .darkPurple)
+            )
+            
+            bag += stackView.addArangedSubview(button)
         }
 
         if animateEntry {
