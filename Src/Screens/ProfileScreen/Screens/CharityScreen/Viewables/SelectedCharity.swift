@@ -102,7 +102,7 @@ extension SelectedCharity: Viewable {
             
             let button = Button(
                 title: String(.PROFILE_MY_CHARITY_INFO_BUTTON),
-                type: .information(textColor: .darkPurple)
+                type: .information(textColor: .darkPurple, icon: Asset.infoBlue)
             )
             
             bag += stackView.addArangedSubview(button)

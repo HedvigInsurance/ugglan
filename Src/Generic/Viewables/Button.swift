@@ -15,7 +15,7 @@ import UIKit
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
-    case information(textColor: HedvigColor)
+    case information(textColor: HedvigColor, icon: ImageAsset?)
 
     func backgroundOpacity() -> CGFloat {
         switch self {
@@ -45,7 +45,7 @@ enum ButtonType {
             return textColor
         case let .pillTransparent((_, textColor)):
             return textColor
-        case let .information((textColor)):
+        case let .information((textColor, _)):
             return textColor
         }
     }
@@ -80,6 +80,15 @@ enum ButtonType {
             return 35
         case .information:
             return 35
+        }
+    }
+    
+    func icon() -> ImageAsset? {
+        switch self {
+        case let .information((_, icon)):
+            return icon
+        default:
+            return nil
         }
     }
 }
@@ -158,6 +167,12 @@ extension Button: Viewable {
 
         let button = UIButton(title: "", style: style)
         button.adjustsImageWhenHighlighted = false
+        
+        if let icon = self.type.icon() {
+            button.setImage(icon.image, for: [])
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 7)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 7, bottom: 0, right: 0)
+        }
 
         bag += title.atOnce().onValue { title in
             button.setTitle(title)
