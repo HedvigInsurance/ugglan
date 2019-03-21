@@ -53,7 +53,15 @@ extension MyHome: Presentable {
                 postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
                 postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
                 bag += section.append(postalCodeRow)
-
+                
+                let livingSpaceRow = KeyValueRow()
+                livingSpaceRow.keySignal.value = String(.MY_HOME_ROW_SIZE_KEY)
+                livingSpaceRow.valueSignal.value = String(.MY_HOME_ROW_SIZE_VALUE(
+                    livingSpace: insurance.livingSpace != nil ? String(insurance.livingSpace!) : ""
+                ))
+                livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
+                bag += section.append(livingSpaceRow)
+                
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = String(.MY_HOME_ROW_TYPE_KEY)
                 apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
