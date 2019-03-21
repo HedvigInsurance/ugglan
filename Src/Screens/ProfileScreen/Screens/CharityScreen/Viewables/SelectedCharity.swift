@@ -49,14 +49,13 @@ extension SelectedCharity: Viewable {
             for subview in stackView.arrangedSubviews {
                 subview.removeFromSuperview()
             }
-
-            let circleIcon = CircleIcon(
-                iconAsset: Asset.charityPlain,
-                iconWidth: 90,
-                spacing: 70,
-                backgroundColor: .white
-            )
-            bag += stackView.addArangedSubview(circleIcon)
+            
+            let charityLogo = CharityLogo(url: cashback.imageUrl!)
+            bag += stackView.addArangedSubview(charityLogo) { view in
+                view.snp.makeConstraints { make in
+                    make.height.equalTo(190)
+                }
+            }
 
             let infoContainer = UIView()
             infoContainer.backgroundColor = .white
