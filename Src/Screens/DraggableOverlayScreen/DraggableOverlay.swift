@@ -9,7 +9,6 @@ import Foundation
 import Presentation
 import UIKit
 import Flow
-import Stellar
 
 struct DraggableOverlay<P: Presentable, PMatter: UIViewController> where P.Result == Disposable, P.Matter == PMatter {
     let presentable: P

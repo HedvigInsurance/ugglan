@@ -1,4 +1,5 @@
 import Foundation
+import QuartzCore
 
 public final class Ease<T: Easeable> {
     
