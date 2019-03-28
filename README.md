@@ -52,7 +52,7 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
 11. Add Google Services plist
 
-Obtain a Google Services plist from firebase and add it to the `Src` folder.
+`Obtain a Google Services plist from firebase and add it to the "Src" folder.`
 
 11. Generate Xcode project
 
