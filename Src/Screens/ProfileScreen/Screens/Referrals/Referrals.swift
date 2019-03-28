@@ -135,12 +135,15 @@ extension Referrals: Presentable {
         }.onValue { memberId in
             bag += self.createInvitationLink(memberId: memberId).bindTo(linkSignal)
         }
-
-        let button = Button(
-            title: String(.REFERRALS_SHARE_BUTTON),
-            type: .standard(backgroundColor: .purple, textColor: .white)
+        
+        let button = LoadableButton(
+            button: Button(
+                title: String(.REFERRALS_SHARE_BUTTON),
+                type: .standard(backgroundColor: .purple, textColor: .white)
+            ),
+            initialLoadingState: true
         )
-
+        
         bag += scrollView.add(button) { buttonView in
             buttonView.snp.makeConstraints({ make in
                 make.bottom.equalTo(
@@ -149,13 +152,7 @@ extension Referrals: Presentable {
                 make.centerX.equalToSuperview()
             })
 
-            buttonView.transform = CGAffineTransform(translationX: 0, y: 100)
-
-            bag += linkSignal.compactMap { $0 }.animated(
-                style: SpringAnimationStyle.heavyBounce()
-            ) {
-                buttonView.transform = CGAffineTransform.identity
-            }
+            bag += linkSignal.compactMap { $0 }.map { false }.bindTo(button.isLoadingSignal)
 
             bag += button.onTapSignal.withLatestFrom(
                 linkSignal.plain()
