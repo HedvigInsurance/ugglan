@@ -73,19 +73,6 @@ extension Profile: Presentable {
         )
 
         bag += form.append(logoutSection)
-        
-        let draggableOverlay = ButtonSection(text: "Open overlay", style: .normal)
-        
-        bag += draggableOverlay.onSelect.onValue { _ in
-            viewController.present(
-                DraggableOverlay(
-                    presentable: Profile(),
-                    presentationOptions: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-                )
-            )
-        }
-        
-        bag += form.append(draggableOverlay)
 
         let query = ProfileQuery()
 

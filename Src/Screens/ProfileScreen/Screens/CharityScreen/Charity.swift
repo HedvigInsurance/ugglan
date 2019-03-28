@@ -42,7 +42,7 @@ extension Charity: Presentable {
                 }
 
                 if cashback != nil {
-                    let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1)
+                    let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1, presentingViewController: viewController)
                     bag += containerView.add(selectedCharity) { view in
                         view.snp.makeConstraints({ make in
                             make.edges.equalToSuperview()

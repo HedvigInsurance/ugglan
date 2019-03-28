@@ -14,20 +14,22 @@ import Foundation
 struct SelectedCharity {
     let client: ApolloClient
     let animateEntry: Bool
+    let presentingViewController: UIViewController
 
     init(
         client: ApolloClient = HedvigApolloClient.shared.client!,
-        animateEntry: Bool
+        animateEntry: Bool,
+        presentingViewController: UIViewController
     ) {
         self.client = client
         self.animateEntry = animateEntry
+        self.presentingViewController = presentingViewController
     }
 }
 
 extension SelectedCharity: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-
         let scrollView = UIScrollView()
         scrollView.alwaysBounceVertical = true
 
@@ -104,6 +106,15 @@ extension SelectedCharity: Viewable {
                 title: String(.PROFILE_MY_CHARITY_INFO_BUTTON),
                 type: .iconTransparent(textColor: .darkPurple, icon: Asset.infoBlue)
             )
+            
+            bag += button.onTapSignal.onValue {_ in
+                self.presentingViewController.present(
+                    DraggableOverlay(
+                        presentable: CharityInformation(),
+                        presentationOptions: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                    )
+                )
+            }
             
             bag += stackView.addArangedSubview(button)
         }
