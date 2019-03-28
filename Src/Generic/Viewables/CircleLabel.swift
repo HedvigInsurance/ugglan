@@ -35,9 +35,9 @@ extension CircleLabel: Viewable {
         label.textAlignment = .center
         label.font = HedvigFonts.circularStdBold?.withSize(30)
         label.textColor = textColor
-        label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 0
+        label.numberOfLines = 3
         label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.1
 
         let labelContainer = UIView()
         labelContainer.backgroundColor = backgroundColor
