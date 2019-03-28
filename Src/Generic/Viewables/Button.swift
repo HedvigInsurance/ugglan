@@ -15,7 +15,7 @@ import UIKit
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
-    case information(textColor: HedvigColor, icon: ImageAsset?)
+    case iconTransparent(textColor: HedvigColor, icon: ImageAsset?)
 
     func backgroundOpacity() -> CGFloat {
         switch self {
@@ -45,7 +45,7 @@ enum ButtonType {
             return textColor
         case let .pillTransparent((_, textColor)):
             return textColor
-        case let .information((textColor, _)):
+        case let .iconTransparent((textColor, _)):
             return textColor
         }
     }
@@ -56,7 +56,7 @@ enum ButtonType {
             return 50
         case .pillTransparent:
             return 30
-        case .information:
+        case .iconTransparent:
             return 30
         }
     }
@@ -67,7 +67,7 @@ enum ButtonType {
             return 15
         case .pillTransparent:
             return 13
-        case .information:
+        case .iconTransparent:
             return 14
         }
     }
@@ -78,14 +78,14 @@ enum ButtonType {
             return 50
         case .pillTransparent:
             return 35
-        case .information:
+        case .iconTransparent:
             return 35
         }
     }
     
     func icon() -> ImageAsset? {
         switch self {
-        case let .information((_, icon)):
+        case let .iconTransparent((_, icon)):
             return icon
         default:
             return nil
@@ -94,7 +94,7 @@ enum ButtonType {
     
     func iconDistance() -> CGFloat {
         switch self {
-        case .information((_, _)):
+        case .iconTransparent((_, _)):
             return 7
         default:
             return 0
