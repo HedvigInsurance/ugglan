@@ -45,13 +45,13 @@ extension LoadableButton: Viewable {
         }
         
         func setLoadingState(isLoading: Bool, animate: Bool) {
-            buttonView.snp.updateConstraints({ (make) in
+            buttonView.snp.updateConstraints { make in
                 if (isLoading) {
                      make.width.equalTo(self.button.type.height())
                 } else {
                      make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
                 }
-            })
+            }
             
             func setLabelAlpha() {
                 if isLoading {
@@ -77,9 +77,9 @@ extension LoadableButton: Viewable {
                     setLabelAlpha()
                 }
                 
-                bag += Signal(after: layoutDelay).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
+                bag += Signal(after: layoutDelay).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                     setSpinnerAlpha()
-                })
+                }
                 
                 UIView.animate(withDuration: 0.25, delay: layoutDelay, usingSpringWithDamping: 30, initialSpringVelocity: 10, options: .curveEaseInOut, animations: {
                     buttonView.titleLabel?.setNeedsUpdateConstraints()
