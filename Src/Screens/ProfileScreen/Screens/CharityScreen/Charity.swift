@@ -14,14 +14,11 @@ import Presentation
 
 struct Charity {
     let client: ApolloClient
-    let presentingViewController: UIViewController
 
     init(
-        client: ApolloClient = HedvigApolloClient.shared.client!,
-        presentingViewController: UIViewController
+        client: ApolloClient = HedvigApolloClient.shared.client!
     ) {
         self.client = client
-        self.presentingViewController = presentingViewController
     }
 }
 
@@ -53,7 +50,7 @@ extension Charity: Presentable {
                     }
                 } else {
                     let charityPicker = CharityPicker(
-                        presentingViewController: self.presentingViewController
+                        presentingViewController: viewController
                     )
                     bag += containerView.add(charityPicker) { view in
                         view.snp.makeConstraints({ make in
