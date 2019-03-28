@@ -3,5 +3,6 @@ query MyHome {
         address
         postalNumber
         type
+        livingSpace
     }
 }
