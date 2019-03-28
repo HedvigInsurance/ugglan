@@ -47,9 +47,10 @@ extension LoadableButton: Viewable {
         func setLoadingState(isLoading: Bool, animate: Bool) {
             buttonView.snp.updateConstraints { make in
                 if (isLoading) {
-                     make.width.equalTo(self.button.type.height())
+                    make.width.equalTo(self.button.type.height())
                 } else {
-                     make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
+                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
+                    print("1. updated margins")
                 }
             }
             
@@ -81,15 +82,27 @@ extension LoadableButton: Viewable {
                     setSpinnerAlpha()
                 }
                 
+                print("2. layouted views")
+                //buttonView.titleLabel?.setNeedsUpdateConstraints()
+                //buttonView.titleLabel?.layoutIfNeeded()
+                //buttonView.setNeedsUpdateConstraints()
+                //buttonView.layoutIfNeeded()
+                
                 UIView.animate(withDuration: 0.25, delay: layoutDelay, usingSpringWithDamping: 30, initialSpringVelocity: 10, options: .curveEaseInOut, animations: {
                     buttonView.titleLabel?.setNeedsUpdateConstraints()
                     buttonView.titleLabel?.layoutIfNeeded()
                     buttonView.setNeedsUpdateConstraints()
                     buttonView.layoutIfNeeded()
+                    
                 }, completion: nil)
             } else {
                 setLabelAlpha()
                 setSpinnerAlpha()
+                
+                buttonView.titleLabel?.setNeedsUpdateConstraints()
+                buttonView.titleLabel?.layoutIfNeeded()
+                buttonView.setNeedsUpdateConstraints()
+                buttonView.layoutIfNeeded()
             }
             
             if isLoading {
