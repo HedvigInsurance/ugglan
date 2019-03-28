@@ -15,7 +15,7 @@ struct BankDetailsSection {
     let client: ApolloClient
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+    init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
 }

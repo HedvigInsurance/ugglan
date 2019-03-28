@@ -18,7 +18,7 @@ struct ReportBugRow {
     let client: ApolloClient
     let presentingViewController: UIViewController
 
-    init(client: ApolloClient = HedvigApolloClient.shared.client!, presentingViewController: UIViewController) {
+    init(client: ApolloClient = ApolloContainer.shared.client, presentingViewController: UIViewController) {
         self.client = client
         self.presentingViewController = presentingViewController
     }
