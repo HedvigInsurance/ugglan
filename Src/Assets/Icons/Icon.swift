@@ -11,14 +11,18 @@ import UIKit
 
 class Icon: UIView {
     let image = UIImageView()
-    let icon: ImageAsset!
-    let iconWidth: CGFloat!
+    var icon: ImageAsset {
+        didSet {
+            setup()
+        }
+    }
 
-    init(frame: CGRect, icon: ImageAsset, iconWidth: CGFloat) {
+    let iconWidth: CGFloat
+
+    init(frame: CGRect = .zero, icon: ImageAsset, iconWidth: CGFloat) {
         self.icon = icon
         self.iconWidth = iconWidth
         super.init(frame: frame)
-
         setup()
     }
 

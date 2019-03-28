@@ -8,7 +8,9 @@
 
 import Apollo
 import Disk
+import Firebase
 import FirebaseAnalytics
+import FirebaseRemoteConfig
 import Flow
 import Form
 import Presentation
@@ -59,6 +61,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        FirebaseApp.configure()
+
+        let remoteConfig = RemoteConfig.remoteConfig()
+        let fetchDuration: TimeInterval = 0
+
+        remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
+            remoteConfig.activateFetched()
+        })
+
         window.backgroundColor = .offWhite
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
@@ -74,7 +85,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.localizationKey?.toString() {
-                Analytics.logEvent("alert_action_tap_\(localizationKey)", parameters: [:])
+                Analytics.logEvent(
+                    "alert_action_tap_\(localizationKey)",
+                    parameters: nil
+                )
             }
         }
 
@@ -110,6 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         HedvigApolloClient.shared.initClient(environment: apolloEnvironment).delay(by: 0.5).onValue { client, store in
             HedvigApolloClient.shared.client = client
             HedvigApolloClient.shared.store = store
+            HedvigApolloClient.shared.remoteConfig = remoteConfig
 
             self.presentMarketing()
 

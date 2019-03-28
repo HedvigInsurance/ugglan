@@ -27,14 +27,20 @@ extension BorderStyle {
 
 extension BackgroundStyle {
     static let white = BackgroundStyle(color: .white, border: .standard)
+    static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
     static let whiteRoundedBorder = BackgroundStyle(color: .white, border: .standardRounded)
 
     static let purple = BackgroundStyle(
+        color: UIColor.purple,
+        border: .standard
+    )
+
+    static let purpleOpaque = BackgroundStyle(
         color: UIColor.purple.withAlphaComponent(0.2),
         border: .standard
     )
 
-    static let purpleRoundedBorder = BackgroundStyle(
+    static let purpleOpaqueRoundedBorder = BackgroundStyle(
         color: UIColor.purple.withAlphaComponent(0.2),
         border: .standardRounded
     )
@@ -106,14 +112,20 @@ extension SectionBackgroundStyle {
         bottomSeparator: .inset
     )
 
-    static let purpleLargeIcons = SectionBackgroundStyle(
-        background: .purple,
+    static let purpleOpaque = SectionBackgroundStyle(
+        background: .purpleOpaque,
+        topSeparator: .inset,
+        bottomSeparator: .inset
+    )
+
+    static let purpleOpaqueLargeIcons = SectionBackgroundStyle(
+        background: .purpleOpaque,
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
 
-    static let purpleRoundedBorder = SectionBackgroundStyle(
-        background: .purpleRoundedBorder,
+    static let purpleOpaqueRoundedBorder = SectionBackgroundStyle(
+        background: .purpleOpaqueRoundedBorder,
         topSeparator: .inset,
         bottomSeparator: .inset
     )
@@ -139,11 +151,12 @@ extension SectionBackgroundStyle {
 
 extension SectionStyle.Background {
     static let standard = SectionStyle.Background(style: .white)
+    static let highlighted = SectionStyle.Background(style: .purple)
     static let standardLargeIcons = SectionStyle.Background(style: .whiteLargeIcons)
     static let standardRoundedBorder = SectionStyle.Background(style: .whiteRoundedBorder)
-    static let selected = SectionStyle.Background(style: .purple)
-    static let selectedLargeIcons = SectionStyle.Background(style: .purpleLargeIcons)
-    static let selectedRoundedBorder = SectionStyle.Background(style: .purpleRoundedBorder)
+    static let selected = SectionStyle.Background(style: .purpleOpaque)
+    static let selectedLargeIcons = SectionStyle.Background(style: .purpleOpaqueLargeIcons)
+    static let selectedRoundedBorder = SectionStyle.Background(style: .purpleOpaqueRoundedBorder)
     static let selectedDanger = SectionStyle.Background(style: .pink)
     static let selectedDangerRoundedBorder = SectionStyle.Background(style: .pinkRoundedBorder)
     static let invisible = SectionStyle.Background(style: .invisible)

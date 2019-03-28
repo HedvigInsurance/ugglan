@@ -11,6 +11,7 @@ import Apollo
     import ApolloWebSocket
 #endif
 import Disk
+import FirebaseRemoteConfig
 import Flow
 import Foundation
 
@@ -23,6 +24,7 @@ class HedvigApolloClient {
     static var shared = HedvigApolloClient()
     var client: ApolloClient?
     var store: ApolloStore?
+    var remoteConfig: RemoteConfig?
 
     private init() {}
 

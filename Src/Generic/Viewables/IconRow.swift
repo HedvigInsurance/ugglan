@@ -13,7 +13,7 @@ import UIKit
 
 struct IconRow {
     enum Options {
-        case defaults, withArrow, disabled, hidden
+        case defaults, withArrow, disabled, hidden, whiteContent
     }
 
     let iconAsset: ImageAsset
@@ -79,6 +79,28 @@ extension IconRow: Viewable {
                 row.isHidden = true
             } else {
                 row.isHidden = false
+            }
+
+            if newOptions.contains(.whiteContent) {
+                titleLabel.styledText = StyledText(
+                    text: titleLabel.text ?? "",
+                    style: .rowTitleWhite
+                )
+                subtitleLabel.styledText = StyledText(
+                    text: subtitleLabel.text ?? "",
+                    style: .rowSubtitleWhite
+                )
+                arrow.icon = Asset.chevronRightWhite
+            } else {
+                titleLabel.styledText = StyledText(
+                    text: titleLabel.text ?? "",
+                    style: .rowTitle
+                )
+                subtitleLabel.styledText = StyledText(
+                    text: subtitleLabel.text ?? "",
+                    style: .rowSubtitle
+                )
+                arrow.icon = Asset.chevronRight
             }
         }
 

@@ -29,6 +29,29 @@ extension Profile: Presentable {
 
         let form = FormView()
 
+        let referralSectionStyle = DynamicSectionStyle.sectionPlain.restyled { (style: inout SectionStyle) in
+            style.background = .highlighted
+        }
+
+        let referralSection = SectionView(rows: [], style: referralSectionStyle)
+
+        let referralRow = ReferralRow(
+            presentingViewController: viewController
+        )
+        bag += referralSection.append(referralRow)
+
+        form.append(referralSection)
+
+        let referralSpacing = Spacing(height: 20)
+        bag += form.append(referralSpacing)
+
+        let remoteConfigContainer = RemoteConfigContainer()
+
+        let referralsHidden = remoteConfigContainer.referralsEnabled() ? false : true
+
+        referralSection.isHidden = referralsHidden
+        referralSpacing.isHiddenSignal.value = referralsHidden
+
         let profileSection = ProfileSection(
             presentingViewController: viewController
         )

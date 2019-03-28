@@ -21,7 +21,8 @@ targets:
   ugglan:
     type: ":application"
     platform: ios
-    sources: Src
+    sources:
+      - Src
     scripts:
       - scripts/clean-frameworks.sh
       - script: scripts/copy-frameworks.sh
@@ -68,8 +69,21 @@ targets:
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
+      - location: Carthage/Build/iOS/Firebase.framework
       - location: Carthage/Build/iOS/FirebaseCore.framework
       - location: Carthage/Build/iOS/FirebaseAnalytics.framework
+      - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
+      - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
+      - location: Carthage/Build/iOS/FirebaseInstanceID.framework
+      - location: Carthage/Build/iOS/FirebaseABTesting.framework
+      - location: Carthage/Build/iOS/FirebaseFirestore.framework
+      - location: Carthage/Build/iOS/FirebaseFirestore.framework/gRPCCertificates.bundle
+        copy: true
+      - location: Carthage/Build/iOS/gRPC-C++.framework
+      - location: Carthage/Build/iOS/gRPC-Core.framework
+      - location: Carthage/Build/iOS/leveldb-library.framework
+      - location: Carthage/Build/iOS/BoringSSL-GRPC.framework
+      - location: Carthage/Build/iOS/Protobuf.framework
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
@@ -91,6 +105,7 @@ targets:
       DEVELOPMENT_TEAM: "AW656G5PFM"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       TARGETED_DEVICE_FAMILY: "1,2"
+      ENABLE_BITCODE: "no"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS

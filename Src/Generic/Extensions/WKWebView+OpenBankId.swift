@@ -27,7 +27,7 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
                 actions: [
                     Alert.Action(
                         title: String(.TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION)
-                    ) { () }
+                    ) { () },
                 ]
             )
 

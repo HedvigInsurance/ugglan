@@ -32,6 +32,11 @@ extension TextStyle {
         style.color = .darkGray
     }
 
+    static let standaloneLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.soRayExtraBold!.withSize(24)
+        style.color = .black
+    }
+
     static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(19)
         style.color = .black
@@ -51,9 +56,18 @@ extension TextStyle {
         style.alignment = .center
     }
 
+    static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(16)
+        style.color = .black
+    }
+
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .black
+    }
+
+    static let rowTitleWhite = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
+        style.color = .white
     }
 
     static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -69,6 +83,10 @@ extension TextStyle {
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
+    }
+
+    static let rowSubtitleWhite = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
+        style.color = .white
     }
 
     static let rowValueEditable = TextStyle.default.restyled { (style: inout TextStyle) in
