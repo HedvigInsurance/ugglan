@@ -1,5 +1,6 @@
 import Foundation
 import QuartzCore
+import Flow
 
 public final class Ease<T: Easeable> {
     
@@ -79,21 +80,19 @@ public final class Ease<T: Easeable> {
         self.manualUpdate = manualUpdate
     }
     
-    public func addSpring(_ spring: Spring, closure: @escaping Closure) -> EaseDisposable {
+    public func addSpring(_ spring: Spring, closure: @escaping Closure) -> Disposable {
         return addSpring(tension: spring.tension, damping: spring.damping, mass: spring.mass, closure: closure)
     }
     
-    public func addSpring(tension: T.F, damping: T.F, mass: T.F, closure: @escaping Closure) -> EaseDisposable {
+    public func addSpring(tension: T.F, damping: T.F, mass: T.F, closure: @escaping Closure) -> Disposable {
         let key = nextKey
         
         observers[key] = EaseObserver(value: value, tension: tension, damping: damping, mass: mass, closure: closure)
         closure(value)
         
-        let disposable = EaseDisposable { [weak self] in
+        return Disposer { [weak self] in
             self?.observers[key] = nil
         }
-        
-        return disposable
     }
     
     public func removeAllObservers() {
