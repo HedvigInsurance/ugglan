@@ -56,11 +56,14 @@ extension MyHome: Presentable {
                 
                 let livingSpaceRow = KeyValueRow()
                 livingSpaceRow.keySignal.value = String(.MY_HOME_ROW_SIZE_KEY)
-                livingSpaceRow.valueSignal.value = String(.MY_HOME_ROW_SIZE_VALUE(
-                    livingSpace: insurance.livingSpace != nil ? String(insurance.livingSpace!) : ""
-                ))
-                livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
-                bag += section.append(livingSpaceRow)
+                
+                if let livingSpace = insurance.livingSpace {
+                    livingSpaceRow.valueSignal.value = String(.MY_HOME_ROW_SIZE_VALUE(
+                        livingSpace: String(livingSpace)
+                    ))
+                    livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
+                    bag += section.append(livingSpaceRow)
+                }
                 
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = String(.MY_HOME_ROW_TYPE_KEY)
