@@ -18,7 +18,14 @@ extension CharityInformation: Presentable {
         let bag = DisposeBag()
         
         let viewController = UIViewController()
-        viewController.displayableTitle = "Välgörenhet"
+        
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor.white
+        
+        let header = DraggableViewHeader(title: "Välgörenhet")
+        bag += containerView.add(header)
+        
+        viewController.view = containerView;
         
         return (viewController, bag)
     }
