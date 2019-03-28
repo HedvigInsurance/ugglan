@@ -45,14 +45,6 @@ extension LoadableButton: Viewable {
         }
         
         func setLoadingState(isLoading: Bool, animate: Bool) {
-            buttonView.snp.updateConstraints { make in
-                if (isLoading) {
-                    make.width.equalTo(self.button.type.height())
-                } else {
-                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
-                    print("1. updated margins")
-                }
-            }
             
             func setLabelAlpha() {
                 if isLoading {
@@ -67,6 +59,17 @@ extension LoadableButton: Viewable {
                     spinner.alpha = 1
                 } else {
                     spinner.alpha = 0
+                }
+            }
+            
+            func setButtonConstraints() {
+                buttonView.snp.updateConstraints { make in
+                    if (isLoading) {
+                        make.width.equalTo(self.button.type.height())
+                    } else {
+                        make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
+                        print("1. updated margins")
+                    }
                 }
             }
             
@@ -88,10 +91,11 @@ extension LoadableButton: Viewable {
                 //buttonView.setNeedsUpdateConstraints()
                 //buttonView.layoutIfNeeded()
                 
+                buttonView.setNeedsLayout()
+                
                 UIView.animate(withDuration: 0.25, delay: layoutDelay, usingSpringWithDamping: 30, initialSpringVelocity: 10, options: .curveEaseInOut, animations: {
-                    buttonView.titleLabel?.setNeedsUpdateConstraints()
-                    buttonView.titleLabel?.layoutIfNeeded()
-                    buttonView.setNeedsUpdateConstraints()
+                    setButtonConstraints()
+                    
                     buttonView.layoutIfNeeded()
                     
                 }, completion: nil)
@@ -99,10 +103,7 @@ extension LoadableButton: Viewable {
                 setLabelAlpha()
                 setSpinnerAlpha()
                 
-                buttonView.titleLabel?.setNeedsUpdateConstraints()
-                buttonView.titleLabel?.layoutIfNeeded()
-                buttonView.setNeedsUpdateConstraints()
-                buttonView.layoutIfNeeded()
+                setButtonConstraints()
             }
             
             if isLoading {
