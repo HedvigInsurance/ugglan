@@ -17,7 +17,7 @@ struct CharityPicker {
     let presentingViewController: UIViewController
 
     init(
-        client: ApolloClient = HedvigApolloClient.shared.client!,
+        client: ApolloClient = ApolloContainer.shared.client,
         presentingViewController: UIViewController
     ) {
         self.client = client

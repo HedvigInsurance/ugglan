@@ -19,8 +19,6 @@ extension ReferralsTitle: Viewable {
         view.axis = .vertical
         view.alignment = .center
 
-        let incentive = RemoteConfigContainer().referralsIncentive()
-
         let title = MultilineLabel(
             styledText: StyledText(
                 text: String(.REFERRALS_TITLE),

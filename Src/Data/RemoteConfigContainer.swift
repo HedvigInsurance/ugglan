@@ -7,11 +7,38 @@
 
 import FirebaseRemoteConfig
 import Foundation
+import Flow
 
-struct RemoteConfigContainer {
-    private let remoteConfig: RemoteConfig
-
-    init(remoteConfig: RemoteConfig = HedvigApolloClient.shared.remoteConfig!) {
+class RemoteConfigContainer {
+    static let shared = RemoteConfigContainer()
+    private let internalQueue = DispatchQueue(label: String(describing: RemoteConfigContainer.self), qos: .default, attributes: .concurrent)
+    
+    private var _remoteConfig: RemoteConfig?
+    private var remoteConfig: RemoteConfig {
+        get {
+            return internalQueue.sync { _remoteConfig! }
+        }
+        set (newState) {
+            internalQueue.async(flags: .barrier) { self._remoteConfig = newState }
+        }
+    }
+    
+    private var _fetched = ReadWriteSignal<Bool>(false)
+    var fetched: ReadWriteSignal<Bool> {
+        get {
+            return internalQueue.sync { _fetched }
+        }
+    }
+    
+    init() {
+        let remoteConfig = RemoteConfig.remoteConfig()
+        let fetchDuration: TimeInterval = 0
+        
+        remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
+            remoteConfig.activateFetched()
+            self.fetched.value = true
+        })
+        
         self.remoteConfig = remoteConfig
     }
 

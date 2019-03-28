@@ -12,13 +12,20 @@ import UIKit
 
 struct ReferralRow {
     let presentingViewController: UIViewController
+    let incentive: String
+    
+    init(
+        presentingViewController: UIViewController,
+        incentive: Int = RemoteConfigContainer.shared.referralsIncentive()
+    ) {
+        self.presentingViewController = presentingViewController
+        self.incentive = String(incentive)
+    }
 }
 
 extension ReferralRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
-
-        let incentive = String(RemoteConfigContainer().referralsIncentive())
 
         let row = IconRow(
             title: String(.REFERRALS_ROW_TITLE(incentive: incentive)),
