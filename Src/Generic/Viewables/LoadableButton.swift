@@ -46,31 +46,22 @@ extension LoadableButton: Viewable {
         
         func setLoadingState(isLoading: Bool, animate: Bool) {
             
-            func setLabelAlpha() {
-                if isLoading {
-                    buttonView.titleLabel?.alpha = 0
-                } else {
-                    buttonView.titleLabel?.alpha = 1
-                }
-            }
-            
-            func setSpinnerAlpha() {
-                if isLoading {
-                    spinner.alpha = 1
-                } else {
-                    spinner.alpha = 0
-                }
-            }
-            
-            func setButtonConstraints() {
+            func setButtonWidth() {
                 buttonView.snp.updateConstraints { make in
-                    if (isLoading) {
+                    if isLoading {
                         make.width.equalTo(self.button.type.height())
                     } else {
                         make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
-                        print("1. updated margins")
                     }
                 }
+            }
+            
+            func setLabelAlpha() {
+                buttonView.titleLabel?.alpha = isLoading ? 0 : 1
+            }
+            
+            func setSpinnerAlpha() {
+                spinner.alpha = isLoading ? 1 : 0
             }
             
             if animate {
@@ -85,25 +76,17 @@ extension LoadableButton: Viewable {
                     setSpinnerAlpha()
                 }
                 
-                print("2. layouted views")
-                //buttonView.titleLabel?.setNeedsUpdateConstraints()
-                //buttonView.titleLabel?.layoutIfNeeded()
-                //buttonView.setNeedsUpdateConstraints()
-                //buttonView.layoutIfNeeded()
-                
-                buttonView.setNeedsLayout()
-                
-                UIView.animate(withDuration: 0.25, delay: layoutDelay, usingSpringWithDamping: 30, initialSpringVelocity: 10, options: .curveEaseInOut, animations: {
-                    setButtonConstraints()
-                    
+                bag += Signal(after: layoutDelay).animated(on: .main, style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+                    setButtonWidth()
                     buttonView.layoutIfNeeded()
-                    
-                }, completion: nil)
+                }
             } else {
                 setLabelAlpha()
                 setSpinnerAlpha()
                 
-                setButtonConstraints()
+                DispatchQueue.main.async {
+                    setButtonWidth()
+                }
             }
             
             if isLoading {

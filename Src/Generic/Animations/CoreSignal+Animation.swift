@@ -56,13 +56,14 @@ extension SignalProvider {
     }
 
     func animated(
+        on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> AnimationStyle,
         animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
 
-        bag += onValueDisposePrevious { value in
+        bag += onValueDisposePrevious(on: scheduler) { value in
             let innerBag = bag.innerBag()
             let style = mapStyle(value)
             UIView.animate(
@@ -84,13 +85,14 @@ extension SignalProvider {
     }
 
     func animated(
+        on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
-
-        bag += onValueDisposePrevious { value in
+        
+        bag += onValueDisposePrevious(on: scheduler) { value in
             let innerBag = bag.innerBag()
             let style = mapStyle(value)
             UIView.animate(
@@ -115,6 +117,7 @@ extension SignalProvider {
     }
 
     func animated(
+        on scheduler: Scheduler = .current,
         style: AnimationStyle,
         animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
@@ -122,7 +125,7 @@ extension SignalProvider {
 
         let bag = DisposeBag()
 
-        bag += onValueDisposePrevious { value in
+        bag += onValueDisposePrevious(on: scheduler) { value in
             let innerBag = bag.innerBag()
 
             UIView.animate(
@@ -145,6 +148,7 @@ extension SignalProvider {
     }
 
     func animated(
+        on scheduler: Scheduler = .current,
         style: SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
     ) -> AnimatedSignal<Value> {
@@ -152,7 +156,7 @@ extension SignalProvider {
 
         let bag = DisposeBag()
 
-        bag += onValueDisposePrevious { value in
+        bag += onValueDisposePrevious(on: scheduler) { value in
             let innerBag = bag.innerBag()
 
             UIView.animate(
