@@ -20,24 +20,26 @@ extension DraggableViewHeader: Viewable {
         
         let bag = DisposeBag()
         
-        let title = UILabel()
-        title.style = .sectionHeader
-        bag += title.setDynamicText(DynamicString("Välgörenhet"))
+        let titleLabel = UILabel()
+        titleLabel.style = .drabbableOverlayTitle
+        titleLabel.textAlignment = .center
+        bag += titleLabel.setDynamicText(DynamicString(title))
         
         let titleContainer = UIView()
-        titleContainer.addSubview(title)
+        titleContainer.addSubview(titleLabel)
         
-        bag += title.didLayoutSignal.onValue { _ in
-            title.snp.remakeConstraints { make in
-                make.width.equalToSuperview()
+        bag += titleLabel.didLayoutSignal.onValue { _ in
+            titleLabel.snp.remakeConstraints { make in
+                make.width.equalToSuperview().multipliedBy(0.8)
                 make.height.equalToSuperview()
+                make.center.equalToSuperview()
             }
         }
         
         view.addSubview(titleContainer)
         
         titleContainer.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.8)
+            make.width.equalToSuperview()
             make.height.equalToSuperview()
         }
         

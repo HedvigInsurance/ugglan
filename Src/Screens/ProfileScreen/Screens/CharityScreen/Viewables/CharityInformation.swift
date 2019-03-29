@@ -22,7 +22,7 @@ extension CharityInformation: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = UIColor.white
         
-        let header = DraggableViewHeader(title: "Välgörenhet")
+        let header = DraggableViewHeader(title: String(.PROFILE_MY_CHARITY_INFO_TITLE))
         bag += containerView.add(header)
         
         viewController.view = containerView;

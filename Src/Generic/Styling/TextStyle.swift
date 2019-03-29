@@ -117,4 +117,9 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .purple
     }
+    
+    static let drabbableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(18)
+        style.color = .black
+    }
 }

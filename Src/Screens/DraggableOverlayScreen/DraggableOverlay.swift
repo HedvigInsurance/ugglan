@@ -74,8 +74,6 @@ extension DraggableOverlay: Presentable {
         bag += dimmingView.didLayoutSignal.take(first: 1).map { true }.onValue(animateDimmingViewVisibility)
         
         let overlay = UIView()
-        overlay.backgroundColor = .white
-        overlay.layer.cornerRadius = 15
         overlay.clipsToBounds = true
         
         view.addSubview(overlay)
@@ -126,10 +124,48 @@ extension DraggableOverlay: Presentable {
         
         bag += childDisposable
         
+        let overlayContainer = UIView()
+        overlayContainer.backgroundColor = .white
+        overlayContainer.layer.cornerRadius = 19
+        overlayContainer.clipsToBounds = true
+        
+        overlay.addSubview(overlayContainer)
+        
+        overlayContainer.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalToSuperview()
+            make.top.equalTo(22)
+        }
+        
+        let handleView = UIView()
+        handleView.backgroundColor = .transparent
+        handleView.translatesAutoresizingMaskIntoConstraints = true
+        
+        overlay.addSubview(handleView)
+        
+        handleView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalTo(22)
+            make.centerX.equalToSuperview()
+            make.top.equalTo(0)
+        }
+        
+        let handle = UIView()
+        handle.backgroundColor = .offLightGray
+        handle.layer.cornerRadius = 3
+        
+        handleView.addSubview(handle)
+        
+        handle.snp.makeConstraints { make in
+            make.width.equalTo(52)
+            make.height.equalTo(6)
+            make.centerX.centerY.equalToSuperview()
+        }
+        
         viewController.addChild(embeddedChildScreen)
         
         embeddedChildScreen.view.translatesAutoresizingMaskIntoConstraints = false
-        overlay.addSubview(embeddedChildScreen.view)
+        overlayContainer.addSubview(embeddedChildScreen.view)
         
         embeddedChildScreen.view.snp.makeConstraints { make in
             make.width.equalToSuperview()
