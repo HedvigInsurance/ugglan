@@ -25,17 +25,19 @@ enum ReferralsFailure: LocalizedError {
 
 struct Referrals {
     let client: ApolloClient
+    let remoteConfigContainer: RemoteConfigContainer
 
     init(
-        client: ApolloClient = HedvigApolloClient.shared.client!
+        client: ApolloClient = ApolloContainer.shared.client,
+        remoteConfigContainer: RemoteConfigContainer = RemoteConfigContainer.shared
     ) {
         self.client = client
+        self.remoteConfigContainer = remoteConfigContainer
     }
 
     func createInvitationLink(memberId: String) -> Future<String> {
         return Future { completion in
-            let remoteConfigContainer = RemoteConfigContainer()
-            let incentive = remoteConfigContainer.referralsIncentive()
+            let incentive = self.remoteConfigContainer.referralsIncentive()
 
             guard let link = URL(
                 string: String(
@@ -48,7 +50,7 @@ struct Referrals {
                 return NilDisposer()
             }
 
-            let domainUriPrefix = remoteConfigContainer.dynamicLinkDomainPrefix()
+            let domainUriPrefix = self.remoteConfigContainer.dynamicLinkDomainPrefix()
 
             let linkBuilder = DynamicLinkComponents(
                 link: link,
@@ -56,11 +58,11 @@ struct Referrals {
             )
 
             linkBuilder?.iOSParameters = DynamicLinkIOSParameters(
-                bundleID: remoteConfigContainer.dynamicLinkiOSBundleId()
+                bundleID: self.remoteConfigContainer.dynamicLinkiOSBundleId()
             )
-            linkBuilder?.iOSParameters?.appStoreID = remoteConfigContainer.dynamicLinkiOSAppStoreId()
+            linkBuilder?.iOSParameters?.appStoreID = self.remoteConfigContainer.dynamicLinkiOSAppStoreId()
             linkBuilder?.androidParameters = DynamicLinkAndroidParameters(
-                packageName: remoteConfigContainer.dynamicLinkAndroidPackageName()
+                packageName: self.remoteConfigContainer.dynamicLinkAndroidPackageName()
             )
 
             linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
@@ -157,8 +159,7 @@ extension Referrals: Presentable {
             bag += button.onTapSignal.withLatestFrom(
                 linkSignal.plain()
             ).compactMap { $1 }.onValue { link in
-
-                let incentive = String(RemoteConfigContainer().referralsIncentive())
+                let incentive = String(self.remoteConfigContainer.referralsIncentive())
                 let shareMessage = String(.REFERRALS_SHARE_MESSAGE(incentive: incentive, link: link))
 
                 let activityView = ActivityView(

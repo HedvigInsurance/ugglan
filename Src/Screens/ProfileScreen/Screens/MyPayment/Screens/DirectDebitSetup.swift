@@ -24,8 +24,8 @@ struct DirectDebitSetup {
 
     init(
         setupType: SetupType = .initial,
-        client: ApolloClient = HedvigApolloClient.shared.client!,
-        store: ApolloStore = HedvigApolloClient.shared.store!,
+        client: ApolloClient = ApolloContainer.shared.client,
+        store: ApolloStore = ApolloContainer.shared.store,
         applicationWillTerminateSignal: Signal<Void> = UIApplication.shared.appDelegate.applicationWillTerminateSignal
     ) {
         self.setupType = setupType

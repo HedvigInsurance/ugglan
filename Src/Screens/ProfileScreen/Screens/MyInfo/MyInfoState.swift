@@ -139,8 +139,8 @@ struct MyInfoState {
 
     init(
         presentingViewController: UIViewController,
-        client: ApolloClient = HedvigApolloClient.shared.client!,
-        store: ApolloStore = HedvigApolloClient.shared.store!
+        client: ApolloClient = ApolloContainer.shared.client,
+        store: ApolloStore = ApolloContainer.shared.store
     ) {
         self.presentingViewController = presentingViewController
         self.client = client

@@ -16,7 +16,7 @@ struct SelectedCharity {
     let animateEntry: Bool
 
     init(
-        client: ApolloClient = HedvigApolloClient.shared.client!,
+        client: ApolloClient = ApolloContainer.shared.client,
         animateEntry: Bool
     ) {
         self.client = client

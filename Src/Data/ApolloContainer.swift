@@ -1,5 +1,5 @@
 //
-//  ApolloClient.swift
+//  ApolloContainer.swift
 //  Hedvig
 //
 //  Created by Sam Pettersson on 2018-11-14.
@@ -15,20 +15,39 @@ import FirebaseRemoteConfig
 import Flow
 import Foundation
 
-struct HedvigApolloEnvironmentConfig {
+struct ApolloEnvironmentConfig {
     let endpointURL: URL
     let wsEndpointURL: URL
 }
 
-class HedvigApolloClient {
-    static var shared = HedvigApolloClient()
-    var client: ApolloClient?
-    var store: ApolloStore?
-    var remoteConfig: RemoteConfig?
-
+class ApolloContainer {
+    static var shared = ApolloContainer()
+    private let internalQueue = DispatchQueue(label: String(describing: ApolloContainer.self), qos: .default, attributes: .concurrent)
+    
+    private var _client: ApolloClient?
+    private var _store: ApolloStore?
+    
+    var client: ApolloClient {
+        get {
+            return internalQueue.sync { _client! }
+        }
+        set (newState) {
+            internalQueue.async(flags: .barrier) { self._client = newState }
+        }
+    }
+    
+    var store: ApolloStore {
+        get {
+            return internalQueue.sync { _store! }
+        }
+        set (newState) {
+            internalQueue.async(flags: .barrier) { self._store = newState }
+        }
+    }
+    
     private init() {}
 
-    func createClient(token: String?, environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
+    func createClient(token: String?, environment: ApolloEnvironmentConfig) -> (ApolloClient, ApolloStore) {
         let authPayloads = [
             "Authorization": token ?? "",
         ]
@@ -53,13 +72,11 @@ class HedvigApolloClient {
             webSocketNetworkTransport: websocketNetworkTransport
         )
 
-        return Future { completion in
-            let cache = InMemoryNormalizedCache()
-            let store = ApolloStore(cache: cache)
-            let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-            completion(Result.success((client, store)))
-            return Disposer {}
-        }
+        let cache = InMemoryNormalizedCache()
+        let store = ApolloStore(cache: cache)
+        let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+        
+        return (client, store)
     }
 
     func retreiveToken() -> AuthorizationToken? {
@@ -79,42 +96,32 @@ class HedvigApolloClient {
         )
     }
 
-    func createClientFromNewSession(environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
+    func createClientFromNewSession(environment: ApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            self.createClient(token: nil, environment: environment).onValue { client, _ in
-                client.perform(mutation: mutation).onValue { result in
-                    if let token = result.data?.createSession {
-                        self.saveToken(token: token)
-                    }
-
-                    self.createClient(
-                        token: result.data?.createSession,
-                        environment: environment
-                    ).onValue { clientWithSession, store in
-                        completion(Result.success((clientWithSession, store)))
-                    }.onError { error in
-                        completion(Result.failure(error))
-                    }
+            let (client, _) = self.createClient(token: nil, environment: environment)
+            
+            client.perform(mutation: mutation).onValue { result in
+                if let token = result.data?.createSession {
+                    self.saveToken(token: token)
                 }
+                
+                let (clientWithSession, store) = self.createClient(
+                    token: result.data?.createSession,
+                    environment: environment
+                )
+                
+                completion(.success((clientWithSession, store)))
             }
 
             return NilDisposer()
         }
     }
 
-    func initClient(environment: HedvigApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
+    func initClient(environment: ApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
         return Future { completion in
-            if let client = self.client, let store = self.store {
-                completion(.success((client, store)))
-                return Disposer {
-                    self.client = nil
-                    self.store = nil
-                }
-            }
-
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {
@@ -131,24 +138,15 @@ class HedvigApolloClient {
                     }
                 }
             } else {
-                self.createClient(token: tokenData!.token, environment: environment).onResult { result in
-                    switch result {
-                    case let .success((client, store)): do {
-                        self.client = client
-                        self.store = store
-                        completion(result)
-                    }
-                    case .failure: do {
-                        completion(result)
-                    }
-                    }
-                }
+                let (client, store) = self.createClient(token: tokenData!.token, environment: environment)
+                
+                self.client = client
+                self.store = store
+                
+                completion(.success((client, store)))
             }
 
-            return Disposer {
-                self.client = nil
-                self.store = nil
-            }
+            return NilDisposer()
         }
     }
 }

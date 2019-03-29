@@ -15,7 +15,7 @@ struct MyPayment {
     let client: ApolloClient
 
     init(
-        client: ApolloClient = HedvigApolloClient.shared.client!
+        client: ApolloClient = ApolloContainer.shared.client
     ) {
         self.client = client
     }
