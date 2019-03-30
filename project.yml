@@ -18,7 +18,105 @@ configurations:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
 targets:
-  ugglan:
+  UITests:
+    sources:
+      - UITests
+      - Src
+    references:
+      - Ugglan
+      - sdkroot:UIKit.framework
+      - location: Carthage/Build/iOS/FBSnapshotTestCase.framework
+      - location: Carthage/Build/iOS/DeviceKit.framework
+      - location: Carthage/Build/iOS/Apollo.framework
+      - location: Carthage/Build/iOS/ApolloSQLite.framework
+      - location: Carthage/Build/iOS/ApolloWebSocket.framework
+      - location: Carthage/Build/iOS/Flow.framework
+      - location: Carthage/Build/iOS/Form.framework
+      - location: Carthage/Build/iOS/Firebase.framework
+      - location: Carthage/Build/iOS/FirebaseCore.framework
+      - location: Carthage/Build/iOS/FirebaseAnalytics.framework
+      - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
+      - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
+      - location: Carthage/Build/iOS/FirebaseInstanceID.framework
+      - location: Carthage/Build/iOS/FirebaseABTesting.framework
+      - location: Carthage/Build/iOS/FirebaseFirestore.framework
+      - location: Carthage/Build/iOS/FirebaseFirestore.framework/gRPCCertificates.bundle
+        copy: true
+      - location: Carthage/Build/iOS/gRPC-C++.framework
+      - location: Carthage/Build/iOS/gRPC-Core.framework
+      - location: Carthage/Build/iOS/leveldb-library.framework
+      - location: Carthage/Build/iOS/BoringSSL-GRPC.framework
+      - location: Carthage/Build/iOS/Protobuf.framework
+      - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
+      - location: Carthage/Build/iOS/GoogleUtilities.framework
+      - location: Carthage/Build/iOS/Lottie.framework
+      - location: Carthage/Build/iOS/Presentation.framework
+      - location: Carthage/Build/iOS/SQLite.framework
+      - location: Carthage/Build/iOS/SnapKit.framework
+      - location: Carthage/Build/iOS/Starscream.framework
+      - location: Carthage/Build/iOS/nanopb.framework
+      - location: Carthage/Build/iOS/FlowFeedback.framework
+      - location: Carthage/Build/iOS/AcknowList.framework
+      - location: Carthage/Build/iOS/Disk.framework
+      - location: Carthage/Build/iOS/DynamicColor.framework
+      - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+    platform: ios
+    type: ":bundle.ui-testing"
+    scripts:
+      - scripts/clean-frameworks.sh
+      - script: scripts/copy-frameworks.sh
+        shell: /bin/bash
+        inputs:
+          - $(SRCROOT)/Carthage/Build/iOS/FBSnapshotTestCase.framework
+          - $(SRCROOT)/Carthage/Build/iOS/DeviceKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Apollo.framework
+          - $(SRCROOT)/Carthage/Build/iOS/ApolloSQLite.framework
+          - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Form.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
+          - $(SRCROOT)/Carthage/Build/iOS/SQLite.framework
+          - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
+          - $(SRCROOT)/Carthage/Build/iOS/FlowFeedback.framework
+          - $(SRCROOT)/Carthage/Build/iOS/AcknowList.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Disk.framework
+          - $(SRCROOT)/Carthage/Build/iOS/DynamicColor.framework
+          - $(SRCROOT)/Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+        outputs:
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSnapshotTestCase.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloSQLite.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SQLite.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FlowFeedback.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AcknowList.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Disk.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
+    configuration:
+      INFOPLIST_FILE: UITests/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
+      TEST_TARGET_NAME: Ugglan
+      SWIFT_VERSION: "4.2"
+      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
+      LD_RUNPATH_SEARCH_PATHS:
+        - $(inherited)
+        - "@executable_path/Frameworks"
+        - "@loader_path/Frameworks"
+      FRAMEWORK_SEARCH_PATHS:
+        - $(inherited)
+        - $(PROJECT_DIR)/Carthage/Build/iOS
+  Ugglan:
     type: ":application"
     platform: ios
     sources:
@@ -119,18 +217,28 @@ schemes:
       parallel: true
       build_implicit: true
       targets:
-        ugglan:
+        Ugglan:
           archiving_enabled: true
           running_enabled: true
           profiling_enabled: true
           testing_enabled: false
           analyzing_enabled: true
+    test:
+      build_configuration: debug
+      targets:
+        - UITests
+      inherit_launch_arguments: true
+      code_coverage_enabled: true
+      environment:
+        OS_ACTIVITY_MODE: disable
     launch:
       build_configuration: debug
-      target: ugglan
+      target: Ugglan
       arguments: -AppleLanguages (en-GB)
       environment:
         OS_ACTIVITY_MODE: disable
+        FB_REFERENCE_IMAGE_DIR: $(SOURCE_ROOT)/UITestsImages/ReferenceImages
+        IMAGE_DIFF_DIR: $(SOURCE_ROOT)/UITestsImages/FailureDiffs
   Release:
     archive:
       name: ugglan.xcarchive
@@ -140,7 +248,7 @@ schemes:
       parallel: true
       build_implicit: true
       targets:
-        ugglan:
+        Ugglan:
           archiving_enabled: true
           running_enabled: true
           profiling_enabled: true
@@ -148,7 +256,7 @@ schemes:
           analyzing_enabled: true
     launch:
       build_configuration: release
-      target: ugglan
+      target: Ugglan
       arguments: -AppleLanguages (en-GB)
       environment:
         OS_ACTIVITY_MODE: disable
