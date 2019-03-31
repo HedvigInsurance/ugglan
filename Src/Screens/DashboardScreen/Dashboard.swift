@@ -33,10 +33,12 @@ extension Dashboard: Presentable {
             String(.DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
         }.bindTo(viewController, \.navigationItem.title)
 
-        let view = UIView()
-        view.backgroundColor = .purple
-
-        viewController.view = view
+        let form = FormView()
+        
+        let myProtectionSection = DashboardSection()
+        bag += form.append(myProtectionSection)
+        
+        bag += viewController.install(form)
 
         return (viewController, bag)
     }

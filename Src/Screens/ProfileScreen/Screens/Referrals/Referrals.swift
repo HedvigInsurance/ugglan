@@ -154,7 +154,7 @@ extension Referrals: Presentable {
                 make.centerX.equalToSuperview()
             })
 
-            bag += linkSignal.compactMap { $0 }.map { false }.bindTo(button.isLoadingSignal)
+            bag += linkSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
 
             bag += button.onTapSignal.withLatestFrom(
                 linkSignal.plain()
