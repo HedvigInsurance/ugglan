@@ -23,7 +23,7 @@ class UITests: FBSnapshotTestCase {
         let view = UIView()
         
         let button = Button(
-            title: "testa",
+            title: "testar",
             type: .standard(
                 backgroundColor: .purple,
                 textColor: .white
@@ -46,7 +46,7 @@ class UITests: FBSnapshotTestCase {
         let view = UIView()
         
         let button = Button(
-            title: "testar",
+            title: "test",
             type: .standard(
                 backgroundColor: .purple,
                 textColor: .white
