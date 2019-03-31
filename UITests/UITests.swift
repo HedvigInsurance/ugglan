@@ -55,10 +55,8 @@ class UITests: FBSnapshotTestCase {
         
         let loadableButton = LoadableButton(
             button: button,
-            initialLoadingState: true
+            initialLoadingState: false
         )
-        
-        
         
         bag += view.add(loadableButton) { buttonView in
             view.snp.makeConstraints { make in
