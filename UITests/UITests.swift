@@ -53,6 +53,7 @@ class UITests: FBSnapshotTestCase {
             )
         )
         
+        
         let loadableButton = LoadableButton(
             button: button,
             initialLoadingState: true
