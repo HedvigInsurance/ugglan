@@ -59,6 +59,8 @@ class UITests: FBSnapshotTestCase {
         )
         
         
+        
+        
         bag += view.add(loadableButton) { buttonView in
             view.snp.makeConstraints { make in
                 make.height.equalTo(buttonView.snp.height)
