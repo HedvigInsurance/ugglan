@@ -13,7 +13,9 @@ import Apollo
 class UITests: FBSnapshotTestCase {
     override func setUp() {
         super.setUp()
-        recordMode = false
+        #if RECORD_MODE
+            recordMode = true
+        #endif
     }
 
     func testExample() {
@@ -59,6 +61,7 @@ class UITests: FBSnapshotTestCase {
         bag += view.add(loadableButton) { buttonView in
             view.snp.makeConstraints { make in
                 make.height.equalTo(buttonView.snp.height)
+                make.width.equalTo(buttonView.snp.width)
             }
         }
         
