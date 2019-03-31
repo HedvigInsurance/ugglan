@@ -59,7 +59,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UI_TEST_DIR</key>
-	<string>$(SOURCE_ROOT)/HedvigTests/Snapshots</string>
 </dict>
 </plist>
