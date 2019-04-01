@@ -23,7 +23,7 @@ class UITests: FBSnapshotTestCase {
         let view = UIView()
         
         let button = Button(
-            title: "testar",
+            title: "testa",
             type: .standard(
                 backgroundColor: .purple,
                 textColor: .white
@@ -46,7 +46,7 @@ class UITests: FBSnapshotTestCase {
         let view = UIView()
         
         let button = Button(
-            title: "test",
+            title: "testa",
             type: .standard(
                 backgroundColor: .purple,
                 textColor: .white
@@ -55,7 +55,7 @@ class UITests: FBSnapshotTestCase {
         
         let loadableButton = LoadableButton(
             button: button,
-            initialLoadingState: false
+            initialLoadingState: true
         )
         
         bag += view.add(loadableButton) { buttonView in
