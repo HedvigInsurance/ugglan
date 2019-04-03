@@ -12,15 +12,16 @@ import Foundation
 struct CoinsuredProtectionView {}
 
 extension CoinsuredProtectionView: Viewable {
-    func materialize(events _: ViewableEvents) -> (ProtectionView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (ExpandableProtectionRow<LargeIconTitleSubtitle, LargeIconTitleSubtitle>, Disposable) {
         let bag = DisposeBag()
         
-        let coinsuredProtectionView = ProtectionView(
+        let coinsuredIconTitleSubtitle = LargeIconTitleSubtitle(
             title: String(.PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: "min sambo")),
-            icon: Asset.coinsuredPlain,
-            color: .darkPurple
+            icon: Asset.coinsuredPlain
         )
         
-        return (coinsuredProtectionView, bag)
+        let expandableView = ExpandableProtectionRow(content: coinsuredIconTitleSubtitle, expandableContent: coinsuredIconTitleSubtitle)
+        
+        return (expandableView, bag)
     }
 }

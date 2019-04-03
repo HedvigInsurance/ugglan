@@ -12,15 +12,16 @@ import Foundation
 struct ItemsProtectionView {}
 
 extension ItemsProtectionView: Viewable {
-    func materialize(events _: ViewableEvents) -> (ProtectionView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (ExpandableProtectionRow<LargeIconTitleSubtitle, LargeIconTitleSubtitle>, Disposable) {
         let bag = DisposeBag()
         
-        let itemsProtectionView = ProtectionView(
+        let itemsIconTitleSubtitle = LargeIconTitleSubtitle(
             title: "Mina prylar",
-            icon: Asset.itemsPlain,
-            color: .purple
+            icon: Asset.itemsPlain
         )
         
-        return (itemsProtectionView, bag)
+        let expandableRow = ExpandableProtectionRow(content: itemsIconTitleSubtitle, expandableContent: itemsIconTitleSubtitle)
+        
+        return (expandableRow, bag)
     }
 }

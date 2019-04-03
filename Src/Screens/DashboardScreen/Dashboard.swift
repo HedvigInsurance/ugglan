@@ -35,7 +35,7 @@ extension Dashboard: Presentable {
 
         let form = FormView()
         
-        let myProtectionSection = DashboardSection()
+        let myProtectionSection = MyProtectionSection()
         bag += form.append(myProtectionSection)
         
         bag += viewController.install(form)

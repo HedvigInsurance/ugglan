@@ -12,15 +12,16 @@ import Foundation
 struct HomeProtectionView {}
 
 extension HomeProtectionView: Viewable {
-    func materialize(events _: ViewableEvents) -> (ProtectionView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (ExpandableProtectionRow<LargeIconTitleSubtitle, LargeIconTitleSubtitle>, Disposable) {
         let bag = DisposeBag()
         
-        let homeProtectionView = ProtectionView(
+        let homeIconTitleSubtitle = LargeIconTitleSubtitle(
             title: "Islandsvägen 13",
-            icon: Asset.homePlain,
-            color: .pink
+            icon: Asset.homePlain
         )
         
-        return (homeProtectionView, bag)
+        let expandableRow = ExpandableProtectionRow(content: homeIconTitleSubtitle, expandableContent: homeIconTitleSubtitle)
+        
+        return (expandableRow, bag)
     }
 }

@@ -10,9 +10,9 @@ import Form
 import Foundation
 import UIKit
 
-struct DashboardSection {}
+struct MyProtectionSection {}
 
-extension DashboardSection: Viewable {
+extension MyProtectionSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
