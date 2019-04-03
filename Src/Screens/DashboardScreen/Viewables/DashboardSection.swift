@@ -34,18 +34,18 @@ extension DashboardSection: Viewable {
         
         bag += stackView.addArranged(referralSpacing)
         
-        let coinsuredRow = CoinsuredRow()
-        bag += stackView.addArranged(coinsuredRow)
+        let coinsuredProtectionView = CoinsuredProtectionView()
+        bag += stackView.addArranged(coinsuredProtectionView)
         
         bag += stackView.addArranged(rowSpacing)
         
-        let homeRow = MyProtectionView(mode: .home)
-        bag += stackView.addArranged(homeRow)
+        let homeProtectionView = HomeProtectionView()
+        bag += stackView.addArranged(homeProtectionView)
         
         bag += stackView.addArranged(rowSpacing)
         
-        let itemsRow = MyProtectionView(mode: .items)
-        bag += stackView.addArranged(itemsRow)
+        let itemsProtectionView = ItemsProtectionView()
+        bag += stackView.addArranged(itemsProtectionView)
         
         return (stackView, bag)
     }

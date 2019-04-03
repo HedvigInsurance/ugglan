@@ -10,68 +10,30 @@ import Form
 import Foundation
 import UIKit
 
-struct MyProtectionView {
+struct ProtectionView {    
+    let titleText: String
+    let iconAsset: ImageAsset
+    let color: HedvigColor
+    let protections: [String]
     
-    enum ProtectionMode {
-        case coinsured, home, items
-        
-        func titleText() -> String {
-            switch self {
-            case .coinsured:
-                return String(.PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: "min sambo"))
-            case .home:
-                return "Islandsvägen 13"
-            case .items:
-                return "Mina prylar"
-            }
-        }
-        
-        func subtitleText() -> String {
-            return "försäkras för"
-        }
-        
-        func iconAsset() -> ImageAsset {
-            switch self {
-            case .coinsured:
-                return Asset.coinsuredPlain
-            case .home:
-                return Asset.homePlain
-            case .items:
-                return Asset.itemsPlain
-            }
-        }
-        
-        func iconWidth() -> CGFloat {
-            return 75
-        }
-        
-        func footerText() -> String {
-            return "Klicka på ikonerna för mer info"
-        }
-        
-        func protections() -> [String] {
-            switch self {
-            case .coinsured:
-                return ["ett", "två"]
-            default:
-                return ["hej"]
-            }
-        }
-    }
-    
-    let mode: ProtectionMode
-    
-    //let color: ColorAsset
+    let iconWidth: CGFloat = 75
+    let footerText = "Klicka på ikonerna för mer info"
+    let subtitleText = "försäkras för"
     
     init(
-        mode: ProtectionMode
-        //color: ColorAsset,
+        title: String,
+        icon: ImageAsset,
+        color: HedvigColor,
+        protections: [String] = []
     ) {
-        self.mode = mode
+        self.titleText = title
+        self.iconAsset = icon
+        self.color = color
+        self.protections = protections
     }
 }
 
-extension MyProtectionView: Viewable {
+extension ProtectionView: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -101,7 +63,7 @@ extension MyProtectionView: Viewable {
         containerView.layer.shadowColor = UIColor.darkGray.cgColor
         
         // Large icon
-        let icon = Icon(frame: .zero, icon: mode.iconAsset(), iconWidth: mode.iconWidth())
+        let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
         icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(icon)
         
@@ -111,10 +73,10 @@ extension MyProtectionView: Viewable {
         titlesView.backgroundColor = .blue
         titlesView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
-        let titleLabel = MultilineLabel(styledText: StyledText(text: mode.titleText(), style: .rowTitle))
+        let titleLabel = MultilineLabel(styledText: StyledText(text: titleText, style: .rowTitle))
         bag += titlesView.addArranged(titleLabel)
         
-        let subtitleLabel = MultilineLabel(styledText: StyledText(text: mode.subtitleText(), style: .rowSubtitle))
+        let subtitleLabel = MultilineLabel(styledText: StyledText(text: subtitleText, style: .rowSubtitle))
         bag += titlesView.addArranged(subtitleLabel)
 
         containerStackView.addArrangedSubview(titlesView)
@@ -141,7 +103,6 @@ extension MyProtectionView: Viewable {
         })
         
         let tapGesture = UITapGestureRecognizer()
-        containerView.isUserInteractionEnabled = true
         bag += containerView.install(tapGesture)
         
         bag += tapGesture.signal(forState: .ended).onValue({ _ in
