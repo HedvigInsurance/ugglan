@@ -30,10 +30,10 @@ extension End: Viewable {
         let bag = DisposeBag()
 
         let happyAvatar = HappyAvatar()
-        bag += stackView.addArangedSubview(happyAvatar)
+        bag += stackView.addArranged(happyAvatar)
 
         let sayHello = SayHello()
-        bag += stackView.addArangedSubview(sayHello)
+        bag += stackView.addArranged(sayHello)
 
         bag += stackView.didLayoutSignal.take(first: 1).onValue { _ in
             let marketingScreenButton = SharedElement.retreive(
@@ -90,7 +90,7 @@ extension End: Viewable {
             let newMemberButton = NewMemberButton(style: .endScreen) {
                 completion(.success(.onboard))
             }
-            bag += stackView.addArangedSubview(newMemberButton)
+            bag += stackView.addArranged(newMemberButton)
 
             let existingMemberButtonContainerView = UIView()
 

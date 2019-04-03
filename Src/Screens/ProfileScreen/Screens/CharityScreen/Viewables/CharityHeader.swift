@@ -39,7 +39,7 @@ extension CharityHeader: Viewable {
             )
         )
 
-        bag += stackView.addArangedSubview(multilineLabel)
+        bag += stackView.addArranged(multilineLabel)
 
         return (stackView, bag)
     }

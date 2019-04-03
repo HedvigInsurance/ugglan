@@ -85,7 +85,7 @@ extension ReferralsOffer: Viewable {
         )
 
         let bag = DisposeBag()
-        bag += view.addArangedSubview(label) { labelView in
+        bag += view.addArranged(label) { labelView in
             labelView.snp.makeConstraints { make in
                 make.centerY.equalToSuperview()
             }

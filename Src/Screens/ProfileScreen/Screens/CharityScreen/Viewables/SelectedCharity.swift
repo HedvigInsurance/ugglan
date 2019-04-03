@@ -56,7 +56,7 @@ extension SelectedCharity: Viewable {
                 spacing: 70,
                 backgroundColor: .white
             )
-            bag += stackView.addArangedSubview(circleIcon)
+            bag += stackView.addArranged(circleIcon)
 
             let infoContainer = UIView()
             infoContainer.backgroundColor = .white
@@ -83,7 +83,7 @@ extension SelectedCharity: Viewable {
             let descriptionLabel = MultilineLabel(
                 styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
             )
-            bag += infoContainerStackView.addArangedSubview(descriptionLabel)
+            bag += infoContainerStackView.addArranged(descriptionLabel)
 
             infoContainer.addSubview(infoContainerStackView)
             stackView.addArrangedSubview(infoContainer)

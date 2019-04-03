@@ -10,9 +10,7 @@ import Form
 import Foundation
 import UIKit
 
-struct DashboardSection {
-    
-}
+struct DashboardSection {}
 
 extension DashboardSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -34,20 +32,20 @@ extension DashboardSection: Viewable {
         let referralSpacing = Spacing(height: 10)
         let rowSpacing = Spacing(height: 8)
         
-        bag += stackView.addArangedSubview(referralSpacing)
+        bag += stackView.addArranged(referralSpacing)
         
-        let coinsuredRow = MyProtectionView(mode: .coinsured)
-        bag += stackView.addArangedSubview(coinsuredRow)
+        let coinsuredRow = CoinsuredRow()
+        bag += stackView.addArranged(coinsuredRow)
         
-        bag += stackView.addArangedSubview(rowSpacing)
+        bag += stackView.addArranged(rowSpacing)
         
         let homeRow = MyProtectionView(mode: .home)
-        bag += stackView.addArangedSubview(homeRow)
+        bag += stackView.addArranged(homeRow)
         
-        bag += stackView.addArangedSubview(rowSpacing)
+        bag += stackView.addArranged(rowSpacing)
         
         let itemsRow = MyProtectionView(mode: .items)
-        bag += stackView.addArangedSubview(itemsRow)
+        bag += stackView.addArranged(itemsRow)
         
         return (stackView, bag)
     }

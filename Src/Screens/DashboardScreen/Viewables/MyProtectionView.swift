@@ -112,10 +112,10 @@ extension MyProtectionView: Viewable {
         titlesView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         let titleLabel = MultilineLabel(styledText: StyledText(text: mode.titleText(), style: .rowTitle))
-        bag += titlesView.addArangedSubview(titleLabel)
+        bag += titlesView.addArranged(titleLabel)
         
         let subtitleLabel = MultilineLabel(styledText: StyledText(text: mode.subtitleText(), style: .rowSubtitle))
-        bag += titlesView.addArangedSubview(subtitleLabel)
+        bag += titlesView.addArranged(subtitleLabel)
 
         containerStackView.addArrangedSubview(titlesView)
         
