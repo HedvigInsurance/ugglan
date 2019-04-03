@@ -19,45 +19,34 @@ struct MyProtectionView {
             switch self {
             case .coinsured:
                 return String(.PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: "min sambo"))
-            default:
-                return "hej"
+            case .home:
+                return "Islandsvägen 13"
+            case .items:
+                return "Mina prylar"
             }
         }
         
         func subtitleText() -> String {
-            switch self {
-            case .coinsured:
-                return "försäkras för"
-            default:
-                return "hej"
-            }
+            return "försäkras för"
         }
         
         func iconAsset() -> ImageAsset {
             switch self {
             case .coinsured:
-                return Asset.coinsured
-            default:
-                return Asset.dashboardTab
+                return Asset.coinsuredPlain
+            case .home:
+                return Asset.homePlain
+            case .items:
+                return Asset.itemsPlain
             }
         }
         
         func iconWidth() -> CGFloat {
-            switch self {
-            case .coinsured:
-                return 70
-            default:
-                return 70
-            }
+            return 75
         }
         
         func footerText() -> String {
-            switch self {
-            case .coinsured:
-                return "Klicka på ikonerna för mer info"
-            default:
-                return "hej"
-            }
+            return "Klicka på ikonerna för mer info"
         }
         
         func protections() -> [String] {
@@ -86,23 +75,29 @@ extension MyProtectionView: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
-        let containerStackView = UIStackView()
-        containerStackView.axis = .horizontal
+        let stackViewEdgeInsets = UIEdgeInsets(
+            top: 12,
+            left: 15,
+            bottom: 12,
+            right: 25
+        )
+        
+        let containerStackView = UIStackView(
+            views: [],
+            axis: .horizontal,
+            spacing: 20,
+            edgeInsets: stackViewEdgeInsets
+        )
+        
         containerStackView.alignment = .center
         containerStackView.isLayoutMarginsRelativeArrangement = true
-        containerStackView.edgeInsets = UIEdgeInsets(
-            top: 20,
-            left: 20,
-            bottom: 20,
-            right: 20
-        )
         
         let containerView = UIView()
         containerView.backgroundColor = .white
         containerView.layer.cornerRadius = 15
-        containerView.layer.shadowOpacity = 0.2
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        containerView.layer.shadowRadius = 4
+        containerView.layer.shadowOpacity = 0.14
+        containerView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        containerView.layer.shadowRadius = 2
         containerView.layer.shadowColor = UIColor.darkGray.cgColor
         
         // Large icon
@@ -110,36 +105,19 @@ extension MyProtectionView: Viewable {
         icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(icon)
         
-        /*let titleLabel = UILabel(value: mode.titleText(), style: .boldSmallTitle)
-        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        containerStackView.addArrangedSubview(titleLabel)*/
-        
         // Title+subtitle
-        let titlesView = UIView()
+        let titlesView = UIStackView()
+        titlesView.axis = .vertical
         titlesView.backgroundColor = .blue
         titlesView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
-        let titleLabel = UILabel(value: mode.titleText(), style: .boldSmallTitle)
-        titleLabel.backgroundColor = .red
-        titlesView.addSubview(titleLabel)
+        let titleLabel = MultilineLabel(styledText: StyledText(text: mode.titleText(), style: .rowTitle))
+        bag += titlesView.addArangedSubview(titleLabel)
         
-        titleLabel.snp.makeConstraints({ make in
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.trailing.lessThanOrEqualToSuperview()
-            make.leading.equalToSuperview()
-        })
-        
-        //let subtitleLabel = UILabel(value: mode.subtitleText(), style: .body)
-        //titleStackView.addArrangedSubview(subtitleLabel)
+        let subtitleLabel = MultilineLabel(styledText: StyledText(text: mode.subtitleText(), style: .rowSubtitle))
+        bag += titlesView.addArangedSubview(subtitleLabel)
+
         containerStackView.addArrangedSubview(titlesView)
-        
-        /*titleLabel.snp.makeConstraints( { make in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-        })*/
         
         // Chevron down
         let chevronDown = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 30)
@@ -160,6 +138,15 @@ extension MyProtectionView: Viewable {
                 make.height.equalTo(size.height)
                 make.width.equalTo(size.width)
             })
+        })
+        
+        let tapGesture = UITapGestureRecognizer()
+        containerView.isUserInteractionEnabled = true
+        bag += containerView.install(tapGesture)
+        
+        bag += tapGesture.signal(forState: .ended).onValue({ _ in
+            // TODO: Show details of the insurance
+            print("Open up")
         })
         
         return (containerView, bag)

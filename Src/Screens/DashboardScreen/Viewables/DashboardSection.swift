@@ -32,10 +32,22 @@ extension DashboardSection: Viewable {
         stackView.addArrangedSubview(title)
         
         let referralSpacing = Spacing(height: 10)
+        let rowSpacing = Spacing(height: 8)
+        
         bag += stackView.addArangedSubview(referralSpacing)
         
-        let row = MyProtectionView(mode: .coinsured)
-        bag += stackView.addArangedSubview(row)
+        let coinsuredRow = MyProtectionView(mode: .coinsured)
+        bag += stackView.addArangedSubview(coinsuredRow)
+        
+        bag += stackView.addArangedSubview(rowSpacing)
+        
+        let homeRow = MyProtectionView(mode: .home)
+        bag += stackView.addArangedSubview(homeRow)
+        
+        bag += stackView.addArangedSubview(rowSpacing)
+        
+        let itemsRow = MyProtectionView(mode: .items)
+        bag += stackView.addArangedSubview(itemsRow)
         
         return (stackView, bag)
     }
