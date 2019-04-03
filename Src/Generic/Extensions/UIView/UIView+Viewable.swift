@@ -159,28 +159,6 @@ extension UIStackView {
         })
     }
     
-    /*private func materializeArrangedViewable<V: Viewable, Matter: Viewable, View: UIView>(
-        viewable: V
-        ) -> (V.Matter, V.Result, Disposable) where
-        V.Matter == Matter,
-        V.Events == ViewableEvents,
-        Matter.Matter == View,
-        Matter.Events == ViewableEvents {
-        let wasAddedCallbacker = Callbacker<Void>()
-        let viewableEvents = ViewableEvents(
-            wasAddedCallbacker: wasAddedCallbacker
-        )
-        let (matter, result) = viewable.materialize(events: viewableEvents)
-        
-        addArrangedSubview(matter)
-        
-        wasAddedCallbacker.callAll()
-        
-        return (matter, result, Disposer {
-            matter.removeFromSuperview()
-        })
-    }*/
-
     // swiftlint:enable large_tuple
 
     func addArranged<V: Viewable, MatterView: UIView>(
