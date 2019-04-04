@@ -10,7 +10,6 @@ import Flow
 import Form
 import Presentation
 import UIKit
-import MarkdownKit
 
 struct CharityInformation {}
 
@@ -32,24 +31,12 @@ extension CharityInformation: Presentable {
         bodyView.snp.remakeConstraints { make in
             make.top.equalTo(60)
             make.width.equalToSuperview()
+            make.height.equalToSuperview().offset(60)
         }
         
-        let markdownParser = MarkdownParser()
+        let body = CharityInformationBody(text: String(.PROFILE_MY_CHARITY_INFO_BODY))
         
-        let body = UILabel()
-        body.numberOfLines = 0
-        body.lineBreakMode = .byWordWrapping
-        body.attributedText = markdownParser.parse(String(.PROFILE_MY_CHARITY_INFO_BODY))
-        
-        bag += body.didLayoutSignal.onValue { _ in
-            body.snp.remakeConstraints { make in
-                make.width.equalToSuperview().inset(24)
-                make.height.equalToSuperview().inset(24)
-                make.center.equalToSuperview()
-            }
-        }
-        
-        bodyView.addSubview(body)
+        bag += bodyView.add(body)
         
         viewController.view = containerView;
         
