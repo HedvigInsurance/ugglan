@@ -111,7 +111,8 @@ extension SelectedCharity: Viewable {
                 self.presentingViewController.present(
                     DraggableOverlay(
                         presentable: CharityInformation(),
-                        presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)]
+                        presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
+                        heightPercentage: 0.55
                     )
                 )
             }

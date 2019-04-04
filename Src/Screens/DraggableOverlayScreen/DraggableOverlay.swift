@@ -14,16 +14,18 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController> where P.Resul
     let presentable: P
     let presentationOptions: PresentationOptions
     let backgroundColor: UIColor
+    let heightPercentage: CGFloat
     
     init(
         presentable: P,
         presentationOptions: PresentationOptions = .defaults,
-        backgroundColor: UIColor = .white
+        backgroundColor: UIColor = .white,
+        heightPercentage: CGFloat = 0.5
     ) {
         self.presentable = presentable
         self.presentationOptions = presentationOptions
         self.backgroundColor = backgroundColor
- 
+        self.heightPercentage = heightPercentage
     }
 }
 
@@ -78,8 +80,8 @@ extension DraggableOverlay: Presentable {
         
         view.addSubview(overlay)
         
+        let overlayHeight: CGFloat = round(self.heightPercentage * UIScreen.main.bounds.height)
         let overshootHeight: CGFloat = 800
-        let overlayHeight: CGFloat = 400
         
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
