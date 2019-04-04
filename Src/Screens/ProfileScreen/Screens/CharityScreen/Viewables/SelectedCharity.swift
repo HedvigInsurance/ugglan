@@ -61,7 +61,7 @@ extension SelectedCharity: Viewable {
 
             let infoContainer = UIView()
             infoContainer.backgroundColor = .white
-            infoContainer.layer.cornerRadius = 15
+            infoContainer.layer.cornerRadius = 8
             infoContainer.layer.shadowOpacity = 0.2
             infoContainer.layer.shadowOffset = CGSize(width: 0, height: 10)
             infoContainer.layer.shadowRadius = 16
@@ -71,10 +71,10 @@ extension SelectedCharity: Viewable {
             infoContainerStackView.axis = .vertical
             infoContainerStackView.spacing = 5
             infoContainerStackView.edgeInsets = UIEdgeInsets(
-                top: 20,
-                left: 20,
-                bottom: 20,
-                right: 20
+                top: 24,
+                left: 16,
+                bottom: 24,
+                right: 16
             )
             infoContainerStackView.isLayoutMarginsRelativeArrangement = true
 
@@ -104,7 +104,7 @@ extension SelectedCharity: Viewable {
             
             let button = Button(
                 title: String(.PROFILE_MY_CHARITY_INFO_BUTTON),
-                type: .iconTransparent(textColor: .darkPurple, icon: Asset.infoBlue)
+                type: .iconTransparent(textColor: .purple, icon: Asset.infoPurple)
             )
             
             bag += button.onTapSignal.onValue {_ in

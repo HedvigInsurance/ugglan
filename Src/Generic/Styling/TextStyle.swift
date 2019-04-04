@@ -38,12 +38,12 @@ extension TextStyle {
     }
 
     static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBold!.withSize(19)
+        style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .black
     }
 
     static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBook!.withSize(13)
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
     }
 
@@ -54,6 +54,11 @@ extension TextStyle {
 
     static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
         style.alignment = .center
+    }
+    
+    static let smallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(16)
+        style.color = .offBlack
     }
 
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
