@@ -62,7 +62,7 @@ extension Charity: Presentable {
                     })
                 }
             }
-
+        
         viewController.view = containerView
 
         return (viewController, bag)

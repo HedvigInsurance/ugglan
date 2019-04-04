@@ -68,6 +68,16 @@ extension CharityPicker: Viewable {
                 headerStackView.addArrangedSubview(label)
 
                 return headerStackView
+            },
+            footerForSection: { _, _ in
+                let footerStackView = UIStackView()
+                footerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 30)
+                footerStackView.isLayoutMarginsRelativeArrangement = true
+                
+                let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
+                bag += footerStackView.addArangedSubview(charityInformationButton)
+                
+                return footerStackView
             }
         )
 

@@ -102,22 +102,9 @@ extension SelectedCharity: Viewable {
                 })
             })
             
-            let button = Button(
-                title: String(.PROFILE_MY_CHARITY_INFO_BUTTON),
-                type: .iconTransparent(textColor: .purple, icon: Asset.infoPurple)
-            )
+            let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
             
-            bag += button.onTapSignal.onValue {_ in
-                self.presentingViewController.present(
-                    DraggableOverlay(
-                        presentable: CharityInformation(),
-                        presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
-                        heightPercentage: 0.55
-                    )
-                )
-            }
-            
-            bag += stackView.addArangedSubview(button)
+            bag += stackView.addArangedSubview(charityInformationButton)
         }
 
         if animateEntry {
