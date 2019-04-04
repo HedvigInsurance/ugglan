@@ -20,7 +20,7 @@ extension CharityInformationBody: Viewable {
         
         let bag = DisposeBag()
         
-        let body = MarkdownText(text: text)
+        let body = MarkdownText(text: text, style: .body)
         bag += view.add(body)
         
         bag += view.didLayoutSignal.onValue { _ in

@@ -10,8 +10,34 @@ import Flow
 import UIKit
 import MarkdownKit
 
+enum MarkdownTextStyle {
+    case body
+    
+    func font() -> UIFont {
+        switch self {
+        case .body:
+            return (HedvigFonts.circularStdBook?.withSize(16))!
+        }
+    }
+    
+    func color () -> UIColor {
+        switch self {
+        case .body:
+            return .offBlack
+        }
+    }
+    
+    func lineSpacing() -> CGFloat {
+        switch self {
+        case .body:
+            return 4
+        }
+    }
+}
+
 struct MarkdownText {
     let text: String
+    let style: MarkdownTextStyle
 }
 
 extension MarkdownText: Viewable {
@@ -20,13 +46,21 @@ extension MarkdownText: Viewable {
         
         let bag = DisposeBag()
         
-        let markdownParser = MarkdownParser()
+        let markdownParser = MarkdownParser(font: (style.font()), color: style.color())
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = style.lineSpacing()
+        
+        let attributedString = markdownParser.parse(text)
+        
+        let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
+        mutableAttributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, mutableAttributedString.length - 1))
         
         let markdownText = UILabel()
         markdownText.numberOfLines = 0
         markdownText.lineBreakMode = .byWordWrapping
         markdownText.baselineAdjustment = .none
-        markdownText.attributedText = markdownParser.parse(text)
+        markdownText.attributedText = mutableAttributedString
         
         bag += markdownText.didLayoutSignal.onValue { _ in
             markdownText.snp.remakeConstraints { make in
