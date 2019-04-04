@@ -12,7 +12,7 @@ import Foundation
 struct TranslationsRepo {
     private static var translations: [String: String] = [:]
 
-    static func fetch(client: ApolloClient) {
+    static func fetch(client: ApolloClient = ApolloContainer.shared.client) {
         let languageCode = String(describing: Localization.Language.currentLanguage)
         client.fetch(query: TranslationsQuery(code: languageCode)).onValue { result in
             let translations = result.data?.languages.first??.translations ?? []

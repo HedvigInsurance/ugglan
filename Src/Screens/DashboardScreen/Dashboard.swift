@@ -16,7 +16,7 @@ import UIKit
 struct Dashboard {
     let client: ApolloClient
 
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+    init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
 }

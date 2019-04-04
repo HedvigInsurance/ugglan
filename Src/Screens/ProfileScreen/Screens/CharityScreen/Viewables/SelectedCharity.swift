@@ -17,7 +17,7 @@ struct SelectedCharity {
     let presentingViewController: UIViewController
 
     init(
-        client: ApolloClient = HedvigApolloClient.shared.client!,
+        client: ApolloClient = ApolloContainer.shared.client,
         animateEntry: Bool,
         presentingViewController: UIViewController
     ) {

@@ -15,7 +15,7 @@ import UIKit
 struct Marketing {
     let client: ApolloClient
 
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+    init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
 }

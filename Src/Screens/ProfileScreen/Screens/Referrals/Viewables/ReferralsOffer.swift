@@ -37,10 +37,11 @@ struct ReferralsOffer {
     let incentive: Int
 
     init(
-        mode: Mode
+        mode: Mode,
+        incentive: Int = RemoteConfigContainer.shared.referralsIncentive()
     ) {
         self.mode = mode
-        incentive = RemoteConfigContainer().referralsIncentive()
+        self.incentive = incentive
     }
 }
 

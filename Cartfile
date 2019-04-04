@@ -11,6 +11,7 @@ github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
 github "vtourraine/AcknowList" "1.7"
 github "daltoniam/Starscream" "3.0.6"
+github "uber/ios-snapshot-test-case" "6.0.2"
 github "ivanbruel/MarkdownKit" "master"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

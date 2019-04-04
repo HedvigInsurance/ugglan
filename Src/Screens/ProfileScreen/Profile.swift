@@ -14,9 +14,14 @@ import UIKit
 
 struct Profile {
     let client: ApolloClient
+    let referralsEnabled: Bool
     
-    init(client: ApolloClient = HedvigApolloClient.shared.client!) {
+    init(
+        client: ApolloClient = ApolloContainer.shared.client,
+        referralsEnabled: Bool = RemoteConfigContainer.shared.referralsEnabled()
+    ) {
         self.client = client
+        self.referralsEnabled = referralsEnabled
     }
 }
 
@@ -45,9 +50,7 @@ extension Profile: Presentable {
         let referralSpacing = Spacing(height: 20)
         bag += form.append(referralSpacing)
 
-        let remoteConfigContainer = RemoteConfigContainer()
-
-        let referralsHidden = remoteConfigContainer.referralsEnabled() ? false : true
+        let referralsHidden = referralsEnabled ? false : true
 
         referralSection.isHidden = referralsHidden
         referralSpacing.isHiddenSignal.value = referralsHidden

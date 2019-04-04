@@ -63,13 +63,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         FirebaseApp.configure()
 
-        let remoteConfig = RemoteConfig.remoteConfig()
-        let fetchDuration: TimeInterval = 0
-
-        remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
-            remoteConfig.activateFetched()
-        })
-
         window.backgroundColor = .offWhite
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
@@ -111,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += navigationController.present(launchPresentation)
         window.makeKeyAndVisible()
 
-        let apolloEnvironment = HedvigApolloEnvironmentConfig(
+        let apolloEnvironment = ApolloEnvironmentConfig(
             endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
             wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
         )
@@ -120,17 +113,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let token = AuthorizationToken(token: "a8Za/PaA2jQqsg==.Lt9hKLFD8+oFBg==.hEprAa/drNxv5g==")
         try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
-
-        HedvigApolloClient.shared.initClient(environment: apolloEnvironment).delay(by: 0.5).onValue { client, store in
-            HedvigApolloClient.shared.client = client
-            HedvigApolloClient.shared.store = store
-            HedvigApolloClient.shared.remoteConfig = remoteConfig
-
+        
+        bag += combineLatest(
+            ApolloContainer.shared.initClient(environment: apolloEnvironment).valueSignal.map { _, _ in true }.plain(),
+            RemoteConfigContainer.shared.fetched.plain()
+        ).delay(by: 0.5).onValue { _, _ in
             self.presentMarketing()
-
+            
             hasLoadedCallbacker.callAll()
 
-            TranslationsRepo.fetch(client: client)
+            TranslationsRepo.fetch()
         }
 
         return true
