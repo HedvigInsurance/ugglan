@@ -32,6 +32,11 @@ extension Dashboard: Presentable {
         ).compactMap { $0.data?.member.firstName }.map {
             String(.DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
         }.bindTo(viewController, \.navigationItem.title)
+        
+        /*bag += client.fetch(query: DashboardQuery()).onValue { result in
+            guard let data = result.data else { return }
+            print(data.insurance)
+        }*/
 
         let form = FormView()
         

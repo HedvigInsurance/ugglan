@@ -20,9 +20,9 @@ extension MyProtectionSection: Viewable {
         stackView.axis = .vertical
         stackView.edgeInsets = UIEdgeInsets(
             top: 0,
-            left: 25,
+            left: 16,
             bottom: 0,
-            right: 25
+            right: 16
         )
         stackView.isLayoutMarginsRelativeArrangement = true
         
@@ -30,7 +30,7 @@ extension MyProtectionSection: Viewable {
         stackView.addArrangedSubview(title)
         
         let referralSpacing = Spacing(height: 10)
-        let rowSpacing = Spacing(height: 8)
+        let rowSpacing = Spacing(height: 10)
         
         bag += stackView.addArranged(referralSpacing)
         

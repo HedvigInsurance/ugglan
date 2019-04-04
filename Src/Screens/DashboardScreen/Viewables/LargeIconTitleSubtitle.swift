@@ -11,18 +11,26 @@ import Foundation
 import UIKit
 
 struct LargeIconTitleSubtitle {
+    
+    enum Orientation {
+        case down, right
+    }
+    
     let titleText: String
     let iconAsset: ImageAsset
     
-    let iconWidth: CGFloat = 75
+    let iconWidth: CGFloat = 35
     let subtitleText = "försäkras för"
+    let arrowOrientation: Orientation
     
     init(
         title: String,
-        icon: ImageAsset
+        icon: ImageAsset,
+        arrowOrientation: Orientation = .down
         ) {
         self.titleText = title
         self.iconAsset = icon
+        self.arrowOrientation = arrowOrientation
     }
 }
 
@@ -31,10 +39,10 @@ extension LargeIconTitleSubtitle: Viewable {
         let bag = DisposeBag()
         
         let stackViewEdgeInsets = UIEdgeInsets(
-            top: 12,
-            left: 15,
-            bottom: 12,
-            right: 25
+            top: 20,
+            left: 16,
+            bottom: 20,
+            right: 19
         )
         
         let containerStackView = UIStackView(
@@ -48,17 +56,18 @@ extension LargeIconTitleSubtitle: Viewable {
         containerStackView.isLayoutMarginsRelativeArrangement = true
         
         // Large icon
-        let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
+        let icon = Icon(icon: iconAsset, iconWidth: iconWidth)
         icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(icon)
         
         // Title+subtitle
         let titlesView = UIStackView()
         titlesView.axis = .vertical
+        titlesView.spacing = 2
         titlesView.backgroundColor = .blue
         titlesView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
-        let titleLabel = MultilineLabel(styledText: StyledText(text: titleText, style: .rowTitle))
+        let titleLabel = MultilineLabel(styledText: StyledText(text: titleText, style: .boldSmallTitle))
         bag += titlesView.addArranged(titleLabel)
         
         let subtitleLabel = MultilineLabel(styledText: StyledText(text: subtitleText, style: .rowSubtitle))
@@ -67,14 +76,10 @@ extension LargeIconTitleSubtitle: Viewable {
         containerStackView.addArrangedSubview(titlesView)
         
         // Chevron down
-        let chevronDown = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 30)
+        let chevronDown = Icon(icon: Asset.chevronRight, iconWidth: 25)
         chevronDown.transform = CGAffineTransform.init(rotationAngle: CGFloat.pi / 2)
         chevronDown.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(chevronDown)
-        
-        bag += containerStackView.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in
-            make.width.height.centerX.centerY.equalToSuperview()
-        })
         
         return (containerStackView, bag)
     }
