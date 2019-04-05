@@ -47,6 +47,7 @@ extension ExpandableRow: Viewable {
         containerView.layer.shadowOffset = CGSize(width: 0, height: 4)
         containerView.layer.shadowRadius = 8
         containerView.layer.shadowColor = UIColor.darkGray.cgColor
+        containerView.clipsToBounds = true
         
         let expandableStackView = UIStackView()
         expandableStackView.axis = .vertical
@@ -63,11 +64,12 @@ extension ExpandableRow: Viewable {
         }
         
         bag += expandableStackView.addArranged(expandedContent) { expandedView in
-            expandedView.isHidden = true
+            expandedView.isHidden = isOpenInitiallys
             
             bag += isOpenSignal.animated(style: AnimationStyle.easeOut(duration: 0.25)) { isOpen in
                 let open = isOpen ?? true
                 expandedView.isHidden = !open
+                expandedView.layoutIfNeeded()
             }
         }
         
