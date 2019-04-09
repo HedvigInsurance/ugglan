@@ -34,13 +34,17 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
 `carthage update --platform iOS`
 
+8. Install translations CLI
+
+`curl -o /usr/local/bin/swiftTranslationsCodegen "https://raw.githubusercontent.com/HedvigInsurance/swift-translations-codegen/master/main.swift?$(date +%s)" && chmod +x /usr/local/bin/swiftTranslationsCodegen`
+
 8. Add aliases to your bash/zsh config
 
    1. open ~/.bashrc or ~/.zshrc
 
    2. put this into that file:
 
-   `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="./scripts/generate-translations.swift --projects '[App, IOS]' --destination 'Src/Assets/Localization/Localization.swift'" alias assets="swiftgen"`
+   `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="swiftTranslationsCodegen --projects '[App, IOS]' --destination 'Src/Assets/Localization/Localization.swift'" alias assets="swiftgen"`
 
 9. Install Apollo CLI
 
