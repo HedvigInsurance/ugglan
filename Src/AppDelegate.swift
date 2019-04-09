@@ -113,13 +113,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let token = AuthorizationToken(token: "a8Za/PaA2jQqsg==.Lt9hKLFD8+oFBg==.hEprAa/drNxv5g==")
         try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
-        
+
         bag += combineLatest(
             ApolloContainer.shared.initClient(environment: apolloEnvironment).valueSignal.map { _, _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()
         ).delay(by: 0.5).onValue { _, _ in
             self.presentMarketing()
-            
+
             hasLoadedCallbacker.callAll()
 
             TranslationsRepo.fetch()

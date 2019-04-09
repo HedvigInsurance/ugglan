@@ -40,7 +40,7 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
    2. put this into that file:
 
-   `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="sh scripts/update-translations.sh" alias assets="swiftgen"`
+   `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="./scripts/generate-translations.swift --projects '[App, IOS]' --destination 'Src/Assets/Localization/Localization.swift'" alias assets="swiftgen"`
 
 9. Install Apollo CLI
 

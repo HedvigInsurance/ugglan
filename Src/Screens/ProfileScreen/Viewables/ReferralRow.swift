@@ -13,7 +13,7 @@ import UIKit
 struct ReferralRow {
     let presentingViewController: UIViewController
     let incentive: String
-    
+
     init(
         presentingViewController: UIViewController,
         incentive: Int = RemoteConfigContainer.shared.referralsIncentive()

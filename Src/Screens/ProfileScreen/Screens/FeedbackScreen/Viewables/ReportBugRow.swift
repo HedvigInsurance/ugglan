@@ -46,11 +46,11 @@ extension ReportBugRow: Viewable {
 
         bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
             let deviceInfo = String(.FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
-                device: device.description,
-                systemName: device.systemName,
-                systemVersion: device.systemVersion,
                 appVersion: appVersion ?? "",
-                memberId: memberId
+                device: device.description,
+                memberId: memberId,
+                systemName: device.systemName,
+                systemVersion: device.systemVersion
             ))
 
             var attachments: [MailViewAttachment] = []

@@ -29,10 +29,10 @@ extension MyHome: Presentable {
 
         let form = FormView()
         bag += viewController.install(form)
-        
+
         let addressCircle = AddressCircle()
         bag += form.prepend(addressCircle)
-        
+
         bag += client.fetch(query: MyHomeQuery()).onValue { result in
             if let insurance = result.data?.insurance {
                 let rowTitle = UILabel(value: String(.MY_HOME_SECTION_TITLE), style: .rowTitle)
@@ -53,10 +53,10 @@ extension MyHome: Presentable {
                 postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
                 postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
                 bag += section.append(postalCodeRow)
-                
+
                 let livingSpaceRow = KeyValueRow()
                 livingSpaceRow.keySignal.value = String(.MY_HOME_ROW_SIZE_KEY)
-                
+
                 if let livingSpace = insurance.livingSpace {
                     livingSpaceRow.valueSignal.value = String(.MY_HOME_ROW_SIZE_VALUE(
                         livingSpace: String(livingSpace)
@@ -64,7 +64,7 @@ extension MyHome: Presentable {
                     livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
                     bag += section.append(livingSpaceRow)
                 }
-                
+
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = String(.MY_HOME_ROW_TYPE_KEY)
                 apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
