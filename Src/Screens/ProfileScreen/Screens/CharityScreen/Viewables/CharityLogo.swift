@@ -5,17 +5,12 @@
 //  Created by Gustaf Gunér on 2019-03-21.
 //
 
-
 import Flow
 import Foundation
 import UIKit
 
 struct CharityLogo {
     let url: String
-    
-    init(url: String) {
-        self.url = url
-    }
 }
 
 extension CharityLogo: Viewable {

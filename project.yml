@@ -143,6 +143,7 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/DynamicColor.framework
           - $(SRCROOT)/Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
@@ -161,6 +162,7 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
     references:
       - sdkroot:UIKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework

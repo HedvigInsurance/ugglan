@@ -8,7 +8,6 @@
 import Foundation
 import Flow
 import UIKit
-import MarkdownKit
 
 struct CharityInformationBody {
     let text: String
