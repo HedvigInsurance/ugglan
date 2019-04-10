@@ -50,9 +50,7 @@ extension ExpandableRow: Viewable {
         let expandableStackView = UIStackView()
         expandableStackView.axis = .vertical
         
-        bag += expandableStackView.addArranged(content) { contentView in
-            
-        }
+        bag += expandableStackView.addArranged(content)
         
         let divider = Divider(backgroundColor: .offWhite)
         bag += expandableStackView.addArranged(divider) { dividerView in
