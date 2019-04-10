@@ -35,6 +35,9 @@ extension Dashboard: Presentable {
 
         let form = FormView()
         
+        let chatActionsSection = ChatActionsSection()
+        bag += form.append(chatActionsSection)
+        
         let myProtectionSection = MyProtectionSection()
         bag += form.append(myProtectionSection)
         
@@ -43,6 +46,10 @@ extension Dashboard: Presentable {
         bag += client.watch(query: DashboardQuery())
             .compactMap { $0.data?.insurance }
             .bindTo(myProtectionSection.dataSignal)
+        
+        bag += client.watch(query: ChatActionsQuery())
+            .compactMap { $0.data?.chatActions }
+            .bindTo(chatActionsSection.dataSignal)
 
         return (viewController, bag)
     }

@@ -31,7 +31,7 @@ extension MoreInfo: Viewable {
         
         let selfRiskCheckmark = CheckmarkLabel(
             styledText: StyledText(
-                text: "Din självrisk är 1500 kr",
+                text: "Din självrisk är 1 500 kr",
                 style: .bodyOffBlack
             )
         )

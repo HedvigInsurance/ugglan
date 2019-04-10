@@ -30,11 +30,15 @@ extension MyProtectionSection: Viewable {
         stackView.isHidden = true
         bag += dataSignal.map { $0 == nil }.bindTo(stackView, \.isHidden)
         
-        let title = UILabel(value: "Ditt skydd", style: .rowTitle)
-        stackView.addArrangedSubview(title)
+        let isActiveLabel = CheckmarkLabel(styledText: StyledText(text: "Din försäkring är aktiv", style: .rowSubtitle))
+        bag += stackView.addArranged(isActiveLabel) { checkmarkLabelView in
+            bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(checkmarkLabelView, \.isHidden)
+        }
         
         let rowSpacing = Spacing(height: 10)
-        bag += stackView.addArranged(rowSpacing)
+        bag += stackView.addArranged(rowSpacing) { spacing in
+            bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(spacing, \.isHidden)
+        }
         
         let perilCategoriesStack = UIStackView()
         perilCategoriesStack.axis = .vertical
