@@ -38,26 +38,30 @@ extension PerilExpandableRow: Viewable {
     func materialize(events _: ViewableEvents) -> (ExpandableRow<LargeIconTitleSubtitle, PerilCollection>, Disposable) {
         let bag = DisposeBag()
         
-        let perilCollectionTitleSubtitle = LargeIconTitleSubtitle()
+        let contentView = LargeIconTitleSubtitle()
         
         bag += perilsDataSignal.atOnce()
             .filter { $0?.title != nil }
             .map { $0!.title! }
-            .bindTo(perilCollectionTitleSubtitle.titleSignal)
+            .bindTo(contentView.titleSignal)
         
         bag += perilsDataSignal.atOnce()
             .filter { $0?.description != nil }
             .map { $0!.description! }
-            .bindTo(perilCollectionTitleSubtitle.subtitleSignal)
+            .bindTo(contentView.subtitleSignal)
         
-        perilCollectionTitleSubtitle.imageSignal.value = PerilCategoryIcon(rawValue: index)?.image
+        if let imageAsset = PerilCategoryIcon(rawValue: index)?.image {
+            contentView.imageSignal.value = imageAsset
+        } else {
+            contentView.imageSignal.value = Asset.moreInfoPlain
+        }
         
-        let coinsuredPerilCollection = PerilCollection()
+        let expandedContentView = PerilCollection()
         bag += perilsDataSignal.atOnce()
-            .bindTo(coinsuredPerilCollection.perilsDataSignal)
+            .bindTo(expandedContentView.perilsDataSignal)
         
-        let expandableView = ExpandableRow(content: perilCollectionTitleSubtitle, expandedContent: coinsuredPerilCollection)
-        bag += expandableView.isOpenSignal.bindTo(perilCollectionTitleSubtitle.isOpenSignal)
+        let expandableView = ExpandableRow(content: contentView, expandedContent: expandedContentView)
+        bag += expandableView.isOpenSignal.bindTo(contentView.isOpenSignal)
         
         return (expandableView, bag)
     }

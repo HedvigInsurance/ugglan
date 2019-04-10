@@ -52,7 +52,9 @@ extension LargeIconTitleSubtitle: Viewable {
         icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(icon)
         
-        bag += imageSignal.atOnce().filter { $0 != nil }.map { $0! }.bindTo(icon, \.icon)
+        bag += imageSignal.atOnce()
+            .filter { $0 != nil }
+            .map { $0! }.bindTo(icon, \.icon)
         
         // Title+subtitle
         let titlesView = UIStackView()
@@ -64,16 +66,20 @@ extension LargeIconTitleSubtitle: Viewable {
         let titleLabel = MultilineLabel(styledText: StyledText(text: "", style: .boldSmallTitle))
         bag += titlesView.addArranged(titleLabel)
         
-        bag += titleSignal.atOnce().map { StyledText(text: $0, style: .boldSmallTitle) }.bindTo(titleLabel.styledTextSignal)
+        bag += titleSignal.atOnce()
+            .map { StyledText(text: $0, style: .boldSmallTitle) }
+            .bindTo(titleLabel.styledTextSignal)
         
         let subtitleLabel = MultilineLabel(styledText: StyledText(text: "", style: .rowSubtitle))
         bag += titlesView.addArranged(subtitleLabel)
         
-        bag += subtitleSignal.atOnce().map { StyledText(text: $0, style: .rowSubtitle) }.bindTo(subtitleLabel.styledTextSignal)
+        bag += subtitleSignal.atOnce()
+            .map { StyledText(text: $0, style: .rowSubtitle) }
+            .bindTo(subtitleLabel.styledTextSignal)
         
         containerStackView.addArrangedSubview(titlesView)
         
-        // Chevron down
+        
         let chevronDown = Icon(icon: Asset.chevronRight, iconWidth: 25)
         chevronDown.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(chevronDown)

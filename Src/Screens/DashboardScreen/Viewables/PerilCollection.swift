@@ -30,7 +30,6 @@ extension PerilCollection: Viewable {
         
         let contentStackView = UIStackView()
         contentStackView.axis = .vertical
-        //contentStackView.edgeInsets = contentViewInsets
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
@@ -42,7 +41,6 @@ extension PerilCollection: Viewable {
         )
         
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
-            // TODO: make this more responsive
             return CGSize(width: 50, height: 85)
         }
         
@@ -66,7 +64,6 @@ extension PerilCollection: Viewable {
                 Peril(title: (peril?.title)!, id: (peril?.id)!)
             }
             
-            //cells.value = perilViewableArray
             collectionKit.set(Table(rows: perilViewableArray), animation: .none, rowIdentifier: { $0.title })
             
             collectionKit.view.snp.remakeConstraints { make in
