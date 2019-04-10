@@ -17,18 +17,18 @@ struct ReferralsOffer {
         func titleText() -> String {
             switch self {
             case .receiver:
-                return String(.REFERRALS_OFFER_RECEIVER_TITLE)
+                return String(key: .REFERRALS_OFFER_RECEIVER_TITLE)
             case .sender:
-                return String(.REFERRALS_OFFER_SENDER_TITLE)
+                return String(key: .REFERRALS_OFFER_SENDER_TITLE)
             }
         }
 
         func labelText(incentive: Int) -> String {
             switch self {
             case .receiver:
-                return String(.REFERRALS_OFFER_RECEIVER_VALUE(incentive: String(incentive)))
+                return String(key: .REFERRALS_OFFER_RECEIVER_VALUE(incentive: String(incentive)))
             case .sender:
-                return String(.REFERRALS_OFFER_SENDER_VALUE(incentive: String(incentive)))
+                return String(key: .REFERRALS_OFFER_SENDER_VALUE(incentive: String(incentive)))
             }
         }
     }

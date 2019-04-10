@@ -21,7 +21,7 @@ extension FeedbackHeader: Viewable {
         let containerView = UIView()
 
         let backgroundWithLabel = BackgroundWithLabel(
-            labelText: DynamicString(String(.FEEDBACK_SCREEN_LABEL)),
+            labelText: DynamicString(String(key: .FEEDBACK_SCREEN_LABEL)),
             backgroundColor: .purple,
             backgroundImage: Asset.feedbackLabelBackground.image
         )

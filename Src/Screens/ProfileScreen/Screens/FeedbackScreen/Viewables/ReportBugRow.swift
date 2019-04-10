@@ -30,9 +30,9 @@ extension ReportBugRow: Viewable {
 
         let row = KeyValueRow()
 
-        let emailAddress = String(.FEEDBACK_IOS_EMAIL)
+        let emailAddress = String(key: .FEEDBACK_IOS_EMAIL)
 
-        row.keySignal.value = String(.FEEDBACK_SCREEN_REPORT_BUG_TITLE)
+        row.keySignal.value = String(key: .FEEDBACK_SCREEN_REPORT_BUG_TITLE)
         row.valueSignal.value = emailAddress
 
         row.valueStyleSignal.value = .rowValueLink
@@ -43,9 +43,9 @@ extension ReportBugRow: Viewable {
         let memberIdSignal = client.fetch(query: MemberIdQuery())
             .valueSignal
             .compactMap { $0.data?.member.id }.plain()
-
+        
         bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
-            let deviceInfo = String(.FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
+            let deviceInfo = String(key: .FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
                 appVersion: appVersion ?? "",
                 device: device.description,
                 memberId: memberId,

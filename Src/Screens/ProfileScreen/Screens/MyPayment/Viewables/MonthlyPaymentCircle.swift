@@ -22,7 +22,7 @@ extension MonthlyPaymentCircle: Viewable {
 
         let monthlyPaymentCircle = CircleLabelWithSubLabel(
             labelText: DynamicString(""),
-            subLabelText: DynamicString(String(.PAYMENT_CURRENCY_OCCURRENCE)),
+            subLabelText: DynamicString(String(key: .PAYMENT_CURRENCY_OCCURRENCE)),
             appearance: .turquoise
         )
         bag += containerView.add(monthlyPaymentCircle)

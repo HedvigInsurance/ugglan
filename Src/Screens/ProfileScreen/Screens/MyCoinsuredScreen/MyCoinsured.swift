@@ -27,7 +27,7 @@ extension MyCoinsured: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = String(.MY_COINSURED_TITLE)
+        viewController.title = String(key: .MY_COINSURED_TITLE)
 
         let form = FormView()
 
@@ -35,7 +35,7 @@ extension MyCoinsured: Presentable {
 
         let circleLabel = CircleLabelWithSubLabel(
             labelText: DynamicString(""),
-            subLabelText: DynamicString(String(.MY_COINSURED_SCREEN_CIRCLE_SUBLABEL)),
+            subLabelText: DynamicString(String(key: .MY_COINSURED_SCREEN_CIRCLE_SUBLABEL)),
             appearance: .purple
         )
         bag += circleContainerView.add(circleLabel)

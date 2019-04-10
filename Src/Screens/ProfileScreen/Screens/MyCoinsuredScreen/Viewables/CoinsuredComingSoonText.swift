@@ -23,7 +23,7 @@ extension CoinsuredComingSoonText: Viewable {
         let titleContainer = UIView()
 
         let title = UILabel(style: .blockRowTitle)
-        title.text = String(.MY_COINSURED_COMING_SOON_TITLE)
+        title.text = String(key: .MY_COINSURED_COMING_SOON_TITLE)
 
         bag += title.didLayoutSignal.onValue {
             title.setContentHuggingPriority(
@@ -50,7 +50,7 @@ extension CoinsuredComingSoonText: Viewable {
 
         let body = MultilineLabel(
             styledText: StyledText(
-                text: String(.MY_COINSURED_COMING_SOON_BODY),
+                text: String(key: .MY_COINSURED_COMING_SOON_BODY),
                 style: .body
             )
         )

@@ -21,14 +21,14 @@ extension MyPaymentRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(.PROFILE_PAYMENT_ROW_HEADER),
+            title: String(key: .PROFILE_PAYMENT_ROW_HEADER),
             subtitle: "",
             iconAsset: Asset.payment,
             options: [.withArrow]
         )
 
         bag += monthlyCostSignal.atOnce().compactMap { $0 }.map { monthlyCost in
-            "\(monthlyCost) \(String(.PAYMENT_CURRENCY_OCCURRENCE)) · \(String(.PROFILE_MY_PAYMENT_METHOD))"
+            "\(monthlyCost) \(String(key: .PAYMENT_CURRENCY_OCCURRENCE)) · \(String(key: .PROFILE_MY_PAYMENT_METHOD))"
         }.bindTo(row.subtitle)
 
         bag += events.onSelect.onValue {

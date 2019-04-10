@@ -18,7 +18,7 @@ extension UpdatingMessage: Viewable {
         let row = RowView()
 
         let label = MultilineLabel(
-            styledText: StyledText(text: String(.MY_PAYMENT_UPDATING_MESSAGE), style: .centeredBodyOffBlack)
+            styledText: StyledText(text: String(key: .MY_PAYMENT_UPDATING_MESSAGE), style: .centeredBodyOffBlack)
         )
         bag += row.addArangedSubview(label)
 

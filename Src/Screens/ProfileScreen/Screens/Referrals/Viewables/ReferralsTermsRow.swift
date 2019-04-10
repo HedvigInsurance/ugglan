@@ -19,7 +19,7 @@ extension ReferralsTermsRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: String(.REFERRALS_TERMS_ROW_TITLE), style: .rowTitle))
+        row.append(UILabel(value: String(key: .REFERRALS_TERMS_ROW_TITLE), style: .rowTitle))
 
         let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 
@@ -30,7 +30,7 @@ extension ReferralsTermsRow: Viewable {
         }
 
         bag += events.onSelect.onValue {
-            guard let url = URL(string: String(.REFERRALS_TERMS_WEBSITE_URL)) else { return }
+            guard let url = URL(string: String(key: .REFERRALS_TERMS_WEBSITE_URL)) else { return }
             UIApplication.shared.openURL(url)
         }
 

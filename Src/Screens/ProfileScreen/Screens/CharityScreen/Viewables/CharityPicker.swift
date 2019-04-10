@@ -61,7 +61,7 @@ extension CharityPicker: Viewable {
                 headerStackView.isLayoutMarginsRelativeArrangement = true
 
                 let label = UILabel(
-                    value: String(.CHARITY_OPTIONS_HEADER_TITLE),
+                    value: String(key: .CHARITY_OPTIONS_HEADER_TITLE),
                     style: .sectionHeader
                 )
 
