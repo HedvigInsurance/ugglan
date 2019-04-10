@@ -10,25 +10,24 @@ import Foundation
 import UIKit
 
 struct CharityLogo {
-    let url: String
+    let url: URL
 }
 
 extension CharityLogo: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
+    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+        let containerView = UIView()
+        let bag = DisposeBag()
         
-        let imageView = UIImageView()
-        imageView.imageFromURL(url: url)
-        imageView.contentMode = .scaleAspectFit
+        let imageView = CachedImage(url: url)
         
-        view.addSubview(imageView)
-        
-        imageView.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.8)
-            make.center.equalToSuperview()
-            make.height.lessThanOrEqualTo(100)
+        bag += containerView.add(imageView) { view in
+            view.snp.makeConstraints { make in
+                make.width.equalToSuperview().multipliedBy(0.8)
+                make.center.equalToSuperview()
+                make.height.lessThanOrEqualTo(100)
+            }
         }
         
-        return (view, NilDisposer())
+        return (containerView, bag)
     }
 }

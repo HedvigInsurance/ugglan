@@ -19,13 +19,13 @@ extension CharityInformationBody: Viewable {
         
         let bag = DisposeBag()
         
-        let body = MarkdownText(text: text, style: .body)
+        let body = MarkdownText(text: text, style: .bodyOffBlack)
         bag += view.add(body)
         
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview().inset(24)
-                make.height.equalToSuperview().inset(24)
+                make.height.equalToSuperview()
                 make.center.equalToSuperview()
             }
         }

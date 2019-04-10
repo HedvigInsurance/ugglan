@@ -7,37 +7,13 @@
 
 import Foundation
 import Flow
+import Form
 import UIKit
 import MarkdownKit
 
-enum MarkdownTextStyle {
-    case body
-    
-    func font() -> UIFont {
-        switch self {
-        case .body:
-            return (HedvigFonts.circularStdBook?.withSize(16))!
-        }
-    }
-    
-    func color () -> UIColor {
-        switch self {
-        case .body:
-            return .offBlack
-        }
-    }
-    
-    func lineSpacing() -> CGFloat {
-        switch self {
-        case .body:
-            return 4
-        }
-    }
-}
-
 struct MarkdownText {
     let text: String
-    let style: MarkdownTextStyle
+    let style: TextStyle
 }
 
 extension MarkdownText: Viewable {
@@ -45,11 +21,11 @@ extension MarkdownText: Viewable {
         let view = UIView()
         
         let bag = DisposeBag()
-        
-        let markdownParser = MarkdownParser(font: (style.font()), color: style.color())
+    
+        let markdownParser = MarkdownParser(font: style.font, color: style.color)
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = style.lineSpacing()
+        paragraphStyle.lineSpacing = style.lineSpacing
         
         let attributedString = markdownParser.parse(text)
         

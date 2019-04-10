@@ -52,7 +52,7 @@ extension SelectedCharity: Viewable {
                 subview.removeFromSuperview()
             }
             
-            let charityLogo = CharityLogo(url: cashback.imageUrl!)
+            let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
             bag += stackView.addArangedSubview(charityLogo) { view in
                 view.snp.makeConstraints { make in
                     make.height.equalTo(190)

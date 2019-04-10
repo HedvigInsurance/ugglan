@@ -200,6 +200,7 @@ targets:
       - location: Carthage/Build/iOS/DynamicColor.framework
       - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
       - location: Carthage/Build/iOS/MarkdownKit.framework
+      - location: Carthage/Build/iOS/Ease.framework
     configuration:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"

@@ -17,6 +17,7 @@ extension TextStyle {
 
     static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .offBlack
+        style.lineSpacing = 4
     }
 
     static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in

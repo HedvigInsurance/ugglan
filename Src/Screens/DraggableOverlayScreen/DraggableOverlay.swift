@@ -9,6 +9,7 @@ import Foundation
 import Presentation
 import UIKit
 import Flow
+import Ease
 
 struct DraggableOverlay<P: Presentable, PMatter: UIViewController> where P.Result == Disposable, P.Matter == PMatter {
     let presentable: P
@@ -95,7 +96,7 @@ extension DraggableOverlay: Presentable {
         
         let panGestureRecognizer = UIPanGestureRecognizer()
         let ease: Ease<CGFloat> = Ease(overlay.center.y, minimumStep: 0.001)
-        
+    
         bag += overlay.didLayoutSignal.take(first: 1).onValue {
             ease.value = overlay.center.y
             ease.velocity = 0.1
@@ -153,7 +154,8 @@ extension DraggableOverlay: Presentable {
         }
         
         let handle = UIView()
-        handle.backgroundColor = .offLightGray
+        handle.backgroundColor = .white
+        handle.alpha = 0.2
         handle.layer.cornerRadius = 3
         
         handleView.addSubview(handle)

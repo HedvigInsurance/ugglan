@@ -22,19 +22,19 @@ extension CharityInformation: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = UIColor.white
         
-        let header = DraggableViewHeader(title: String(.PROFILE_MY_CHARITY_INFO_TITLE))
+        let header = DraggableViewHeader(title: String(key: .PROFILE_MY_CHARITY_INFO_TITLE))
         bag += containerView.add(header)
         
         let bodyView = UIView()
         containerView.addSubview(bodyView)
         
         bodyView.snp.remakeConstraints { make in
-            make.top.equalTo(60)
+            make.top.equalTo(56 + 8)
             make.width.equalToSuperview()
-            make.height.equalToSuperview().offset(60)
+            make.height.equalToSuperview().offset(56 + 8)
         }
         
-        let body = CharityInformationBody(text: String(.PROFILE_MY_CHARITY_INFO_BODY))
+        let body = CharityInformationBody(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY))
         
         bag += bodyView.add(body)
         

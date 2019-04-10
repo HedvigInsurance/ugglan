@@ -16,13 +16,13 @@ struct DraggableViewHeader {
 extension DraggableViewHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
-        view.backgroundColor = .offWhite
         
         let bag = DisposeBag()
         
         let titleLabel = UILabel()
-        titleLabel.style = .drabbableOverlayTitle
-        titleLabel.textAlignment = .center
+        titleLabel.style = .standaloneLargeTitle
+        titleLabel.textAlignment = .left
+        
         bag += titleLabel.setDynamicText(DynamicString(title))
         
         let titleContainer = UIView()
@@ -30,9 +30,10 @@ extension DraggableViewHeader: Viewable {
         
         bag += titleLabel.didLayoutSignal.onValue { _ in
             titleLabel.snp.remakeConstraints { make in
-                make.width.equalToSuperview().multipliedBy(0.8)
-                make.height.equalToSuperview()
-                make.center.equalToSuperview()
+                make.width.equalToSuperview().inset(24)
+                make.height.equalTo(24)
+                make.centerX.equalToSuperview()
+                make.bottom.equalTo(0)
             }
         }
         
@@ -45,7 +46,7 @@ extension DraggableViewHeader: Viewable {
         
         view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalToSuperview()
-            make.height.equalTo(60)
+            make.height.equalTo(56)
         }
         
         return (view, bag)
