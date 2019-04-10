@@ -38,7 +38,7 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
 `curl -o /usr/local/bin/swiftTranslationsCodegen "https://raw.githubusercontent.com/HedvigInsurance/swift-translations-codegen/master/main.swift?$(date +%s)" && chmod +x /usr/local/bin/swiftTranslationsCodegen`
 
-8. Add aliases to your bash/zsh config
+9. Add aliases to your bash/zsh config
 
    1. open ~/.bashrc or ~/.zshrc
 
@@ -46,27 +46,27 @@ This is the main repository for the up and coming iOS app for Hedvig, this repos
 
    `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="swiftTranslationsCodegen --projects '[App, IOS]' --destination 'Src/Assets/Localization/Localization.swift'" alias assets="swiftgen"`
 
-9. Install Apollo CLI
+10. Install Apollo CLI
 
 `npm install -g apollo`
 
-10. Run file generation scripts
+11. Run file generation scripts
 
 `graphqlSchema graphql translations assets`
 
-11. Add Google Services plist
+12. Add Google Services plist
 
 `Obtain a Google Services plist from firebase and add it to the "Src" folder.`
 
-11. Generate Xcode project
+13. Generate Xcode project
 
 `struct generate`
 
-12. Open the projext
+14. Open the projext
 
 `open project.xcodeproj`
 
-13. run it!! 🏃🏻‍♂️
+15. run it!! 🏃🏻‍♂️
 
 `press cmd + r`
 
