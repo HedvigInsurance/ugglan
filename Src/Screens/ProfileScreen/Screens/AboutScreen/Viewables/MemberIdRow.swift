@@ -24,7 +24,7 @@ extension MemberIdRow: Viewable {
         let bag = DisposeBag()
         let row = KeyValueRow()
 
-        row.keySignal.value = String(.ABOUT_MEMBER_ID_ROW_KEY)
+        row.keySignal.value = String(key: .ABOUT_MEMBER_ID_ROW_KEY)
 
         bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap {
             $0.data?.member.id

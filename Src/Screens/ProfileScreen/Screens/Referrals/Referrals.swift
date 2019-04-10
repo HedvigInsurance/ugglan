@@ -41,6 +41,7 @@ struct Referrals {
 
             guard let link = URL(
                 string: String(
+                    key:
                     .REFERRALS_DYNAMIC_LINK_LANDING(
                         incentive: String(incentive),
                         memberId: memberId
@@ -66,10 +67,10 @@ struct Referrals {
             )
 
             linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-            linkBuilder?.socialMetaTagParameters?.title = String(.REFERRAL_SHARE_SOCIAL_TITLE)
-            linkBuilder?.socialMetaTagParameters?.descriptionText = String(.REFERRAL_SHARE_SOCIAL_DESCRIPTION)
+            linkBuilder?.socialMetaTagParameters?.title = String(key: .REFERRAL_SHARE_SOCIAL_TITLE)
+            linkBuilder?.socialMetaTagParameters?.descriptionText = String(key: .REFERRAL_SHARE_SOCIAL_DESCRIPTION)
 
-            if let imageUrl = URL(string: String(.REFERRAL_SHARE_SOCIAL_IMAGE_URL)) {
+            if let imageUrl = URL(string: String(key: .REFERRAL_SHARE_SOCIAL_IMAGE_URL)) {
                 linkBuilder?.socialMetaTagParameters?.imageURL = imageUrl
             }
 
@@ -89,7 +90,7 @@ struct Referrals {
 extension Referrals: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(.REFERRALS_SCREEN_TITLE)
+        viewController.title = String(key: .REFERRALS_SCREEN_TITLE)
 
         let bag = DisposeBag()
 
@@ -140,7 +141,7 @@ extension Referrals: Presentable {
 
         let button = LoadableButton(
             button: Button(
-                title: String(.REFERRALS_SHARE_BUTTON),
+                title: String(key: .REFERRALS_SHARE_BUTTON),
                 type: .standard(backgroundColor: .purple, textColor: .white)
             ),
             initialLoadingState: true
@@ -160,7 +161,7 @@ extension Referrals: Presentable {
                 linkSignal.plain()
             ).compactMap { $1 }.onValue { link in
                 let incentive = String(self.remoteConfigContainer.referralsIncentive())
-                let shareMessage = String(.REFERRALS_SHARE_MESSAGE(incentive: incentive, link: link))
+                let shareMessage = String(key: .REFERRALS_SHARE_MESSAGE(incentive: incentive, link: link))
 
                 let activityView = ActivityView(
                     activityItems: [shareMessage],

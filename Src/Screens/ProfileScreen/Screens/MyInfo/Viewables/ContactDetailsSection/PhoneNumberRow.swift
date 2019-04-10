@@ -17,7 +17,7 @@ struct PhoneNumberRow {
 extension PhoneNumberRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
-        let row = RowView(title: String(.PHONE_NUMBER_ROW_TITLE), style: .rowTitle)
+        let row = RowView(title: String(key: .PHONE_NUMBER_ROW_TITLE), style: .rowTitle)
 
         let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
             style.autocorrection = .no

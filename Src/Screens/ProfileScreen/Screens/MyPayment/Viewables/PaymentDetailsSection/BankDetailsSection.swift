@@ -25,7 +25,7 @@ extension BankDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String(.MY_PAYMENT_BANK_ROW_LABEL),
+            header: String(key: .MY_PAYMENT_BANK_ROW_LABEL),
             footer: nil,
             style: .sectionPlain
         )
@@ -42,7 +42,7 @@ extension BankDetailsSection: Viewable {
         }
 
         bag += noBankAccountSignal.map {
-            _ in String(.MY_PAYMENT_NOT_CONNECTED)
+            _ in String(key: .MY_PAYMENT_NOT_CONNECTED)
         }.bindTo(row.keySignal)
 
         let dataSignal = dataValueSignal.compactMap { $0.data }

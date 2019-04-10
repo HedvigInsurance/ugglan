@@ -28,8 +28,8 @@ extension ReferralRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(.REFERRALS_ROW_TITLE(incentive: incentive)),
-            subtitle: String(.REFERRALS_ROW_SUBTITLE),
+            title: String(key: .REFERRALS_ROW_TITLE(incentive: incentive)),
+            subtitle: String(key: .REFERRALS_ROW_SUBTITLE),
             iconAsset: Asset.share,
             options: [.withArrow, .whiteContent]
         )

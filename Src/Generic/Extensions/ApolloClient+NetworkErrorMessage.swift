@@ -26,11 +26,11 @@ extension ApolloClient {
         ApolloClient.isShowingNetworkErrorMessage = true
 
         let alert = Alert<Bool>(
-            title: String(.NETWORK_ERROR_ALERT_TITLE),
-            message: String(.NETWORK_ERROR_ALERT_MESSAGE),
+            title: String(key: .NETWORK_ERROR_ALERT_TITLE),
+            message: String(key: .NETWORK_ERROR_ALERT_MESSAGE),
             actions:
-            Alert.Action(title: String(.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION)) { true },
-            Alert.Action(title: String(.NETWORK_ERROR_ALERT_CANCEL_ACTION)) { false }
+            Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION)) { true },
+            Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_CANCEL_ACTION)) { false }
         )
 
         var window: UIWindow? = UIWindow()

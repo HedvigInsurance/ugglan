@@ -107,10 +107,10 @@ struct MyInfoState {
         }.onError { error in
             self.onSaveCallbacker.callAll(with: .failure(error))
             let alert = Alert<Void>(
-                title: String(.MY_INFO_ALERT_SAVE_FAILURE_TITLE),
+                title: String(key: .MY_INFO_ALERT_SAVE_FAILURE_TITLE),
                 message: error.localizedDescription,
                 actions: [
-                    Alert.Action(title: String(.MY_INFO_ALERT_SAVE_FAILURE_BUTTON)) {
+                    Alert.Action(title: String(key: .MY_INFO_ALERT_SAVE_FAILURE_BUTTON)) {
                         ()
                     },
                 ]

@@ -21,7 +21,7 @@ extension HomeRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(.PROFILE_MY_HOME_ROW_TITLE),
+            title: String(key: .PROFILE_MY_HOME_ROW_TITLE),
             subtitle: "",
             iconAsset: Asset.home,
             options: [.withArrow]

@@ -18,7 +18,7 @@ extension OtherSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(
-            header: String(.OTHER_SECTION_TITLE),
+            header: String(key: .OTHER_SECTION_TITLE),
             footer: nil,
             style: .sectionPlain
         )
