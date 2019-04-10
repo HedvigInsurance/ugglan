@@ -5,7 +5,6 @@
 //  Created by Axel Backlund on 2019-04-04.
 //
 
-import Apollo
 import Flow
 import Form
 import Foundation

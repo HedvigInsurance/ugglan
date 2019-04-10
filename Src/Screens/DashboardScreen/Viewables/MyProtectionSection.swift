@@ -40,18 +40,20 @@ extension MyProtectionSection: Viewable {
         perilCategoriesStack.axis = .vertical
         stackView.addArrangedSubview(perilCategoriesStack)
         
-        bag += dataSignal.atOnce().compactMap { $0?.perilCategories }.onValue { perilCategories in            
+        bag += dataSignal.atOnce().compactMap { $0?.perilCategories }.onValue { perilCategories in
             perilCategoriesStack.subviews.forEach { view in
                 view.removeFromSuperview()
             }
             
             for (index, perilCategory) in perilCategories.enumerated() {
-                print(index)
                 let protectionSection = PerilExpandableRow(index: index)
                 protectionSection.perilsDataSignal.value = perilCategory
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)
             }
+            
+            let moreInfoSection = MoreInfoExpandableRow()
+            bag += perilCategoriesStack.addArranged(moreInfoSection)
         }
         
         return (stackView, bag)

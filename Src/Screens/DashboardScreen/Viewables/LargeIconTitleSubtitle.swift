@@ -17,12 +17,14 @@ struct LargeIconTitleSubtitle {
     let subtitleSignal: ReadWriteSignal<String> = ReadWriteSignal("")
     let imageSignal: ReadWriteSignal<ImageAsset?> = ReadWriteSignal(nil)
     
-    let iconWidth: CGFloat = 35
+    let iconWidth: CGFloat
     
     init(
-        isOpenInitially: Bool = false
+        isOpenInitially: Bool = false,
+        iconWidth: CGFloat = 35
         ) {
         isOpenSignal = ReadWriteSignal<Bool>(isOpenInitially)
+        self.iconWidth = iconWidth
     }
 }
 

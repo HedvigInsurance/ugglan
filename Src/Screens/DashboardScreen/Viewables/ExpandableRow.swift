@@ -41,11 +41,15 @@ extension ExpandableRow: Viewable {
         let containerView = UIView()
         containerView.backgroundColor = .white
         containerView.layer.cornerRadius = 15
-        containerView.layer.shadowOpacity = 0.18
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        containerView.layer.shadowOpacity = 0.15
+        containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
         containerView.layer.shadowRadius = 8
         containerView.layer.shadowColor = UIColor.darkGray.cgColor
-        containerView.clipsToBounds = true
+        //containerView.clipsToBounds = true
+        //containerView.layer.masksToBounds = true
+        
+        let clippingView = UIView()
+        clippingView.clipsToBounds = true
         
         let expandableStackView = UIStackView()
         expandableStackView.axis = .vertical
@@ -94,9 +98,14 @@ extension ExpandableRow: Viewable {
             }
         }
         
-        containerView.addSubview(expandableStackView)
+        clippingView.addSubview(expandableStackView)
+        containerView.addSubview(clippingView)
         
         expandableStackView.snp.makeConstraints { make in
+            make.width.height.centerX.centerY.equalToSuperview()
+        }
+        
+        clippingView.snp.makeConstraints { make in
             make.width.height.centerX.centerY.equalToSuperview()
         }
         
