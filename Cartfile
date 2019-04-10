@@ -1,15 +1,15 @@
 github "dennisweissmann/DeviceKit" ~> 1.3
 github "airbnb/lottie-ios" "lottie/objectiveC"
 github "yannickl/DynamicColor" >= 4.0.3
-github "apollographql/apollo-ios" >= 0.9.5
-github "saoudrizwan/Disk" >= 0.4.0
+github "apollographql/apollo-ios" == 0.9.5
+github "saoudrizwan/Disk" == 0.5.0
 github "hedviginsurance/flow" "master"
 github "hedviginsurance/presentation" "master"
 github "hedviginsurance/form" "master"
 github "SnapKit/SnapKit" >= 4.0.0
 github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
-github "vtourraine/AcknowList" "master"
+github "vtourraine/AcknowList" "swift-4-2"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"

@@ -60,6 +60,11 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
     }
+    
+    static let perilTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(12)
+        style.color = .gray
+    }
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)

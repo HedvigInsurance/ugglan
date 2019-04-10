@@ -11,26 +11,18 @@ import Foundation
 import UIKit
 
 struct LargeIconTitleSubtitle {
+    let isOpenSignal: ReadWriteSignal<Bool>
     
-    enum Orientation {
-        case down, right
-    }
-    
-    let titleText: String
-    let iconAsset: ImageAsset
+    let titleSignal: ReadWriteSignal<String> = ReadWriteSignal("")
+    let subtitleSignal: ReadWriteSignal<String> = ReadWriteSignal("")
+    let imageSignal: ReadWriteSignal<ImageAsset?> = ReadWriteSignal(nil)
     
     let iconWidth: CGFloat = 35
-    let subtitleText = "försäkras för"
-    let arrowOrientation: Orientation
     
     init(
-        title: String,
-        icon: ImageAsset,
-        arrowOrientation: Orientation = .down
+        isOpenInitially: Bool = false
         ) {
-        self.titleText = title
-        self.iconAsset = icon
-        self.arrowOrientation = arrowOrientation
+        isOpenSignal = ReadWriteSignal<Bool>(isOpenInitially)
     }
 }
 
@@ -56,9 +48,11 @@ extension LargeIconTitleSubtitle: Viewable {
         containerStackView.isLayoutMarginsRelativeArrangement = true
         
         // Large icon
-        let icon = Icon(icon: iconAsset, iconWidth: iconWidth)
+        let icon = Icon(icon: Asset.homePlain, iconWidth: iconWidth)
         icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(icon)
+        
+        bag += imageSignal.atOnce().filter { $0 != nil }.map { $0! }.bindTo(icon, \.icon)
         
         // Title+subtitle
         let titlesView = UIStackView()
@@ -67,19 +61,46 @@ extension LargeIconTitleSubtitle: Viewable {
         titlesView.backgroundColor = .blue
         titlesView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
-        let titleLabel = MultilineLabel(styledText: StyledText(text: titleText, style: .boldSmallTitle))
+        let titleLabel = MultilineLabel(styledText: StyledText(text: "", style: .boldSmallTitle))
         bag += titlesView.addArranged(titleLabel)
         
-        let subtitleLabel = MultilineLabel(styledText: StyledText(text: subtitleText, style: .rowSubtitle))
+        bag += titleSignal.atOnce().map { StyledText(text: $0, style: .boldSmallTitle) }.bindTo(titleLabel.styledTextSignal)
+        
+        let subtitleLabel = MultilineLabel(styledText: StyledText(text: "", style: .rowSubtitle))
         bag += titlesView.addArranged(subtitleLabel)
+        
+        bag += subtitleSignal.atOnce().map { StyledText(text: $0, style: .rowSubtitle) }.bindTo(subtitleLabel.styledTextSignal)
         
         containerStackView.addArrangedSubview(titlesView)
         
         // Chevron down
         let chevronDown = Icon(icon: Asset.chevronRight, iconWidth: 25)
-        chevronDown.transform = CGAffineTransform.init(rotationAngle: CGFloat.pi / 2)
         chevronDown.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(chevronDown)
+        
+        func setChevronRotation(isOpen: Bool, animate: Bool) {
+            let rotationAngle = isOpen ? ((3 * CGFloat.pi / 2) * 1.0001) : (CGFloat.pi / 2)
+            
+            func setRotation() {
+                chevronDown.transform = CGAffineTransform.init(rotationAngle: rotationAngle)
+            }
+            
+            if animate {
+                bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    setRotation()
+                }
+            } else {
+                setRotation()
+            }
+        }
+        
+        bag += isOpenSignal.onValue { isOpen in
+            setChevronRotation(isOpen: isOpen, animate: true)
+        }
+        
+        bag += events.wasAdded.withLatestFrom(isOpenSignal.atOnce().plain()).onValue { _, isOpen in
+            setChevronRotation(isOpen: isOpen, animate: false)
+        }
         
         return (containerStackView, bag)
     }

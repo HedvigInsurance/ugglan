@@ -12,21 +12,25 @@ import Foundation
 import UIKit
 
 struct PerilCollection {
-    let perils: [String]
-    let client: ApolloClient
-    
-    init(
-        perils: [String],
-        client: ApolloClient = ApolloContainer.shared.client
-        ) {
-        self.client = client
-        self.perils = perils
-    }
+    let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
 }
 
 extension PerilCollection: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
+        
+        let collectionViewEdgeInset: CGFloat = 16
+        
+        let contentViewInsets = UIEdgeInsets(
+            top: 20,
+            left: collectionViewEdgeInset,
+            bottom: 20,
+            right: collectionViewEdgeInset
+        )
+        
+        let contentStackView = UIStackView()
+        contentStackView.axis = .vertical
+        //contentStackView.edgeInsets = contentViewInsets
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
@@ -37,31 +41,53 @@ extension PerilCollection: Viewable {
             bag: bag
         )
         
-        collectionKit.view.backgroundColor = .clear
+        bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
+            // TODO: make this more responsive
+            return CGSize(width: 50, height: 85)
+        }
         
-        let cells = ReadWriteSignal<[Peril]>([])
-        
-        bag += cells.atOnce().onValue { perilViewableArray in
-            collectionKit.set(Table(rows: perilViewableArray), animation: .none, rowIdentifier: { $0.peril })
-            
-            collectionKit.view.snp.remakeConstraints{ make in
-                make.width.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.width)
+        bag += collectionKit.delegate.willDisplayCell.onValue { _ in
+            collectionKit.view.snp.remakeConstraints { make in
+                make.width.equalToSuperview().inset(collectionViewEdgeInset * 2)
                 make.height.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.height)
             }
         }
         
-        bag += client.watch(
-            query: DashboardQuery()
-        ).compactMap {
-            $0.data?.insurance.perilCategories?.compactMap { $0 }
-        }.onValue { perilSignalArray in
+        collectionKit.view.backgroundColor = .clear
+        
+        let collectionViewStack = UIStackView()
+        collectionViewStack.edgeInsets = contentViewInsets
+        collectionViewStack.addArrangedSubview(collectionKit.view)
+        
+        contentStackView.addArrangedSubview(collectionViewStack)
+        
+        bag += perilsDataSignal.atOnce().compactMap { $0?.perils }.onValue { perilSignalArray in
             let perilViewableArray = perilSignalArray.map { peril in
-                Peril(peril: peril.title ?? "")
+                Peril(title: (peril?.title)!, id: (peril?.id)!)
             }
             
-            cells.value = perilViewableArray
+            //cells.value = perilViewableArray
+            collectionKit.set(Table(rows: perilViewableArray), animation: .none, rowIdentifier: { $0.title })
+            
+            collectionKit.view.snp.remakeConstraints { make in
+                make.width.equalToSuperview().inset(collectionViewEdgeInset * 2)
+                // A given height is needed for the cells to render -- the actual height constraint is set in the willDisplayCell method.
+                make.height.equalTo(10)
+            }
         }
         
-        return (collectionKit.view, bag)
+        let divider = Divider(backgroundColor: .offWhite)
+        bag += contentStackView.addArranged(divider)
+        
+        let footerLabel = MultilineLabel(styledText: StyledText(text: "Klicka på ikonerna för mer info", style: .perilTitle))
+        bag += contentStackView.addArranged(footerLabel) { footerLabelView in
+            footerLabelView.textAlignment = .center
+            footerLabelView.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.height.equalTo(30)
+            }
+        }
+        
+        return (contentStackView, bag)
     }
 }

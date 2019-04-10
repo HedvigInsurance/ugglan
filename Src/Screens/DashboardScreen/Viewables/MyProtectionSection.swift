@@ -10,7 +10,9 @@ import Form
 import Foundation
 import UIKit
 
-struct MyProtectionSection {}
+struct MyProtectionSection {
+    let dataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance?> = ReadWriteSignal(nil)
+}
 
 extension MyProtectionSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -25,27 +27,36 @@ extension MyProtectionSection: Viewable {
             right: 16
         )
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.isHidden = true
+        bag += dataSignal.map { $0 == nil }.bindTo(stackView, \.isHidden)
         
         let title = UILabel(value: "Ditt skydd", style: .rowTitle)
         stackView.addArrangedSubview(title)
         
-        let referralSpacing = Spacing(height: 10)
         let rowSpacing = Spacing(height: 10)
+        bag += stackView.addArranged(rowSpacing)
         
-        bag += stackView.addArranged(referralSpacing)
+        bag += dataSignal.atOnce().compactMap { $0?.perilCategories }.onValue { perilCategories in
+            for (index, perilCategory) in perilCategories.enumerated() {
+                let protectionSection = PerilExpandableRow(index: index)
+                protectionSection.perilsDataSignal.value = perilCategory
+                bag += stackView.addArranged(protectionSection)
+                bag += stackView.addArranged(rowSpacing)
+            }
+        }
         
-        let coinsuredProtectionView = CoinsuredProtectionView()
-        bag += stackView.addArranged(coinsuredProtectionView)
+//        let coinsuredProtectionView = CoinsuredProtectionView()
+//        bag += stackView.addArranged(coinsuredProtectionView)
         
         bag += stackView.addArranged(rowSpacing)
         
-        let homeProtectionView = HomeProtectionView()
-        bag += stackView.addArranged(homeProtectionView)
+//        let homeProtectionView = HomeProtectionView()
+//        bag += stackView.addArranged(homeProtectionView)
         
         bag += stackView.addArranged(rowSpacing)
         
-        let itemsProtectionView = ItemsProtectionView()
-        bag += stackView.addArranged(itemsProtectionView)
+//        let itemsProtectionView = ItemsProtectionView()
+//        bag += stackView.addArranged(itemsProtectionView)
         
         return (stackView, bag)
     }
