@@ -37,7 +37,7 @@ struct TranslationsRepo {
             replacements.forEach { key, value in
                 textValue = textValue.replacingOccurrences(of: "{\(key)}", with: value)
             }
-
+            
             return textValue
         }
 

@@ -42,8 +42,8 @@ struct Referrals {
             guard let link = URL(
                 string: String(
                     .REFERRALS_DYNAMIC_LINK_LANDING(
-                        memberId: memberId,
-                        incentive: String(incentive)
+                        incentive: String(incentive),
+                        memberId: memberId
                     )
                 )
             ) else {
@@ -137,7 +137,7 @@ extension Referrals: Presentable {
         }.onValue { memberId in
             bag += self.createInvitationLink(memberId: memberId).bindTo(linkSignal)
         }
-        
+
         let button = LoadableButton(
             button: Button(
                 title: String(.REFERRALS_SHARE_BUTTON),
@@ -145,7 +145,7 @@ extension Referrals: Presentable {
             ),
             initialLoadingState: true
         )
-        
+
         bag += scrollView.add(button) { buttonView in
             buttonView.snp.makeConstraints({ make in
                 make.bottom.equalTo(

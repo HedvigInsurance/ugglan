@@ -15,7 +15,7 @@ import UIKit
 struct Profile {
     let client: ApolloClient
     let referralsEnabled: Bool
-    
+
     init(
         client: ApolloClient = ApolloContainer.shared.client,
         referralsEnabled: Bool = RemoteConfigContainer.shared.referralsEnabled()
