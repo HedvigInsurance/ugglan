@@ -9,11 +9,11 @@ import Foundation
 import Flow
 import UIKit
 
-struct DraggableViewHeader {
+struct DraggableOverlayHeader {
     let title: String
 }
 
-extension DraggableViewHeader: Viewable {
+extension DraggableOverlayHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
         

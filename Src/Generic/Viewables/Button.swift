@@ -27,6 +27,17 @@ enum ButtonType {
             return 0.0
         }
     }
+    
+    func highlightedBackgroundOpacity() -> CGFloat {
+        switch self {
+        case .standard:
+            return 1
+        case .pillTransparent:
+            return 0.6
+        case .iconTransparent:
+            return 0.05
+        }
+    }
 
     func backgroundColor() -> HedvigColor {
         switch self {
@@ -92,6 +103,15 @@ enum ButtonType {
         }
     }
     
+    func iconColor() -> HedvigColor? {
+        switch self {
+        case .iconTransparent((_, _)):
+            return self.textColor()
+        default:
+            return nil
+        }
+    }
+    
     func iconDistance() -> CGFloat {
         switch self {
         case .iconTransparent((_, _)):
@@ -152,7 +172,7 @@ extension Button: Viewable {
 
             let backgroundColor = UIColor.from(
                 apollo: self.type.backgroundColor()
-            ).darkened(amount: 0.05).withAlphaComponent(self.type.backgroundOpacity())
+            ).darkened(amount: 0.05).withAlphaComponent(self.type.highlightedBackgroundOpacity())
             let textColor = UIColor.from(apollo: self.type.textColor())
 
             style.states = [
@@ -178,7 +198,10 @@ extension Button: Viewable {
         button.adjustsImageWhenHighlighted = false
         
         if let icon = self.type.icon() {
-            button.setImage(icon.image, for: [])
+            button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
+            if self.type.iconColor() != nil {
+                button.tintColor = UIColor.from(apollo: self.type.iconColor()!)
+            }
             
             let iconDistance = self.type.iconDistance()
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)

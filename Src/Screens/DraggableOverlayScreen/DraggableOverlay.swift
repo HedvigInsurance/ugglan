@@ -105,8 +105,14 @@ extension DraggableOverlay: Presentable {
         
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
-            ease.velocity = panGestureRecognizer.velocity(in: view).y
-            ease.targetValue = overlayCenter() + location.y
+            
+            if (location.y < -0) {
+                ease.velocity = panGestureRecognizer.velocity(in: view).y * 0.20
+                ease.targetValue = overlayCenter() + location.y * 0.1
+            } else {
+                ease.velocity = panGestureRecognizer.velocity(in: view).y * 1.35
+                ease.targetValue = overlayCenter() + location.y
+            }
         }
         
         bag += ease.addSpring(tension: 200, damping: 20, mass: 1) { position in
@@ -189,7 +195,7 @@ extension DraggableOverlay: Presentable {
                 let velocity = panGestureRecognizer.velocity(in: view)
                 let translation = panGestureRecognizer.translation(in: view)
                 
-                if translation.y > (overlayHeight / 2) || velocity.y > 1700 {
+                if translation.y > (overlayHeight * 0.4) || velocity.y > 1300 {
                     hideOverlay()
                 }
             }
