@@ -17,6 +17,7 @@ extension TextStyle {
 
     static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .offBlack
+        style.lineSpacing = 4
     }
 
     static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in
@@ -38,12 +39,12 @@ extension TextStyle {
     }
 
     static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBold!.withSize(19)
+        style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .black
     }
 
     static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBook!.withSize(13)
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
     }
 
@@ -54,6 +55,11 @@ extension TextStyle {
 
     static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
         style.alignment = .center
+    }
+    
+    static let smallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(16)
+        style.color = .offBlack
     }
 
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -116,5 +122,10 @@ extension TextStyle {
     static let navigationBarButtonPrimary = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .purple
+    }
+    
+    static let drabbableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(18)
+        style.color = .black
     }
 }

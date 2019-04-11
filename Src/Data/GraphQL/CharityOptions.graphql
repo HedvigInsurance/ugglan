@@ -3,6 +3,7 @@ query CharityOptions {
         id
         name
         title
+        imageUrl
         description
         paragraph
     }

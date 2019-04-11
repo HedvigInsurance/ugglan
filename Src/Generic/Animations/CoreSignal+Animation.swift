@@ -109,7 +109,7 @@ extension SignalProvider {
                     callbacker.callAll(with: value)
                 }
             )
-
+            
             return innerBag
         }
 
