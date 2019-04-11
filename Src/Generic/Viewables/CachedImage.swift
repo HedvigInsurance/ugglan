@@ -45,28 +45,3 @@ extension CachedImage: Viewable {
         return (imageView, bag)
     }
 }
-
-
-/*
-extension UIImageView {
-    func imageFromURL(url: String) -> Void {
-        UIImageView.cacheImage(url: url)
-        let data = try? Disk.retrieve(url, from: .caches, as: Data.self)
-        self.image = UIImage(data: data!)
-    }
-    
-    private static func cacheImage(url: String) -> Void {
-        let isCached = Disk.exists(url, in: .caches)
-        
-        if isCached {
-            return
-        }
-        
-        let data = try? Data(contentsOf: URL(string: url)!, options: [])
-        
-        if let data = data {
-            try? Disk.save(data, to: .caches, as: url)
-        }
-    }
-}
-*/
