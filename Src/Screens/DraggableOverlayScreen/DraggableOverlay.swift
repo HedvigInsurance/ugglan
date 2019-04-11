@@ -83,6 +83,7 @@ extension DraggableOverlay: Presentable {
         
         let overlayHeight: CGFloat = round(self.heightPercentage * UIScreen.main.bounds.height)
         let overshootHeight: CGFloat = 800
+        let dragLimit = overlayHeight - UIScreen.main.bounds.height + 60
         
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
@@ -106,9 +107,9 @@ extension DraggableOverlay: Presentable {
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
             
-            if (location.y < -0) {
+            if (location.y < dragLimit) {
                 ease.velocity = panGestureRecognizer.velocity(in: view).y * 0.20
-                ease.targetValue = overlayCenter() + location.y * 0.1
+                ease.targetValue = overlayCenter() + dragLimit + location.y * 0.015
             } else {
                 ease.velocity = panGestureRecognizer.velocity(in: view).y * 1.35
                 ease.targetValue = overlayCenter() + location.y
@@ -161,7 +162,7 @@ extension DraggableOverlay: Presentable {
         
         let handle = UIView()
         handle.backgroundColor = .white
-        handle.alpha = 0.2
+        handle.alpha = 0.8
         handle.layer.cornerRadius = 3
         
         handleView.addSubview(handle)
