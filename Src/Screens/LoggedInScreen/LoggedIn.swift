@@ -27,10 +27,17 @@ extension LoggedIn: Presentable {
         let bag = DisposeBag()
 
         let dashboard = Dashboard()
+        let claims = Claims()
         let profile = Profile(client: client)
 
         let dashboardPresentation = Presentation(
             dashboard,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
+        
+        let claimsPresentation = Presentation(
+            claims,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
@@ -43,6 +50,7 @@ extension LoggedIn: Presentable {
 
         bag += tabBarController.presentTabs(
             dashboardPresentation,
+            claimsPresentation,
             profilePresentation
         )
 

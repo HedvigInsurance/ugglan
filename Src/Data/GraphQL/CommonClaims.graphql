@@ -1,0 +1,31 @@
+query CommonClaims($locale: Locale!) {
+    commonClaims(locale: $locale) {
+        title
+        icon {
+            pdfUrl
+        }
+        layout {
+            __typename
+            ... on TitleAndBulletPoints {
+                color
+                bulletPoints {
+                    description
+                    title
+                    icon {
+                        pdfUrl
+                    }
+                }
+                buttonTitle
+                claimFirstMessage
+                color
+                icon {
+                    pdfUrl
+                }
+                title
+            }
+            ... on Emergency {
+                color
+            }
+        }
+    }
+}
