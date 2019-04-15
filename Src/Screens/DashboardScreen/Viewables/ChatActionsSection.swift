@@ -12,6 +12,7 @@ import UIKit
 
 struct ChatActionsSection {
     let dataSignal: ReadWriteSignal<[ChatActionsQuery.Data.ChatAction?]?> = ReadWriteSignal(nil)
+    let presentingViewController: UIViewController
 }
 
 extension ChatActionsSection: Viewable {
@@ -20,56 +21,49 @@ extension ChatActionsSection: Viewable {
         
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.edgeInsets = UIEdgeInsets(
-            top: 0,
-            left: 16,
-            bottom: 0,
-            right: 0
-        )
+        stackView.spacing = 16
         
+        let headerLabelContainer = UIStackView()
+        headerLabelContainer.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         let headerLabel = MultilineLabel(styledText: StyledText(
             text: "Vad vill du göra idag?",
             style: .boldSmallTitle
             )
         )
-        bag += stackView.addArranged(headerLabel)
+        bag += headerLabelContainer.addArranged(headerLabel)
+        stackView.addArrangedSubview(headerLabelContainer)
         
-        let scrollViewContainer = UIView()
-        stackView.addArrangedSubview(scrollViewContainer)
-        
-        let horizontalScrollView = UIScrollView()
-        scrollViewContainer.addSubview(horizontalScrollView)
-        
-        horizontalScrollView.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview()
-            make.width.equalToSuperview()
-        }
+        let scrollView = UIScrollView()
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
         
         let buttonStackView = UIStackView()
         buttonStackView.axis = .horizontal
-        buttonStackView.spacing = 20
-        horizontalScrollView.addSubview(buttonStackView)
+        buttonStackView.spacing = 10
         
-        buttonStackView.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalToSuperview()
-            make.height.equalToSuperview()
+        scrollView.embedView(buttonStackView, scrollAxis: .horizontal)
+
+        bag += dataSignal.atOnce()
+            .compactMap { $0?.filter { $0?.enabled == true } }
+            .onValue { chatActions in
+            for chatAction in chatActions  {
+                let buttonContainer = UIView()
+                let button = Button(title: chatAction?.text ?? "", type: .standard(backgroundColor: .purple, textColor: .white))
+                bag += button.onTapSignal.onValue {
+                    DashboardRouting.openChat(viewController: self.presentingViewController, chatActionUrl: chatAction?.triggerUrl ?? "")
+                }
+                bag += buttonContainer.add(button) { button in
+                    button.snp.makeConstraints({ (make) in
+                        make.height.width.centerX.centerY.equalToSuperview()
+                    })
+                }
+                
+                buttonStackView.addArrangedSubview(buttonContainer)
+            }
         }
         
-        bag += dataSignal.atOnce().compactMap {
-                $0?.compactMap {
-                    Button(title: $0?.text ?? "", type: .standard(backgroundColor: .purple, textColor: .white))
-                }
-            }.onValue { buttons in
-                for button in buttons {
-                    bag += buttonStackView.addArranged(button) { buttonView in
-                        buttonView.snp.makeConstraints({ (make) in
-                            make.width.equalTo(60)
-                        })
-                    }
-                }
-                print(buttonStackView.arrangedSubviews)
-            }
-        
+        stackView.addArrangedSubview(scrollView)
         
         return (stackView, bag)
     }
