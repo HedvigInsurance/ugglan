@@ -75,7 +75,7 @@ extension CharityPicker: Viewable {
                 footerStackView.isLayoutMarginsRelativeArrangement = true
                 
                 let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
-                bag += footerStackView.addArangedSubview(charityInformationButton)
+                bag += footerStackView.addArranged(charityInformationButton)
                 
                 return footerStackView
             }
