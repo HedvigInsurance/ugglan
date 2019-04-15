@@ -38,9 +38,9 @@ extension MailView: Presentable {
     func materialize() -> (UIViewController, Future<MFMailComposeResult>) {
         if !MFMailComposeViewController.canSendMail() {
             let alert = Alert(
-                title: String(.MAIL_VIEW_CANT_SEND_ALERT_TITLE),
-                message: String(.MAIL_VIEW_CANT_SEND_ALERT_MESSAGE),
-                actions: [Alert.Action(title: String(.MAIL_VIEW_CANT_SEND_ALERT_BUTTON)) { () }]
+                title: String(key: .MAIL_VIEW_CANT_SEND_ALERT_TITLE),
+                message: String(key: .MAIL_VIEW_CANT_SEND_ALERT_MESSAGE),
+                actions: [Alert.Action(title: String(key: .MAIL_VIEW_CANT_SEND_ALERT_BUTTON)) { () }]
             )
 
             let (viewController, future) = alert.materialize()

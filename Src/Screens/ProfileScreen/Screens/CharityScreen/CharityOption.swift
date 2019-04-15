@@ -58,10 +58,10 @@ extension CharityOption: Reusable {
             contentView.spacing = 7.5
 
             contentView.layoutMargins = UIEdgeInsets(
-                top: 15,
-                left: 15,
-                bottom: 15,
-                right: 15
+                top: 24,
+                left: 16,
+                bottom: 24,
+                right: 16
             )
             contentView.isLayoutMarginsRelativeArrangement = true
 
@@ -115,15 +115,15 @@ extension CharityOption: Reusable {
             bag += containerView.didLayoutSignal.onValue {
                 let shadowPath = UIBezierPath(
                     roundedRect: containerView.bounds,
-                    cornerRadius: 16
+                    cornerRadius: 8
                 )
 
                 containerView.layer.masksToBounds = false
-                containerView.layer.cornerRadius = 16
+                containerView.layer.cornerRadius = 8
                 containerView.layer.shadowOpacity = 1
                 containerView.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
                 containerView.layer.shadowOffset = CGSize(width: 0, height: 10)
-                containerView.layer.shadowRadius = 16
+                containerView.layer.shadowRadius = 8
                 containerView.layer.shadowPath = shadowPath.cgPath
             }
 

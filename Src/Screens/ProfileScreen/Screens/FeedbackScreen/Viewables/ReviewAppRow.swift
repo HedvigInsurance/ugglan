@@ -20,12 +20,12 @@ extension ReviewAppRow: Viewable {
 
         let row = KeyValueRow()
 
-        row.keySignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_TITLE)
-        row.valueSignal.value = String(.FEEDBACK_SCREEN_REVIEW_APP_VALUE)
+        row.keySignal.value = String(key: .FEEDBACK_SCREEN_REVIEW_APP_TITLE)
+        row.valueSignal.value = String(key: .FEEDBACK_SCREEN_REVIEW_APP_VALUE)
 
         row.valueStyleSignal.value = .rowValueLink
 
-        let reviewURL = String(.APP_STORE_REVIEW_URL)
+        let reviewURL = String(key: .APP_STORE_REVIEW_URL)
 
         bag += events.onSelect.onValue { _ in
             if #available(iOS 10.3, *) {

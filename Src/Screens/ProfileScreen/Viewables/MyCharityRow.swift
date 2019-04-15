@@ -21,19 +21,19 @@ extension MyCharityRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(.PROFILE_MY_CHARITY_ROW_TITLE),
+            title: String(key: .PROFILE_MY_CHARITY_ROW_TITLE),
             subtitle: "",
             iconAsset: Asset.charity,
             options: [.withArrow]
         )
 
         bag += charityNameSignal.atOnce().map({ charityName -> String in
-            charityName ?? String(.PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE)
+            charityName ?? String(key: .PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE)
         }).bindTo(row.subtitle)
 
         bag += events.onSelect.onValue { _ in
             self.presentingViewController.present(
-                Charity(presentingViewController: self.presentingViewController),
+                Charity(),
                 options: [.largeTitleDisplayMode(.never)]
             )
         }
@@ -44,7 +44,7 @@ extension MyCharityRow: Viewable {
 
 extension MyCharityRow: Previewable {
     func preview() -> (Charity, PresentationOptions) {
-        let charity = Charity(presentingViewController: presentingViewController)
+        let charity = Charity()
         return (charity, [.largeTitleDisplayMode(.never)])
     }
 }

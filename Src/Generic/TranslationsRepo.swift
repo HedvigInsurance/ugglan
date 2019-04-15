@@ -13,8 +13,8 @@ struct TranslationsRepo {
     private static var translations: [String: String] = [:]
 
     static func fetch(client: ApolloClient = ApolloContainer.shared.client) {
-        let languageCode = String(describing: Localization.Language.currentLanguage)
-        client.fetch(query: TranslationsQuery(code: languageCode)).onValue { result in
+        let localeCode = String(describing: Localization.Locale.currentLocale)
+        client.fetch(query: TranslationsQuery(code: localeCode)).onValue { result in
             let translations = result.data?.languages.first??.translations ?? []
 
             translations.forEach({ translation in
@@ -37,7 +37,7 @@ struct TranslationsRepo {
             replacements.forEach { key, value in
                 textValue = textValue.replacingOccurrences(of: "{\(key)}", with: value)
             }
-
+            
             return textValue
         }
 

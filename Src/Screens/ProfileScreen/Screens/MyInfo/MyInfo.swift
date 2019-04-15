@@ -18,7 +18,7 @@ extension MyInfo: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(.MY_INFO_TITLE)
+        viewController.title = String(key: .MY_INFO_TITLE)
 
         let state = MyInfoState(presentingViewController: viewController)
         bag += state.loadData()
@@ -26,7 +26,7 @@ extension MyInfo: Presentable {
         let form = FormView()
 
         let saveButton = ActivityBarButton(
-            item: UIBarButtonItem(title: String(.MY_INFO_SAVE_BUTTON), style: .navigationBarButtonPrimary),
+            item: UIBarButtonItem(title: String(key: .MY_INFO_SAVE_BUTTON), style: .navigationBarButtonPrimary),
             position: .right
         )
         bag += saveButton.onValue { _ in
@@ -46,7 +46,7 @@ extension MyInfo: Presentable {
         bag += form.append(contactDetailsSection)
 
         let cancelButton = UIBarButtonItem(
-            title: String(.MY_INFO_CANCEL_BUTTON),
+            title: String(key: .MY_INFO_CANCEL_BUTTON),
             style: .navigationBarButton
         )
 
@@ -69,13 +69,13 @@ extension MyInfo: Presentable {
         return (viewController, Future { completion in
             bag += cancelButton.onValue { _ in
                 let alert = Alert<Bool>(
-                    title: String(.MY_INFO_CANCEL_ALERT_TITLE),
-                    message: String(.MY_INFO_CANCEL_ALERT_MESSAGE),
+                    title: String(key: .MY_INFO_CANCEL_ALERT_TITLE),
+                    message: String(key: .MY_INFO_CANCEL_ALERT_MESSAGE),
                     actions: [
-                        Alert.Action(title: String(.MY_INFO_CANCEL_ALERT_BUTTON_CONFIRM)) {
+                        Alert.Action(title: String(key: .MY_INFO_CANCEL_ALERT_BUTTON_CONFIRM)) {
                             true
                         },
-                        Alert.Action(title: String(.MY_INFO_CANCEL_ALERT_BUTTON_CANCEL)) {
+                        Alert.Action(title: String(key: .MY_INFO_CANCEL_ALERT_BUTTON_CANCEL)) {
                             false
                         },
                     ]

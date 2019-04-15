@@ -30,7 +30,7 @@ extension Dashboard: Presentable {
         bag += client.watch(
             query: DashboardQuery()
         ).compactMap { $0.data?.member.firstName }.map {
-            String(.DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
+            String(key: .DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
         }.bindTo(viewController, \.navigationItem.title)
 
         let form = FormView()
@@ -61,7 +61,7 @@ extension Dashboard: Presentable {
 extension Dashboard: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(.TAB_DASHBOARD_TITLE),
+            title: String(key: .TAB_DASHBOARD_TITLE),
             image: Asset.dashboardTab.image,
             selectedImage: nil
         )

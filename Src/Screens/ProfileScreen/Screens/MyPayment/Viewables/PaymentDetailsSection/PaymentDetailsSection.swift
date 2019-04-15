@@ -24,13 +24,13 @@ extension PaymentDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String(.MY_PAYMENT_PAYMENT_ROW_LABEL),
+            header: String(key: .MY_PAYMENT_PAYMENT_ROW_LABEL),
             footer: nil,
             style: .sectionPlain
         )
 
         let row = KeyValueRow()
-        row.keySignal.value = String(.MY_PAYMENT_TYPE)
+        row.keySignal.value = String(key: .MY_PAYMENT_TYPE)
         row.valueStyleSignal.value = .rowTitleDisabled
 
         let dataValueSignal = client.watch(query: MyPaymentQuery())
@@ -39,7 +39,7 @@ extension PaymentDetailsSection: Viewable {
             $0.data?.nextChargeDate
         }.map { paymentDate in
             if let paymentDate = paymentDate {
-                return String(.MY_PAYMENT_DATE(paymentDate: paymentDate))
+                return String(key: .MY_PAYMENT_DATE(paymentDate: paymentDate))
             }
 
             return ""

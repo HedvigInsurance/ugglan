@@ -14,20 +14,22 @@ import Foundation
 struct SelectedCharity {
     let client: ApolloClient
     let animateEntry: Bool
+    let presentingViewController: UIViewController
 
     init(
         client: ApolloClient = ApolloContainer.shared.client,
-        animateEntry: Bool
+        animateEntry: Bool,
+        presentingViewController: UIViewController
     ) {
         self.client = client
         self.animateEntry = animateEntry
+        self.presentingViewController = presentingViewController
     }
 }
 
 extension SelectedCharity: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-
         let scrollView = UIScrollView()
         scrollView.alwaysBounceVertical = true
 
@@ -49,18 +51,17 @@ extension SelectedCharity: Viewable {
             for subview in stackView.arrangedSubviews {
                 subview.removeFromSuperview()
             }
-
-            let circleIcon = CircleIcon(
-                iconAsset: Asset.charityPlain,
-                iconWidth: 90,
-                spacing: 70,
-                backgroundColor: .white
-            )
-            bag += stackView.addArranged(circleIcon)
+            
+            let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
+            bag += stackView.addArangedSubview(charityLogo) { view in
+                view.snp.makeConstraints { make in
+                    make.height.equalTo(190)
+                }
+            }
 
             let infoContainer = UIView()
             infoContainer.backgroundColor = .white
-            infoContainer.layer.cornerRadius = 15
+            infoContainer.layer.cornerRadius = 8
             infoContainer.layer.shadowOpacity = 0.2
             infoContainer.layer.shadowOffset = CGSize(width: 0, height: 10)
             infoContainer.layer.shadowRadius = 16
@@ -70,10 +71,10 @@ extension SelectedCharity: Viewable {
             infoContainerStackView.axis = .vertical
             infoContainerStackView.spacing = 5
             infoContainerStackView.edgeInsets = UIEdgeInsets(
-                top: 20,
-                left: 20,
-                bottom: 20,
-                right: 20
+                top: 24,
+                left: 16,
+                bottom: 24,
+                right: 16
             )
             infoContainerStackView.isLayoutMarginsRelativeArrangement = true
 
@@ -83,7 +84,7 @@ extension SelectedCharity: Viewable {
             let descriptionLabel = MultilineLabel(
                 styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
             )
-            bag += infoContainerStackView.addArranged(descriptionLabel)
+            bag += infoContainerStackView.addArangedSubview(descriptionLabel)
 
             infoContainer.addSubview(infoContainerStackView)
             stackView.addArrangedSubview(infoContainer)
@@ -100,6 +101,10 @@ extension SelectedCharity: Viewable {
                     make.width.equalToSuperview().inset(20)
                 })
             })
+            
+            let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
+            
+            bag += stackView.addArangedSubview(charityInformationButton)
         }
 
         if animateEntry {

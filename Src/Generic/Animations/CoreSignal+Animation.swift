@@ -91,7 +91,7 @@ extension SignalProvider {
     ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
-        
+
         bag += onValueDisposePrevious(on: scheduler) { value in
             let innerBag = bag.innerBag()
             let style = mapStyle(value)
@@ -109,7 +109,7 @@ extension SignalProvider {
                     callbacker.callAll(with: value)
                 }
             )
-
+            
             return innerBag
         }
 

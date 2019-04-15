@@ -20,14 +20,14 @@ extension MyCoinsuredRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(.PROFILE_MY_COINSURED_ROW_TITLE),
+            title: String(key: .PROFILE_MY_COINSURED_ROW_TITLE),
             subtitle: "",
             iconAsset: Asset.coinsured,
             options: [.withArrow]
         )
 
         bag += amountOfCoinsuredSignal.atOnce().compactMap { $0 }.map {
-            String(.PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: String($0 - 1)))
+            String(key: .PROFILE_MY_COINSURED_ROW_SUBTITLE(amountCoinsured: String($0 - 1)))
         }.bindTo(row.subtitle)
 
         bag += amountOfCoinsuredSignal.atOnce().map {

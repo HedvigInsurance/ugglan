@@ -23,28 +23,28 @@ struct ApolloEnvironmentConfig {
 class ApolloContainer {
     static var shared = ApolloContainer()
     private let internalQueue = DispatchQueue(label: String(describing: ApolloContainer.self), qos: .default, attributes: .concurrent)
-    
+
     private var _client: ApolloClient?
     private var _store: ApolloStore?
-    
+
     var client: ApolloClient {
         get {
             return internalQueue.sync { _client! }
         }
-        set (newState) {
+        set(newState) {
             internalQueue.async(flags: .barrier) { self._client = newState }
         }
     }
-    
+
     var store: ApolloStore {
         get {
             return internalQueue.sync { _store! }
         }
-        set (newState) {
+        set(newState) {
             internalQueue.async(flags: .barrier) { self._store = newState }
         }
     }
-    
+
     private init() {}
 
     func createClient(token: String?, environment: ApolloEnvironmentConfig) -> (ApolloClient, ApolloStore) {
@@ -75,7 +75,7 @@ class ApolloContainer {
         let cache = InMemoryNormalizedCache()
         let store = ApolloStore(cache: cache)
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-        
+
         return (client, store)
     }
 
@@ -102,17 +102,17 @@ class ApolloContainer {
 
         return Future { completion in
             let (client, _) = self.createClient(token: nil, environment: environment)
-            
+
             client.perform(mutation: mutation).onValue { result in
                 if let token = result.data?.createSession {
                     self.saveToken(token: token)
                 }
-                
+
                 let (clientWithSession, store) = self.createClient(
                     token: result.data?.createSession,
                     environment: environment
                 )
-                
+
                 completion(.success((clientWithSession, store)))
             }
 
@@ -139,10 +139,10 @@ class ApolloContainer {
                 }
             } else {
                 let (client, store) = self.createClient(token: tokenData!.token, environment: environment)
-                
+
                 self.client = client
                 self.store = store
-                
+
                 completion(.success((client, store)))
             }
 

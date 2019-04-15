@@ -26,7 +26,7 @@ extension MyPayment: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(.MY_PAYMENT_TITLE)
+        viewController.title = String(key: .MY_PAYMENT_TITLE)
 
         let form = FormView()
         bag += viewController.install(form)
@@ -67,7 +67,7 @@ extension MyPayment: Presentable {
             monthlyPaymentCircle.monthlyCostSignal.value = result.data?.insurance.monthlyCost
 
             let hasAlreadyConnected = result.data?.bankAccount != nil
-            buttonSection.text.value = hasAlreadyConnected ? String(.MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(.MY_PAYMENT_DIRECT_DEBIT_BUTTON)
+            buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
 
             innerBag += buttonSection.onSelect.onValue {
                 let directDebitSetup = DirectDebitSetup(

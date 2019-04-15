@@ -15,6 +15,7 @@ import UIKit
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case iconTransparent(textColor: HedvigColor, icon: ImageAsset)
 
     func backgroundOpacity() -> CGFloat {
         switch self {
@@ -22,6 +23,19 @@ enum ButtonType {
             return 1
         case .pillTransparent:
             return 0.6
+        case .iconTransparent:
+            return 0.0
+        }
+    }
+    
+    func highlightedBackgroundOpacity() -> CGFloat {
+        switch self {
+        case .standard:
+            return 1
+        case .pillTransparent:
+            return 0.6
+        case .iconTransparent:
+            return 0.05
         }
     }
 
@@ -31,6 +45,8 @@ enum ButtonType {
             return backgroundColor
         case let .pillTransparent((backgroundColor, _)):
             return backgroundColor
+        case .iconTransparent((_, _)):
+            return .purple
         }
     }
 
@@ -39,6 +55,8 @@ enum ButtonType {
         case let .standard((_, textColor)):
             return textColor
         case let .pillTransparent((_, textColor)):
+            return textColor
+        case let .iconTransparent((textColor, _)):
             return textColor
         }
     }
@@ -49,6 +67,8 @@ enum ButtonType {
             return 50
         case .pillTransparent:
             return 30
+        case .iconTransparent:
+            return 30
         }
     }
 
@@ -58,6 +78,8 @@ enum ButtonType {
             return 15
         case .pillTransparent:
             return 13
+        case .iconTransparent:
+            return 14
         }
     }
 
@@ -67,6 +89,35 @@ enum ButtonType {
             return 50
         case .pillTransparent:
             return 35
+        case .iconTransparent:
+            return 35
+        }
+    }
+    
+    func icon() -> ImageAsset? {
+        switch self {
+        case let .iconTransparent((_, icon)):
+            return icon
+        default:
+            return nil
+        }
+    }
+    
+    func iconColor() -> HedvigColor? {
+        switch self {
+        case .iconTransparent((_, _)):
+            return self.textColor()
+        default:
+            return nil
+        }
+    }
+    
+    func iconDistance() -> CGFloat {
+        switch self {
+        case .iconTransparent((_, _)):
+            return 7
+        default:
+            return 0
         }
     }
 }
@@ -121,7 +172,7 @@ extension Button: Viewable {
 
             let backgroundColor = UIColor.from(
                 apollo: self.type.backgroundColor()
-            ).darkened(amount: 0.05).withAlphaComponent(self.type.backgroundOpacity())
+            ).darkened(amount: 0.05).withAlphaComponent(self.type.highlightedBackgroundOpacity())
             let textColor = UIColor.from(apollo: self.type.textColor())
 
             style.states = [
@@ -145,6 +196,17 @@ extension Button: Viewable {
 
         let button = UIButton(title: "", style: style)
         button.adjustsImageWhenHighlighted = false
+        
+        if let icon = self.type.icon() {
+            button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
+            if self.type.iconColor() != nil {
+                button.tintColor = UIColor.from(apollo: self.type.iconColor()!)
+            }
+            
+            let iconDistance = self.type.iconDistance()
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
+        }
 
         bag += title.atOnce().onValue { title in
             button.setTitle(title)

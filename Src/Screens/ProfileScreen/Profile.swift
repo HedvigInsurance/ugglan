@@ -15,7 +15,7 @@ import UIKit
 struct Profile {
     let client: ApolloClient
     let referralsEnabled: Bool
-    
+
     init(
         client: ApolloClient = ApolloContainer.shared.client,
         referralsEnabled: Bool = RemoteConfigContainer.shared.referralsEnabled()
@@ -98,7 +98,7 @@ extension Profile: Presentable {
 extension Profile: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(.TAB_PROFILE_TITLE),
+            title: String(key: .TAB_PROFILE_TITLE),
             image: Asset.profileTab.image,
             selectedImage: nil
         )

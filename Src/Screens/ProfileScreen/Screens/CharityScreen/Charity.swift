@@ -14,14 +14,9 @@ import Presentation
 
 struct Charity {
     let client: ApolloClient
-    let presentingViewController: UIViewController
 
-    init(
-        client: ApolloClient = ApolloContainer.shared.client,
-        presentingViewController: UIViewController
-    ) {
+    init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
-        self.presentingViewController = presentingViewController
     }
 }
 
@@ -29,7 +24,7 @@ extension Charity: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = String(.MY_CHARITY_SCREEN_TITLE)
+        viewController.title = String(key: .MY_CHARITY_SCREEN_TITLE)
 
         let containerView = UIView()
         containerView.backgroundColor = .offWhite
@@ -45,7 +40,7 @@ extension Charity: Presentable {
                 }
 
                 if cashback != nil {
-                    let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1)
+                    let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1, presentingViewController: viewController)
                     bag += containerView.add(selectedCharity) { view in
                         view.snp.makeConstraints({ make in
                             make.edges.equalToSuperview()
@@ -53,7 +48,7 @@ extension Charity: Presentable {
                     }
                 } else {
                     let charityPicker = CharityPicker(
-                        presentingViewController: self.presentingViewController
+                        presentingViewController: viewController
                     )
                     bag += containerView.add(charityPicker) { view in
                         view.snp.makeConstraints({ make in
@@ -67,7 +62,7 @@ extension Charity: Presentable {
                     })
                 }
             }
-
+        
         viewController.view = containerView
 
         return (viewController, bag)

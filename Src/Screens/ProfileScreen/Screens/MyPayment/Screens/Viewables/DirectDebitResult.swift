@@ -25,27 +25,27 @@ enum DirectDebitResultType {
     var headingText: String {
         switch self {
         case .success:
-            return String(.DIRECT_DEBIT_SUCCESS_HEADING)
+            return String(key: .DIRECT_DEBIT_SUCCESS_HEADING)
         case .failure:
-            return String(.DIRECT_DEBIT_FAIL_HEADING)
+            return String(key: .DIRECT_DEBIT_FAIL_HEADING)
         }
     }
 
     var messageText: String {
         switch self {
         case .success:
-            return String(.DIRECT_DEBIT_SUCCESS_MESSAGE)
+            return String(key: .DIRECT_DEBIT_SUCCESS_MESSAGE)
         case .failure:
-            return String(.DIRECT_DEBIT_FAIL_MESSAGE)
+            return String(key: .DIRECT_DEBIT_FAIL_MESSAGE)
         }
     }
 
     var buttonText: String {
         switch self {
         case .success:
-            return String(.DIRECT_DEBIT_SUCCESS_BUTTON)
+            return String(key: .DIRECT_DEBIT_SUCCESS_BUTTON)
         case .failure:
-            return String(.DIRECT_DEBIT_FAIL_BUTTON)
+            return String(key: .DIRECT_DEBIT_FAIL_BUTTON)
         }
     }
 

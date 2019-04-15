@@ -22,11 +22,11 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
             UIApplication.shared.openURL(url)
         } else {
             let alert = Alert<Void>(
-                title: String(.TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE),
-                message: String(.TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE),
+                title: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE),
+                message: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE),
                 actions: [
                     Alert.Action(
-                        title: String(.TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION)
+                        title: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION)
                     ) { () },
                 ]
             )

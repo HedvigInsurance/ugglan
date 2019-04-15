@@ -13,6 +13,7 @@ Src/Data/API.swift
 Carthage
 project.xcodeproj
 Src/GoogleService-Info.plist
+UITestsImages/FailureDiffs
 
 ## Various settings
 *.pbxuser

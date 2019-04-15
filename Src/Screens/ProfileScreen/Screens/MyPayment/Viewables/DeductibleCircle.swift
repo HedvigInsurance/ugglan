@@ -18,7 +18,7 @@ extension DeductibleCircle: Viewable {
 
         let containerView = UIView()
 
-        let deductibleCircleText = DynamicString(String(.MY_PAYMENT_DEDUCTIBLE_CIRCLE))
+        let deductibleCircleText = DynamicString(String(key: .MY_PAYMENT_DEDUCTIBLE_CIRCLE))
 
         let deductibleCircle = CircleLabelSmall(
             labelText: deductibleCircleText,
