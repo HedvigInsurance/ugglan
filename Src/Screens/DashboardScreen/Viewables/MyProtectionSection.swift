@@ -12,6 +12,7 @@ import UIKit
 
 struct MyProtectionSection {
     let dataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance?> = ReadWriteSignal(nil)
+    let presentingViewController: UIViewController
 }
 
 extension MyProtectionSection: Viewable {
@@ -50,7 +51,7 @@ extension MyProtectionSection: Viewable {
             }
             
             for (index, perilCategory) in perilCategories.enumerated() {
-                let protectionSection = PerilExpandableRow(index: index)
+                let protectionSection = PerilExpandableRow(index: index, presentingViewController: self.presentingViewController)
                 protectionSection.perilsDataSignal.value = perilCategory
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)

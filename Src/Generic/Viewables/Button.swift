@@ -14,6 +14,7 @@ import UIKit
 
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case outline(borderColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
     case iconTransparent(textColor: HedvigColor, icon: ImageAsset)
 
@@ -21,6 +22,8 @@ enum ButtonType {
         switch self {
         case .standard:
             return 1
+        case .outline:
+            return 0
         case .pillTransparent:
             return 0.6
         case .iconTransparent:
@@ -32,6 +35,8 @@ enum ButtonType {
         switch self {
         case .standard:
             return 1
+        case .outline:
+            return 0.05
         case .pillTransparent:
             return 0.6
         case .iconTransparent:
@@ -43,6 +48,8 @@ enum ButtonType {
         switch self {
         case let .standard((backgroundColor, _)):
             return backgroundColor
+        case .outline((_, _)):
+            return .purple
         case let .pillTransparent((backgroundColor, _)):
             return backgroundColor
         case .iconTransparent((_, _)):
@@ -53,6 +60,8 @@ enum ButtonType {
     func textColor() -> HedvigColor {
         switch self {
         case let .standard((_, textColor)):
+            return textColor
+        case let .outline((_, textColor)):
             return textColor
         case let .pillTransparent((_, textColor)):
             return textColor
@@ -65,6 +74,8 @@ enum ButtonType {
         switch self {
         case .standard:
             return 50
+        case .outline:
+            return 34
         case .pillTransparent:
             return 30
         case .iconTransparent:
@@ -74,7 +85,7 @@ enum ButtonType {
 
     func fontSize() -> CGFloat {
         switch self {
-        case .standard:
+        case .standard, .outline:
             return 15
         case .pillTransparent:
             return 13
@@ -87,6 +98,8 @@ enum ButtonType {
         switch self {
         case .standard:
             return 50
+        case .outline:
+            return 35
         case .pillTransparent:
             return 35
         case .iconTransparent:
@@ -118,6 +131,24 @@ enum ButtonType {
             return 7
         default:
             return 0
+        }
+    }
+    
+    func borderWidth() -> CGFloat {
+        switch self {
+        case .outline((_, _)):
+            return 1
+        default:
+            return 0
+        }
+    }
+    
+    func borderColor() -> UIColor {
+        switch self {
+        case let .outline((borderColor, _)):
+            return UIColor.from(apollo: borderColor)
+        default:
+            return UIColor.clear
         }
     }
 }
@@ -153,10 +184,9 @@ extension Button: Viewable {
                     background: BackgroundStyle(
                         color: backgroundColor,
                         border: BorderStyle(
-                            width: 0,
-                            color: UIColor.clear,
-                            cornerRadius: self.type.height() / 2,
-                            borderEdges: UIRectEdge()
+                            width: self.type.borderWidth(),
+                            color: self.type.borderColor(),
+                            cornerRadius: self.type.height() / 2
                         )
                     ),
                     text: TextStyle(
@@ -180,10 +210,9 @@ extension Button: Viewable {
                     background: BackgroundStyle(
                         color: backgroundColor,
                         border: BorderStyle(
-                            width: 0,
-                            color: UIColor.clear,
-                            cornerRadius: self.type.height() / 2,
-                            borderEdges: UIRectEdge()
+                            width: self.type.borderWidth(),
+                            color: self.type.borderColor(),
+                            cornerRadius: self.type.height() / 2
                         )
                     ),
                     text: TextStyle(

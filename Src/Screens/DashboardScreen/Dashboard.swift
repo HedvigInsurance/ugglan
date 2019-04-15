@@ -35,13 +35,18 @@ extension Dashboard: Presentable {
 
         let form = FormView()
         
+        let paymentNeedsSetupSection = PaymentNeedsSetupSection()
+        bag += form.append(paymentNeedsSetupSection)
+        
+        bag += form.append(Spacing(height: 25))
+        
         let chatActionsSection = ChatActionsSection(presentingViewController: viewController)
         bag += form.append(chatActionsSection)
         
         let buttonSpacing = Spacing(height: 35)
         bag += form.append(buttonSpacing)
         
-        let myProtectionSection = MyProtectionSection()
+        let myProtectionSection = MyProtectionSection(presentingViewController: viewController)
         bag += form.append(myProtectionSection)
         
         bag += viewController.install(form)

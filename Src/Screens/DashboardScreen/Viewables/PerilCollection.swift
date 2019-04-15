@@ -12,6 +12,7 @@ import UIKit
 
 struct PerilCollection {
     let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
+    let presentingViewController: UIViewController
 }
 
 extension PerilCollection: Viewable {
@@ -60,7 +61,7 @@ extension PerilCollection: Viewable {
         
         bag += perilsDataSignal.atOnce().compactMap { $0?.perils }.onValue { perilSignalArray in
             let perilViewableArray = perilSignalArray.map { peril in
-                Peril(title: (peril?.title)!, id: (peril?.id)!)
+                Peril(title: (peril?.title)!, id: (peril?.id)!, description: (peril?.description)!, presentingViewController: self.presentingViewController)
             }
             
             collectionKit.set(Table(rows: perilViewableArray), animation: .none, rowIdentifier: { $0.title })

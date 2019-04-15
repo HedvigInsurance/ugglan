@@ -47,6 +47,11 @@ extension ChatActionsSection: Viewable {
         bag += dataSignal.atOnce()
             .compactMap { $0?.filter { $0?.enabled == true } }
             .onValue { chatActions in
+                
+            buttonStackView.subviews.forEach { view in
+                view.removeFromSuperview()
+            }
+                
             for chatAction in chatActions  {
                 let buttonContainer = UIView()
                 let button = Button(title: chatAction?.text ?? "", type: .standard(backgroundColor: .purple, textColor: .white))

@@ -9,14 +9,19 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import DeviceKit
 
 struct Peril {
     let title: String
     let id: String
+    let description: String
+    let presentingViewController: UIViewController
     
-    init(title: String, id: String) {
+    init(title: String, id: String, description: String, presentingViewController: UIViewController) {
         self.title = title
         self.id = id
+        self.description = description
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -66,6 +71,8 @@ extension Peril: Reusable {
             }
         }
         
+        
+        
         return (perilView, { peril in
             perilView.subviews.forEach({ view in
                 view.removeFromSuperview()
@@ -76,7 +83,7 @@ extension Peril: Reusable {
             let perilIcon = Icon(icon: perilIconAsset(for: peril.id), iconWidth: 40)
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
+                make.centerX.top.equalToSuperview()
             }
             
             let perilTitleLabel = MultilineLabel(styledText: StyledText(text: peril.title, style: .perilTitle))
@@ -92,6 +99,24 @@ extension Peril: Reusable {
                 }
                 
                 titleLabel.sizeToFit()
+            }
+            
+            let tapGesture = UITapGestureRecognizer()
+            bag += perilView.install(tapGesture)
+            
+            bag += tapGesture.signal(forState: .ended).onValue { _ in
+                let title = peril.title.replacingOccurrences(of: "-\n", with: "")
+                
+                // - TODO: make DraggableOverlay scrollable
+                let heightPercentage: CGFloat = Device.hasRoundedCorners ? 0.4 : 0.7
+                
+                peril.presentingViewController.present(
+                    DraggableOverlay(
+                        presentable: PerilInformation(title: title, description: peril.description, icon: perilIconAsset(for: peril.id)),
+                        presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
+                        heightPercentage: heightPercentage
+                    )
+                )
             }
             
             return bag

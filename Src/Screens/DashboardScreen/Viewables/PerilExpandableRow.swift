@@ -12,9 +12,11 @@ import Foundation
 struct PerilExpandableRow {
     let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
     let index: Int
+    let presentingViewController: UIViewController
     
-    init(index: Int) {
+    init(index: Int, presentingViewController: UIViewController) {
         self.index = index
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -56,7 +58,7 @@ extension PerilExpandableRow: Viewable {
             contentView.imageSignal.value = Asset.moreInfoPlain
         }
         
-        let expandedContentView = PerilCollection()
+        let expandedContentView = PerilCollection(presentingViewController: presentingViewController)
         bag += perilsDataSignal.atOnce()
             .bindTo(expandedContentView.perilsDataSignal)
         
