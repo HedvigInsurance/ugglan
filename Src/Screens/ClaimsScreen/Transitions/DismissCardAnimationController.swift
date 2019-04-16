@@ -39,11 +39,12 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         
         let originFrame = originView.convert(originView.frame, to: transitionContext.containerView)
         
-        self.commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
-        self.commonClaimCard.cornerRadiusSignal.value = 0
-        self.commonClaimCard.iconTopPaddingSignal.value = 50
-        self.commonClaimCard.titleAlphaSignal.value = 0
-        self.commonClaimCard.layoutTitleAlphaSignal.value = 1
+        commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
+        commonClaimCard.cornerRadiusSignal.value = 0
+        commonClaimCard.iconTopPaddingSignal.value = 50
+        commonClaimCard.titleAlphaSignal.value = 0
+        commonClaimCard.layoutTitleAlphaSignal.value = 1
+        commonClaimCard.shadowOpacitySignal.value = 0
         
         bag += contentContainerView.add(commonClaimCard) { view in
             view.snp.makeConstraints ({ make in
@@ -62,6 +63,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 self.commonClaimCard.cornerRadiusSignal.value = 8
                 self.commonClaimCard.iconTopPaddingSignal.value = 15
                 self.commonClaimCard.titleAlphaSignal.value = 1
+                self.commonClaimCard.shadowOpacitySignal.value = 0.05
                 
                 view.snp.updateConstraints ({ make in
                     make.height.equalTo(originFrame.height)
@@ -89,6 +91,8 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         }
         
         bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            contentView.layer.cornerRadius = 8
+            
             contentView.snp.updateConstraints ({ make in
                 make.height.equalTo(0)
                 make.width.equalTo(originFrame.width)

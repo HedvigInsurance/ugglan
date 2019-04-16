@@ -65,6 +65,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                 self.commonClaimCard.cornerRadiusSignal.value = 0
                 self.commonClaimCard.iconTopPaddingSignal.value = 50
                 self.commonClaimCard.titleAlphaSignal.value = 0
+                self.commonClaimCard.shadowOpacitySignal.value = 0
                 
                 view.layoutIfNeeded()
                 contentContainerView.layoutIfNeeded()
@@ -78,6 +79,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         
         let contentView = UIView()
         contentView.backgroundColor = .offWhite
+        contentView.layer.cornerRadius = 8
         
         contentContainerView.addSubview(contentView)
         
@@ -97,6 +99,8 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                 make.top.equalTo(claimsCardFinalHeight)
                 make.left.equalTo(0)
             }
+            
+            contentView.layer.cornerRadius = 0
             
             contentView.layoutIfNeeded()
             contentContainerView.layoutIfNeeded()
