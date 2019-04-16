@@ -42,7 +42,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingSignal.value = 50
-        commonClaimCard.titleAlphaSignal.value = 0
+        commonClaimCard.titleLabelStateSignal.value = .expanded
         commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.shadowOpacitySignal.value = 0
         
@@ -62,7 +62,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 self.commonClaimCard.backgroundColorSignal.value = UIColor.white
                 self.commonClaimCard.cornerRadiusSignal.value = 8
                 self.commonClaimCard.iconTopPaddingSignal.value = 15
-                self.commonClaimCard.titleAlphaSignal.value = 1
+                self.commonClaimCard.titleLabelStateSignal.value = .normal
                 self.commonClaimCard.shadowOpacitySignal.value = 0.05
                 
                 view.snp.updateConstraints ({ make in

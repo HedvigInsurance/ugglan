@@ -16,11 +16,15 @@ struct CommonClaimCard {
     let index: TableIndex
     let presentingViewController: UIViewController
     
+    enum State {
+        case normal, expanded
+    }
+    
     let backgroundColorSignal = ReadWriteSignal<UIColor>(.white)
     let cornerRadiusSignal = ReadWriteSignal<CGFloat>(8)
     let iconTopPaddingSignal = ReadWriteSignal<CGFloat>(15)
-    let titleAlphaSignal = ReadWriteSignal<CGFloat>(1)
     let layoutTitleAlphaSignal = ReadWriteSignal<CGFloat>(0)
+    let titleLabelStateSignal = ReadWriteSignal<State>(.normal)
     let controlIsEnabledSignal = ReadWriteSignal<Bool>(true)
     let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
     
@@ -66,16 +70,26 @@ extension CommonClaimCard: Viewable {
         let titleLabel = UILabel(value: data.title, style: .rowTitle)
         contentView.addSubview(titleLabel)
         
-        titleLabel.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(15)
-            make.width.equalToSuperview().inset(15)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(15)
+        bag += titleLabelStateSignal.atOnce().onValue { newState in
+            if newState == .normal {
+                titleLabel.snp.remakeConstraints { make in
+                    make.bottom.equalToSuperview().inset(15)
+                    make.width.equalToSuperview().inset(15)
+                    make.centerX.equalToSuperview()
+                    make.height.equalTo(titleLabel.intrinsicContentSize.height)
+                }
+            } else {
+                titleLabel.snp.remakeConstraints { make in
+                    make.top.equalToSuperview().inset(40)
+                    make.width.equalTo(titleLabel.intrinsicContentSize.width)
+                    make.centerX.equalToSuperview()
+                    make.height.equalTo(titleLabel.intrinsicContentSize.height)
+                }
+            }
         }
-        bag += titleAlphaSignal.atOnce().bindTo(titleLabel, \.alpha)
         
         let layoutTitleLabel = MultilineLabel(styledText: StyledText(
-                text: "Blir ditt bagage försenat när du reser ersätter Hedvig dig för att du ska kunna köpa saker du behöver. Hur mycket du får beror på hur lång tid ditt bagage är försenat",
+                text: data.layout.asTitleAndBulletPoints?.title ?? "",
                 style: .standaloneLargeTitle
             )
         )

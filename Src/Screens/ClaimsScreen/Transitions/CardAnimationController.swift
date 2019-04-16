@@ -64,7 +64,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                 self.commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
                 self.commonClaimCard.cornerRadiusSignal.value = 0
                 self.commonClaimCard.iconTopPaddingSignal.value = 50
-                self.commonClaimCard.titleAlphaSignal.value = 0
+                self.commonClaimCard.titleLabelStateSignal.value = .expanded
                 self.commonClaimCard.shadowOpacitySignal.value = 0
                 
                 view.layoutIfNeeded()
