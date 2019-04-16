@@ -25,8 +25,6 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let contentContainerView = UIView()
-        contentContainerView.alpha = 0
-        
         let claimsCardFinalHeight: CGFloat = 265
         
         transitionContext.containerView.addSubview(contentContainerView)

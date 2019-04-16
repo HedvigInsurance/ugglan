@@ -55,7 +55,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
             bag += button.onTapSignal.onValue {
                 completion(.success)
             }
-            return bag
+            return DelayedDisposer(bag, delay: 1)
         })
     }
 }
