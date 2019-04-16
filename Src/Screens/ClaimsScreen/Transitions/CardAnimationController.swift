@@ -20,7 +20,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 1
+        return 0.5
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -70,7 +70,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                 contentContainerView.layoutIfNeeded()
             }
             
-            bag += Signal(after: 0.3).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+            bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                 self.commonClaimCard.layoutTitleAlphaSignal.value = 1
             }
         }
@@ -102,7 +102,8 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             contentContainerView.layoutIfNeeded()
         }
         
-        bag += Signal(after: 1).onValue {
+        
+        bag += Signal(after: transitionDuration(using: transitionContext)).onValue {
             transitionContext.containerView.addSubview(toVC.view)
 
             toVC.view.snp.makeConstraints({ make in

@@ -24,9 +24,9 @@ struct SpringAnimationStyle {
 }
 
 extension SpringAnimationStyle {
-    static func lightBounce(delay: TimeInterval = 0) -> SpringAnimationStyle {
+    static func lightBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.5) -> SpringAnimationStyle {
         return SpringAnimationStyle(
-            duration: 0.5,
+            duration: duration,
             damping: 30,
             velocity: 1,
             delay: delay

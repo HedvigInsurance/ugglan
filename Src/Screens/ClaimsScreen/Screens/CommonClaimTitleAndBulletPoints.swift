@@ -22,7 +22,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         
         let bag = DisposeBag()
      
-        let view = UIView()
+        let view = UIControl()
         view.backgroundColor = .offWhite
         
         commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
@@ -42,17 +42,10 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
             })
         }
         
-        let button = Button(title: "test", type: .standard(backgroundColor: .pink, textColor: .white))
-        bag += view.add(button) { view in
-            view.snp.makeConstraints({ make in
-                make.bottom.equalToSuperview().inset(30)
-            })
-        }
-    
         viewController.view = view
         
         return (viewController, Future { completion in
-            bag += button.onTapSignal.onValue {
+            bag += view.signal(for: .touchUpInside).onValue {
                 completion(.success)
             }
             return DelayedDisposer(bag, delay: 1)

@@ -20,7 +20,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 1
+        return 0.5
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -106,7 +106,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         fromVC?.view.alpha = 0
         contentContainerView.alpha = 1
         
-        bag += Signal(after: 1).onValue {
+        bag += Signal(after: transitionDuration(using: transitionContext)).onValue {
             self.originView.alpha = 1
             transitionContext.completeTransition(true)
         }
