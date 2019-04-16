@@ -71,7 +71,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                 contentContainerView.layoutIfNeeded()
             }
             
-            bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+            bag += Signal(after: 0.3).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                 self.commonClaimCard.layoutTitleAlphaSignal.value = 1
             }
         }
