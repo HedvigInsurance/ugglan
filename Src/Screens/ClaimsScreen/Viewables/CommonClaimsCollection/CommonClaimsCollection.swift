@@ -9,12 +9,19 @@ import Foundation
 import Flow
 import Form
 import Apollo
+import UIKit
+import Presentation
 
 struct CommonClaimsCollection {
     let client: ApolloClient
+    let presentingViewController: UIViewController
     
-    init(client: ApolloClient = ApolloContainer.shared.client) {
+    init(
+        client: ApolloClient = ApolloContainer.shared.client,
+        presentingViewController: UIViewController
+    ) {
         self.client = client
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -60,17 +67,17 @@ extension CommonClaimsCollection: Viewable {
         
         bag += client.fetch(query: CommonClaimsQuery(locale: .svSe)).onValue { result in
             let rows = result.data!.commonClaims.enumerated().map {
-                CommonClaimCard(data: $0.element, index: TableIndex(section: 0, row: $0.offset))
+                CommonClaimCard(
+                    data: $0.element,
+                    index: TableIndex(section: 0, row: $0.offset),
+                    presentingViewController: self.presentingViewController
+                )
             }
             
-            bag += rows.map { commonClaimCard in
-                return commonClaimCard.onTapSignal.onValue({ _ in
-                    print("should add view")
-                })
-            }
-            
-            let table = Table<EmptySection, CommonClaimCard>(rows: rows)
-            collectionKit.set(table, rowIdentifier: { $0.data.title })
+            collectionKit.set(
+                Table(rows: rows),
+                rowIdentifier: { $0.data.title }
+            )
         }.disposable
         
         return (collectionKit.view, bag)
