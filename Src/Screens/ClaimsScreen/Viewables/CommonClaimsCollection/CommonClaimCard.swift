@@ -92,7 +92,7 @@ extension CommonClaimCard: Viewable {
                 }
             } else {
                 titleLabel.snp.remakeConstraints { make in
-                    make.top.equalToSuperview().inset(50)
+                    make.top.equalToSuperview().inset(55)
                     make.width.equalTo(titleLabel.intrinsicContentSize.width)
                     make.centerX.equalToSuperview()
                     make.height.equalTo(titleLabel.intrinsicContentSize.height)

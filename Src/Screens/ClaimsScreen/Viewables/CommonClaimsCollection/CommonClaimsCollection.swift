@@ -73,7 +73,7 @@ extension CommonClaimsCollection: Viewable {
                     presentingViewController: self.presentingViewController
                 )
             }
-            
+                        
             collectionKit.set(
                 Table(rows: rows),
                 rowIdentifier: { $0.data.title }

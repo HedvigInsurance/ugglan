@@ -38,7 +38,6 @@ struct BulletPointCard: Reusable {
         let contentView = UIStackView()
         contentView.axis = .vertical
         contentView.alignment = .top
-        contentView.distribution = .fillProportionally
         contentView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         contentView.isLayoutMarginsRelativeArrangement = true
         
@@ -82,17 +81,10 @@ struct BulletPointCollection {
 }
 
 extension BulletPointCollection: Viewable {
-    func materialize(events: ViewableEvents) -> (UICollectionView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
         
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
-        
-        let collectionKit = CollectionKit<EmptySection, BulletPointCard>(layout: layout, bag: bag)
-        
-        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            return CGSize(width: UIScreen.main.bounds.width, height: 100)
-        }
+        let tableKit = TableKit<EmptySection, BulletPointCard>(bag: bag)
         
         let rows = bulletPoints.map {
             BulletPointCard(
@@ -102,9 +94,9 @@ extension BulletPointCollection: Viewable {
             )
         }
         
-        collectionKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        collectionKit.view.backgroundColor = .offWhite
+        tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
+        tableKit.view.backgroundColor = .offWhite
         
-        return (collectionKit.view, bag)
+        return (tableKit.view, bag)
     }
 }
