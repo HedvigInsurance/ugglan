@@ -192,7 +192,6 @@ extension CommonClaimCard: Viewable {
         }
         
         bag += closeButton.signal(for: .touchUpInside).onValue {
-            print("touch up insside")
             self.closeCallbacker.callAll()
         }
         
