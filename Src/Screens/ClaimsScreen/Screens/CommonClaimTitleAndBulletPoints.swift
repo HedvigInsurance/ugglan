@@ -19,7 +19,6 @@ struct CommonClaimTitleAndBulletPoints {
 extension CommonClaimTitleAndBulletPoints: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        viewController.title = commonClaimCard.data.layout.asTitleAndBulletPoints?.title
         
         let bag = DisposeBag()
      

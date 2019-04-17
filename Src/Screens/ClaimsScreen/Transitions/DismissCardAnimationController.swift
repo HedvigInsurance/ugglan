@@ -90,7 +90,6 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             }
             
             contentView.layer.cornerRadius = 8
-            
             contentView.layoutIfNeeded()
             
             bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
