@@ -38,6 +38,9 @@ struct BulletPointCard: Reusable {
         let contentView = UIStackView()
         contentView.axis = .vertical
         contentView.alignment = .top
+        contentView.distribution = .fillProportionally
+        contentView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        contentView.isLayoutMarginsRelativeArrangement = true
         
         cardContainer.addSubview(contentView)
         
@@ -51,14 +54,15 @@ struct BulletPointCard: Reusable {
         let titleLabel = UILabel(value: "", style: .blockRowTitle)
         contentView.addArrangedSubview(titleLabel)
         
-        let descriptionLabel = UILabel(value: "", style: .blockRowDescription)
-        contentView.addArrangedSubview(descriptionLabel)
+        let descriptionLabel = MultilineLabel(styledText: StyledText(text: "", style: .blockRowDescription))
         
         return (view, { bulletPointCard in
             let bag = DisposeBag()
             
+            bag += contentView.addArangedSubview(descriptionLabel)
+            
             titleLabel.text = bulletPointCard.title
-            descriptionLabel.text = bulletPointCard.description
+            descriptionLabel.styledTextSignal.value = StyledText(text: bulletPointCard.description, style: .blockRowDescription)
             
             bag += cardContainer.add(bulletPointCard.icon) { iconView in
                 iconView.snp.makeConstraints({ make in
@@ -87,7 +91,7 @@ extension BulletPointCollection: Viewable {
         let collectionKit = CollectionKit<EmptySection, BulletPointCard>(layout: layout, bag: bag)
         
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            return CGSize(width: UIScreen.main.bounds.width, height: 150)
+            return CGSize(width: UIScreen.main.bounds.width, height: 100)
         }
         
         let rows = bulletPoints.map {
