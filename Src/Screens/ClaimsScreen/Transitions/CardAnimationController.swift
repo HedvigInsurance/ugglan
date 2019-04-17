@@ -106,7 +106,6 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             }
         }
         
-        
         bag += Signal(after: transitionDuration(using: transitionContext)).onValue {
             transitionContext.containerView.addSubview(toVC.view)
 

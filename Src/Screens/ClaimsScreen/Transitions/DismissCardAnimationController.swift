@@ -77,31 +77,35 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             }
         }
         
-        let contentView = UIView()
-        contentView.alpha = 1
-        contentView.backgroundColor = .offWhite
+        let bulletPointCollection = BulletPointCollection(
+            bulletPoints: self.commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
+        )
         
-        contentContainerView.addSubview(contentView)
-        
-        contentView.snp.makeConstraints { make in
-            make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
-            make.width.equalTo(contentContainerView.frame.width)
-            make.top.equalTo(claimsCardFinalHeight)
-            make.left.equalTo(0)
-        }
-        
-        bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+        bag += contentContainerView.add(bulletPointCollection) { contentView in
+            contentView.snp.makeConstraints { make in
+                make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
+                make.width.equalTo(contentContainerView.frame.width)
+                make.top.equalTo(claimsCardFinalHeight)
+                make.left.equalTo(0)
+            }
+            
             contentView.layer.cornerRadius = 8
             
-            contentView.snp.updateConstraints ({ make in
-                make.height.equalTo(0)
-                make.width.equalTo(originFrame.width)
-                make.top.equalTo(originFrame.maxY)
-                make.left.equalTo(originFrame.origin.x)
-            })
-            
             contentView.layoutIfNeeded()
-            contentContainerView.layoutIfNeeded()
+            
+            bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                contentView.snp.updateConstraints ({ make in
+                    make.height.equalTo(0)
+                    make.width.equalTo(originFrame.width)
+                    make.top.equalTo(originFrame.maxY)
+                    make.left.equalTo(originFrame.origin.x)
+                })
+                
+                contentView.layoutIfNeeded()
+                contentContainerView.layoutIfNeeded()
+                
+                contentView.layer.cornerRadius = 0
+            }
         }
         
         contentContainerView.layoutIfNeeded()
