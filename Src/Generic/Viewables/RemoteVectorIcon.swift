@@ -8,6 +8,7 @@
 import Foundation
 import Flow
 import UIKit
+import Disk
 
 struct RemoteVectorIcon {
     let pdfUrl = ReadWriteSignal<URL?>(nil)
@@ -78,10 +79,24 @@ extension RemoteVectorIcon: Viewable {
                 }
         }
         
-        bag += pdfUrl.atOnce().compactMap { $0 }.map { url in
+        bag += pdfUrl.atOnce().compactMap { $0 }.map(on: .background) { url -> CFData? in
+            if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
+                return data as CFData
+            }
+            
             let data = try? Data(contentsOf: url)
-            return CGPDFDocument(CGDataProvider(data: data! as CFData)!)!
-        }.bindTo(pdfDocumentSignal)
+            try? Disk.save(data, to: .caches, as: url.absoluteString)
+            
+            if let data = data {
+                return data as CFData
+            }
+            
+            return nil
+        }.map { data in
+            guard let data = data else { return nil }
+            guard let provider = CGDataProvider(data: data) else { return nil }
+            return CGPDFDocument(provider)
+        }.compactMap { $0 }.bindTo(pdfDocumentSignal)
         
         return (imageView, bag)
     }
