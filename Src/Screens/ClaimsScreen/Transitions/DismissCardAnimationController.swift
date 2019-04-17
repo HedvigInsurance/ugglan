@@ -25,7 +25,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let contentContainerView = UIView()
-        let claimsCardFinalHeight: CGFloat = 265
+        let claimsCardFinalHeight = commonClaimCard.height(state: .expanded)
         
         transitionContext.containerView.addSubview(contentContainerView)
 
@@ -41,7 +41,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         
         commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
         commonClaimCard.cornerRadiusSignal.value = 0
-        commonClaimCard.iconTopPaddingSignal.value = 50
+        commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
         commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.shadowOpacitySignal.value = 0
@@ -61,7 +61,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 self.commonClaimCard.backgroundColorSignal.value = UIColor.white
                 self.commonClaimCard.cornerRadiusSignal.value = 8
-                self.commonClaimCard.iconTopPaddingSignal.value = 15
+                self.commonClaimCard.iconTopPaddingStateSignal.value = .normal
                 self.commonClaimCard.titleLabelStateSignal.value = .normal
                 self.commonClaimCard.shadowOpacitySignal.value = 0.05
                 

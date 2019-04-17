@@ -29,7 +29,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         }
         
         let contentContainerView = UIView()
-        let claimsCardFinalHeight: CGFloat = 265
+        let claimsCardFinalHeight = commonClaimCard.height(state: .expanded)
         
         transitionContext.containerView.addSubview(contentContainerView)
         
@@ -63,7 +63,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
 
                 self.commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
                 self.commonClaimCard.cornerRadiusSignal.value = 0
-                self.commonClaimCard.iconTopPaddingSignal.value = 50
+                self.commonClaimCard.iconTopPaddingStateSignal.value = .expanded
                 self.commonClaimCard.titleLabelStateSignal.value = .expanded
                 self.commonClaimCard.shadowOpacitySignal.value = 0
                 
@@ -77,33 +77,33 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         }
         
         
-        let contentView = UIView()
-        contentView.backgroundColor = .offWhite
-        contentView.layer.cornerRadius = 8
+        let bulletPointCollection = BulletPointCollection(
+            bulletPoints: self.commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
+        )
         
-        contentContainerView.addSubview(contentView)
-        
-        contentView.snp.makeConstraints { make in
-            make.height.equalTo(0)
-            make.width.equalTo(originFrame.width)
-            make.top.equalTo(originFrame.maxY)
-            make.left.equalTo(originFrame.origin.x)
-        }
-        
-        contentView.layoutIfNeeded()
-        
-        bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-            contentView.snp.updateConstraints { make in
-                make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
-                make.width.equalTo(contentContainerView.frame.width)
-                make.top.equalTo(claimsCardFinalHeight)
-                make.left.equalTo(0)
+        bag += contentContainerView.add(bulletPointCollection) { contentView in
+            contentView.snp.makeConstraints { make in
+                make.height.equalTo(0)
+                make.width.equalTo(originFrame.width)
+                make.top.equalTo(originFrame.maxY)
+                make.left.equalTo(originFrame.origin.x)
             }
             
-            contentView.layer.cornerRadius = 0
-            
             contentView.layoutIfNeeded()
-            contentContainerView.layoutIfNeeded()
+            
+            bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                contentView.snp.updateConstraints { make in
+                    make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
+                    make.width.equalTo(contentContainerView.frame.width)
+                    make.top.equalTo(claimsCardFinalHeight)
+                    make.left.equalTo(0)
+                }
+                
+                contentView.layer.cornerRadius = 0
+                
+                contentView.layoutIfNeeded()
+                contentContainerView.layoutIfNeeded()
+            }
         }
         
         

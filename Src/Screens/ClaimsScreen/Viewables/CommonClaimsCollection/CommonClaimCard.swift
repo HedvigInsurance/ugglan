@@ -22,11 +22,21 @@ struct CommonClaimCard {
     
     let backgroundColorSignal = ReadWriteSignal<UIColor>(.white)
     let cornerRadiusSignal = ReadWriteSignal<CGFloat>(8)
-    let iconTopPaddingSignal = ReadWriteSignal<CGFloat>(15)
+    let iconTopPaddingStateSignal = ReadWriteSignal<State>(.normal)
     let layoutTitleAlphaSignal = ReadWriteSignal<CGFloat>(0)
     let titleLabelStateSignal = ReadWriteSignal<State>(.normal)
     let controlIsEnabledSignal = ReadWriteSignal<Bool>(true)
     let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
+    let closeSignal: Signal<Void>
+    private let closeCallbacker: Callbacker<Void>
+    
+    func iconTopPadding(state: State) -> CGFloat {
+        return state == .normal ? 15 : 90
+    }
+    
+    func height(state: State) -> CGFloat {
+        return state == .normal ? 0 : 320
+    }
     
     var isFirstInRow: Bool {
         let dividedIndex = Double(index.row) / 2
@@ -41,6 +51,8 @@ struct CommonClaimCard {
         self.index = index
         self.data = data
         self.presentingViewController = presentingViewController
+        self.closeCallbacker = Callbacker()
+        self.closeSignal = closeCallbacker.signal()
     }
 }
 
@@ -80,7 +92,7 @@ extension CommonClaimCard: Viewable {
                 }
             } else {
                 titleLabel.snp.remakeConstraints { make in
-                    make.top.equalToSuperview().inset(40)
+                    make.top.equalToSuperview().inset(50)
                     make.width.equalTo(titleLabel.intrinsicContentSize.width)
                     make.centerX.equalToSuperview()
                     make.height.equalTo(titleLabel.intrinsicContentSize.height)
@@ -95,16 +107,24 @@ extension CommonClaimCard: Viewable {
         )
         bag += contentView.add(layoutTitleLabel) { view in
             view.snp.makeConstraints { make in
-                make.top.equalTo(self.iconTopPaddingSignal.value + 20)
+                make.top.equalTo(0)
                 make.centerX.equalToSuperview()
                 make.width.equalToSuperview().inset(15)
                 make.height.equalTo(200)
             }
             
-            bag += iconTopPaddingSignal.onValue({ newValue in
-                view.snp.updateConstraints({ make in
-                    make.top.equalToSuperview().inset(newValue + 20)
-                })
+            bag += iconTopPaddingStateSignal.atOnce().onValue({ state in
+                let extraPadding: CGFloat = 20
+                
+                if state == .normal {
+                    view.snp.updateConstraints({ make in
+                        make.top.equalTo(self.iconTopPadding(state: state) + extraPadding)
+                    })
+                } else {
+                    view.snp.updateConstraints({ make in
+                        make.top.equalTo(self.iconTopPadding(state: state) + extraPadding)
+                    })
+                }
             })
             
             bag += layoutTitleAlphaSignal.atOnce().bindTo(view, \.alpha)
@@ -120,16 +140,22 @@ extension CommonClaimCard: Viewable {
         
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints({ make in
-                make.top.equalToSuperview().inset(self.iconTopPaddingSignal.value)
+                make.top.equalToSuperview()
                 make.left.equalToSuperview().inset(15)
                 make.width.equalTo(30)
                 make.height.equalTo(30)
             })
             
-            bag += iconTopPaddingSignal.onValue({ newValue in
-                imageView.snp.updateConstraints({ make in
-                    make.top.equalToSuperview().inset(newValue)
-                })
+            bag += iconTopPaddingStateSignal.atOnce().onValue({ state in
+                if state == .normal {
+                    imageView.snp.updateConstraints({ make in
+                        make.top.equalToSuperview().inset(self.iconTopPadding(state: state))
+                    })
+                } else {
+                    imageView.snp.updateConstraints({ make in
+                        make.top.equalToSuperview().inset(self.iconTopPadding(state: state))
+                    })
+                }
             })
         }
         
@@ -154,10 +180,29 @@ extension CommonClaimCard: Viewable {
                 contentView.transform = CGAffineTransform.identity
         }
         
+        let closeButton = UIControl()
+        closeButton.backgroundColor = UIColor.offWhite.withAlphaComponent(0.3)
+        view.addSubview(closeButton)
+        
+        closeButton.snp.makeConstraints { make in
+            make.right.equalTo(-15)
+            make.top.equalTo(50)
+            make.width.equalTo(30)
+            make.height.equalTo(30)
+        }
+        
+        bag += closeButton.signal(for: .touchUpInside).onValue {
+            print("touch up insside")
+            self.closeCallbacker.callAll()
+        }
+        
         bag += contentView.signal(for: .touchUpInside).onValue { _ in
             if let _ = self.data.layout.asTitleAndBulletPoints {
                 self.presentingViewController.present(
-                    CommonClaimTitleAndBulletPoints(commonClaimCard: CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)),
+                    CommonClaimTitleAndBulletPoints(
+                        commonClaimCard: CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController),
+                        originView: view
+                    ),
                     style: .modally(
                         presentationStyle: .custom,
                         transitionStyle: nil,
@@ -166,7 +211,10 @@ extension CommonClaimCard: Viewable {
                     options: [],
                     configure: { vc, bag in
                         let newCommonClaimCard = CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
-                        let delegate = CardControllerTransitioningDelegate(originView: contentView, commonClaimCard: newCommonClaimCard)
+                        let delegate = CardControllerTransitioningDelegate(
+                            originView: contentView,
+                            commonClaimCard: newCommonClaimCard
+                        )
                         bag.hold(delegate)
                         vc.transitioningDelegate = delegate
                 }

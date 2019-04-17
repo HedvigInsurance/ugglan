@@ -13,6 +13,7 @@ import Form
 
 struct CommonClaimTitleAndBulletPoints {
     let commonClaimCard: CommonClaimCard
+    let originView: UIView
 }
 
 extension CommonClaimTitleAndBulletPoints: Presentable {
@@ -22,32 +23,40 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         
         let bag = DisposeBag()
      
-        let view = UIControl()
+        let view = UIStackView()
+        view.axis = .vertical
         view.backgroundColor = .offWhite
+        
+        let pan = UIPanGestureRecognizer()
+        
+        bag += view.install(pan)
         
         commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
         commonClaimCard.cornerRadiusSignal.value = 0
-        commonClaimCard.iconTopPaddingSignal.value = 50
+        commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
         commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.controlIsEnabledSignal.value = false
         commonClaimCard.shadowOpacitySignal.value = 0
         
-        bag += view.add(commonClaimCard) { view in
+        bag += view.addArangedSubview(commonClaimCard) { view in
+            
             view.snp.makeConstraints({ make in
-                make.width.equalToSuperview()
-                make.height.equalTo(265)
-                make.top.equalToSuperview()
-                make.left.equalToSuperview()
+                make.height.equalTo(commonClaimCard.height(state: .expanded))
             })
         }
+        
+        bag += view.addArangedSubview(BulletPointCollection(
+            bulletPoints: commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
+        ))
         
         viewController.view = view
         
         return (viewController, Future { completion in
-            bag += view.signal(for: .touchUpInside).onValue {
+            bag += self.commonClaimCard.closeSignal.onValue {
                 completion(.success)
             }
+            
             return DelayedDisposer(bag, delay: 1)
         })
     }
