@@ -18,8 +18,6 @@ struct BulletPointCard: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (BulletPointCard) -> Disposable) {
         let view = UIStackView()
         view.axis = .vertical
-        view.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        view.isLayoutMarginsRelativeArrangement = true
         
         let cardContainer = UIView()
         cardContainer.backgroundColor = .white
@@ -31,13 +29,10 @@ struct BulletPointCard: Reusable {
         
         view.addArrangedSubview(cardContainer)
         
-        cardContainer.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-        }
-        
         let contentView = UIStackView()
         contentView.axis = .vertical
         contentView.alignment = .top
+        contentView.spacing = 10
         contentView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         contentView.isLayoutMarginsRelativeArrangement = true
         
@@ -61,7 +56,10 @@ struct BulletPointCard: Reusable {
             bag += contentView.addArangedSubview(descriptionLabel)
             
             titleLabel.text = bulletPointCard.title
-            descriptionLabel.styledTextSignal.value = StyledText(text: bulletPointCard.description, style: .blockRowDescription)
+            descriptionLabel.styledTextSignal.value = StyledText(
+                text: bulletPointCard.description,
+                style: .blockRowDescription
+            )
             
             bag += cardContainer.add(bulletPointCard.icon) { iconView in
                 iconView.snp.makeConstraints({ make in
@@ -84,7 +82,29 @@ extension BulletPointCollection: Viewable {
     func materialize(events: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
         
-        let tableKit = TableKit<EmptySection, BulletPointCard>(bag: bag)
+        let sectionStyle = SectionStyle(
+            rowInsets: UIEdgeInsets(
+                top: 5,
+                left: 20,
+                bottom: 5,
+                right: 20
+            ),
+            itemSpacing: 0,
+            minRowHeight: 1,
+            background: .invisible,
+            selectedBackground: .invisible,
+            header: .none,
+            footer: .none
+        )
+        
+        let dynamicSectionStyle = DynamicSectionStyle { _ in
+            sectionStyle
+        }
+        
+        let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
+
+        
+        let tableKit = TableKit<EmptySection, BulletPointCard>(style: style, bag: bag)
         
         let rows = bulletPoints.map {
             BulletPointCard(
@@ -93,6 +113,10 @@ extension BulletPointCollection: Viewable {
                 description: $0.description
             )
         }
+        
+        bag += tableKit.delegate.willDisplayCell.onValue({ cell, indexPath in
+            cell.layer.zPosition = CGFloat(indexPath.row)
+        })
         
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
         tableKit.view.backgroundColor = .offWhite
