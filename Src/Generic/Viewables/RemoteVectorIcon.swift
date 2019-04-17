@@ -87,7 +87,7 @@ extension RemoteVectorIcon: Viewable {
             renderPdfDocument(pdfDocument: pdfDocument)
         }
         
-        bag += pdfUrl.atOnce().compactMap { $0 }.map(on: .background) { url -> CFData? in
+        bag += pdfUrl.atOnce().compactMap { $0 }.map { url -> CFData? in
             if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
                 return data as CFData
             }
@@ -95,7 +95,10 @@ extension RemoteVectorIcon: Viewable {
             let data = try? Data(contentsOf: url)
             
             if let data = data {
-                try? Disk.save(data, to: .caches, as: url.absoluteString)
+                defer {
+                    try? Disk.save(data, to: .caches, as: url.absoluteString)
+                }
+                
                 return data as CFData
             }
             
