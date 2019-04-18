@@ -39,7 +39,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             make.center.equalToSuperview()
         }
         
-        let originFrame = originView.convert(originView.frame, to: transitionContext.containerView)
+        let originFrame = originView.convert(originView.frameWithoutTransform, to: transitionContext.containerView)
         
         bag += contentContainerView.add(commonClaimCard) { view in
             self.originView.alpha = 0
