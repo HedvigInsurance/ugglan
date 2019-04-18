@@ -235,7 +235,7 @@ extension CommonClaimCard: Viewable {
             type: .standard(backgroundColor: .purple, textColor: .white)
         )
         
-        bag += contentView.add(claimButton) { claimButtonView in
+        bag += view.add(claimButton) { claimButtonView in
             bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
             bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
             
