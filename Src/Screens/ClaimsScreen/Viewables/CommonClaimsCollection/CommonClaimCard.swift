@@ -195,7 +195,7 @@ extension CommonClaimCard: Viewable {
             .map { Date() }
             .bindTo(touchDownDateSignal)
         
-        bag += contentView.signal(for: .touchDown).feedback(type: .impactLight)
+        bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
         
         bag += contentView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             contentView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
