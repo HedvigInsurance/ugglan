@@ -45,6 +45,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         commonClaimCard.titleLabelStateSignal.value = .expanded
         commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.shadowOpacitySignal.value = 0
+        commonClaimCard.showCloseButton.value = true
         
         bag += contentContainerView.add(commonClaimCard) { view in
             view.snp.makeConstraints ({ make in
@@ -64,6 +65,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 self.commonClaimCard.iconTopPaddingStateSignal.value = .normal
                 self.commonClaimCard.titleLabelStateSignal.value = .normal
                 self.commonClaimCard.shadowOpacitySignal.value = 0.05
+                self.commonClaimCard.showCloseButton.value = false
                 
                 view.snp.updateConstraints ({ make in
                     make.height.equalTo(originFrame.height)

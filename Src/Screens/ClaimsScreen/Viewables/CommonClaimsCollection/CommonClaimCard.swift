@@ -27,15 +27,28 @@ struct CommonClaimCard {
     let titleLabelStateSignal = ReadWriteSignal<State>(.normal)
     let controlIsEnabledSignal = ReadWriteSignal<Bool>(true)
     let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
+    let showCloseButton = ReadWriteSignal<Bool>(false)
+    
     let closeSignal: Signal<Void>
     private let closeCallbacker: Callbacker<Void>
     
     func iconTopPadding(state: State) -> CGFloat {
-        return state == .normal ? 15 : 90
+        return state == .normal ? 15 : 100
     }
     
     func height(state: State) -> CGFloat {
-        return state == .normal ? 0 : 320
+        let attributedString = NSAttributedString(styledText: StyledText(
+            text: data.layout.asTitleAndBulletPoints?.title ?? "",
+            style: .standaloneLargeTitle
+        ))
+        
+        let size = attributedString.boundingRect(
+            with: CGSize(width: UIScreen.main.bounds.width - 20, height: 1000),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
+        
+        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90)
     }
     
     var isFirstInRow: Bool {
@@ -63,12 +76,14 @@ extension CommonClaimCard: Viewable {
         let bag = DisposeBag()
         
         func backgroundColorFromData() -> UIColor {
+            let lightenedAmount: CGFloat = 0.5
+            
             if let color = data.layout.asTitleAndBulletPoints?.color {
-                return UIColor.from(apollo: color).lighter(amount: 0.2)
+                return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
             }
             
             if let color = data.layout.asEmergency?.color {
-                return UIColor.from(apollo: color).lighter(amount: 0.2)
+                return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
             }
             
             return UIColor.purple
@@ -180,6 +195,8 @@ extension CommonClaimCard: Viewable {
             .map { Date() }
             .bindTo(touchDownDateSignal)
         
+        bag += contentView.signal(for: .touchDown).feedback(type: .impactLight)
+        
         bag += contentView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             contentView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }
@@ -197,6 +214,8 @@ extension CommonClaimCard: Viewable {
         let closeButton = CloseButton()
         
         bag += view.add(closeButton) { closeButtonView in
+            bag += showCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
+            
             closeButtonView.snp.makeConstraints { make in
                 make.left.equalTo(15)
                 make.top.equalTo(50)

@@ -66,6 +66,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                 self.commonClaimCard.iconTopPaddingStateSignal.value = .expanded
                 self.commonClaimCard.titleLabelStateSignal.value = .expanded
                 self.commonClaimCard.shadowOpacitySignal.value = 0
+                self.commonClaimCard.showCloseButton.value = true
                 
                 view.layoutIfNeeded()
                 contentContainerView.layoutIfNeeded()
