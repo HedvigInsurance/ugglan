@@ -217,7 +217,7 @@ extension CommonClaimCard: Viewable {
             bag += showCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
             
             closeButtonView.snp.makeConstraints { make in
-                make.left.equalTo(15)
+                make.left.equalTo(10)
                 make.top.equalTo(50)
                 make.width.equalTo(30)
                 make.height.equalTo(30)
