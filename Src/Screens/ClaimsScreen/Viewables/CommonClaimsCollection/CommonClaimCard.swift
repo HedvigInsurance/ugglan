@@ -28,6 +28,7 @@ struct CommonClaimCard {
     let controlIsEnabledSignal = ReadWriteSignal<Bool>(true)
     let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
     let showCloseButton = ReadWriteSignal<Bool>(false)
+    let showClaimButtonSignal = ReadWriteSignal<Bool>(false)
     
     let closeSignal: Signal<Void>
     private let closeCallbacker: Callbacker<Void>
@@ -48,7 +49,7 @@ struct CommonClaimCard {
             context: nil
         )
         
-        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90)
+        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90 + 60)
     }
     
     var isFirstInRow: Bool {
@@ -226,6 +227,20 @@ extension CommonClaimCard: Viewable {
             bag += closeButtonView.signal(for: .touchUpInside).onValue {
                 self.closeCallbacker.callAll()
             }
+        }
+        
+        let claimButton = Button(
+            title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
+            type: .standard(backgroundColor: .purple, textColor: .white)
+        )
+        
+        bag += contentView.add(claimButton) { claimButtonView in
+            bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
+            
+            claimButtonView.snp.makeConstraints({ make in
+                make.bottom.equalTo(-15)
+                make.centerX.equalToSuperview()
+            })
         }
         
         bag += contentView.signal(for: .touchUpInside).onValue { _ in

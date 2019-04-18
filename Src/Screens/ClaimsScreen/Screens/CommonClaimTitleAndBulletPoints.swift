@@ -38,6 +38,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.controlIsEnabledSignal.value = false
         commonClaimCard.shadowOpacitySignal.value = 0
         commonClaimCard.showCloseButton.value = true
+        commonClaimCard.showClaimButtonSignal.value = true
         
         bag += view.addArangedSubview(commonClaimCard) { view in
             view.snp.makeConstraints({ make in
