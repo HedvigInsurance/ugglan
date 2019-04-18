@@ -30,7 +30,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         
         bag += view.install(pan)
         
-        commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
+        commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
@@ -39,7 +39,6 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.shadowOpacitySignal.value = 0
         
         bag += view.addArangedSubview(commonClaimCard) { view in
-            
             view.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             })

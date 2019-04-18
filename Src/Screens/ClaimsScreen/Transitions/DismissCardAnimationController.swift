@@ -39,7 +39,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         
         let originFrame = originView.convert(originView.frame, to: transitionContext.containerView)
         
-        commonClaimCard.backgroundColorSignal.value = UIColor.pink.lighter(amount: 0.1)
+        commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
@@ -59,7 +59,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             })
             
             bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                self.commonClaimCard.backgroundColorSignal.value = UIColor.white
+                self.commonClaimCard.backgroundStateSignal.value = .normal
                 self.commonClaimCard.cornerRadiusSignal.value = 8
                 self.commonClaimCard.iconTopPaddingStateSignal.value = .normal
                 self.commonClaimCard.titleLabelStateSignal.value = .normal

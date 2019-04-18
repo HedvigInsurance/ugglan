@@ -20,7 +20,7 @@ struct CommonClaimCard {
         case normal, expanded
     }
     
-    let backgroundColorSignal = ReadWriteSignal<UIColor>(.white)
+    let backgroundStateSignal = ReadWriteSignal<State>(.normal)
     let cornerRadiusSignal = ReadWriteSignal<CGFloat>(8)
     let iconTopPaddingStateSignal = ReadWriteSignal<State>(.normal)
     let layoutTitleAlphaSignal = ReadWriteSignal<CGFloat>(0)
@@ -62,9 +62,23 @@ extension CommonClaimCard: Viewable {
         
         let bag = DisposeBag()
         
+        func backgroundColorFromData() -> UIColor {
+            if let color = data.layout.asTitleAndBulletPoints?.color {
+                return UIColor.from(apollo: color).lighter(amount: 0.2)
+            }
+            
+            if let color = data.layout.asEmergency?.color {
+                return UIColor.from(apollo: color).lighter(amount: 0.2)
+            }
+            
+            return UIColor.purple
+        }
+        
         let contentView = UIControl()
         bag += controlIsEnabledSignal.atOnce().bindTo(contentView, \.isEnabled)
-        bag += backgroundColorSignal.atOnce().bindTo(contentView, \.backgroundColor)
+        bag += backgroundStateSignal.atOnce().map {
+            $0 == .normal ? UIColor.white : backgroundColorFromData()
+        }.bindTo(contentView, \.backgroundColor)
         bag += cornerRadiusSignal.atOnce().bindTo(contentView, \.layer.cornerRadius)
         
         bag += shadowOpacitySignal.atOnce().bindTo(contentView, \.layer.shadowOpacity)
