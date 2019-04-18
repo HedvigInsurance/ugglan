@@ -34,7 +34,7 @@ extension BulletPointCard: Reusable {
         let contentView = UIStackView()
         contentView.axis = .vertical
         contentView.alignment = .top
-        contentView.spacing = 10
+        contentView.spacing = 5
         contentView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         contentView.isLayoutMarginsRelativeArrangement = true
         
