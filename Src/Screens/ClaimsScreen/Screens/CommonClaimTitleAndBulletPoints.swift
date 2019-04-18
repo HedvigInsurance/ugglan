@@ -44,7 +44,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
             })
         }
         
-        bag += view.addArangedSubview(BulletPointCollection(
+        bag += view.addArangedSubview(BulletPointTable(
             bulletPoints: commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
         ))
         

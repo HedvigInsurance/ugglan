@@ -77,11 +77,11 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             }
         }
         
-        let bulletPointCollection = BulletPointCollection(
+        let bulletPointTable = BulletPointTable(
             bulletPoints: self.commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
         )
         
-        bag += contentContainerView.add(bulletPointCollection) { contentView in
+        bag += contentContainerView.add(bulletPointTable) { contentView in
             contentView.snp.makeConstraints { make in
                 make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
                 make.width.equalTo(contentContainerView.frame.width)

@@ -77,11 +77,11 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         }
         
         
-        let bulletPointCollection = BulletPointCollection(
+        let bulletPointTable = BulletPointTable(
             bulletPoints: self.commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
         )
         
-        bag += contentContainerView.add(bulletPointCollection) { contentView in
+        bag += contentContainerView.add(bulletPointTable) { contentView in
             contentView.snp.makeConstraints { make in
                 make.height.equalTo(0)
                 make.width.equalTo(originFrame.width)
