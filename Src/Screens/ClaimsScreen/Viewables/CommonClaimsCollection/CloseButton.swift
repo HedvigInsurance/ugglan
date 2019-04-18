@@ -22,6 +22,8 @@ extension CloseButton: Viewable {
             \.alpha
         )
         
+        bag += button.signal(for: .touchUpInside).feedback(type: .impactLight)
+        
         bag += merge(
             button.signal(for: .touchUpInside),
             button.signal(for: .touchUpOutside),
