@@ -194,19 +194,19 @@ extension CommonClaimCard: Viewable {
                 contentView.transform = CGAffineTransform.identity
         }
         
-        let closeButton = UIControl()
-        closeButton.backgroundColor = UIColor.offWhite.withAlphaComponent(0.3)
-        view.addSubview(closeButton)
+        let closeButton = CloseButton()
         
-        closeButton.snp.makeConstraints { make in
-            make.right.equalTo(-15)
-            make.top.equalTo(50)
-            make.width.equalTo(30)
-            make.height.equalTo(30)
-        }
-        
-        bag += closeButton.signal(for: .touchUpInside).onValue {
-            self.closeCallbacker.callAll()
+        bag += view.add(closeButton) { closeButtonView in
+            closeButtonView.snp.makeConstraints { make in
+                make.left.equalTo(15)
+                make.top.equalTo(50)
+                make.width.equalTo(30)
+                make.height.equalTo(30)
+            }
+            
+            bag += closeButtonView.signal(for: .touchUpInside).onValue {
+                self.closeCallbacker.callAll()
+            }
         }
         
         bag += contentView.signal(for: .touchUpInside).onValue { _ in
