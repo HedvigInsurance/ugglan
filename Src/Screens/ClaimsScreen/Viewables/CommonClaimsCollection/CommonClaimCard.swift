@@ -216,6 +216,7 @@ extension CommonClaimCard: Viewable {
         
         bag += view.add(closeButton) { closeButtonView in
             bag += showCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
+            bag += showCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(closeButtonView, \.alpha)
             
             closeButtonView.snp.makeConstraints { make in
                 make.left.equalTo(10)
@@ -236,6 +237,7 @@ extension CommonClaimCard: Viewable {
         
         bag += contentView.add(claimButton) { claimButtonView in
             bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
+            bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
             
             claimButtonView.snp.makeConstraints({ make in
                 make.bottom.equalTo(-15)
