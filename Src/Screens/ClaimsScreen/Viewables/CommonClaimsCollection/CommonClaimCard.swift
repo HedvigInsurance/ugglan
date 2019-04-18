@@ -44,11 +44,11 @@ struct CommonClaimCard {
         ))
         
         let size = attributedString.boundingRect(
-            with: CGSize(width: UIScreen.main.bounds.width - 20, height: 1000),
+            with: CGSize(width: UIScreen.main.bounds.width - 40, height: 1000),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil
         )
-        
+                
         return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90 + 60)
     }
     
@@ -77,7 +77,7 @@ extension CommonClaimCard: Viewable {
         let bag = DisposeBag()
         
         func backgroundColorFromData() -> UIColor {
-            let lightenedAmount: CGFloat = 0.5
+            let lightenedAmount: CGFloat = 0.3
             
             if let color = data.layout.asTitleAndBulletPoints?.color {
                 return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
@@ -140,11 +140,10 @@ extension CommonClaimCard: Viewable {
                 make.top.equalTo(0)
                 make.centerX.equalToSuperview()
                 make.width.equalToSuperview().inset(15)
-                make.height.equalTo(200)
             }
             
             bag += iconTopPaddingStateSignal.atOnce().onValue({ state in
-                let extraPadding: CGFloat = 20
+                let extraPadding: CGFloat = 50
                 
                 if state == .normal {
                     view.snp.updateConstraints({ make in
