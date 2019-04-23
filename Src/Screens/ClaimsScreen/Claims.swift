@@ -30,11 +30,8 @@ extension Claims: Presentable {
         stackView.axis = .vertical
         stackView.spacing = 15
         
-        let headerView = UIView()
-        headerView.snp.makeConstraints { make in
-            make.height.equalTo(200)
-        }
-        stackView.addArrangedSubview(headerView)
+        let claimsHeader = ClaimsHeader()
+        bag += stackView.addArangedSubview(claimsHeader)
         
         let commonClaimsCollection = CommonClaimsCollection(presentingViewController: viewController)
         

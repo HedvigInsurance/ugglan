@@ -10,6 +10,12 @@ import Form
 import Foundation
 
 extension TextStyle {
+    func centered() -> TextStyle {
+        return self.restyled({ (style: inout TextStyle) in
+            style.alignment = .center
+        })
+    }
+    
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .black
