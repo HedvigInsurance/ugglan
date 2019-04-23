@@ -47,10 +47,6 @@ extension CommonClaimsCollection: Viewable {
             )
         }
         
-        bag += collectionKit.registerViewForSupplementaryElement { tableIndex -> CommonClaimsHeader in
-            return CommonClaimsHeader()
-        }
-        
         bag += client.fetch(query: CommonClaimsQuery(locale: .svSe)).onValue { result in
             let rows = result.data!.commonClaims.enumerated().map {
                 CommonClaimCard(
