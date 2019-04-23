@@ -40,7 +40,7 @@ struct CommonClaimsHeader: Reusable {
 }
 
 extension CommonClaimsCollection: Viewable {
-    func materialize(events: ViewableEvents) -> (UICollectionView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         
         let layout = UICollectionViewFlowLayout()
@@ -80,6 +80,25 @@ extension CommonClaimsCollection: Viewable {
             )
         }.disposable
         
-        return (collectionKit.view, bag)
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        
+        let titleLabel = MultilineLabel(value: "Snabbval", style: .blockRowTitle)
+        bag += stackView.addArangedSubview(titleLabel.wrappedIn(UIStackView())) { containerStackView in
+            containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+            containerStackView.isLayoutMarginsRelativeArrangement = true
+        }
+        
+        stackView.addArrangedSubview(collectionKit.view)
+        
+        bag += collectionKit.view.didLayoutSignal.onValue({ _ in
+            collectionKit.view.snp.updateConstraints({ make in
+                make.height.equalTo(
+                    collectionKit.view.collectionViewLayout.collectionViewContentSize.height
+                )
+            })
+        })
+        
+        return (stackView, bag)
     }
 }

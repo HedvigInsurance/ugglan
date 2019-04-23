@@ -35,15 +35,7 @@ extension Claims: Presentable {
         
         let commonClaimsCollection = CommonClaimsCollection(presentingViewController: viewController)
         
-        bag += stackView.addArangedSubview(commonClaimsCollection) { collectionView in
-            bag += collectionView.didLayoutSignal.onValue({ _ in
-                collectionView.snp.updateConstraints({ make in
-                    make.height.equalTo(
-                        collectionView.collectionViewLayout.collectionViewContentSize.height
-                    )
-                })
-            })
-        }
+        bag += stackView.addArangedSubview(commonClaimsCollection)
         
         bag += viewController.install([stackView])
         
