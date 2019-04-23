@@ -22,15 +22,18 @@ struct ExpandableRow<Content: Viewable, ExpandableContent: Viewable> where
     let content: Content
     let expandedContent: ExpandableContent
     let isOpenSignal: ReadWriteSignal<Bool>
+    let transparent: Bool
     
     init(
         content: Content,
         expandedContent: ExpandableContent,
-        isOpen: Bool = false
+        isOpen: Bool = false,
+        transparent: Bool = false
     ) {
         self.content = content
         self.expandedContent = expandedContent
         self.isOpenSignal = ReadWriteSignal<Bool>(isOpen)
+        self.transparent = transparent
     }
 }
 
@@ -39,12 +42,17 @@ extension ExpandableRow: Viewable {
         let bag = DisposeBag()
         
         let containerView = UIView()
-        containerView.backgroundColor = .white
-        containerView.layer.cornerRadius = 15
-        containerView.layer.shadowOpacity = 0.15
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
-        containerView.layer.shadowRadius = 8
-        containerView.layer.shadowColor = UIColor.darkGray.cgColor
+        if !transparent {
+            containerView.backgroundColor = .white
+            containerView.layer.cornerRadius = 15
+            containerView.layer.shadowOpacity = 0.15
+            containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
+            containerView.layer.shadowRadius = 8
+            containerView.layer.shadowColor = UIColor.darkGray.cgColor
+        } else {
+            containerView.backgroundColor = .transparent
+        }
+        
         //containerView.clipsToBounds = true
         //containerView.layer.masksToBounds = true
         

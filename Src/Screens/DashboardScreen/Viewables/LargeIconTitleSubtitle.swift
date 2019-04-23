@@ -55,8 +55,8 @@ extension LargeIconTitleSubtitle: Viewable {
         containerStackView.addArrangedSubview(icon)
         
         bag += imageSignal.atOnce()
-            .filter { $0 != nil }
-            .map { $0! }.bindTo(icon, \.icon)
+            .compactMap { $0 }
+            .bindTo(icon, \.icon)
         
         // Title+subtitle
         let titlesView = UIStackView()

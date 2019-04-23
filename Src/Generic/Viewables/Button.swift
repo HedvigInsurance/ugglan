@@ -14,13 +14,14 @@ import UIKit
 
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case standardSmall(backgroundColor: HedvigColor, textColor: HedvigColor)
     case outline(borderColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
     case iconTransparent(textColor: HedvigColor, icon: ImageAsset)
 
     func backgroundOpacity() -> CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardSmall:
             return 1
         case .outline:
             return 0
@@ -33,7 +34,7 @@ enum ButtonType {
     
     func highlightedBackgroundOpacity() -> CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardSmall:
             return 1
         case .outline:
             return 0.05
@@ -48,6 +49,8 @@ enum ButtonType {
         switch self {
         case let .standard((backgroundColor, _)):
             return backgroundColor
+        case let .standardSmall((backgroundColor, _)):
+            return backgroundColor
         case .outline((_, _)):
             return .purple
         case let .pillTransparent((backgroundColor, _)):
@@ -60,6 +63,8 @@ enum ButtonType {
     func textColor() -> HedvigColor {
         switch self {
         case let .standard((_, textColor)):
+            return textColor
+        case let .standardSmall((_, textColor)):
             return textColor
         case let .outline((_, textColor)):
             return textColor
@@ -74,6 +79,8 @@ enum ButtonType {
         switch self {
         case .standard:
             return 50
+        case .standardSmall:
+            return 34
         case .outline:
             return 34
         case .pillTransparent:
@@ -85,7 +92,7 @@ enum ButtonType {
 
     func fontSize() -> CGFloat {
         switch self {
-        case .standard, .outline:
+        case .standard, .standardSmall, .outline:
             return 15
         case .pillTransparent:
             return 13
@@ -98,6 +105,8 @@ enum ButtonType {
         switch self {
         case .standard:
             return 50
+        case .standardSmall:
+            return 35
         case .outline:
             return 35
         case .pillTransparent:
@@ -156,12 +165,12 @@ enum ButtonType {
 struct Button {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
-    let title: ReadSignal<String>
+    let title: ReadWriteSignal<String>
     let onTapSignal: Signal<Void>
     let type: ButtonType
 
     init(title: String, type: ButtonType) {
-        self.title = ReadWriteSignal(title).readOnly()
+        self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = type
     }
@@ -239,6 +248,10 @@ extension Button: Viewable {
 
         bag += title.atOnce().onValue { title in
             button.setTitle(title)
+            
+            button.snp.remakeConstraints { make in
+                make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
+            }
         }
 
         bag += button.signal(for: .touchDown).map({ _ -> ButtonStyle in
@@ -266,7 +279,7 @@ extension Button: Viewable {
             \.style
         )
 
-        bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
+        bag += touchUpInside.flatMapLatest { _ -> ReadWriteSignal<String> in
             self.title.atOnce()
         }.onValue { title in
             if let localizationKey = title.localizationKey?.toString() {
