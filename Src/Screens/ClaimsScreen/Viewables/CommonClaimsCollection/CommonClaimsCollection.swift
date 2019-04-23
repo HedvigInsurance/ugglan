@@ -25,20 +25,6 @@ struct CommonClaimsCollection {
     }
 }
 
-struct CommonClaimsHeader: Reusable {
-    public static func makeAndConfigure() -> (
-        make: UIView,
-        configure: (CommonClaimsHeader) -> Disposable
-    ) {
-        let containerView = UIStackView()
-        
-        return (containerView, { data in
-            
-            return NilDisposer()
-        })
-    }
-}
-
 extension CommonClaimsCollection: Viewable {
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
