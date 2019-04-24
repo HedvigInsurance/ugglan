@@ -12,8 +12,8 @@ import Ease
 import Form
 
 struct SlideToClaim: SignalProvider {
-    var providedSignal: Signal<Void> {
-        return providedSignalCallbacker.signal()
+    var providedSignal: CoreSignal<Finite, Void> {
+        return providedSignalCallbacker.signal().take(first: 1)
     }
     
     private let providedSignalCallbacker = Callbacker<Void>()
