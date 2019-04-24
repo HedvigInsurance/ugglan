@@ -113,7 +113,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             contentContainerView.backgroundColor = .white
         }
         
-        bag += Signal(after: transitionDuration(using: transitionContext)).onValue {
+        bag += Signal(after: transitionDuration(using: transitionContext)).onValue { [weak self] in
             transitionContext.containerView.addSubview(toVC.view)
             
             toVC.view.snp.makeConstraints({ make in
@@ -124,6 +124,8 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             transitionContext.containerView.addSubview(toVC.view)
             contentContainerView.removeFromSuperview()
             transitionContext.completeTransition(true)
+            
+            self?.bag.dispose()
         }
     }
 }

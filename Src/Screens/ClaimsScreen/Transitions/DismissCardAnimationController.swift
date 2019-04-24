@@ -119,9 +119,10 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         fromVC?.view.alpha = 0
         contentContainerView.alpha = 1
         
-        bag += Signal(after: transitionDuration(using: transitionContext)).onValue {
-            self.originView.alpha = 1
+        bag += Signal(after: transitionDuration(using: transitionContext)).onValue { [weak self] in
+            self?.originView.alpha = 1
             transitionContext.completeTransition(true)
+            self?.bag.dispose()
         }
     }
 }

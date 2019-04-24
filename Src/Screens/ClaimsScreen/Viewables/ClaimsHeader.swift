@@ -11,6 +11,8 @@ import UIKit
 import Form
 
 struct ClaimsHeader {
+    let presentingViewController: UIViewController
+    
     struct Title {}
     struct Description {}
 }
@@ -86,6 +88,17 @@ extension ClaimsHeader: Viewable {
         bag += view.addArangedSubview(description)
         
         let button = Button(title: "Anmäl skada", type: .standard(backgroundColor: .purple, textColor: .white))
+        
+        bag += button.onTapSignal.onValue {
+            self.presentingViewController.present(
+                DraggableOverlay(
+                    presentable: HonestyPledge(),
+                    presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
+                    heightPercentage: 0.35
+                )
+            )
+        }
+        
         bag += view.addArangedSubview(button.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .center
