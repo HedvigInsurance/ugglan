@@ -64,6 +64,8 @@ extension CommonClaimsCollection: Viewable {
         
         let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+        stackView.isLayoutMarginsRelativeArrangement = true
         
         let titleLabel = MultilineLabel(value: "Snabbval", style: .blockRowTitle)
         bag += stackView.addArangedSubview(titleLabel.wrappedIn(UIStackView())) { containerStackView in
