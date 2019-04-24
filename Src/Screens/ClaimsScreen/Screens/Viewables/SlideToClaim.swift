@@ -67,7 +67,7 @@ extension SlideToClaim: Viewable {
         }
         
         let pan = UIPanGestureRecognizer()
-        bag += handle.install(pan)
+        bag += view.install(pan)
         
         let ease: Ease<CGFloat> = Ease(handle.center.x, minimumStep: 0.001)
         
