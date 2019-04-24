@@ -78,39 +78,44 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             }
         }
         
-        
-        let bulletPointTable = BulletPointTable(
-            bulletPoints: self.commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
-        )
-        
-        bag += contentContainerView.add(bulletPointTable) { contentView in
-            contentView.snp.makeConstraints { make in
-                make.height.equalTo(0)
-                make.width.equalTo(originFrame.width)
-                make.top.equalTo(originFrame.maxY)
-                make.left.equalTo(originFrame.origin.x)
-            }
+        if let bulletPoints = self.commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
+            let bulletPointTable = BulletPointTable(
+                bulletPoints: bulletPoints
+            )
             
-            contentView.layoutIfNeeded()
-            
-            bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                contentView.snp.updateConstraints { make in
-                    make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
-                    make.width.equalTo(contentContainerView.frame.width)
-                    make.top.equalTo(claimsCardFinalHeight)
-                    make.left.equalTo(0)
+            bag += contentContainerView.add(bulletPointTable) { contentView in
+                contentView.snp.makeConstraints { make in
+                    make.height.equalTo(0)
+                    make.width.equalTo(originFrame.width)
+                    make.top.equalTo(originFrame.maxY)
+                    make.left.equalTo(originFrame.origin.x)
                 }
                 
-                contentView.layer.cornerRadius = 0
-                
                 contentView.layoutIfNeeded()
-                contentContainerView.layoutIfNeeded()
+                
+                bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    contentView.snp.updateConstraints { make in
+                        make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
+                        make.width.equalTo(contentContainerView.frame.width)
+                        make.top.equalTo(claimsCardFinalHeight)
+                        make.left.equalTo(0)
+                    }
+                    
+                    contentView.layer.cornerRadius = 0
+                    
+                    contentView.layoutIfNeeded()
+                    contentContainerView.layoutIfNeeded()
+                }
             }
+        }
+        
+        if let _ = self.commonClaimCard.data.layout.asEmergency {
+            contentContainerView.backgroundColor = .white
         }
         
         bag += Signal(after: transitionDuration(using: transitionContext)).onValue {
             transitionContext.containerView.addSubview(toVC.view)
-
+            
             toVC.view.snp.makeConstraints({ make in
                 make.width.equalToSuperview()
                 make.height.equalToSuperview()

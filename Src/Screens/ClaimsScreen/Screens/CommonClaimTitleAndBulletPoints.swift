@@ -19,9 +19,8 @@ struct CommonClaimTitleAndBulletPoints {
 extension CommonClaimTitleAndBulletPoints: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        
         let bag = DisposeBag()
-     
+        
         let view = UIStackView()
         view.axis = .vertical
         view.backgroundColor = .offWhite
@@ -46,9 +45,11 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
             })
         }
         
-        bag += view.addArangedSubview(BulletPointTable(
-            bulletPoints: commonClaimCard.data.layout.asTitleAndBulletPoints!.bulletPoints
-        ))
+        if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
+            bag += view.addArangedSubview(BulletPointTable(
+                bulletPoints: bulletPoints
+            ))
+        }
         
         viewController.view = view
         

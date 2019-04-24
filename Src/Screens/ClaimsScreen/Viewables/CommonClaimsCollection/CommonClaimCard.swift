@@ -269,10 +269,26 @@ extension CommonClaimCard: Viewable {
                 )
             }
             
-            if let layout = self.data.layout.asEmergency {
+            if let _ = self.data.layout.asEmergency {
                 self.presentingViewController.present(
-                    CommonClaimEmergency(layout: layout),
-                    style: .modally()
+                    CommonClaimEmergency(
+                        commonClaimCard: CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
+                    ),
+                    style: .modally(
+                        presentationStyle: .custom,
+                        transitionStyle: nil,
+                        capturesStatusBarAppearance: true
+                    ),
+                    options: [],
+                    configure: { vc, bag in
+                        let newCommonClaimCard = CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
+                        let delegate = CardControllerTransitioningDelegate(
+                            originView: contentView,
+                            commonClaimCard: newCommonClaimCard
+                        )
+                        bag.hold(delegate)
+                        vc.transitioningDelegate = delegate
+                }
                 )
             }
         }
