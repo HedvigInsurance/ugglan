@@ -10,7 +10,13 @@ import Form
 import Foundation
 import UIKit
 
-struct Countdown {}
+struct Countdown {
+    let date: Date
+    
+    init(date: Date) {
+        self.date = date
+    }
+}
 
 extension Countdown: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -33,31 +39,27 @@ extension Countdown: Viewable {
             return label
         }
         
-        let date = Date()
-        
-        //bag += Signal(every: 1)
-        
-        let monthLabel = UILabel(styledText: StyledText(text: "8", style: .countdownNumber))
+        let monthLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         view.addArrangedSubview(monthLabel)
         
         let m = descriptiveLabel(text: "M")
         view.addArrangedSubview(m)
         
-        let dayLabel = UILabel(styledText: StyledText(text: "24", style: .countdownNumber))
+        let dayLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         dayLabel.textColor = UIColor.darkPurple
         view.addArrangedSubview(dayLabel)
         
         let d = descriptiveLabel(text: "D")
         view.addArrangedSubview(d)
         
-        let hourLabel = UILabel(styledText: StyledText(text: "13", style: .countdownNumber))
+        let hourLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         hourLabel.textColor = UIColor.purple
         view.addArrangedSubview(hourLabel)
         
         let h = descriptiveLabel(text: "H")
         view.addArrangedSubview(h)
         
-        let minLabel = UILabel(styledText: StyledText(text: "45", style: .countdownNumber))
+        let minLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         minLabel.textColor = UIColor.turquoise
         view.addArrangedSubview(minLabel)
         
@@ -66,6 +68,26 @@ extension Countdown: Viewable {
         
         view.snp.makeConstraints { (make) in
             make.height.centerX.centerY.equalToSuperview()
+        }
+        
+        bag += Signal(every: 30).atOnce().onValue {
+            let currentDate = Date()
+            let calendar = Calendar.current
+            
+            let timeInterval = calendar.dateComponents([.month, .day, .hour, .minute], from: currentDate, to: self.date)
+            
+            if let months = timeInterval.month {
+                monthLabel.text = String(months)
+            }
+            if let days = timeInterval.day {
+                dayLabel.text = String(days)
+            }
+            if let hours = timeInterval.hour {
+                hourLabel.text = String(hours)
+            }
+            if let mins = timeInterval.minute {
+                minLabel.text = String(mins)
+            }
         }
         
         return (contentView, bag)

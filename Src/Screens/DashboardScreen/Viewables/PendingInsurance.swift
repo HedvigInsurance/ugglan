@@ -21,23 +21,28 @@ extension PendingInsurance: Viewable {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 15
-        stackView.edgeInsets = UIEdgeInsets(top: 25, left: 25, bottom: 25, right: 25)
+        stackView.edgeInsets = UIEdgeInsets(top: 15, left: 25, bottom: 30, right: 25)
         
-        bag += dataSignal.atOnce().map { $0 == nil || $0?.status == .inactive || $0?.status == .inactiveWithStartDate }.bindTo(stackView, \.isHidden)
+        bag += dataSignal.atOnce().map { $0 == nil || $0?.status != .inactive || $0?.status != .inactiveWithStartDate }.bindTo(stackView, \.isHidden)
         
-        bag += dataSignal.atOnce().compactMap { $0?.status } .onValue { insuranceStatus in
-            let moreInfo = PendingInsuranceMoreInfo()
-            
-            switch insuranceStatus {
-            case .inactive, .active:
+        bag += dataSignal.atOnce().compactMap { $0 } .onValue { insurance in
+            switch insurance.status {
+            case .inactive:
                 let content = CountdownShapes()
+                let moreInfo = PendingInsuranceMoreInfo()
                 let expandableView: ExpandableRow<CountdownShapes, PendingInsuranceMoreInfo> = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
                 addBottomContent(view: expandableView)
             case .inactiveWithStartDate:
-                let content = Countdown()
-                let expandableView: ExpandableRow<Countdown, PendingInsuranceMoreInfo> = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
-                addBottomContent(view: expandableView)
-                // Start date
+                if #available(iOS 10.0, *) {
+                    let dateString = insurance.activeFrom?.replacingOccurrences(of: ".", with: "+")
+                    let date = ISO8601DateFormatter().date(from: dateString ?? "")
+                    let content = Countdown(date: date ?? Date())
+                    let moreInfo = PendingInsuranceMoreInfo(date: date)
+                    let expandableView: ExpandableRow<Countdown, PendingInsuranceMoreInfo> = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
+                    addBottomContent(view: expandableView)
+                } else {
+                    print("pls update ios")
+                }
                 ()
             default:
                 ()
@@ -50,14 +55,14 @@ extension PendingInsurance: Viewable {
                 view.removeFromSuperview()
             }
             
-            let pendingInsuranceHeader = MultilineLabel(styledText: StyledText(text: "Din försäkring är på gång!", style: .bodyOffBlack))
+            let pendingInsuranceHeader = MultilineLabel(styledText: StyledText(text: String(key: .DASHBOARD_PENDING_HEADER), style: .bodyOffBlack))
             bag += stackView.addArranged(pendingInsuranceHeader)
             
             bag += stackView.addArranged(view)
             
             let buttonContainer = UIView()
-            let openButton = Button(title: "Mer info", type: .standardSmall(backgroundColor: .lightGray, textColor: .offBlack))
-            let closeButton = Button(title: "Mindre info", type: .standardSmall(backgroundColor: .lightGray, textColor: .offBlack))
+            let openButton = Button(title: String(key: .DASHBOARD_PENDING_MORE_INFO), type: .standardSmall(backgroundColor: .lightGray, textColor: .offBlack))
+            let closeButton = Button(title: String(key: .DASHBOARD_PENDING_LESS_INFO), type: .standardSmall(backgroundColor: .lightGray, textColor: .offBlack))
             
             let isOpenSignal = view.isOpenSignal.atOnce()
             

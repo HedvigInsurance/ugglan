@@ -76,7 +76,7 @@ extension PerilCollection: Viewable {
         let divider = Divider(backgroundColor: .offWhite)
         bag += contentStackView.addArranged(divider)
         
-        let footerLabel = MultilineLabel(styledText: StyledText(text: "Klicka på ikonerna för mer info", style: .perilTitle))
+        let footerLabel = MultilineLabel(styledText: StyledText(text: String(key: .DASHBOARD_PERIL_FOOTER), style: .perilTitle))
         bag += contentStackView.addArranged(footerLabel) { footerLabelView in
             footerLabelView.textAlignment = .center
             footerLabelView.snp.makeConstraints { make in

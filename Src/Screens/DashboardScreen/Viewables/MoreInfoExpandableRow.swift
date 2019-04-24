@@ -16,8 +16,8 @@ extension MoreInfoExpandableRow: Viewable {
         let bag = DisposeBag()
         
         let contentView = LargeIconTitleSubtitle()
-        contentView.titleSignal.value = String(key: .DASHBOARD_MORE_INFO_BUTTON_TEXT)
-        contentView.subtitleSignal.value = "om din hemförsäkring"
+        contentView.titleSignal.value = String(key: .DASHBOARD_INFO_HEADER)
+        contentView.subtitleSignal.value = String(key: .DASHBOARD_INFO_SUBHEADER)
         contentView.imageSignal.value = Asset.moreInfoPlain
         
         let moreInfoView = MoreInfo()

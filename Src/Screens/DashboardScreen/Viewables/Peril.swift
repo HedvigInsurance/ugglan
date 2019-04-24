@@ -107,7 +107,6 @@ extension Peril: Reusable {
             bag += tapGesture.signal(forState: .ended).onValue { _ in
                 let title = peril.title.replacingOccurrences(of: "-\n", with: "")
                 
-                // - TODO: make DraggableOverlay scrollable
                 let heightPercentage: CGFloat = Device.hasRoundedCorners ? 0.4 : 0.7
                 
                 peril.presentingViewController.present(

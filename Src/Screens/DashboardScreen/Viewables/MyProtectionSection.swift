@@ -31,7 +31,7 @@ extension MyProtectionSection: Viewable {
         stackView.isHidden = true
         bag += dataSignal.map { $0 == nil }.bindTo(stackView, \.isHidden)
         
-        let isActiveLabel = CheckmarkLabel(styledText: StyledText(text: "Din försäkring är aktiv", style: .rowSubtitle))
+        let isActiveLabel = CheckmarkLabel(styledText: StyledText(text: String(key: .DASHBOARD_INSURANCE_STATUS), style: .rowSubtitle))
         bag += stackView.addArranged(isActiveLabel) { checkmarkLabelView in
             bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(checkmarkLabelView, \.isHidden)
         }

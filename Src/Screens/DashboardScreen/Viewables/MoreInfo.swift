@@ -32,7 +32,7 @@ extension MoreInfo: Viewable {
         
         let selfRiskCheckmark = CheckmarkLabel(
             styledText: StyledText(
-                text: "Din självrisk är 1 500 kr",
+                text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
                 style: .bodyOffBlack
             )
         )
@@ -40,7 +40,7 @@ extension MoreInfo: Viewable {
         
         let totalInsuranceCheckmark = CheckmarkLabel(
             styledText: StyledText(
-                text: "Prylarna försäkras till totalt 1 000 000 kr",
+                text: String(key: .DASHBOARD_INFO_INSURANCE_AMOUNT),
                 style: .bodyOffBlack
             )
         )
@@ -48,7 +48,7 @@ extension MoreInfo: Viewable {
         
         let travelValidCheckmark = CheckmarkLabel(
             styledText: StyledText(
-                text: "Gäller på resor varsomhelst i världen",
+                text: String(key: .DASHBOARD_INFO_TRAVEL),
                 style: .bodyOffBlack
             )
         )

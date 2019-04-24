@@ -9,7 +9,13 @@ import Flow
 import Form
 import Foundation
 
-struct PendingInsuranceMoreInfo {}
+struct PendingInsuranceMoreInfo {
+    let date: Date?
+    
+    init(date: Date? = nil) {
+        self.date = date
+    }
+}
 
 extension PendingInsuranceMoreInfo: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -23,8 +29,26 @@ extension PendingInsuranceMoreInfo: Viewable {
             make.width.lessThanOrEqualTo(400)
         }
         
+        var text = ""
+        
+        if let _date = date {
+            // - TODO: Date in app's language
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "sv_SE")
+            dateFormatter.dateStyle = .long
+            let dateString = dateFormatter.string(from: _date)
+            
+            text = String(key: .DASHBOARD_PENDING_HAS_DATE(date: dateString))
+            
+        } else {
+            text = String(key: .DASHBOARD_PENDING_NO_DATE)
+        }
+        
+        //let text = date != nil ? String(key: .DASHBOARD_PENDING_HAS_DATE(date: "31 maj 2019")) : String(key: .DASHBOARD_PENDING_NO_DATE)
+        
         let morePendingInsuranceInfo = MultilineLabel(styledText: StyledText(
-            text: "Du är fortfarande försäkrad hos ditt tidigare försäkringsbolag. Vi har påbörjat flytten och den 31 maj 2019 är du är kund hos Hedvig!",
+            text: text,
             style: .bodyOffBlack
         ))
         

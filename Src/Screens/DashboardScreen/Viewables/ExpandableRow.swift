@@ -42,6 +42,7 @@ extension ExpandableRow: Viewable {
         let bag = DisposeBag()
         
         let containerView = UIView()
+        
         if !transparent {
             containerView.backgroundColor = .white
             containerView.layer.cornerRadius = 15

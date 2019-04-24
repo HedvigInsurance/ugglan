@@ -26,12 +26,14 @@ extension ChatActionsSection: Viewable {
         let headerLabelContainer = UIStackView()
         headerLabelContainer.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         let headerLabel = MultilineLabel(styledText: StyledText(
-            text: "Vad vill du göra idag?",
+            text: String(key: .DASHBOARD_CHAT_ACTIONS_HEADER),
             style: .boldSmallTitle
             )
         )
         bag += headerLabelContainer.addArranged(headerLabel)
         stackView.addArrangedSubview(headerLabelContainer)
+        
+        bag += dataSignal.atOnce().map { $0 == nil }.bindTo(headerLabelContainer, \.isHidden)
         
         let scrollView = UIScrollView()
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
