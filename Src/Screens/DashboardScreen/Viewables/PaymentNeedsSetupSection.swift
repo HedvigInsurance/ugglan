@@ -10,13 +10,22 @@ import Form
 import Foundation
 import UIKit
 
-struct PaymentNeedsSetupSection {}
+struct PaymentNeedsSetupSection {
+    let dataSignal: ReadWriteSignal<MyPaymentQuery.Data?> = ReadWriteSignal(nil)
+    let presentingViewController: UIViewController
+}
 
 extension PaymentNeedsSetupSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
         let wrapper = UIView()
+        wrapper.isHidden = true
+        
+        bag += dataSignal.onValue { data in
+            let hasAlreadyConnected = data?.bankAccount != nil
+            wrapper.isHidden = hasAlreadyConnected
+        }
         
         let containerView = UIView()
         containerView.backgroundColor = .offLightGray
@@ -47,8 +56,12 @@ extension PaymentNeedsSetupSection: Viewable {
         let connectButton = Button(title: "Koppla betalning", type: .outline(borderColor: .purple, textColor: .purple))
         bag += buttonContainer.add(connectButton) { buttonView in
             buttonView.snp.makeConstraints { make in
-                make.height.centerY.centerX.equalToSuperview()
+                make.width.height.centerY.centerX.equalToSuperview()
             }
+        }
+        
+        bag += connectButton.onTapSignal.onValue { _ in
+            self.presentingViewController.present(DirectDebitSetup(), options: [.autoPop, .largeTitleDisplayMode(.never)])
         }
         
         containerStackView.addArrangedSubview(buttonContainer)

@@ -22,7 +22,6 @@ extension Countdown: Viewable {
         view.alignment = .top
         view.distribution = .fill
         view.spacing = 4
-        //view.edgeInsets = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 50)
         
         contentView.addSubview(view)
         
@@ -34,7 +33,9 @@ extension Countdown: Viewable {
             return label
         }
         
-        //let date = Date()
+        let date = Date()
+        
+        //bag += Signal(every: 1)
         
         let monthLabel = UILabel(styledText: StyledText(text: "8", style: .countdownNumber))
         view.addArrangedSubview(monthLabel)

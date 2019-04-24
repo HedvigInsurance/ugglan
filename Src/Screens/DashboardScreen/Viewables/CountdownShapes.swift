@@ -71,49 +71,34 @@ extension CountdownShapes: Viewable {
             make.height.centerX.centerY.equalToSuperview()
         }
         
-        let animationDelay = 0.3
         
-        
-        let squareCallbacker = Callbacker<Void>()
-        bag += squareCallbacker.addCallback { _ in
-            bag += Signal(after: 0).animated(style: .heavyBounce(delay: 0)) { _ in
-                    square.transform = CGAffineTransform(scaleX: 1, y: 0.5)
-                }.animated(style: .heavyBounce(delay: 0.3)) { _ in
-                    square.transform = CGAffineTransform.identity
-                }.onValue {
-                    squareCallbacker.callAll()
-            }
-        }
-        
-        _ = Signal(callbacker: squareCallbacker)
-        
-        squareCallbacker.callAll()
-
-        /*bag += square.didLayoutSignal.delay(by: animationDelay).animated(style: .heavyBounce(delay: 0)) { _ in
+        bag += Signal(every: 0.6*2 + 0.3, delay: 0).animated(style: .heavyBounce(delay: 0)) { _ in
                 square.transform = CGAffineTransform(scaleX: 1, y: 0.5)
             }.animated(style: .heavyBounce(delay: 0.3)) { _ in
                 square.transform = CGAffineTransform.identity
-        }*/
-        
-        bag += square.didLayoutSignal.delay(by: animationDelay * 2).animated(style: .heavyBounce(delay: 0)) { _ in
-                circle.transform = CGAffineTransform(translationX: 10, y: 0)
-            }.animated(style: .heavyBounce(delay: 0.3)) { _ in
-                circle.transform = CGAffineTransform.identity
-        }.repeating(after: 0)
-        
-        bag += square.didLayoutSignal.delay(by: animationDelay * 3).animated(style: .heavyBounce(delay: 0)) { _ in
-            cogwheel.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
         }
         
-        bag += square.didLayoutSignal.delay(by: animationDelay * 4).animated(style: .heavyBounce(delay: 0)) { _ in
-            firstBar.snp.updateConstraints { make in
-                make.height.equalTo(12)
-            }
-            secondBar.snp.updateConstraints { make in
-                make.height.equalTo(32)
-            }
+        bag += Signal(every: 0.9*2, delay: 0).animated(style: .easeOut(duration: 0.9, delay: 0)) { _ in
+                circle.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            }.animated(style: .easeOut(duration: 0.9, delay: 0)) { _ in
+                circle.transform = CGAffineTransform.identity
+        }
+        
+        bag += Signal(every: 2, delay: 0).animated(style: .linear(duration: 1, delay: 0)) { _ in
+                cogwheel.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
+            }.animated(style: .linear(duration: 1, delay: 0)) { _ in
+                cogwheel.transform = CGAffineTransform(rotationAngle: CGFloat.pi * 2)
+        }
+        
+        bag += Signal(every: 0.6*2 + 0.4, delay: 0).animated(style: .heavyBounce(delay: 0)) { _ in
+                firstBar.snp.updateConstraints { make in
+                    make.height.equalTo(12)
+                }
+                secondBar.snp.updateConstraints { make in
+                    make.height.equalTo(32)
+                }
             
-            barStack.layoutIfNeeded()
+                barStack.layoutIfNeeded()
             }.delay(by: 0.4).animated(style: .heavyBounce(delay: 0)) { _ in
                 firstBar.snp.updateConstraints { make in
                     make.height.equalTo(32)

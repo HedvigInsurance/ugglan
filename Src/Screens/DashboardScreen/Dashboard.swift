@@ -35,7 +35,7 @@ extension Dashboard: Presentable {
 
         let form = FormView()
         
-        let paymentNeedsSetupSection = PaymentNeedsSetupSection()
+        let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += form.append(paymentNeedsSetupSection)
         
         let pendingInsurance = PendingInsurance()
@@ -51,13 +51,17 @@ extension Dashboard: Presentable {
         
         bag += viewController.install(form)
         
-        bag += client.watch(query: DashboardQuery())
-            .compactMap { $0.data?.insurance }
-            .bindTo(myProtectionSection.dataSignal)
+        let dashboardInsuranceQuery = client.watch(query: DashboardQuery()).compactMap { $0.data?.insurance }
+        bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
+        bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
         
         bag += client.watch(query: ChatActionsQuery())
             .compactMap { $0.data?.chatActions }
             .bindTo(chatActionsSection.dataSignal)
+        
+        bag += client.watch(query: MyPaymentQuery())
+            .compactMap { $0.data }
+            .bindTo(paymentNeedsSetupSection.dataSignal)
 
         return (viewController, bag)
     }

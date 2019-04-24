@@ -93,6 +93,7 @@ extension ExpandableRow: Viewable {
             expandedView.alpha = isOpenSignal.value ? 1 : 0
             
             bag += isOpenSignal.onValue { isOpen in
+                
                 let alpha: CGFloat = isOpen ? 1 : 0
                 let delay = isOpen ? 0.05 : 0
                 

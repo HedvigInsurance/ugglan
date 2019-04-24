@@ -26,6 +26,7 @@ extension MoreInfo: Viewable {
         )
         
         let moreInfoStackView = UIStackView()
+        moreInfoStackView.spacing = 6
         moreInfoStackView.axis = .vertical
         moreInfoStackView.edgeInsets = contentViewInsets
         

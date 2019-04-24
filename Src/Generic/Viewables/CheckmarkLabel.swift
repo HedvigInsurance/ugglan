@@ -35,15 +35,18 @@ extension CheckmarkLabel: Viewable {
         view.addArrangedSubview(icon)
         
         icon.snp.makeConstraints { make in
-            make.width.equalTo(icon.iconWidth)
+            make.width.equalTo(15)
+            make.height.equalTo(15 + 4)
         }
         
         let label = MultilineLabel(styledText: styledTextSignal.value)
         bag += styledTextSignal.atOnce().bindTo(label.styledTextSignal)
         
         bag += view.addArranged(label) { labelView in
-            labelView.snp.makeConstraints { make in
-                make.centerY.equalToSuperview()
+            bag += label.intrinsicContentSizeSignal.onValue { contentSize in
+                labelView.snp.makeConstraints { make in
+                    make.height.equalTo(contentSize.height)
+                }
             }
         }
         

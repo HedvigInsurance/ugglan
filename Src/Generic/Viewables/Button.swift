@@ -168,11 +168,13 @@ struct Button {
     let title: ReadWriteSignal<String>
     let onTapSignal: Signal<Void>
     let type: ButtonType
+    let animate: Bool
 
-    init(title: String, type: ButtonType) {
+    init(title: String, type: ButtonType, animate: Bool = true) {
         self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = type
+        self.animate = animate
     }
 }
 
@@ -254,7 +256,7 @@ extension Button: Viewable {
             }
         }
 
-        bag += button.signal(for: .touchDown).map({ _ -> ButtonStyle in
+        bag += button.signal(for: .touchDown).filter { self.animate }.map({ _ -> ButtonStyle in
             highlightedStyle
         }).bindTo(
             transition: button,
@@ -270,7 +272,7 @@ extension Button: Viewable {
             ()
         }).bindTo(onTapReadWriteSignal)
 
-        bag += touchUpInside.map({ _ -> ButtonStyle in
+        bag += touchUpInside.filter { self.animate }.map({ _ -> ButtonStyle in
             style
         }).delay(by: 0.1).bindTo(
             transition: button,
@@ -290,7 +292,7 @@ extension Button: Viewable {
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
-        ).map({ _ -> ButtonStyle in
+        ).filter { self.animate }.map({ _ -> ButtonStyle in
             style
         }).bindTo(
             transition: button,

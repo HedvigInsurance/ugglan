@@ -13,57 +13,10 @@ import UIKit
 struct AnimatedSignal<Value, From: SignalProvider>: SignalProvider, Disposable {
     let providedSignal: Signal<Value>
     let providedDisposable: Disposable
-    let from: From
-    
-    func isFromAnimatedSignal() -> Bool {
-        //let jdigol = from as! AnimatedSignal<Value, >
-        
-        if from is CoreSignal<Kind, Any> {
-            return false
-        } else {
-            return true
-        }
-    }
+    var from: From
 
     func dispose() {
         providedDisposable.dispose()
-    }
-}
-
-extension AnimatedSignal {
-    func repeating(after: TimeInterval) -> Disposable {
-        let bag = DisposeBag()
-        
-        /*func checkForAnimatedSignal<>(for provider: T) {
-         let anfj = provider as! AnimatedSignal<Value, T.from>
-         print(anfj)
-         }*/
-        
-        //checkForAnimatedSignal(for: self)
-        
-        if self.isFromAnimatedSignal() {
-            let fjeai = self.from as! AnimatedSignal<Value, AnimatedSignal<Value, T>>
-            bag += fjeai.repeating(after: 0)
-        }
-        
-        print(self.isFromAnimatedSignal())
-        
-        //print(self)
-        //let animadfjio = self as! AnimatedSignal<Value, Self>
-        //print(animadfjio)
-        
-        /*if let animatedSignal = self as? AnimatedSignal<Value, Self> {
-            print("wow! Also animated signal")
-            print(animatedSignal)
-            print(animatedSignal.from)
-            bag += animatedSignal.from.repeating(after: after)
-        }*/
-        
-        /*if let animatedSignal = self as? AnimatedSignal<Value> {
-         animatedSignal.from
-         }*/
-        
-        return bag
     }
 }
 
