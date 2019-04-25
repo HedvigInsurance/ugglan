@@ -45,11 +45,10 @@ extension CommonClaimEmergency: Presentable {
             })
         }
         
-        if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
-            bag += view.addArangedSubview(BulletPointTable(
-                bulletPoints: bulletPoints
-            ))
-        }
+        let dummyView = UIView()
+        dummyView.backgroundColor = .white
+        
+        view.addArrangedSubview(dummyView)
         
         viewController.view = view
         

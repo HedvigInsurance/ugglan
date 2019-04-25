@@ -48,8 +48,10 @@ struct CommonClaimCard {
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil
         )
+        
+        let buttonPadding: CGFloat = includeButton ? 60 : 0
                 
-        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90 + 60)
+        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90 + buttonPadding)
     }
     
     var isFirstInRow: Bool {
@@ -67,6 +69,10 @@ struct CommonClaimCard {
         }
         
         return ""
+    }
+    
+    var includeButton: Bool {
+        return data.layout.asTitleAndBulletPoints != nil
     }
     
     init(
@@ -241,19 +247,21 @@ extension CommonClaimCard: Viewable {
             }
         }
         
-        let claimButton = Button(
-            title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-            type: .standard(backgroundColor: .purple, textColor: .white)
-        )
-        
-        bag += view.add(claimButton) { claimButtonView in
-            bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
-            bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
+        if includeButton {
+            let claimButton = Button(
+                title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
+                type: .standard(backgroundColor: .purple, textColor: .white)
+            )
             
-            claimButtonView.snp.makeConstraints({ make in
-                make.bottom.equalTo(-15)
-                make.centerX.equalToSuperview()
-            })
+            bag += view.add(claimButton) { claimButtonView in
+                bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
+                bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
+                
+                claimButtonView.snp.makeConstraints({ make in
+                    make.bottom.equalTo(-15)
+                    make.centerX.equalToSuperview()
+                })
+            }
         }
         
         bag += contentView.signal(for: .touchUpInside).onValue { _ in
