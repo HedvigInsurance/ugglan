@@ -38,7 +38,6 @@ extension BulletPointTable: Viewable {
         }
         
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
-
         
         let tableKit = TableKit<EmptySection, BulletPointCard>(style: style, bag: bag)
         

@@ -113,6 +113,36 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             }
         }
         
+        if self.commonClaimCard.data.layout.asEmergency != nil {
+            let emergencyActions = EmergencyActions()
+            
+            bag += contentContainerView.add(emergencyActions) { contentView in
+                contentView.snp.makeConstraints { make in
+                    make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
+                    make.width.equalTo(contentContainerView.frame.width)
+                    make.top.equalTo(claimsCardFinalHeight)
+                    make.left.equalTo(0)
+                }
+                
+                contentView.layer.cornerRadius = 8
+                contentView.layoutIfNeeded()
+                
+                bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    contentView.snp.updateConstraints ({ make in
+                        make.height.equalTo(0)
+                        make.width.equalTo(originFrame.width)
+                        make.top.equalTo(originFrame.maxY)
+                        make.left.equalTo(originFrame.origin.x)
+                    })
+                    
+                    contentView.layoutIfNeeded()
+                    contentContainerView.layoutIfNeeded()
+                    
+                    contentView.layer.cornerRadius = 0
+                }
+            }
+        }
+        
         contentContainerView.layoutIfNeeded()
         
         let fromVC = transitionContext.viewController(forKey: .from)

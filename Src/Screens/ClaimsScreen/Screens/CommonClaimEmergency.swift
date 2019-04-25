@@ -45,10 +45,8 @@ extension CommonClaimEmergency: Presentable {
             })
         }
         
-        let dummyView = UIView()
-        dummyView.backgroundColor = .white
-        
-        view.addArrangedSubview(dummyView)
+        let emergencyActions = EmergencyActions()
+        bag += view.addArangedSubview(emergencyActions)
         
         viewController.view = view
         

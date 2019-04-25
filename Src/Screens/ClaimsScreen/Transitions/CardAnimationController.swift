@@ -100,9 +100,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
                         make.top.equalTo(claimsCardFinalHeight)
                         make.left.equalTo(0)
                     }
-                    
-                    contentView.layer.cornerRadius = 0
-                    
+                                        
                     contentView.layoutIfNeeded()
                     contentContainerView.layoutIfNeeded()
                 }
@@ -110,7 +108,30 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         }
         
         if let _ = self.commonClaimCard.data.layout.asEmergency {
-            contentContainerView.backgroundColor = .white
+           let emergencyActions = EmergencyActions()
+            
+            bag += contentContainerView.add(emergencyActions) { contentView in
+                contentView.snp.makeConstraints { make in
+                    make.height.equalTo(0)
+                    make.width.equalTo(originFrame.width)
+                    make.top.equalTo(originFrame.maxY)
+                    make.left.equalTo(originFrame.origin.x)
+                }
+                
+                contentView.layoutIfNeeded()
+                
+                bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    contentView.snp.updateConstraints { make in
+                        make.height.equalTo(contentContainerView.frame.height - claimsCardFinalHeight)
+                        make.width.equalTo(contentContainerView.frame.width)
+                        make.top.equalTo(claimsCardFinalHeight)
+                        make.left.equalTo(0)
+                    }
+                    
+                    contentView.layoutIfNeeded()
+                    contentContainerView.layoutIfNeeded()
+                }
+            }
         }
         
         bag += Signal(after: transitionDuration(using: transitionContext)).onValue { [weak self] in
