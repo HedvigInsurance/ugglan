@@ -77,7 +77,7 @@ extension SlideToClaim: Viewable {
         
         bag += self.providedSignal.feedback(type: .success)
         
-        func handleCenterX() -> CGFloat {
+        var handleCenterX: CGFloat {
             return handle.frame.width / 2
         }
         
@@ -94,14 +94,14 @@ extension SlideToClaim: Viewable {
             let tracklabelOriginX = (view.frame.width - trackLabel.intrinsicContentSize.width) / 2
             trackLabel.alpha = 1 - (cappedLocationX / tracklabelOriginX)
             
-            ease.value = max(handleCenterX() + cappedLocationX, handleCenterX())
+            ease.value = max(handleCenterX + cappedLocationX, handleCenterX)
             handle.center.x = ease.value
             ease.targetValue = ease.value
         }
         
         bag += pan.signal(forState: .ended).onValue {
             ease.velocity = pan.velocity(in: view).x
-            ease.targetValue = handleCenterX()
+            ease.targetValue = handleCenterX
         }
         
         bag += pan.signal(forState: .ended).animated(style: .easeOut(duration: 0.25), animations: { _ in
