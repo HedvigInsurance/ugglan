@@ -96,6 +96,7 @@ extension SlideToClaim: Viewable {
             
             ease.value = max(handleCenterX() + cappedLocationX, handleCenterX())
             handle.center.x = ease.value
+            ease.targetValue = ease.value
         }
         
         bag += pan.signal(forState: .ended).onValue {
