@@ -39,7 +39,7 @@ struct CommonClaimCard {
     
     func height(state: State) -> CGFloat {
         let attributedString = NSAttributedString(styledText: StyledText(
-            text: data.layout.asTitleAndBulletPoints?.title ?? "",
+            text: layoutTitle,
             style: .standaloneLargeTitle
         ))
         
@@ -55,6 +55,18 @@ struct CommonClaimCard {
     var isFirstInRow: Bool {
         let dividedIndex = Double(index.row) / 2
         return rint(dividedIndex) == dividedIndex
+    }
+    
+    var layoutTitle: String {
+        if let title = data.layout.asTitleAndBulletPoints?.title {
+            return title
+        }
+        
+        if let title = data.layout.asEmergency?.title {
+            return title
+        }
+        
+        return ""
     }
     
     init(
@@ -131,7 +143,7 @@ extension CommonClaimCard: Viewable {
         }
         
         let layoutTitleLabel = MultilineLabel(styledText: StyledText(
-                text: data.layout.asTitleAndBulletPoints?.title ?? "",
+                text: layoutTitle,
                 style: .standaloneLargeTitle
             )
         )

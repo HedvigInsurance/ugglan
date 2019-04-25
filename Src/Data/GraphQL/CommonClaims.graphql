@@ -18,13 +18,11 @@ query CommonClaims($locale: Locale!) {
                 buttonTitle
                 claimFirstMessage
                 color
-                icon {
-                    pdfUrl
-                }
                 title
             }
             ... on Emergency {
                 color
+                title
             }
         }
     }
