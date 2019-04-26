@@ -51,7 +51,7 @@ extension CommonClaimsCollection: Viewable {
             cell.layer.zPosition = CGFloat(indexPath.row)
         })
         
-        bag += client.fetch(query: CommonClaimsQuery(locale: .svSe)).onValue { result in
+        bag += client.fetch(query: CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())).onValue { result in
             let rows = result.data!.commonClaims.enumerated().map {
                 CommonClaimCard(
                     data: $0.element,
