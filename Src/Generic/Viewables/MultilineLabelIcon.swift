@@ -10,15 +10,19 @@ import Form
 import Foundation
 import UIKit
 
-struct CheckmarkLabel {
+struct MultilineLabelIcon {
     let styledTextSignal: ReadWriteSignal<StyledText>
+    let iconAsset: ImageAsset
+    let iconWidth: CGFloat
     
-    init(styledText: StyledText) {
+    init(styledText: StyledText, icon: ImageAsset, iconWidth: CGFloat) {
         self.styledTextSignal = ReadWriteSignal(styledText)
+        self.iconAsset = icon
+        self.iconWidth = iconWidth
     }
 }
 
-extension CheckmarkLabel: Viewable {
+extension MultilineLabelIcon: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -29,14 +33,14 @@ extension CheckmarkLabel: Viewable {
         view.spacing = 10
         
         let icon = Icon(
-            icon: Asset.greenCircularCheckmark,
-            iconWidth: 15
+            icon: iconAsset,
+            iconWidth: iconWidth
         )
         view.addArrangedSubview(icon)
         
         icon.snp.makeConstraints { make in
-            make.width.equalTo(15)
-            make.height.equalTo(15 + 4)
+            make.width.equalTo(iconWidth)
+            make.height.equalTo(iconWidth + 4)
         }
         
         let label = MultilineLabel(styledText: styledTextSignal.value)

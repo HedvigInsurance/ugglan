@@ -25,9 +25,10 @@ extension ChatActionsSection: Viewable {
         
         let headerLabelContainer = UIStackView()
         headerLabelContainer.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        let headerLabel = MultilineLabel(styledText: StyledText(
-            text: String(key: .DASHBOARD_CHAT_ACTIONS_HEADER),
-            style: .boldSmallTitle
+        let headerLabel = MultilineLabel(
+            styledText: StyledText(
+                text: String(key: .DASHBOARD_CHAT_ACTIONS_HEADER),
+                style: .boldSmallTitle
             )
         )
         bag += headerLabelContainer.addArranged(headerLabel)
@@ -54,10 +55,10 @@ extension ChatActionsSection: Viewable {
                 view.removeFromSuperview()
             }
                 
-            for chatAction in chatActions  {
+            for chatAction in chatActions {
                 let buttonContainer = UIView()
                 let button = Button(title: chatAction?.text ?? "", type: .standard(backgroundColor: .purple, textColor: .white))
-                bag += button.onTapSignal.onValue {
+                bag += button.onTapSignal.filter { chatAction?.triggerUrl != nil }.onValue {
                     DashboardRouting.openChat(viewController: self.presentingViewController, chatActionUrl: chatAction?.triggerUrl ?? "")
                 }
                 bag += buttonContainer.add(button) { button in

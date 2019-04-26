@@ -71,7 +71,6 @@ extension CountdownShapes: Viewable {
             make.height.centerX.centerY.equalToSuperview()
         }
         
-        
         bag += Signal(every: 0.6*2 + 0.3, delay: 0).animated(style: .heavyBounce(delay: 0)) { _ in
                 square.transform = CGAffineTransform(scaleX: 1, y: 0.5)
             }.animated(style: .heavyBounce(delay: 0.3)) { _ in

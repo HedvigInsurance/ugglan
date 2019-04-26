@@ -54,9 +54,6 @@ extension ExpandableRow: Viewable {
             containerView.backgroundColor = .transparent
         }
         
-        //containerView.clipsToBounds = true
-        //containerView.layer.masksToBounds = true
-        
         let clippingView = UIView()
         clippingView.clipsToBounds = true
         
@@ -69,43 +66,37 @@ extension ExpandableRow: Viewable {
         bag += expandableStackView.addArranged(divider) { dividerView in
             dividerView.alpha = isOpenSignal.value ? 1 : 0
             
-            bag += isOpenSignal.onValue({ isOpen in
-                let delay: Double = isOpen ? 0 : 0.15
-                let opacity: CGFloat = isOpen ? 1 : 0
-                
-                bag += Signal(after: delay).animated(style: AnimationStyle.easeOut(duration: 0.1), animations: { _ in
+            bag += isOpenSignal
+                .atOnce()
+                .map { $0 ? 0 : 0.15 }
+                .flatMapLatest { Signal(after: $0) }
+                .flatMapLatest { self.isOpenSignal.atOnce().plain() }
+                .map { $0 ? 1 : 0 }
+                .animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { opacity in
                     dividerView.alpha = opacity
                 })
-            })
         }
-        
-        // TODO: Rewrite the above to a nice Signal thing like below. Currently doesn't work.
-        
-        /*bag += isOpenSignal
-            .atOnce()
-            .map { $0 ? 0 : 1 }
-            .flatMapLatest { Signal(after: $0) }
-            .flatMapLatest { isOpenSignal.atOnce().plain() }
-            .map { $0 ? 1 : 0 }
-            .bindTo(divider, \.alpha)*/
         
         bag += expandableStackView.addArranged(expandedContent) { expandedView in
             expandedView.isHidden = !isOpenSignal.value
             expandedView.alpha = isOpenSignal.value ? 1 : 0
             
-            bag += isOpenSignal.onValue { isOpen in
-                
-                let alpha: CGFloat = isOpen ? 1 : 0
-                let delay = isOpen ? 0.05 : 0
-                
-                bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                    expandedView.isHidden = !isOpen
+            bag += isOpenSignal
+                .atOnce()
+                .map { !$0 }
+                .animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
+                    expandedView.isHidden = isHidden
                 }
-                
-                bag += Signal(after: delay).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-                    expandedView.alpha = alpha
-                }
-            }
+            
+            bag += isOpenSignal
+                .atOnce()
+                .map { $0 ? 0.05 : 0 }
+                .flatMapLatest { Signal(after: $0) }
+                .flatMapLatest { self.isOpenSignal.atOnce().plain() }
+                .map { $0 ? 1 : 0 }
+                .animated(style: .easeOut(duration: 0.25), animations: { opacity in
+                    expandedView.alpha = opacity
+                })
         }
         
         clippingView.addSubview(expandableStackView)

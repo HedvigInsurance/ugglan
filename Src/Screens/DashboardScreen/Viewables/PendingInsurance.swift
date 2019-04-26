@@ -30,7 +30,7 @@ extension PendingInsurance: Viewable {
             case .inactive:
                 let content = CountdownShapes()
                 let moreInfo = PendingInsuranceMoreInfo()
-                let expandableView: ExpandableRow<CountdownShapes, PendingInsuranceMoreInfo> = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
+                let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
                 addBottomContent(view: expandableView)
             case .inactiveWithStartDate:
                 if #available(iOS 10.0, *) {
@@ -38,7 +38,7 @@ extension PendingInsurance: Viewable {
                     let date = ISO8601DateFormatter().date(from: dateString ?? "")
                     let content = Countdown(date: date ?? Date())
                     let moreInfo = PendingInsuranceMoreInfo(date: date)
-                    let expandableView: ExpandableRow<Countdown, PendingInsuranceMoreInfo> = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
+                    let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
                     addBottomContent(view: expandableView)
                 } else {
                     print("pls update ios")
@@ -50,7 +50,6 @@ extension PendingInsurance: Viewable {
         }
         
         func addBottomContent<G: Viewable>(view: ExpandableRow<G, PendingInsuranceMoreInfo>) {
-            
             stackView.subviews.forEach { view in
                 view.removeFromSuperview()
             }

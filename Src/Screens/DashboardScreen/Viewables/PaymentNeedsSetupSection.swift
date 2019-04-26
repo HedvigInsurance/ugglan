@@ -53,7 +53,10 @@ extension PaymentNeedsSetupSection: Viewable {
         containerStackView.addArrangedSubview(infoContainer)
         
         let buttonContainer = UIView()
-        let connectButton = Button(title: String(key: .DASHBOARD_PAYMENT_SETUP_BUTTON), type: .outline(borderColor: .purple, textColor: .purple))
+        let connectButton = Button(
+            title: String(key: .DASHBOARD_PAYMENT_SETUP_BUTTON),
+            type: .outline(borderColor: .purple, textColor: .purple)
+        )
         bag += buttonContainer.add(connectButton) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.width.height.centerY.centerX.equalToSuperview()

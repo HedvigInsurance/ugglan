@@ -30,27 +30,34 @@ extension MoreInfo: Viewable {
         moreInfoStackView.axis = .vertical
         moreInfoStackView.edgeInsets = contentViewInsets
         
-        let selfRiskCheckmark = CheckmarkLabel(
+        
+        let selfRiskCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
                 style: .bodyOffBlack
-            )
+            ),
+            icon: Asset.greenCircularCheckmark,
+            iconWidth: 15
         )
         bag += moreInfoStackView.addArranged(selfRiskCheckmark)
         
-        let totalInsuranceCheckmark = CheckmarkLabel(
+        let totalAmountCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_INSURANCE_AMOUNT),
                 style: .bodyOffBlack
-            )
+            ),
+            icon: Asset.greenCircularCheckmark,
+            iconWidth: 15
         )
-        bag += moreInfoStackView.addArranged(totalInsuranceCheckmark)
+        bag += moreInfoStackView.addArranged(totalAmountCheckmark)
         
-        let travelValidCheckmark = CheckmarkLabel(
+        let travelValidCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_TRAVEL),
                 style: .bodyOffBlack
-            )
+            ),
+            icon: Asset.greenCircularCheckmark,
+            iconWidth: 15
         )
         bag += moreInfoStackView.addArranged(travelValidCheckmark)
         

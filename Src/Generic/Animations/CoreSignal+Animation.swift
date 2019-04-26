@@ -10,10 +10,9 @@ import Flow
 import Foundation
 import UIKit
 
-struct AnimatedSignal<Value, From: SignalProvider>: SignalProvider, Disposable {
+struct AnimatedSignal<Value>: SignalProvider, Disposable {
     let providedSignal: Signal<Value>
     let providedDisposable: Disposable
-    var from: From
 
     func dispose() {
         providedDisposable.dispose()
@@ -60,7 +59,7 @@ extension SignalProvider {
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> AnimationStyle,
         animations: @escaping (_ value: Value) -> Void
-    ) -> AnimatedSignal<Value, Self> {
+    ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
 
@@ -82,14 +81,14 @@ extension SignalProvider {
             return innerBag
         }
 
-        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag, from: self)
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 
     func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
-    ) -> AnimatedSignal<Value, Self> {
+    ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
         let bag = DisposeBag()
 
@@ -114,14 +113,14 @@ extension SignalProvider {
             return innerBag
         }
 
-        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag, from: self)
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 
     func animated(
         on scheduler: Scheduler = .current,
         style: AnimationStyle,
         animations: @escaping (_ value: Value) -> Void
-    ) -> AnimatedSignal<Value, Self> {
+    ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
 
         let bag = DisposeBag()
@@ -145,14 +144,14 @@ extension SignalProvider {
             return innerBag
         }
 
-        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag, from: self)
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 
     func animated(
         on scheduler: Scheduler = .current,
         style: SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
-    ) -> AnimatedSignal<Value, Self> {
+    ) -> AnimatedSignal<Value> {
         let callbacker = Callbacker<Value>()
 
         let bag = DisposeBag()
@@ -178,6 +177,6 @@ extension SignalProvider {
             return innerBag
         }
 
-        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag, from: self)
+        return AnimatedSignal(providedSignal: callbacker.signal(), providedDisposable: bag)
     }
 }

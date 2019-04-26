@@ -81,33 +81,19 @@ extension LargeIconTitleSubtitle: Viewable {
         
         containerStackView.addArrangedSubview(titlesView)
         
-        
         let chevronDown = Icon(icon: Asset.chevronRight, iconWidth: 25)
         chevronDown.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(chevronDown)
         
-        func setChevronRotation(isOpen: Bool, animate: Bool) {
-            let rotationAngle = isOpen ? ((3 * CGFloat.pi / 2) * 1.0001) : (CGFloat.pi / 2)
-            
-            func setRotation() {
-                chevronDown.transform = CGAffineTransform.init(rotationAngle: rotationAngle)
-            }
-            
-            if animate {
-                bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                    setRotation()
-                }
-            } else {
-                setRotation()
-            }
+        bag += isOpenSignal.atOnce().take(first: 1).onValue { isOpen in
+            let rotationAngle = isOpen ? (3 * CGFloat.pi / 2) * 1.0001 : (CGFloat.pi / 2)
+            chevronDown.transform = CGAffineTransform.init(rotationAngle: rotationAngle)
         }
         
         bag += isOpenSignal.onValue { isOpen in
-            setChevronRotation(isOpen: isOpen, animate: true)
-        }
-        
-        bag += events.wasAdded.withLatestFrom(isOpenSignal.atOnce().plain()).onValue { _, isOpen in
-            setChevronRotation(isOpen: isOpen, animate: false)
+            bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                isOpen ? chevronDown.flip() : chevronDown.reFlip()
+            }
         }
         
         return (containerStackView, bag)

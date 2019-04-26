@@ -29,23 +29,20 @@ extension PendingInsuranceMoreInfo: Viewable {
             make.width.lessThanOrEqualTo(400)
         }
         
-        var text = ""
+        //var text = ""
         
-        if let _date = date {
-            // - TODO: Date in app's language
-            
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "sv_SE")
-            dateFormatter.dateStyle = .long
-            let dateString = dateFormatter.string(from: _date)
-            
-            text = String(key: .DASHBOARD_PENDING_HAS_DATE(date: dateString))
-            
-        } else {
-            text = String(key: .DASHBOARD_PENDING_NO_DATE)
+        var text: String {
+            if let date = date {
+                let dateFormatter = DateFormatter()
+                dateFormatter.locale = Locale(identifier: Localization.Locale.currentLocale.rawValue)
+                dateFormatter.dateStyle = .long
+                let dateString = dateFormatter.string(from: date)
+                
+                return String(key: .DASHBOARD_PENDING_HAS_DATE(date: dateString))
+            } else {
+                return String(key: .DASHBOARD_PENDING_NO_DATE)
+            }
         }
-        
-        //let text = date != nil ? String(key: .DASHBOARD_PENDING_HAS_DATE(date: "31 maj 2019")) : String(key: .DASHBOARD_PENDING_NO_DATE)
         
         let morePendingInsuranceInfo = MultilineLabel(styledText: StyledText(
             text: text,

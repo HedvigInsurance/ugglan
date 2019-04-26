@@ -25,10 +25,7 @@ struct Peril {
     }
 }
 
-// query chatactions
-
 extension Peril: Reusable {
-    
     static func makeAndConfigure() -> (make: UIView, configure: (Peril) -> Disposable) {
         let perilView = UIView()
         
@@ -70,8 +67,6 @@ extension Peril: Reusable {
                 return Asset.houseBreakIn
             }
         }
-        
-        
         
         return (perilView, { peril in
             perilView.subviews.forEach({ view in

@@ -12,10 +12,6 @@ import UIKit
 
 struct Divider {
     let backgroundColor: UIColor
-    
-    init(backgroundColor: UIColor) {
-        self.backgroundColor = backgroundColor
-    }
 }
 
 extension Divider: Viewable {
