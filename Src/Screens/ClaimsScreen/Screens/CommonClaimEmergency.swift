@@ -35,10 +35,13 @@ extension CommonClaimEmergency: Presentable {
         commonClaimCard.showCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
         
-        bag += view.addArangedSubview(commonClaimCard) { view in
-            view.layer.zPosition = 2
-            view.snp.makeConstraints({ make in
+        bag += view.addArangedSubview(commonClaimCard) { commonClaimCardView in
+            commonClaimCardView.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
+            })
+            
+            bag += commonClaimCardView.didLayoutSignal.onValue({ _ in
+                view.bringSubviewToFront(commonClaimCardView)
             })
         }
         
@@ -55,6 +58,7 @@ extension CommonClaimEmergency: Presentable {
             bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
             
             if #available(iOS 11.0, *) {
+                scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
                 scrollView.insetsLayoutMarginsFromSafeArea = false
                 scrollView.contentInsetAdjustmentBehavior = .never
             }
