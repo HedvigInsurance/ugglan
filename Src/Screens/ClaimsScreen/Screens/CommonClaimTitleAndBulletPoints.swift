@@ -25,10 +25,6 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         view.axis = .vertical
         view.backgroundColor = .offWhite
         
-        let pan = UIPanGestureRecognizer()
-        
-        bag += view.install(pan)
-        
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
@@ -48,10 +44,23 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
             bag += view.addArangedSubview(BulletPointTable(
                 bulletPoints: bulletPoints
-            ))
+            )) { tableView in
+                bag += tableView.didLayoutSignal.onValue({ _ in
+                    tableView.snp.remakeConstraints({ make in
+                        make.height.equalTo(tableView.contentSize.height + 20)
+                    })
+                })
+            }
         }
         
-        viewController.view = view
+        bag += viewController.install(view) { scrollView in
+            bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
+            
+            if #available(iOS 11.0, *) {
+                scrollView.insetsLayoutMarginsFromSafeArea = false
+                scrollView.contentInsetAdjustmentBehavior = .never
+            }
+        }
         
         return (viewController, Future { completion in
             bag += self.commonClaimCard.closeSignal.onValue {
