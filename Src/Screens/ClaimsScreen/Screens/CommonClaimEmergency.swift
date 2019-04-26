@@ -18,16 +18,12 @@ extension CommonClaimEmergency: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         viewController.title = ""
+        viewController.automaticallyAdjustsScrollViewInsets = false
         
         let bag = DisposeBag()
         
         let view = UIStackView()
         view.axis = .vertical
-        view.backgroundColor = .offWhite
-        
-        let pan = UIPanGestureRecognizer()
-        
-        bag += view.install(pan)
         
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
@@ -40,15 +36,29 @@ extension CommonClaimEmergency: Presentable {
         commonClaimCard.showClaimButtonSignal.value = true
         
         bag += view.addArangedSubview(commonClaimCard) { view in
+            view.layer.zPosition = 2
             view.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             })
         }
         
         let emergencyActions = EmergencyActions()
-        bag += view.addArangedSubview(emergencyActions)
+        bag += view.addArangedSubview(emergencyActions) { emergencyActionsView in
+            bag += emergencyActionsView.didLayoutSignal.onValue({ _ in
+                emergencyActionsView.snp.remakeConstraints({ make in
+                    make.height.equalTo(emergencyActionsView.contentSize.height)
+                })
+            })
+        }
         
-        viewController.view = view
+        bag += viewController.install(view) { scrollView in
+            bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
+            
+            if #available(iOS 11.0, *) {
+                scrollView.insetsLayoutMarginsFromSafeArea = false
+                scrollView.contentInsetAdjustmentBehavior = .never
+            }
+        }
         
         return (viewController, Future { completion in
             bag += self.commonClaimCard.closeSignal.onValue {

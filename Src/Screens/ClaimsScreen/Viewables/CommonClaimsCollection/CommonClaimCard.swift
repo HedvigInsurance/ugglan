@@ -29,6 +29,7 @@ struct CommonClaimCard {
     let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
     let showCloseButton = ReadWriteSignal<Bool>(false)
     let showClaimButtonSignal = ReadWriteSignal<Bool>(false)
+    let scrollPositionSignal = ReadWriteSignal<CGPoint>(CGPoint(x: 0, y: 0))
     
     let closeSignal: Signal<Void>
     private let closeCallbacker: Callbacker<Void>
@@ -127,8 +128,41 @@ extension CommonClaimCard: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
+        let expandedHeaderView = UIView()
+        bag += backgroundStateSignal.atOnce().map {
+            $0 == .normal ? UIColor.white : backgroundColorFromData()
+        }.bindTo(expandedHeaderView, \.backgroundColor)
+        expandedHeaderView.alpha = 0
+        expandedHeaderView.layer.zPosition = 1
+        
+        contentView.addSubview(expandedHeaderView)
+        
+        expandedHeaderView.snp.makeConstraints { make in
+            make.height.equalTo(100)
+            make.top.equalTo(0)
+            make.left.equalTo(0)
+            make.width.equalToSuperview()
+        }
+        
         let titleLabel = UILabel(value: data.title, style: .rowTitle)
+        titleLabel.layer.zPosition = 2
         contentView.addSubview(titleLabel)
+        
+        bag += scrollPositionSignal.onValue { point in
+            titleLabel.transform = CGAffineTransform(translationX: 0, y: point.y)
+            expandedHeaderView.transform = CGAffineTransform(translationX: 0, y: point.y)
+            
+            if point.y != 0 {
+                expandedHeaderView.alpha = 1
+                expandedHeaderView.snp.updateConstraints({ make in
+                    if point.y < 0 {
+                        make.height.equalTo(90 + -point.y)
+                    } else {
+                        make.height.equalTo(90)
+                    }
+                })
+            }
+        }
         
         bag += titleLabelStateSignal.atOnce().onValue { newState in
             if newState == .normal {
@@ -245,6 +279,10 @@ extension CommonClaimCard: Viewable {
             bag += closeButtonView.signal(for: .touchUpInside).onValue {
                 self.closeCallbacker.callAll()
             }
+            
+            bag += scrollPositionSignal.onValue { point in
+                closeButtonView.transform = CGAffineTransform(translationX: 0, y: point.y)
+            }
         }
         
         if includeButton {
@@ -330,9 +368,9 @@ extension CommonClaimCard: Reusable {
             
             containerView.layoutMargins = UIEdgeInsets(
                 top: 10,
-                left: commonClaimCard.isFirstInRow ? 15 : 5,
+                left: 0,
                 bottom: 10,
-                right: commonClaimCard.isFirstInRow ? 5 : 15
+                right: 0
             )
             
            bag += containerView.addArangedSubview(commonClaimCard)
