@@ -31,7 +31,7 @@ extension CommonClaimsCollection: Viewable {
         
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
+        layout.minimumInteritemSpacing = 5
         
         let collectionKit = CollectionKit<EmptySection, CommonClaimCard>(
             layout: layout,
@@ -42,10 +42,14 @@ extension CommonClaimsCollection: Viewable {
         
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             return CGSize(
-                width: collectionKit.view.frame.width / 2,
+                width: min(170, (collectionKit.view.frame.width / 2) - 10),
                 height: 140
             )
         }
+        
+        bag += collectionKit.delegate.willDisplayCell.onValue({ cell, indexPath in
+            cell.layer.zPosition = CGFloat(indexPath.row)
+        })
         
         bag += client.fetch(query: CommonClaimsQuery(locale: .svSe)).onValue { result in
             let rows = result.data!.commonClaims.enumerated().map {
@@ -64,12 +68,12 @@ extension CommonClaimsCollection: Viewable {
         
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
         
         let titleLabel = MultilineLabel(value: "Snabbval", style: .blockRowTitle)
         bag += stackView.addArangedSubview(titleLabel.wrappedIn(UIStackView())) { containerStackView in
-            containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+            containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
             containerStackView.isLayoutMarginsRelativeArrangement = true
         }
         
