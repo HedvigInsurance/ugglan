@@ -46,7 +46,7 @@ extension CommonClaimEmergency: Presentable {
         bag += view.addArangedSubview(emergencyActions) { emergencyActionsView in
             bag += emergencyActionsView.didLayoutSignal.onValue({ _ in
                 emergencyActionsView.snp.remakeConstraints({ make in
-                    make.height.equalTo(emergencyActionsView.contentSize.height)
+                    make.height.equalTo(emergencyActionsView.contentSize.height + 20)
                 })
             })
         }
