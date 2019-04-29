@@ -35,14 +35,14 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.showCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
         
-        bag += view.addArangedSubview(commonClaimCard) { view in
+        bag += view.addArranged(commonClaimCard) { view in
             view.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             })
         }
         
         if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
-            bag += view.addArangedSubview(BulletPointTable(
+            bag += view.addArranged(BulletPointTable(
                 bulletPoints: bulletPoints
             )) { tableView in
                 bag += tableView.didLayoutSignal.onValue({ _ in

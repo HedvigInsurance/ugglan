@@ -35,7 +35,7 @@ extension CommonClaimEmergency: Presentable {
         commonClaimCard.showCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
         
-        bag += view.addArangedSubview(commonClaimCard) { commonClaimCardView in
+        bag += view.addArranged(commonClaimCard) { commonClaimCardView in
             commonClaimCardView.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             })
@@ -46,7 +46,7 @@ extension CommonClaimEmergency: Presentable {
         }
         
         let emergencyActions = EmergencyActions()
-        bag += view.addArangedSubview(emergencyActions) { emergencyActionsView in
+        bag += view.addArranged(emergencyActions) { emergencyActionsView in
             bag += emergencyActionsView.didLayoutSignal.onValue({ _ in
                 emergencyActionsView.snp.remakeConstraints({ make in
                     make.height.equalTo(emergencyActionsView.contentSize.height + 20)

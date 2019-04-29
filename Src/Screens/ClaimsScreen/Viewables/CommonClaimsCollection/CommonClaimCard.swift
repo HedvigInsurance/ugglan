@@ -373,7 +373,7 @@ extension CommonClaimCard: Reusable {
                 right: 0
             )
             
-           bag += containerView.addArangedSubview(commonClaimCard)
+           bag += containerView.addArranged(commonClaimCard)
             
             return bag
         })

@@ -30,7 +30,7 @@ extension ClaimsHeader.Title: Viewable {
             style: TextStyle.standaloneLargeTitle.centered()
         )
         
-        bag += view.addArangedSubview(label) { view in
+        bag += view.addArranged(label) { view in
             view.snp.makeConstraints({ make in
                 make.width.equalToSuperview().multipliedBy(0.7)
             })
@@ -53,7 +53,7 @@ extension ClaimsHeader.Description: Viewable {
             style: TextStyle.body.centered()
         )
         
-        bag += view.addArangedSubview(label) { view in
+        bag += view.addArranged(label) { view in
             view.snp.makeConstraints({ make in
                 make.width.equalToSuperview().multipliedBy(0.7)
             })
@@ -82,10 +82,10 @@ extension ClaimsHeader: Viewable {
         view.addArrangedSubview(imageView)
         
         let title = Title()
-        bag += view.addArangedSubview(title)
+        bag += view.addArranged(title)
         
         let description = Description()
-        bag += view.addArangedSubview(description)
+        bag += view.addArranged(description)
         
         let button = Button(title: "Anmäl skada", type: .standard(backgroundColor: .purple, textColor: .white))
         
@@ -99,7 +99,7 @@ extension ClaimsHeader: Viewable {
             )
         }
         
-        bag += view.addArangedSubview(button.wrappedIn(UIStackView())) { stackView in
+        bag += view.addArranged(button.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .center
         }

@@ -15,7 +15,7 @@ struct ContainerViewable<V: Viewable, Matter: UIView>: Viewable where V.Matter =
     
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
-        bag += container.addArangedSubview(viewable)
+        bag += container.addArranged(viewable)
         return (container, bag)
     }
 }

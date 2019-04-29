@@ -55,7 +55,7 @@ extension BulletPointCard: Reusable {
         return (view, { bulletPointCard in
             let bag = DisposeBag()
             
-            bag += contentView.addArangedSubview(descriptionLabel)
+            bag += contentView.addArranged(descriptionLabel)
             
             titleLabel.text = bulletPointCard.title
             descriptionLabel.styledTextSignal.value = StyledText(

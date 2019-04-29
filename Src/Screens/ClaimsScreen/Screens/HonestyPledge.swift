@@ -29,16 +29,16 @@ extension HonestyPledge: Presentable {
         containerStackView.addArrangedSubview(stackView)
         
         let titleLabel = MultilineLabel(value: "Ditt hederslöfte", style: .standaloneLargeTitle)
-        bag += stackView.addArangedSubview(titleLabel)
+        bag += stackView.addArranged(titleLabel)
         
         let descriptionLabel = MultilineLabel(
             value: "Jag förstår att Hedvig bygger på tillit. Jag lover att jag berättat om händelsen precis som den var, och bara ta ut den ersättning jag har rätt till.",
             style: .bodyOffBlack
         )
-        bag += stackView.addArangedSubview(descriptionLabel)
+        bag += stackView.addArranged(descriptionLabel)
         
         let slideToClaim = SlideToClaim()
-        bag += stackView.addArangedSubview(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
+        bag += stackView.addArranged(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
             slideToClaimStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
             slideToClaimStackView.isLayoutMarginsRelativeArrangement = true
         }

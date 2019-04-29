@@ -31,11 +31,11 @@ extension Claims: Presentable {
         stackView.spacing = 15
         
         let claimsHeader = ClaimsHeader(presentingViewController: viewController)
-        bag += stackView.addArangedSubview(claimsHeader)
+        bag += stackView.addArranged(claimsHeader)
         
         let commonClaimsCollection = CommonClaimsCollection(presentingViewController: viewController)
         
-        bag += stackView.addArangedSubview(commonClaimsCollection)
+        bag += stackView.addArranged(commonClaimsCollection)
         
         bag += viewController.install([stackView])
         

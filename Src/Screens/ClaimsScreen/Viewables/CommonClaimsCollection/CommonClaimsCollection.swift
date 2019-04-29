@@ -72,7 +72,7 @@ extension CommonClaimsCollection: Viewable {
         stackView.isLayoutMarginsRelativeArrangement = true
         
         let titleLabel = MultilineLabel(value: "Snabbval", style: .blockRowTitle)
-        bag += stackView.addArangedSubview(titleLabel.wrappedIn(UIStackView())) { containerStackView in
+        bag += stackView.addArranged(titleLabel.wrappedIn(UIStackView())) { containerStackView in
             containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
             containerStackView.isLayoutMarginsRelativeArrangement = true
         }
