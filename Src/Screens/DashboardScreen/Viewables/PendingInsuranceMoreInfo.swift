@@ -32,7 +32,7 @@ extension PendingInsuranceMoreInfo: Viewable {
         var text: String {
             if let date = date {
                 let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: Localization.Locale.currentLocale.rawValue)
+                dateFormatter.locale = Foundation.Locale(identifier: Localization.Locale.currentLocale.rawValue)
                 dateFormatter.dateStyle = .long
                 let dateString = dateFormatter.string(from: date)
 

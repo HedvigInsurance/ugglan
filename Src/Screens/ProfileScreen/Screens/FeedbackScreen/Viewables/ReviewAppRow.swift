@@ -32,7 +32,7 @@ extension ReviewAppRow: Viewable {
                 SKStoreReviewController.requestReview()
             } else {
                 guard let url = URL(string: reviewURL), UIApplication.shared.canOpenURL(url) else { return }
-                UIApplication.shared.openURL(url)
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
 

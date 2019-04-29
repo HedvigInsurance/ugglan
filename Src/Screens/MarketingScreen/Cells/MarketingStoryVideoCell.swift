@@ -32,14 +32,12 @@ class MarketingStoryVideoCell: UICollectionViewCell {
         videoPlayerLayer.frame = bounds
         layer.addSublayer(videoPlayerLayer)
 
-        if #available(iOS 10.0, *) {
-            try? AVAudioSession.sharedInstance().setCategory(
-                AVAudioSession.Category.ambient,
-                mode: .default,
-                options: .mixWithOthers
-            )
-            try? AVAudioSession.sharedInstance().setActive(true)
-        }
+        try? AVAudioSession.sharedInstance().setCategory(
+            AVAudioSession.Category.ambient,
+            mode: .default,
+            options: .mixWithOthers
+        )
+        try? AVAudioSession.sharedInstance().setActive(true)
 
         DispatchQueue.global(qos: .background).async {
             guard let playerAsset = marketingStory.playerAsset() else { return }
@@ -49,20 +47,14 @@ class MarketingStoryVideoCell: UICollectionViewCell {
             self.videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
             self.videoPlayerLayer.player = self.videoPlayer
 
-            if #available(iOS 10.0, *) {
-                self.videoPlayer.playImmediately(atRate: 1)
-            } else {
-                self.videoPlayer.play()
-            }
+            self.videoPlayer.playImmediately(atRate: 1)
 
             self.cellDidLoad()
         }
     }
 
     func resume() {
-        if #available(iOS 10.0, *) {
-            self.videoPlayer.playImmediately(atRate: 1)
-        }
+        self.videoPlayer.playImmediately(atRate: 1)
     }
 
     func pause() {
@@ -77,12 +69,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
 
     func restart() {
         videoPlayer.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-
-        if #available(iOS 10.0, *) {
-            self.videoPlayer.playImmediately(atRate: 1)
-        } else {
-            videoPlayer.play()
-        }
+        videoPlayer.playImmediately(atRate: 1)
     }
 
     required init?(coder _: NSCoder) {

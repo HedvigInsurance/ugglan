@@ -31,7 +31,7 @@ extension ReferralsTermsRow: Viewable {
 
         bag += events.onSelect.onValue {
             guard let url = URL(string: String(key: .REFERRALS_TERMS_WEBSITE_URL)) else { return }
-            UIApplication.shared.openURL(url)
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
 
         return (row, bag)

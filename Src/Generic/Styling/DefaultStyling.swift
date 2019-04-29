@@ -30,12 +30,8 @@ extension DefaultStyling {
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
 
-        if #available(iOS 10.0, *) {
-            UITabBar.appearance().unselectedItemTintColor = .offBlack
-            UITabBar.appearance().tintColor = .purple
-        } else {
-            UITabBar.appearance().tintColor = .offBlack
-        }
+        UITabBar.appearance().unselectedItemTintColor = .offBlack
+        UITabBar.appearance().tintColor = .purple
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [

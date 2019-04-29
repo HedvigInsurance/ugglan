@@ -3,14 +3,14 @@ version: 2.2.0
 configurations:
   debug:
     overrides:
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.0"
       PROVISIONING_PROFILE_SPECIFIER: "Ugglan Developer Profile"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
   release:
     overrides:
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.0"
       CODE_SIGN_IDENTITY: "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution: Hedvig AB (AW656G5PFM)"
       PROVISIONING_PROFILE_SPECIFIER: "Ugglan - AdHoc 2"
@@ -107,7 +107,7 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
       TEST_TARGET_NAME: Ugglan
       SWIFT_VERSION: "5.0"
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.0"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       LD_RUNPATH_SEARCH_PATHS:
         - $(inherited)
@@ -203,7 +203,7 @@ targets:
       - location: Carthage/Build/iOS/Ease.framework
     configuration:
       INFOPLIST_FILE: Src/Info.plist
-      IPHONEOS_DEPLOYMENT_TARGET: "9.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "10.0"
       SWIFT_VERSION: "5.0"
       PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"
       DEVELOPMENT_TEAM: "AW656G5PFM"
