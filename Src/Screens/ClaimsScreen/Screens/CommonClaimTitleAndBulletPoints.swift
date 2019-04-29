@@ -5,11 +5,11 @@
 //  Created by Sam Pettersson on 2019-04-15.
 //
 
-import Foundation
 import Flow
+import Form
+import Foundation
 import Presentation
 import UIKit
-import Form
 
 struct CommonClaimTitleAndBulletPoints {
     let commonClaimCard: CommonClaimCard
@@ -20,11 +20,11 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let view = UIStackView()
         view.axis = .vertical
         view.backgroundColor = .offWhite
-        
+
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
@@ -34,13 +34,13 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.shadowOpacitySignal.value = 0
         commonClaimCard.showCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
-        
+
         bag += view.addArranged(commonClaimCard) { view in
             view.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             })
         }
-        
+
         if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
             bag += view.addArranged(BulletPointTable(
                 bulletPoints: bulletPoints
@@ -52,22 +52,22 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
                 })
             }
         }
-        
+
         bag += viewController.install(view) { scrollView in
             bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
-            
+
             if #available(iOS 11.0, *) {
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
                 scrollView.insetsLayoutMarginsFromSafeArea = false
                 scrollView.contentInsetAdjustmentBehavior = .never
             }
         }
-        
+
         return (viewController, Future { completion in
             bag += self.commonClaimCard.closeSignal.onValue {
                 completion(.success)
             }
-            
+
             return DelayedDisposer(bag, delay: 1)
         })
     }

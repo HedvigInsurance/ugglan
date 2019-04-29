@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-04-15.
 //
 
-import Foundation
 import Flow
+import Foundation
 import Presentation
 import UIKit
 
@@ -19,12 +19,12 @@ extension CommonClaimEmergency: Presentable {
         let viewController = UIViewController()
         viewController.title = ""
         viewController.automaticallyAdjustsScrollViewInsets = false
-        
+
         let bag = DisposeBag()
-        
+
         let view = UIStackView()
         view.axis = .vertical
-        
+
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
@@ -34,17 +34,17 @@ extension CommonClaimEmergency: Presentable {
         commonClaimCard.shadowOpacitySignal.value = 0
         commonClaimCard.showCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
-        
+
         bag += view.addArranged(commonClaimCard) { commonClaimCardView in
             commonClaimCardView.snp.makeConstraints({ make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             })
-            
+
             bag += commonClaimCardView.didLayoutSignal.onValue({ _ in
                 view.bringSubviewToFront(commonClaimCardView)
             })
         }
-        
+
         let emergencyActions = EmergencyActions()
         bag += view.addArranged(emergencyActions) { emergencyActionsView in
             bag += emergencyActionsView.didLayoutSignal.onValue({ _ in
@@ -53,22 +53,22 @@ extension CommonClaimEmergency: Presentable {
                 })
             })
         }
-        
+
         bag += viewController.install(view) { scrollView in
             bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
-            
+
             if #available(iOS 11.0, *) {
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
                 scrollView.insetsLayoutMarginsFromSafeArea = false
                 scrollView.contentInsetAdjustmentBehavior = .never
             }
         }
-        
+
         return (viewController, Future { completion in
             bag += self.commonClaimCard.closeSignal.onValue {
                 completion(.success)
             }
-            
+
             return DelayedDisposer(bag, delay: 1)
         })
     }

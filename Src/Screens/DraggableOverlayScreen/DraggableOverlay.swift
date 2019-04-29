@@ -125,7 +125,7 @@ extension DraggableOverlay: Presentable {
         }
 
         bag += overlay.install(panGestureRecognizer)
-        
+
         let (childScreen, childResult) = presentable.materialize()
         childScreen.setLargeTitleDisplayMode(presentationOptions)
 
@@ -201,11 +201,11 @@ extension DraggableOverlay: Presentable {
             bag += dimmingViewTap.signal(forState: .recognized).onValue {
                 hideOverlay()
             }
-            
+
             bag += childResult.onValue({ _ in
                 hideOverlay()
             })
-            
+
             return bag
         })
     }

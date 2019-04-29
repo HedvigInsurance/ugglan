@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-04-26.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 extension UIScrollView {
@@ -15,7 +15,7 @@ extension UIScrollView {
             var observer: NSKeyValueObservation? = self.observe(\.contentOffset) { _, _ in
                 callback(self.contentOffset)
             }
-            
+
             return Disposer {
                 observer?.invalidate()
                 observer = nil

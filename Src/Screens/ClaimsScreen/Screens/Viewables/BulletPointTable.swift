@@ -5,19 +5,19 @@
 //  Created by Sam Pettersson on 2019-04-17.
 //
 
-import Foundation
 import Flow
-import UIKit
 import Form
+import Foundation
+import UIKit
 
 struct BulletPointTable {
     let bulletPoints: [CommonClaimsQuery.Data.CommonClaim.Layout.AsTitleAndBulletPoints.BulletPoint]
 }
 
 extension BulletPointTable: Viewable {
-    func materialize(events: ViewableEvents) -> (UITableView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
-        
+
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 5,
@@ -32,16 +32,16 @@ extension BulletPointTable: Viewable {
             header: .none,
             footer: .none
         )
-        
+
         let dynamicSectionStyle = DynamicSectionStyle { _ in
             sectionStyle
         }
-        
+
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
-        
+
         let tableKit = TableKit<EmptySection, BulletPointCard>(style: style, bag: bag)
         tableKit.view.isScrollEnabled = false
-        
+
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,
@@ -49,14 +49,14 @@ extension BulletPointTable: Viewable {
                 description: $0.description
             )
         }
-        
+
         bag += tableKit.delegate.willDisplayCell.onValue({ cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
         })
-        
+
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
         tableKit.view.backgroundColor = .offWhite
-        
+
         return (tableKit.view, bag)
     }
 }

@@ -28,7 +28,7 @@ extension UIColor {
     static let darkGreen = UIColor(red: 0, green: 0.57, blue: 0.46, alpha: 1.0)
     static let pink = UIColor(red: 1.00, green: 0.54, blue: 0.50, alpha: 1.0)
     static let darkPink = UIColor(red: 0.67, green: 0.0, blue: 0.27, alpha: 1.0)
-    static let yellow = UIColor(red:1.00, green:0.80, blue:0.30, alpha:1.0)
+    static let yellow = UIColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1.0)
     static let grayBorder = UIColor.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
 
     // swiftlint:disable cyclomatic_complexity

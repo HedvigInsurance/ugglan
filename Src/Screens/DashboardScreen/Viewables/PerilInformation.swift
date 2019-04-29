@@ -85,7 +85,7 @@ extension PerilInformation: Presentable {
         viewController.view = containerView
 
         return (viewController, Future { _ in
-            return bag
+            bag
         })
     }
 }

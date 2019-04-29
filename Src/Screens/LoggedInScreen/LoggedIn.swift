@@ -35,7 +35,7 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         let claimsPresentation = Presentation(
             claims,
             style: .default,

@@ -22,7 +22,7 @@ struct MultilineLabel {
         styledTextSignal = ReadWriteSignal(styledText)
         intrinsicContentSizeSignal = intrinsicContentSizeReadWriteSignal.readOnly()
     }
-    
+
     init(value: DisplayableString, style: TextStyle) {
         self.init(styledText: StyledText(text: value, style: style))
     }

@@ -39,7 +39,7 @@ extension CharityInformation: Presentable {
         bag += bodyView.add(body)
 
         return (viewController, Future { _ in
-            return bag
+            bag
         })
     }
 }

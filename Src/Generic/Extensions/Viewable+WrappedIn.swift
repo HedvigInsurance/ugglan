@@ -5,15 +5,15 @@
 //  Created by Sam Pettersson on 2019-04-23.
 //
 
+import Flow
 import Foundation
 import UIKit
-import Flow
 
 struct ContainerViewable<V: Viewable, Matter: UIView>: Viewable where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Disposable {
     let viewable: V
     let container: UIStackView
-    
-    func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
+
+    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         bag += container.addArranged(viewable)
         return (container, bag)
