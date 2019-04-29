@@ -10,16 +10,16 @@ import DeviceKit
 import Foundation
 
 extension Device {
-    static var hasRoundedCorners: Bool = Device().isOneOf([
+    static var hasRoundedCorners: Bool = Device.current.isOneOf([
         Device.iPhoneX,
-        Device.iPhoneXs,
-        Device.iPhoneXsMax,
-        Device.iPhoneXr,
+        Device.iPhoneXS,
+        Device.iPhoneXSMax,
+        Device.iPhoneXR,
         Device.iPadPro12Inch3,
         Device.simulator(Device.iPhoneX),
-        Device.simulator(Device.iPhoneXs),
-        Device.simulator(Device.iPhoneXsMax),
-        Device.simulator(Device.iPhoneXr),
+        Device.simulator(Device.iPhoneXS),
+        Device.simulator(Device.iPhoneXSMax),
+        Device.simulator(Device.iPhoneXR),
         Device.simulator(Device.iPadPro12Inch3),
     ])
 }

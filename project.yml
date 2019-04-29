@@ -106,7 +106,7 @@ targets:
       INFOPLIST_FILE: UITests/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
       TEST_TARGET_NAME: Ugglan
-      SWIFT_VERSION: "4.2"
+      SWIFT_VERSION: "5.0"
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       LD_RUNPATH_SEARCH_PATHS:
@@ -204,7 +204,7 @@ targets:
     configuration:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "9.0"
-      SWIFT_VERSION: "4.2"
+      SWIFT_VERSION: "5.0"
       PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.ugglan"
       DEVELOPMENT_TEAM: "AW656G5PFM"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"

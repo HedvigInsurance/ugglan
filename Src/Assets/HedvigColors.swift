@@ -55,6 +55,8 @@ extension UIColor {
             return .white
         case .offWhite:
             return .offWhite
+        case .yellow:
+            return .white
         case .__unknown:
             return .white
         }
