@@ -87,7 +87,7 @@ extension Profile: Presentable {
             let refreshControl = UIRefreshControl()
             bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
-            scrollView.addRefreshControl(refreshControl)
+            scrollView.refreshControl = refreshControl
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
         }
 

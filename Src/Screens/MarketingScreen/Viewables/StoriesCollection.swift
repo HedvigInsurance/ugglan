@@ -74,10 +74,7 @@ extension StoriesCollection: Viewable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.bounces = false
         collectionKit.view.showsHorizontalScrollIndicator = false
-
-        if #available(iOS 10.0, *) {
-            collectionKit.view.isPrefetchingEnabled = true
-        }
+        collectionKit.view.isPrefetchingEnabled = true
 
         if #available(iOS 11.0, *) {
             collectionKit.view.contentInsetAdjustmentBehavior = .never
