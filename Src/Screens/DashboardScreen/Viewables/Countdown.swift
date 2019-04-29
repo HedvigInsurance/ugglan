@@ -11,6 +11,14 @@ import Foundation
 import UIKit
 
 struct Countdown {
+    func descriptiveLabel(text: String) -> UILabel {
+        let label = UILabel(styledText: StyledText(text: text, style: .countdownLetter))
+        label.snp.makeConstraints { make in
+            make.width.equalTo(label.intrinsicContentSize.width + 7)
+        }
+        return label
+    }
+    
     let date: Date
     
     init(date: Date) {
@@ -31,39 +39,31 @@ extension Countdown: Viewable {
         
         contentView.addSubview(view)
         
-        func descriptiveLabel(text: String) -> UILabel {
-            let label = UILabel(styledText: StyledText(text: text, style: .countdownLetter))
-            label.snp.makeConstraints { make in
-                make.width.equalTo(label.intrinsicContentSize.width + 7)
-            }
-            return label
-        }
-        
         let monthLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         view.addArrangedSubview(monthLabel)
         
-        let m = descriptiveLabel(text: "M")
+        let m = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_MONTHS))
         view.addArrangedSubview(m)
         
         let dayLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         dayLabel.textColor = UIColor.darkPurple
         view.addArrangedSubview(dayLabel)
         
-        let d = descriptiveLabel(text: "D")
+        let d = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_DAYS))
         view.addArrangedSubview(d)
         
         let hourLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         hourLabel.textColor = UIColor.purple
         view.addArrangedSubview(hourLabel)
         
-        let h = descriptiveLabel(text: "H")
+        let h = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_HOURS))
         view.addArrangedSubview(h)
         
         let minLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
         minLabel.textColor = UIColor.turquoise
         view.addArrangedSubview(minLabel)
         
-        let mi = descriptiveLabel(text: "M")
+        let mi = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_MINUTES))
         view.addArrangedSubview(mi)
         
         view.snp.makeConstraints { (make) in
@@ -71,6 +71,8 @@ extension Countdown: Viewable {
         }
         
         bag += Signal(every: 30).atOnce().onValue {
+            
+            // TODO: Singleton, move into struct
             let currentDate = Date()
             let calendar = Calendar.current
             

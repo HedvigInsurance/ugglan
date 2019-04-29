@@ -60,8 +60,8 @@ extension PerilCollection: Viewable {
         contentStackView.addArrangedSubview(collectionViewStack)
         
         bag += perilsDataSignal.atOnce().compactMap { $0?.perils }.onValue { perilSignalArray in
-            let perilViewableArray = perilSignalArray.map { peril in
-                Peril(title: (peril?.title)!, id: (peril?.id)!, description: (peril?.description)!, presentingViewController: self.presentingViewController)
+            let perilViewableArray = perilSignalArray.filter { $0?.title != nil || $0?.id != nil || $0?.description != nil }.map { peril in
+                Peril(title: peril?.title ?? "", id: peril?.id ?? "", description: peril?.description ?? "", presentingViewController: self.presentingViewController)
             }
             
             collectionKit.set(Table(rows: perilViewableArray), animation: .none, rowIdentifier: { $0.title })

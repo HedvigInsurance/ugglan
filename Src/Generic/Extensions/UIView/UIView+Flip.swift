@@ -11,7 +11,6 @@ import UIKit
 extension UIView {
     func flip() {
         let currentRotation = CGFloat(atan2(Double(self.transform.b), Double(self.transform.a)))
-        print(currentRotation)
         let newRotation = currentRotation + CGFloat.pi * 1.0000001
         self.transform = CGAffineTransform.init(rotationAngle: newRotation)
     }

@@ -14,6 +14,20 @@ struct PendingInsurance {
 }
 
 extension PendingInsurance: Viewable {
+    func noDateContent() -> ExpandableRow<CountdownShapes, PendingInsuranceMoreInfo> {
+        let content = CountdownShapes()
+        let moreInfo = PendingInsuranceMoreInfo()
+        let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
+        return expandableView
+    }
+    
+    func dateContent(date: Date) -> ExpandableRow<Countdown, PendingInsuranceMoreInfo> {
+        let content = Countdown(date: date)
+        let moreInfo = PendingInsuranceMoreInfo(date: date)
+        let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
+        return expandableView
+    }
+    
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -28,22 +42,14 @@ extension PendingInsurance: Viewable {
         bag += dataSignal.atOnce().compactMap { $0 } .onValue { insurance in
             switch insurance.status {
             case .inactive:
-                let content = CountdownShapes()
-                let moreInfo = PendingInsuranceMoreInfo()
-                let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
-                addBottomContent(view: expandableView)
+                addBottomContent(view: self.noDateContent())
             case .inactiveWithStartDate:
-                if #available(iOS 10.0, *) {
-                    let dateString = insurance.activeFrom?.replacingOccurrences(of: ".", with: "+")
-                    let date = ISO8601DateFormatter().date(from: dateString ?? "")
-                    let content = Countdown(date: date ?? Date())
-                    let moreInfo = PendingInsuranceMoreInfo(date: date)
-                    let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
-                    addBottomContent(view: expandableView)
+                let formatter = DateFormatter.iso8601
+                if let date = formatter.date(from: insurance.activeFrom ?? "") {
+                    addBottomContent(view: self.dateContent(date: date))
                 } else {
-                    print("pls update ios")
+                    addBottomContent(view: self.noDateContent())
                 }
-                ()
             default:
                 ()
             }

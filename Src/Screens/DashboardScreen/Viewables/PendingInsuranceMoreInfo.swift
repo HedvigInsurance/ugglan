@@ -29,8 +29,6 @@ extension PendingInsuranceMoreInfo: Viewable {
             make.width.lessThanOrEqualTo(400)
         }
         
-        //var text = ""
-        
         var text: String {
             if let date = date {
                 let dateFormatter = DateFormatter()
