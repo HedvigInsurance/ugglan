@@ -13,24 +13,23 @@ import UIKit
 struct MoreInfo {}
 
 extension MoreInfo: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        
+
         let contentEdgeInsets: CGFloat = 20
-        
+
         let contentViewInsets = UIEdgeInsets(
             top: 20,
             left: contentEdgeInsets,
             bottom: 20,
             right: contentEdgeInsets
         )
-        
+
         let moreInfoStackView = UIStackView()
         moreInfoStackView.spacing = 6
         moreInfoStackView.axis = .vertical
         moreInfoStackView.edgeInsets = contentViewInsets
-        
-        
+
         let selfRiskCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
@@ -40,7 +39,7 @@ extension MoreInfo: Viewable {
             iconWidth: 15
         )
         bag += moreInfoStackView.addArranged(selfRiskCheckmark)
-        
+
         let totalAmountCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_INSURANCE_AMOUNT),
@@ -50,7 +49,7 @@ extension MoreInfo: Viewable {
             iconWidth: 15
         )
         bag += moreInfoStackView.addArranged(totalAmountCheckmark)
-        
+
         let travelValidCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_TRAVEL),
@@ -60,8 +59,7 @@ extension MoreInfo: Viewable {
             iconWidth: 15
         )
         bag += moreInfoStackView.addArranged(travelValidCheckmark)
-        
+
         return (moreInfoStackView, bag)
     }
 }
-

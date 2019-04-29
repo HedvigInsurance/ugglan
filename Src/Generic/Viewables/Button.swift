@@ -31,7 +31,7 @@ enum ButtonType {
             return 0.0
         }
     }
-    
+
     func highlightedBackgroundOpacity() -> CGFloat {
         switch self {
         case .standard, .standardSmall:
@@ -115,7 +115,7 @@ enum ButtonType {
             return 35
         }
     }
-    
+
     func icon() -> ImageAsset? {
         switch self {
         case let .iconTransparent((_, icon)):
@@ -124,16 +124,16 @@ enum ButtonType {
             return nil
         }
     }
-    
+
     func iconColor() -> HedvigColor? {
         switch self {
         case .iconTransparent((_, _)):
-            return self.textColor()
+            return textColor()
         default:
             return nil
         }
     }
-    
+
     func iconDistance() -> CGFloat {
         switch self {
         case .iconTransparent((_, _)):
@@ -142,7 +142,7 @@ enum ButtonType {
             return 0
         }
     }
-    
+
     func borderWidth() -> CGFloat {
         switch self {
         case .outline((_, _)):
@@ -151,7 +151,7 @@ enum ButtonType {
             return 0
         }
     }
-    
+
     func borderColor() -> UIColor {
         switch self {
         case let .outline((borderColor, _)):
@@ -236,21 +236,21 @@ extension Button: Viewable {
 
         let button = UIButton(title: "", style: style)
         button.adjustsImageWhenHighlighted = false
-        
+
         if let icon = self.type.icon() {
             button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
-            if self.type.iconColor() != nil {
-                button.tintColor = UIColor.from(apollo: self.type.iconColor()!)
+            if type.iconColor() != nil {
+                button.tintColor = UIColor.from(apollo: type.iconColor()!)
             }
-            
-            let iconDistance = self.type.iconDistance()
+
+            let iconDistance = type.iconDistance()
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
             button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
 
         bag += title.atOnce().onValue { title in
             button.setTitle(title)
-            
+
             button.snp.remakeConstraints { make in
                 make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
             }
@@ -268,13 +268,13 @@ extension Button: Viewable {
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
 
-        bag += touchUpInside.map({ _ -> Void in
+        bag += touchUpInside.map { _ -> Void in
             ()
-        }).bindTo(onTapReadWriteSignal)
+        }.bindTo(onTapReadWriteSignal)
 
-        bag += touchUpInside.filter { self.animate }.map({ _ -> ButtonStyle in
+        bag += touchUpInside.filter { self.animate }.map { _ -> ButtonStyle in
             style
-        }).delay(by: 0.1).bindTo(
+        }.delay(by: 0.1).bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
             button,
@@ -292,9 +292,9 @@ extension Button: Viewable {
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
-        ).filter { self.animate }.map({ _ -> ButtonStyle in
+        ).filter { self.animate }.map { _ -> ButtonStyle in
             style
-        }).bindTo(
+        }.bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
             button,

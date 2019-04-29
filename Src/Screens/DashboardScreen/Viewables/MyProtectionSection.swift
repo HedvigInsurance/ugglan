@@ -18,7 +18,7 @@ struct MyProtectionSection {
 extension MyProtectionSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        
+
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.edgeInsets = UIEdgeInsets(
@@ -30,7 +30,7 @@ extension MyProtectionSection: Viewable {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.isHidden = true
         bag += dataSignal.map { $0 == nil }.bindTo(stackView, \.isHidden)
-        
+
         let isActiveLabel = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INSURANCE_STATUS),
@@ -39,36 +39,36 @@ extension MyProtectionSection: Viewable {
             icon: Asset.greenCircularCheckmark,
             iconWidth: 15
         )
-        
+
         bag += stackView.addArranged(isActiveLabel) { checkmarkLabelView in
             bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(checkmarkLabelView, \.isHidden)
         }
-        
+
         let rowSpacing = Spacing(height: 10)
         bag += stackView.addArranged(rowSpacing) { spacing in
             bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(spacing, \.isHidden)
         }
-        
+
         let perilCategoriesStack = UIStackView()
         perilCategoriesStack.axis = .vertical
         stackView.addArrangedSubview(perilCategoriesStack)
-        
+
         bag += dataSignal.atOnce().compactMap { $0?.perilCategories }.onValue { perilCategories in
             perilCategoriesStack.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-            
+
             for (index, perilCategory) in perilCategories.enumerated() {
                 let protectionSection = PerilExpandableRow(index: index, presentingViewController: self.presentingViewController)
                 protectionSection.perilsDataSignal.value = perilCategory
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)
             }
-            
+
             let moreInfoSection = MoreInfoExpandableRow()
             bag += perilCategoriesStack.addArranged(moreInfoSection)
         }
-        
+
         return (stackView, bag)
     }
 }

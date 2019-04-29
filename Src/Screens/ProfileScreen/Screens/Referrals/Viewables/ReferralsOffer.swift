@@ -59,7 +59,7 @@ extension ReferralsOffer: Viewable {
 
         let title = UILabel(value: mode.titleText(), style: .boldSmallTitle)
         containerView.addArrangedSubview(title)
-        
+
         let checkmarkView = MultilineLabelIcon(
             styledText: StyledText(
                 text: mode.labelText(incentive: incentive),
@@ -68,9 +68,9 @@ extension ReferralsOffer: Viewable {
             icon: Asset.greenCircularCheckmark,
             iconWidth: 15
         )
-        
+
         let bag = DisposeBag()
-        
+
         bag += containerView.addArranged(checkmarkView)
 
         return (containerView, bag)

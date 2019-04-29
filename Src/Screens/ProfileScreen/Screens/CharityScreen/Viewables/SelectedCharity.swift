@@ -51,7 +51,7 @@ extension SelectedCharity: Viewable {
             for subview in stackView.arrangedSubviews {
                 subview.removeFromSuperview()
             }
-            
+
             let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
             bag += stackView.addArranged(charityLogo) { view in
                 view.snp.makeConstraints { make in
@@ -89,21 +89,21 @@ extension SelectedCharity: Viewable {
             infoContainer.addSubview(infoContainerStackView)
             stackView.addArrangedSubview(infoContainer)
 
-            infoContainerStackView.snp.makeConstraints({ make in
+            infoContainerStackView.snp.makeConstraints { make in
                 make.width.height.centerX.centerY.equalToSuperview()
-            })
+            }
 
-            bag += infoContainerStackView.didLayoutSignal.onValue({ _ in
+            bag += infoContainerStackView.didLayoutSignal.onValue { _ in
                 let size = infoContainerStackView.systemLayoutSizeFitting(CGSize.zero)
 
-                infoContainer.snp.remakeConstraints({ make in
+                infoContainer.snp.remakeConstraints { make in
                     make.height.equalTo(size.height)
                     make.width.equalToSuperview().inset(20)
-                })
-            })
-            
+                }
+            }
+
             let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
-            
+
             bag += stackView.addArranged(charityInformationButton)
         }
 

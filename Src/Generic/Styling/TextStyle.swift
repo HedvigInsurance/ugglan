@@ -66,7 +66,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
     }
-    
+
     static let perilTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.color = .gray
@@ -133,12 +133,12 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(18)
         style.color = .black
     }
-    
+
     static let countdownNumber = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(40)
         style.color = .pink
     }
-    
+
     static let countdownLetter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(12)
         style.color = .black

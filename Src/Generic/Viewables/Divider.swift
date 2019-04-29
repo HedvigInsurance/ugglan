@@ -17,16 +17,16 @@ struct Divider {
 extension Divider: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let divider = UIView()
-        
+
         let bag = DisposeBag()
-        
+
         divider.backgroundColor = backgroundColor
-        
+
         divider.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(1)
             make.width.centerX.equalToSuperview()
         }
-        
+
         return (divider, bag)
     }
 }

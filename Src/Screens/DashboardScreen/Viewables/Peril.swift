@@ -5,18 +5,18 @@
 //  Created by Axel Backlund on 2019-04-04.
 //
 
+import DeviceKit
 import Flow
 import Form
 import Foundation
 import UIKit
-import DeviceKit
 
 struct Peril {
     let title: String
     let id: String
     let description: String
     let presentingViewController: UIViewController
-    
+
     init(title: String, id: String, description: String, presentingViewController: UIViewController) {
         self.title = title
         self.id = id
@@ -28,7 +28,7 @@ struct Peril {
 extension Peril: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (Peril) -> Disposable) {
         let perilView = UIView()
-        
+
         func perilIconAsset(for value: String) -> ImageAsset {
             switch value {
             case "ME.LEGAL":
@@ -67,24 +67,24 @@ extension Peril: Reusable {
                 return Asset.houseBreakIn
             }
         }
-        
+
         return (perilView, { peril in
-            perilView.subviews.forEach({ view in
+            perilView.subviews.forEach { view in
                 view.removeFromSuperview()
-            })
-            
+            }
+
             let bag = DisposeBag()
-            
+
             let perilIcon = Icon(icon: perilIconAsset(for: peril.id), iconWidth: 40)
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in
                 make.centerX.top.equalToSuperview()
             }
-            
+
             let perilTitleLabel = MultilineLabel(styledText: StyledText(text: peril.title, style: .perilTitle))
             bag += perilView.add(perilTitleLabel) { titleLabel in
                 titleLabel.textAlignment = .center
-                
+
                 bag += perilIcon.didLayoutSignal.onValue {
                     titleLabel.snp.makeConstraints { make in
                         make.top.equalTo(perilIcon.frame.height + 5)
@@ -92,18 +92,18 @@ extension Peril: Reusable {
                         make.width.equalTo(50)
                     }
                 }
-                
+
                 titleLabel.sizeToFit()
             }
-            
+
             let tapGesture = UITapGestureRecognizer()
             bag += perilView.install(tapGesture)
-            
+
             bag += tapGesture.signal(forState: .ended).onValue { _ in
                 let title = peril.title.replacingOccurrences(of: "-\n", with: "")
-                
+
                 let heightPercentage: CGFloat = Device.hasRoundedCorners ? 0.4 : 0.7
-                
+
                 peril.presentingViewController.present(
                     DraggableOverlay(
                         presentable: PerilInformation(title: title, description: peril.description, icon: perilIconAsset(for: peril.id)),
@@ -112,7 +112,7 @@ extension Peril: Reusable {
                     )
                 )
             }
-            
+
             return bag
         })
     }

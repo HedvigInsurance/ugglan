@@ -9,8 +9,7 @@ import Foundation
 import UIKit
 
 struct DashboardRouting {
-    static func openChat(viewController: UIViewController, chatActionUrl: String) {
+    static func openChat(viewController: UIViewController, chatActionUrl _: String) {
         viewController.present(Chat())
     }
 }
-

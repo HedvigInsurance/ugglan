@@ -158,7 +158,7 @@ extension UIStackView {
             matter.removeFromSuperview()
         })
     }
-    
+
     // swiftlint:enable large_tuple
 
     func addArranged<V: Viewable, MatterView: UIView>(
@@ -177,11 +177,11 @@ extension UIStackView {
             disposable.dispose()
         }
     }
-    
+
     func addArranged<V: Viewable, Matter: Viewable, View: UIView>(
         _ viewable: V,
         onCreate: (_ view: Matter.Matter) -> Void = { _ in }
-        ) -> V.Result where
+    ) -> V.Result where
         V.Matter == Matter,
         V.Result == Disposable,
         V.Events == ViewableEvents,
@@ -189,15 +189,15 @@ extension UIStackView {
         Matter.Result == Disposable,
         Matter.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
-        
+
         let (matter, result) = viewable.materialize(events: ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
         ))
-            
+
         let (viewableMatter, viewableResult, disposable) = materializeArrangedViewable(viewable: matter)
-            
+
         onCreate(viewableMatter)
-        
+
         return Disposer {
             result.dispose()
             disposable.dispose()
