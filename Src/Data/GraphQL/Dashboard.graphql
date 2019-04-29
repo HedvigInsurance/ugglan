@@ -1,4 +1,18 @@
 query Dashboard {
+    insurance {
+        status
+        type
+        activeFrom
+        perilCategories {
+            title
+            description
+            perils {
+                id
+                title
+                description
+            }
+        }
+    }
     member {
         firstName
     }

@@ -158,13 +158,16 @@ extension UIStackView {
             matter.removeFromSuperview()
         })
     }
-
+    
     // swiftlint:enable large_tuple
 
-    func addArangedSubview<V: Viewable, MatterView: UIView>(
+    func addArranged<V: Viewable, MatterView: UIView>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
-    ) -> V.Result where V.Matter == MatterView, V.Result == Disposable, V.Events == ViewableEvents {
+    ) -> V.Result where
+        V.Matter == MatterView,
+        V.Result == Disposable,
+        V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
 
         onCreate(matter)
@@ -172,6 +175,33 @@ extension UIStackView {
         return Disposer {
             result.dispose()
             disposable.dispose()
+        }
+    }
+    
+    func addArranged<V: Viewable, Matter: Viewable, View: UIView>(
+        _ viewable: V,
+        onCreate: (_ view: Matter.Matter) -> Void = { _ in }
+        ) -> V.Result where
+        V.Matter == Matter,
+        V.Result == Disposable,
+        V.Events == ViewableEvents,
+        Matter.Matter == View,
+        Matter.Result == Disposable,
+        Matter.Events == ViewableEvents {
+        let wasAddedCallbacker = Callbacker<Void>()
+        
+        let (matter, result) = viewable.materialize(events: ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker
+        ))
+            
+        let (viewableMatter, viewableResult, disposable) = materializeArrangedViewable(viewable: matter)
+            
+        onCreate(viewableMatter)
+        
+        return Disposer {
+            result.dispose()
+            disposable.dispose()
+            viewableResult.dispose()
         }
     }
 }

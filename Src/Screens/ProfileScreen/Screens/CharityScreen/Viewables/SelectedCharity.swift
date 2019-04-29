@@ -53,7 +53,7 @@ extension SelectedCharity: Viewable {
             }
             
             let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
-            bag += stackView.addArangedSubview(charityLogo) { view in
+            bag += stackView.addArranged(charityLogo) { view in
                 view.snp.makeConstraints { make in
                     make.height.equalTo(190)
                 }
@@ -84,7 +84,7 @@ extension SelectedCharity: Viewable {
             let descriptionLabel = MultilineLabel(
                 styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
             )
-            bag += infoContainerStackView.addArangedSubview(descriptionLabel)
+            bag += infoContainerStackView.addArranged(descriptionLabel)
 
             infoContainer.addSubview(infoContainerStackView)
             stackView.addArrangedSubview(infoContainer)
@@ -104,7 +104,7 @@ extension SelectedCharity: Viewable {
             
             let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
             
-            bag += stackView.addArangedSubview(charityInformationButton)
+            bag += stackView.addArranged(charityInformationButton)
         }
 
         if animateEntry {
