@@ -44,9 +44,9 @@ extension CharityOption: Reusable {
         stackView.distribution = .fill
 
         return (stackView, { charityOption in
-            stackView.arrangedSubviews.forEach({ view in
+            stackView.arrangedSubviews.forEach { view in
                 view.removeFromSuperview()
-            })
+            }
 
             let bag = DisposeBag()
 

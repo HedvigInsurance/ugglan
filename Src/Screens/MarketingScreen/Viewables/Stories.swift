@@ -71,12 +71,12 @@ extension Stories: Viewable {
         )
         bag += view.add(logo)
 
-        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in
+        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalToSuperview()
             make.top.equalToSuperview()
             make.center.equalToSuperview()
             make.height.equalToSuperview()
-        })
+        }
 
         return (view, bag)
     }

@@ -97,20 +97,20 @@ extension StoriesIndicator: Viewable {
             }
         }
 
-        bag += pausedCallbacker.signal().onValue({ paused in
+        bag += pausedCallbacker.signal().onValue { paused in
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 collectionKit.view.alpha = paused ? 0 : 1
             }, completion: nil)
-        })
+        }
 
         let marketingStoryIndicatorsCallbacker = Callbacker<[MarketingStoryIndicator]>()
         let marketingStoryIndicatorsSignal = marketingStoryIndicatorsCallbacker.signal()
 
         let currentFocusedStorySignal = marketingStoryIndicatorsSignal.map {
             marketingStoryIndicators -> MarketingStoryIndicator? in
-            marketingStoryIndicators.filter({ marketingStoryIndicator -> Bool in
+            marketingStoryIndicators.filter { marketingStoryIndicator -> Bool in
                 marketingStoryIndicator.focused
-            }).first
+            }.first
         }
 
         bag += marketingStoryIndicatorsSignal
@@ -118,7 +118,7 @@ extension StoriesIndicator: Viewable {
                 collectionKit.set(Table(rows: marketingStoryIndicators), animation: .none)
             }
 
-        bag += storyDidLoadSignal.onValue({ index in
+        bag += storyDidLoadSignal.onValue { index in
             let newRows = collectionKit.table.enumerated().map {
                 (offset, marketingStoryIndicator) -> MarketingStoryIndicator in
                 MarketingStoryIndicator(
@@ -131,7 +131,7 @@ extension StoriesIndicator: Viewable {
             }
 
             marketingStoryIndicatorsCallbacker.callAll(with: newRows)
-        })
+        }
 
         bag += scrollToSignal
             .withLatestFrom(
@@ -139,7 +139,7 @@ extension StoriesIndicator: Viewable {
             )
             .filter(predicate: { (_, latestFrom) -> Bool in
                 latestFrom.1 != nil
-            }).onValue({ direction, latestFrom in
+            }).onValue { direction, latestFrom in
                 let (marketingStoryIndicators, currentFocusedStory) = latestFrom
 
                 if direction == .first {
@@ -182,11 +182,11 @@ extension StoriesIndicator: Viewable {
                 }
 
                 marketingStoryIndicatorsCallbacker.callAll(with: newRows)
-            })
+            }
 
         bag += marketingStories.atOnce().map {
             (marketingStories: [MarketingStory]) -> [MarketingStoryIndicator] in
-            marketingStories.enumerated().map({
+            marketingStories.enumerated().map {
                 (offset, marketingStory) -> MarketingStoryIndicator in
                 MarketingStoryIndicator(
                     duration: marketingStory.duration,
@@ -195,12 +195,12 @@ extension StoriesIndicator: Viewable {
                     shown: offset == 0,
                     contentHasLoaded: false
                 )
-            })
+            }
         }.onValue { marketingStoryIndicators in
             marketingStoryIndicatorsCallbacker.callAll(with: marketingStoryIndicators)
         }
 
-        bag += collectionKit.view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, safeArea in
+        bag += collectionKit.view.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
             if Device.hasRoundedCorners {
                 make.top.equalTo(safeArea.layoutGuide)
             } else {
@@ -210,7 +210,7 @@ extension StoriesIndicator: Viewable {
             make.width.equalToSuperview()
             make.height.equalTo(2.5)
             make.centerX.equalToSuperview().inset(2.5)
-        })
+        }
 
         return (collectionKit.view, bag)
     }

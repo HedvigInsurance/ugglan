@@ -14,12 +14,12 @@ struct CharityLogo {
 }
 
 extension CharityLogo: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let containerView = UIView()
         let bag = DisposeBag()
-        
+
         let imageView = CachedImage(url: url)
-        
+
         bag += containerView.add(imageView) { view in
             view.snp.makeConstraints { make in
                 make.width.equalToSuperview().multipliedBy(0.8)
@@ -27,7 +27,7 @@ extension CharityLogo: Viewable {
                 make.height.lessThanOrEqualTo(100)
             }
         }
-        
+
         return (containerView, bag)
     }
 }

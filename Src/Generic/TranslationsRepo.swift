@@ -17,11 +17,11 @@ struct TranslationsRepo {
         client.fetch(query: TranslationsQuery(code: localeCode)).onValue { result in
             let translations = result.data?.languages.first??.translations ?? []
 
-            translations.forEach({ translation in
+            translations.forEach { translation in
                 if let key = translation.key?.value {
                     TranslationsRepo.translations[key] = translation.text
                 }
-            })
+            }
         }
     }
 
@@ -37,7 +37,7 @@ struct TranslationsRepo {
             replacements.forEach { key, value in
                 textValue = textValue.replacingOccurrences(of: "{\(key)}", with: value)
             }
-            
+
             return textValue
         }
 

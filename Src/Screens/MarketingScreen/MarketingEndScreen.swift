@@ -81,9 +81,9 @@ extension MarketingEnd: Presentable {
         )
 
         bag += cancelSignal
-            .map({ _ -> CGAffineTransform in
+            .map { _ -> CGAffineTransform in
                 CGAffineTransform.identity
-            }).bindTo(animate: AnimationStyle.easeOut(duration: 0.25), containerView, \.transform)
+            }.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), containerView, \.transform)
 
         bag += dismissSignal.animated(mapStyle: { _ -> SpringAnimationStyle in
             let velocity = panGestureRecognizer.velocity(in: containerView)
@@ -104,12 +104,12 @@ extension MarketingEnd: Presentable {
         })
 
         // set scale while panning
-        bag += panGestureRecognizer.signal(forState: .changed).map({ _ -> CGAffineTransform in
+        bag += panGestureRecognizer.signal(forState: .changed).map { _ -> CGAffineTransform in
             let translation = panGestureRecognizer.translation(in: containerView)
 
             let scale = max(1 - (translation.y / (containerView.bounds.height * 4)), 0.5)
             return CGAffineTransform(scaleX: min(scale, 1), y: min(scale, 1))
-        }).bindTo(containerView, \.transform)
+        }.bindTo(containerView, \.transform)
 
         // set rounded corners when panning has started
         bag += panGestureRecognizer.signal(forState: .changed).onValue { _ in
@@ -138,9 +138,9 @@ extension MarketingEnd: Presentable {
                 dismissSignal: dismissSignal
             )
 
-            bag += containerView.add(end).onValue({ result in
+            bag += containerView.add(end).onValue { result in
                 self.didResult.callAll(with: result)
-            })
+            }
 
             bag += dismissSignal.delay(by: 0.2).onValue { _ in
                 completion(.success)

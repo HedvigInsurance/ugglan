@@ -81,9 +81,9 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
                     }
 
                 // cancel preview disposal by disposing innerBag when a commit happens
-                innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?.signal().onValue({ _ in
+                innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?.signal().onValue { _ in
                     innerBag.dispose()
-                })
+                }
 
                 bag += future.disposable
                 return (viewController, future.disposable)
@@ -142,9 +142,9 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
                     }
 
                 // cancel preview disposal by disposing innerBag when a commit happens
-                innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?.signal().onValue({ _ in
+                innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?.signal().onValue { _ in
                     innerBag.dispose()
-                })
+                }
 
                 bag += disposable
                 return (viewController, disposable)

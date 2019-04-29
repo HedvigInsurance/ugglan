@@ -30,11 +30,11 @@ extension MemberActionButtons: Viewable {
         stackView.alpha = 0
         stackView.transform = CGAffineTransform(translationX: 0, y: 15)
 
-        bag += pausedSignal.onValue({ paused in
+        bag += pausedSignal.onValue { paused in
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 stackView.alpha = paused ? 0 : 1
             }, completion: nil)
-        })
+        }
 
         let newMemberButton = NewMemberButton(style: .marketingScreen) {
             self.resultCallbacker.callAll(with: .onboard)

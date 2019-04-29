@@ -30,11 +30,11 @@ extension Logo: Viewable {
             make.center.equalToSuperview()
         }
 
-        bag += pausedSignal.onValue({ paused in
+        bag += pausedSignal.onValue { paused in
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 view.alpha = paused ? 0 : 1
             }, completion: nil)
-        })
+        }
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
             if Device.hasRoundedCorners {

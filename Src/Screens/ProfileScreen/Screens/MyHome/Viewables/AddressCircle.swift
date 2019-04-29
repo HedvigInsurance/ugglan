@@ -26,13 +26,13 @@ extension AddressCircle: Viewable {
 
         let circleText = DynamicString()
 
-        bag += client.fetch(query: MyHomeQuery()).valueSignal.map({ result -> String in
+        bag += client.fetch(query: MyHomeQuery()).valueSignal.map { result -> String in
             if let address = result.data?.insurance.address {
                 return address
             }
 
             return ""
-        }).bindTo(circleText)
+        }.bindTo(circleText)
 
         let circleLabel = CircleLabel(
             labelText: circleText,

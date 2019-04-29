@@ -45,9 +45,9 @@ extension ApolloClient {
 
         bag += viewController.present(alert).onValue { shouldRetry in
             if shouldRetry {
-                ApolloClient.retryQueue.forEach({ retry in
+                ApolloClient.retryQueue.forEach { retry in
                     retry()
-                })
+                }
             }
 
             ApolloClient.retryQueue = []

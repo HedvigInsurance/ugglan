@@ -28,12 +28,12 @@ extension SkipToPreviousButton: Viewable {
         bag += button.throttle(0.5).onValue(onScrollToPrevious)
 
         bag += events.wasAdded.onValue {
-            button.snp.makeConstraints({ make in
+            button.snp.makeConstraints { make in
                 make.width.equalToSuperview().multipliedBy(0.25)
                 make.height.equalToSuperview().inset(60)
                 make.top.equalToSuperview()
                 make.left.equalToSuperview()
-            })
+            }
         }
 
         return (button, bag)

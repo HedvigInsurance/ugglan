@@ -30,12 +30,12 @@ extension MultilineLabel: Viewable {
 
         let label = UILabel()
 
-        bag += styledTextSignal.atOnce().map({ styledText -> StyledText in
-            styledText.restyled({ (textStyle: inout TextStyle) in
+        bag += styledTextSignal.atOnce().map { styledText -> StyledText in
+            styledText.restyled { (textStyle: inout TextStyle) in
                 textStyle.numberOfLines = 0
                 textStyle.lineBreakMode = .byWordWrapping
-            })
-        }).bindTo(label, \.styledText)
+            }
+        }.bindTo(label, \.styledText)
 
         bag += label.didLayoutSignal.onValue {
             label.preferredMaxLayoutWidth = label.frame.size.width

@@ -27,9 +27,9 @@ extension MyCharityRow: Viewable {
             options: [.withArrow]
         )
 
-        bag += charityNameSignal.atOnce().map({ charityName -> String in
+        bag += charityNameSignal.atOnce().map { charityName -> String in
             charityName ?? String(key: .PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE)
-        }).bindTo(row.subtitle)
+        }.bindTo(row.subtitle)
 
         bag += events.onSelect.onValue { _ in
             self.presentingViewController.present(

@@ -42,27 +42,27 @@ extension Charity: Presentable {
                 if cashback != nil {
                     let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1, presentingViewController: viewController)
                     bag += containerView.add(selectedCharity) { view in
-                        view.snp.makeConstraints({ make in
+                        view.snp.makeConstraints { make in
                             make.edges.equalToSuperview()
-                        })
+                        }
                     }
                 } else {
                     let charityPicker = CharityPicker(
                         presentingViewController: viewController
                     )
                     bag += containerView.add(charityPicker) { view in
-                        view.snp.makeConstraints({ make in
+                        view.snp.makeConstraints { make in
                             make.edges.equalToSuperview()
-                        })
-                    }.onValue({ _ in
+                        }
+                    }.onValue { _ in
                         bag += self.client.fetch(
                             query: SelectedCharityQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).disposable
-                    })
+                    }
                 }
             }
-        
+
         viewController.view = containerView
 
         return (viewController, bag)

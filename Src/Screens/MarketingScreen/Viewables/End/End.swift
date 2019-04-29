@@ -44,9 +44,9 @@ extension End: Viewable {
             )
 
             if let marketingScreenButton = marketingScreenButton, let endScreenButton = endScreenButton {
-                bag += self.dismissSignal.map({ _ -> CGAffineTransform in
+                bag += self.dismissSignal.map { _ -> CGAffineTransform in
                     CGAffineTransform.identity
-                }).bindTo(animate: AnimationStyle.easeOut(duration: 0.3), marketingScreenButton, \.transform)
+                }.bindTo(animate: AnimationStyle.easeOut(duration: 0.3), marketingScreenButton, \.transform)
 
                 let transformFrame = endScreenButton.frameRelativeTo(view: marketingScreenButton)
 
@@ -74,17 +74,17 @@ extension End: Viewable {
             stackView.alpha = 1
         }
 
-        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in
+        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.center.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview()
-        })
+        }
 
-        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue({ make, _ in
+        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.center.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview()
-        })
+        }
 
         return (view, Future { completion in
             let newMemberButton = NewMemberButton(style: .endScreen) {
@@ -98,9 +98,9 @@ extension End: Viewable {
                 completion(.success(.login))
             }
             bag += existingMemberButtonContainerView.add(existingMemberButton) { buttonView in
-                buttonView.snp.makeConstraints({ make in
+                buttonView.snp.makeConstraints { make in
                     make.center.equalToSuperview()
-                })
+                }
             }
 
             view.addSubview(existingMemberButtonContainerView)
@@ -119,9 +119,9 @@ extension End: Viewable {
                 make.height.equalTo(30)
             }
 
-            bag += events.removeAfter.set({ _ -> TimeInterval in
+            bag += events.removeAfter.set { _ -> TimeInterval in
                 2
-            })
+            }
 
             return DelayedDisposer(bag, delay: 2)
         })

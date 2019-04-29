@@ -138,10 +138,10 @@ extension DirectDebitSetup: Presentable {
                 }
 
                 bag += containerView.add(directDebitResult) { view in
-                    view.snp.makeConstraints({ make in
+                    view.snp.makeConstraints { make in
                         make.size.equalToSuperview()
                         make.edges.equalToSuperview()
-                    })
+                    }
                 }.onValue {
                     completion(.success)
                 }
@@ -149,7 +149,7 @@ extension DirectDebitSetup: Presentable {
                 viewController.view = containerView
             }
 
-            bag += webView.decidePolicyForNavigationAction.set({ _, navigationAction in
+            bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
                 guard let url = navigationAction.request.url else { return .allow }
                 let urlString = String(describing: url)
 
@@ -159,7 +159,7 @@ extension DirectDebitSetup: Presentable {
                 }
 
                 return .allow
-            })
+            }
 
             // if user is closing app in the middle of process make sure to inform backend
             bag += self.applicationWillTerminateSignal.onValue {

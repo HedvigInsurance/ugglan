@@ -42,7 +42,7 @@ extension ReportBugRow: Viewable {
         let memberIdSignal = client.fetch(query: MemberIdQuery())
             .valueSignal
             .compactMap { $0.data?.member.id }.plain()
-        
+
         bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
             let deviceInfo = String(key: .FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
                 appVersion: appVersion ?? "",

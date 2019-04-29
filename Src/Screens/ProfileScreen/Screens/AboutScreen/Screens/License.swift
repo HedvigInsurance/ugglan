@@ -44,11 +44,11 @@ extension License: Presentable {
 
         scrollView.addSubview(textLabel)
 
-        textLabel.snp.makeConstraints({ make in
+        textLabel.snp.makeConstraints { make in
             make.width.equalToSuperview().inset(10)
             make.top.equalToSuperview().inset(10)
             make.centerX.equalToSuperview()
-        })
+        }
 
         viewController.view = scrollView
 

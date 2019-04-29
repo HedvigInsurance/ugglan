@@ -27,13 +27,13 @@ extension NameCircle: Viewable {
 
         let nameCircleText = DynamicString()
 
-        bag += client.fetch(query: ProfileQuery()).valueSignal.map({ result -> String in
+        bag += client.fetch(query: ProfileQuery()).valueSignal.map { result -> String in
             if let member = result.data?.member, let firstName = member.firstName, let lastName = member.lastName {
                 return "\(firstName) \(lastName)"
             }
 
             return ""
-        }).bindTo(nameCircleText)
+        }.bindTo(nameCircleText)
 
         let nameCircle = CircleLabel(
             labelText: nameCircleText,

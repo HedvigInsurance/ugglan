@@ -13,7 +13,7 @@ import UIKit
 
 extension DefaultStyling {
     static func installCustom() {
-        ListTableView.self.appearance().backgroundColor = .offWhite
+        ListTableView.appearance().backgroundColor = .offWhite
 
         for view in [FormScrollView.self, FormTableView.self] {
             view.appearance(

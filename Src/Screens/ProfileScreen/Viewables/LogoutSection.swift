@@ -24,7 +24,7 @@ extension LogoutSection: Viewable {
             style: .danger
         )
 
-        bag += logoutButtonSection.onSelect.onValue({ _ in
+        bag += logoutButtonSection.onSelect.onValue { _ in
             let alert = Alert<Bool>(
                 title: String(key: .LOGOUT_ALERT_TITLE),
                 message: nil,
@@ -41,13 +41,13 @@ extension LogoutSection: Viewable {
                 ]
             )
 
-            bag += self.presentingViewController.present(alert).onValue({ shouldLogout in
+            bag += self.presentingViewController.present(alert).onValue { shouldLogout in
                 if shouldLogout {
                     let appDelegate = UIApplication.shared.delegate as? AppDelegate
                     appDelegate?.logout()
                 }
-            })
-        })
+            }
+        }
 
         return (logoutButtonSection, bag)
     }

@@ -7,12 +7,12 @@
 
 import Flow
 import Foundation
-import UIKit
 import SnapKit
+import UIKit
 
 struct CharityInformationButton {
     let presentingViewController: UIViewController
-    
+
     init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
     }
@@ -21,17 +21,17 @@ struct CharityInformationButton {
 extension CharityInformationButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
-        
+
         let bag = DisposeBag()
-        
+
         let button = Button(
             title: String(key: .PROFILE_MY_CHARITY_INFO_BUTTON),
             type: .iconTransparent(textColor: .purple, icon: Asset.infoPurple)
         )
-        
+
         bag += view.add(button)
-        
-        bag += button.onTapSignal.onValue {_ in
+
+        bag += button.onTapSignal.onValue { _ in
             self.presentingViewController.present(
                 DraggableOverlay(
                     presentable: CharityInformation(),
@@ -40,11 +40,11 @@ extension CharityInformationButton: Viewable {
                 )
             )
         }
-        
+
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(button.type.height())
         }
-        
+
         return (view, bag)
     }
 }

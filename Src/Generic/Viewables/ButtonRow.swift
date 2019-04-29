@@ -42,13 +42,13 @@ extension ButtonRow: Viewable {
 
         let label = UILabel()
 
-        bag += style.atOnce().map({ textStyle -> TextStyle in
-            textStyle.restyled({ (style: inout TextStyle) in
+        bag += style.atOnce().map { textStyle -> TextStyle in
+            textStyle.restyled { (style: inout TextStyle) in
                 style.alignment = .center
-            })
-        }).map({ textStyle -> StyledText in
+            }
+        }.map { textStyle -> StyledText in
             StyledText(text: label.text ?? "", style: textStyle)
-        }).bindTo(label, \.styledText)
+        }.bindTo(label, \.styledText)
         bag += text.atOnce().bindTo(label, \.text)
 
         bag += label.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in

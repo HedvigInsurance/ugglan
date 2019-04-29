@@ -5,8 +5,8 @@
 //  Created by Gustaf Gunér on 2019-04-04.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 struct CharityInformationBody {
@@ -14,14 +14,14 @@ struct CharityInformationBody {
 }
 
 extension CharityInformationBody: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
-        
+
         let bag = DisposeBag()
-        
+
         let body = MarkdownText(text: text, style: .bodyOffBlack)
         bag += view.add(body)
-        
+
         bag += view.didLayoutSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview().inset(24)
@@ -29,7 +29,7 @@ extension CharityInformationBody: Viewable {
                 make.center.equalToSuperview()
             }
         }
-        
+
         return (view, bag)
     }
 }

@@ -148,12 +148,12 @@ extension Referrals: Presentable {
         )
 
         bag += scrollView.add(button) { buttonView in
-            buttonView.snp.makeConstraints({ make in
+            buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
                     viewController.bottomLayoutGuide.snp.bottom
                 ).inset(20)
                 make.centerX.equalToSuperview()
-            })
+            }
 
             bag += linkSignal.compactMap { $0 }.map { false }.bindTo(button.isLoadingSignal)
 
