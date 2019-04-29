@@ -44,9 +44,9 @@ extension Launch: Presentable {
 
         return (viewController, Future { completion in
 
-            bag += self.hasLoadedSignal.onValue({ _ in
+            bag += self.hasLoadedSignal.onValue { _ in
                 animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
-            })
+            }
 
             bag += self.hasLoadedSignal.debug().delay(
                 by: 0.6

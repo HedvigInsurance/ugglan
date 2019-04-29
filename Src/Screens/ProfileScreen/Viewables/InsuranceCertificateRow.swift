@@ -33,19 +33,19 @@ extension InsuranceCertificateRow: Viewable {
             options: []
         )
 
-        bag += certificateUrlSignal.atOnce().map({ value -> String in
+        bag += certificateUrlSignal.atOnce().map { value -> String in
             value != nil ?
                 String(key: .PROFILE_MY_INSURANCE_CERTIFICATE_ROW_SUBTITLE) :
                 String(key: .PROFILE_MY_INSURANCE_CERTIFICATE_ROW_DISABLED_SUBTITLE)
-        }).bindTo(row.subtitle)
+        }.bindTo(row.subtitle)
 
-        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 == nil }).map({ _ -> [IconRow.Options] in
+        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 == nil }).map { _ -> [IconRow.Options] in
             [.disabled]
-        }).bindTo(row.options)
+        }.bindTo(row.options)
 
-        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 != nil }).map({ _ -> [IconRow.Options] in
+        bag += certificateUrlSignal.atOnce().filter(predicate: { $0 != nil }).map { _ -> [IconRow.Options] in
             [.withArrow]
-        }).bindTo(row.options)
+        }.bindTo(row.options)
 
         bag += certificateUrlSignal.atOnce().filter(predicate: { $0 != nil }).onValueDisposePrevious { _ in
             let innerBag = bag.innerBag()

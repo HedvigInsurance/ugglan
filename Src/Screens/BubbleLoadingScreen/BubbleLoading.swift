@@ -49,11 +49,11 @@ extension BubbleLoading: Presentable {
 
         containerView.addSubview(activityIndicator)
 
-        activityIndicator.snp.makeConstraints({ make in
+        activityIndicator.snp.makeConstraints { make in
             make.height.equalToSuperview()
             make.width.equalToSuperview()
             make.center.equalToSuperview()
-        })
+        }
 
         viewController.view = containerView
 
@@ -87,9 +87,9 @@ extension BubbleLoading: Presentable {
                 activityIndicator.alpha = 0
             }.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                 bubbleView.alpha = 0
-            }.onValue({ _ in
+            }.onValue { _ in
                 completion(.success)
-            })
+            }
 
             return bag
         })

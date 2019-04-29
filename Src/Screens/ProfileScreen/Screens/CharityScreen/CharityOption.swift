@@ -44,9 +44,9 @@ extension CharityOption: Reusable {
         stackView.distribution = .fill
 
         return (stackView, { charityOption in
-            stackView.arrangedSubviews.forEach({ view in
+            stackView.arrangedSubviews.forEach { view in
                 view.removeFromSuperview()
-            })
+            }
 
             let bag = DisposeBag()
 
@@ -79,9 +79,9 @@ extension CharityOption: Reusable {
                     style: .blockRowDescription
                 )
             )
-            bag += contentView.addArangedSubview(descriptionLabel)
+            bag += contentView.addArranged(descriptionLabel)
 
-            bag += contentView.addArangedSubview(Spacing(height: 5))
+            bag += contentView.addArranged(Spacing(height: 5))
 
             let buttonContainer = UIView()
 

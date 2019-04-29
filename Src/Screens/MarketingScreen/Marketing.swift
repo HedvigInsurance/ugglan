@@ -36,22 +36,22 @@ extension Marketing: Presentable {
 
         return (viewController, Future { completion in
             let resultCallbacker = Callbacker<MarketingResult>()
-            bag += resultCallbacker.signal().onValue({ marketingResult in
+            bag += resultCallbacker.signal().onValue { marketingResult in
                 completion(.success(marketingResult))
-            })
+            }
 
             let endScreenCallbacker = Callbacker<Void>()
             let pausedCallbacker = Callbacker<Bool>()
             let scrollToCallbacker = Callbacker<ScrollTo>()
 
-            bag += endScreenCallbacker.signal().onValue({ _ in
+            bag += endScreenCallbacker.signal().onValue { _ in
                 pausedCallbacker.callAll(with: true)
 
                 let marketingEndDidResultCallbacker = Callbacker<MarketingResult>()
 
-                bag += marketingEndDidResultCallbacker.signal().onValue({ marketingResult in
+                bag += marketingEndDidResultCallbacker.signal().onValue { marketingResult in
                     completion(.success(marketingResult))
-                })
+                }
 
                 let marketingEnd = MarketingEnd(
                     didResult: marketingEndDidResultCallbacker
@@ -70,7 +70,7 @@ extension Marketing: Presentable {
                     scrollToCallbacker.callAll(with: .first)
                     pausedCallbacker.callAll(with: false)
                 }
-            })
+            }
 
             let rowsSignal = ReadWriteSignal<[MarketingStory]>([])
 
@@ -91,9 +91,9 @@ extension Marketing: Presentable {
 
             bag += self.client.fetch(query: MarketingStoriesQuery()).onValue { result in
                 guard let data = result.data else { return }
-                let rows = data.marketingStories.map({ (marketingStoryData) -> MarketingStory in
+                let rows = data.marketingStories.map { (marketingStoryData) -> MarketingStory in
                     MarketingStory(apollo: marketingStoryData!)
-                })
+                }
 
                 loadingIndicatorBag.dispose()
 

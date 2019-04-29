@@ -41,7 +41,7 @@ extension ButtonSection: Viewable {
         bag += isHiddenSignal.bindTo(section, \.isHidden)
 
         section.dynamicStyle = DynamicSectionStyle { trait -> SectionStyle in
-            SectionStyle.sectionPlain.restyled({ (style: inout SectionStyle) in
+            SectionStyle.sectionPlain.restyled { (style: inout SectionStyle) in
                 if trait.isPad {
                     style.background = .standardRoundedBorder
 
@@ -60,7 +60,7 @@ extension ButtonSection: Viewable {
                         style.selectedBackground = .selectedDangerRoundedBorder
                     }
                 }
-            })
+            }
         }
 
         let buttonRow = ButtonRow(

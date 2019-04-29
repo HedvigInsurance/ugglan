@@ -62,7 +62,7 @@ extension TextStyle {
     static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
         style.alignment = .center
     }
-    
+
     static let smallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.color = .offBlack
@@ -71,6 +71,11 @@ extension TextStyle {
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
+    }
+
+    static let perilTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(12)
+        style.color = .gray
     }
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -129,9 +134,19 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .purple
     }
-    
+
     static let drabbableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(18)
+        style.color = .black
+    }
+
+    static let countdownNumber = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.soRayExtraBold!.withSize(40)
+        style.color = .pink
+    }
+
+    static let countdownLetter = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(12)
         style.color = .black
     }
 }

@@ -20,7 +20,7 @@ extension UpdatingMessage: Viewable {
         let label = MultilineLabel(
             styledText: StyledText(text: String(key: .MY_PAYMENT_UPDATING_MESSAGE), style: .centeredBodyOffBlack)
         )
-        bag += row.addArangedSubview(label)
+        bag += row.addArranged(label)
 
         return (row, bag)
     }

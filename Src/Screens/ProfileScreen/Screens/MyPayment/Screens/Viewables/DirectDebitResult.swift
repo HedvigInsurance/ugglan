@@ -92,7 +92,7 @@ extension DirectDebitResult: Viewable {
             )
         )
 
-        bag += stackView.addArangedSubview(heading) { view in
+        bag += stackView.addArranged(heading) { view in
             view.snp.makeConstraints { make in
                 make.width.equalTo(containerView.snp.width).inset(20)
             }
@@ -105,7 +105,7 @@ extension DirectDebitResult: Viewable {
             )
         )
 
-        bag += stackView.addArangedSubview(body) { view in
+        bag += stackView.addArranged(body) { view in
             view.snp.makeConstraints { make in
                 make.width.lessThanOrEqualTo(containerView.snp.width).inset(20)
             }

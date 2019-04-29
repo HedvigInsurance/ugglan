@@ -36,9 +36,9 @@ extension ApolloClient {
                                 query: query,
                                 cachePolicy: cachePolicy,
                                 queue: queue
-                            ).onResult({ result in
+                            ).onResult { result in
                                 completion(result)
-                            })
+                            }
                         }
                     }
                 }
@@ -79,9 +79,9 @@ extension ApolloClient {
                         }
 
                         self.showNetworkErrorMessage { [unowned self] in
-                            self.perform(mutation: mutation, queue: queue).onResult({ result in
+                            self.perform(mutation: mutation, queue: queue).onResult { result in
                                 completion(result)
-                            })
+                            }
                         }
                     }
                 }
@@ -110,9 +110,9 @@ extension ApolloClient {
                     }
 
                     self.showNetworkErrorMessage { [unowned self] in
-                        bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue({ result in
+                        bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue { result in
                             callbacker(result)
-                        })
+                        }
                     }
                 }
             }

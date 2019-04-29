@@ -21,8 +21,8 @@ extension UIView {
         return Future { completion in
             let bag = DisposeBag()
 
-            bag += wasAdded.onValue({ _ in
-                self.snp.makeConstraints({ make in
+            bag += wasAdded.onValue { _ in
+                self.snp.makeConstraints { make in
                     if #available(iOS 11.0, *) {
                         if let safeAreaLayoutGuide = self.superview?.safeAreaLayoutGuide,
                             let safeAreaInsets = self.superview?.safeAreaInsets {
@@ -51,8 +51,8 @@ extension UIView {
                             )
                         )
                     )
-                })
-            })
+                }
+            }
 
             return bag
         }

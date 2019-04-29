@@ -55,14 +55,14 @@ struct MyInfoState {
 
                     innerBag += self.client.perform(
                         mutation: UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
-                    ).onValue({ result in
+                    ).onValue { result in
                         if result.errors?.count != nil {
                             completion(.failure(MyInfoSaveError.phoneNumberMalformed))
                             return
                         }
 
                         completion(.success)
-                    })
+                    }
 
                     return innerBag
                 }
@@ -85,7 +85,7 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.client.perform(mutation: UpdateEmailMutation(email: email)).onValue({ result in
+                    innerBag += self.client.perform(mutation: UpdateEmailMutation(email: email)).onValue { result in
                         if result.errors?.count != nil {
                             completion(.failure(MyInfoSaveError.emailMalformed))
                             return
@@ -96,7 +96,7 @@ struct MyInfoState {
                         self.store.update(query: MyInfoQuery()) { (data: inout MyInfoQuery.Data) in
                             data.member.email = email
                         }
-                    })
+                    }
 
                     return innerBag
                 }

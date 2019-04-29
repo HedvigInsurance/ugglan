@@ -23,16 +23,16 @@ extension SkipToNextButton: Viewable {
 
         let button = UIButton(title: "Nästa", style: .invisible)
 
-        bag += button.signal(for: .touchDown).onValue({ _ in
+        bag += button.signal(for: .touchDown).onValue { _ in
             let timeAtTouchDown = Date()
 
             let pauseBag = DisposeBag()
 
-            pauseBag += Signal(after: 0.15).onValue({ _ in
+            pauseBag += Signal(after: 0.15).onValue { _ in
                 self.pausedCallbacker.callAll(with: true)
-            })
+            }
 
-            pauseBag += button.signal(for: .touchUpInside).onValue({ _ in
+            pauseBag += button.signal(for: .touchUpInside).onValue { _ in
                 if Date().timeIntervalSince(timeAtTouchDown) < 0.15 {
                     self.onScrollToNext()
                     bag += Signal(after: 0).feedback(type: .impactLight)
@@ -41,18 +41,18 @@ extension SkipToNextButton: Viewable {
                 }
 
                 pauseBag.dispose()
-            })
+            }
 
             bag += pauseBag
-        })
+        }
 
         bag += events.wasAdded.onValue {
-            button.snp.makeConstraints({ make in
+            button.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.right.equalTo(0)
                 make.top.equalTo(0)
                 make.height.equalToSuperview().inset(60)
-            })
+            }
         }
 
         return (button, bag)

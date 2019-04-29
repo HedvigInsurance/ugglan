@@ -46,9 +46,9 @@ extension MailView: Presentable {
             let (viewController, future) = alert.materialize()
 
             return (viewController, Future { completion in
-                future.onValue({ _ in
+                future.onValue { _ in
                     completion(.failure(MailViewError.cantSendMail))
-                })
+                }
 
                 return NilDisposer()
             })
@@ -66,13 +66,13 @@ extension MailView: Presentable {
         return (viewController, Future { completion in
             let bag = DisposeBag()
 
-            bag += viewController.didFinishWithSignal.onValue({ result, error in
+            bag += viewController.didFinishWithSignal.onValue { result, error in
                 if let error = error {
                     completion(.failure(error))
                 } else {
                     completion(.success(result))
                 }
-            })
+            }
 
             return bag
         })

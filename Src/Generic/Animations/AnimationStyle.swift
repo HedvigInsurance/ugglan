@@ -25,4 +25,8 @@ extension AnimationStyle {
     static func easeOut(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
         return AnimationStyle(options: .curveEaseOut, duration: duration, delay: delay)
     }
+
+    static func linear(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
+        return AnimationStyle(options: .curveLinear, duration: duration, delay: delay)
+    }
 }

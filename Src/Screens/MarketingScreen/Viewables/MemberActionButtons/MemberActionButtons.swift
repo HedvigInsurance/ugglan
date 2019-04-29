@@ -30,21 +30,21 @@ extension MemberActionButtons: Viewable {
         stackView.alpha = 0
         stackView.transform = CGAffineTransform(translationX: 0, y: 15)
 
-        bag += pausedSignal.onValue({ paused in
+        bag += pausedSignal.onValue { paused in
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 stackView.alpha = paused ? 0 : 1
             }, completion: nil)
-        })
+        }
 
         let newMemberButton = NewMemberButton(style: .marketingScreen) {
             self.resultCallbacker.callAll(with: .onboard)
         }
-        bag += stackView.addArangedSubview(newMemberButton)
+        bag += stackView.addArranged(newMemberButton)
 
         let existingMemberButton = ExistingMemberButton {
             self.resultCallbacker.callAll(with: .login)
         }
-        bag += stackView.addArangedSubview(existingMemberButton)
+        bag += stackView.addArranged(existingMemberButton)
 
         bag += stackView.didMoveToWindowSignal.animated(
             style: SpringAnimationStyle.lightBounce()

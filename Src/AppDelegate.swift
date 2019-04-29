@@ -45,10 +45,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             marketing,
             style: .marketing,
             options: .defaults
-        ).onValue({ _ in
+        ).onValue { _ in
             let loggedIn = LoggedIn()
             self.bag += self.window.present(loggedIn, options: [], animated: true)
-        })
+        }
 
         bag += navigationController.present(marketingPresentation)
     }

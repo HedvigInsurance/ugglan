@@ -29,11 +29,11 @@ extension SignalProvider {
     ) -> Disposable {
         let bag = DisposeBag()
 
-        bag += bindTo(on: scheduler, { newValue in
+        bag += bindTo(on: scheduler) { newValue in
             UIView.transition(with: view, duration: style.duration, options: style.options, animations: {
                 value[keyPath: keyPath] = newValue
             }, completion: nil)
-        })
+        }
 
         return bag
     }
@@ -46,11 +46,11 @@ extension SignalProvider {
     ) -> Disposable {
         let bag = DisposeBag()
 
-        bag += bindTo(on: scheduler, { newValue in
+        bag += bindTo(on: scheduler) { newValue in
             UIView.animate(withDuration: style.duration, delay: style.delay, options: style.options, animations: {
                 value[keyPath: keyPath] = newValue
             }, completion: nil)
-        })
+        }
 
         return bag
     }
@@ -109,7 +109,7 @@ extension SignalProvider {
                     callbacker.callAll(with: value)
                 }
             )
-            
+
             return innerBag
         }
 

@@ -38,10 +38,10 @@ extension ExistingMemberButton: Viewable {
         }
 
         bag += events.wasAdded.onValue {
-            view.snp.makeConstraints({ make in
+            view.snp.makeConstraints { make in
                 make.height.equalTo(button.type.height())
                 make.width.equalToSuperview()
-            })
+            }
         }
 
         return (view, bag)

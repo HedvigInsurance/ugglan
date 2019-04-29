@@ -22,7 +22,7 @@ extension UIColor {
     static let darkPurple = UIColor(red: 0.06, green: 0.00, blue: 0.48, alpha: 1.0)
     static let darkGray = UIColor(red: 0.61, green: 0.61, blue: 0.67, alpha: 1.0)
     static let lightGray = UIColor(red: 0.91, green: 0.93, blue: 0.94, alpha: 1.0)
-    static let offLightGray = UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1.0)
+    static let offLightGray = UIColor(red: 0.89, green: 0.90, blue: 0.92, alpha: 1.0)
     static let offBlack = UIColor(red: 0.25, green: 0.25, blue: 0.31, alpha: 1.0)
     static let offWhite = UIColor(red: 0.98, green: 0.98, blue: 0.99, alpha: 1.0)
     static let darkGreen = UIColor(red: 0, green: 0.57, blue: 0.46, alpha: 1.0)

@@ -37,20 +37,19 @@ extension ReportBugRow: Viewable {
 
         row.valueStyleSignal.value = .rowValueLink
 
-        let device = Device()
         let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String
 
         let memberIdSignal = client.fetch(query: MemberIdQuery())
             .valueSignal
             .compactMap { $0.data?.member.id }.plain()
-        
+
         bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
             let deviceInfo = String(key: .FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
                 appVersion: appVersion ?? "",
-                device: device.description,
+                device: Device.current.description,
                 memberId: memberId,
-                systemName: device.systemName,
-                systemVersion: device.systemVersion
+                systemName: Device.current.systemName ?? "",
+                systemVersion: Device.current.systemVersion ?? ""
             ))
 
             var attachments: [MailViewAttachment] = []
