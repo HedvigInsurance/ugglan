@@ -39,12 +39,12 @@ extension MemberActionButtons: Viewable {
         let newMemberButton = NewMemberButton(style: .marketingScreen) {
             self.resultCallbacker.callAll(with: .onboard)
         }
-        bag += stackView.addArangedSubview(newMemberButton)
+        bag += stackView.addArranged(newMemberButton)
 
         let existingMemberButton = ExistingMemberButton {
             self.resultCallbacker.callAll(with: .login)
         }
-        bag += stackView.addArangedSubview(existingMemberButton)
+        bag += stackView.addArranged(existingMemberButton)
 
         bag += stackView.didMoveToWindowSignal.animated(
             style: SpringAnimationStyle.lightBounce()

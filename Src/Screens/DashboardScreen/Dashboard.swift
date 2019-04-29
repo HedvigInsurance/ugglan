@@ -33,10 +33,35 @@ extension Dashboard: Presentable {
             String(key: .DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
         }.bindTo(viewController, \.navigationItem.title)
 
-        let view = UIView()
-        view.backgroundColor = .purple
-
-        viewController.view = view
+        let form = FormView()
+        
+        let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
+        bag += form.append(paymentNeedsSetupSection)
+        
+        let pendingInsurance = PendingInsurance()
+        bag += form.append(pendingInsurance)
+        
+        let chatActionsSection = ChatActionsSection(presentingViewController: viewController)
+        bag += form.append(chatActionsSection)
+        
+        bag += form.append(Spacing(height: 35))
+        
+        let myProtectionSection = MyProtectionSection(presentingViewController: viewController)
+        bag += form.append(myProtectionSection)
+        
+        bag += viewController.install(form)
+        
+        let dashboardInsuranceQuery = client.watch(query: DashboardQuery()).compactMap { $0.data?.insurance }
+        bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
+        bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
+        
+        bag += client.watch(query: ChatActionsQuery())
+            .compactMap { $0.data?.chatActions }
+            .bindTo(chatActionsSection.dataSignal)
+        
+        bag += client.watch(query: MyPaymentQuery())
+            .compactMap { $0.data }
+            .bindTo(paymentNeedsSetupSection.dataSignal)
 
         return (viewController, bag)
     }

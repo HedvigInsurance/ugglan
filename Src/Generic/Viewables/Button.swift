@@ -14,24 +14,30 @@ import UIKit
 
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case standardSmall(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case outline(borderColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
     case iconTransparent(textColor: HedvigColor, icon: ImageAsset)
 
     func backgroundOpacity() -> CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardSmall:
             return 1
+        case .outline:
+            return 0
         case .pillTransparent:
             return 0.6
         case .iconTransparent:
             return 0.0
         }
     }
-
+    
     func highlightedBackgroundOpacity() -> CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardSmall:
             return 1
+        case .outline:
+            return 0.05
         case .pillTransparent:
             return 0.6
         case .iconTransparent:
@@ -43,6 +49,10 @@ enum ButtonType {
         switch self {
         case let .standard((backgroundColor, _)):
             return backgroundColor
+        case let .standardSmall((backgroundColor, _)):
+            return backgroundColor
+        case .outline((_, _)):
+            return .purple
         case let .pillTransparent((backgroundColor, _)):
             return backgroundColor
         case .iconTransparent((_, _)):
@@ -53,6 +63,10 @@ enum ButtonType {
     func textColor() -> HedvigColor {
         switch self {
         case let .standard((_, textColor)):
+            return textColor
+        case let .standardSmall((_, textColor)):
+            return textColor
+        case let .outline((_, textColor)):
             return textColor
         case let .pillTransparent((_, textColor)):
             return textColor
@@ -65,6 +79,10 @@ enum ButtonType {
         switch self {
         case .standard:
             return 50
+        case .standardSmall:
+            return 34
+        case .outline:
+            return 34
         case .pillTransparent:
             return 30
         case .iconTransparent:
@@ -74,7 +92,7 @@ enum ButtonType {
 
     func fontSize() -> CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardSmall, .outline:
             return 15
         case .pillTransparent:
             return 13
@@ -87,13 +105,17 @@ enum ButtonType {
         switch self {
         case .standard:
             return 50
+        case .standardSmall:
+            return 35
+        case .outline:
+            return 35
         case .pillTransparent:
             return 35
         case .iconTransparent:
             return 35
         }
     }
-
+    
     func icon() -> ImageAsset? {
         switch self {
         case let .iconTransparent((_, icon)):
@@ -102,16 +124,16 @@ enum ButtonType {
             return nil
         }
     }
-
+    
     func iconColor() -> HedvigColor? {
         switch self {
         case .iconTransparent((_, _)):
-            return textColor()
+            return self.textColor()
         default:
             return nil
         }
     }
-
+    
     func iconDistance() -> CGFloat {
         switch self {
         case .iconTransparent((_, _)):
@@ -120,19 +142,39 @@ enum ButtonType {
             return 0
         }
     }
+    
+    func borderWidth() -> CGFloat {
+        switch self {
+        case .outline((_, _)):
+            return 1
+        default:
+            return 0
+        }
+    }
+    
+    func borderColor() -> UIColor {
+        switch self {
+        case let .outline((borderColor, _)):
+            return UIColor.from(apollo: borderColor)
+        default:
+            return UIColor.clear
+        }
+    }
 }
 
 struct Button {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
-    let title: ReadSignal<String>
+    let title: ReadWriteSignal<String>
     let onTapSignal: Signal<Void>
     let type: ButtonType
+    let animate: Bool
 
-    init(title: String, type: ButtonType) {
-        self.title = ReadWriteSignal(title).readOnly()
+    init(title: String, type: ButtonType, animate: Bool = true) {
+        self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = type
+        self.animate = animate
     }
 }
 
@@ -153,10 +195,9 @@ extension Button: Viewable {
                     background: BackgroundStyle(
                         color: backgroundColor,
                         border: BorderStyle(
-                            width: 0,
-                            color: UIColor.clear,
-                            cornerRadius: self.type.height() / 2,
-                            borderEdges: UIRectEdge()
+                            width: self.type.borderWidth(),
+                            color: self.type.borderColor(),
+                            cornerRadius: self.type.height() / 2
                         )
                     ),
                     text: TextStyle(
@@ -180,10 +221,9 @@ extension Button: Viewable {
                     background: BackgroundStyle(
                         color: backgroundColor,
                         border: BorderStyle(
-                            width: 0,
-                            color: UIColor.clear,
-                            cornerRadius: self.type.height() / 2,
-                            borderEdges: UIRectEdge()
+                            width: self.type.borderWidth(),
+                            color: self.type.borderColor(),
+                            cornerRadius: self.type.height() / 2
                         )
                     ),
                     text: TextStyle(
@@ -196,23 +236,27 @@ extension Button: Viewable {
 
         let button = UIButton(title: "", style: style)
         button.adjustsImageWhenHighlighted = false
-
+        
         if let icon = self.type.icon() {
             button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
-            if type.iconColor() != nil {
-                button.tintColor = UIColor.from(apollo: type.iconColor()!)
+            if self.type.iconColor() != nil {
+                button.tintColor = UIColor.from(apollo: self.type.iconColor()!)
             }
-
-            let iconDistance = type.iconDistance()
+            
+            let iconDistance = self.type.iconDistance()
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
             button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
 
         bag += title.atOnce().onValue { title in
             button.setTitle(title)
+            
+            button.snp.remakeConstraints { make in
+                make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
+            }
         }
 
-        bag += button.signal(for: .touchDown).map({ _ -> ButtonStyle in
+        bag += button.signal(for: .touchDown).filter { self.animate }.map({ _ -> ButtonStyle in
             highlightedStyle
         }).bindTo(
             transition: button,
@@ -224,20 +268,20 @@ extension Button: Viewable {
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
 
-        bag += touchUpInside.map { _ -> Void in
+        bag += touchUpInside.map({ _ -> Void in
             ()
-        }.bindTo(onTapReadWriteSignal)
+        }).bindTo(onTapReadWriteSignal)
 
-        bag += touchUpInside.map { _ -> ButtonStyle in
+        bag += touchUpInside.filter { self.animate }.map({ _ -> ButtonStyle in
             style
-        }.delay(by: 0.1).bindTo(
+        }).delay(by: 0.1).bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
             button,
             \.style
         )
 
-        bag += touchUpInside.flatMapLatest { _ -> ReadSignal<String> in
+        bag += touchUpInside.flatMapLatest { _ -> ReadWriteSignal<String> in
             self.title.atOnce()
         }.onValue { title in
             if let localizationKey = title.localizationKey?.toString() {
@@ -248,9 +292,9 @@ extension Button: Viewable {
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
-        ).map { _ -> ButtonStyle in
+        ).filter { self.animate }.map({ _ -> ButtonStyle in
             style
-        }.bindTo(
+        }).bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
             button,

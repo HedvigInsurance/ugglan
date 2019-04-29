@@ -51,9 +51,9 @@ extension SelectedCharity: Viewable {
             for subview in stackView.arrangedSubviews {
                 subview.removeFromSuperview()
             }
-
+            
             let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
-            bag += stackView.addArangedSubview(charityLogo) { view in
+            bag += stackView.addArranged(charityLogo) { view in
                 view.snp.makeConstraints { make in
                     make.height.equalTo(190)
                 }
@@ -84,27 +84,27 @@ extension SelectedCharity: Viewable {
             let descriptionLabel = MultilineLabel(
                 styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
             )
-            bag += infoContainerStackView.addArangedSubview(descriptionLabel)
+            bag += infoContainerStackView.addArranged(descriptionLabel)
 
             infoContainer.addSubview(infoContainerStackView)
             stackView.addArrangedSubview(infoContainer)
 
-            infoContainerStackView.snp.makeConstraints { make in
+            infoContainerStackView.snp.makeConstraints({ make in
                 make.width.height.centerX.centerY.equalToSuperview()
-            }
+            })
 
-            bag += infoContainerStackView.didLayoutSignal.onValue { _ in
+            bag += infoContainerStackView.didLayoutSignal.onValue({ _ in
                 let size = infoContainerStackView.systemLayoutSizeFitting(CGSize.zero)
 
-                infoContainer.snp.remakeConstraints { make in
+                infoContainer.snp.remakeConstraints({ make in
                     make.height.equalTo(size.height)
                     make.width.equalToSuperview().inset(20)
-                }
-            }
-
+                })
+            })
+            
             let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
-
-            bag += stackView.addArangedSubview(charityInformationButton)
+            
+            bag += stackView.addArranged(charityInformationButton)
         }
 
         if animateEntry {

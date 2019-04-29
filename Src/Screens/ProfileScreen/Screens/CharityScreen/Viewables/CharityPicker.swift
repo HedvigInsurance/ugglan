@@ -73,10 +73,10 @@ extension CharityPicker: Viewable {
                 let footerStackView = UIStackView()
                 footerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 30)
                 footerStackView.isLayoutMarginsRelativeArrangement = true
-
+                
                 let charityInformationButton = CharityInformationButton(presentingViewController: self.presentingViewController)
-                bag += footerStackView.addArangedSubview(charityInformationButton)
-
+                bag += footerStackView.addArranged(charityInformationButton)
+                
                 return footerStackView
             }
         )
@@ -84,9 +84,9 @@ extension CharityPicker: Viewable {
         let charityHeader = CharityHeader()
         bag += tableKit.view.addTableHeaderView(charityHeader)
 
-        bag += tableKit.delegate.willDisplayCell.onValue { cell, indexPath in
+        bag += tableKit.delegate.willDisplayCell.onValue({ cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
-        }
+        })
 
         let rows = ReadWriteSignal<[CharityOption]>([])
 
@@ -116,7 +116,7 @@ extension CharityPicker: Viewable {
             bag += rows.atOnce().onValueDisposePrevious { charityOptions -> Disposable? in
                 let innerBag = bag.innerBag()
 
-                innerBag += charityOptions.map { charityOption -> Disposable in
+                innerBag += charityOptions.map({ charityOption -> Disposable in
                     charityOption.onSelectSignal.onValueDisposePrevious { buttonView in
                         let dismissCallbacker = Callbacker<Void>()
 
@@ -135,17 +135,17 @@ extension CharityPicker: Viewable {
                             options: [.unanimated]
                         )
 
-                        bag += bubbleLoading.dismissSignal.delay(by: 0.2).onValue { _ in
+                        bag += bubbleLoading.dismissSignal.delay(by: 0.2).onValue({ _ in
                             completion(.success(charityOption))
-                        }
+                        })
 
                         return self.client.perform(
                             mutation: SelectCharityMutation(id: charityOption.id)
-                        ).onValue { _ in
+                        ).onValue({ _ in
                             dismissCallbacker.callAll()
-                        }.disposable
+                        }).disposable
                     }
-                }
+                })
 
                 return innerBag
             }

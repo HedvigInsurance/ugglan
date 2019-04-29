@@ -26,7 +26,7 @@ extension ReferralsTitle: Viewable {
             )
         )
 
-        bag += view.addArangedSubview(title) { titleView in
+        bag += view.addArranged(title) { titleView in
             titleView.snp.makeConstraints { make in
                 make.width.equalToSuperview().inset(20)
             }
