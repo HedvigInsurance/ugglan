@@ -11,7 +11,7 @@ import Foundation
 import Presentation
 import UIKit
 
-struct DraggableOverlay<P: Presentable, PMatter: UIViewController> where P.Result == Disposable, P.Matter == PMatter {
+struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult: Any> where P.Matter == PMatter, P.Result == Future<FutureResult> {
     let presentable: P
     let presentationOptions: PresentationOptions
     let backgroundColor: UIColor
@@ -130,12 +130,10 @@ extension DraggableOverlay: Presentable {
 
         bag += overlay.install(panGestureRecognizer)
 
-        let (childScreen, childDisposable) = presentable.materialize()
+        let (childScreen, childResult) = presentable.materialize()
         childScreen.setLargeTitleDisplayMode(presentationOptions)
 
         let embeddedChildScreen = childScreen.embededInNavigationController(presentationOptions)
-
-        bag += childDisposable
 
         let overlayContainer = UIView()
         overlayContainer.backgroundColor = .white
@@ -207,6 +205,10 @@ extension DraggableOverlay: Presentable {
             }
 
             bag += dimmingViewTap.signal(forState: .recognized).onValue {
+                hideOverlay()
+            }
+
+            bag += childResult.onValue { _ in
                 hideOverlay()
             }
 
