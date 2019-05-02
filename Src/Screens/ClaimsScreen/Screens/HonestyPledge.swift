@@ -12,6 +12,9 @@ import UIKit
 
 struct HonestyPledge {}
 
+// Hack to integrate with React Native
+var honestyPledgeOpenClaimsFlow: (_ presentingViewController: UIViewController) -> Void = { _ in }
+
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
@@ -27,12 +30,12 @@ extension HonestyPledge: Presentable {
         stackView.spacing = 10
 
         containerStackView.addArrangedSubview(stackView)
-
-        let titleLabel = MultilineLabel(value: "Ditt hederslöfte", style: .standaloneLargeTitle)
+        
+        let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .standaloneLargeTitle)
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
-            value: "Jag förstår att Hedvig bygger på tillit. Jag lover att jag berättat om händelsen precis som den var, och bara ta ut den ersättning jag har rätt till.",
+            value: String(key: .HONESTY_PLEDGE_DESCRIPTION),
             style: .bodyOffBlack
         )
         bag += stackView.addArranged(descriptionLabel)
@@ -47,7 +50,11 @@ extension HonestyPledge: Presentable {
 
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
-                completion(.success)
+                honestyPledgeOpenClaimsFlow(viewController)
+                
+                bag += Signal(after: 1).onValue { _ in
+                    completion(.success)
+                }
             }
 
             return DelayedDisposer(bag, delay: 1)
