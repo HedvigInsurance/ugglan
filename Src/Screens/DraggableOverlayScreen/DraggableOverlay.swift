@@ -80,20 +80,24 @@ extension DraggableOverlay: Presentable {
 
         view.addSubview(overlay)
 
-        let overlayHeight: CGFloat = round(heightPercentage * UIScreen.main.bounds.height)
-        let overshootHeight: CGFloat = 800
-        let dragLimit = overlayHeight - UIScreen.main.bounds.height + 60
-
-        overlay.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(overshootHeight + overlayHeight)
-            make.bottom.equalTo(overshootHeight + overlayHeight)
+        let overlayHeightSignal = ReadWriteSignal<CGFloat>(300)
+        var dragLimit: CGFloat {
+            return overlayHeightSignal.value - UIScreen.main.bounds.height + 60
+        }
+        
+        bag += overlayHeightSignal.atOnce().onValue { overlayHeight in
+            overlay.snp.remakeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalTo(overlayHeight)
+                make.bottom.equalToSuperview()
+                make.centerX.equalToSuperview()
+            }
         }
 
         func overlayCenter() -> CGFloat {
-            return view.frame.height / 2 + overshootHeight - (overlayHeight / 2)
+            return view.frame.height - (overlayHeightSignal.value / 2)
         }
-
+        
         let panGestureRecognizer = UIPanGestureRecognizer()
         let ease: Ease<CGFloat> = Ease(overlay.center.y, minimumStep: 0.001)
 
@@ -173,15 +177,17 @@ extension DraggableOverlay: Presentable {
         }
 
         viewController.addChild(embeddedChildScreen)
-
+        
         embeddedChildScreen.view.translatesAutoresizingMaskIntoConstraints = false
         overlayContainer.addSubview(embeddedChildScreen.view)
-
+        
         embeddedChildScreen.view.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(overlayHeight)
+            make.width.equalTo(overlay.snp.width)
+            make.height.equalTo(overlay.snp.height)
         }
-
+        
+        bag += embeddedChildScreen.view.didLayoutSignal.map { _ in childScreen.preferredContentSize.height }.bindTo(overlayHeightSignal)
+        
         return (viewController, Future { completion in
             func hideOverlay() {
                 bag += Signal(after: 0.5).onValue {
@@ -194,8 +200,8 @@ extension DraggableOverlay: Presentable {
             bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
                 let velocity = panGestureRecognizer.velocity(in: view)
                 let translation = panGestureRecognizer.translation(in: view)
-
-                if translation.y > (overlayHeight * 0.4) || velocity.y > 1300 {
+                
+                if translation.y > (overlayHeightSignal.value * 0.4) || velocity.y > 1300 {
                     hideOverlay()
                 }
             }

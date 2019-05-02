@@ -17,9 +17,7 @@ struct MarkdownText {
 }
 
 extension MarkdownText: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
-
+    func materialize(events _: ViewableEvents) -> (UILabel, Disposable) {
         let bag = DisposeBag()
 
         let markdownParser = MarkdownParser(font: style.font, color: style.color)
@@ -38,22 +36,6 @@ extension MarkdownText: Viewable {
         markdownText.baselineAdjustment = .none
         markdownText.attributedText = mutableAttributedString
 
-        bag += markdownText.didLayoutSignal.onValue { _ in
-            markdownText.snp.remakeConstraints { make in
-                make.width.equalToSuperview()
-                make.centerX.equalToSuperview()
-            }
-        }
-
-        view.addSubview(markdownText)
-
-        bag += view.didLayoutSignal.onValue { _ in
-            view.snp.remakeConstraints { make in
-                make.width.equalToSuperview()
-                make.height.equalToSuperview()
-            }
-        }
-
-        return (view, bag)
+        return (markdownText, bag)
     }
 }

@@ -28,18 +28,26 @@ extension PerilInformation: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
+        viewController.preferredContentSize = CGSize(width: 0, height: 0)
 
-        let containerView = UIView()
+        let containerView = UIStackView()
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.spacing = 15
         containerView.backgroundColor = UIColor.white
+        containerView.axis = .vertical
+        containerView.alignment = .top
+        
+        if #available(iOS 11.0, *) {
+            containerView.insetsLayoutMarginsFromSafeArea = false
+        }
 
         let icon = Icon(icon: self.icon, iconWidth: 60)
-        containerView.addSubview(icon)
+        containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in
             make.width.equalTo(60)
             make.height.equalTo(60)
-            make.leading.equalToSuperview().inset(24)
-            make.top.equalToSuperview().inset(24)
         }
 
         let titleLabel = UILabel()
@@ -48,38 +56,34 @@ extension PerilInformation: Presentable {
 
         bag += titleLabel.setDynamicText(DynamicString(title))
 
-        let titleContainer = UIView()
-        titleContainer.addSubview(titleLabel)
+        containerView.addArrangedSubview(titleLabel)
 
-        titleLabel.snp.remakeConstraints { make in
-            make.width.equalToSuperview().inset(24)
-            make.top.equalToSuperview().inset(24 + 60 + 12)
-            make.height.equalTo(32)
-            make.centerX.equalToSuperview()
-        }
-
-        containerView.addSubview(titleContainer)
-
-        titleContainer.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-        }
-
-        let bodyView = UIView()
-        containerView.addSubview(bodyView)
-
-        let body = CharityInformationBody(text: description)
-        bag += bodyView.add(body) { bodyText in
-            bodyText.snp.makeConstraints { make in
-                make.height.equalTo(bodyText.intrinsicContentSize.height)
-                make.top.bottom.trailing.leading.equalToSuperview()
-            }
-        }
-
-        bodyView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(24 + 60 + 12 + 32 + 8)
-            make.width.equalToSuperview()
-            make.height.equalTo(bodyView.intrinsicContentSize.height)
+        let body = MarkdownText(text: description, style: .bodyOffBlack)
+        bag += containerView.addArranged(body)
+        
+//        bag += containerView.didLayoutSignal.take(first: 1).onValue { _ in
+//            var height: CGFloat = 0
+//            for subview in containerView.subviews {
+//                height += subview.intrinsicContentSize.height
+//
+//                if subview != containerView.subviews.last! {
+//                    height += containerView.spacing
+//                }
+//            }
+//
+//            height += containerView.layoutMargins.top + containerView.layoutMargins.bottom
+//
+//            if #available(iOS 11.0, *) {
+//                height += containerView.safeAreaInsets.bottom
+//            }
+//
+//            viewController.preferredContentSize = CGSize(width: 0, height: height)
+//        }
+        
+        bag += viewController.install(containerView) { scrollView in
+            bag += scrollView.didLayoutSignal.onValue({ _ in
+                print(scrollView.contentSize)
+            })
         }
 
         viewController.view = containerView
