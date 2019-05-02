@@ -54,7 +54,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
     }
 
     func resume() {
-        self.videoPlayer.playImmediately(atRate: 1)
+        videoPlayer.playImmediately(atRate: 1)
     }
 
     func pause() {

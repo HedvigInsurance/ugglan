@@ -11,9 +11,9 @@ import Foundation
 
 extension TextStyle {
     func centered() -> TextStyle {
-        return restyled({ (style: inout TextStyle) in
+        return restyled { (style: inout TextStyle) in
             style.alignment = .center
-        })
+        }
     }
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in

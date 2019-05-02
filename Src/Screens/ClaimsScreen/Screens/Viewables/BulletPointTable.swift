@@ -50,9 +50,9 @@ extension BulletPointTable: Viewable {
             )
         }
 
-        bag += tableKit.delegate.willDisplayCell.onValue({ cell, indexPath in
+        bag += tableKit.delegate.willDisplayCell.onValue { cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
-        })
+        }
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
         tableKit.view.backgroundColor = .offWhite

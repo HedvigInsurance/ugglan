@@ -154,13 +154,13 @@ extension CommonClaimCard: Viewable {
 
             if point.y != 0 {
                 expandedHeaderView.alpha = 1
-                expandedHeaderView.snp.updateConstraints({ make in
+                expandedHeaderView.snp.updateConstraints { make in
                     if point.y < 0 {
                         make.height.equalTo(90 + -point.y)
                     } else {
                         make.height.equalTo(90)
                     }
-                })
+                }
             }
         }
 
@@ -193,19 +193,19 @@ extension CommonClaimCard: Viewable {
                 make.width.equalToSuperview().inset(15)
             }
 
-            bag += iconTopPaddingStateSignal.atOnce().onValue({ state in
+            bag += iconTopPaddingStateSignal.atOnce().onValue { state in
                 let extraPadding: CGFloat = 50
 
                 if state == .normal {
-                    view.snp.updateConstraints({ make in
+                    view.snp.updateConstraints { make in
                         make.top.equalTo(self.iconTopPadding(state: state) + extraPadding)
-                    })
+                    }
                 } else {
-                    view.snp.updateConstraints({ make in
+                    view.snp.updateConstraints { make in
                         make.top.equalTo(self.iconTopPadding(state: state) + extraPadding)
-                    })
+                    }
                 }
-            })
+            }
 
             bag += layoutTitleAlphaSignal.atOnce().bindTo(view, \.alpha)
         }
@@ -218,24 +218,24 @@ extension CommonClaimCard: Viewable {
         remoteVectorIcon.pdfUrl.value = pdfUrl
 
         bag += contentView.add(remoteVectorIcon) { imageView in
-            imageView.snp.makeConstraints({ make in
+            imageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
                 make.left.equalToSuperview().inset(15)
                 make.width.equalTo(30)
                 make.height.equalTo(30)
-            })
+            }
 
-            bag += iconTopPaddingStateSignal.atOnce().onValue({ state in
+            bag += iconTopPaddingStateSignal.atOnce().onValue { state in
                 if state == .normal {
-                    imageView.snp.updateConstraints({ make in
+                    imageView.snp.updateConstraints { make in
                         make.top.equalToSuperview().inset(self.iconTopPadding(state: state))
-                    })
+                    }
                 } else {
-                    imageView.snp.updateConstraints({ make in
+                    imageView.snp.updateConstraints { make in
                         make.top.equalToSuperview().inset(self.iconTopPadding(state: state))
-                    })
+                    }
                 }
-            })
+            }
         }
 
         let touchDownDateSignal = ReadWriteSignal<Date>(Date())
@@ -293,10 +293,10 @@ extension CommonClaimCard: Viewable {
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
                 bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
 
-                claimButtonView.snp.makeConstraints({ make in
+                claimButtonView.snp.makeConstraints { make in
                     make.bottom.equalTo(-15)
                     make.centerX.equalToSuperview()
-                })
+                }
             }
         }
 

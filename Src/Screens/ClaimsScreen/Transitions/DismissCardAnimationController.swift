@@ -49,12 +49,12 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         commonClaimCard.showClaimButtonSignal.value = true
 
         bag += contentContainerView.add(commonClaimCard) { view in
-            view.snp.makeConstraints({ make in
+            view.snp.makeConstraints { make in
                 make.height.equalTo(claimsCardFinalHeight)
                 make.width.equalTo(contentContainerView.frame.width)
                 make.top.equalTo(0)
                 make.left.equalTo(0)
-            })
+            }
 
             bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.1), animations: { _ in
                 self.commonClaimCard.layoutTitleAlphaSignal.value = 0
@@ -69,12 +69,12 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 self.commonClaimCard.showCloseButton.value = false
                 self.commonClaimCard.showClaimButtonSignal.value = false
 
-                view.snp.updateConstraints({ make in
+                view.snp.updateConstraints { make in
                     make.height.equalTo(originFrame.height)
                     make.width.equalTo(originFrame.width)
                     make.top.equalTo(originFrame.origin.y)
                     make.left.equalTo(originFrame.origin.x)
-                })
+                }
 
                 view.layoutIfNeeded()
                 contentContainerView.layoutIfNeeded()
@@ -98,12 +98,12 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 contentView.layoutIfNeeded()
 
                 bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                    contentView.snp.updateConstraints({ make in
+                    contentView.snp.updateConstraints { make in
                         make.height.equalTo(0)
                         make.width.equalTo(originFrame.width)
                         make.top.equalTo(originFrame.maxY)
                         make.left.equalTo(originFrame.origin.x)
-                    })
+                    }
 
                     contentView.layoutIfNeeded()
                     contentContainerView.layoutIfNeeded()
@@ -128,12 +128,12 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 contentView.layoutIfNeeded()
 
                 bag += Signal(after: 0.0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                    contentView.snp.updateConstraints({ make in
+                    contentView.snp.updateConstraints { make in
                         make.height.equalTo(0)
                         make.width.equalTo(originFrame.width)
                         make.top.equalTo(originFrame.maxY)
                         make.left.equalTo(originFrame.origin.x)
-                    })
+                    }
 
                     contentView.layoutIfNeeded()
                     contentContainerView.layoutIfNeeded()

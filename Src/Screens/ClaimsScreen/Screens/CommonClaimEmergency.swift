@@ -36,22 +36,22 @@ extension CommonClaimEmergency: Presentable {
         commonClaimCard.showClaimButtonSignal.value = true
 
         bag += view.addArranged(commonClaimCard) { commonClaimCardView in
-            commonClaimCardView.snp.makeConstraints({ make in
+            commonClaimCardView.snp.makeConstraints { make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
-            })
+            }
 
-            bag += commonClaimCardView.didLayoutSignal.onValue({ _ in
+            bag += commonClaimCardView.didLayoutSignal.onValue { _ in
                 view.bringSubviewToFront(commonClaimCardView)
-            })
+            }
         }
 
         let emergencyActions = EmergencyActions()
         bag += view.addArranged(emergencyActions) { emergencyActionsView in
-            bag += emergencyActionsView.didLayoutSignal.onValue({ _ in
-                emergencyActionsView.snp.remakeConstraints({ make in
+            bag += emergencyActionsView.didLayoutSignal.onValue { _ in
+                emergencyActionsView.snp.remakeConstraints { make in
                     make.height.equalTo(emergencyActionsView.contentSize.height + 20)
-                })
-            })
+                }
+            }
         }
 
         bag += viewController.install(view) { scrollView in

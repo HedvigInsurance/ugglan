@@ -202,9 +202,9 @@ extension DraggableOverlay: Presentable {
                 hideOverlay()
             }
 
-            bag += childResult.onValue({ _ in
+            bag += childResult.onValue { _ in
                 hideOverlay()
-            })
+            }
 
             return bag
         })

@@ -41,15 +41,15 @@ extension CommonClaimsCollection: Viewable {
         collectionKit.view.clipsToBounds = false
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            return CGSize(
+            CGSize(
                 width: min(170, (collectionKit.view.frame.width / 2) - 10),
                 height: 140
             )
         }
 
-        bag += collectionKit.delegate.willDisplayCell.onValue({ cell, indexPath in
+        bag += collectionKit.delegate.willDisplayCell.onValue { cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
-        })
+        }
 
         bag += client.fetch(query: CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())).onValue { result in
             let rows = result.data!.commonClaims.enumerated().map {
@@ -79,13 +79,13 @@ extension CommonClaimsCollection: Viewable {
 
         stackView.addArrangedSubview(collectionKit.view)
 
-        bag += collectionKit.view.didLayoutSignal.onValue({ _ in
-            collectionKit.view.snp.updateConstraints({ make in
+        bag += collectionKit.view.didLayoutSignal.onValue { _ in
+            collectionKit.view.snp.updateConstraints { make in
                 make.height.equalTo(
                     collectionKit.view.collectionViewLayout.collectionViewContentSize.height
                 )
-            })
-        })
+            }
+        }
 
         return (stackView, bag)
     }

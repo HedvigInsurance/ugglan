@@ -64,11 +64,11 @@ extension BulletPointCard: Reusable {
             )
 
             bag += cardContainer.add(bulletPointCard.icon) { iconView in
-                iconView.snp.makeConstraints({ make in
+                iconView.snp.makeConstraints { make in
                     make.width.height.equalTo(20)
                     make.top.equalTo(15)
                     make.left.equalTo(15)
-                })
+                }
             }
 
             return bag

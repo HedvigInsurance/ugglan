@@ -106,9 +106,9 @@ extension EmergencyActions: Viewable {
         let tableKit = TableKit<EmptySection, EmergencyAction>(style: style, bag: bag)
         tableKit.view.isScrollEnabled = false
 
-        bag += tableKit.delegate.willDisplayCell.onValue({ cell, indexPath in
+        bag += tableKit.delegate.willDisplayCell.onValue { cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
-        })
+        }
 
         let callMeAction = EmergencyAction(
             title: "Prata med någon",
