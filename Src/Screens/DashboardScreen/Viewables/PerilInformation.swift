@@ -24,7 +24,7 @@ struct PerilInformation {
 }
 
 extension PerilInformation: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
@@ -84,6 +84,8 @@ extension PerilInformation: Presentable {
 
         viewController.view = containerView
 
-        return (viewController, bag)
+        return (viewController, Future { _ in
+            bag
+        })
     }
 }

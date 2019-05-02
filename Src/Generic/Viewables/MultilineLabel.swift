@@ -22,6 +22,10 @@ struct MultilineLabel {
         styledTextSignal = ReadWriteSignal(styledText)
         intrinsicContentSizeSignal = intrinsicContentSizeReadWriteSignal.readOnly()
     }
+
+    init(value: DisplayableString, style: TextStyle) {
+        self.init(styledText: StyledText(text: value, style: style))
+    }
 }
 
 extension MultilineLabel: Viewable {
@@ -39,7 +43,6 @@ extension MultilineLabel: Viewable {
 
         bag += label.didLayoutSignal.onValue {
             label.preferredMaxLayoutWidth = label.frame.size.width
-
             self.intrinsicContentSizeReadWriteSignal.value = label.intrinsicContentSize
         }
 

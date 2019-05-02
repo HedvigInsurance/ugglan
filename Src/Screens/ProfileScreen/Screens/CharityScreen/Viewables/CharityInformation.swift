@@ -14,7 +14,7 @@ import UIKit
 struct CharityInformation {}
 
 extension CharityInformation: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
@@ -38,8 +38,8 @@ extension CharityInformation: Presentable {
 
         bag += bodyView.add(body)
 
-        viewController.view = containerView
-
-        return (viewController, bag)
+        return (viewController, Future { _ in
+            bag
+        })
     }
 }
