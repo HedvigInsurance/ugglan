@@ -23,6 +23,7 @@ extension PaymentNeedsSetupSection: Viewable {
         wrapper.isHidden = true
 
         bag += dataSignal.onValue { data in
+            print("DATA SIGNAL:", data)
             let hasAlreadyConnected = data?.bankAccount != nil
             wrapper.isHidden = hasAlreadyConnected
         }
