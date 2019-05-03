@@ -37,7 +37,7 @@ extension PendingInsurance: Viewable {
         stackView.spacing = 15
         stackView.edgeInsets = UIEdgeInsets(top: 5, left: 25, bottom: 25, right: 25)
 
-        bag += dataSignal.atOnce().map { $0 == nil || $0?.status != .inactive || $0?.status != .inactiveWithStartDate }.bindTo(stackView, \.isHidden)
+        bag += dataSignal.atOnce().map { $0 == nil || $0?.status == .active }.bindTo(stackView, \.isHidden)
 
         bag += dataSignal.atOnce().compactMap { $0 }.onValue { insurance in
             switch insurance.status {

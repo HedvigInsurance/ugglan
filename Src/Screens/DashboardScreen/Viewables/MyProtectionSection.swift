@@ -41,12 +41,12 @@ extension MyProtectionSection: Viewable {
         )
 
         bag += stackView.addArranged(isActiveLabel) { checkmarkLabelView in
-            bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(checkmarkLabelView, \.isHidden)
+            bag += dataSignal.atOnce().compactMap { !($0?.status == .active) }.bindTo(checkmarkLabelView, \.isHidden)
         }
 
         let rowSpacing = Spacing(height: 10)
         bag += stackView.addArranged(rowSpacing) { spacing in
-            bag += dataSignal.atOnce().compactMap { !($0?.status.rawValue == "ACTIVE") }.bindTo(spacing, \.isHidden)
+            bag += dataSignal.atOnce().compactMap { !($0?.status == .active) }.bindTo(spacing, \.isHidden)
         }
 
         let perilCategoriesStack = UIStackView()
