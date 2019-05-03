@@ -24,7 +24,7 @@ extension PaymentNeedsSetupSection: Viewable {
 
         bag += dataSignal.onValue { data in
             let hasAlreadyConnected = data?.bankAccount != nil
-            wrapper.isHidden = hasAlreadyConnected
+            wrapper.isHidden = !hasAlreadyConnected
         }
 
         let containerView = UIView()
@@ -72,9 +72,10 @@ extension PaymentNeedsSetupSection: Viewable {
         wrapper.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.trailing.leading.equalToSuperview().inset(16)
-            make.height.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(25)
         }
-
+        
         return (wrapper, bag)
     }
 }
