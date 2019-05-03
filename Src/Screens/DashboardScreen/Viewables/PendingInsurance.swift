@@ -35,15 +35,15 @@ extension PendingInsurance: Viewable {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 15
-        stackView.edgeInsets = UIEdgeInsets(top: 5, left: 25, bottom: 20, right: 25)
+        stackView.edgeInsets = UIEdgeInsets(top: 5, left: 25, bottom: 25, right: 25)
 
-        bag += dataSignal.atOnce().map { $0 == nil || $0?.status == .inactive || $0?.status == .inactiveWithStartDate }.bindTo(stackView, \.isHidden)
+        bag += dataSignal.atOnce().map { $0 == nil || $0?.status != .inactive || $0?.status != .inactiveWithStartDate }.bindTo(stackView, \.isHidden)
 
         bag += dataSignal.atOnce().compactMap { $0 }.onValue { insurance in
             switch insurance.status {
             case .inactive:
                 addBottomContent(view: self.noDateContent())
-            case .inactiveWithStartDate, .active:
+            case .inactiveWithStartDate:
                 let formatter = DateFormatter.iso8601
                 if let date = formatter.date(from: insurance.activeFrom ?? "") {
                     addBottomContent(view: self.dateContent(date: date))
