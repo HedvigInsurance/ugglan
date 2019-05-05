@@ -29,6 +29,8 @@ extension PerilInformation: Presentable {
 
         let viewController = UIViewController()
         viewController.preferredContentSize = CGSize(width: 0, height: 0)
+        
+        let containerStackView = UIStackView()
 
         let containerView = UIStackView()
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
@@ -37,6 +39,8 @@ extension PerilInformation: Presentable {
         containerView.backgroundColor = UIColor.white
         containerView.axis = .vertical
         containerView.alignment = .top
+        
+        containerStackView.addArrangedSubview(containerView)
         
         if #available(iOS 11.0, *) {
             containerView.insetsLayoutMarginsFromSafeArea = false
@@ -61,32 +65,22 @@ extension PerilInformation: Presentable {
         let body = MarkdownText(text: description, style: .bodyOffBlack)
         bag += containerView.addArranged(body)
         
-//        bag += containerView.didLayoutSignal.take(first: 1).onValue { _ in
-//            var height: CGFloat = 0
-//            for subview in containerView.subviews {
-//                height += subview.intrinsicContentSize.height
-//
-//                if subview != containerView.subviews.last! {
-//                    height += containerView.spacing
-//                }
-//            }
-//
-//            height += containerView.layoutMargins.top + containerView.layoutMargins.bottom
-//
-//            if #available(iOS 11.0, *) {
-//                height += containerView.safeAreaInsets.bottom
-//            }
-//
-//            viewController.preferredContentSize = CGSize(width: 0, height: height)
-//        }
-        
-        bag += viewController.install(containerView) { scrollView in
-            bag += scrollView.didLayoutSignal.onValue({ _ in
-                print(scrollView.contentSize)
-            })
+        bag += containerView.didLayoutSignal.take(first: 1).onValue { _ in
+            var height: CGFloat = 0
+            for subview in containerView.subviews {
+                height += subview.intrinsicContentSize.height
+
+                if subview != containerView.subviews.last! {
+                    height += containerView.spacing
+                }
+            }
+
+            height += containerView.layoutMargins.top + containerView.layoutMargins.bottom
+            
+            viewController.preferredContentSize = CGSize(width: 0, height: height)
         }
 
-        viewController.view = containerView
+        viewController.view = containerStackView
 
         return (viewController, Future { _ in
             bag

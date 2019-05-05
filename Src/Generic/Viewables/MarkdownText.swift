@@ -35,6 +35,10 @@ extension MarkdownText: Viewable {
         markdownText.lineBreakMode = .byWordWrapping
         markdownText.baselineAdjustment = .none
         markdownText.attributedText = mutableAttributedString
+        
+        bag += markdownText.didLayoutSignal.onValue { _ in
+            markdownText.preferredMaxLayoutWidth = markdownText.frame.size.width
+        }
 
         return (markdownText, bag)
     }
