@@ -57,7 +57,6 @@ extension BulletPointCard: Reusable {
 
             bag += contentView.addArranged(descriptionLabel)
 
-            print("PRESENT")
             titleLabel.text = bulletPointCard.title
             descriptionLabel.styledTextSignal.value = StyledText(
                 text: bulletPointCard.description,
