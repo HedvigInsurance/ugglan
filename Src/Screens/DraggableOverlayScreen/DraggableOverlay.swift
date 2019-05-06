@@ -135,7 +135,7 @@ extension DraggableOverlay: Presentable {
         
         let ease: Ease<CGFloat> = Ease(UIScreen.main.bounds.height, minimumStep: 0.001)
         
-        func overlayCenter() -> CGFloat {
+        var overlayCenter: CGFloat {
             var bottomPadding: CGFloat {
                 if #available(iOS 11.0, *) {
                     return view.safeAreaInsets.bottom
@@ -156,7 +156,7 @@ extension DraggableOverlay: Presentable {
             view.layoutIfNeeded()
             overshoot.layoutIfNeeded()
             
-            overlay.center.y = overlayCenter()
+            overlay.center.y = overlayCenter
             ease.value = overlay.center.y
             ease.targetValue = overlay.center.y
         }
@@ -182,7 +182,7 @@ extension DraggableOverlay: Presentable {
             
             bag += Signal(after: 0.1).onValue({ _ in
                 ease.velocity = 0.1
-                ease.targetValue = overlayCenter()
+                ease.targetValue = overlayCenter
                 overlay.alpha = 1
             })
         }
@@ -193,12 +193,12 @@ extension DraggableOverlay: Presentable {
             let location = panGestureRecognizer.translation(in: view)
 
             if (location.y < dragLimit) {
-                ease.value = max(overlayCenter() + (dragLimit * (1 + log10(location.y / dragLimit))), overlayCenter() + dragLimit - 60)
+                ease.value = max(overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit))), overlayCenter + dragLimit - 60)
                 ease.targetValue = ease.value
                 return
             }
            
-            ease.value = overlayCenter() + location.y
+            ease.value = overlayCenter + location.y
             ease.targetValue = ease.value
         }
 
@@ -208,7 +208,7 @@ extension DraggableOverlay: Presentable {
 
         bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
             ease.velocity = panGestureRecognizer.velocity(in: view).y
-            ease.targetValue = overlayCenter()
+            ease.targetValue = overlayCenter
         }
 
         bag += overlay.install(panGestureRecognizer)
