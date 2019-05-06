@@ -33,19 +33,19 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
 extension UIViewController {
     var preferredContentSizeSignal: ReadSignal<CGSize> {
         let signal = ReadWriteSignal(preferredContentSize)
-        
-        var observer: NSKeyValueObservation? = self.observe(\.preferredContentSize) { [weak self] _, _ in
+
+        var observer: NSKeyValueObservation? = observe(\.preferredContentSize) { [weak self] _, _ in
             signal.value = self?.preferredContentSize ?? signal.value
         }
-        
+
         let bag = DisposeBag()
-        
+
         bag += deallocSignal.onValue { _ in
             observer?.invalidate()
             observer = nil
             bag.dispose()
         }
-        
+
         return signal.readOnly()
     }
 }
@@ -72,7 +72,7 @@ extension DraggableOverlay: Presentable {
 
         let view = UIView()
         viewController.view = view
-        
+
         let dimmingView = UIView()
         dimmingView.backgroundColor = UIColor.black
         dimmingView.alpha = 0
@@ -100,18 +100,18 @@ extension DraggableOverlay: Presentable {
         overlay.alpha = 0
 
         view.addSubview(overlay)
-        
+
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalTo(0)
             make.center.equalToSuperview()
         }
-        
+
         let overshoot = UIView()
         overshoot.backgroundColor = .white
-        
+
         overlay.addSubview(overshoot)
-        
+
         bag += view.didLayoutSignal.onValue { _ in
             overshoot.snp.remakeConstraints { make in
                 make.height.equalTo(view.snp.height)
@@ -132,72 +132,72 @@ extension DraggableOverlay: Presentable {
             let extraPadding = safeAreaTop + 70
             return overlayHeightSignal.value - (view.frame.height - extraPadding)
         }
-        
+
         let ease: Ease<CGFloat> = Ease(UIScreen.main.bounds.height, minimumStep: 0.001)
-        
+
         var overlayCenter: CGFloat {
             var bottomPadding: CGFloat {
                 if #available(iOS 11.0, *) {
                     return view.safeAreaInsets.bottom
                 }
-                
+
                 return 0
             }
-            
+
             return UIScreen.main.bounds.height - (overlayHeightSignal.value / 2)
         }
-        
+
         bag += overlayHeightSignal.distinct().skip(first: 1).animated(style: SpringAnimationStyle.lightBounce()) { overlayHeight in
             overlay.snp.updateConstraints { make in
                 make.height.equalTo(overlayHeight)
             }
-            
+
             overlay.layoutIfNeeded()
             view.layoutIfNeeded()
             overshoot.layoutIfNeeded()
-            
+
             overlay.center.y = overlayCenter
             ease.value = overlay.center.y
             ease.targetValue = overlay.center.y
         }
-        
+
         let (childScreen, childResult) = presentable.materialize()
         childScreen.setLargeTitleDisplayMode(presentationOptions)
-        
+
         let embeddedChildScreen = childScreen.embededInNavigationController(presentationOptions)
-        
+
         // initial entry animation
         bag += overlayHeightSignal.filter(predicate: { $0 != 0 }).wait(until: view.hasWindowSignal).take(first: 1).onValue { overlayHeight in
             let originalCenterY = view.frame.height + overlayHeight
             overlay.center.y = originalCenterY
             ease.value = originalCenterY
-            
+
             overlay.snp.updateConstraints { make in
                 make.height.equalTo(overlayHeight)
             }
-            
+
             overlay.layoutIfNeeded()
             overshoot.layoutIfNeeded()
             view.layoutIfNeeded()
-            
-            bag += Signal(after: 0.1).onValue({ _ in
+
+            bag += Signal(after: 0.1).onValue { _ in
                 ease.velocity = 0.1
                 ease.targetValue = overlayCenter
                 overlay.alpha = 1
-            })
+            }
         }
-        
+
         let panGestureRecognizer = UIPanGestureRecognizer()
 
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
 
-            if (location.y < dragLimit) {
+            if location.y < dragLimit {
                 ease.value = max(overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit))), overlayCenter + dragLimit - 60)
                 ease.targetValue = ease.value
                 return
             }
-           
+
             ease.value = overlayCenter + location.y
             ease.targetValue = ease.value
         }
@@ -253,20 +253,20 @@ extension DraggableOverlay: Presentable {
         }
 
         viewController.addChild(embeddedChildScreen)
-        
+
         overlayContainer.addSubview(embeddedChildScreen.view)
-        
+
         embeddedChildScreen.view.snp.makeConstraints { make in
             make.width.equalTo(overlay.snp.width)
             make.height.equalTo(overlay.snp.height)
             make.center.equalTo(overlay.snp.center)
         }
-        
+
         if let navigationController = embeddedChildScreen as? UINavigationController {
             let initialViewControllerBag = bag.innerBag()
             initialViewControllerBag += navigationController.viewControllers.last?.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
-            
-            bag += navigationController.willShowViewControllerSignal.onValueDisposePrevious { (viewController: UIViewController, animated: Bool) in
+
+            bag += navigationController.willShowViewControllerSignal.onValueDisposePrevious { (viewController: UIViewController, _: Bool) in
                 initialViewControllerBag.dispose()
                 let innerBag = bag.innerBag()
                 innerBag += viewController.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
@@ -275,7 +275,7 @@ extension DraggableOverlay: Presentable {
         } else {
             overlayHeightSignal.value = childScreen.preferredContentSize.height
         }
-        
+
         return (viewController, Future { completion in
             func hideOverlay() {
                 bag += Signal(after: 0.5).onValue {
@@ -289,7 +289,7 @@ extension DraggableOverlay: Presentable {
             bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
                 let velocity = panGestureRecognizer.velocity(in: view)
                 let translation = panGestureRecognizer.translation(in: view)
-                
+
                 if translation.y > (overlayHeightSignal.value * 0.4) || velocity.y > 1300 {
                     hideOverlay()
                 }

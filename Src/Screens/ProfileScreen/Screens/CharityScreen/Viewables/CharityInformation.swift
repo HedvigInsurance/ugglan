@@ -18,7 +18,7 @@ extension CharityInformation: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        
+
         let containerStackView = UIStackView()
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.alignment = .leading
@@ -27,19 +27,19 @@ extension CharityInformation: Presentable {
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.axis = .vertical
-        
+
         containerStackView.addArrangedSubview(containerView)
-        
+
         let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .standaloneLargeTitle)
         bag += containerView.addArranged(titleLabel)
-        
+
         let body = MarkdownText(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
-        
+
         bag += containerStackView.didLayoutSignal.map {
             containerStackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
         }.distinct().bindTo(viewController, \.preferredContentSize)
-        
+
         viewController.view = containerStackView
 
         return (viewController, Future { _ in

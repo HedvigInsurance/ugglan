@@ -29,10 +29,10 @@ extension PerilInformation: Presentable {
 
         let viewController = UIViewController()
         viewController.preferredContentSize = CGSize(width: 0, height: 0)
-        
+
         let containerStackView = UIStackView()
         containerStackView.isLayoutMarginsRelativeArrangement = false
-        
+
         let containerView = UIStackView()
         containerView.spacing = 15
         containerView.backgroundColor = UIColor.white
@@ -40,7 +40,7 @@ extension PerilInformation: Presentable {
         containerView.alignment = .top
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         containerView.isLayoutMarginsRelativeArrangement = true
-        
+
         containerStackView.addArrangedSubview(containerView)
 
         let icon = Icon(icon: self.icon, iconWidth: 60)
@@ -61,11 +61,11 @@ extension PerilInformation: Presentable {
 
         let body = MarkdownText(text: description, style: .bodyOffBlack)
         bag += containerView.addArranged(body)
-        
+
         bag += containerStackView.didLayoutSignal.map { _ in
             containerStackView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
         }.distinct().bindTo(viewController, \.preferredContentSize)
-        
+
         viewController.view = containerStackView
 
         return (viewController, Future { _ in
