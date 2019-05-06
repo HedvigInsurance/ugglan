@@ -14,7 +14,7 @@ struct HonestyPledge {}
 
 // Hack to integrate with React Native
 var honestyPledgeOpenClaimsFlow: (_ presentingViewController: UIViewController) -> Void = { viewController in
-    viewController.present(LoggedIn(), style: .default, options: [.prefersNavigationBarHidden(false)])
+    viewController.present(Chat(), style: .default, options: [.prefersNavigationBarHidden(false)])
 }
 
 extension HonestyPledge: Presentable {
