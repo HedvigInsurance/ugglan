@@ -13,11 +13,14 @@ import UIKit
 struct HonestyPledge {}
 
 // Hack to integrate with React Native
-var honestyPledgeOpenClaimsFlow: (_ presentingViewController: UIViewController) -> Void = { _ in }
+var honestyPledgeOpenClaimsFlow: (_ presentingViewController: UIViewController) -> Void = { viewController in
+    viewController.present(Chat(), style: .default, options: [.prefersNavigationBarHidden(false)])
+}
 
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        
         let bag = DisposeBag()
 
         let containerStackView = UIStackView()
@@ -25,7 +28,7 @@ extension HonestyPledge: Presentable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.spacing = 10
 
@@ -45,16 +48,16 @@ extension HonestyPledge: Presentable {
             slideToClaimStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
             slideToClaimStackView.isLayoutMarginsRelativeArrangement = true
         }
-
+        
+        bag += stackView.didLayoutSignal.map {
+            stackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        }.distinct().bindTo(viewController, \.preferredContentSize)
+        
         viewController.view = containerStackView
 
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
                 honestyPledgeOpenClaimsFlow(viewController)
-                
-                bag += Signal(after: 1).onValue { _ in
-                    completion(.success)
-                }
             }
 
             return DelayedDisposer(bag, delay: 1)
