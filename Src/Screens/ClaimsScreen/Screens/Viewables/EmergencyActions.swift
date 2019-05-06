@@ -40,7 +40,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         contentView.axis = .vertical
         contentView.alignment = .fill
         contentView.spacing = 5
-        contentView.layoutMargins = UIEdgeInsets(top: 25, left: 15, bottom: 25, right: 15)
+        contentView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         contentView.isLayoutMarginsRelativeArrangement = true
 
         cardContainer.addSubview(contentView)
@@ -67,7 +67,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical
-                stackView.edgeInsets = UIEdgeInsets(top: 25, left: 0, bottom: 0, right: 0)
+                stackView.edgeInsets = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
                 stackView.isLayoutMarginsRelativeArrangement = true
             }
 
