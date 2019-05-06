@@ -263,9 +263,13 @@ extension DraggableOverlay: Presentable {
         }
         
         if let navigationController = embeddedChildScreen as? UINavigationController {
-            bag += navigationController.viewControllersSignal.atOnce().onValueDisposePrevious { viewControllers -> Disposable? in
+            let initialViewControllerBag = bag.innerBag()
+            initialViewControllerBag += navigationController.viewControllers.last?.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
+            
+            bag += navigationController.willShowViewControllerSignal.onValueDisposePrevious { (viewController: UIViewController, animated: Bool) in
+                initialViewControllerBag.dispose()
                 let innerBag = bag.innerBag()
-                innerBag += viewControllers.last?.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
+                innerBag += viewController.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
                 return innerBag
             }
         } else {
