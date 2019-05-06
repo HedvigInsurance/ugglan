@@ -31,20 +31,17 @@ extension PerilInformation: Presentable {
         viewController.preferredContentSize = CGSize(width: 0, height: 0)
         
         let containerStackView = UIStackView()
-
+        containerStackView.isLayoutMarginsRelativeArrangement = false
+        
         let containerView = UIStackView()
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
-        containerView.isLayoutMarginsRelativeArrangement = true
         containerView.spacing = 15
         containerView.backgroundColor = UIColor.white
         containerView.axis = .vertical
         containerView.alignment = .top
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
+        containerView.isLayoutMarginsRelativeArrangement = true
         
         containerStackView.addArrangedSubview(containerView)
-        
-        if #available(iOS 11.0, *) {
-            containerView.insetsLayoutMarginsFromSafeArea = false
-        }
 
         let icon = Icon(icon: self.icon, iconWidth: 60)
         containerView.addArrangedSubview(icon)
@@ -65,21 +62,10 @@ extension PerilInformation: Presentable {
         let body = MarkdownText(text: description, style: .bodyOffBlack)
         bag += containerView.addArranged(body)
         
-        bag += containerView.didLayoutSignal.take(first: 1).onValue { _ in
-            var height: CGFloat = 0
-            for subview in containerView.subviews {
-                height += subview.intrinsicContentSize.height
-
-                if subview != containerView.subviews.last! {
-                    height += containerView.spacing
-                }
-            }
-
-            height += containerView.layoutMargins.top + containerView.layoutMargins.bottom
-            
-            viewController.preferredContentSize = CGSize(width: 0, height: height)
-        }
-
+        bag += containerStackView.didLayoutSignal.map { _ in
+            containerStackView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
+        }.distinct().debug().bindTo(viewController, \.preferredContentSize)
+        
         viewController.view = containerStackView
 
         return (viewController, Future { _ in

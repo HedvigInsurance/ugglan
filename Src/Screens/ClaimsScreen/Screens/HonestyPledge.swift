@@ -20,7 +20,6 @@ var honestyPledgeOpenClaimsFlow: (_ presentingViewController: UIViewController) 
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        viewController.preferredContentSize = CGSize(width: 0, height: 300)
         
         let bag = DisposeBag()
 
@@ -29,7 +28,7 @@ extension HonestyPledge: Presentable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.spacing = 10
 
@@ -49,7 +48,11 @@ extension HonestyPledge: Presentable {
             slideToClaimStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
             slideToClaimStackView.isLayoutMarginsRelativeArrangement = true
         }
-
+        
+        bag += stackView.didLayoutSignal.map {
+            stackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        }.debug().distinct().bindTo(viewController, \.preferredContentSize)
+        
         viewController.view = containerStackView
 
         return (viewController, Future { completion in
