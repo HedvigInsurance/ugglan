@@ -29,15 +29,18 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
-        commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.controlIsEnabledSignal.value = false
         commonClaimCard.shadowOpacitySignal.value = 0
-        commonClaimCard.showCloseButton.value = true
+        commonClaimCard.showTitleCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
 
-        bag += view.addArranged(commonClaimCard) { view in
-            view.snp.makeConstraints { make in
+        bag += view.addArranged(commonClaimCard) { commonClaimCardView in
+            commonClaimCardView.snp.makeConstraints { make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
+            }
+            
+            bag += commonClaimCardView.didLayoutSignal.onValue { _ in
+                view.bringSubviewToFront(commonClaimCardView)
             }
         }
 

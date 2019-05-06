@@ -23,11 +23,10 @@ struct CommonClaimCard {
     let backgroundStateSignal = ReadWriteSignal<State>(.normal)
     let cornerRadiusSignal = ReadWriteSignal<CGFloat>(8)
     let iconTopPaddingStateSignal = ReadWriteSignal<State>(.normal)
-    let layoutTitleAlphaSignal = ReadWriteSignal<CGFloat>(0)
     let titleLabelStateSignal = ReadWriteSignal<State>(.normal)
     let controlIsEnabledSignal = ReadWriteSignal<Bool>(true)
     let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
-    let showCloseButton = ReadWriteSignal<Bool>(false)
+    let showTitleCloseButton = ReadWriteSignal<Bool>(false)
     let showClaimButtonSignal = ReadWriteSignal<Bool>(false)
     let scrollPositionSignal = ReadWriteSignal<CGPoint>(CGPoint(x: 0, y: 0))
 
@@ -207,7 +206,8 @@ extension CommonClaimCard: Viewable {
                 }
             }
 
-            bag += layoutTitleAlphaSignal.atOnce().bindTo(view, \.alpha)
+            bag += showTitleCloseButton.atOnce().map { !$0 }.bindTo(view, \.isHidden)
+            bag += showTitleCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(view, \.alpha)
         }
 
         let remoteVectorIcon = RemoteVectorIcon()
@@ -264,8 +264,8 @@ extension CommonClaimCard: Viewable {
         let closeButton = CloseButton()
 
         bag += view.add(closeButton) { closeButtonView in
-            bag += showCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
-            bag += showCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(closeButtonView, \.alpha)
+            bag += showTitleCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
+            bag += showTitleCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(closeButtonView, \.alpha)
 
             closeButtonView.snp.makeConstraints { make in
                 make.left.equalTo(10)
@@ -289,12 +289,16 @@ extension CommonClaimCard: Viewable {
                 type: .standard(backgroundColor: .purple, textColor: .white)
             )
 
-            bag += view.add(claimButton) { claimButtonView in
+            bag += contentView.add(claimButton) { claimButtonView in
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
                 bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
 
+                bag += showClaimButtonSignal.onValue { _ in
+                    contentView.sendSubviewToBack(claimButtonView)
+                }
+                
                 claimButtonView.snp.makeConstraints { make in
-                    make.bottom.equalTo(-15)
+                    make.bottom.equalTo(-28)
                     make.centerX.equalToSuperview()
                 }
             }

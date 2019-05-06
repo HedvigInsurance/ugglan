@@ -35,7 +35,7 @@ extension BulletPointCard: Reusable {
         contentView.axis = .vertical
         contentView.alignment = .top
         contentView.spacing = 5
-        contentView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        contentView.layoutMargins = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 20)
         contentView.isLayoutMarginsRelativeArrangement = true
 
         cardContainer.addSubview(contentView)
@@ -57,6 +57,7 @@ extension BulletPointCard: Reusable {
 
             bag += contentView.addArranged(descriptionLabel)
 
+            print("PRESENT")
             titleLabel.text = bulletPointCard.title
             descriptionLabel.styledTextSignal.value = StyledText(
                 text: bulletPointCard.description,
@@ -66,7 +67,7 @@ extension BulletPointCard: Reusable {
             bag += cardContainer.add(bulletPointCard.icon) { iconView in
                 iconView.snp.makeConstraints { make in
                     make.width.height.equalTo(20)
-                    make.top.equalTo(15)
+                    make.top.equalTo(21)
                     make.left.equalTo(15)
                 }
             }
