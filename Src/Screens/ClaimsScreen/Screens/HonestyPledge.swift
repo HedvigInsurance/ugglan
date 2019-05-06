@@ -51,7 +51,7 @@ extension HonestyPledge: Presentable {
         
         bag += stackView.didLayoutSignal.map {
             stackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        }.debug().distinct().bindTo(viewController, \.preferredContentSize)
+        }.distinct().bindTo(viewController, \.preferredContentSize)
         
         viewController.view = containerStackView
 

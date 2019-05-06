@@ -38,7 +38,7 @@ extension CharityInformation: Presentable {
         
         bag += containerStackView.didLayoutSignal.map {
             containerStackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        }.debug().distinct().bindTo(viewController, \.preferredContentSize)
+        }.distinct().bindTo(viewController, \.preferredContentSize)
         
         viewController.view = containerStackView
 

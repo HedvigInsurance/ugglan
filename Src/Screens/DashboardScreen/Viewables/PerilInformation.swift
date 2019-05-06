@@ -64,7 +64,7 @@ extension PerilInformation: Presentable {
         
         bag += containerStackView.didLayoutSignal.map { _ in
             containerStackView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
-        }.distinct().debug().bindTo(viewController, \.preferredContentSize)
+        }.distinct().bindTo(viewController, \.preferredContentSize)
         
         viewController.view = containerStackView
 
