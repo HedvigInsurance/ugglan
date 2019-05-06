@@ -42,15 +42,23 @@ extension MultilineLabelIcon: Viewable {
             make.width.equalTo(iconWidth)
             make.height.equalTo(iconWidth + 4)
         }
-
-        let label = MultilineLabel(styledText: styledTextSignal.value)
-        bag += styledTextSignal.atOnce().bindTo(label.styledTextSignal)
-
-        bag += view.addArranged(label) { labelView in
-            bag += label.intrinsicContentSizeSignal.onValue { contentSize in
-                labelView.snp.makeConstraints { make in
-                    make.height.equalTo(contentSize.height)
-                }
+        
+        let label = UILabel()
+        
+        bag += styledTextSignal.atOnce().map { styledText -> StyledText in
+            styledText.restyled { (textStyle: inout TextStyle) in
+                textStyle.numberOfLines = 0
+                textStyle.lineBreakMode = .byWordWrapping
+            }
+        }.bindTo(label, \.styledText)
+        
+        view.addArrangedSubview(label)
+        
+        bag += label.didLayoutSignal.onValue {
+            label.sizeToFit()
+            label.preferredMaxLayoutWidth = label.frame.size.width
+            label.snp.makeConstraints { make in
+                make.height.equalTo(label.intrinsicContentSize.height)
             }
         }
 
