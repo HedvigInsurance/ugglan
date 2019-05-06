@@ -28,18 +28,27 @@ extension PerilInformation: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-
-        let containerView = UIView()
+        viewController.preferredContentSize = CGSize(width: 0, height: 0)
+        
+        let containerStackView = UIStackView()
+        containerStackView.isLayoutMarginsRelativeArrangement = false
+        
+        let containerView = UIStackView()
+        containerView.spacing = 15
         containerView.backgroundColor = UIColor.white
+        containerView.axis = .vertical
+        containerView.alignment = .top
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
+        containerView.isLayoutMarginsRelativeArrangement = true
+        
+        containerStackView.addArrangedSubview(containerView)
 
         let icon = Icon(icon: self.icon, iconWidth: 60)
-        containerView.addSubview(icon)
+        containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in
             make.width.equalTo(60)
             make.height.equalTo(60)
-            make.leading.equalToSuperview().inset(24)
-            make.top.equalToSuperview().inset(24)
         }
 
         let titleLabel = UILabel()
@@ -48,41 +57,16 @@ extension PerilInformation: Presentable {
 
         bag += titleLabel.setDynamicText(DynamicString(title))
 
-        let titleContainer = UIView()
-        titleContainer.addSubview(titleLabel)
+        containerView.addArrangedSubview(titleLabel)
 
-        titleLabel.snp.remakeConstraints { make in
-            make.width.equalToSuperview().inset(24)
-            make.top.equalToSuperview().inset(24 + 60 + 12)
-            make.height.equalTo(32)
-            make.centerX.equalToSuperview()
-        }
-
-        containerView.addSubview(titleContainer)
-
-        titleContainer.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-        }
-
-        let bodyView = UIView()
-        containerView.addSubview(bodyView)
-
-        let body = CharityInformationBody(text: description)
-        bag += bodyView.add(body) { bodyText in
-            bodyText.snp.makeConstraints { make in
-                make.height.equalTo(bodyText.intrinsicContentSize.height)
-                make.top.bottom.trailing.leading.equalToSuperview()
-            }
-        }
-
-        bodyView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(24 + 60 + 12 + 32 + 8)
-            make.width.equalToSuperview()
-            make.height.equalTo(bodyView.intrinsicContentSize.height)
-        }
-
-        viewController.view = containerView
+        let body = MarkdownText(text: description, style: .bodyOffBlack)
+        bag += containerView.addArranged(body)
+        
+        bag += containerStackView.didLayoutSignal.map { _ in
+            containerStackView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
+        }.distinct().bindTo(viewController, \.preferredContentSize)
+        
+        viewController.view = containerStackView
 
         return (viewController, Future { _ in
             bag

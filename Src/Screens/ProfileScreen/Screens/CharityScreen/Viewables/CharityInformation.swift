@@ -18,25 +18,29 @@ extension CharityInformation: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
+        
+        let containerStackView = UIStackView()
+        containerStackView.isLayoutMarginsRelativeArrangement = true
+        containerStackView.alignment = .leading
 
-        let containerView = UIView()
-        containerView.backgroundColor = UIColor.white
-
-        let header = DraggableOverlayHeader(title: String(key: .PROFILE_MY_CHARITY_INFO_TITLE))
-        bag += containerView.add(header)
-
-        let bodyView = UIView()
-        containerView.addSubview(bodyView)
-
-        bodyView.snp.remakeConstraints { make in
-            make.top.equalTo(56 + 8)
-            make.width.equalToSuperview()
-            make.height.equalToSuperview().offset(56 + 8)
-        }
-
-        let body = CharityInformationBody(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY))
-
-        bag += bodyView.add(body)
+        let containerView = UIStackView()
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.axis = .vertical
+        
+        containerStackView.addArrangedSubview(containerView)
+        
+        let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .standaloneLargeTitle)
+        bag += containerView.addArranged(titleLabel)
+        
+        let body = MarkdownText(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY), style: .bodyOffBlack)
+        bag += containerView.addArranged(body)
+        
+        bag += containerStackView.didLayoutSignal.map {
+            containerStackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        }.distinct().bindTo(viewController, \.preferredContentSize)
+        
+        viewController.view = containerStackView
 
         return (viewController, Future { _ in
             bag
