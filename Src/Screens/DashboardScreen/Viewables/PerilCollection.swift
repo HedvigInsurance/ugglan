@@ -41,7 +41,10 @@ extension PerilCollection: Viewable {
         )
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: collectionKit.view.frame.width / 4, height: 85)
+            CGSize(
+                width: min(85, collectionKit.view.frame.width / 4),
+                height: 85
+            )
         }
 
         bag += collectionKit.delegate.willDisplayCell.onValue { _ in
