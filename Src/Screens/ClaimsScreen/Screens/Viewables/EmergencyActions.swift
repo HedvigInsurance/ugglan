@@ -10,7 +10,9 @@ import Form
 import Foundation
 import UIKit
 
-struct EmergencyActions {}
+struct EmergencyActions {
+    let presentingViewController: UIViewController
+}
 
 struct EmergencyAction: Reusable, SignalProvider {
     let title: String
@@ -78,6 +80,8 @@ struct EmergencyAction: Reusable, SignalProvider {
     }
 }
 
+var commonClaimEmergencyOpenFreeTextChat: (_ viewController: UIViewController) -> Void = { _ in }
+
 extension EmergencyActions: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
@@ -137,7 +141,7 @@ extension EmergencyActions: Viewable {
         )
 
         bag += unsureAction.onValue {
-            print("open chat")
+            commonClaimEmergencyOpenFreeTextChat(self.presentingViewController)
         }
 
         let rows = [

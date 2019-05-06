@@ -38,7 +38,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
             commonClaimCardView.snp.makeConstraints { make in
                 make.height.equalTo(commonClaimCard.height(state: .expanded))
             }
-            
+
             bag += commonClaimCardView.didLayoutSignal.onValue { _ in
                 view.bringSubviewToFront(commonClaimCardView)
             }

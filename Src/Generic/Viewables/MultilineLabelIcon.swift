@@ -42,18 +42,18 @@ extension MultilineLabelIcon: Viewable {
             make.width.equalTo(iconWidth)
             make.height.equalTo(iconWidth + 4)
         }
-        
+
         let label = UILabel()
-        
+
         bag += styledTextSignal.atOnce().map { styledText -> StyledText in
             styledText.restyled { (textStyle: inout TextStyle) in
                 textStyle.numberOfLines = 0
                 textStyle.lineBreakMode = .byWordWrapping
             }
         }.bindTo(label, \.styledText)
-        
+
         view.addArrangedSubview(label)
-        
+
         bag += label.didLayoutSignal.onValue {
             label.sizeToFit()
             label.preferredMaxLayoutWidth = label.frame.size.width

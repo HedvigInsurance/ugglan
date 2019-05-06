@@ -79,7 +79,7 @@ extension PaymentNeedsSetupSection: Viewable {
             make.top.equalToSuperview()
             make.bottom.equalToSuperview().inset(25)
         }
-        
+
         return (wrapper, bag)
     }
 }

@@ -109,7 +109,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         }
 
         if commonClaimCard.data.layout.asEmergency != nil {
-            let emergencyActions = EmergencyActions()
+            let emergencyActions = EmergencyActions(presentingViewController: UIViewController())
 
             bag += contentContainerView.add(emergencyActions) { contentView in
                 contentView.snp.makeConstraints { make in

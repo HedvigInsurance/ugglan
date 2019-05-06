@@ -33,7 +33,7 @@ extension PerilCollection: Viewable {
 
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
-        
+
         let collectionKit = CollectionKit<EmptySection, Peril>(
             table: Table(),
             layout: flowLayout,

@@ -107,7 +107,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         }
 
         if let _ = self.commonClaimCard.data.layout.asEmergency {
-            let emergencyActions = EmergencyActions()
+            let emergencyActions = EmergencyActions(presentingViewController: toVC)
 
             bag += contentContainerView.add(emergencyActions) { contentView in
                 contentView.snp.makeConstraints { make in

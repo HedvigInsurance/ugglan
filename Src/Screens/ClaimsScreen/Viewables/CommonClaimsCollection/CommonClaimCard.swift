@@ -142,7 +142,7 @@ extension CommonClaimCard: Viewable {
             make.left.equalTo(0)
             make.width.equalToSuperview()
         }
-        
+
         let titleLabel = UILabel(value: data.title, style: .rowTitle)
         titleLabel.layer.zPosition = 2
         contentView.addSubview(titleLabel)
@@ -296,7 +296,7 @@ extension CommonClaimCard: Viewable {
                 bag += showClaimButtonSignal.onValue { _ in
                     contentView.sendSubviewToBack(claimButtonView)
                 }
-                
+
                 claimButtonView.snp.makeConstraints { make in
                     make.bottom.equalTo(-28)
                     make.centerX.equalToSuperview()

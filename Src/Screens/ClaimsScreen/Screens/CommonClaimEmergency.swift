@@ -44,7 +44,7 @@ extension CommonClaimEmergency: Presentable {
             }
         }
 
-        let emergencyActions = EmergencyActions()
+        let emergencyActions = EmergencyActions(presentingViewController: viewController)
         bag += view.addArranged(emergencyActions) { emergencyActionsView in
             bag += emergencyActionsView.didLayoutSignal.onValue { _ in
                 emergencyActionsView.snp.remakeConstraints { make in
