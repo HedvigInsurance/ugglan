@@ -143,7 +143,7 @@ extension CommonClaimCard: Viewable {
             make.left.equalTo(0)
             make.width.equalToSuperview()
         }
-
+        
         let titleLabel = UILabel(value: data.title, style: .rowTitle)
         titleLabel.layer.zPosition = 2
         contentView.addSubview(titleLabel)

@@ -26,7 +26,7 @@ extension ClaimsHeader.Title: Viewable {
         let bag = DisposeBag()
 
         let label = MultilineLabel(
-            value: "Har det hänt något? Starta anmälan här!",
+            value: String(key: .CLAIMS_HEADER_TITLE),
             style: TextStyle.standaloneLargeTitle.centered()
         )
 
@@ -49,7 +49,7 @@ extension ClaimsHeader.Description: Viewable {
         let bag = DisposeBag()
 
         let label = MultilineLabel(
-            value: "Har du tappat telefonen eller råkat ut för en stöld? Anmäl det till Hedvig",
+            value: String(key: .CLAIMS_HEADER_SUBTITLE),
             style: TextStyle.body.centered()
         )
 
@@ -87,7 +87,7 @@ extension ClaimsHeader: Viewable {
         let description = Description()
         bag += view.addArranged(description)
 
-        let button = Button(title: "Anmäl skada", type: .standard(backgroundColor: .purple, textColor: .white))
+        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .purple, textColor: .white))
 
         bag += button.onTapSignal.onValue {
             self.presentingViewController.present(
