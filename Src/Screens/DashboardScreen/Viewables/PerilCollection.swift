@@ -33,7 +33,7 @@ extension PerilCollection: Viewable {
 
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
-
+        
         let collectionKit = CollectionKit<EmptySection, Peril>(
             table: Table(),
             layout: flowLayout,
@@ -41,12 +41,11 @@ extension PerilCollection: Viewable {
         )
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: 50, height: 85)
+            CGSize(width: collectionKit.view.frame.width / 4, height: 85)
         }
 
         bag += collectionKit.delegate.willDisplayCell.onValue { _ in
             collectionKit.view.snp.remakeConstraints { make in
-                make.width.equalToSuperview().inset(collectionViewEdgeInset * 2)
                 make.height.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.height)
             }
         }
