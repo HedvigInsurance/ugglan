@@ -46,6 +46,7 @@ extension PerilCollection: Viewable {
 
         bag += collectionKit.delegate.willDisplayCell.onValue { _ in
             collectionKit.view.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(collectionViewEdgeInset)
                 make.height.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.height)
             }
         }
