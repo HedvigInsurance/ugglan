@@ -23,8 +23,12 @@ extension PaymentNeedsSetupSection: Viewable {
         wrapper.isHidden = true
 
         bag += dataSignal.onValue { data in
-            let hasAlreadyConnected = data?.bankAccount != nil
-            wrapper.isHidden = hasAlreadyConnected
+            switch data?.directDebitStatus {
+            case .active?, .pending?:
+                wrapper.isHidden = true
+            default:
+                wrapper.isHidden = false
+            }
         }
 
         let containerView = UIView()
@@ -72,9 +76,10 @@ extension PaymentNeedsSetupSection: Viewable {
         wrapper.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.trailing.leading.equalToSuperview().inset(16)
-            make.height.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(25)
         }
-
+        
         return (wrapper, bag)
     }
 }

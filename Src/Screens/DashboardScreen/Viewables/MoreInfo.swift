@@ -30,7 +30,7 @@ extension MoreInfo: Viewable {
         moreInfoStackView.axis = .vertical
         moreInfoStackView.edgeInsets = contentViewInsets
 
-        let selfRiskCheckmark = MultilineLabelIcon(
+        let deductibleCheckmark = MultilineLabelIcon(
             styledText: StyledText(
                 text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
                 style: .bodyOffBlack
@@ -38,7 +38,7 @@ extension MoreInfo: Viewable {
             icon: Asset.greenCircularCheckmark,
             iconWidth: 15
         )
-        bag += moreInfoStackView.addArranged(selfRiskCheckmark)
+        bag += moreInfoStackView.addArranged(deductibleCheckmark)
 
         let totalAmountCheckmark = MultilineLabelIcon(
             styledText: StyledText(

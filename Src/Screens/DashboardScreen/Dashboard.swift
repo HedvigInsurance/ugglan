@@ -55,7 +55,8 @@ extension Dashboard: Presentable {
         bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
         bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
 
-        bag += client.watch(query: ChatActionsQuery())
+        bag += client.fetch(query: ChatActionsQuery())
+            .valueSignal
             .compactMap { $0.data?.chatActions }
             .bindTo(chatActionsSection.dataSignal)
 
