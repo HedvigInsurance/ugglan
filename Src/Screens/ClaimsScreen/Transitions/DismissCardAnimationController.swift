@@ -43,9 +43,8 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
-        commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.shadowOpacitySignal.value = 0
-        commonClaimCard.showCloseButton.value = true
+        commonClaimCard.showTitleCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
 
         bag += contentContainerView.add(commonClaimCard) { view in
@@ -56,17 +55,13 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 make.left.equalTo(0)
             }
 
-            bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.1), animations: { _ in
-                self.commonClaimCard.layoutTitleAlphaSignal.value = 0
-            })
-
             bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 self.commonClaimCard.backgroundStateSignal.value = .normal
                 self.commonClaimCard.cornerRadiusSignal.value = 8
                 self.commonClaimCard.iconTopPaddingStateSignal.value = .normal
                 self.commonClaimCard.titleLabelStateSignal.value = .normal
                 self.commonClaimCard.shadowOpacitySignal.value = 0.05
-                self.commonClaimCard.showCloseButton.value = false
+                self.commonClaimCard.showTitleCloseButton.value = false
                 self.commonClaimCard.showClaimButtonSignal.value = false
 
                 view.snp.updateConstraints { make in

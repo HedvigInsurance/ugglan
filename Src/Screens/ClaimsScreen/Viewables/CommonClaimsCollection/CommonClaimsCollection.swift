@@ -39,10 +39,10 @@ extension CommonClaimsCollection: Viewable {
         )
         collectionKit.view.backgroundColor = .offWhite
         collectionKit.view.clipsToBounds = false
-
+        
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(
-                width: min(170, (collectionKit.view.frame.width / 2) - 10),
+                width: min(190, (collectionKit.view.frame.width / 2) - 10),
                 height: 140
             )
         }
@@ -71,7 +71,7 @@ extension CommonClaimsCollection: Viewable {
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
 
-        let titleLabel = MultilineLabel(value: "Snabbval", style: .blockRowTitle)
+        let titleLabel = MultilineLabel(value: String(key: .CLAIMS_QUICK_CHOICE_HEADER), style: .blockRowTitle)
         bag += stackView.addArranged(titleLabel.wrappedIn(UIStackView())) { containerStackView in
             containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
             containerStackView.isLayoutMarginsRelativeArrangement = true

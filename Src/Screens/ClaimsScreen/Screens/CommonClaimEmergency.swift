@@ -29,10 +29,9 @@ extension CommonClaimEmergency: Presentable {
         commonClaimCard.cornerRadiusSignal.value = 0
         commonClaimCard.iconTopPaddingStateSignal.value = .expanded
         commonClaimCard.titleLabelStateSignal.value = .expanded
-        commonClaimCard.layoutTitleAlphaSignal.value = 1
         commonClaimCard.controlIsEnabledSignal.value = false
         commonClaimCard.shadowOpacitySignal.value = 0
-        commonClaimCard.showCloseButton.value = true
+        commonClaimCard.showTitleCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
 
         bag += view.addArranged(commonClaimCard) { commonClaimCardView in
