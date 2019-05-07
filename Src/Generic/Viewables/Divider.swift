@@ -24,7 +24,6 @@ extension Divider: Viewable {
 
         divider.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(1)
-            make.width.centerX.equalToSuperview()
         }
 
         return (divider, bag)

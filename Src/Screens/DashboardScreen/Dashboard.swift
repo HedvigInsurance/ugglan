@@ -42,7 +42,7 @@ extension Dashboard: Presentable {
         }
         
         bag += merge(
-            chatButtonView.signal(for: .touchUpInside),
+            chatButtonView.signal(for: .touchUpInside).delay(by: 0.2),
             chatButtonView.signal(for: .touchUpOutside),
             chatButtonView.signal(for: .touchCancel)
         ).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
@@ -82,7 +82,7 @@ extension Dashboard: Presentable {
         let pendingInsurance = PendingInsurance()
         bag += form.append(pendingInsurance)
 
-        let chatPreview = ChatPreview()
+        let chatPreview = ChatPreview(presentingViewController: viewController)
         bag += form.append(chatPreview)
 
         bag += form.append(Spacing(height: 35))

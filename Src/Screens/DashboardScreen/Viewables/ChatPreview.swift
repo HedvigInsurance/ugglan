@@ -12,8 +12,10 @@ import Apollo
 
 struct ChatPreview {
     let client: ApolloClient
+    let presentingViewController: UIViewController
     
-    init(client: ApolloClient = ApolloContainer.shared.client) {
+    init(presentingViewController: UIViewController, client: ApolloClient = ApolloContainer.shared.client) {
+        self.presentingViewController = presentingViewController
         self.client = client
     }
 }
@@ -41,38 +43,32 @@ extension ChatPreview: Viewable {
         
         let bag = DisposeBag()
         
-        let card = UIView()
-        card.backgroundColor = .white
-        card.layer.cornerRadius = 15
-        card.layer.shadowOpacity = 0.15
-        card.layer.shadowOffset = CGSize(width: 0, height: 6)
-        card.layer.shadowRadius = 8
-        card.layer.shadowColor = UIColor.darkGray.cgColor
+        let symbolIconContainer = UIStackView()
+        symbolIconContainer.axis = .vertical
+        symbolIconContainer.alignment = .leading
+        symbolIconContainer.isLayoutMarginsRelativeArrangement = true
+        symbolIconContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+
+        let symbolIcon = Icon(icon: Asset.symbol, iconWidth: 20)
+        symbolIconContainer.addArrangedSubview(symbolIcon)
         
-        let cardContent = UIStackView()
-        cardContent.axis = .vertical
-        cardContent.isLayoutMarginsRelativeArrangement = true
-        cardContent.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
-        cardContent.spacing = 15
-        
-        let title = UILabel(value: "Nytt meddelande från Hedvig", style: .blockRowTitle)
-        cardContent.addArrangedSubview(title)
+        containerView.addArrangedSubview(symbolIconContainer)
         
         let messageBubble = MessageBubble()
-        bag += cardContent.addArranged(messageBubble)
+        bag += containerView.addArranged(messageBubble)
         
-        card.addSubview(cardContent)
-        
-        cardContent.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview()
-        }
-        
-        containerView.addArrangedSubview(card)
-        
-        let openChatButton = Button(title: "Svara", type: .pillTransparent(backgroundColor: .purple, textColor: .white))
-        bag += cardContent.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
+        let openChatButton = Button(title: "Svara", type: .standardSmall(backgroundColor: .purple, textColor: .white))
+        bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .trailing
+        }
+        
+        bag += containerView.addArranged(Spacing(height: 10))
+        
+        bag += containerView.addArranged(Divider(backgroundColor: .lightGray))
+        
+        bag += openChatButton.onTapSignal.onValue { _ in
+            dashboardOpenFreeTextChat(self.presentingViewController)
         }
         
         func animateVisibility(visible: Bool) {
@@ -84,7 +80,10 @@ extension ChatPreview: Viewable {
         
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
         
-        bag += client.fetch(query: ChatPreviewQuery()).valueSignal.compactMap { $0.data?.messages }.compactMap { $0.compactMap { $0 } }.onValue { messages in
+        bag += client.fetch(query: ChatPreviewQuery()).valueSignal
+            .compactMap { $0.data?.messages }
+            .compactMap { $0.compactMap { $0 } }
+            .onValue { messages in
             guard let firstMessage = messages.first, let text = firstMessage.body.asMessageBodyText?.text, firstMessage.id == freeChatFromBoId else {
                 animateVisibility(visible: false)
                 return
@@ -94,7 +93,9 @@ extension ChatPreview: Viewable {
             messageBubble.textSignal.value = text
         }
         
-        bag += self.client.subscribe(subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))).compactMap { $0.data?.messages?.compactMap { $0 } }.distinct().onValue({ messages in
+        bag += self.client.subscribe(
+            subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))
+        ).compactMap { $0.data?.messages?.compactMap { $0 } }.distinct().onValue { messages in
             guard let firstMessage = messages.first, let text = firstMessage.body.asMessageBodyText?.text, firstMessage.id == freeChatFromBoId else {
                 animateVisibility(visible: false)
                 return
@@ -102,7 +103,7 @@ extension ChatPreview: Viewable {
             
             animateVisibility(visible: true)
             messageBubble.textSignal.value = text
-        })
+        }
         
         return (containerView, bag)
     }

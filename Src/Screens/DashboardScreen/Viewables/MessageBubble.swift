@@ -23,12 +23,21 @@ extension MessageBubble: Viewable {
         containerStackView.alignment = .leading
 
         let stylingView = UIView()
+        stylingView.layer.shadowOpacity = 0.05
+        stylingView.layer.shadowOffset = CGSize(width: 0, height: 6)
+        stylingView.layer.shadowRadius = 8
+        stylingView.layer.shadowColor = UIColor.darkGray.cgColor
+        
         let containerView = UIStackView()
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
 
         let label = MultilineLabel(value: "", style: .bodyOffBlack, usePreferredMaxLayoutWidth: false)
         bag += containerView.addArranged(label) { labelView in
+            bag += labelView.copySignal.onValue({ _ in
+                UIPasteboard.general.string = labelView.text
+            })
+            
             bag += textSignal.map { StyledText(text: $0, style: .bodyOffBlack) }.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 labelView.alpha = 0
             }).animated(style: SpringAnimationStyle.lightBounce(), animations: { styledText in
@@ -44,10 +53,10 @@ extension MessageBubble: Viewable {
 
         containerView.snp.makeConstraints { make in
             make.top.bottom.left.right.equalToSuperview()
-            make.width.lessThanOrEqualTo(200)
+            make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = .offLightGray
+        stylingView.backgroundColor = .white
         stylingView.layer.cornerRadius = 30
 
         bag += stylingView.didLayoutSignal.onValue { _ in
