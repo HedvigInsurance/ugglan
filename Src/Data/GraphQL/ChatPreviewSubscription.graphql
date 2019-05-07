@@ -8,6 +8,7 @@ subscription ChatPreview_($mostRecentTimestamp: String!) {
             }
         }
         header {
+            timeStamp
             fromMyself
         }
     }

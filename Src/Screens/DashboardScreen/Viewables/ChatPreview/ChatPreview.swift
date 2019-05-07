@@ -100,6 +100,17 @@ extension ChatPreview: Viewable {
                     return message.body.asMessageBodyText != nil
                 }).filter({ message -> Bool in
                     return handledMessageGlobalIds.first { message.globalId == $0 } == nil
+                }).filter({ message -> Bool in
+                    guard let timeStamp = Int64(message.header.timeStamp) else {
+                        return false
+                    }
+                    
+                    let diff = timeStamp - Date().currentTimeMillis()
+                    let oneWeek = 604800 * 1000
+                    
+                    return diff < oneWeek
+                }).sorted(by: { (a, b) -> Bool in
+                    a.header.timeStamp < b.header.timeStamp
                 })
                 
             guard messagesToShow.count != 0 else {
@@ -110,9 +121,13 @@ extension ChatPreview: Viewable {
             handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
             animateVisibility(visible: true)
                 
-            messagesBubbleBag += messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.map({ text in
-                let messageBubble = MessageBubble(text: text)
-                return messageBubbleContainer.addArranged(messageBubble)
+                messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach({ (arg) in
+                    let (offset, text) = arg
+                    print(text)
+                    messagesBubbleBag += Signal(after: 0.5 * Double(offset)).onValue { _ in
+                    let messageBubble = MessageBubble(text: text)
+                    messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
+                }
             })
         }
         
@@ -125,8 +140,19 @@ extension ChatPreview: Viewable {
                 return message.body.asMessageBodyText != nil
             }).filter({ message -> Bool in
                 return handledMessageGlobalIds.first { message.globalId == $0 } == nil
+            }).filter({ message -> Bool in
+                guard let timeStamp = Int64(message.header.timeStamp) else {
+                    return false
+                }
+                
+                let diff = timeStamp - Date().currentTimeMillis()
+                let oneWeek = 604800 * 1000
+                
+                return diff < oneWeek
+            }).sorted(by: { (a, b) -> Bool in
+                a.header.timeStamp < b.header.timeStamp
             })
-            
+                        
             guard messagesToShow.count != 0 else {
                 animateVisibility(visible: false)
                 return

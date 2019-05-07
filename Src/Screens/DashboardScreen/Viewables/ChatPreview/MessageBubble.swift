@@ -68,7 +68,7 @@ extension MessageBubble: Viewable {
         stylingView.backgroundColor = .white
         stylingView.layer.cornerRadius = 30
 
-        bag += stylingView.didLayoutSignal.onValue { _ in
+        bag += merge(stylingView.didMoveToWindowSignal, stylingView.didLayoutSignal).onValue { _ in
             stylingView.layer.cornerRadius = min(stylingView.frame.height / 2, 20)
         }
 
