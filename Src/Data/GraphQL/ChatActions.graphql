@@ -1,7 +1,0 @@
-query ChatActions {
-    chatActions {
-        text
-        triggerUrl
-        enabled
-    }
-}

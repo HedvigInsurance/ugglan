@@ -1,6 +1,7 @@
 subscription ChatPreview_($mostRecentTimestamp: String!) {
     messages(mostRecentTimestamp: $mostRecentTimestamp) {
         id
+        globalId
         body {
             ... on MessageBodyText {
                 text

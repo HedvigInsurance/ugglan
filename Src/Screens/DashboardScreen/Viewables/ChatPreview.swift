@@ -24,6 +24,12 @@ extension Date {
     }
 }
 
+extension ChatPreviewSubscription.Data.Message: Equatable {
+    public static func == (lhs: ChatPreviewSubscription.Data.Message, rhs: ChatPreviewSubscription.Data.Message) -> Bool {
+        return lhs.globalId == rhs.globalId
+    }
+}
+
 extension ChatPreview: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let containerView = UIStackView()
@@ -88,8 +94,7 @@ extension ChatPreview: Viewable {
             messageBubble.textSignal.value = text
         }
         
-        bag += self.client.subscribe(subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))).compactMap { $0.data?.messages?.compactMap { $0 } }.onValue({ messages in
-            print(messages.first!.id)
+        bag += self.client.subscribe(subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))).compactMap { $0.data?.messages?.compactMap { $0 } }.distinct().onValue({ messages in
             guard let firstMessage = messages.first, let text = firstMessage.body.asMessageBodyText?.text, firstMessage.id == freeChatFromBoId else {
                 animateVisibility(visible: false)
                 return

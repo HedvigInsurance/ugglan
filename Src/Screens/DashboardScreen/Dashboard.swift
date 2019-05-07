@@ -26,12 +26,7 @@ extension Dashboard: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-
-        bag += client.watch(
-            query: DashboardQuery()
-        ).compactMap { $0.data?.member.firstName }.map {
-            String(key: .DASHBOARD_BANNER_ACTIVE_TITLE(firstName: $0))
-        }.bindTo(viewController, \.navigationItem.title)
+        viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
 
         let form = FormView()
 
@@ -44,9 +39,6 @@ extension Dashboard: Presentable {
         let chatPreview = ChatPreview()
         bag += form.append(chatPreview)
 
-        let chatActionsSection = ChatActionsSection(presentingViewController: viewController)
-        bag += form.append(chatActionsSection)
-
         bag += form.append(Spacing(height: 35))
 
         let myProtectionSection = MyProtectionSection(presentingViewController: viewController)
@@ -57,11 +49,6 @@ extension Dashboard: Presentable {
         let dashboardInsuranceQuery = client.watch(query: DashboardQuery()).compactMap { $0.data?.insurance }
         bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
         bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
-
-        bag += client.fetch(query: ChatActionsQuery())
-            .valueSignal
-            .compactMap { $0.data?.chatActions }
-            .bindTo(chatActionsSection.dataSignal)
 
         bag += client.watch(query: MyPaymentQuery())
             .compactMap { $0.data }
