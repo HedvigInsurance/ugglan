@@ -26,7 +26,7 @@ extension Chat: Presentable {
         viewController.view = view
 
         return (viewController, Future { _ in
-            return bag
+            bag
         })
     }
 }
