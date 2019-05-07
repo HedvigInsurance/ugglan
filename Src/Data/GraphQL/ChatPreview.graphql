@@ -1,6 +1,7 @@
 query ChatPreview {
     messages {
         id
+        globalId
         body {
             ... on MessageBodyText {
                 text

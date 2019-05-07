@@ -11,7 +11,11 @@ import Foundation
 import UIKit
 
 struct MessageBubble {
-    let textSignal = ReadWriteSignal<String>("")
+    let textSignal: ReadWriteSignal<String>
+    
+    init(text: String) {
+        self.textSignal = ReadWriteSignal(text)
+    }
 }
 
 extension MessageBubble: Viewable {
@@ -21,12 +25,14 @@ extension MessageBubble: Viewable {
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.alignment = .leading
+        containerStackView.isHidden = true
 
         let stylingView = UIView()
         stylingView.layer.shadowOpacity = 0.05
         stylingView.layer.shadowOffset = CGSize(width: 0, height: 6)
         stylingView.layer.shadowRadius = 8
         stylingView.layer.shadowColor = UIColor.darkGray.cgColor
+        stylingView.alpha = 0
         
         let containerView = UIStackView()
         containerView.isLayoutMarginsRelativeArrangement = true
@@ -38,12 +44,15 @@ extension MessageBubble: Viewable {
                 UIPasteboard.general.string = labelView.text
             })
             
-            bag += textSignal.map { StyledText(text: $0, style: .bodyOffBlack) }.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+            bag += textSignal.atOnce().map { StyledText(text: $0, style: .bodyOffBlack) }.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 labelView.alpha = 0
             }).animated(style: SpringAnimationStyle.lightBounce(), animations: { styledText in
                 label.styledTextSignal.value = styledText
+                containerStackView.isHidden = false
                 containerView.layoutIfNeeded()
-                containerView.layoutSuperviewsIfNeeded()
+                stylingView.layoutIfNeeded()
+                containerStackView.layoutIfNeeded()
+                stylingView.alpha = 1
             }).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 labelView.alpha = 1
             })

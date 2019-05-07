@@ -54,8 +54,10 @@ extension ChatPreview: Viewable {
         
         containerView.addArrangedSubview(symbolIconContainer)
         
-        let messageBubble = MessageBubble()
-        bag += containerView.addArranged(messageBubble)
+        let messageBubbleContainer = UIStackView()
+        messageBubbleContainer.axis = .vertical
+        messageBubbleContainer.spacing = 8
+        containerView.addArrangedSubview(messageBubbleContainer)
         
         let openChatButton = Button(title: "Svara", type: .standardSmall(backgroundColor: .purple, textColor: .white))
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
@@ -67,15 +69,23 @@ extension ChatPreview: Viewable {
         
         bag += containerView.addArranged(Divider(backgroundColor: .lightGray))
         
-        bag += openChatButton.onTapSignal.onValue { _ in
-            dashboardOpenFreeTextChat(self.presentingViewController)
-        }
+        let messagesBubbleBag = DisposeBag()
+        var handledMessageGlobalIds: [GraphQLID] = []
         
         func animateVisibility(visible: Bool) {
             bag += Signal(after: 0.5).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 containerView.isHidden = !visible
-                containerView.layoutSuperviewsIfNeeded()
+                containerView.alpha = visible ? 1 : 0
+            }).onValue({ _ in
+                if !visible {
+                    messagesBubbleBag.dispose()
+                }
             })
+        }
+        
+        bag += openChatButton.onTapSignal.onValue { _ in
+            dashboardOpenFreeTextChat(self.presentingViewController)
+            animateVisibility(visible: false)
         }
         
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
@@ -84,25 +94,51 @@ extension ChatPreview: Viewable {
             .compactMap { $0.data?.messages }
             .compactMap { $0.compactMap { $0 } }
             .onValue { messages in
-            guard let firstMessage = messages.first, let text = firstMessage.body.asMessageBodyText?.text, firstMessage.id == freeChatFromBoId else {
+                let messagesToShow = messages.prefix(while: { message -> Bool in
+                    return message.id == freeChatFromBoId
+                }).filter({ message -> Bool in
+                    return message.body.asMessageBodyText != nil
+                }).filter({ message -> Bool in
+                    return handledMessageGlobalIds.first { message.globalId == $0 } == nil
+                })
+                
+            guard messagesToShow.count != 0 else {
                 animateVisibility(visible: false)
                 return
             }
-            
+                
+            handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
             animateVisibility(visible: true)
-            messageBubble.textSignal.value = text
+                
+            messagesBubbleBag += messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.map({ text in
+                let messageBubble = MessageBubble(text: text)
+                return messageBubbleContainer.addArranged(messageBubble)
+            })
         }
         
         bag += self.client.subscribe(
             subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))
-        ).compactMap { $0.data?.messages?.compactMap { $0 } }.distinct().onValue { messages in
-            guard let firstMessage = messages.first, let text = firstMessage.body.asMessageBodyText?.text, firstMessage.id == freeChatFromBoId else {
+        ).compactMap { $0.data?.messages?.compactMap { $0 } }.distinct().debounce(0.5).onValue { messages in
+            let messagesToShow = messages.prefix(while: { message -> Bool in
+                return message.id == freeChatFromBoId
+            }).filter({ message -> Bool in
+                return message.body.asMessageBodyText != nil
+            }).filter({ message -> Bool in
+                return handledMessageGlobalIds.first { message.globalId == $0 } == nil
+            })
+            
+            guard messagesToShow.count != 0 else {
                 animateVisibility(visible: false)
                 return
             }
             
+            handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
             animateVisibility(visible: true)
-            messageBubble.textSignal.value = text
+            
+            messagesBubbleBag += messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.map({ text in
+                let messageBubble = MessageBubble(text: text)
+                return messageBubbleContainer.addArranged(messageBubble)
+            })
         }
         
         return (containerView, bag)
