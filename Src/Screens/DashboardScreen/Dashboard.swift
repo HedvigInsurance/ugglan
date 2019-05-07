@@ -32,15 +32,15 @@ extension Dashboard: Presentable {
 
         let viewController = UIViewController()
         viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
-        
+
         let chatButtonView = UIControl()
         chatButtonView.backgroundColor = .offLightGray
         chatButtonView.layer.cornerRadius = 20
-        
+
         bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
             chatButtonView.backgroundColor = UIColor.offLightGray.darkened(amount: 0.05)
         }
-        
+
         bag += merge(
             chatButtonView.signal(for: .touchUpInside),
             chatButtonView.signal(for: .touchUpOutside),
@@ -48,27 +48,27 @@ extension Dashboard: Presentable {
         ).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
             chatButtonView.backgroundColor = UIColor.offLightGray
         }
-        
+
         bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in
             dashboardOpenFreeTextChat(viewController)
         }
-        
+
         let chatIcon = UIImageView()
         chatIcon.image = Asset.chat.image
         chatIcon.contentMode = .scaleAspectFit
-        
+
         chatButtonView.addSubview(chatIcon)
-        
+
         chatIcon.snp.makeConstraints { make in
             make.width.equalToSuperview().multipliedBy(0.5)
             make.height.equalToSuperview().multipliedBy(0.5)
             make.center.equalToSuperview()
         }
-        
+
         let item = UIBarButtonItem(customView: chatButtonView)
-        
+
         viewController.navigationItem.rightBarButtonItem = item
-        
+
         chatButtonView.snp.makeConstraints { make in
             make.width.equalTo(40)
             make.height.equalTo(40)
