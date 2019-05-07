@@ -171,6 +171,7 @@ extension DraggableOverlay: Presentable {
             let originalCenterY = view.frame.height + overlayHeight
             overlay.center.y = originalCenterY
             ease.value = originalCenterY
+            ease.targetValue = originalCenterY
 
             overlay.snp.updateConstraints { make in
                 make.height.equalTo(overlayHeight)
