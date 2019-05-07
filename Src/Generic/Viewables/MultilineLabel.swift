@@ -13,18 +13,20 @@ import Foundation
 struct MultilineLabel {
     let styledTextSignal: ReadWriteSignal<StyledText>
     let intrinsicContentSizeSignal: ReadSignal<CGSize>
+    let usePreferredMaxLayoutWidth: Bool
 
     private let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
         CGSize(width: 0, height: 0)
     )
 
-    init(styledText: StyledText) {
+    init(styledText: StyledText, usePreferredMaxLayoutWidth: Bool = true) {
         styledTextSignal = ReadWriteSignal(styledText)
         intrinsicContentSizeSignal = intrinsicContentSizeReadWriteSignal.readOnly()
+        self.usePreferredMaxLayoutWidth = usePreferredMaxLayoutWidth
     }
 
-    init(value: DisplayableString, style: TextStyle) {
-        self.init(styledText: StyledText(text: value, style: style))
+    init(value: DisplayableString, style: TextStyle, usePreferredMaxLayoutWidth: Bool = true) {
+        self.init(styledText: StyledText(text: value, style: style), usePreferredMaxLayoutWidth: usePreferredMaxLayoutWidth)
     }
 }
 
@@ -42,7 +44,9 @@ extension MultilineLabel: Viewable {
         }.bindTo(label, \.styledText)
 
         bag += label.didLayoutSignal.onValue {
-            label.preferredMaxLayoutWidth = label.frame.size.width
+            if self.usePreferredMaxLayoutWidth {
+                label.preferredMaxLayoutWidth = label.frame.size.width
+            }
             self.intrinsicContentSizeReadWriteSignal.value = label.intrinsicContentSize
         }
 

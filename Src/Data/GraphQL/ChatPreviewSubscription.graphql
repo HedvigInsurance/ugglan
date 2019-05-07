@@ -1,0 +1,13 @@
+subscription ChatPreview_($mostRecentTimestamp: String!) {
+    messages(mostRecentTimestamp: $mostRecentTimestamp) {
+        id
+        body {
+            ... on MessageBodyText {
+                text
+            }
+        }
+        header {
+            fromMyself
+        }
+    }
+}

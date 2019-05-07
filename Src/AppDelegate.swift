@@ -111,7 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         DefaultStyling.installCustom()
 
-        let token = AuthorizationToken(token: "a8Za/PaA2jQqsg==.Lt9hKLFD8+oFBg==.hEprAa/drNxv5g==")
+        let token = AuthorizationToken(token: "iRdjaazqSHqtGg==.h/6BEAGKcveJIg==.u2sxTGn+PWkHMg==")
         try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
 
         bag += combineLatest(

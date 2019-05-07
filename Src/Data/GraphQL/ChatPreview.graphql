@@ -1,0 +1,14 @@
+query ChatPreview {
+    messages {
+        id
+        body {
+            ... on MessageBodyText {
+                text
+            }
+        }
+        header {
+            fromMyself
+            timeStamp
+        }
+    }
+}

@@ -40,6 +40,9 @@ extension Dashboard: Presentable {
 
         let pendingInsurance = PendingInsurance()
         bag += form.append(pendingInsurance)
+        
+        let chatPreview = ChatPreview()
+        bag += form.append(chatPreview)
 
         let chatActionsSection = ChatActionsSection(presentingViewController: viewController)
         bag += form.append(chatActionsSection)
