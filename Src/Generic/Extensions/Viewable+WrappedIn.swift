@@ -23,7 +23,7 @@ struct ContainerStackViewable<V: Viewable, Matter: UIView, ContainerView: UIStac
 struct ContainerViewable<V: Viewable, Matter: UIView, ContainerView: UIView>: Viewable where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Disposable {
     let viewable: V
     let container: ContainerView
-    
+
     func materialize(events _: ViewableEvents) -> (ContainerView, Disposable) {
         let bag = DisposeBag()
         bag += container.add(viewable)
@@ -35,7 +35,7 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
     func wrappedIn(_ stackView: UIStackView) -> ContainerStackViewable<Self, Self.Matter, UIStackView> {
         return ContainerStackViewable(viewable: self, container: stackView)
     }
-    
+
     func wrappedIn(_ view: UIView) -> ContainerViewable<Self, Self.Matter, UIView> {
         return ContainerViewable(viewable: self, container: view)
     }

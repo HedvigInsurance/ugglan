@@ -40,7 +40,7 @@ extension Dashboard: Presentable {
 
         let pendingInsurance = PendingInsurance()
         bag += form.append(pendingInsurance)
-        
+
         let chatPreview = ChatPreview()
         bag += form.append(chatPreview)
 

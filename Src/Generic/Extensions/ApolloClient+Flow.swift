@@ -123,19 +123,19 @@ extension ApolloClient {
             }
         }
     }
-    
-    func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription : GraphQLSubscription {
+
+    func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
         return Signal { callbacker in
             let bag = DisposeBag()
-            
-            let subscriber = self.subscribe(subscription: subscription, resultHandler: { (result, error) in
+
+            let subscriber = self.subscribe(subscription: subscription, resultHandler: { result, error in
                 if let result = result {
                     callbacker(result)
                 } else {
                     if error?.localizedDescription == "cancelled" {
                         return
                     }
-                    
+
                     self.showNetworkErrorMessage { [unowned self] in
                         bag += self.subscribe(subscription: subscription, queue: queue).onValue { result in
                             callbacker(result)
@@ -143,7 +143,7 @@ extension ApolloClient {
                     }
                 }
             })
-            
+
             return Disposer {
                 subscriber.cancel()
                 bag.dispose()

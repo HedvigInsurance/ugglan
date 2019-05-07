@@ -11,7 +11,7 @@ import UIKit
 extension UIView {
     // recursively goes through all superviews and calls layoutIfNeeded()
     func layoutSuperviewsIfNeeded() {
-        self.superview?.layoutIfNeeded()
-        self.superview?.layoutSuperviewsIfNeeded()
+        superview?.layoutIfNeeded()
+        superview?.layoutSuperviewsIfNeeded()
     }
 }
