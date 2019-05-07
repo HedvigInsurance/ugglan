@@ -14,7 +14,7 @@ import UIKit
 struct Chat {}
 
 extension Chat: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
@@ -25,7 +25,9 @@ extension Chat: Presentable {
 
         viewController.view = view
 
-        return (viewController, bag)
+        return (viewController, Future { _ in
+            return bag
+        })
     }
 }
 
