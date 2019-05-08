@@ -24,7 +24,7 @@ extension Claims: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = "Skador"
+        viewController.title = String(key: .CLAIMS_SCREEN_TITLE)
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -46,7 +46,7 @@ extension Claims: Presentable {
 extension Claims: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: "Skador",
+            title: String(key: .CLAIMS_SCREEN_TAB),
             image: Asset.claimsTabIcon.image,
             selectedImage: Asset.claimsTabIcon.image
         )
