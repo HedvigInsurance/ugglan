@@ -288,8 +288,13 @@ extension CommonClaimCard: Viewable {
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
                 type: .standard(backgroundColor: .purple, textColor: .white)
             )
+            
+            bag += claimButton.onTapSignal.onValue { _ in
+                let overlay = DraggableOverlay(presentable: HonestyPledge())
+                self.presentingViewController.present(overlay)
+            }
 
-            bag += contentView.add(claimButton) { claimButtonView in
+            bag += view.add(claimButton) { claimButtonView in
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
                 bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
 
