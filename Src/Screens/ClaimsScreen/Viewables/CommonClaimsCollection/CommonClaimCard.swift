@@ -288,7 +288,7 @@ extension CommonClaimCard: Viewable {
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
                 type: .standard(backgroundColor: .purple, textColor: .white)
             )
-            
+
             bag += claimButton.onTapSignal.onValue { _ in
                 let overlay = DraggableOverlay(presentable: HonestyPledge())
                 self.presentingViewController.present(overlay)
