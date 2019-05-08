@@ -18,15 +18,16 @@ extension CharityInformation: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-
+        
         let containerStackView = UIStackView()
-        containerStackView.isLayoutMarginsRelativeArrangement = true
+        containerStackView.isLayoutMarginsRelativeArrangement = false
         containerStackView.alignment = .leading
-
+        
         let containerView = UIStackView()
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.axis = .vertical
+        containerView.spacing = 10
 
         containerStackView.addArrangedSubview(containerView)
 

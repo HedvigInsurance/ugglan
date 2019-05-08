@@ -15,18 +15,15 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
     let presentable: P
     let presentationOptions: PresentationOptions
     let backgroundColor: UIColor
-    let heightPercentage: CGFloat
 
     init(
         presentable: P,
         presentationOptions: PresentationOptions = .defaults,
-        backgroundColor: UIColor = .white,
-        heightPercentage: CGFloat = 0.5
+        backgroundColor: UIColor = .white
     ) {
         self.presentable = presentable
         self.presentationOptions = presentationOptions
         self.backgroundColor = backgroundColor
-        self.heightPercentage = heightPercentage
     }
 }
 
@@ -130,7 +127,10 @@ extension DraggableOverlay: Presentable {
                 }
             }
             let extraPadding = safeAreaTop + 70
-            return overlayHeightSignal.value - (view.frame.height - extraPadding)
+            
+            let limit = overlayHeightSignal.value - (view.frame.height - extraPadding)
+            
+            return limit >= 0 ? -20 : limit
         }
 
         let ease: Ease<CGFloat> = Ease(UIScreen.main.bounds.height, minimumStep: 0.001)
@@ -192,9 +192,21 @@ extension DraggableOverlay: Presentable {
 
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
+            print("location.y: \(location.y) overlayCenter: \(overlayCenter) dragLimit: \(dragLimit)")
 
             if location.y < dragLimit {
-                ease.value = max(overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit))), overlayCenter + dragLimit - 60)
+                
+                let val1 = overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit)))
+                print("val1: \(val1)")
+                
+                let val2 = overlayCenter + dragLimit - 60
+                print("val2: \(val2)")
+                
+                let val = max(val1, val2)
+                
+                print("Val: \(val)")
+                ease.value = val
+                
                 ease.targetValue = ease.value
                 return
             }

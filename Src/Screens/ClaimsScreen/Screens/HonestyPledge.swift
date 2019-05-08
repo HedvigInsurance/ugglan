@@ -29,12 +29,12 @@ extension HonestyPledge: Presentable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 25)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.spacing = 10
-
+        
         containerStackView.addArrangedSubview(stackView)
-
+        
         let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .standaloneLargeTitle)
         bag += stackView.addArranged(titleLabel)
 
