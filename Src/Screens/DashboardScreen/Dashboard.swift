@@ -75,6 +75,7 @@ extension Dashboard: Presentable {
         }
 
         let form = FormView()
+        form.dynamicStyle = .systemPlain
 
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += form.append(paymentNeedsSetupSection)
