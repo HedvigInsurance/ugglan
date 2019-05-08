@@ -53,7 +53,7 @@ extension MessageBubble: Viewable {
                 stylingView.layoutIfNeeded()
                 containerStackView.layoutIfNeeded()
                 stylingView.alpha = 1
-            }).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+            }).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
                 labelView.alpha = 1
             })
         }

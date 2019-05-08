@@ -93,7 +93,6 @@ extension ChatPreview: Viewable {
         }
 
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
-
         let loadDataBag = bag.innerBag()
 
         func loadData() {
@@ -163,7 +162,6 @@ extension ChatPreview: Viewable {
                 subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))
             ).compactMap { $0.data?.messages?.compactMap { $0 } }
                 .distinct()
-                .debounce(0.5)
                 .withLatestFrom(Chat.lastOpenedChatSignal.atOnce().plain())
                 .onValue { messages, lastOpenedChat in
                     let messagesToShow = messages.prefix(while: { message -> Bool in
@@ -225,11 +223,17 @@ extension ChatPreview: Viewable {
 
         loadData()
 
-        bag += NotificationCenter.default.signal(forName: UIApplication.willResignActiveNotification).onValue { _ in
+        bag += merge(
+            NotificationCenter.default.signal(forName: .didOpenChat),
+            NotificationCenter.default.signal(forName: UIApplication.willResignActiveNotification)
+        ).onValue { _ in
             loadDataBag.dispose()
         }
 
-        bag += NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification).onValue { _ in
+        bag += merge(
+            NotificationCenter.default.signal(forName: .didCloseChat),
+            NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification)
+        ).onValue { _ in
             loadDataBag.dispose()
             loadData()
         }

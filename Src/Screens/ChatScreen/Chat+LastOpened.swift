@@ -8,6 +8,11 @@
 import Flow
 import Foundation
 
+extension Notification.Name {
+    static let didOpenChat = Notification.Name("didOpenChat")
+    static let didCloseChat = Notification.Name("didCloseChat")
+}
+
 extension Chat {
     private static var lastOpenedChatKey = "lastOpenedChat"
 
@@ -34,9 +39,19 @@ extension Chat {
             return bag
         }.readable(capturing: getSignalValue())
     }
-
-    static func didOpen() {
+    
+    private static func updateLastOpened() {
         let newValue = Date().currentTimeMillis()
         UserDefaults.standard.set(newValue, forKey: lastOpenedChatKey)
+    }
+
+    static func didOpen() {
+        NotificationCenter.default.post(Notification(name: .didOpenChat))
+        updateLastOpened()
+    }
+    
+    static func didClose() {
+        NotificationCenter.default.post(Notification(name: .didCloseChat))
+        updateLastOpened()
     }
 }
