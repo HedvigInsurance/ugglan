@@ -131,6 +131,14 @@ extension ApolloClient {
             let subscriber = self.subscribe(subscription: subscription, resultHandler: { result, error in
                 if let result = result {
                     callbacker(result)
+                } else {
+                    if error?.localizedDescription == "cancelled" {
+                        return
+                    }
+
+                    bag += self.subscribe(subscription: subscription, queue: queue).onValue { result in
+                        callbacker(result)
+                    }
                 }
             })
 
