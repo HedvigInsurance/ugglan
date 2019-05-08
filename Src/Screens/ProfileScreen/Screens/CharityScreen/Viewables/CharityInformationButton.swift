@@ -28,7 +28,7 @@ extension CharityInformationButton: Viewable {
             title: String(key: .PROFILE_MY_CHARITY_INFO_BUTTON),
             type: .iconTransparent(textColor: .purple, icon: Asset.infoPurple)
         )
-        
+
         bag += view.add(button) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.center.equalToSuperview()

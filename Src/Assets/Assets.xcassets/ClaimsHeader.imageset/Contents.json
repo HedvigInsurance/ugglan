@@ -1,8 +1,12 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "filename" : "claims-header.pdf"
+      "idiom" : "iphone",
+      "filename" : "claims_illustration_08052019.pdf"
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "claims_ipad.pdf"
     }
   ],
   "info" : {

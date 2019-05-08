@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 
 struct EmergencyActions {
@@ -115,9 +116,9 @@ extension EmergencyActions: Viewable {
         }
 
         let callMeAction = EmergencyAction(
-            title: "Prata med någon",
-            description: "Befinner du dig i en krisstuation kan vi ringa upp dig. Tänk på att meddela SOS Alarm först vid nödsituationer!",
-            buttonTitle: "Ring mig"
+            title: String(key: .EMERGENCY_CALL_ME_TITLE),
+            description: String(key: .EMERGENCY_CALL_ME_DESCRIPTION),
+            buttonTitle: String(key: .EMERGENCY_CALL_ME_BUTTON)
         )
 
         bag += callMeAction.onValue {
@@ -125,19 +126,32 @@ extension EmergencyActions: Viewable {
         }
 
         let emergencyAbroadAction = EmergencyAction(
-            title: "Akut sjuk utomlands",
-            description: "Är du akut sjuk eller skadad utomlands och behöver vård? Det första du behöver göra är att kontakta Hedvig Global Assistance.",
-            buttonTitle: "Ring Hedvig Global Assistance"
+            title: String(key: .EMERGENCY_ABROAD_TITLE),
+            description: String(key: .EMERGENCY_ABROAD_DESCRIPTION),
+            buttonTitle: String(key: .EMERGENCY_ABROAD_BUTTON)
         )
 
         bag += emergencyAbroadAction.onValue {
-            print("call me")
+            let phoneNumber = String(key: .EMERGENCY_ABROAD_BUTTON_ACTION_PHONE_NUMBER)
+            guard let phoneNumberUrl = URL(string: "tel:\(phoneNumber)") else { return }
+
+            if UIApplication.shared.canOpenURL(phoneNumberUrl) {
+                UIApplication.shared.open(phoneNumberUrl, options: [:], completionHandler: nil)
+            } else {
+                let nonPhoneAlert = Alert<Void>(
+                    title: String(key: .EMERGENCY_ABROAD_ALERT_NON_PHONE_TITLE),
+                    message: phoneNumber,
+                    actions: [Alert<Void>.Action(title: String(key: .EMERGENCY_ABROAD_ALERT_NON_PHONE_OK_BUTTON)) {}]
+                )
+
+                self.presentingViewController.present(nonPhoneAlert)
+            }
         }
 
         let unsureAction = EmergencyAction(
-            title: "Osäker?",
-            description: "Osäker på om ditt tillstånd räknas som akut? Kontakta Hedvig först!",
-            buttonTitle: "Skriv till oss"
+            title: String(key: .EMERGENCY_UNSURE_TITLE),
+            description: String(key: .EMERGENCY_UNSURE_DESCRIPTION),
+            buttonTitle: String(key: .EMERGENCY_UNSURE_BUTTON)
         )
 
         bag += unsureAction.onValue {
