@@ -29,7 +29,7 @@ extension DeductibleCircle: Viewable {
 
         containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(80)
-            make.centerX.equalToSuperview().inset(80)
+            make.centerX.equalToSuperview().offset(80)
             make.bottom.equalTo(0)
         }
 
