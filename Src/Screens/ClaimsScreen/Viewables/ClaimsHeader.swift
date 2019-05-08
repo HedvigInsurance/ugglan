@@ -75,9 +75,11 @@ extension ClaimsHeader: Viewable {
 
         let imageView = UIImageView()
         imageView.image = Asset.claimsHeader.image
+        imageView.contentMode = .scaleAspectFit
 
         imageView.snp.makeConstraints { make in
-            make.height.equalTo(185)
+            make.height.equalTo(imageView.image?.size.height ?? 0)
+            make.width.equalTo(imageView.image?.size.width ?? 0)
         }
 
         view.addArrangedSubview(imageView)
