@@ -39,8 +39,7 @@ extension CharityInformationButton: Viewable {
             self.presentingViewController.present(
                 DraggableOverlay(
                     presentable: CharityInformation(),
-                    presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
-                    heightPercentage: 0.55
+                    presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)]
                 )
             )
         }

@@ -102,13 +102,10 @@ extension Peril: Reusable {
             bag += tapGesture.signal(forState: .ended).onValue { _ in
                 let title = peril.title.replacingOccurrences(of: "-\n", with: "")
 
-                let heightPercentage: CGFloat = Device.hasRoundedCorners ? 0.4 : 0.7
-
                 peril.presentingViewController.present(
                     DraggableOverlay(
                         presentable: PerilInformation(title: title, description: peril.description, icon: perilIconAsset(for: peril.id)),
-                        presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)],
-                        heightPercentage: heightPercentage
+                        presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)]
                     )
                 )
             }
