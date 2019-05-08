@@ -8,8 +8,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import Presentation
+import UIKit
 
 struct EmergencyActions {
     let presentingViewController: UIViewController
@@ -134,7 +134,7 @@ extension EmergencyActions: Viewable {
         bag += emergencyAbroadAction.onValue {
             let phoneNumber = String(key: .EMERGENCY_ABROAD_BUTTON_ACTION_PHONE_NUMBER)
             guard let phoneNumberUrl = URL(string: "tel:\(phoneNumber)") else { return }
-            
+
             if UIApplication.shared.canOpenURL(phoneNumberUrl) {
                 UIApplication.shared.open(phoneNumberUrl, options: [:], completionHandler: nil)
             } else {
@@ -143,7 +143,7 @@ extension EmergencyActions: Viewable {
                     message: phoneNumber,
                     actions: [Alert<Void>.Action(title: String(key: .EMERGENCY_ABROAD_ALERT_NON_PHONE_OK_BUTTON)) {}]
                 )
-                
+
                 self.presentingViewController.present(nonPhoneAlert)
             }
         }

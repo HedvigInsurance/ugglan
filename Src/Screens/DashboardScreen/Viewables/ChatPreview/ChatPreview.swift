@@ -40,7 +40,7 @@ extension ChatPreview: Viewable {
         containerView.axis = .vertical
         containerView.spacing = 15
         containerView.isHidden = true
-        
+
         let bag = DisposeBag()
 
         let symbolIconContainer = UIStackView()
@@ -82,7 +82,7 @@ extension ChatPreview: Viewable {
                 }
             }
         }
-        
+
         bag += Chat.lastOpenedChatSignal.onValue { _ in
             animateVisibility(visible: false)
         }
@@ -109,11 +109,11 @@ extension ChatPreview: Viewable {
                     guard let timeStamp = Int64(message.header.timeStamp) else {
                         return false
                     }
-                    
+
                     guard let lastOpenedChat = lastOpenedChat else {
                         return true
                     }
-                    
+
                     return lastOpenedChat < timeStamp
                 }.filter { message -> Bool in
                     guard let timeStamp = Int64(message.header.timeStamp) else {
@@ -152,48 +152,48 @@ extension ChatPreview: Viewable {
             .debounce(0.5)
             .withLatestFrom(Chat.lastOpenedChatSignal.atOnce().plain())
             .onValue { messages, lastOpenedChat in
-            let messagesToShow = messages.prefix(while: { message -> Bool in
-                message.id == freeChatFromBoId
-            }).filter { message -> Bool in
-                message.body.asMessageBodyText != nil
-            }.filter { message -> Bool in
-                handledMessageGlobalIds.first { message.globalId == $0 } == nil
-            }.filter { message -> Bool in
-                guard let timeStamp = Int64(message.header.timeStamp) else {
-                    return false
-                }
-                
-                guard let lastOpenedChat = lastOpenedChat else {
-                    return true
-                }
-                
-                return lastOpenedChat < timeStamp
-            }.filter { message -> Bool in
-                guard let timeStamp = Int64(message.header.timeStamp) else {
-                    return false
+                let messagesToShow = messages.prefix(while: { message -> Bool in
+                    message.id == freeChatFromBoId
+                }).filter { message -> Bool in
+                    message.body.asMessageBodyText != nil
+                }.filter { message -> Bool in
+                    handledMessageGlobalIds.first { message.globalId == $0 } == nil
+                }.filter { message -> Bool in
+                    guard let timeStamp = Int64(message.header.timeStamp) else {
+                        return false
+                    }
+
+                    guard let lastOpenedChat = lastOpenedChat else {
+                        return true
+                    }
+
+                    return lastOpenedChat < timeStamp
+                }.filter { message -> Bool in
+                    guard let timeStamp = Int64(message.header.timeStamp) else {
+                        return false
+                    }
+
+                    let diff = timeStamp - Date().currentTimeMillis()
+                    let oneWeek = 604_800 * 1000
+
+                    return diff < oneWeek
+                }.sorted(by: { (a, b) -> Bool in
+                    a.header.timeStamp < b.header.timeStamp
+                })
+
+                guard messagesToShow.count != 0 else {
+                    animateVisibility(visible: false)
+                    return
                 }
 
-                let diff = timeStamp - Date().currentTimeMillis()
-                let oneWeek = 604_800 * 1000
+                handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
+                animateVisibility(visible: true)
 
-                return diff < oneWeek
-            }.sorted(by: { (a, b) -> Bool in
-                a.header.timeStamp < b.header.timeStamp
-            })
-
-            guard messagesToShow.count != 0 else {
-                animateVisibility(visible: false)
-                return
+                messagesBubbleBag += messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.map { text in
+                    let messageBubble = MessageBubble(text: text)
+                    return messageBubbleContainer.addArranged(messageBubble)
+                }
             }
-
-            handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
-            animateVisibility(visible: true)
-
-            messagesBubbleBag += messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.map { text in
-                let messageBubble = MessageBubble(text: text)
-                return messageBubbleContainer.addArranged(messageBubble)
-            }
-        }
 
         return (containerView, bag)
     }
