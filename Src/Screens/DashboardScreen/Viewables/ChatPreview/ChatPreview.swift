@@ -40,7 +40,7 @@ extension ChatPreview: Viewable {
         containerView.axis = .vertical
         containerView.spacing = 15
         containerView.isHidden = true
-
+        
         let bag = DisposeBag()
 
         let symbolIconContainer = UIStackView()
@@ -82,10 +82,13 @@ extension ChatPreview: Viewable {
                 }
             }
         }
+        
+        bag += Chat.lastOpenedChatSignal.onValue { _ in
+            animateVisibility(visible: false)
+        }
 
         bag += openChatButton.onTapSignal.onValue { _ in
             dashboardOpenFreeTextChat(self.presentingViewController)
-            animateVisibility(visible: false)
         }
 
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
@@ -93,13 +96,25 @@ extension ChatPreview: Viewable {
         bag += client.fetch(query: ChatPreviewQuery()).valueSignal
             .compactMap { $0.data?.messages }
             .compactMap { $0.compactMap { $0 } }
-            .onValue { messages in
+            .plain()
+            .withLatestFrom(Chat.lastOpenedChatSignal.atOnce().plain())
+            .onValue { messages, lastOpenedChat in
                 let messagesToShow = messages.prefix(while: { message -> Bool in
                     message.id == freeChatFromBoId
                 }).filter { message -> Bool in
                     message.body.asMessageBodyText != nil
                 }.filter { message -> Bool in
                     handledMessageGlobalIds.first { message.globalId == $0 } == nil
+                }.filter { message -> Bool in
+                    guard let timeStamp = Int64(message.header.timeStamp) else {
+                        return false
+                    }
+                    
+                    guard let lastOpenedChat = lastOpenedChat else {
+                        return true
+                    }
+                    
+                    return lastOpenedChat < timeStamp
                 }.filter { message -> Bool in
                     guard let timeStamp = Int64(message.header.timeStamp) else {
                         return false
@@ -123,7 +138,6 @@ extension ChatPreview: Viewable {
 
                 messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach { arg in
                     let (offset, text) = arg
-                    print(text)
                     messagesBubbleBag += Signal(after: 0.5 * Double(offset)).onValue { _ in
                         let messageBubble = MessageBubble(text: text)
                         messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
@@ -133,13 +147,27 @@ extension ChatPreview: Viewable {
 
         bag += client.subscribe(
             subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))
-        ).compactMap { $0.data?.messages?.compactMap { $0 } }.distinct().debounce(0.5).onValue { messages in
+        ).compactMap { $0.data?.messages?.compactMap { $0 } }
+            .distinct()
+            .debounce(0.5)
+            .withLatestFrom(Chat.lastOpenedChatSignal.atOnce().plain())
+            .onValue { messages, lastOpenedChat in
             let messagesToShow = messages.prefix(while: { message -> Bool in
                 message.id == freeChatFromBoId
             }).filter { message -> Bool in
                 message.body.asMessageBodyText != nil
             }.filter { message -> Bool in
                 handledMessageGlobalIds.first { message.globalId == $0 } == nil
+            }.filter { message -> Bool in
+                guard let timeStamp = Int64(message.header.timeStamp) else {
+                    return false
+                }
+                
+                guard let lastOpenedChat = lastOpenedChat else {
+                    return true
+                }
+                
+                return lastOpenedChat < timeStamp
             }.filter { message -> Bool in
                 guard let timeStamp = Int64(message.header.timeStamp) else {
                     return false
