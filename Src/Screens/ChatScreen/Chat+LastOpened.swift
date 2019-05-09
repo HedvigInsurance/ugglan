@@ -39,7 +39,7 @@ extension Chat {
             return bag
         }.readable(capturing: getSignalValue())
     }
-    
+
     private static func updateLastOpened() {
         let newValue = Date().currentTimeMillis()
         UserDefaults.standard.set(newValue, forKey: lastOpenedChatKey)
@@ -49,7 +49,7 @@ extension Chat {
         NotificationCenter.default.post(Notification(name: .didOpenChat))
         updateLastOpened()
     }
-    
+
     static func didClose() {
         NotificationCenter.default.post(Notification(name: .didCloseChat))
         updateLastOpened()

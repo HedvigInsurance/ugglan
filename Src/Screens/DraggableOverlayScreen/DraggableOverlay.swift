@@ -127,9 +127,9 @@ extension DraggableOverlay: Presentable {
                 }
             }
             let extraPadding = safeAreaTop + 70
-            
+
             let limit = overlayHeightSignal.value - (view.frame.height - extraPadding)
-            
+
             return limit >= 0 ? -20 : limit
         }
 
@@ -195,18 +195,17 @@ extension DraggableOverlay: Presentable {
             print("location.y: \(location.y) overlayCenter: \(overlayCenter) dragLimit: \(dragLimit)")
 
             if location.y < dragLimit {
-                
                 let val1 = overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit)))
                 print("val1: \(val1)")
-                
+
                 let val2 = overlayCenter + dragLimit - 60
                 print("val2: \(val2)")
-                
+
                 let val = max(val1, val2)
-                
+
                 print("Val: \(val)")
                 ease.value = val
-                
+
                 ease.targetValue = ease.value
                 return
             }
