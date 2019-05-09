@@ -81,7 +81,9 @@ struct EmergencyAction: Reusable, SignalProvider {
     }
 }
 
-var commonClaimEmergencyOpenFreeTextChat: (_ viewController: UIViewController) -> Void = { _ in }
+var commonClaimEmergencyOpenFreeTextChat: (_ viewController: UIViewController) -> Void = { viewController in
+    viewController.present(DraggableOverlay(presentable: Chat()))
+}
 
 extension EmergencyActions: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
