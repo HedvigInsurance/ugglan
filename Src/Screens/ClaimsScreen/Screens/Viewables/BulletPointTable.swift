@@ -26,7 +26,7 @@ extension BulletPointTable: Viewable {
                 right: 20
             ),
             itemSpacing: 0,
-            minRowHeight: 1,
+            minRowHeight: 10,
             background: .invisible,
             selectedBackground: .invisible,
             header: .none,
@@ -41,7 +41,7 @@ extension BulletPointTable: Viewable {
 
         let tableKit = TableKit<EmptySection, BulletPointCard>(style: style, bag: bag)
         tableKit.view.isScrollEnabled = false
-
+        
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,

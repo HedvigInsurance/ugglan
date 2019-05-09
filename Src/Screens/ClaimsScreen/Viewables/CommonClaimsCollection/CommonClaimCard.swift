@@ -36,7 +36,7 @@ struct CommonClaimCard {
     private let claimButtonTapCallbacker: Callbacker<Void>
 
     func iconTopPadding(state: State) -> CGFloat {
-        return state == .normal ? 15 : 100
+        return state == .normal ? 15 : 65 + safeAreaTop
     }
 
     func height(state: State) -> CGFloat {
@@ -52,8 +52,8 @@ struct CommonClaimCard {
         )
 
         let buttonPadding: CGFloat = includeButton ? 60 : 0
-
-        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 90 + buttonPadding)
+        
+        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 80 + buttonPadding)
     }
 
     var isFirstInRow: Bool {
@@ -71,6 +71,16 @@ struct CommonClaimCard {
         }
 
         return ""
+    }
+    
+    var safeAreaTop: CGFloat {
+        let keyWindow = UIApplication.shared.keyWindow
+        
+        if #available(iOS 11.0, *) {
+            return keyWindow?.safeAreaInsets.top ?? 0
+        } else {
+            return keyWindow?.layoutMargins.top ?? 0
+        }
     }
 
     var includeButton: Bool {
@@ -136,12 +146,11 @@ extension CommonClaimCard: Viewable {
             $0 == .normal ? UIColor.white : backgroundColorFromData()
         }.bindTo(expandedHeaderView, \.backgroundColor)
         expandedHeaderView.alpha = 0
-        expandedHeaderView.layer.zPosition = 1
 
-        contentView.addSubview(expandedHeaderView)
+        view.addSubview(expandedHeaderView)
 
         expandedHeaderView.snp.makeConstraints { make in
-            make.height.equalTo(100)
+            make.height.equalTo(65 + safeAreaTop)
             make.top.equalTo(0)
             make.left.equalTo(0)
             make.width.equalToSuperview()
@@ -155,7 +164,7 @@ extension CommonClaimCard: Viewable {
             titleLabel.preferredMaxLayoutWidth = titleLabel.frame.width
         }
 
-        contentView.addSubview(titleLabel)
+        view.addSubview(titleLabel)
 
         bag += scrollPositionSignal.onValue { point in
             titleLabel.transform = CGAffineTransform(translationX: 0, y: point.y)
@@ -165,9 +174,9 @@ extension CommonClaimCard: Viewable {
                 expandedHeaderView.alpha = 1
                 expandedHeaderView.snp.updateConstraints { make in
                     if point.y < 0 {
-                        make.height.equalTo(90 + -point.y)
+                        make.height.equalTo(55 + self.safeAreaTop + -point.y)
                     } else {
-                        make.height.equalTo(90)
+                        make.height.equalTo(55 + self.safeAreaTop)
                     }
                 }
             }
@@ -202,7 +211,7 @@ extension CommonClaimCard: Viewable {
                 )
 
                 titleLabel.snp.remakeConstraints { make in
-                    make.top.equalToSuperview().inset(55)
+                    make.top.equalToSuperview().inset(20 + self.safeAreaTop)
                     make.width.equalTo(size.width + 2)
                     make.centerX.equalToSuperview()
                     make.height.equalTo(size.height)
@@ -276,6 +285,7 @@ extension CommonClaimCard: Viewable {
 
         bag += contentView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             contentView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }
 
         bag += merge(
@@ -285,6 +295,7 @@ extension CommonClaimCard: Viewable {
         ).withLatestFrom(touchDownDateSignal.atOnce().plain())
             .delay(by: { _, date in date.timeIntervalSinceNow < -0.2 ? 0 : 0.2 })
             .animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                view.transform = CGAffineTransform.identity
                 contentView.transform = CGAffineTransform.identity
             }
 
@@ -296,7 +307,7 @@ extension CommonClaimCard: Viewable {
 
             closeButtonView.snp.makeConstraints { make in
                 make.left.equalTo(10)
-                make.top.equalTo(50)
+                make.top.equalTo(15 + self.safeAreaTop)
                 make.width.equalTo(30)
                 make.height.equalTo(30)
             }
@@ -304,6 +315,10 @@ extension CommonClaimCard: Viewable {
             bag += closeButtonView.signal(for: .touchUpInside).onValue {
                 self.closeCallbacker.callAll()
             }
+            
+            bag += closeButtonView.didLayoutSignal.onValue({ _ in
+                view.bringSubviewToFront(closeButtonView)
+            })
 
             bag += scrollPositionSignal.onValue { point in
                 closeButtonView.transform = CGAffineTransform(translationX: 0, y: point.y)
@@ -383,7 +398,9 @@ extension CommonClaimCard: Viewable {
                 )
             }
         }
-
+        
+        view.bringSubviewToFront(expandedHeaderView)
+        
         return (view, bag)
     }
 }
