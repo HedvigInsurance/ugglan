@@ -31,6 +31,7 @@ extension Profile: Presentable {
 
         let viewController = UIViewController()
         viewController.displayableTitle = "Profil"
+        viewController.installChatButton()
 
         let form = FormView()
 

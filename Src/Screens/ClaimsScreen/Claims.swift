@@ -25,6 +25,7 @@ extension Claims: Presentable {
 
         let viewController = UIViewController()
         viewController.title = String(key: .CLAIMS_SCREEN_TITLE)
+        viewController.installChatButton()
 
         let stackView = UIStackView()
         stackView.axis = .vertical
