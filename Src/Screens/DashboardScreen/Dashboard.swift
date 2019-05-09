@@ -15,9 +15,11 @@ import UIKit
 
 struct Dashboard {
     let client: ApolloClient
+    let remoteConfig: RemoteConfigContainer
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
+    init(client: ApolloClient = ApolloContainer.shared.client, remoteConfig: RemoteConfigContainer = RemoteConfigContainer.shared) {
         self.client = client
+        self.remoteConfig = remoteConfig
     }
 }
 
@@ -82,9 +84,11 @@ extension Dashboard: Presentable {
 
         let pendingInsurance = PendingInsurance()
         bag += form.append(pendingInsurance)
-
-        let chatPreview = ChatPreview(presentingViewController: viewController)
-        bag += form.append(chatPreview)
+        
+        if self.remoteConfig.chatPreviewEnabled() {
+            let chatPreview = ChatPreview(presentingViewController: viewController)
+            bag += form.append(chatPreview)
+        }
 
         bag += form.append(Spacing(height: 35))
 
