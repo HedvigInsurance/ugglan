@@ -24,9 +24,12 @@ extension SlideToClaim: Viewable {
         let view = UIView()
         let bag = DisposeBag()
 
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
+        bag += view.didMoveToWindowSignal.onValue({ _ in
+            view.snp.remakeConstraints { make in
+                make.height.equalTo(50)
+                make.center.equalToSuperview()
+            }
+        })
 
         let track = UIView()
         track.backgroundColor = .lightGray
@@ -36,6 +39,7 @@ extension SlideToClaim: Viewable {
         track.snp.makeConstraints { make in
             make.height.equalToSuperview()
             make.width.equalToSuperview()
+            make.center.equalToSuperview()
         }
 
         let trackLabel = UILabel(value: "Dra för att starta anmälan", style: TextStyle.bodyOffBlack.centered())
@@ -44,6 +48,7 @@ extension SlideToClaim: Viewable {
         trackLabel.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalToSuperview()
+            make.center.equalToSuperview()
         }
 
         let handle = UIView()
@@ -64,6 +69,7 @@ extension SlideToClaim: Viewable {
             make.width.equalTo(view.snp.height)
             make.height.equalToSuperview()
             make.left.equalTo(0)
+            make.center.equalToSuperview()
         }
 
         let pan = UIPanGestureRecognizer()
