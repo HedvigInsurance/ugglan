@@ -27,26 +27,6 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
     }
 }
 
-extension UIViewController {
-    var preferredContentSizeSignal: ReadSignal<CGSize> {
-        let signal = ReadWriteSignal(preferredContentSize)
-
-        var observer: NSKeyValueObservation? = observe(\.preferredContentSize) { [weak self] _, _ in
-            signal.value = self?.preferredContentSize ?? signal.value
-        }
-
-        let bag = DisposeBag()
-
-        bag += deallocSignal.onValue { _ in
-            observer?.invalidate()
-            observer = nil
-            bag.dispose()
-        }
-
-        return signal.readOnly()
-    }
-}
-
 extension PresentationStyle {
     /// makes PresentationOptions passed to style be [.unanimated] and only that
     static func unanimated(style: PresentationStyle) -> PresentationStyle {
