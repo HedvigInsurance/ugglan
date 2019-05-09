@@ -243,11 +243,7 @@ extension CommonClaimCard: Viewable {
         }
 
         let remoteVectorIcon = RemoteVectorIcon()
-
-        let pdfUrl = URL(
-            string: "https://graphql.dev.hedvigit.com\(data.icon.pdfUrl)"
-        )
-        remoteVectorIcon.pdfUrl.value = pdfUrl
+        remoteVectorIcon.pdfUrlStringSignal.value = data.icon.pdfUrl
 
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints { make in

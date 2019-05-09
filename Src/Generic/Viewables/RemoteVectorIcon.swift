@@ -11,10 +11,15 @@ import Foundation
 import UIKit
 
 struct RemoteVectorIcon {
-    let pdfUrl = ReadWriteSignal<URL?>(nil)
+    let pdfUrlStringSignal = ReadWriteSignal<String?>(nil)
+    let environment: ApolloEnvironmentConfig
 
-    init(_ pdfUrl: URL? = nil) {
-        self.pdfUrl.value = pdfUrl
+    init(
+        _ pdfUrlString: String? = nil,
+        environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment
+    ) {
+        self.pdfUrlStringSignal.value = pdfUrlString
+        self.environment = environment
     }
 }
 
@@ -87,7 +92,11 @@ extension RemoteVectorIcon: Viewable {
             renderPdfDocument(pdfDocument: pdfDocument)
         }
 
-        bag += pdfUrl.atOnce().compactMap { $0 }.map { url -> CFData? in
+        bag += pdfUrlStringSignal.atOnce().compactMap { $0 }.map { pdfUrlString -> CFData? in
+            guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
+                return nil
+            }
+            
             if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
                 return data as CFData
             }

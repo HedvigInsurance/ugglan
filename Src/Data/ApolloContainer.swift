@@ -18,6 +18,7 @@ import Foundation
 struct ApolloEnvironmentConfig {
     let endpointURL: URL
     let wsEndpointURL: URL
+    let assetsEndpointURL: URL
 }
 
 class ApolloContainer {
@@ -26,6 +27,7 @@ class ApolloContainer {
 
     private var _client: ApolloClient?
     private var _store: ApolloStore?
+    private var _environment: ApolloEnvironmentConfig?
 
     var client: ApolloClient {
         get {
@@ -44,10 +46,19 @@ class ApolloContainer {
             internalQueue.async(flags: .barrier) { self._store = newState }
         }
     }
+    
+    var environment: ApolloEnvironmentConfig {
+        get {
+            return internalQueue.sync { _environment! }
+        }
+        set(newState) {
+            internalQueue.async(flags: .barrier) { self._environment = newState }
+        }
+    }
 
     private init() {}
 
-    func createClient(token: String?, environment: ApolloEnvironmentConfig) -> (ApolloClient, ApolloStore) {
+    func createClient(token: String?) -> (ApolloClient, ApolloStore) {
         let authPayloads = [
             "Authorization": token ?? "",
         ]
@@ -96,12 +107,12 @@ class ApolloContainer {
         )
     }
 
-    func createClientFromNewSession(environment: ApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
+    func createClientFromNewSession() -> Future<(ApolloClient, ApolloStore)> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            let (client, _) = self.createClient(token: nil, environment: environment)
+            let (client, _) = self.createClient(token: nil)
 
             client.perform(mutation: mutation).onValue { result in
                 if let token = result.data?.createSession {
@@ -109,8 +120,7 @@ class ApolloContainer {
                 }
 
                 let (clientWithSession, store) = self.createClient(
-                    token: result.data?.createSession,
-                    environment: environment
+                    token: result.data?.createSession
                 )
 
                 completion(.success((clientWithSession, store)))
@@ -120,12 +130,12 @@ class ApolloContainer {
         }
     }
 
-    func initClient(environment: ApolloEnvironmentConfig) -> Future<(ApolloClient, ApolloStore)> {
+    func initClient() -> Future<(ApolloClient, ApolloStore)> {
         return Future { completion in
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {
-                self.createClientFromNewSession(environment: environment).onResult { result in
+                self.createClientFromNewSession().onResult { result in
                     switch result {
                     case let .success((client, store)): do {
                         self.client = client
@@ -138,7 +148,7 @@ class ApolloContainer {
                     }
                 }
             } else {
-                let (client, store) = self.createClient(token: tokenData!.token, environment: environment)
+                let (client, store) = self.createClient(token: tokenData!.token)
 
                 self.client = client
                 self.store = store

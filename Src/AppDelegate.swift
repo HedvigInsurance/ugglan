@@ -106,8 +106,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let apolloEnvironment = ApolloEnvironmentConfig(
             endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
+            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+            assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
         )
+        
+        ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
 
@@ -115,7 +118,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
 
         bag += combineLatest(
-            ApolloContainer.shared.initClient(environment: apolloEnvironment).valueSignal.map { _, _ in true }.plain(),
+            ApolloContainer.shared.initClient().valueSignal.map { _, _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()
         ).delay(by: 0.5).onValue { _, _ in
             self.presentMarketing()
