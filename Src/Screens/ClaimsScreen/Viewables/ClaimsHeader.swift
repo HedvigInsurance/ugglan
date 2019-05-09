@@ -56,7 +56,7 @@ extension ClaimsHeader.Description: Viewable {
 
         bag += view.addArranged(label) { view in
             view.snp.makeConstraints { make in
-                make.width.equalToSuperview().multipliedBy(0.7)
+                make.width.equalToSuperview().multipliedBy(0.8)
             }
         }
 
