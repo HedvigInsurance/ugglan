@@ -65,7 +65,7 @@ class RemoteConfigContainer {
     func dynamicLinkAndroidPackageName() -> String {
         return remoteConfig.configValue(forKey: "DynamicLink_Android_PackageName").stringValue ?? ""
     }
-    
+
     func chatPreviewEnabled() -> Bool {
         return remoteConfig.configValue(forKey: "Chat_Preview_Enabled").boolValue
     }

@@ -150,11 +150,11 @@ extension CommonClaimCard: Viewable {
         let titleLabel = UILabel(value: data.title, style: .rowTitle)
         titleLabel.numberOfLines = 0
         titleLabel.layer.zPosition = 2
-        
+
         bag += titleLabel.didLayoutSignal.onValue { _ in
             titleLabel.preferredMaxLayoutWidth = titleLabel.frame.width
         }
-        
+
         contentView.addSubview(titleLabel)
 
         bag += scrollPositionSignal.onValue { point in
@@ -175,7 +175,7 @@ extension CommonClaimCard: Viewable {
 
         bag += titleLabelStateSignal.atOnce().onValueDisposePrevious { newState in
             let labelSizeBag = bag.innerBag()
-            
+
             if newState == .normal {
                 titleLabel.snp.remakeConstraints { make in
                     make.bottom.equalToSuperview().inset(15)
@@ -183,25 +183,24 @@ extension CommonClaimCard: Viewable {
                     make.centerX.equalToSuperview()
                     make.height.equalTo(titleLabel.intrinsicContentSize.height)
                 }
-                
-                labelSizeBag += titleLabel.didLayoutSignal.onValue({ _ in
-                    titleLabel.snp.updateConstraints({ make in
+
+                labelSizeBag += titleLabel.didLayoutSignal.onValue { _ in
+                    titleLabel.snp.updateConstraints { make in
                         make.height.equalTo(titleLabel.intrinsicContentSize.height)
-                    })
-                })
+                    }
+                }
             } else {
-                
                 let attributedString = NSAttributedString(styledText: StyledText(
                     text: titleLabel.text ?? "",
                     style: titleLabel.style
                 ))
-                
+
                 let size = attributedString.boundingRect(
                     with: CGSize(width: UIScreen.main.bounds.width, height: 1000),
                     options: [.usesLineFragmentOrigin, .usesFontLeading],
                     context: nil
                 )
-                                
+
                 titleLabel.snp.remakeConstraints { make in
                     make.top.equalToSuperview().inset(55)
                     make.width.equalTo(size.width + 2)
@@ -209,7 +208,7 @@ extension CommonClaimCard: Viewable {
                     make.height.equalTo(size.height)
                 }
             }
-            
+
             return labelSizeBag
         }
 

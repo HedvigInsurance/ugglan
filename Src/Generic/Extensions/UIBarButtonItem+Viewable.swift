@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-05-09.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 extension UIBarButtonItem {
@@ -14,21 +14,21 @@ extension UIBarButtonItem {
         V.Matter == View,
         V.Events == ViewableEvents,
         V.Result == Disposable {
-            let wasAddedCallbacker = Callbacker<Void>()
-            let events = ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
-            
-            let bag = DisposeBag()
-            
-            let (matter, result) = viewable.materialize(events: events)
-            
-            onCreate(matter)
-            
-            bag += result
-            
-            self.init(customView: matter)
-            
-            bag += deallocSignal.onValue {
-                bag.dispose()
-            }
+        let wasAddedCallbacker = Callbacker<Void>()
+        let events = ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
+
+        let bag = DisposeBag()
+
+        let (matter, result) = viewable.materialize(events: events)
+
+        onCreate(matter)
+
+        bag += result
+
+        self.init(customView: matter)
+
+        bag += deallocSignal.onValue {
+            bag.dispose()
+        }
     }
 }

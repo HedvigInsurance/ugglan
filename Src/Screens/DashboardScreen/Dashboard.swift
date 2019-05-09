@@ -44,8 +44,8 @@ extension Dashboard: Presentable {
 
         let pendingInsurance = PendingInsurance()
         bag += form.append(pendingInsurance)
-        
-        if self.remoteConfig.chatPreviewEnabled() {
+
+        if remoteConfig.chatPreviewEnabled() {
             let chatPreview = ChatPreview(presentingViewController: viewController)
             bag += form.append(chatPreview)
         }

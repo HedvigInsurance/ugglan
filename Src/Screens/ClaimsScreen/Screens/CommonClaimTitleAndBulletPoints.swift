@@ -33,7 +33,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.shadowOpacitySignal.value = 0
         commonClaimCard.showTitleCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
-        
+
         bag += commonClaimCard.claimButtonTapSignal.onValue { _ in
             let overlay = DraggableOverlay(
                 presentable: HonestyPledge(),
