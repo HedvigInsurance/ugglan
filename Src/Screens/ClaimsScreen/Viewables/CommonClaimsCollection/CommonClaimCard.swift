@@ -197,17 +197,17 @@ extension CommonClaimCard: Viewable {
                 ))
                 
                 let size = attributedString.boundingRect(
-                    with: CGSize(width: UIScreen.main.bounds.width - 40, height: 1000),
+                    with: CGSize(width: UIScreen.main.bounds.width, height: 1000),
                     options: [.usesLineFragmentOrigin, .usesFontLeading],
                     context: nil
                 )
-                
+                                
                 titleLabel.snp.remakeConstraints { make in
                     make.top.equalToSuperview().inset(55)
-                    make.width.equalTo(size.width)
+                    make.width.equalTo(size.width + 2)
                     make.centerX.equalToSuperview()
                     make.height.equalTo(size.height)
-                }                
+                }
             }
             
             return labelSizeBag
