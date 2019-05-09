@@ -33,6 +33,19 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.shadowOpacitySignal.value = 0
         commonClaimCard.showTitleCloseButton.value = true
         commonClaimCard.showClaimButtonSignal.value = true
+        
+        bag += commonClaimCard.claimButtonTapSignal.onValue { _ in
+            let overlay = DraggableOverlay(
+                presentable: HonestyPledge(),
+                presentationOptions: [
+                    .defaults,
+                    .prefersLargeTitles(false),
+                    .largeTitleDisplayMode(.never),
+                    .prefersNavigationBarHidden(true)
+                ]
+            )
+            viewController.present(overlay)
+        }
 
         bag += view.addArranged(commonClaimCard) { commonClaimCardView in
             commonClaimCardView.snp.makeConstraints { make in

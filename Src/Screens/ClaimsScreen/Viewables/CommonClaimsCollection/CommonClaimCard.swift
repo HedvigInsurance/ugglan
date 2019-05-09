@@ -30,8 +30,10 @@ struct CommonClaimCard {
     let showClaimButtonSignal = ReadWriteSignal<Bool>(false)
     let scrollPositionSignal = ReadWriteSignal<CGPoint>(CGPoint(x: 0, y: 0))
 
+    let claimButtonTapSignal: Signal<Void>
     let closeSignal: Signal<Void>
     private let closeCallbacker: Callbacker<Void>
+    private let claimButtonTapCallbacker: Callbacker<Void>
 
     func iconTopPadding(state: State) -> CGFloat {
         return state == .normal ? 15 : 100
@@ -85,6 +87,8 @@ struct CommonClaimCard {
         self.presentingViewController = presentingViewController
         closeCallbacker = Callbacker()
         closeSignal = closeCallbacker.signal()
+        claimButtonTapCallbacker = Callbacker()
+        claimButtonTapSignal = claimButtonTapCallbacker.signal()
     }
 }
 
@@ -289,9 +293,8 @@ extension CommonClaimCard: Viewable {
                 type: .standard(backgroundColor: .purple, textColor: .white)
             )
 
-            bag += claimButton.onTapSignal.onValue { _ in
-                let overlay = DraggableOverlay(presentable: HonestyPledge())
-                self.presentingViewController.present(overlay)
+            bag += claimButton.onTapSignal.onValue {
+                self.claimButtonTapCallbacker.callAll()
             }
 
             bag += view.add(claimButton) { claimButtonView in
