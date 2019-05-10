@@ -14,12 +14,19 @@ import UIKit
 
 struct LoadingIndicator {
     let showAfter: TimeInterval
+    let color: UIColor
+    
+    init(showAfter: TimeInterval, color: UIColor = .white) {
+        self.showAfter = showAfter
+        self.color = color
+    }
 }
 
 extension LoadingIndicator: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
         loadingIndicator.alpha = 0
+        loadingIndicator.color = color
 
         loadingIndicator.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalTo(100)

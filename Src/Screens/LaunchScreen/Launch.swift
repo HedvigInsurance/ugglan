@@ -48,18 +48,18 @@ extension Launch: Presentable {
                 animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
             }
 
-            bag += self.hasLoadedSignal.debug().delay(
+            bag += self.hasLoadedSignal.delay(
                 by: 0.6
             ).animated(
                 style: AnimationStyle.easeOut(duration: 0.5)
             ) {
                 animationView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            }.debug().animated(
+            }.animated(
                 style: AnimationStyle.easeOut(duration: 0.5)
             ) {
                 containerView.alpha = 0
                 animationView.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            }.debug().onValue { _ in
+            }.onValue { _ in
                 completion(.success(()))
             }
 

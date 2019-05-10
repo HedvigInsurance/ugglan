@@ -36,28 +36,33 @@ extension Dashboard: Presentable {
         viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
         viewController.installChatButton()
 
-        let form = FormView()
-        form.dynamicStyle = .systemPlain
-
+        let containerStackView = UIStackView()
+        containerStackView.axis = .vertical
+        containerStackView.spacing = 25
+        containerStackView.isLayoutMarginsRelativeArrangement = true
+        containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 25)
+        
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
-        bag += form.append(paymentNeedsSetupSection)
+        bag += containerStackView.addArranged(paymentNeedsSetupSection)
 
         let pendingInsurance = PendingInsurance()
-        bag += form.append(pendingInsurance)
+        bag += containerStackView.addArranged(pendingInsurance)
 
         if remoteConfig.chatPreviewEnabled() {
             let chatPreview = ChatPreview(presentingViewController: viewController)
-            bag += form.append(chatPreview)
+            bag += containerStackView.addArranged(chatPreview)
         }
 
-        bag += form.append(Spacing(height: 35))
-
         let myProtectionSection = MyProtectionSection(presentingViewController: viewController)
-        bag += form.append(myProtectionSection)
+        bag += containerStackView.addArranged(myProtectionSection)
 
-        bag += viewController.install(form)
+        bag += viewController.install(containerStackView)
 
-        let dashboardInsuranceQuery = client.watch(query: DashboardQuery()).compactMap { $0.data?.insurance }
+        let dashboardInsuranceQuery = client
+            .watch(query: DashboardQuery())
+            .loader(after: 2, view: viewController.view)
+            .compactMap { $0.data?.insurance }
+        
         bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
         bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
 

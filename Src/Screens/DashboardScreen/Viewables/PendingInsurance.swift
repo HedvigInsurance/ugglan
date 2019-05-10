@@ -35,7 +35,8 @@ extension PendingInsurance: Viewable {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 15
-        stackView.edgeInsets = UIEdgeInsets(top: 5, left: 25, bottom: 25, right: 25)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.edgeInsets = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 25)
 
         bag += dataSignal.atOnce().map { $0 == nil || $0?.status == .active }.bindTo(stackView, \.isHidden)
 
@@ -59,7 +60,7 @@ extension PendingInsurance: Viewable {
             stackView.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-
+            
             let pendingInsuranceHeader = MultilineLabel(styledText: StyledText(text: String(key: .DASHBOARD_PENDING_HEADER), style: .bodyOffBlack))
             bag += stackView.addArranged(pendingInsuranceHeader)
 

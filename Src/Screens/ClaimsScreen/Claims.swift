@@ -29,7 +29,8 @@ extension Claims: Presentable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 15
+        stackView.spacing = 20
+        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 25)
 
         let claimsHeader = ClaimsHeader(presentingViewController: viewController)
         bag += stackView.addArranged(claimsHeader)

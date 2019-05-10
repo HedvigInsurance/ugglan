@@ -10,11 +10,13 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Apollo
 
 struct CommonClaimCard {
     let data: CommonClaimsQuery.Data.CommonClaim
     let index: TableIndex
     let presentingViewController: UIViewController
+    let client: ApolloClient
 
     enum State {
         case normal, expanded
@@ -90,11 +92,13 @@ struct CommonClaimCard {
     init(
         data: CommonClaimsQuery.Data.CommonClaim,
         index: TableIndex,
-        presentingViewController: UIViewController
+        presentingViewController: UIViewController,
+        client: ApolloClient = ApolloContainer.shared.client
     ) {
         self.index = index
         self.data = data
         self.presentingViewController = presentingViewController
+        self.client = client
         closeCallbacker = Callbacker()
         closeSignal = closeCallbacker.signal()
         claimButtonTapCallbacker = Callbacker()
@@ -336,8 +340,22 @@ extension CommonClaimCard: Viewable {
             }
 
             bag += view.add(claimButton) { claimButtonView in
+                claimButtonView.alpha = 0
+                
+                bag += client.insuranceIsActiveSignal().bindTo(claimButtonView, \.isUserInteractionEnabled)
+                
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
-                bag += showClaimButtonSignal.atOnce().map { $0 ? 1 : 0 }.bindTo(claimButtonView, \.alpha)
+                bag += combineLatest(showClaimButtonSignal.atOnce().plain(), client.insuranceIsActiveSignal())
+                    .map { showButton, insuranceIsActive in
+                        if showButton {
+                            return insuranceIsActive ? 1 : 0.5
+                        }
+                        
+                        return 0
+                    }
+                    .onValue({ alpha in
+                        claimButtonView.alpha = alpha
+                    })
 
                 bag += showClaimButtonSignal.onValue { _ in
                     contentView.sendSubviewToBack(claimButtonView)

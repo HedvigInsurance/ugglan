@@ -172,20 +172,15 @@ extension DraggableOverlay: Presentable {
 
         bag += panGestureRecognizer.signal(forState: .changed).onValue {
             let location = panGestureRecognizer.translation(in: view)
-            print("location.y: \(location.y) overlayCenter: \(overlayCenter) dragLimit: \(dragLimit)")
 
             if location.y < dragLimit {
                 let val1 = overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit)))
-                print("val1: \(val1)")
 
                 let val2 = overlayCenter + dragLimit - 60
-                print("val2: \(val2)")
 
                 let val = max(val1, val2)
 
-                print("Val: \(val)")
                 ease.value = val
-
                 ease.targetValue = ease.value
                 return
             }
