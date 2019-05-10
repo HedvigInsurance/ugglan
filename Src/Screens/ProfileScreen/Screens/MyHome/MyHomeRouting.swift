@@ -10,6 +10,7 @@ import UIKit
 
 struct MyHomeRouting {
     static func openChat(viewController: UIViewController) {
-        viewController.present(Chat())
+        let overlay = DraggableOverlay(presentable: Chat())
+        viewController.present(overlay)
     }
 }
