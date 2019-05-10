@@ -56,10 +56,6 @@ extension MyCoinsured: Presentable {
 
         let lottieView = LOTAnimationView(name: Asset.buildingAnimation.name)
 
-        lottieContainerView.snp.makeConstraints { make in
-            make.height.equalTo(60)
-        }
-
         lottieView.play()
         lottieView.loopAnimation = true
         lottieView.contentMode = .scaleAspectFit
@@ -70,9 +66,15 @@ extension MyCoinsured: Presentable {
             make.width.equalTo(189)
             make.height.equalToSuperview()
             make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
 
         form.append(lottieContainerView)
+        
+        lottieContainerView.snp.makeConstraints { make in
+            make.height.equalTo(60)
+            make.center.equalToSuperview()
+        }
 
         bag += form.append(Spacing(height: 20))
 
