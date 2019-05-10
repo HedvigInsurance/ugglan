@@ -5,16 +5,16 @@
 //  Created by Sam Pettersson on 2019-04-23.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import UIKit
-import Apollo
 
 struct ClaimsHeader {
     let presentingViewController: UIViewController
     let client: ApolloClient
-    
+
     init(
         presentingViewController: UIViewController,
         client: ApolloClient = ApolloContainer.shared.client
@@ -27,7 +27,7 @@ struct ClaimsHeader {
     struct Description {}
     struct InactiveMessage {
         let client: ApolloClient
-        
+
         init(client: ApolloClient = ApolloContainer.shared.client) {
             self.client = client
         }
@@ -82,47 +82,47 @@ extension ClaimsHeader.Description: Viewable {
 }
 
 extension ClaimsHeader.InactiveMessage: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UIStackView()
         view.axis = .vertical
         view.alignment = .center
         view.isHidden = true
-        
+
         let bag = DisposeBag()
-        
+
         let card = UIView()
         card.backgroundColor = .offLightGray
         card.layer.cornerRadius = 10
-        
+
         view.addArrangedSubview(card)
-        
+
         card.snp.makeConstraints { make in
             make.trailing.leading.top.bottom.equalToSuperview()
         }
-        
+
         let cardContent = UIStackView()
         cardContent.axis = .vertical
         cardContent.isLayoutMarginsRelativeArrangement = true
         cardContent.edgeInsets = UIEdgeInsets(horizontalInset: 24, verticalInset: 24)
         cardContent.alpha = 0
         card.addSubview(cardContent)
-        
+
         cardContent.snp.makeConstraints { make in
             make.trailing.leading.top.bottom.equalToSuperview()
         }
-        
+
         let label = MultilineLabel(
             value: String(key: .CLAIMS_INACTIVE_MESSAGE),
             style: TextStyle.bodyOffBlack.centered()
         )
-        
+
         bag += cardContent.addArranged(label) { view in
             view.snp.makeConstraints { make in
                 make.width.equalToSuperview().multipliedBy(0.8)
                 make.center.equalToSuperview()
             }
         }
-        
+
         bag += client.insuranceIsActiveSignal()
             .wait(until: view.hasWindowSignal)
             .filter { !$0 }
@@ -131,10 +131,10 @@ extension ClaimsHeader.InactiveMessage: Viewable {
                 bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                     cardContent.alpha = 1
                 }
-                
+
                 view.isHidden = false
-        }
-        
+            }
+
         return (view, bag)
     }
 }
@@ -147,10 +147,10 @@ extension ClaimsHeader: Viewable {
         view.isLayoutMarginsRelativeArrangement = true
         view.spacing = 15
         let bag = DisposeBag()
-        
+
         let inactiveMessage = InactiveMessage()
         bag += view.addArranged(inactiveMessage)
-        
+
         let imageView = UIImageView()
         imageView.image = Asset.claimsHeader.image
         imageView.contentMode = .scaleAspectFit
@@ -184,9 +184,9 @@ extension ClaimsHeader: Viewable {
             bag += client.insuranceIsActiveSignal()
                 .map { $0 ? 1 : 0.5 }
                 .animated(style: AnimationStyle.easeOut(duration: 0.25)) { alpha in
-                stackView.alpha = alpha
-            }
-            
+                    stackView.alpha = alpha
+                }
+
             stackView.axis = .vertical
             stackView.alignment = .center
         }

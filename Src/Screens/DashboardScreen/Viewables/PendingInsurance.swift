@@ -60,7 +60,7 @@ extension PendingInsurance: Viewable {
             stackView.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-            
+
             let pendingInsuranceHeader = MultilineLabel(styledText: StyledText(text: String(key: .DASHBOARD_PENDING_HEADER), style: .bodyOffBlack))
             bag += stackView.addArranged(pendingInsuranceHeader)
 

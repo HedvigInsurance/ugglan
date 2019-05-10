@@ -41,7 +41,7 @@ extension BulletPointTable: Viewable {
 
         let tableKit = TableKit<EmptySection, BulletPointCard>(style: style, bag: bag)
         tableKit.view.isScrollEnabled = false
-        
+
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,

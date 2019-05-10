@@ -109,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
             assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
         )
-        
+
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()

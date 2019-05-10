@@ -15,7 +15,7 @@ import UIKit
 struct LoadingIndicator {
     let showAfter: TimeInterval
     let color: UIColor
-    
+
     init(showAfter: TimeInterval, color: UIColor = .white) {
         self.showAfter = showAfter
         self.color = color

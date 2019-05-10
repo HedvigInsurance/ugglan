@@ -5,12 +5,12 @@
 //  Created by Sam Pettersson on 2019-04-12.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import Presentation
 import UIKit
-import Apollo
 
 struct CommonClaimCard {
     let data: CommonClaimsQuery.Data.CommonClaim
@@ -54,7 +54,7 @@ struct CommonClaimCard {
         )
 
         let buttonPadding: CGFloat = includeButton ? 60 : 0
-        
+
         return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 80 + buttonPadding)
     }
 
@@ -74,10 +74,10 @@ struct CommonClaimCard {
 
         return ""
     }
-    
+
     var safeAreaTop: CGFloat {
         let keyWindow = UIApplication.shared.keyWindow
-        
+
         if #available(iOS 11.0, *) {
             return keyWindow?.safeAreaInsets.top ?? 0
         } else {
@@ -319,10 +319,10 @@ extension CommonClaimCard: Viewable {
             bag += closeButtonView.signal(for: .touchUpInside).onValue {
                 self.closeCallbacker.callAll()
             }
-            
-            bag += closeButtonView.didLayoutSignal.onValue({ _ in
+
+            bag += closeButtonView.didLayoutSignal.onValue { _ in
                 view.bringSubviewToFront(closeButtonView)
-            })
+            }
 
             bag += scrollPositionSignal.onValue { point in
                 closeButtonView.transform = CGAffineTransform(translationX: 0, y: point.y)
@@ -341,21 +341,21 @@ extension CommonClaimCard: Viewable {
 
             bag += view.add(claimButton) { claimButtonView in
                 claimButtonView.alpha = 0
-                
+
                 bag += client.insuranceIsActiveSignal().bindTo(claimButtonView, \.isUserInteractionEnabled)
-                
+
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
                 bag += combineLatest(showClaimButtonSignal.atOnce().plain(), client.insuranceIsActiveSignal())
                     .map { showButton, insuranceIsActive in
                         if showButton {
                             return insuranceIsActive ? 1 : 0.5
                         }
-                        
+
                         return 0
                     }
-                    .onValue({ alpha in
+                    .onValue { alpha in
                         claimButtonView.alpha = alpha
-                    })
+                    }
 
                 bag += showClaimButtonSignal.onValue { _ in
                     contentView.sendSubviewToBack(claimButtonView)
@@ -416,9 +416,9 @@ extension CommonClaimCard: Viewable {
                 )
             }
         }
-        
+
         view.bringSubviewToFront(expandedHeaderView)
-        
+
         return (view, bag)
     }
 }

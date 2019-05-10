@@ -46,7 +46,7 @@ class ApolloContainer {
             internalQueue.async(flags: .barrier) { self._store = newState }
         }
     }
-    
+
     var environment: ApolloEnvironmentConfig {
         get {
             return internalQueue.sync { _environment! }
