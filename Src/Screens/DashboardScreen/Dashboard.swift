@@ -41,7 +41,7 @@ extension Dashboard: Presentable {
         containerStackView.spacing = 25
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 25)
-        
+
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(paymentNeedsSetupSection)
 
@@ -62,7 +62,7 @@ extension Dashboard: Presentable {
             .watch(query: DashboardQuery())
             .loader(after: 2, view: viewController.view)
             .compactMap { $0.data?.insurance }
-        
+
         bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
         bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
 

@@ -85,6 +85,10 @@ var commonClaimEmergencyOpenFreeTextChat: (_ viewController: UIViewController) -
     viewController.present(DraggableOverlay(presentable: Chat()))
 }
 
+var commonClaimEmergencyOpenCallMeChat: (_ viewController: UIViewController) -> Void = { viewController in
+    viewController.present(DraggableOverlay(presentable: Chat()))
+}
+
 extension EmergencyActions: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
@@ -124,7 +128,7 @@ extension EmergencyActions: Viewable {
         )
 
         bag += callMeAction.onValue {
-            print("call me")
+            commonClaimEmergencyOpenCallMeChat(self.presentingViewController)
         }
 
         let emergencyAbroadAction = EmergencyAction(

@@ -33,7 +33,7 @@ extension PaymentNeedsSetupSection: Viewable {
         containerStackView.alignment = .fill
         containerStackView.edgeInsets = UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)
         containerStackView.alpha = 0
-        
+
         containerView.addSubview(containerStackView)
 
         containerStackView.snp.makeConstraints { make in
@@ -67,17 +67,19 @@ extension PaymentNeedsSetupSection: Viewable {
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
-        
+
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { data in
             bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
                 containerStackView.alpha = 1
             })
-            
+
             switch data?.directDebitStatus {
             case .active?, .pending?:
                 wrapper.isHidden = true
+                wrapper.alpha = 1
             default:
                 wrapper.isHidden = false
+                wrapper.alpha = 0
             }
         }
 

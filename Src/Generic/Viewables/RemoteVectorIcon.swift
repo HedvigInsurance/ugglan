@@ -18,7 +18,7 @@ struct RemoteVectorIcon {
         _ pdfUrlString: String? = nil,
         environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment
     ) {
-        self.pdfUrlStringSignal.value = pdfUrlString
+        pdfUrlStringSignal.value = pdfUrlString
         self.environment = environment
     }
 }
@@ -96,7 +96,7 @@ extension RemoteVectorIcon: Viewable {
             guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
                 return nil
             }
-            
+
             if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
                 return data as CFData
             }

@@ -24,12 +24,12 @@ extension SlideToClaim: Viewable {
         let view = UIView()
         let bag = DisposeBag()
 
-        bag += view.didMoveToWindowSignal.onValue({ _ in
+        bag += view.didMoveToWindowSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.height.equalTo(50)
                 make.center.equalToSuperview()
             }
-        })
+        }
 
         let track = UIView()
         track.backgroundColor = .lightGray
