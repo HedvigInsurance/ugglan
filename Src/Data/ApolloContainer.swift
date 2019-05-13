@@ -22,43 +22,32 @@ struct ApolloEnvironmentConfig {
 }
 
 class ApolloContainer {
-    static var shared = ApolloContainer()
-    private let internalQueue = DispatchQueue(label: String(describing: ApolloContainer.self), qos: .default, attributes: .concurrent)
+    static let shared = ApolloContainer()
 
     private var _client: ApolloClient?
     private var _store: ApolloStore?
     private var _environment: ApolloEnvironmentConfig?
 
     var client: ApolloClient {
-        get {
-            return internalQueue.sync { _client! }
-        }
-        set(newState) {
-            internalQueue.async(flags: .barrier) { self._client = newState }
-        }
+        return _client!
     }
 
     var store: ApolloStore {
-        get {
-            return internalQueue.sync { _store! }
-        }
-        set(newState) {
-            internalQueue.async(flags: .barrier) { self._store = newState }
-        }
+        return _store!
     }
 
     var environment: ApolloEnvironmentConfig {
         get {
-            return internalQueue.sync { _environment! }
+            return _environment!
         }
-        set(newState) {
-            internalQueue.async(flags: .barrier) { self._environment = newState }
+        set(newValue) {
+            _environment = newValue
         }
     }
 
     private init() {}
 
-    func createClient(token: String?) -> (ApolloClient, ApolloStore) {
+    func createClient(token: String?) {
         let authPayloads = [
             "Authorization": token ?? "",
         ]
@@ -84,10 +73,8 @@ class ApolloContainer {
         )
 
         let cache = InMemoryNormalizedCache()
-        let store = ApolloStore(cache: cache)
-        let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-
-        return (client, store)
+        _store = ApolloStore(cache: cache)
+        _client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
     }
 
     func retreiveToken() -> AuthorizationToken? {
@@ -107,53 +94,47 @@ class ApolloContainer {
         )
     }
 
-    func createClientFromNewSession() -> Future<(ApolloClient, ApolloStore)> {
+    func createClientFromNewSession() -> Future<Void> {
         let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            let (client, _) = self.createClient(token: nil)
+            self.createClient(token: nil)
 
-            client.perform(mutation: mutation).onValue { result in
+            self.client.perform(mutation: mutation).onValue { result in
                 if let token = result.data?.createSession {
                     self.saveToken(token: token)
                 }
 
-                let (clientWithSession, store) = self.createClient(
+                self.createClient(
                     token: result.data?.createSession
                 )
 
-                completion(.success((clientWithSession, store)))
+                completion(.success)
             }
 
             return NilDisposer()
         }
     }
 
-    func initClient() -> Future<(ApolloClient, ApolloStore)> {
+    func initClient() -> Future<Void> {
         return Future { completion in
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {
                 self.createClientFromNewSession().onResult { result in
                     switch result {
-                    case let .success((client, store)): do {
-                        self.client = client
-                        self.store = store
-                        completion(result)
+                    case .success: do {
+                        completion(.success)
                     }
-                    case .failure: do {
-                        completion(result)
+                    case let .failure(error): do {
+                        completion(.failure(error))
                     }
                     }
                 }
             } else {
-                let (client, store) = self.createClient(token: tokenData!.token)
-
-                self.client = client
-                self.store = store
-
-                completion(.success((client, store)))
+                self.createClient(token: tokenData!.token)
+                completion(.success)
             }
 
             return NilDisposer()
