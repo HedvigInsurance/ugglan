@@ -12,8 +12,10 @@ import UIKit
 
 struct MessageBubble {
     let textSignal: ReadWriteSignal<String>
+    let delay: TimeInterval
 
-    init(text: String) {
+    init(text: String, delay: TimeInterval) {
+        self.delay = delay
         textSignal = ReadWriteSignal(text)
     }
 }
@@ -44,14 +46,11 @@ extension MessageBubble: Viewable {
                 UIPasteboard.general.string = labelView.text
             }
 
-            bag += textSignal.atOnce().map { StyledText(text: $0, style: .bodyOffBlack) }.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+            bag += textSignal.atOnce().delay(by: delay).map { StyledText(text: $0, style: .bodyOffBlack) }.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 labelView.alpha = 0
             }).animated(style: SpringAnimationStyle.lightBounce(), animations: { styledText in
                 label.styledTextSignal.value = styledText
                 containerStackView.isHidden = false
-                containerView.layoutIfNeeded()
-                stylingView.layoutIfNeeded()
-                containerStackView.layoutIfNeeded()
                 stylingView.alpha = 1
             }).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
                 labelView.alpha = 1

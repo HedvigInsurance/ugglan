@@ -1,5 +1,5 @@
-subscription ChatPreview_($mostRecentTimestamp: String!) {
-    messages(mostRecentTimestamp: $mostRecentTimestamp) {
+subscription ChatPreview_ {
+    message {
         id
         globalId
         body {

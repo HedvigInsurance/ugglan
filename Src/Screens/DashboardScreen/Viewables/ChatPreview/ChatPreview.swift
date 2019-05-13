@@ -93,10 +93,10 @@ extension ChatPreview: Viewable {
         }
 
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
-        let loadDataBag = bag.innerBag()
+        let subscriptionBag = bag.innerBag()
 
         func loadData() {
-            loadDataBag += client.fetch(query: ChatPreviewQuery(), cachePolicy: .fetchIgnoringCacheData).valueSignal
+            bag += client.fetch(query: ChatPreviewQuery(), cachePolicy: .fetchIgnoringCacheData).valueSignal
                 .compactMap { $0.data?.messages }
                 .compactMap { $0.compactMap { $0 } }
                 .plain()
@@ -151,91 +151,40 @@ extension ChatPreview: Viewable {
 
                     actualMessagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach { arg in
                         let (offset, text) = arg
-                        messagesBubbleBag += Signal(after: 0.5 * Double(offset)).onValue { _ in
-                            let messageBubble = MessageBubble(text: text)
-                            messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
-                        }
+                        
+                        let messageBubble = MessageBubble(text: text, delay: 0.5 * Double(offset))
+                        messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
                     }
-                }
-
-            loadDataBag += client.subscribe(
-                subscription: ChatPreviewSubscription(mostRecentTimestamp: String(Date().currentTimeMillis()))
-            ).compactMap { $0.data?.messages?.compactMap { $0 } }
-                .distinct()
-                .withLatestFrom(Chat.lastOpenedChatSignal.atOnce().plain())
-                .onValue { messages, lastOpenedChat in
-                    let messagesToShow = messages.prefix(while: { message -> Bool in
-                        message.id == freeChatFromBoId
-                    }).filter { message -> Bool in
-                        message.body.asMessageBodyText != nil
-                    }.filter { message -> Bool in
-                        guard let timeStamp = Int64(message.header.timeStamp) else {
-                            return false
-                        }
-
-                        guard let lastOpenedChat = lastOpenedChat else {
-                            return true
-                        }
-
-                        return lastOpenedChat < timeStamp
-                    }.filter { message -> Bool in
-                        guard let timeStamp = Int64(message.header.timeStamp) else {
-                            return false
-                        }
-
-                        let diff = timeStamp - Date().currentTimeMillis()
-                        let oneWeek = 604_800 * 1000
-
-                        return diff < oneWeek
-                    }.sorted(by: { (a, b) -> Bool in
-                        a.header.timeStamp < b.header.timeStamp
-                    })
-
-                    let onlyExistingMessages = messagesToShow.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
-                        message.globalId == globalId
-                    })
-
-                    guard !onlyExistingMessages else {
-                        return
-                    }
-
-                    let actualMessagesToShow = messagesToShow.filter { message -> Bool in
-                        handledMessageGlobalIds.first { message.globalId == $0 } == nil
-                    }
-
-                    guard actualMessagesToShow.count != 0 else {
-                        animateVisibility(visible: false)
-                        return
-                    }
-
-                    handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
-                    animateVisibility(visible: true)
-
-                    actualMessagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach { arg in
-                        let (offset, text) = arg
-                        messagesBubbleBag += Signal(after: 0.5 * Double(offset)).onValue { _ in
-                            let messageBubble = MessageBubble(text: text)
-                            messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
-                        }
-                    }
-                }
+            }
+        }
+        
+        func setupSubscription() {
+            subscriptionBag += client.subscribe(
+                subscription: ChatPreviewSubscription()
+            ).compactMap { $0.data?.message }
+            .distinct()
+            .onValue({ _ in
+                loadData()
+            })
         }
 
         loadData()
+        setupSubscription()
 
         bag += merge(
             NotificationCenter.default.signal(forName: .didOpenChat),
             NotificationCenter.default.signal(forName: UIApplication.willResignActiveNotification)
         ).onValue { _ in
-            loadDataBag.dispose()
+            subscriptionBag.dispose()
         }
 
         bag += merge(
             NotificationCenter.default.signal(forName: .didCloseChat),
             NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification)
         ).onValue { _ in
-            loadDataBag.dispose()
+            subscriptionBag.dispose()
             loadData()
+            setupSubscription()
         }
 
         return (containerView, bag)
