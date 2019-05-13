@@ -75,9 +75,11 @@ extension PaymentNeedsSetupSection: Viewable {
 
             switch data?.directDebitStatus {
             case .active?, .pending?:
-                wrapper.isHidden = false
-            default:
                 wrapper.isHidden = true
+                wrapper.alpha = 1
+            default:
+                wrapper.isHidden = false
+                wrapper.alpha = 0
             }
         }
 
