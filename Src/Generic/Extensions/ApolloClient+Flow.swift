@@ -30,6 +30,8 @@ extension ApolloClient {
                         if error?.localizedDescription == "cancelled" {
                             return
                         }
+                        
+                        log.error(error?.localizedDescription)
 
                         self.showNetworkErrorMessage { [unowned self] in
                             self.fetch(
@@ -77,6 +79,8 @@ extension ApolloClient {
                         if error?.localizedDescription == "cancelled" {
                             return
                         }
+                        
+                        log.error(error?.localizedDescription)
 
                         self.showNetworkErrorMessage { [unowned self] in
                             self.perform(mutation: mutation, queue: queue).onResult { result in
@@ -108,6 +112,8 @@ extension ApolloClient {
                     if error?.localizedDescription == "cancelled" {
                         return
                     }
+                    
+                    log.error(error?.localizedDescription)
 
                     self.showNetworkErrorMessage { [unowned self] in
                         bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue { result in
@@ -128,7 +134,8 @@ extension ApolloClient {
         return Signal { callbacker in
             let bag = DisposeBag()
 
-            let subscriber = self.subscribe(subscription: subscription, resultHandler: { result, _ in
+            let subscriber = self.subscribe(subscription: subscription, resultHandler: { result, error in
+                log.error(error?.localizedDescription)
                 if let result = result {
                     callbacker(result)
                 }
