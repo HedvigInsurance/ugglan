@@ -56,17 +56,6 @@ extension About: Presentable {
         bag += versionSection.append(memberIdRow)
 
         bag += form.append(Spacing(height: 15))
-        
-        let betaFeaturesSection = form.appendSection(
-            headerView: nil,
-            footerView: nil,
-            style: .sectionPlain
-        )
-        
-        let chatPreviewRow = ChatPreviewRow()
-        bag += betaFeaturesSection.append(chatPreviewRow)
-        
-        bag += form.append(Spacing(height: 15))
 
         let year = Calendar.current.component(.year, from: Date())
 

@@ -76,6 +76,11 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
     }
+    
+    static let reallySmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(13)
+        style.color = .darkGray
+    }
 
     static let perilTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)

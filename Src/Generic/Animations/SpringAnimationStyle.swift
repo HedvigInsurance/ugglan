@@ -14,12 +14,14 @@ struct SpringAnimationStyle {
     var damping: CGFloat
     var velocity: CGFloat
     var delay: TimeInterval
+    var options: UIView.AnimationOptions
 
-    init(duration: TimeInterval, damping: CGFloat, velocity: CGFloat, delay: TimeInterval) {
+    init(duration: TimeInterval, damping: CGFloat, velocity: CGFloat, delay: TimeInterval, options: UIView.AnimationOptions = [.allowUserInteraction]) {
         self.duration = duration
         self.damping = damping
         self.velocity = velocity
         self.delay = delay
+        self.options = options
     }
 }
 
@@ -29,7 +31,8 @@ extension SpringAnimationStyle {
             duration: duration,
             damping: 30,
             velocity: 1,
-            delay: delay
+            delay: delay,
+            options: [.allowUserInteraction]
         )
     }
 
@@ -38,7 +41,8 @@ extension SpringAnimationStyle {
             duration: 0.6,
             damping: 0.6,
             velocity: 2,
-            delay: delay
+            delay: delay,
+            options: [.allowUserInteraction]
         )
     }
 }

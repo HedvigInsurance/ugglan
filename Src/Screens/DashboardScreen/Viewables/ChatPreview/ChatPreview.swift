@@ -59,7 +59,7 @@ extension ChatPreview: Viewable {
         messageBubbleContainer.spacing = 8
         containerView.addArrangedSubview(messageBubbleContainer)
 
-        let openChatButton = Button(title: "Svara", type: .standardSmall(backgroundColor: .purple, textColor: .white))
+        let openChatButton = Button(title: String(key: .CHAT_PREVIEW_OPEN_CHAT), type: .standardSmall(backgroundColor: .purple, textColor: .white))
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .trailing
@@ -94,42 +94,51 @@ extension ChatPreview: Viewable {
 
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
         let subscriptionBag = bag.innerBag()
+        
+        func getMessagesToShow(messages: [ChatPreviewQuery.Data.Message]) -> Signal<[ChatPreviewQuery.Data.Message]> {
+            return Chat.lastOpenedChatSignal.atOnce().plain().map { lastOpenedChat in
+                let messagesToShow = messages.prefix(while: { message -> Bool in
+                    message.id == freeChatFromBoId
+                }).filter { message -> Bool in
+                    message.body.asMessageBodyText != nil
+                    }.filter { message -> Bool in
+                        guard let timeStamp = Int64(message.header.timeStamp) else {
+                            return false
+                        }
+                        
+                        guard let lastOpenedChat = lastOpenedChat else {
+                            return true
+                        }
+                        
+                        return lastOpenedChat < timeStamp
+                    }.filter { message -> Bool in
+                        guard let timeStamp = Int64(message.header.timeStamp) else {
+                            return false
+                        }
+                        
+                        let diff = timeStamp - Date().currentTimeMillis()
+                        let oneWeek = 604_800 * 1000
+                        
+                        return diff < oneWeek
+                    }.sorted(by: { (a, b) -> Bool in
+                        a.header.timeStamp < b.header.timeStamp
+                    })
+                
+                return messagesToShow
+            }
+        }
 
         func loadData() {
             bag += client.fetch(query: ChatPreviewQuery(), cachePolicy: .fetchIgnoringCacheData).valueSignal
                 .compactMap { $0.data?.messages }
                 .compactMap { $0.compactMap { $0 } }
                 .plain()
-                .withLatestFrom(Chat.lastOpenedChatSignal.atOnce().plain())
-                .onValue { messages, lastOpenedChat in
-                    let messagesToShow = messages.prefix(while: { message -> Bool in
-                        message.id == freeChatFromBoId
-                    }).filter { message -> Bool in
-                        message.body.asMessageBodyText != nil
-                    }.filter { message -> Bool in
-                        guard let timeStamp = Int64(message.header.timeStamp) else {
-                            return false
-                        }
-
-                        guard let lastOpenedChat = lastOpenedChat else {
-                            return true
-                        }
-
-                        return lastOpenedChat < timeStamp
-                    }.filter { message -> Bool in
-                        guard let timeStamp = Int64(message.header.timeStamp) else {
-                            return false
-                        }
-
-                        let diff = timeStamp - Date().currentTimeMillis()
-                        let oneWeek = 604_800 * 1000
-
-                        return diff < oneWeek
-                    }.sorted(by: { (a, b) -> Bool in
-                        a.header.timeStamp < b.header.timeStamp
-                    })
-
-                    let onlyExistingMessages = messagesToShow.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
+                .flatMapLatest { getMessagesToShow(messages: $0) }
+                .atValue({ messages in
+                    self.presentingViewController.updateTabBarItemBadge(value: messages.count > 0 ? String(messages.count) : nil)
+                })
+                .onValue { messages in
+                    let onlyExistingMessages = messages.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
                         message.globalId == globalId
                     })
 
@@ -137,22 +146,21 @@ extension ChatPreview: Viewable {
                         return
                     }
 
-                    let actualMessagesToShow = messagesToShow.filter { message -> Bool in
+                    let messagesToShow = messages.filter { message -> Bool in
                         handledMessageGlobalIds.first { message.globalId == $0 } == nil
                     }
 
-                    guard actualMessagesToShow.count != 0 else {
+                    guard messagesToShow.count != 0 else {
                         animateVisibility(visible: false)
                         return
                     }
 
-                    handledMessageGlobalIds.append(contentsOf: actualMessagesToShow.map { $0.globalId })
+                    handledMessageGlobalIds.append(contentsOf: messagesToShow.map { $0.globalId })
                     animateVisibility(visible: true)
 
-                    actualMessagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach { arg in
+                    messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach { arg in
                         let (offset, text) = arg
-                        
-                        let messageBubble = MessageBubble(text: text, delay: 0.5 * Double(offset))
+                        let messageBubble = MessageBubble(text: text, delay: 0.25 * Double(offset))
                         messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
                     }
             }

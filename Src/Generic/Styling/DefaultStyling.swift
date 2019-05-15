@@ -70,6 +70,13 @@ extension DefaultStyling {
         UITabBar.appearance().barTintColor = UIColor.offWhite
         UITabBar.appearance().backgroundImage = UIColor.offWhite.as1ptImage()
         UITabBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
+        
+        UITabBarItem.appearance().setBadgeTextAttributes([
+            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+        ], for: .normal)
+        UITabBarItem.appearance().setBadgeTextAttributes([
+            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+        ], for: .selected)
 
         if #available(iOS 11.0, *) {
             UINavigationBar.appearance().largeTitleTextAttributes = [

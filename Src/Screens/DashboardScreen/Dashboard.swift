@@ -42,12 +42,9 @@ extension Dashboard: Presentable {
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 25)
        
-        let chatPreview = WhenEnabled(remoteConfig.chatPreviewEnabledSignal) {
-            return ChatPreview(presentingViewController: viewController)
-        }
-        
+        let chatPreview = ChatPreview(presentingViewController: viewController)
         bag += containerStackView.addArranged(chatPreview)
-
+        
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(paymentNeedsSetupSection)
 

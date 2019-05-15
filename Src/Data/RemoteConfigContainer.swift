@@ -34,12 +34,6 @@ class RemoteConfigContainer {
         })
         
         self.remoteConfig = remoteConfig
-        
-        let bag = DisposeBag()
-        
-        bag += fetched.onValue { _ in
-            self.chatPreviewEnabledSignal.value = remoteConfig.configValue(forKey: "Chat_Preview_Enabled").boolValue
-        }
     }
 
     func referralsEnabled() -> Bool {
@@ -67,6 +61,4 @@ class RemoteConfigContainer {
     func dynamicLinkAndroidPackageName() -> String {
         return remoteConfig.configValue(forKey: "DynamicLink_Android_PackageName").stringValue ?? ""
     }
-    
-    let chatPreviewEnabledSignal = ReadWriteSignal(false)
 }

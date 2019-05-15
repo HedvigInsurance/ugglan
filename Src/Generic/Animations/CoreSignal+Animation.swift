@@ -100,7 +100,7 @@ extension SignalProvider {
                 delay: style.delay,
                 usingSpringWithDamping: style.damping,
                 initialSpringVelocity: style.velocity,
-                options: [],
+                options: style.options,
                 animations: {
                     animations(value)
                 },
@@ -164,7 +164,7 @@ extension SignalProvider {
                 delay: style.delay,
                 usingSpringWithDamping: style.damping,
                 initialSpringVelocity: style.velocity,
-                options: [],
+                options: style.options,
                 animations: {
                     animations(value)
                 },
