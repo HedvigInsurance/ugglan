@@ -73,7 +73,11 @@ extension ChatPreview: Viewable {
         var handledMessageGlobalIds: [GraphQLID] = []
 
         func animateVisibility(visible: Bool) {
-            bag += Signal(after: 0.5).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+            bag += containerView.hasWindowSignal
+                .atOnce()
+                .filter { $0 }
+                .take(first: 1)
+                .animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 containerView.isHidden = !visible
                 containerView.alpha = visible ? 1 : 0
             }).onValue { _ in
@@ -137,6 +141,7 @@ extension ChatPreview: Viewable {
                 .atValue({ messages in
                     self.presentingViewController.updateTabBarItemBadge(value: messages.count > 0 ? String(messages.count) : nil)
                 })
+                .wait(until: containerView.hasWindowSignal)
                 .onValue { messages in
                     let onlyExistingMessages = messages.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
                         message.globalId == globalId
