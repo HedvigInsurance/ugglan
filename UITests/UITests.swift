@@ -8,22 +8,27 @@
 import Apollo
 import FBSnapshotTestCase
 import Flow
+import UIKit
 import XCTest
 
 class UITests: FBSnapshotTestCase {
     override func setUp() {
         super.setUp()
+        
         #if RECORD_MODE
             recordMode = true
         #endif
+        
+        FontLoader.loadFonts(fontNames: ["Merriweather-Light", "CircularStd-Bold", "CircularStd-Book", "SoRay-ExtraBold"])
     }
+    
 
     func testExample() {
         let bag = DisposeBag()
         let view = UIView()
 
         let button = Button(
-            title: "testa",
+            title: "Lorem ipsum",
             type: .standard(
                 backgroundColor: .purple,
                 textColor: .white
