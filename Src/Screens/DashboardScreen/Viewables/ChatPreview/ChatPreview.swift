@@ -160,7 +160,7 @@ extension ChatPreview: Viewable {
 
                     messagesToShow.compactMap { $0.body.asMessageBodyText?.text }.enumerated().forEach { arg in
                         let (offset, text) = arg
-                        let messageBubble = MessageBubble(text: text, delay: 0.25 * Double(offset))
+                        let messageBubble = MessageBubble(text: text, delay: 0.5 * Double(offset))
                         messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
                     }
             }
