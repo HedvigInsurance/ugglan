@@ -102,6 +102,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
 
         let cardContent = UIStackView()
         cardContent.axis = .vertical
+        cardContent.alignment = .center
         cardContent.isLayoutMarginsRelativeArrangement = true
         cardContent.edgeInsets = UIEdgeInsets(horizontalInset: 24, verticalInset: 24)
         cardContent.alpha = 0
