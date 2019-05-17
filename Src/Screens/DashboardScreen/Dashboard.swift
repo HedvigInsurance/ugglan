@@ -24,7 +24,7 @@ struct Dashboard {
 }
 
 var dashboardOpenFreeTextChat: (_ presentingViewController: UIViewController) -> Void = { presentingViewController in
-    let chatOverlay = DraggableOverlay(presentable: Chat())
+    let chatOverlay = DraggableOverlay(presentable: FreeTextChat())
     presentingViewController.present(chatOverlay, style: .default, options: [.prefersNavigationBarHidden(false)])
 }
 
@@ -41,10 +41,10 @@ extension Dashboard: Presentable {
         containerStackView.spacing = 25
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 25)
-       
+
         let chatPreview = ChatPreview(presentingViewController: viewController)
         bag += containerStackView.addArranged(chatPreview)
-        
+
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(paymentNeedsSetupSection)
 

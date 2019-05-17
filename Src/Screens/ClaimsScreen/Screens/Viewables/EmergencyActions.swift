@@ -82,11 +82,11 @@ struct EmergencyAction: Reusable, SignalProvider {
 }
 
 var commonClaimEmergencyOpenFreeTextChat: (_ viewController: UIViewController) -> Void = { viewController in
-    viewController.present(DraggableOverlay(presentable: Chat()))
+    viewController.present(DraggableOverlay(presentable: FreeTextChat()))
 }
 
 var commonClaimEmergencyOpenCallMeChat: (_ viewController: UIViewController) -> Void = { viewController in
-    viewController.present(DraggableOverlay(presentable: Chat()))
+    viewController.present(DraggableOverlay(presentable: FreeTextChat()))
 }
 
 extension EmergencyActions: Viewable {

@@ -30,6 +30,12 @@ extension TextStyle {
         style.color = .white
     }
 
+    static let navigationSubtitleWhite = TextStyle.body.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(13)
+        style.lineSpacing = 4
+        style.color = .white
+    }
+
     static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in
         style.alignment = .center
     }
@@ -76,7 +82,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
     }
-    
+
     static let reallySmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(13)
         style.color = .darkGray

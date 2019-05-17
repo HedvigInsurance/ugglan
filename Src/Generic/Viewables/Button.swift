@@ -6,6 +6,7 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
+import Firebase
 import FirebaseAnalytics
 import Flow
 import Form

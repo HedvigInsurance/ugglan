@@ -70,7 +70,7 @@ extension MyCoinsured: Presentable {
         }
 
         form.append(lottieContainerView)
-        
+
         lottieContainerView.snp.makeConstraints { make in
             make.height.equalTo(60)
             make.center.equalToSuperview()

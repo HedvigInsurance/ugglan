@@ -30,7 +30,7 @@ extension ApolloClient {
                         if error?.localizedDescription == "cancelled" {
                             return
                         }
-                        
+
                         log.error(error?.localizedDescription)
 
                         self.showNetworkErrorMessage { [unowned self] in
@@ -79,7 +79,7 @@ extension ApolloClient {
                         if error?.localizedDescription == "cancelled" {
                             return
                         }
-                        
+
                         log.error(error?.localizedDescription)
 
                         self.showNetworkErrorMessage { [unowned self] in
@@ -112,7 +112,7 @@ extension ApolloClient {
                     if error?.localizedDescription == "cancelled" {
                         return
                     }
-                    
+
                     log.error(error?.localizedDescription)
 
                     self.showNetworkErrorMessage { [unowned self] in

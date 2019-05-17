@@ -78,14 +78,14 @@ extension ChatPreview: Viewable {
                 .filter { $0 }
                 .take(first: 1)
                 .animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                containerView.isHidden = !visible
-                containerView.alpha = visible ? 1 : 0
-            }).onValue { _ in
-                if !visible {
-                    handledMessageGlobalIds = []
-                    messagesBubbleBag.dispose()
+                    containerView.isHidden = !visible
+                    containerView.alpha = visible ? 1 : 0
+                }).onValue { _ in
+                    if !visible {
+                        handledMessageGlobalIds = []
+                        messagesBubbleBag.dispose()
+                    }
                 }
-            }
         }
 
         bag += Chat.lastOpenedChatSignal.onValue { _ in
@@ -98,36 +98,36 @@ extension ChatPreview: Viewable {
 
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
         let subscriptionBag = bag.innerBag()
-        
+
         func getMessagesToShow(messages: [ChatPreviewQuery.Data.Message]) -> Signal<[ChatPreviewQuery.Data.Message]> {
             return Chat.lastOpenedChatSignal.atOnce().plain().map { lastOpenedChat in
                 let messagesToShow = messages.prefix(while: { message -> Bool in
                     message.id == freeChatFromBoId
                 }).filter { message -> Bool in
                     message.body.asMessageBodyText != nil
-                    }.filter { message -> Bool in
-                        guard let timeStamp = Int64(message.header.timeStamp) else {
-                            return false
-                        }
-                        
-                        guard let lastOpenedChat = lastOpenedChat else {
-                            return true
-                        }
-                        
-                        return lastOpenedChat < timeStamp
-                    }.filter { message -> Bool in
-                        guard let timeStamp = Int64(message.header.timeStamp) else {
-                            return false
-                        }
-                        
-                        let diff = timeStamp - Date().currentTimeMillis()
-                        let oneWeek = 604_800 * 1000
-                        
-                        return diff < oneWeek
-                    }.sorted(by: { (a, b) -> Bool in
-                        a.header.timeStamp < b.header.timeStamp
-                    })
-                
+                }.filter { message -> Bool in
+                    guard let timeStamp = Int64(message.header.timeStamp) else {
+                        return false
+                    }
+
+                    guard let lastOpenedChat = lastOpenedChat else {
+                        return true
+                    }
+
+                    return lastOpenedChat < timeStamp
+                }.filter { message -> Bool in
+                    guard let timeStamp = Int64(message.header.timeStamp) else {
+                        return false
+                    }
+
+                    let diff = timeStamp - Date().currentTimeMillis()
+                    let oneWeek = 604_800 * 1000
+
+                    return diff < oneWeek
+                }.sorted(by: { (a, b) -> Bool in
+                    a.header.timeStamp < b.header.timeStamp
+                })
+
                 return messagesToShow
             }
         }
@@ -138,9 +138,9 @@ extension ChatPreview: Viewable {
                 .compactMap { $0.compactMap { $0 } }
                 .plain()
                 .flatMapLatest { getMessagesToShow(messages: $0) }
-                .atValue({ messages in
+                .atValue { messages in
                     self.presentingViewController.updateTabBarItemBadge(value: messages.count > 0 ? String(messages.count) : nil)
-                })
+                }
                 .wait(until: containerView.hasWindowSignal)
                 .onValue { messages in
                     let onlyExistingMessages = messages.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
@@ -168,17 +168,17 @@ extension ChatPreview: Viewable {
                         let messageBubble = MessageBubble(text: text, delay: 0.5 * Double(offset))
                         messagesBubbleBag += messageBubbleContainer.addArranged(messageBubble)
                     }
-            }
+                }
         }
-        
+
         func setupSubscription() {
             subscriptionBag += client.subscribe(
                 subscription: ChatPreviewSubscription()
             ).compactMap { $0.data?.message }
-            .distinct()
-            .onValue({ _ in
-                loadData()
-            })
+                .distinct()
+                .onValue { _ in
+                    loadData()
+                }
         }
 
         loadData()

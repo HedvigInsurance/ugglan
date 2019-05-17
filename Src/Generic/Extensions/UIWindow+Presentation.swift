@@ -21,12 +21,9 @@ extension UIWindow {
         _ presentable: P,
         options: PresentationOptions = [],
         animated: Bool
-    ) -> Disposable where
-        P.Matter: UIViewController,
-        P.Result == Disposable {
-        let bag = DisposeBag()
-        let (viewController, disposable) = presentable.materialize()
-        bag += disposable
+    ) -> P.Result where
+        P.Matter: UIViewController {
+        let (viewController, result) = presentable.materialize()
 
         if animated {
             let snapshot = snapshotView(afterScreenUpdates: true)!
@@ -69,10 +66,6 @@ extension UIWindow {
 
         rootViewController = viewController.embededInNavigationController(options)
 
-        makeKeyAndVisible()
-
-        bag.hold(self)
-
-        return bag
+        return result
     }
 }

@@ -32,7 +32,7 @@ class RemoteConfigContainer {
             remoteConfig.activateFetched()
             fetched.value = true
         })
-        
+
         self.remoteConfig = remoteConfig
     }
 

@@ -40,10 +40,7 @@ extension Launch: Presentable {
             make.centerY.equalToSuperview().offset(-3)
         }
 
-        animationView.play(fromProgress: 1, toProgress: 1, withCompletion: nil)
-
         return (viewController, Future { completion in
-
             bag += self.hasLoadedSignal.onValue { _ in
                 animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
             }

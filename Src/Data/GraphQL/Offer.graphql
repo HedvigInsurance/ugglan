@@ -1,0 +1,5 @@
+query Offer {
+    insurance {
+        address
+    }
+}

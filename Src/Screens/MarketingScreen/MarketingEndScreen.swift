@@ -138,15 +138,16 @@ extension MarketingEnd: Presentable {
                 dismissSignal: dismissSignal
             )
 
-            bag += containerView.add(end).onValue { result in
-                self.didResult.callAll(with: result)
+            bag += containerView.add(end).onValue { marketingResult in
+                let intent: OnboardingChat.Intent = marketingResult == .onboard ? .onboard : .login
+                bag += viewController.present(OnboardingChat(intent: intent), options: [.prefersNavigationBarHidden(false)])
             }
 
-            bag += dismissSignal.delay(by: 0.2).onValue { _ in
+            bag += dismissSignal.onValue { _ in
                 completion(.success)
             }
 
-            return bag
+            return DelayedDisposer(bag, delay: 0.2)
         })
     }
 }

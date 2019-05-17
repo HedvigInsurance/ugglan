@@ -45,21 +45,20 @@ extension MessageBubble: Viewable {
             bag += labelView.copySignal.onValue { _ in
                 UIPasteboard.general.string = labelView.text
             }
-            
+
             labelView.alpha = 0
-            
-            
+
             bag += textSignal
                 .atOnce()
                 .map { StyledText(text: $0, style: .bodyOffBlack) }
                 .delay(by: delay)
                 .animated(style: SpringAnimationStyle.lightBounce()) { styledText in
-                label.styledTextSignal.value = styledText
-                containerStackView.isHidden = false
-                stylingView.alpha = 1
-            }.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-                labelView.alpha = 1
-            }
+                    label.styledTextSignal.value = styledText
+                    containerStackView.isHidden = false
+                    stylingView.alpha = 1
+                }.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+                    labelView.alpha = 1
+                }
         }
 
         stylingView.addSubview(containerView)
