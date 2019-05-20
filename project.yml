@@ -60,6 +60,8 @@ targets:
       - location: Carthage/Build/iOS/Disk.framework
       - location: Carthage/Build/iOS/DynamicColor.framework
       - location: Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+      - location: Carthage/Build/iOS/MarkdownKit.framework
+      - location: Carthage/Build/iOS/Ease.framework
     platform: ios
     type: ":bundle.ui-testing"
     scripts:
@@ -84,6 +86,8 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Disk.framework
           - $(SRCROOT)/Carthage/Build/iOS/DynamicColor.framework
           - $(SRCROOT)/Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework
+          - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
         outputs:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSnapshotTestCase.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
@@ -102,6 +106,8 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Disk.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
     configuration:
       INFOPLIST_FILE: UITests/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
