@@ -24,6 +24,8 @@ extension LoggedIn: Presentable {
     func materialize() -> (UITabBarController, Disposable) {
         let tabBarController = UITabBarController()
 
+        ApplicationState.preserveState(.loggedIn)
+
         let bag = DisposeBag()
 
         let dashboard = Dashboard()

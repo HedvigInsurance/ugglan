@@ -40,9 +40,22 @@ extension Launch: Presentable {
             make.centerY.equalToSuperview().offset(-3)
         }
 
+        let imageView = UIImageView()
+        imageView.image = Asset.wordmark.image
+        imageView.contentMode = .scaleAspectFit
+
+        containerView.addSubview(imageView)
+
+        imageView.snp.makeConstraints { make in
+            make.width.equalTo(140)
+            make.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
+
         return (viewController, Future { completion in
             bag += self.hasLoadedSignal.onValue { _ in
                 animationView.play(fromProgress: 1, toProgress: 0, withCompletion: nil)
+                imageView.alpha = 0
             }
 
             bag += self.hasLoadedSignal.delay(
