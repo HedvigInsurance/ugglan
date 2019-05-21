@@ -9,14 +9,14 @@ import Foundation
 import UIKit
 
 class FontLoader {
-    static func loadFonts(fontNames: [String]) -> Void {
+    static func loadFonts(fontNames: [String]) {
         let fileManager = FileManager.default
         let bundleURL = Bundle(for: FontLoader.self).bundleURL
-        
+
         do {
             let contents = try fileManager.contentsOfDirectory(at: bundleURL, includingPropertiesForKeys: [], options: .skipsHiddenFiles)
             for url in contents {
-                if (fontNames.contains(url.deletingPathExtension().lastPathComponent)) {
+                if fontNames.contains(url.deletingPathExtension().lastPathComponent) {
                     guard let fontData = NSData(contentsOf: url) else {
                         continue
                     }
