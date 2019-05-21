@@ -51,7 +51,6 @@ extension PaymentNeedsSetupSection: Viewable {
         bag += buttonContainer.add(connectButton) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.height.centerY.centerX.equalToSuperview()
-                make.width.equalToSuperview().inset(50)
             }
         }
 
@@ -69,17 +68,13 @@ extension PaymentNeedsSetupSection: Viewable {
         }
 
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { data in
-            bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
-                containerStackView.alpha = 1
-            })
-
             switch data?.directDebitStatus {
             case .active?, .pending?:
                 wrapper.isHidden = true
-                wrapper.alpha = 1
+                containerStackView.alpha = 0
             default:
                 wrapper.isHidden = false
-                wrapper.alpha = 0
+                containerStackView.alpha = 1
             }
         }
 
