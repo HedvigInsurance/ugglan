@@ -17,14 +17,14 @@ extension FreeTextChat: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        
+
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
-        
+
         let view = UIView()
         view.backgroundColor = .purple
-        
+
         viewController.view = view
-        
+
         return (viewController, Future { _ in
             bag
         })
