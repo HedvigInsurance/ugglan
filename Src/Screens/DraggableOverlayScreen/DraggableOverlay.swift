@@ -5,6 +5,7 @@
 //  Created by Sam Pettersson on 2019-03-13.
 //
 
+import DeviceKit
 import Ease
 import Flow
 import Foundation
@@ -126,7 +127,9 @@ extension DraggableOverlay: Presentable {
 
             return UIScreen.main.bounds.height - (overlayHeightSignal.value / 2)
         }
-
+        
+        let overlayContainer = UIView()
+        
         bag += overlayHeightSignal.distinct().skip(first: 1).animated(style: SpringAnimationStyle.lightBounce()) { overlayHeight in
             overlay.snp.updateConstraints { make in
                 make.height.equalTo(overlayHeight)
@@ -135,6 +138,8 @@ extension DraggableOverlay: Presentable {
             overlay.layoutIfNeeded()
             view.layoutIfNeeded()
             overshoot.layoutIfNeeded()
+            
+            overlayContainer.applyRadiusMaskFor(topLeft: 19, bottomLeft: Device.hasRoundedCorners ? 19 : 0, bottomRight: Device.hasRoundedCorners ? 19 : 0, topRight: 19)
 
             overlay.center.y = overlayCenter
             ease.value = overlay.center.y
@@ -160,6 +165,8 @@ extension DraggableOverlay: Presentable {
             overlay.layoutIfNeeded()
             overshoot.layoutIfNeeded()
             view.layoutIfNeeded()
+            
+            overlayContainer.applyRadiusMaskFor(topLeft: 19, bottomLeft: Device.hasRoundedCorners ? 19 : 0, bottomRight: Device.hasRoundedCorners ? 19 : 0, topRight: 19)
 
             bag += Signal(after: 0.1).onValue { _ in
                 ease.velocity = 0.1
@@ -199,12 +206,10 @@ extension DraggableOverlay: Presentable {
         }
 
         bag += overlay.install(panGestureRecognizer)
-
-        let overlayContainer = UIView()
+        
         overlayContainer.backgroundColor = .white
-        overlayContainer.layer.cornerRadius = 19
         overlayContainer.clipsToBounds = true
-
+        
         overlay.addSubview(overlayContainer)
 
         overlayContainer.snp.makeConstraints { make in
@@ -248,7 +253,7 @@ extension DraggableOverlay: Presentable {
             make.height.equalTo(overlay.snp.height)
             make.center.equalTo(overlay.snp.center)
         }
-
+        
         if let navigationController = embeddedChildScreen as? UINavigationController {
             let initialViewControllerBag = bag.innerBag()
             initialViewControllerBag += navigationController.viewControllers.last?.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
