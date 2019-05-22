@@ -12,6 +12,6 @@ struct ApplicationState {
     enum Screen: String {
         case marketing, onboardingChat, offer, loggedIn
     }
-    
-    static func preserveState(_ screen: Screen) {}
+
+    static func preserveState(_: Screen) {}
 }

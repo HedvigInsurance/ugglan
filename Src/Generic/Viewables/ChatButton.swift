@@ -51,7 +51,7 @@ extension ChatButton: Viewable {
         let chatIcon = UIImageView()
         chatIcon.image = Asset.chat.image
         chatIcon.contentMode = .scaleAspectFit
-        chatIcon.tintColor = .darkGray
+        chatIcon.tintColor = .offBlack
 
         chatButtonView.addSubview(chatIcon)
 

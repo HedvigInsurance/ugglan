@@ -15,7 +15,7 @@ struct FreeTextChat {}
 extension FreeTextChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        
+
         let viewController = UIViewController()
         
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
