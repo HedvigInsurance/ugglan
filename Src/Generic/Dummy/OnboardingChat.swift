@@ -15,9 +15,9 @@ struct OnboardingChat {
     enum Intent: String {
         case onboard, login
     }
-    
+
     let intent: Intent
-    
+
     init(intent: Intent) {
         self.intent = intent
     }
@@ -26,9 +26,9 @@ struct OnboardingChat {
 extension OnboardingChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        
+
         let viewController = UIViewController()
-        
+
         return (viewController, Future { _ in
             bag
         })

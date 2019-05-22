@@ -15,49 +15,7 @@ import UIKit
 struct ImagePicker {}
 
 private var didPickImageCallbackerKey = 0
-
-enum PHAssetError: Error {
-    case retreiveUrlError
-}
-
-extension PHAsset {
-    func getURL() -> Future<URL> {
-        return Future { completion in
-            if self.mediaType == .image {
-                let options: PHContentEditingInputRequestOptions = PHContentEditingInputRequestOptions()
-                options.canHandleAdjustmentData = { (_: PHAdjustmentData) -> Bool in
-                    true
-                }
-                self.requestContentEditingInput(with: options, completionHandler: { (contentEditingInput: PHContentEditingInput?, _: [AnyHashable: Any]) -> Void in
-                    guard let url = contentEditingInput?.fullSizeImageURL as URL? else {
-                        completion(.failure(PHAssetError.retreiveUrlError))
-                        return
-                    }
-                    completion(.success(url))
-
-                })
-            } else if self.mediaType == .video {
-                let options: PHVideoRequestOptions = PHVideoRequestOptions()
-                options.version = .original
-                PHImageManager.default().requestAVAsset(
-                    forVideo: self,
-                    options: options,
-                    resultHandler: {
-                        (asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable: Any]?) in
-                        if let urlAsset = asset as? AVURLAsset {
-                            let localVideoUrl = urlAsset.url
-                            completion(.success(localVideoUrl))
-                        } else {
-                            completion(.failure(PHAssetError.retreiveUrlError))
-                        }
-                    }
-                )
-            }
-
-            return NilDisposer()
-        }
-    }
-}
+private var didCancelImagePickerCallbackerKey = 1
 
 extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     private var didPickImageCallbacker: Callbacker<URL> {
@@ -74,8 +32,30 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
         return callbacker
     }
 
+    private var didCancelImagePickerCallbacker: Callbacker<Void> {
+        if let callbacker = objc_getAssociatedObject(self, &didCancelImagePickerCallbackerKey) as? Callbacker<Void> {
+            return callbacker
+        }
+
+        delegate = self
+
+        let callbacker = Callbacker<Void>()
+
+        objc_setAssociatedObject(self, &didCancelImagePickerCallbackerKey, callbacker, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+
+        return callbacker
+    }
+
     var didPickImageSignal: Signal<URL> {
         return didPickImageCallbacker.providedSignal
+    }
+
+    var didCancelSignal: Signal<Void> {
+        return didCancelImagePickerCallbacker.providedSignal
+    }
+
+    public func imagePickerControllerDidCancel(_: UIImagePickerController) {
+        didCancelImagePickerCallbacker.callAll()
     }
 
     public func imagePickerController(
@@ -89,6 +69,10 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
     }
 }
 
+enum ImagePickerError: Error {
+    case cancelled
+}
+
 extension ImagePicker: Presentable {
     func materialize() -> (UIImagePickerController, Future<URL>) {
         let viewController = UIImagePickerController()
@@ -99,6 +83,10 @@ extension ImagePicker: Presentable {
 
             bag += viewController.didPickImageSignal.onValue { url in
                 completion(.success(url))
+            }
+
+            bag += viewController.didCancelSignal.onValue { _ in
+                completion(.failure(ImagePickerError.cancelled))
             }
 
             return bag
