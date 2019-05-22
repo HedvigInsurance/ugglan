@@ -76,7 +76,11 @@ enum ImagePickerError: Error {
 extension ImagePicker: Presentable {
     func materialize() -> (UIImagePickerController, Future<URL>) {
         let viewController = UIImagePickerController()
-        viewController.preferredPresentationStyle = .modal
+        viewController.preferredPresentationStyle = .modally(
+            presentationStyle: .overFullScreen,
+            transitionStyle: nil,
+            capturesStatusBarAppearance: nil
+        )
 
         return (viewController, Future { completion in
             let bag = DisposeBag()
