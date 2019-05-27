@@ -25,6 +25,7 @@ targets:
     references:
       - Ugglan
       - sdkroot:UIKit.framework
+      - sdkroot:SceneKit.framework
       - location: Carthage/Build/iOS/FBSnapshotTestCase.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
@@ -171,6 +172,7 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
     references:
       - sdkroot:UIKit.framework
+      - sdkroot:SceneKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
       - location: Carthage/Build/iOS/ApolloSQLite.framework
