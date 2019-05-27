@@ -8,9 +8,11 @@
 import Foundation
 import SceneKit
 import Flow
+import SpriteKit
 
 struct ReferralsProgressBar {
     let amountOfBlocks: Int
+    let amountOfCompletedBlocks: Int
 }
 
 func radians(_ degrees: Float) -> Float {
@@ -27,11 +29,12 @@ extension ReferralsProgressBar: Viewable {
         
         let containerNode = SCNNode()
         containerNode.physicsBody?.isAffectedByGravity = true
+        containerNode.eulerAngles = SCNVector3Make(0, radians(-45), 0)
         
         for i in 1...amountOfBlocks {
-            let boxGeometry = SCNBox(width: 12.0, height: 2.0, length: 12.0, chamferRadius: 0)
+            let boxGeometry = SCNBox(width: 10.0, height: 2.0, length: 10.0, chamferRadius: 0)
             
-            if i > 8 {
+            if i > amountOfBlocks - amountOfCompletedBlocks {
                 boxGeometry.firstMaterial?.diffuse.contents = UIColor.turquoise
             } else {
                 boxGeometry.firstMaterial?.diffuse.contents = UIColor.purple
@@ -47,12 +50,34 @@ extension ReferralsProgressBar: Viewable {
             boxNode.runAction(moveDown)
         }
         
+        let skScene = SKScene(size: CGSize(width: 200, height: 200))
+        skScene.backgroundColor = UIColor.clear
+        
+        let labelNode = SKLabelNode(text: "Hello World")
+        labelNode.fontSize = 20
+        labelNode.fontName = "San Fransisco"
+        labelNode.position = CGPoint(x: 100, y: 100)
+        labelNode.fontColor = UIColor.black
+        
+        skScene.addChild(labelNode)
+        
+        let plane = SCNPlane(width: 20, height: 20)
+        let material = SCNMaterial()
+        material.isDoubleSided = true
+        material.diffuse.contents = skScene
+        plane.materials = [material]
+        let node = SCNNode(geometry: plane)
+        node.position = SCNVector3Make(20, 0, 0)
+        scene.rootNode.addChildNode(node)
+        
         scene.rootNode.addChildNode(containerNode)
         
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3Make(-30, Float(amountOfBlocks) + 25, 36)
-        cameraNode.eulerAngles = SCNVector3Make(radians(-15), radians(-40), 0)
+        cameraNode.camera?.usesOrthographicProjection = true
+        cameraNode.camera?.orthographicScale = Double(42 - Float(amountOfBlocks))
+        cameraNode.position = SCNVector3Make(0, Float(amountOfBlocks) * 2.5, Float(amountOfBlocks) * 1.75)
+        cameraNode.eulerAngles = SCNVector3Make(radians(-40), 0, 0)
         scene.rootNode.addChildNode(cameraNode)
         
         let ambientLightNode = SCNNode()
@@ -101,7 +126,7 @@ extension ReferralsProgressBar: Viewable {
         
         bag += pan.signal(forState: .changed).onValue {
             let translation = pan.translation(in: pan.view)
-            let newAngleY = radians(Float(translation.x))
+            let newAngleY = radians(Float(translation.x)) + radians(-45)
             containerNode.eulerAngles.y = newAngleY
         }
         
