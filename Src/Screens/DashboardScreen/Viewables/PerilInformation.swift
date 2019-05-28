@@ -34,7 +34,7 @@ extension PerilInformation: Presentable {
         containerStackView.isLayoutMarginsRelativeArrangement = false
 
         let containerView = UIStackView()
-        containerView.spacing = 15
+        containerView.spacing = 10
         containerView.backgroundColor = UIColor.white
         containerView.axis = .vertical
         containerView.alignment = .top
@@ -54,9 +54,13 @@ extension PerilInformation: Presentable {
         let titleLabel = UILabel()
         titleLabel.style = .standaloneLargeTitle
         titleLabel.textAlignment = .left
-
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+        
         bag += titleLabel.setDynamicText(DynamicString(title))
-
+        
+        titleLabel.setLineHeight(lineHeight: 1.3)
+        
         containerView.addArrangedSubview(titleLabel)
 
         let body = MarkdownText(text: description, style: .bodyOffBlack)
