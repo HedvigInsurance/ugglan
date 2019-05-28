@@ -99,14 +99,27 @@ extension Peril: Reusable {
                 titleLabel.sizeToFit()
             }
             
+            let touchDownDateSignal = ReadWriteSignal<Date>(Date())
+            
+            bag += perilView
+                .signal(for: .touchDown)
+                .map { Date() }
+                .bindTo(touchDownDateSignal)
+            
             bag += perilView.signal(for: .touchUpInside).feedback(type: .impactLight)
             
             bag += perilView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 perilView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
             }
             
-            bag += perilView.signal(for: .touchUpInside).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                perilView.transform = CGAffineTransform.identity
+            bag += merge(
+                perilView.signal(for: .touchUpInside),
+                perilView.signal(for: .touchUpOutside),
+                perilView.signal(for: .touchCancel)
+                ).withLatestFrom(touchDownDateSignal.atOnce().plain())
+                .delay(by: { _, date in date.timeIntervalSinceNow < -0.2 ? 0 : 0.2 })
+                .animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    perilView.transform = CGAffineTransform.identity
             }
             
             bag += perilView.signal(for: .touchUpInside).onValue { _ in
