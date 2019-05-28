@@ -68,7 +68,7 @@ extension Peril {
 
 extension Peril: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (Peril) -> Disposable) {
-        let perilView = UIView()
+        let perilView = UIControl()
 
         return (perilView, { peril in
             perilView.subviews.forEach { view in
@@ -78,6 +78,7 @@ extension Peril: Reusable {
             let bag = DisposeBag()
 
             let perilIcon = Icon(icon: Peril.iconAsset(for: peril.id), iconWidth: 40)
+            
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in
                 make.centerX.top.equalToSuperview()
@@ -97,11 +98,18 @@ extension Peril: Reusable {
 
                 titleLabel.sizeToFit()
             }
-
-            let tapGesture = UITapGestureRecognizer()
-            bag += perilView.install(tapGesture)
-
-            bag += tapGesture.signal(forState: .ended).onValue { _ in
+            
+            bag += perilView.signal(for: .touchUpInside).feedback(type: .impactLight)
+            
+            bag += perilView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                perilView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }
+            
+            bag += perilView.signal(for: .touchUpInside).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                perilView.transform = CGAffineTransform.identity
+            }
+            
+            bag += perilView.signal(for: .touchUpInside).onValue { _ in
                 let title = peril.title.replacingOccurrences(of: "-\n", with: "")
 
                 peril.presentingViewController.present(
