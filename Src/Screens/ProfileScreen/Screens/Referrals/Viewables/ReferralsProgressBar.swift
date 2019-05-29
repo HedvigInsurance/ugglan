@@ -21,15 +21,15 @@ func radians(_ degrees: Float) -> Float {
 
 extension ReferralsProgressBar {
     func currentDiscountLabel() -> SCNNode {
-        let textGeometry = SCNText(string: "10kr", extrusionDepth: 1)
-        textGeometry.font = HedvigFonts.circularStdBold?.withSize(250)
+        let textGeometry = SCNText(string: "-10kr", extrusionDepth: 1)
+        textGeometry.font = HedvigFonts.circularStdBold?.withSize(225)
         textGeometry.firstMaterial?.diffuse.contents = UIColor.offBlack
         
         let textNode = SCNNode(geometry: textGeometry)
         
         let chamferRadius: CGFloat = 150
         let paddingX: Float = 250
-        let paddingY: Float = 125
+        let paddingY: Float = 150
         
         let backgroundBox = SCNBox(
             width: CGFloat(textGeometry.boundingBox.max.x + paddingX),
@@ -44,8 +44,8 @@ extension ReferralsProgressBar {
         let backgroundNode = SCNNode(geometry: backgroundBox)
         backgroundNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
         backgroundNode.position = SCNVector3Make(
-            10,
-            Float((amountOfBlocks - amountOfCompletedBlocks) * 2),
+            13,
+            Float((amountOfBlocks - (amountOfCompletedBlocks / 2)) * 2),
             0
         )
         backgroundNode.scale = SCNVector3Make(0.01, 0.01, 0.01)
@@ -55,8 +55,22 @@ extension ReferralsProgressBar {
             -(backgroundNode.boundingBox.max.y + (textNode.boundingBox.max.y / 2)) / 2,
             Float(chamferRadius)
         )
-        
         backgroundNode.addChildNode(textNode)
+        
+        let chevronGeometry = SCNPyramid(width: 50, height: 50, length: 50)
+        let chevronNode = SCNNode(geometry: chevronGeometry)
+        chevronNode.eulerAngles = SCNVector3Make(0, 0, radians(90))
+        chevronNode.position = SCNVector3Make(
+            -backgroundNode.boundingBox.max.x,
+            0,
+            0
+        )
+        
+        chevronGeometry.firstMaterial?.diffuse.contents = UIColor.turquoise
+        chevronGeometry.firstMaterial?.shininess = 0
+        chevronGeometry.firstMaterial?.lightingModel = .constant
+        
+        backgroundNode.addChildNode(chevronNode)
         
         return backgroundNode
     }
