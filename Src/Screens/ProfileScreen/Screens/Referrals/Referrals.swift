@@ -110,6 +110,13 @@ extension Referrals: Presentable {
                 make.height.equalTo(210)
             }
         }
+        
+        let referralsProgressBar = ReferralsProgressBar(amountOfBlocks: 20, amountOfCompletedBlocks: 2)
+        bag += formView.prepend(referralsProgressBar) { view in
+            view.snp.makeConstraints { make in
+                make.height.equalTo(350)
+            }
+        }
 
         let referralsTitle = ReferralsTitle()
         bag += formView.append(referralsTitle)
