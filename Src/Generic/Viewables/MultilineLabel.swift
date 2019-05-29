@@ -14,19 +14,21 @@ struct MultilineLabel {
     let styledTextSignal: ReadWriteSignal<StyledText>
     let intrinsicContentSizeSignal: ReadSignal<CGSize>
     let usePreferredMaxLayoutWidth: Bool
+    let lineHeight: CGFloat?
 
     private let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
         CGSize(width: 0, height: 0)
     )
 
-    init(styledText: StyledText, usePreferredMaxLayoutWidth: Bool = true) {
+    init(styledText: StyledText, usePreferredMaxLayoutWidth: Bool = true, lineHeight: CGFloat? = nil) {
         styledTextSignal = ReadWriteSignal(styledText)
         intrinsicContentSizeSignal = intrinsicContentSizeReadWriteSignal.readOnly()
         self.usePreferredMaxLayoutWidth = usePreferredMaxLayoutWidth
+        self.lineHeight = lineHeight
     }
 
-    init(value: DisplayableString, style: TextStyle, usePreferredMaxLayoutWidth: Bool = true) {
-        self.init(styledText: StyledText(text: value, style: style), usePreferredMaxLayoutWidth: usePreferredMaxLayoutWidth)
+    init(value: DisplayableString, style: TextStyle, usePreferredMaxLayoutWidth: Bool = true, lineHeight: CGFloat? = nil) {
+        self.init(styledText: StyledText(text: value, style: style), usePreferredMaxLayoutWidth: usePreferredMaxLayoutWidth, lineHeight: lineHeight)
     }
 }
 
@@ -42,6 +44,12 @@ extension MultilineLabel: Viewable {
                 textStyle.lineBreakMode = .byWordWrapping
             }
         }.bindTo(label, \.styledText)
+        
+        bag += styledTextSignal.atOnce().onValue { _ in
+            if (self.lineHeight != nil) {
+                label.setLineHeight(lineHeight: self.lineHeight!)
+            }
+        }
 
         bag += label.didLayoutSignal.onValue {
             if self.usePreferredMaxLayoutWidth {

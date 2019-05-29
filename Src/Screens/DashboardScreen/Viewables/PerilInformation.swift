@@ -50,18 +50,9 @@ extension PerilInformation: Presentable {
             make.width.equalTo(60)
             make.height.equalTo(60)
         }
-
-        let titleLabel = UILabel()
-        titleLabel.style = .standaloneLargeTitle
-        titleLabel.textAlignment = .left
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
         
-        bag += titleLabel.setDynamicText(DynamicString(title))
-        
-        titleLabel.setLineHeight(lineHeight: 1.3)
-        
-        containerView.addArrangedSubview(titleLabel)
+        let titleLabel = MultilineLabel(value: title, style: .standaloneLargeTitle, lineHeight: 1.3)
+        bag += containerView.addArranged(titleLabel)
 
         let body = MarkdownText(text: description, style: .bodyOffBlack)
         bag += containerView.addArranged(body)

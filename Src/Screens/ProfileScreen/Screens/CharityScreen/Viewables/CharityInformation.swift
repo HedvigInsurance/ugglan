@@ -31,7 +31,7 @@ extension CharityInformation: Presentable {
 
         containerStackView.addArrangedSubview(containerView)
 
-        let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .standaloneLargeTitle)
+        let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .standaloneLargeTitle, lineHeight: 1.3)
         bag += containerView.addArranged(titleLabel)
 
         let body = MarkdownText(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY), style: .bodyOffBlack)
