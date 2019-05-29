@@ -19,6 +19,49 @@ func radians(_ degrees: Float) -> Float {
     return degrees * Float.pi / 180
 }
 
+extension ReferralsProgressBar {
+    func currentDiscountLabel() -> SCNNode {
+        let textGeometry = SCNText(string: "10kr", extrusionDepth: 1)
+        textGeometry.font = HedvigFonts.circularStdBold?.withSize(250)
+        textGeometry.firstMaterial?.diffuse.contents = UIColor.offBlack
+        
+        let textNode = SCNNode(geometry: textGeometry)
+        
+        let chamferRadius: CGFloat = 150
+        let paddingX: Float = 250
+        let paddingY: Float = 125
+        
+        let backgroundBox = SCNBox(
+            width: CGFloat(textGeometry.boundingBox.max.x + paddingX),
+            height: CGFloat(textGeometry.boundingBox.max.y + paddingY),
+            length: chamferRadius,
+            chamferRadius: chamferRadius
+        )
+        backgroundBox.firstMaterial?.diffuse.contents = UIColor.turquoise
+        backgroundBox.firstMaterial?.shininess = 0
+        backgroundBox.firstMaterial?.lightingModel = .constant
+        
+        let backgroundNode = SCNNode(geometry: backgroundBox)
+        backgroundNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
+        backgroundNode.position = SCNVector3Make(
+            10,
+            Float((amountOfBlocks - amountOfCompletedBlocks) * 2),
+            0
+        )
+        backgroundNode.scale = SCNVector3Make(0.01, 0.01, 0.01)
+        
+        textNode.position = SCNVector3Make(
+            -textNode.boundingBox.max.x / 2,
+            -(backgroundNode.boundingBox.max.y + (textNode.boundingBox.max.y / 2)) / 2,
+            Float(chamferRadius)
+        )
+        
+        backgroundNode.addChildNode(textNode)
+        
+        return backgroundNode
+    }
+}
+
 extension ReferralsProgressBar: Viewable {
     func materialize(events: ViewableEvents) -> (SCNView, Disposable) {
         let view = SCNView()
@@ -35,7 +78,20 @@ extension ReferralsProgressBar: Viewable {
             let boxGeometry = SCNBox(width: 10.0, height: 2.0, length: 10.0, chamferRadius: 0)
             
             if i > amountOfBlocks - amountOfCompletedBlocks {
-                boxGeometry.firstMaterial?.diffuse.contents = UIColor.turquoise
+                let boxColor = UIColor.turquoise.withAlphaComponent(0.9)
+                
+                boxGeometry.materials = [
+                    boxColor,
+                    boxColor,
+                    boxColor,
+                    boxColor,
+                    i == amountOfBlocks ? boxColor : UIColor.clear
+                    ].map({ color in
+                        let material = SCNMaterial()
+                        material.diffuse.contents = color
+                        material.locksAmbientWithDiffuse = true
+                        return material
+                    })
             } else {
                 boxGeometry.firstMaterial?.diffuse.contents = UIColor.purple
             }
@@ -50,25 +106,7 @@ extension ReferralsProgressBar: Viewable {
             boxNode.runAction(moveDown)
         }
         
-        let skScene = SKScene(size: CGSize(width: 200, height: 200))
-        skScene.backgroundColor = UIColor.clear
-        
-        let labelNode = SKLabelNode(text: "Hello World")
-        labelNode.fontSize = 20
-        labelNode.fontName = "San Fransisco"
-        labelNode.position = CGPoint(x: 100, y: 100)
-        labelNode.fontColor = UIColor.black
-        
-        skScene.addChild(labelNode)
-        
-        let plane = SCNPlane(width: 20, height: 20)
-        let material = SCNMaterial()
-        material.isDoubleSided = true
-        material.diffuse.contents = skScene
-        plane.materials = [material]
-        let node = SCNNode(geometry: plane)
-        node.position = SCNVector3Make(20, 0, 0)
-        scene.rootNode.addChildNode(node)
+        scene.rootNode.addChildNode(currentDiscountLabel())
         
         scene.rootNode.addChildNode(containerNode)
         
@@ -76,8 +114,8 @@ extension ReferralsProgressBar: Viewable {
         cameraNode.camera = SCNCamera()
         cameraNode.camera?.usesOrthographicProjection = true
         cameraNode.camera?.orthographicScale = Double(42 - Float(amountOfBlocks))
-        cameraNode.position = SCNVector3Make(0, Float(amountOfBlocks) * 2.5, Float(amountOfBlocks) * 1.75)
-        cameraNode.eulerAngles = SCNVector3Make(radians(-40), 0, 0)
+        cameraNode.position = SCNVector3Make(0, Float(amountOfBlocks) * 2, Float(amountOfBlocks) * 1.75)
+        cameraNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
         scene.rootNode.addChildNode(cameraNode)
         
         let ambientLightNode = SCNNode()
