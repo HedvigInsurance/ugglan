@@ -226,7 +226,10 @@ extension ReferralsProgressBar: Viewable {
             boxNode.physicsBody?.isAffectedByGravity = true
             containerNode.addChildNode(boxNode)
             
-            let moveDown = SCNAction.moveBy(x: 0, y: CGFloat(-20 * i), z: 0, duration: TimeInterval(0.75 + (0.1 * Float(i))))
+            let baseAnimationTime: Float = 0.75
+            let animationDelay = i < amountOfBlocks - amountOfCompletedBlocks ? TimeInterval(baseAnimationTime + (0.1 * Float(i))) : TimeInterval(baseAnimationTime + (0.1 * Float(amountOfBlocks - amountOfCompletedBlocks)))
+            
+            let moveDown = SCNAction.moveBy(x: 0, y: CGFloat(-20 * i), z: 0, duration: animationDelay)
             moveDown.timingMode = .easeInEaseOut
             boxNode.runAction(moveDown)
         }
