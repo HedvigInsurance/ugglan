@@ -189,7 +189,7 @@ extension ReferralsProgressBar {
 extension ReferralsProgressBar: Viewable {
     func materialize(events: ViewableEvents) -> (SCNView, Disposable) {
         let view = SCNView()
-        view.antialiasingMode = .multisampling2X
+        view.antialiasingMode = .multisampling4X
         let bag = DisposeBag()
         
         let scene = SCNScene()
