@@ -44,7 +44,7 @@ extension ReferralsProgressBar {
         let backgroundNode = SCNNode(geometry: backgroundBox)
         backgroundNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
         backgroundNode.position = SCNVector3Make(
-            13,
+            13 + 100,
             Float((amountOfBlocks - (amountOfCompletedBlocks / 2)) * 2),
             0
         )
@@ -71,6 +71,16 @@ extension ReferralsProgressBar {
         chevronGeometry.firstMaterial?.lightingModel = .constant
         
         backgroundNode.addChildNode(chevronNode)
+        
+        let moveIn = SCNAction.moveBy(x: -100, y: 0, z: 0, duration: 0.5)
+        moveIn.timingMode = .easeInEaseOut
+        
+        let bag = DisposeBag()
+        
+        bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
+            bag.dispose()
+            backgroundNode.runAction(moveIn)
+        }
         
         return backgroundNode
     }
