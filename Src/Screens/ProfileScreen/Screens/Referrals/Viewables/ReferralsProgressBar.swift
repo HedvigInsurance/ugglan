@@ -20,10 +20,31 @@ func radians(_ degrees: Float) -> Float {
 }
 
 extension ReferralsProgressBar {
-    func currentDiscountLabel() -> SCNNode {
-        let textGeometry = SCNText(string: "-10kr", extrusionDepth: 1)
-        textGeometry.font = HedvigFonts.circularStdBold?.withSize(225)
-        textGeometry.firstMaterial?.diffuse.contents = UIColor.offBlack
+    
+    enum ChevronDirection {
+        case left, right
+    }
+    
+    enum LabelSize {
+        case small, large
+    }
+    
+    func createLabel(
+        text: String,
+        textColor: UIColor,
+        backgroundColor: UIColor,
+        chevronDirection: ChevronDirection,
+        size: LabelSize
+    ) -> SCNNode {
+        let textGeometry = SCNText(string: text, extrusionDepth: 1)
+        
+        if size == .small {
+            textGeometry.font = HedvigFonts.circularStdBold?.withSize(175)
+        } else {
+            textGeometry.font = HedvigFonts.circularStdBold?.withSize(225)
+        }
+        
+        textGeometry.firstMaterial?.diffuse.contents = textColor
         
         let textNode = SCNNode(geometry: textGeometry)
         
@@ -37,17 +58,12 @@ extension ReferralsProgressBar {
             length: chamferRadius,
             chamferRadius: chamferRadius
         )
-        backgroundBox.firstMaterial?.diffuse.contents = UIColor.turquoise
+        backgroundBox.firstMaterial?.diffuse.contents = backgroundColor
         backgroundBox.firstMaterial?.shininess = 0
         backgroundBox.firstMaterial?.lightingModel = .constant
         
         let backgroundNode = SCNNode(geometry: backgroundBox)
         backgroundNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
-        backgroundNode.position = SCNVector3Make(
-            13 + 100,
-            Float((amountOfBlocks - (amountOfCompletedBlocks / 2)) * 2),
-            0
-        )
         backgroundNode.scale = SCNVector3Make(0.01, 0.01, 0.01)
         
         textNode.position = SCNVector3Make(
@@ -59,18 +75,102 @@ extension ReferralsProgressBar {
         
         let chevronGeometry = SCNPyramid(width: 50, height: 50, length: 50)
         let chevronNode = SCNNode(geometry: chevronGeometry)
-        chevronNode.eulerAngles = SCNVector3Make(0, 0, radians(90))
-        chevronNode.position = SCNVector3Make(
-            -backgroundNode.boundingBox.max.x,
-            0,
-            0
-        )
         
-        chevronGeometry.firstMaterial?.diffuse.contents = UIColor.turquoise
+        if chevronDirection == .left {
+            chevronNode.eulerAngles = SCNVector3Make(0, 0, radians(90))
+            chevronNode.position = SCNVector3Make(
+                -backgroundNode.boundingBox.max.x,
+                0,
+                0
+            )
+        } else {
+            chevronNode.eulerAngles = SCNVector3Make(0, 0, radians(-90))
+            chevronNode.position = SCNVector3Make(
+                backgroundNode.boundingBox.max.x,
+                0,
+                0
+            )
+        }
+        
+        chevronGeometry.firstMaterial?.diffuse.contents = backgroundColor
         chevronGeometry.firstMaterial?.shininess = 0
         chevronGeometry.firstMaterial?.lightingModel = .constant
         
         backgroundNode.addChildNode(chevronNode)
+        
+        return backgroundNode
+    }
+    
+    func fullPriceLabel() -> SCNNode {
+        let node = createLabel(
+            text: "-200kr",
+            textColor: UIColor.white,
+            backgroundColor: UIColor.offBlack,
+            chevronDirection: .right,
+            size: .small
+        )
+        
+        node.position = SCNVector3Make(
+            -113,
+            Float(amountOfBlocks * 2) + 1,
+            0
+        )
+        
+        let moveIn = SCNAction.moveBy(x: 100, y: 0, z: 0, duration: 0.5)
+        moveIn.timingMode = .easeInEaseOut
+
+        let bag = DisposeBag()
+
+        bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
+            bag.dispose()
+            node.runAction(moveIn)
+        }
+        
+        return node
+    }
+    
+    func freeLabel() -> SCNNode {
+        let node = createLabel(
+            text: "Gratis!",
+            textColor: UIColor.white,
+            backgroundColor: UIColor.offBlack,
+            chevronDirection: .right,
+            size: .small
+        )
+        
+        node.position = SCNVector3Make(
+            -113,
+            1,
+            0
+        )
+        
+        let moveIn = SCNAction.moveBy(x: 100, y: 0, z: 0, duration: 0.5)
+        moveIn.timingMode = .easeInEaseOut
+
+        let bag = DisposeBag()
+
+        bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
+            bag.dispose()
+            node.runAction(moveIn)
+        }
+        
+        return node
+    }
+    
+    func currentDiscountLabel() -> SCNNode {
+        let node = createLabel(
+            text: "-10kr",
+            textColor: UIColor.offBlack,
+            backgroundColor: UIColor.turquoise,
+            chevronDirection: .left,
+            size: .large
+        )
+        
+        node.position = SCNVector3Make(
+            13 + 100,
+            Float((amountOfBlocks - (amountOfCompletedBlocks / 2)) * 2) + 1,
+            0
+        )
         
         let moveIn = SCNAction.moveBy(x: -100, y: 0, z: 0, duration: 0.5)
         moveIn.timingMode = .easeInEaseOut
@@ -79,10 +179,10 @@ extension ReferralsProgressBar {
         
         bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
             bag.dispose()
-            backgroundNode.runAction(moveIn)
+            node.runAction(moveIn)
         }
         
-        return backgroundNode
+        return node
     }
 }
 
@@ -131,6 +231,8 @@ extension ReferralsProgressBar: Viewable {
         }
         
         scene.rootNode.addChildNode(currentDiscountLabel())
+        scene.rootNode.addChildNode(fullPriceLabel())
+        scene.rootNode.addChildNode(freeLabel())
         
         scene.rootNode.addChildNode(containerNode)
         
@@ -142,11 +244,13 @@ extension ReferralsProgressBar: Viewable {
         cameraNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
         scene.rootNode.addChildNode(cameraNode)
         
+        let lightTemperature: CGFloat = 6500
+        
         let ambientLightNode = SCNNode()
         let ambientLight = SCNLight()
         ambientLight.type = .ambient
         ambientLight.color = UIColor.white
-        ambientLight.temperature = 5500
+        ambientLight.temperature = lightTemperature
         ambientLight.intensity = 800
         
         ambientLightNode.light = ambientLight
@@ -157,7 +261,7 @@ extension ReferralsProgressBar: Viewable {
         let sideLight = SCNLight()
         sideLight.type = .directional
         sideLight.color = UIColor.white
-        sideLight.temperature = 5500
+        sideLight.temperature = lightTemperature
         sideLight.intensity = 200
         sideLight.spotOuterAngle = 55
         sideLightNode.eulerAngles = SCNVector3Make(0, radians(-55), 0)
@@ -170,7 +274,7 @@ extension ReferralsProgressBar: Viewable {
         let topLight = SCNLight()
         topLight.type = .directional
         topLight.color = UIColor.white
-        topLight.temperature = 5500
+        topLight.temperature = lightTemperature
         topLight.intensity = 250
         topLight.spotOuterAngle = 55
         topLightNode.eulerAngles = SCNVector3Make(radians(-90), radians(-55), 0)
