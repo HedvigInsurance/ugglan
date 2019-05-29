@@ -117,29 +117,16 @@ extension ExpandableRow: Viewable {
             make.width.height.centerX.centerY.equalToSuperview()
         }
         
-        let touchDownDateSignal = ReadWriteSignal<Date>(Date())
-        
-        bag += contentWrapperView
-            .signal(for: .touchDown)
-            .map { Date() }
-            .bindTo(touchDownDateSignal)
-
         bag += contentWrapperView.signal(for: .touchUpInside).feedback(type: .impactLight)
         
         bag += contentWrapperView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }
         
-        bag += merge(
-            contentWrapperView.signal(for: .touchUpInside),
-            contentWrapperView.signal(for: .touchUpOutside),
-            contentWrapperView.signal(for: .touchCancel)
-            ).withLatestFrom(touchDownDateSignal.atOnce().plain())
-            .delay(by: { _, date in date.timeIntervalSinceNow < -0.1 ? 0 : 0.1 })
-            .animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                containerView.transform = CGAffineTransform.identity
+        bag += contentWrapperView.delayedTouchCancel(delay: 0.1).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            containerView.transform = CGAffineTransform.identity
         }
-    
+        
         bag += contentWrapperView
             .signal(for: .touchUpInside)
             .withLatestFrom(isOpenSignal.atOnce().plain())
