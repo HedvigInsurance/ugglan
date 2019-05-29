@@ -51,10 +51,12 @@ extension ReferralsProgressBar {
         let chamferRadius: CGFloat = 150
         let paddingX: Float = 250
         let paddingY: Float = 150
+        let backgroundBoxHeight = textGeometry.boundingBox.max.y + paddingY
+        let backgroundBoxWidth = textGeometry.boundingBox.max.x + paddingX
         
         let backgroundBox = SCNBox(
-            width: CGFloat(textGeometry.boundingBox.max.x + paddingX),
-            height: CGFloat(textGeometry.boundingBox.max.y + paddingY),
+            width: CGFloat(backgroundBoxWidth),
+            height: CGFloat(backgroundBoxHeight),
             length: chamferRadius,
             chamferRadius: chamferRadius
         )
@@ -68,7 +70,7 @@ extension ReferralsProgressBar {
         
         textNode.position = SCNVector3Make(
             -textNode.boundingBox.max.x / 2,
-            -(backgroundNode.boundingBox.max.y + (textNode.boundingBox.max.y / 2)) / 2,
+            -backgroundBoxHeight / 2 + (paddingY / 2) - 15,
             Float(chamferRadius)
         )
         backgroundNode.addChildNode(textNode)
