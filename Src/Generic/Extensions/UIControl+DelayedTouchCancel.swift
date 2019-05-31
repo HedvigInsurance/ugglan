@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 extension UIControl {
-    func delayedTouchCancel(delay: Double = 0.2) -> Signal<Bool> {
+    func delayedTouchCancel(delay: TimeInterval = 0.2) -> Signal<Void> {
         return Signal { callback in
             let bag = DisposeBag()
             
@@ -28,7 +28,7 @@ extension UIControl {
                 ).withLatestFrom(touchDownDateSignal.atOnce().plain())
                 .delay(by: { _, date in date.timeIntervalSinceNow < -delay ? 0 : delay })
                 .onValue({ _ in
-                    callback(true)
+                    callback(())
                 })
             
             return bag
