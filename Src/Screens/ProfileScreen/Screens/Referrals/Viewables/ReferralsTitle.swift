@@ -22,7 +22,7 @@ extension ReferralsTitle: Viewable {
 
         let title = MultilineLabel(
             styledText: StyledText(
-                text: String(key: .REFERRALS_TITLE),
+                text: String(key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: "10")),
                 style: TextStyle.standaloneLargeTitle.centerAligned
             )
         )
@@ -35,7 +35,7 @@ extension ReferralsTitle: Viewable {
         
         let description = MultilineLabel(
             styledText: StyledText(
-                text: "Du ger bort 10 kr rabatt och får 10 kr rabatt för varje vän du bjuder in via din unika länk! Kan du nå gratis försäkring?",
+                text: String(key: .REFERRAL_PROGRESS_BODY(referralValue: "10")),
                 style: TextStyle.bodyOffBlack.centerAligned
             )
         )
