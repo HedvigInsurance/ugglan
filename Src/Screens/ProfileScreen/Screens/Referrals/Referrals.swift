@@ -113,6 +113,9 @@ extension Referrals: Presentable {
 
         let referralsTitle = ReferralsTitle()
         bag += formView.append(referralsTitle)
+        
+        let referralsCodeContainer = ReferralsCodeContainer()
+        bag += formView.append(referralsCodeContainer)
 
         let referralsOfferSender = ReferralsOffer(mode: .sender)
         bag += formView.append(referralsOfferSender)
