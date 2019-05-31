@@ -117,21 +117,6 @@ extension Referrals: Presentable {
         let referralsCodeContainer = ReferralsCodeContainer()
         bag += formView.append(referralsCodeContainer)
 
-        let referralsOfferSender = ReferralsOffer(mode: .sender)
-        bag += formView.append(referralsOfferSender)
-
-        let referralsOfferReceiver = ReferralsOffer(mode: .receiver)
-        bag += formView.append(referralsOfferReceiver)
-
-        let section = SectionView(rows: [], style: .sectionPlain)
-
-        let termsRow = ReferralsTermsRow(
-            presentingViewController: viewController
-        )
-        bag += section.append(termsRow)
-
-        formView.append(section)
-
         bag += formView.append(Spacing(height: 50))
 
         let linkSignal = ReadWriteSignal<String?>(nil)
