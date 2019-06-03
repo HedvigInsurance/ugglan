@@ -116,7 +116,25 @@ extension ReferralsInvitationsTable: Viewable {
             style.section.background = SectionStyle.Background.standardMediumIcons
         }
         
-        let tableKit = TableKit<EmptySection, ReferralsInvitation>(table: Table(rows: invitations), style: tableStyle, bag: bag)
+        let tableKit = TableKit<EmptySection, ReferralsInvitation>(
+            table: Table(rows: invitations),
+            style: tableStyle,
+            bag: bag,
+            headerForSection: { _, _ in
+                let headerStackView = UIStackView()
+                headerStackView.edgeInsets = UIEdgeInsets(top: 0, left: 20, bottom: 10, right: 0)
+                headerStackView.isLayoutMarginsRelativeArrangement = true
+                
+                let label = UILabel(
+                    value: String(key: .REFERRAL_INVITE_TITLE),
+                    style: .sectionHeader
+                )
+                
+                headerStackView.addArrangedSubview(label)
+                
+                return headerStackView
+            }
+        )
         tableKit.view.isScrollEnabled = false
         
         return (tableKit.view, bag)
