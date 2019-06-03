@@ -37,23 +37,22 @@ struct ReferralsInvitation: Reusable {
         let view = UIStackView()
         view.spacing = 12
         
-        let circleContainer = UIStackView()
-        circleContainer.alignment = .center
-        circleContainer.axis = .horizontal
+        let circleContainer = UIView()
         circleContainer.snp.makeConstraints { make in
-            make.width.equalTo(circleSize)
+            make.width.equalTo(50)
             make.height.equalTo(circleSize)
         }
         
         view.addArrangedSubview(circleContainer)
         
         let circle = UIView()
-        circleContainer.addArrangedSubview(circle)
+        circleContainer.addSubview(circle)
         circle.layer.cornerRadius = CGFloat(circleSize / 2)
         
         circle.snp.makeConstraints { make in
             make.width.equalTo(circleSize)
             make.height.equalTo(circleSize)
+            make.center.equalToSuperview()
         }
         
         let circleLabel = UILabel()
@@ -77,7 +76,13 @@ struct ReferralsInvitation: Reusable {
         
         view.addArrangedSubview(contentContainer)
         
+        let iconContainer = UIStackView()
+        
+        view.addArrangedSubview(iconContainer)
+        
         return (view, { invitation in
+            let bag = DisposeBag()
+            
             let textStyle = TextStyle(
                 font: HedvigFonts.circularStdBold!,
                 color: UIColor.white
@@ -91,7 +96,35 @@ struct ReferralsInvitation: Reusable {
             
             descriptionLabel.text = invitation.state.description
             
-            return NilDisposer()
+            iconContainer.subviews.forEach({ subview in
+                subview.removeFromSuperview()
+            })
+            
+            switch invitation.state {
+            case .onboarding:
+                bag += iconContainer.addArranged(ReferralsInvitationOnboardingIcon())
+                
+                iconContainer.snp.remakeConstraints({ make in
+                    make.width.equalTo(16)
+                })
+                break
+            case .member:
+                bag += iconContainer.addArranged(ReferralsInvitationMemberIcon())
+                
+                iconContainer.snp.remakeConstraints({ make in
+                    make.width.equalTo(76)
+                })
+                break
+            case .left:
+                bag += iconContainer.addArranged(ReferralsInvitationLeftIcon())
+                
+                iconContainer.snp.remakeConstraints({ make in
+                    make.width.equalTo(16)
+                })
+                break
+            }
+            
+            return bag
         })
     }
 }
@@ -102,7 +135,7 @@ extension ReferralsInvitationsTable: Viewable {
         
         var invitations = [
             ReferralsInvitation(name: "Sam", state: .onboarding),
-            ReferralsInvitation(name: "Anton", state: .onboarding),
+            ReferralsInvitation(name: "Anton", state: .member),
             ReferralsInvitation(name: "Fredrik", state: .left)
         ]
         
@@ -114,7 +147,7 @@ extension ReferralsInvitationsTable: Viewable {
         
         let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in
             style.section.minRowHeight = 72
-            style.section.background = SectionStyle.Background.standardMediumIcons
+            style.section.background = SectionStyle.Background.standardLargeIcons
         }
         
         let tableKit = TableKit<EmptySection, ReferralsInvitation>(
