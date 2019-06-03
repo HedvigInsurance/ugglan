@@ -35,6 +35,7 @@ struct ReferralsInvitation: Reusable {
     
     static func makeAndConfigure() -> (make: UIView, configure: (ReferralsInvitation) -> Disposable) {
         let view = UIStackView()
+        view.spacing = 12
         
         let circleContainer = UIStackView()
         circleContainer.alignment = .center
