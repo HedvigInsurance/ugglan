@@ -116,6 +116,15 @@ extension Referrals: Presentable {
         
         let referralsCodeContainer = ReferralsCodeContainer()
         bag += formView.append(referralsCodeContainer)
+        
+        let referralsInvitationsTable = ReferralsInvitationsTable()
+        bag += formView.append(referralsInvitationsTable) { tableView in
+            bag += tableView.didLayoutSignal.onValue { _ in
+                tableView.snp.remakeConstraints { make in
+                    make.height.equalTo(tableView.contentSize.height)
+                }
+            }
+        }
 
         bag += formView.append(Spacing(height: 50))
 

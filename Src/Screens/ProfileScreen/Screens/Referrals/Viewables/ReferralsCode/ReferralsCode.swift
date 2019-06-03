@@ -34,7 +34,10 @@ extension ReferralsCode: Viewable {
         codeContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 5)
         codeContainer.isLayoutMarginsRelativeArrangement = true
         
-        let codeTextStyle = TextStyle(font: HedvigFonts.circularStdBold!, color: UIColor.purple).centerAligned.lineHeight(2.4).resized(to: 16).restyled { (style: inout TextStyle) in
+        let codeTextStyle = TextStyle(
+            font: HedvigFonts.circularStdBold!,
+            color: UIColor.purple
+        ).centerAligned.lineHeight(2.4).resized(to: 16).restyled { (style: inout TextStyle) in
             style.highlightedColor = .darkPurple
         }
         
