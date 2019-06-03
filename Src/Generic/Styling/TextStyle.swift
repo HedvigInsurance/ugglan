@@ -97,6 +97,10 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .black
     }
+    
+    static let rowTitleBold = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(17)
+    }
 
     static let rowTitleWhite = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
         style.color = .white

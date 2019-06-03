@@ -15,21 +15,36 @@ struct ReferralsInvitationsTable {}
 struct ReferralsInvitation: Reusable {
     enum InviteState {
         case onboarding, member, left
+        
+        var description: String {
+            switch self {
+            case .onboarding:
+                return String(key: .REFERRAL_INVITE_STARTEDSTATE)
+            case .member:
+                return String(key: .REFERRAL_INVITE_NEWSTATE)
+            case .left:
+                return String(key: .REFERRAL_INVITE_QUITSTATE)
+            }
+        }
     }
     
     let name: String?
     let state: InviteState
     
+    static let circleSize = 32
+    
     static func makeAndConfigure() -> (make: UIView, configure: (ReferralsInvitation) -> Disposable) {
         let view = UIStackView()
         
         let circleContainer = UIStackView()
-        circleContainer.alignment = .leading
-        circleContainer.axis = .vertical
+        circleContainer.alignment = .center
+        circleContainer.axis = .horizontal
+        circleContainer.snp.makeConstraints { make in
+            make.width.equalTo(circleSize)
+            make.height.equalTo(circleSize)
+        }
         
         view.addArrangedSubview(circleContainer)
-        
-        let circleSize = 32
         
         let circle = UIView()
         circleContainer.addArrangedSubview(circle)
@@ -50,9 +65,14 @@ struct ReferralsInvitation: Reusable {
         }
         
         let contentContainer = UIStackView()
+        contentContainer.axis = .vertical
+        contentContainer.spacing = 5
         
-        let titleLabel = UILabel(value: "", style: .rowTitle)
+        let titleLabel = UILabel(value: "", style: .rowTitleBold)
         contentContainer.addArrangedSubview(titleLabel)
+        
+        let descriptionLabel = UILabel(value: "", style: .rowSubtitle)
+        contentContainer.addArrangedSubview(descriptionLabel)
         
         view.addArrangedSubview(contentContainer)
         
@@ -68,6 +88,8 @@ struct ReferralsInvitation: Reusable {
                 titleLabel.text = name
             }
             
+            descriptionLabel.text = invitation.state.description
+            
             return NilDisposer()
         })
     }
@@ -77,14 +99,20 @@ extension ReferralsInvitationsTable: Viewable {
     func materialize(events: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
         
-        let invitations = [
+        var invitations = [
             ReferralsInvitation(name: "Sam", state: .onboarding),
             ReferralsInvitation(name: "Anton", state: .onboarding),
             ReferralsInvitation(name: "Fredrik", state: .left)
         ]
         
+        for _ in 1...3 {
+            invitations.forEach { invitation in
+                invitations.append(invitation)
+            }
+        }
+        
         let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in
-            style.section.minRowHeight = 32
+            style.section.minRowHeight = 72
             style.section.background = SectionStyle.Background.standardMediumIcons
         }
         
