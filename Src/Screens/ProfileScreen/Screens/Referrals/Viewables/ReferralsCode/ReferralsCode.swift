@@ -26,9 +26,9 @@ extension ReferralsCode: Viewable {
         
         let code = "HDVG87"
         
-        bag += view.copySignal.onValue { _ in
+        bag += view.copySignal.atValue { _ in
             UIPasteboard.general.value = code
-        }
+        }.feedback(type: .success)
         
         let codeContainer = UIStackView()
         codeContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 5)
