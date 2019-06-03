@@ -92,6 +92,8 @@ struct ReferralsInvitation: Reusable {
                 circleLabel.styledText = StyledText(text: String(name.prefix(1)), style: textStyle)
                 circle.backgroundColor = String(name.prefix(1)).hedvigColor
                 titleLabel.text = name
+            } else {
+                titleLabel.text = String(key: .REFERRAL_INVITE_ANONS)
             }
             
             descriptionLabel.text = invitation.state.description
@@ -129,28 +131,74 @@ struct ReferralsInvitation: Reusable {
     }
 }
 
+struct ReferralsInvitationAnonymous: Reusable {
+    let count: Int
+    
+    static func makeAndConfigure() -> (make: UIView, configure: (ReferralsInvitationAnonymous) -> Disposable) {
+        let view = UIStackView()
+        view.spacing = 10
+        
+        let ghostIconContainer = UIView()
+        
+        let ghostIcon = Icon(icon: Asset.ghost, iconWidth: 24)
+        ghostIconContainer.addSubview(ghostIcon)
+        
+        ghostIcon.snp.makeConstraints { make in
+            make.width.equalTo(24)
+            make.center.equalToSuperview()
+        }
+        
+        view.addArrangedSubview(ghostIconContainer)
+        
+        ghostIconContainer.snp.makeConstraints { make in
+            make.width.equalTo(50)
+        }
+        
+        let contentContainer = UIStackView()
+        contentContainer.axis = .vertical
+        contentContainer.spacing = 5
+        
+        let titleLabel = UILabel(value: "", style: .rowTitleBold)
+        contentContainer.addArrangedSubview(titleLabel)
+        
+        let descriptionLabel = UILabel(value: "", style: .rowSubtitle)
+        contentContainer.addArrangedSubview(descriptionLabel)
+        
+        view.addArrangedSubview(contentContainer)
+        
+        return (view, { invitation in
+            let bag = DisposeBag()
+            
+            if invitation.count > 1 {
+                titleLabel.text = String(key: .REFERRAL_INVITE_ANONS)
+                descriptionLabel.text = String(key: .REFERRAL_INVITE_OPENEDSTATE)
+            } else {
+                titleLabel.text = String(key: .REFERRAL_INVITE_ANON)
+                descriptionLabel.text = String(key: .REFERRAL_INVITE_OPENEDSTATE)
+            }
+            
+            return bag
+        })
+    }
+}
+
 extension ReferralsInvitationsTable: Viewable {
     func materialize(events: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
         
-        var invitations = [
-            ReferralsInvitation(name: "Sam", state: .onboarding),
-            ReferralsInvitation(name: "Anton", state: .member),
-            ReferralsInvitation(name: "Fredrik", state: .left)
+        let invitations: [Either<ReferralsInvitation, ReferralsInvitationAnonymous>] = [
+            .right(ReferralsInvitationAnonymous(count: 1)),
+            .left(ReferralsInvitation(name: "Sam", state: .onboarding)),
+            .left(ReferralsInvitation(name: "Anton", state: .member)),
+            .left(ReferralsInvitation(name: "Fredrik", state: .left))
         ]
-        
-        for _ in 1...3 {
-            invitations.forEach { invitation in
-                invitations.append(invitation)
-            }
-        }
         
         let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in
             style.section.minRowHeight = 72
             style.section.background = SectionStyle.Background.standardLargeIcons
         }
         
-        let tableKit = TableKit<EmptySection, ReferralsInvitation>(
+        let tableKit = TableKit<EmptySection, Either<ReferralsInvitation, ReferralsInvitationAnonymous>>(
             table: Table(rows: invitations),
             style: tableStyle,
             bag: bag,
