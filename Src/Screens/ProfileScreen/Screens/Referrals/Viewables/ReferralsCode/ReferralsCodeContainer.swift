@@ -12,14 +12,6 @@ import Form
 
 struct ReferralsCodeContainer {}
 
-extension TextStyle {
-    func lineHeight(_ lineHeight: CGFloat) -> TextStyle {
-        return restyled { (style: inout TextStyle) in
-            style.lineHeight = lineHeight
-        }
-    }
-}
-
 extension ReferralsCodeContainer: Viewable {
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
