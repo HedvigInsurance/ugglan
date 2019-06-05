@@ -28,6 +28,11 @@ var dashboardOpenFreeTextChat: (_ presentingViewController: UIViewController) ->
     presentingViewController.present(chatOverlay, style: .default, options: [.prefersNavigationBarHidden(false)])
 }
 
+var dashboardOpenWhatsNew: (_ presentingViewController: UIViewController) -> Void = { presentingViewController in
+    let whatsNew = WhatsNew()
+    presentingViewController.present(whatsNew)
+}
+
 extension Dashboard: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
@@ -35,6 +40,7 @@ extension Dashboard: Presentable {
         let viewController = UIViewController()
         viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
         viewController.installChatButton()
+        viewController.installWhatsNewButton()
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
