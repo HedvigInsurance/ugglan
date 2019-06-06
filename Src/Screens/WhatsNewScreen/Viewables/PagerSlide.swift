@@ -29,18 +29,19 @@ extension PagerSlide: Viewable {
         
         containerView.edgeInsets = UIEdgeInsets(
             top: 24,
-            left: 24,
+            left: 0,
             bottom: 24,
-            right: 24
+            right: 0
         )
         
         let imageView = UIImageView()
         imageView.image = Asset.bonusrain.image
         
         containerView.addArrangedSubview(imageView)
+        
         imageView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(270)
+            make.height.lessThanOrEqualTo(270)
         }
         
         let spacing = Spacing(height: 40)
@@ -90,7 +91,7 @@ extension PagerSlide: Viewable {
         
         containerView.snp.makeConstraints { make in
             make.width.equalToSuperview().inset(24)
-            make.centerX.equalToSuperview()
+            make.centerX.centerY.equalToSuperview()
         }
         
         return (view, bag)

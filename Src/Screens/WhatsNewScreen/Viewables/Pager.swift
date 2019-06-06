@@ -12,26 +12,23 @@ import UIKit
 
 struct Pager {
     let superviewSize: CGSize
+    let pages: [PagerSlide]
 }
 
 extension Pager: Viewable {
      func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
-        let slides: [PagerSlide] = [
-            PagerSlide(title: "Bonusregn till folket!", body: "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får 10 kr lägre månadskostnad – för varje vän!"),
-            PagerSlide(title: "Bonusregn till folket 2 ", body: "Lorem 2")
-        ]
-        
         let scrollView = UIScrollView()
-        scrollView.contentSize = CGSize(width: superviewSize.width * CGFloat(slides.count), height: 400)
+        scrollView.contentSize = CGSize(width: superviewSize.width * CGFloat(pages.count), height: 400)
         scrollView.isPagingEnabled = true
         scrollView.alwaysBounceHorizontal = false
+        scrollView.showsHorizontalScrollIndicator = false
         
-        for i in 0 ..< slides.count {
-            bag += scrollView.add(slides[i]) { slideView in
+        for i in 0 ..< pages.count {
+            bag += scrollView.add(pages[i]) { slideView in
                 slideView.snp.makeConstraints { make in
-                    make.width.height.equalToSuperview()
+                    make.width.height.centerY.equalToSuperview()
                     make.left.equalTo(superviewSize.width * CGFloat(i))
                 }
             }
