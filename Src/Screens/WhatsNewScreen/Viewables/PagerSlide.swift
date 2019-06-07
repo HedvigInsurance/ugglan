@@ -12,7 +12,8 @@ import UIKit
 
 struct PagerSlide {
     let title: String
-    let body: String
+    let paragraph: String
+    let imageUrl: String
 }
 
 extension PagerSlide: Viewable {
@@ -34,17 +35,17 @@ extension PagerSlide: Viewable {
             right: 0
         )
         
-        let imageView = UIImageView()
-        imageView.image = Asset.bonusrain.image
+        let image = RemoteVectorIcon()
+        image.pdfUrlStringSignal.value = imageUrl
         
-        containerView.addArrangedSubview(imageView)
-        
-        imageView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.lessThanOrEqualTo(270)
+        bag += containerView.addArranged(image) { imageView in
+            imageView.snp.makeConstraints { make in
+                make.width.centerX.equalToSuperview()
+                make.height.equalTo(270)
+            }
         }
-        
-        let spacing = Spacing(height: 40)
+
+        let spacing = Spacing(height: 60)
         bag += containerView.addArranged(spacing)
         
         let titleLabel = MultilineLabel(styledText: StyledText(
@@ -56,7 +57,8 @@ extension PagerSlide: Viewable {
             titleLabelView.textAlignment = .center
             
             titleLabelView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
+                make.width.equalToSuperview().inset(24)
+                make.centerX.equalToSuperview()
                 make.height.equalTo(100)
             }
             
@@ -68,7 +70,7 @@ extension PagerSlide: Viewable {
         }
         
         let bodyLabel = MultilineLabel(styledText: StyledText(
-            text: body,
+            text: paragraph,
             style: .bodyOffBlack
         ))
         
@@ -76,7 +78,8 @@ extension PagerSlide: Viewable {
             bodyLabelView.textAlignment = .center
             
             bodyLabelView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
+                make.width.equalToSuperview().inset(24)
+                make.centerX.equalToSuperview()
                 make.height.equalTo(100)
             }
             
@@ -90,8 +93,9 @@ extension PagerSlide: Viewable {
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.width.equalToSuperview().inset(24)
-            make.centerX.centerY.equalToSuperview()
+            make.width.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(0)
         }
         
         return (view, bag)

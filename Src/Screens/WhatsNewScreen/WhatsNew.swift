@@ -5,6 +5,7 @@
 //  Created by Gustaf Gunér on 2019-06-05.
 //
 
+import Apollo
 import Foundation
 import Flow
 import Form
@@ -12,9 +13,16 @@ import Presentation
 import UIKit
 
 struct WhatsNew {
+    let client: ApolloClient
+    let environment: ApolloEnvironmentConfig
     let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
         CGSize(width: 0, height: 0)
     )
+    
+    init(client: ApolloClient = ApolloContainer.shared.client, environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment) {
+        self.client = client
+        self.environment = environment
+    }
 }
 
 extension WhatsNew: Presentable {
@@ -54,44 +62,51 @@ extension WhatsNew: Presentable {
         view.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
-            make.width.centerY.centerX.equalToSuperview()
+            make.width.centerX.centerY.equalToSuperview()
         }
         
-        let pages: [PagerSlide] = [
-            PagerSlide(title: "Bonusregn till folket!", body: "Hedvig blir bättre när du får dela det med dina vänner! Du och dina vänner får 10 kr lägre månadskostnad – för varje vän!"),
-            PagerSlide(title: "Bonusregn till folket 2 ", body: "Lorem 2")
-        ]
-    
-        let pager = Pager(superviewSize: viewController.view.bounds.size, pages: pages)
-        
-        bag += stackView.addArranged(pager) { pagerView in
-            pagerView.snp.makeConstraints { make in
-                make.width.centerX.equalToSuperview()
-                make.height.equalTo(480)
+        bag += client.watch(query: WhatsNewQuery(locale: Locale.svSe, sinceVersion: "2.7.0")).compactMap { $0.data?.news }.onValue { news in
+            
+            let pages = news.map { n in
+                PagerSlide(
+                    title: n.title,
+                    paragraph: n.paragraph,
+                    imageUrl: n.illustration.pdfUrl
+                )
             }
-        }
-        
-        
-        let pageIndicator = PageIndicator(numberOfPages: 6)
-     
-        bag += stackView.addArranged(pageIndicator) { pageIndicatorView in
-            pageIndicatorView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.height.equalTo(40)
+            
+            print(news)
+            
+            let pager = Pager(superviewSize: viewController.view.bounds.size, pages: pages)
+            
+            bag += stackView.addArranged(pager) { pagerView in
+                pagerView.snp.makeConstraints { make in
+                    make.width.centerX.equalToSuperview()
+                    make.height.equalTo(480)
+                }
             }
-        }
-        
-        let button = Button(title: "Nästa nyhet", type: .standard(backgroundColor: .purple, textColor: .white))
-        
-        let buttonContainer = UIView()
-        
-        bag += buttonContainer.add(button) { buttonView in
-            buttonView.snp.makeConstraints { make in
-                make.height.centerY.centerX.equalToSuperview()
+            
+            let pageIndicator = PageIndicator(numberOfPages: pages.count)
+            
+            bag += stackView.addArranged(pageIndicator) { pageIndicatorView in
+                pageIndicatorView.snp.makeConstraints { make in
+                    make.width.equalToSuperview()
+                    make.height.equalTo(40)
+                }
             }
+            
+            let button = Button(title: "Nästa nyhet", type: .standard(backgroundColor: .purple, textColor: .white))
+            
+            let buttonContainer = UIView()
+            
+            bag += buttonContainer.add(button) { buttonView in
+                buttonView.snp.makeConstraints { make in
+                    make.height.centerY.centerX.equalToSuperview()
+                }
+            }
+            
+            stackView.addArrangedSubview(buttonContainer)
         }
-        
-        stackView.addArrangedSubview(buttonContainer)
         
         viewController.view = view
         
