@@ -59,14 +59,6 @@ extension LoggedIn: Presentable {
         bag += NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
             tabBarController.selectedIndex = 2
         }
-        
-        bag += Signal(after: 2).onValue { _ in
-            bag += tabBarController.present(ReferralsNotification(), options: [.prefersNavigationBarHidden(true)]).onValue({ result in
-                if result == .openReferrals {
-                    NotificationCenter.default.post(name: .shouldOpenReferrals, object: nil)
-                }
-            })
-        }
 
         return (tabBarController, bag)
     }
