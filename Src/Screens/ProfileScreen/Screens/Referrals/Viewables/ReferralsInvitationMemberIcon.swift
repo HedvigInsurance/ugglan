@@ -18,13 +18,13 @@ extension ReferralsInvitationMemberIcon: Viewable {
         view.axis = .horizontal
         view.alignment = .center
         
-        let styling = UIView()
-        styling.backgroundColor = UIColor.lightGray
-        styling.layer.cornerRadius = 8
+        let boxView = UIView()
+        boxView.backgroundColor = UIColor.lightGray
+        boxView.layer.cornerRadius = 8
         
-        view.addArrangedSubview(styling)
+        view.addArrangedSubview(boxView)
         
-        styling.snp.makeConstraints { make in
+        boxView.snp.makeConstraints { make in
             make.height.equalTo(28)
         }
         
@@ -32,7 +32,7 @@ extension ReferralsInvitationMemberIcon: Viewable {
         contentView.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 6)
         contentView.isLayoutMarginsRelativeArrangement = true
         
-        styling.addSubview(contentView)
+        boxView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
             make.trailing.leading.top.bottom.equalToSuperview()
