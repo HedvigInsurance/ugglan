@@ -13,6 +13,7 @@ import UIKit
 struct Pager {
     let superviewSize: CGSize
     let pages: [PagerSlide]
+    let scrollToNextSignal: ReadSignal<Void>
 }
 
 extension Pager: Viewable {
@@ -20,10 +21,11 @@ extension Pager: Viewable {
         let bag = DisposeBag()
         
         let scrollView = UIScrollView()
-        scrollView.contentSize = CGSize(width: superviewSize.width * CGFloat(pages.count), height: 400)
+        scrollView.contentSize = CGSize(width: superviewSize.width * CGFloat(pages.count + 1), height: 400)
         scrollView.isPagingEnabled = true
         scrollView.alwaysBounceHorizontal = false
         scrollView.showsHorizontalScrollIndicator = false
+
         
         for i in 0 ..< pages.count {
             bag += scrollView.add(pages[i]) { slideView in
@@ -32,6 +34,16 @@ extension Pager: Viewable {
                     make.left.equalTo(superviewSize.width * CGFloat(i))
                 }
             }
+        }
+        
+        bag += scrollToNextSignal.onValue { _ in
+            if (scrollView.contentOffset.x >= (scrollView.contentSize.width - self.superviewSize.width)) {
+                return
+            }
+            
+            let newOffset = CGPoint(x: scrollView.contentOffset.x + self.superviewSize.width, y: scrollView.contentOffset.y)
+
+            scrollView.setContentOffset(newOffset, animated: true)
         }
         
         return (scrollView, bag)

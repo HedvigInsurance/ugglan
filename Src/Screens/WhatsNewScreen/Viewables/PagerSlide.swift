@@ -41,11 +41,11 @@ extension PagerSlide: Viewable {
         bag += containerView.addArranged(image) { imageView in
             imageView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
-                make.height.equalTo(270)
+                make.height.lessThanOrEqualTo(300)
             }
         }
 
-        let spacing = Spacing(height: 60)
+        let spacing = Spacing(height: 40)
         bag += containerView.addArranged(spacing)
         
         let titleLabel = MultilineLabel(styledText: StyledText(
@@ -57,7 +57,7 @@ extension PagerSlide: Viewable {
             titleLabelView.textAlignment = .center
             
             titleLabelView.snp.makeConstraints { make in
-                make.width.equalToSuperview().inset(24)
+                make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
                 make.height.equalTo(100)
             }
@@ -78,7 +78,7 @@ extension PagerSlide: Viewable {
             bodyLabelView.textAlignment = .center
             
             bodyLabelView.snp.makeConstraints { make in
-                make.width.equalToSuperview().inset(24)
+                make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
                 make.height.equalTo(100)
             }
@@ -93,7 +93,7 @@ extension PagerSlide: Viewable {
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
+            make.width.equalToSuperview().inset(24)
             make.centerX.equalToSuperview()
             make.bottom.equalTo(0)
         }

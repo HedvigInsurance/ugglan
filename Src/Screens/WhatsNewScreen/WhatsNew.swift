@@ -75,10 +75,10 @@ extension WhatsNew: Presentable {
                 )
             }
             
-            print(news)
+            let scrollToNextSignal = ReadWriteSignal<Void>(())
             
-            let pager = Pager(superviewSize: viewController.view.bounds.size, pages: pages)
-            
+            let pager = Pager(superviewSize: viewController.view.bounds.size, pages: pages, scrollToNextSignal: scrollToNextSignal.readOnly())
+    
             bag += stackView.addArranged(pager) { pagerView in
                 pagerView.snp.makeConstraints { make in
                     make.width.centerX.equalToSuperview()
@@ -86,7 +86,7 @@ extension WhatsNew: Presentable {
                 }
             }
             
-            let pageIndicator = PageIndicator(numberOfPages: pages.count)
+            let pageIndicator = PageIndicator(numberOfPages: pages.count + 1)
             
             bag += stackView.addArranged(pageIndicator) { pageIndicatorView in
                 pageIndicatorView.snp.makeConstraints { make in
@@ -96,6 +96,8 @@ extension WhatsNew: Presentable {
             }
             
             let button = Button(title: "Nästa nyhet", type: .standard(backgroundColor: .purple, textColor: .white))
+            
+            bag += button.onTapSignal.map { _ -> Void in () }.bindTo(scrollToNextSignal)
             
             let buttonContainer = UIView()
             

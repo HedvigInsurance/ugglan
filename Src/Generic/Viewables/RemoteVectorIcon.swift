@@ -41,6 +41,11 @@ extension RemoteVectorIcon: Viewable {
 
             let page = pdfDocument.page(at: 1)!
             let rect = page.getBoxRect(CGPDFBox.mediaBox)
+            
+            let newSize = CGSize(
+                width: imageViewSize.width,
+                height: imageViewSize.width * (rect.height / rect.width)
+            )
 
             func render(_ context: CGContext) {
                 context.setFillColor(gray: 1, alpha: 0)
@@ -48,19 +53,19 @@ extension RemoteVectorIcon: Viewable {
                     x: rect.origin.x,
                     y: rect.origin.y,
                     width: imageViewSize.width,
-                    height: imageViewSize.height
+                    height: newSize.height
                 ))
-                context.translateBy(x: 0, y: imageViewSize.height)
+                context.translateBy(x: 0, y: newSize.height)
                 context.scaleBy(
-                    x: imageViewSize.width / rect.width, y:
-                    -(imageViewSize.height / rect.height)
+                    x: imageViewSize.width / rect.width,
+                    y: -(newSize.height / rect.height)
                 )
 
                 context.drawPDFPage(page)
             }
 
             if #available(iOS 10.0, *) {
-                let renderer = UIGraphicsImageRenderer(size: imageViewSize)
+                let renderer = UIGraphicsImageRenderer(size: newSize)
 
                 let image = renderer.image(actions: { context in
                     render(context.cgContext)
@@ -68,7 +73,7 @@ extension RemoteVectorIcon: Viewable {
 
                 imageView.image = image
             } else {
-                UIGraphicsBeginImageContext(imageViewSize)
+                UIGraphicsBeginImageContext(newSize)
 
                 guard let context = UIGraphicsGetCurrentContext() else { return }
 
@@ -80,6 +85,8 @@ extension RemoteVectorIcon: Viewable {
 
                 imageView.image = image
             }
+            
+            imageView.contentMode = .scaleAspectFit
         }
 
         bag += imageView.didLayoutSignal
