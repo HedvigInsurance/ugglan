@@ -11,7 +11,8 @@ import Flow
 import UIKit
 
 struct PageIndicator {
-    let numberOfPages: Int
+    let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?> = ReadWriteSignal(nil)
+    let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
 }
 
 extension PageIndicator: Viewable {
@@ -34,16 +35,31 @@ extension PageIndicator: Viewable {
             }
         }
         
-        for _ in 0 ..< numberOfPages {
-            let indicator = UIView()
-            indicator.backgroundColor = .gray
-            indicator.layer.cornerRadius = 2
-            
-            indicator.snp.makeConstraints { make in
-                make.width.height.equalTo(4)
+        bag += dataSignal.atOnce().compactMap { $0?.news }.onValue { news in
+            for i in 0...3 {
+                let indicator = UIView()
+                indicator.backgroundColor = i == 0 ? .purple : .gray
+                indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
+                indicator.layer.cornerRadius = 2
+                
+                indicator.snp.makeConstraints { make in
+                    make.width.height.equalTo(4)
+                }
+                
+                stackView.addArrangedSubview(indicator)
             }
-            
-            stackView.addArrangedSubview(indicator)
+        }
+        
+        bag += pageIndexSignal
+            .animated(style: SpringAnimationStyle.heavyBounce())
+            { pageIndex in
+                
+            for (index, indicator) in stackView.subviews.enumerated() {
+                let indicatorIsActive = index == pageIndex
+                
+                indicator.backgroundColor = indicatorIsActive ? .purple : .gray
+                indicator.transform = indicatorIsActive ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
+            }
         }
         
         return (view, bag)

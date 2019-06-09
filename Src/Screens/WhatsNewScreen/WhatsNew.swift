@@ -65,55 +65,55 @@ extension WhatsNew: Presentable {
             make.width.centerX.centerY.equalToSuperview()
         }
         
-        bag += client.watch(query: WhatsNewQuery(locale: Locale.svSe, sinceVersion: "2.7.0")).compactMap { $0.data?.news }.onValue { news in
-            
-            let pages = news.map { n in
-                PagerSlide(
-                    title: n.title,
-                    paragraph: n.paragraph,
-                    imageUrl: n.illustration.pdfUrl
-                )
+        let scrollToNextSignal = ReadWriteSignal<Void>(())
+        
+        let pager = Pager(presentingViewController: viewController, scrollToNextSignal: scrollToNextSignal.readOnly())
+        
+        bag += stackView.addArranged(pager) { pagerView in
+            pagerView.snp.makeConstraints { make in
+                make.width.centerX.equalToSuperview()
+                make.height.equalTo(480)
             }
-            
-            let scrollToNextSignal = ReadWriteSignal<Void>(())
-            
-            let pager = Pager(superviewSize: viewController.view.bounds.size, pages: pages, scrollToNextSignal: scrollToNextSignal.readOnly())
-    
-            bag += stackView.addArranged(pager) { pagerView in
-                pagerView.snp.makeConstraints { make in
-                    make.width.centerX.equalToSuperview()
-                    make.height.equalTo(480)
-                }
-            }
-            
-            let pageIndicator = PageIndicator(numberOfPages: pages.count + 1)
-            
-            bag += stackView.addArranged(pageIndicator) { pageIndicatorView in
-                pageIndicatorView.snp.makeConstraints { make in
-                    make.width.equalToSuperview()
-                    make.height.equalTo(40)
-                }
-            }
-            
-            let button = Button(title: "Nästa nyhet", type: .standard(backgroundColor: .purple, textColor: .white))
-            
-            bag += button.onTapSignal.map { _ -> Void in () }.bindTo(scrollToNextSignal)
-            
-            let buttonContainer = UIView()
-            
-            bag += buttonContainer.add(button) { buttonView in
-                buttonView.snp.makeConstraints { make in
-                    make.height.centerY.centerX.equalToSuperview()
-                }
-            }
-            
-            stackView.addArrangedSubview(buttonContainer)
         }
+       
+        let pageIndicator = PageIndicator()
+        
+        bag += stackView.addArranged(pageIndicator) { pageIndicatorView in
+            pageIndicatorView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalTo(40)
+            }
+        }
+        
+        let whatsNewQuery = client.watch(query: WhatsNewQuery(locale: Locale.svSe, sinceVersion: "2.7.0"))
+            .compactMap { $0.data }
+        
+        bag += whatsNewQuery.bindTo(pager.dataSignal)
+        bag += whatsNewQuery.bindTo(pageIndicator.dataSignal)
+        
+        bag += pager.onScrolledToPageSignal.bindTo(pageIndicator.pageIndexSignal)
+        
+        let button = Button(title: "Nästa nyhet", type: .standard(backgroundColor: .purple, textColor: .white))
+        
+        bag += button.onTapSignal.map { _ -> Void in () }.bindTo(scrollToNextSignal)
+        
+        let buttonContainer = UIView()
+        
+        bag += buttonContainer.add(button) { buttonView in
+            buttonView.snp.makeConstraints { make in
+                make.height.centerY.centerX.equalToSuperview()
+            }
+        }
+        
+        stackView.addArrangedSubview(buttonContainer)
         
         viewController.view = view
         
         return (viewController, Future { completion in
-            bag += dismissButton.onTapSignal.onValue { _ in
+            bag += merge(
+                dismissButton.onTapSignal,
+                pager.onScrolledToEndSignal
+            ).onValue {
                 completion(.success)
             }
             
