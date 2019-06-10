@@ -55,6 +55,10 @@ extension LoggedIn: Presentable {
             claimsPresentation,
             profilePresentation
         )
+        
+        bag += NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
+            tabBarController.selectedIndex = 2
+        }
 
         return (tabBarController, bag)
     }
