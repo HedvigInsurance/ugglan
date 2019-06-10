@@ -70,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
             
-            innerBag += rootViewController.present(ReferralsLink(), style: .modal, options: [
+            innerBag += rootViewController.present(ReferralsReceiverConsent(), style: .modal, options: [
                 .prefersNavigationBarHidden(true)
             ]).onValue { _ in
                 self.presentOnboarding()

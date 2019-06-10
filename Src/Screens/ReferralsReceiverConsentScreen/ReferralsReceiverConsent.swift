@@ -10,21 +10,21 @@ import Flow
 import Presentation
 import UIKit
 
-enum ReferralsLinkResult {
+enum ReferralsReceiverConsentResult {
     case accept, decline
 }
 
-struct ReferralsLink {}
+struct ReferralsReceiverConsent {}
 
-extension ReferralsLink: Presentable {
-    func materialize() -> (UIViewController, Future<ReferralsLinkResult>) {
+extension ReferralsReceiverConsent: Presentable {
+    func materialize() -> (UIViewController, Future<ReferralsReceiverConsentResult>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
         
         let view = UIView()
         view.backgroundColor = UIColor.offWhite
         
-        let content = ReferralsLinkContent()
+        let content = ReferralsReceiverConsentContent()
         
         bag += view.add(content) { view in
             view.snp.makeConstraints({ make in

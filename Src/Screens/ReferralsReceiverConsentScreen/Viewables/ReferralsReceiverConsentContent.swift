@@ -1,5 +1,5 @@
 //
-//  ReferralsInvitationContent.swift
+//  ReferralsReceiverConsentContent.swift
 //  UITests
 //
 //  Created by Sam Pettersson on 2019-06-10.
@@ -10,7 +10,7 @@ import Flow
 import UIKit
 import Form
 
-struct ReferralsLinkContent {
+struct ReferralsReceiverConsentContent {
     var didTapDecline: Signal<Void> {
         return didTapDeclineCallbacker.providedSignal
     }
@@ -21,7 +21,7 @@ struct ReferralsLinkContent {
     private let didTapAcceptCallbacker = Callbacker<Void>()
 }
 
-extension ReferralsLinkContent: Viewable {
+extension ReferralsReceiverConsentContent: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
