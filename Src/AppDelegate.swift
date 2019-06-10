@@ -72,8 +72,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             innerBag += rootViewController.present(ReferralsReceiverConsent(), style: .modal, options: [
                 .prefersNavigationBarHidden(true)
-            ]).onValue { _ in
-                self.presentOnboarding()
+            ]).onValue { result in
+                if result == .accept {
+                    self.presentOnboarding()
+                }
                 innerBag.dispose()
             }
         }
