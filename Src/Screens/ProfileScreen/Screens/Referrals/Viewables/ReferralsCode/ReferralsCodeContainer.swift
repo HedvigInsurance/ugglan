@@ -20,7 +20,10 @@ extension ReferralsCodeContainer: Viewable {
         stackView.alignment = .center
         stackView.spacing = 5
         
-        let titleLabel = MultilineLabel(value: "Din kod", style: TextStyle.centeredBodyOffBlack)
+        let titleLabel = MultilineLabel(
+            value: String(key: .REFERRAL_PROGRESS_CODE_TITLE),
+            style: TextStyle.centeredBodyOffBlack
+        )
         bag += stackView.addArranged(titleLabel)
         
         let referralsCode = ReferralsCode()
