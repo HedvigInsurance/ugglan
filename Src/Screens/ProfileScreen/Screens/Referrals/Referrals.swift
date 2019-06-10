@@ -103,13 +103,6 @@ extension Referrals: Presentable {
             formView,
             scrollView: scrollView
         )
-
-        let referralsIllustration = ReferralsIllustration()
-        bag += formView.prepend(referralsIllustration) { view in
-            view.snp.makeConstraints { make in
-                make.height.equalTo(210)
-            }
-        }
         
         let referralsProgressBar = ReferralsProgressBar(amountOfBlocks: 20, amountOfCompletedBlocks: 2)
         bag += formView.prepend(referralsProgressBar) { view in
@@ -120,21 +113,18 @@ extension Referrals: Presentable {
 
         let referralsTitle = ReferralsTitle()
         bag += formView.append(referralsTitle)
-
-        let referralsOfferSender = ReferralsOffer(mode: .sender)
-        bag += formView.append(referralsOfferSender)
-
-        let referralsOfferReceiver = ReferralsOffer(mode: .receiver)
-        bag += formView.append(referralsOfferReceiver)
-
-        let section = SectionView(rows: [], style: .sectionPlain)
-
-        let termsRow = ReferralsTermsRow(
-            presentingViewController: viewController
-        )
-        bag += section.append(termsRow)
-
-        formView.append(section)
+        
+        let referralsCodeContainer = ReferralsCodeContainer()
+        bag += formView.append(referralsCodeContainer)
+        
+        let referralsInvitationsTable = ReferralsInvitationsTable()
+        bag += formView.append(referralsInvitationsTable) { tableView in
+            bag += tableView.didLayoutSignal.onValue { _ in
+                tableView.snp.remakeConstraints { make in
+                    make.height.equalTo(tableView.contentSize.height)
+                }
+            }
+        }
 
         bag += formView.append(Spacing(height: 50))
 
