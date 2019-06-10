@@ -56,13 +56,13 @@ extension ReferralsReceiverConsentContent: Viewable {
         view.addArrangedSubview(headerImageContainer)
         
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_LINK_INVITATION_SCREEN_HEADLINE(name: "Lucas", referralValue: "10")),
+            value: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10", user: "Lucas")),
             style: TextStyle.standaloneLargeTitle.colored(.offBlack).aligned(to: .center)
         )
         bag += view.addArranged(title)
         
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_LINK_INVITATION_SCREEN_BODY),
+            value: String(key: .REFERRAL_STARTSCREEN_BODY),
             style: TextStyle.bodyOffBlack.aligned(to: .center)
         )
         bag += view.addArranged(description)
@@ -94,7 +94,7 @@ extension ReferralsReceiverConsentContent: Viewable {
         }
         
         let acceptDiscountButton = Button(
-            title: String(key: .REFERRAL_LINK_INVITATION_SCREEN_BTN_ACCEPT),
+            title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
             type: .standard(backgroundColor: .purple, textColor: .white)
         )
         bag += buttonsContainer.addArranged(acceptDiscountButton.wrappedIn(UIStackView())) { stackView in
@@ -107,7 +107,7 @@ extension ReferralsReceiverConsentContent: Viewable {
         }
         
         let declineButton = Button(
-            title: String(key: .REFERRAL_LINK_INVITATION_SCREEN_BTN_DECLINE),
+            title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
             type: .pillTransparent(backgroundColor: .blackPurple, textColor: .white)
         )
         bag += buttonsContainer.addArranged(declineButton.wrappedIn(UIStackView())) { stackView in
