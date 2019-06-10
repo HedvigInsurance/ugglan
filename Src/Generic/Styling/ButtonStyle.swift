@@ -113,6 +113,27 @@ extension ButtonStyle {
             ),
         ]
     }
+    
+    static let standardBlackPurple = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+        style.buttonType = .custom
+        style.states = [
+            .normal: ButtonStateStyle(
+                background: BackgroundStyle(
+                    color: UIColor.blackPurple,
+                    border: BorderStyle(
+                        width: 0,
+                        color: UIColor.clear,
+                        cornerRadius: 25,
+                        borderEdges: UIRectEdge()
+                    )
+                ),
+                text: TextStyle(
+                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    color: UIColor.white
+                )
+            ),
+        ]
+    }
 
     static let standardTransparentBlack = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
         style.buttonType = .custom

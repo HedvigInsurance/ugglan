@@ -50,6 +50,7 @@ extension WhatsNew: Presentable {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 8
+        stackView.alignment = .center
         stackView.isLayoutMarginsRelativeArrangement = true
         
         stackView.edgeInsets = UIEdgeInsets(
@@ -85,27 +86,27 @@ extension WhatsNew: Presentable {
             }
         }
         
+        let proceedButton = ProceedButton(
+            button: Button(title: "Next", type: .standard(backgroundColor: .blackPurple, textColor: .white))
+        )
+        
+        bag += stackView.addArranged(proceedButton) { proceedButtonView in
+            proceedButtonView.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+            }
+        }
+        
         let whatsNewQuery = client.watch(query: WhatsNewQuery(locale: Locale.svSe, sinceVersion: "2.7.0"))
             .compactMap { $0.data }
         
         bag += whatsNewQuery.bindTo(pager.dataSignal)
         bag += whatsNewQuery.bindTo(pageIndicator.dataSignal)
+        bag += whatsNewQuery.bindTo(proceedButton.dataSignal)
         
         bag += pager.onScrolledToPageSignal.bindTo(pageIndicator.pageIndexSignal)
+        bag += pager.onScrolledToPageSignal.bindTo(proceedButton.onScrolledToPageIndexSignal)
         
-        let button = Button(title: "Nästa nyhet", type: .standard(backgroundColor: .purple, textColor: .white))
-        
-        bag += button.onTapSignal.map { _ -> Void in () }.bindTo(scrollToNextSignal)
-        
-        let buttonContainer = UIView()
-        
-        bag += buttonContainer.add(button) { buttonView in
-            buttonView.snp.makeConstraints { make in
-                make.height.centerY.centerX.equalToSuperview()
-            }
-        }
-        
-        stackView.addArrangedSubview(buttonContainer)
+        bag += proceedButton.onTapSignal.map { _ -> Void in () }.bindTo(scrollToNextSignal)
         
         viewController.view = view
         
