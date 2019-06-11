@@ -51,7 +51,7 @@ extension PerilInformation: Presentable {
             make.height.equalTo(60)
         }
         
-        let titleLabel = MultilineLabel(value: title, style: .standaloneLargeTitle, lineHeight: 1.3)
+        let titleLabel = MultilineLabel(value: title, style: TextStyle.standaloneLargeTitle.lineHeight(32.0))
         bag += containerView.addArranged(titleLabel)
 
         let body = MarkdownText(text: description, style: .bodyOffBlack)
@@ -60,7 +60,7 @@ extension PerilInformation: Presentable {
         bag += containerStackView.didLayoutSignal.map { _ in
             containerStackView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
         }.distinct().bindTo(viewController, \.preferredContentSize)
-
+        
         viewController.view = containerStackView
 
         return (viewController, Future { _ in

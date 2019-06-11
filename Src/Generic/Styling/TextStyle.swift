@@ -15,6 +15,10 @@ extension TextStyle {
             style.alignment = .center
         }
     }
+    
+    func lineHeight(_ lineHeight: CGFloat) -> TextStyle {
+        return restyled { $0.lineHeight = lineHeight }
+    }
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
