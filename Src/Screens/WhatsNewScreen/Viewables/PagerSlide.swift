@@ -28,13 +28,18 @@ extension PagerSlide: Viewable {
         containerView.spacing = 8
         containerView.isLayoutMarginsRelativeArrangement = true
 
-        let image = RemoteVectorImage()
+        let image = RemoteVectorIcon()
         image.pdfUrlStringSignal.value = imageUrl
         
         bag += containerView.addArranged(image) { imageView in
             imageView.snp.makeConstraints { make in
-                make.width.centerX.equalToSuperview()
-                make.height.lessThanOrEqualTo(UIScreen.main.bounds.width > 320 ? 270 : 120)
+                make.centerX.equalToSuperview()
+                
+                if (UIScreen.main.bounds.width <= 320) {
+                    make.width.equalToSuperview().multipliedBy(0.8)
+                } else {
+                    make.width.equalToSuperview()
+                }
             }
         }
         

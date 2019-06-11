@@ -15,9 +15,8 @@ struct Pager {
     let scrollToNextSignal: ReadSignal<Void>
     let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?> = ReadWriteSignal(nil)
     
-    let onScrolledToEndSignal: Signal<Void>
     let onScrolledToPageSignal: Signal<Int>
-    private let onScrolledToEndReadWriteSignal = ReadWriteSignal<Void>(())
+    let onScrolledToEndCallbacker: Callbacker<Void>
     private let onScrolledToPageReadWriteSignal = ReadWriteSignal<Int>(0)
     
     init(
@@ -26,7 +25,7 @@ struct Pager {
     {
         self.presentingViewController = presentingViewController
         self.scrollToNextSignal = scrollToNextSignal
-        self.onScrolledToEndSignal = onScrolledToEndReadWriteSignal.plain()
+        self.onScrolledToEndCallbacker = Callbacker<Void>()
         self.onScrolledToPageSignal = onScrolledToPageReadWriteSignal.plain()
     }
 }
@@ -59,9 +58,9 @@ extension Pager: Viewable {
         
         bag += scrollView.contentOffsetSignal
             .filter(predicate: { $0.x >= scrollView.contentSize.width - presentingViewControllerSize.width && scrollView.contentSize.width != 0 })
-            .map { _ -> Void in () }
-            .bindTo(onScrolledToEndReadWriteSignal)
-        
+            .onValue { _ in
+                self.onScrolledToEndCallbacker.callAll()
+            }
         
         bag += scrollView.contentOffsetSignal
             .filter(predicate: { $0.x.remainder(dividingBy: presentingViewControllerSize.width) == 0 })

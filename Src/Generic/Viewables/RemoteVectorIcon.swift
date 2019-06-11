@@ -1,5 +1,5 @@
 //
-//  RemoteVectorImage.swift
+//  RemoteVectorIcon.swift
 //  project
 //
 //  Created by Sam Pettersson on 2019-04-12.
@@ -10,7 +10,7 @@ import Flow
 import Foundation
 import UIKit
 
-struct RemoteVectorImage {
+struct RemoteVectorIcon {
     let pdfUrlStringSignal = ReadWriteSignal<String?>(nil)
     let environment: ApolloEnvironmentConfig
 
@@ -23,7 +23,7 @@ struct RemoteVectorImage {
     }
 }
 
-extension RemoteVectorImage: Viewable {
+extension RemoteVectorIcon: Viewable {
     func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
         let imageView = UIImageView()
@@ -42,30 +42,32 @@ extension RemoteVectorImage: Viewable {
             let page = pdfDocument.page(at: 1)!
             let rect = page.getBoxRect(CGPDFBox.mediaBox)
             
-            let newSize = CGSize(
+            let imageSize = CGSize(
                 width: imageViewSize.width,
                 height: imageViewSize.width * (rect.height / rect.width)
             )
+            
+            imageView.frame.size = imageSize
 
             func render(_ context: CGContext) {
                 context.setFillColor(gray: 1, alpha: 0)
                 context.fill(CGRect(
                     x: rect.origin.x,
                     y: rect.origin.y,
-                    width: imageViewSize.width,
-                    height: newSize.height
+                    width: imageSize.width,
+                    height: imageSize.height
                 ))
-                context.translateBy(x: 0, y: newSize.height)
+                context.translateBy(x: 0, y: imageSize.height)
                 context.scaleBy(
-                    x: imageViewSize.width / rect.width,
-                    y: -(newSize.height / rect.height)
+                    x: imageSize.width / rect.width,
+                    y: -(imageSize.height / rect.height)
                 )
 
                 context.drawPDFPage(page)
             }
 
             if #available(iOS 10.0, *) {
-                let renderer = UIGraphicsImageRenderer(size: newSize)
+                let renderer = UIGraphicsImageRenderer(size: imageSize)
 
                 let image = renderer.image(actions: { context in
                     render(context.cgContext)
@@ -73,7 +75,7 @@ extension RemoteVectorImage: Viewable {
 
                 imageView.image = image
             } else {
-                UIGraphicsBeginImageContext(newSize)
+                UIGraphicsBeginImageContext(imageSize)
 
                 guard let context = UIGraphicsGetCurrentContext() else { return }
 
@@ -85,8 +87,6 @@ extension RemoteVectorImage: Viewable {
 
                 imageView.image = image
             }
-            
-            imageView.contentMode = .scaleAspectFit
         }
 
         bag += imageView.didLayoutSignal

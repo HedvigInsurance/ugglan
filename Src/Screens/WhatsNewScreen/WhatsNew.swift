@@ -21,8 +21,6 @@ struct WhatsNew {
 }
 
 extension WhatsNew: Presentable {
-    static let lastNewsSeenKey = "lastNewsSeen"
-    
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         
@@ -77,7 +75,7 @@ extension WhatsNew: Presentable {
         bag += stackView.addArranged(pager) { pagerView in
             pagerView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
-                make.height.equalTo(390)
+                make.height.lessThanOrEqualTo(390)
             }
         }
         
@@ -117,9 +115,9 @@ extension WhatsNew: Presentable {
         return (viewController, Future { completion in
             bag += merge(
                 closeButton.onTapSignal,
-                pager.onScrolledToEndSignal
+                pager.onScrolledToEndCallbacker.signal()
             ).onValue {
-                UserDefaults.standard.set(Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "0.0.0", forKey: WhatsNew.lastNewsSeenKey)
+                ApplicationState.setLastNewsSeen()
                 completion(.success)
             }
             

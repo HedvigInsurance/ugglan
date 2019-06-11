@@ -20,9 +20,9 @@ extension VersionRow: Viewable {
         let row = RowView()
         row.append(UILabel(value: "Version", style: .rowTitle))
 
-        let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String
+        let appVersion = Bundle.appVersion()
 
-        row.append(UILabel(value: appVersion ?? "", style: .rowTitleDisabled))
+        row.append(UILabel(value: appVersion, style: .rowTitleDisabled))
 
         return (row, bag)
     }

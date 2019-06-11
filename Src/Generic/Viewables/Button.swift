@@ -267,22 +267,24 @@ extension Button: Viewable {
             button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
 
-        bag += title.atOnce().onValue { title in
+        bag += title.atOnce().withLatestFrom(self.type).onValue { title, type in
             button.setTitle(title)
 
             button.snp.remakeConstraints { make in
-                make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset())
+                make.width.equalTo(button.intrinsicContentSize.width + type.extraWidthOffset())
             }
         }
-
-        bag += button.signal(for: .touchDown).filter { self.animate }.map({ _ -> ButtonStyle in
-            highlightedStyleSignal.value
-        }).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
+        
+        bag += button.signal(for: .touchDown).filter { self.animate }
+            .withLatestFrom(highlightedStyleSignal.atOnce().plain())
+            .map({ _, highlightedStyleSignalValue -> ButtonStyle in
+                highlightedStyleSignalValue
+            }).bindTo(
+                transition: button,
+                style: TransitionStyle.crossDissolve(duration: 0.25),
+                button,
+                \.style
+            )
 
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
@@ -291,14 +293,16 @@ extension Button: Viewable {
             ()
         }.bindTo(onTapReadWriteSignal)
 
-        bag += touchUpInside.filter { self.animate }.map { _ -> ButtonStyle in
-            styleSignal.value
-        }.delay(by: 0.1).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
+        bag += touchUpInside.filter { self.animate }
+            .withLatestFrom(styleSignal.atOnce().plain())
+            .map { _, styleSignalValue -> ButtonStyle in
+                styleSignalValue
+            }.delay(by: 0.1).bindTo(
+                transition: button,
+                style: TransitionStyle.crossDissolve(duration: 0.25),
+                button,
+                \.style
+            )
 
         bag += touchUpInside.flatMapLatest { _ -> ReadWriteSignal<String> in
             self.title.atOnce()
@@ -311,8 +315,10 @@ extension Button: Viewable {
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
-        ).filter { self.animate }.map { _ -> ButtonStyle in
-            styleSignal.value
+        ).filter { self.animate }
+        .withLatestFrom(styleSignal.atOnce().plain())
+        .map { _, styleSignalValue -> ButtonStyle in
+            styleSignalValue
         }.bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),

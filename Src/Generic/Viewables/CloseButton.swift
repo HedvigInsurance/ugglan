@@ -33,9 +33,7 @@ extension CloseButton: Viewable {
         
         bag += touchUpInside.feedback(type: .impactLight)
         
-        bag += touchUpInside.map { _ -> Void in
-            ()
-            }.bindTo(onTapReadWriteSignal)
+        bag += touchUpInside.map {}.toVoid().bindTo(onTapReadWriteSignal)
         
         bag += merge(
             button.signal(for: .touchUpInside),

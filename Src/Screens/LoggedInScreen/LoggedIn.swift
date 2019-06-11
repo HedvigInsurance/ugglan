@@ -56,13 +56,13 @@ extension LoggedIn: Presentable {
             profilePresentation
         )
         
-        let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "0.0.0"
-        let lastNewsSeen = UserDefaults.standard.string(forKey: WhatsNew.lastNewsSeenKey) ?? "0.0.0"
+        let appVersion = Bundle.appVersion()
+        let lastNewsSeen = ApplicationState.getLastNewsSeen()
         
-        if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
+        if "1.0.0".compare("0.9.9", options: .numeric) == .orderedDescending {
             bag += client
-                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-                .filter(predicate: { $0.data != nil && $0.data!.news.count > 0 })
+                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.9.9"))
+                .filter{ $0.data != nil && $0.data!.news.count > 0 }
                 .compactMap { $0.data }
                 .onValue { data in
                     let whatsNew = WhatsNew(data: data)
