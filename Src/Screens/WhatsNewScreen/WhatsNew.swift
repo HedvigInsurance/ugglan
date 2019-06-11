@@ -13,19 +13,16 @@ import Presentation
 import UIKit
 
 struct WhatsNew {
-    let client: ApolloClient
-    let environment: ApolloEnvironmentConfig
-    let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
-        CGSize(width: 0, height: 0)
-    )
+    let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?>
     
-    init(client: ApolloClient = ApolloContainer.shared.client, environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment) {
-        self.client = client
-        self.environment = environment
+    init(data: WhatsNewQuery.Data?) {
+        self.dataSignal = ReadWriteSignal<WhatsNewQuery.Data?>(data)
     }
 }
 
 extension WhatsNew: Presentable {
+    static let lastNewsSeenKey = "lastNewsSeen"
+    
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         
@@ -37,15 +34,26 @@ extension WhatsNew: Presentable {
             capturesStatusBarAppearance: nil
         )
         
-        let dismissButton = DismissButton()
+        let closeButton = CloseButton()
         
-        let item = UIBarButtonItem(viewable: dismissButton)
+        let item = UIBarButtonItem(viewable: closeButton)
         viewController.navigationItem.rightBarButtonItem = item
         
-        viewController.displayableTitle = "Vad är nytt?"
+        viewController.displayableTitle = String(key: .FEATURE_PROMO_TITLE)
         
         let view = UIView()
         view.backgroundColor = .offWhite
+        
+        let containerView = UIStackView()
+        containerView.axis = .horizontal
+        containerView.alignment = .center
+        containerView.isLayoutMarginsRelativeArrangement = true
+        
+        view.addSubview(containerView)
+        
+        containerView.snp.makeConstraints { make in
+            make.width.height.centerX.centerY.equalToSuperview()
+        }
         
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -54,17 +62,13 @@ extension WhatsNew: Presentable {
         stackView.isLayoutMarginsRelativeArrangement = true
         
         stackView.edgeInsets = UIEdgeInsets(
-            top: 24,
+            top: 25,
             left: 0,
-            bottom: 24,
+            bottom: 25,
             right: 0
         )
         
-        view.addSubview(stackView)
-        
-        stackView.snp.makeConstraints { make in
-            make.width.centerX.centerY.equalToSuperview()
-        }
+        containerView.addArrangedSubview(stackView)
         
         let scrollToNextSignal = ReadWriteSignal<Void>(())
         
@@ -73,9 +77,12 @@ extension WhatsNew: Presentable {
         bag += stackView.addArranged(pager) { pagerView in
             pagerView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
-                make.height.equalTo(480)
+                make.height.equalTo(390)
             }
         }
+        
+        let pageIndicatorSpacing = Spacing(height: 20)
+        bag += stackView.addArranged(pageIndicatorSpacing)
        
         let pageIndicator = PageIndicator()
         
@@ -96,12 +103,9 @@ extension WhatsNew: Presentable {
             }
         }
         
-        let whatsNewQuery = client.watch(query: WhatsNewQuery(locale: Locale.svSe, sinceVersion: "2.7.0"))
-            .compactMap { $0.data }
-        
-        bag += whatsNewQuery.bindTo(pager.dataSignal)
-        bag += whatsNewQuery.bindTo(pageIndicator.dataSignal)
-        bag += whatsNewQuery.bindTo(proceedButton.dataSignal)
+        bag += dataSignal.atOnce().bindTo(pager.dataSignal)
+        bag += dataSignal.atOnce().bindTo(pageIndicator.dataSignal)
+        bag += dataSignal.atOnce().bindTo(proceedButton.dataSignal)
         
         bag += pager.onScrolledToPageSignal.bindTo(pageIndicator.pageIndexSignal)
         bag += pager.onScrolledToPageSignal.bindTo(proceedButton.onScrolledToPageIndexSignal)
@@ -112,9 +116,10 @@ extension WhatsNew: Presentable {
         
         return (viewController, Future { completion in
             bag += merge(
-                dismissButton.onTapSignal,
+                closeButton.onTapSignal,
                 pager.onScrolledToEndSignal
             ).onValue {
+                UserDefaults.standard.set(Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "0.0.0", forKey: WhatsNew.lastNewsSeenKey)
                 completion(.success)
             }
             

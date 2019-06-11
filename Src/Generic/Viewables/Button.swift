@@ -187,7 +187,6 @@ extension Button: Viewable {
         let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
         
         bag += type.atOnce().onValue { buttonType in
-            print(buttonType)
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
                 

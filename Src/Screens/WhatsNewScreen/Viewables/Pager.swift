@@ -38,7 +38,7 @@ extension Pager: Viewable {
         let presentingViewControllerSize = presentingViewController.view.bounds.size
         
         let scrollView = UIScrollView()
-        scrollView.contentSize = CGSize(width: 0, height: 400)
+        scrollView.contentSize = CGSize(width: 0, height: 0)
         scrollView.isPagingEnabled = true
         scrollView.alwaysBounceHorizontal = false
         scrollView.showsHorizontalScrollIndicator = false
@@ -54,22 +54,7 @@ extension Pager: Viewable {
                 }
             }
             
-            scrollView.contentSize = CGSize(width: presentingViewControllerSize.width * CGFloat(news.count + 1), height: 400)
- 
-            
-            /*
-            for i in 0...3 {
-                let pagerSlide = PagerSlide(title: "Page \(i)", paragraph: "Lorem ipsum", imageUrl: news[0].illustration.pdfUrl)
-                bag += scrollView.add(pagerSlide) { pagerSlideView in
-                    pagerSlideView.snp.makeConstraints { make in
-                        make.width.height.centerY.equalToSuperview()
-                        make.left.equalTo(presentingViewControllerSize.width * CGFloat(i))
-                    }
-                }
-            }
-            
-            scrollView.contentSize = CGSize(width: presentingViewControllerSize.width * CGFloat(4 + 1), height: 400)
-            */
+            scrollView.contentSize = CGSize(width: presentingViewControllerSize.width * CGFloat(news.count + 1), height: 0)
         }
         
         bag += scrollView.contentOffsetSignal

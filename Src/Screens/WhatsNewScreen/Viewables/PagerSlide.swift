@@ -27,25 +27,18 @@ extension PagerSlide: Viewable {
         containerView.axis = .vertical
         containerView.spacing = 8
         containerView.isLayoutMarginsRelativeArrangement = true
-        
-        containerView.edgeInsets = UIEdgeInsets(
-            top: 24,
-            left: 0,
-            bottom: 24,
-            right: 0
-        )
-        
-        let image = RemoteVectorIcon()
+
+        let image = RemoteVectorImage()
         image.pdfUrlStringSignal.value = imageUrl
         
         bag += containerView.addArranged(image) { imageView in
             imageView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
-                make.height.lessThanOrEqualTo(300)
+                make.height.lessThanOrEqualTo(UIScreen.main.bounds.width > 320 ? 270 : 120)
             }
         }
-
-        let spacing = Spacing(height: 40)
+        
+        let spacing = Spacing(height: 30)
         bag += containerView.addArranged(spacing)
         
         let titleLabel = MultilineLabel(styledText: StyledText(
@@ -94,7 +87,7 @@ extension PagerSlide: Viewable {
         
         containerView.snp.makeConstraints { make in
             make.width.equalToSuperview().inset(24)
-            make.centerX.equalToSuperview()
+            make.centerX.centerY.equalToSuperview()
             make.bottom.equalTo(0)
         }
         

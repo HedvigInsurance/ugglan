@@ -39,7 +39,6 @@ extension CachedImage: Viewable {
         cacheImage(url: url)
 
         let data = try? Disk.retrieve(urlString, from: .caches, as: Data.self)
-        print(data)
         imageView.image = UIImage(data: data!)
         imageView.contentMode = .scaleAspectFit
 

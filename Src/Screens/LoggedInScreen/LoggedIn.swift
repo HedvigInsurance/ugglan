@@ -55,6 +55,21 @@ extension LoggedIn: Presentable {
             claimsPresentation,
             profilePresentation
         )
+        
+        let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "0.0.0"
+        let lastNewsSeen = UserDefaults.standard.string(forKey: WhatsNew.lastNewsSeenKey) ?? "0.0.0"
+        
+        if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
+            bag += client
+                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
+                .filter(predicate: { $0.data != nil && $0.data!.news.count > 0 })
+                .compactMap { $0.data }
+                .onValue { data in
+                    let whatsNew = WhatsNew(data: data)
+                    tabBarController.present(whatsNew)
+                }
+            
+        }
 
         return (tabBarController, bag)
     }

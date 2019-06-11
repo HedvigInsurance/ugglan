@@ -254,7 +254,7 @@ extension CommonClaimCard: Viewable {
             bag += showTitleCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(view, \.alpha)
         }
 
-        let remoteVectorIcon = RemoteVectorIcon()
+        let remoteVectorIcon = RemoteVectorImage()
         remoteVectorIcon.pdfUrlStringSignal.value = data.icon.pdfUrl
 
         bag += contentView.add(remoteVectorIcon) { imageView in

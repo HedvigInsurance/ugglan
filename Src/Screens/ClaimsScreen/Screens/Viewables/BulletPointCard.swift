@@ -12,7 +12,7 @@ import UIKit
 
 struct BulletPointCard {
     let title: String
-    let icon: RemoteVectorIcon
+    let icon: RemoteVectorImage
     let description: String
 }
 

@@ -1,5 +1,5 @@
 //
-//  RemoteVectorIcon.swift
+//  RemoteVectorImage.swift
 //  project
 //
 //  Created by Sam Pettersson on 2019-04-12.
@@ -10,7 +10,7 @@ import Flow
 import Foundation
 import UIKit
 
-struct RemoteVectorIcon {
+struct RemoteVectorImage {
     let pdfUrlStringSignal = ReadWriteSignal<String?>(nil)
     let environment: ApolloEnvironmentConfig
 
@@ -23,7 +23,7 @@ struct RemoteVectorIcon {
     }
 }
 
-extension RemoteVectorIcon: Viewable {
+extension RemoteVectorImage: Viewable {
     func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
         let imageView = UIImageView()
