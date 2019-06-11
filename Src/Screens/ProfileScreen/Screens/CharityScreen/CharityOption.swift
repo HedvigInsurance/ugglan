@@ -102,7 +102,7 @@ extension CharityOption: Reusable {
             contentView.addArrangedSubview(buttonContainer)
 
             buttonContainer.snp.makeConstraints { make in
-                make.height.equalTo(button.type.height())
+                make.height.equalTo(button.type.value.height())
             }
 
             containerView.addSubview(contentView)

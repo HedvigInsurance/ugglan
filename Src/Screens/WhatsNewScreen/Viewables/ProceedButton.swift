@@ -27,47 +27,52 @@ extension ProceedButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
         let (buttonView, disposable) = button.materialize(events: events)
+        buttonView.alpha = 0
         
         let buttonTitleSignal = ReadWriteSignal<String>("")
-        let isMoreNewsSignal = ReadWriteSignal<Bool>(false)
+        
+        func setButtonStyle (isMorePages: Bool) {
+            button.type.value = isMorePages ? ButtonType.standard(backgroundColor: .blackPurple, textColor: .white) : ButtonType.standard(backgroundColor: .purple, textColor: .white)
+        }
+        
+        func setButtonTitle (isMorePages: Bool) {
+            buttonTitleSignal.value = isMorePages ? "Next" : "Go to app"
+        }
         
         bag += button.onTapSignal.bindTo(onTapReadWriteSignal)
         
-        bag += buttonTitleSignal.distinct().animated(style: AnimationStyle.easeOut(duration: 0.25)) { title in
-            buttonView.setTitle(title)
-            
-            buttonView.snp.remakeConstraints { make in
-                make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.extraWidthOffset())
+        bag += buttonTitleSignal
+            .distinct()
+            .delay(by: 0.25)
+            .animated(style: SpringAnimationStyle.lightBounce(duration: 0.15)) { title in
+                buttonView.setTitle(title)
+                
+                buttonView.snp.remakeConstraints { make in
+                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset())
+                }
+                
+                buttonView.layoutIfNeeded()
             }
-            
-            buttonView.layoutIfNeeded()
-        }
-        
-        bag += isMoreNewsSignal
-            .map { (isMoreNews) -> ButtonStyle in
-                return isMoreNews ? .standardBlackPurple : .standardPurple
-            }.bindTo(
-                transition: buttonView,
-                style: TransitionStyle.crossDissolve(duration: 0.25),
-                buttonView,
-                \.style
-        )
         
         bag += dataSignal
             .filter(predicate: { $0 != nil })
             .compactMap { $0!.news.count }
             .take(first: 1)
             .onValue { newsCount in
-                let isMoreNews = 4 > 1
+                let isMorePages = newsCount > 1
                 
-                buttonTitleSignal.value = isMoreNews ? "Next" : "Go to app"
-                isMoreNewsSignal.value = isMoreNews
+                setButtonTitle(isMorePages: isMorePages)
+                setButtonStyle(isMorePages: isMorePages)
+                
+                buttonView.alpha = 1
         }
         
         bag += onScrolledToPageIndexSignal.onValue { pageIndex in
             if let newsCount = self.dataSignal.value?.news.count {
-                buttonTitleSignal.value = (pageIndex >= (4 - 1)) ? "Go to app" : "Next"
-                isMoreNewsSignal.value = (pageIndex < (4 - 1))
+                let isMorePages = pageIndex < (newsCount - 1)
+                    
+                setButtonTitle(isMorePages: isMorePages)
+                setButtonStyle(isMorePages: isMorePages)
             }
         }
         

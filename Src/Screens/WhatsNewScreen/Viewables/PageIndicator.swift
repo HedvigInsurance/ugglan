@@ -36,7 +36,7 @@ extension PageIndicator: Viewable {
         }
         
         bag += dataSignal.atOnce().compactMap { $0?.news }.onValue { news in
-            for i in 0...4 {
+            for i in 0...news.count {
                 let indicator = UIView()
                 indicator.backgroundColor = i == 0 ? .purple : .gray
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity

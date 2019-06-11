@@ -45,7 +45,7 @@ extension CharityInformationButton: Viewable {
         }
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(button.type.height())
+            make.height.equalTo(button.type.value.height())
         }
 
         return (view, bag)

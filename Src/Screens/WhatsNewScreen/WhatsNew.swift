@@ -87,7 +87,7 @@ extension WhatsNew: Presentable {
         }
         
         let proceedButton = ProceedButton(
-            button: Button(title: "Next", type: .standard(backgroundColor: .blackPurple, textColor: .white))
+            button: Button(title: "", type: .standard(backgroundColor: .blackPurple, textColor: .white))
         )
         
         bag += stackView.addArranged(proceedButton) { proceedButtonView in

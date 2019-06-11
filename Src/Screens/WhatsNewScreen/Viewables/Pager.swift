@@ -16,10 +16,8 @@ struct Pager {
     let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?> = ReadWriteSignal(nil)
     
     let onScrolledToEndSignal: Signal<Void>
-    let onScrolledToLastPage: Signal<Void>
     let onScrolledToPageSignal: Signal<Int>
     private let onScrolledToEndReadWriteSignal = ReadWriteSignal<Void>(())
-    private let onScrolledToLastPageReadWriteSignal = ReadWriteSignal<Void>(())
     private let onScrolledToPageReadWriteSignal = ReadWriteSignal<Int>(0)
     
     init(
@@ -29,7 +27,6 @@ struct Pager {
         self.presentingViewController = presentingViewController
         self.scrollToNextSignal = scrollToNextSignal
         self.onScrolledToEndSignal = onScrolledToEndReadWriteSignal.plain()
-        self.onScrolledToLastPage = onScrolledToLastPageReadWriteSignal.plain()
         self.onScrolledToPageSignal = onScrolledToPageReadWriteSignal.plain()
     }
 }
@@ -47,9 +44,6 @@ extension Pager: Viewable {
         scrollView.showsHorizontalScrollIndicator = false
         
         bag += dataSignal.atOnce().compactMap { $0?.news }.onValue { news in
-            print(news)
-            
-            /*
             for (index, newsPage) in news.enumerated() {
                 let pagerSlide = PagerSlide(title: newsPage.title, paragraph: newsPage.paragraph, imageUrl: newsPage.illustration.pdfUrl)
                 bag += scrollView.add(pagerSlide) { pagerSlideView in
@@ -61,9 +55,9 @@ extension Pager: Viewable {
             }
             
             scrollView.contentSize = CGSize(width: presentingViewControllerSize.width * CGFloat(news.count + 1), height: 400)
-            */
+ 
             
-            
+            /*
             for i in 0...3 {
                 let pagerSlide = PagerSlide(title: "Page \(i)", paragraph: "Lorem ipsum", imageUrl: news[0].illustration.pdfUrl)
                 bag += scrollView.add(pagerSlide) { pagerSlideView in
@@ -75,14 +69,8 @@ extension Pager: Viewable {
             }
             
             scrollView.contentSize = CGSize(width: presentingViewControllerSize.width * CGFloat(4 + 1), height: 400)
-            
+            */
         }
-        
-        bag += scrollView.contentOffsetSignal
-            .filter(predicate: { $0.x >= scrollView.contentSize.width - presentingViewControllerSize.width * 2 && scrollView.contentSize.width != 0 })
-            .map { _ -> Void in () }
-            .bindTo(self.onScrolledToLastPageReadWriteSignal)
-        
         
         bag += scrollView.contentOffsetSignal
             .filter(predicate: { $0.x >= scrollView.contentSize.width - presentingViewControllerSize.width && scrollView.contentSize.width != 0 })
