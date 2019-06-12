@@ -277,14 +277,7 @@ extension CommonClaimCard: Viewable {
                 }
             }
         }
-
-        let touchDownDateSignal = ReadWriteSignal<Date>(Date())
-
-        bag += contentView
-            .signal(for: .touchDown)
-            .map { Date() }
-            .bindTo(touchDownDateSignal)
-
+        
         bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
         bag += contentView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -292,16 +285,10 @@ extension CommonClaimCard: Viewable {
             view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }
 
-        bag += merge(
-            contentView.signal(for: UIControl.Event.touchUpInside),
-            contentView.signal(for: UIControl.Event.touchUpOutside),
-            contentView.signal(for: UIControl.Event.touchCancel)
-        ).withLatestFrom(touchDownDateSignal.atOnce().plain())
-            .delay(by: { _, date in date.timeIntervalSinceNow < -0.2 ? 0 : 0.2 })
-            .animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                view.transform = CGAffineTransform.identity
-                contentView.transform = CGAffineTransform.identity
-            }
+        bag += contentView.delayedTouchCancel().animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            view.transform = CGAffineTransform.identity
+            contentView.transform = CGAffineTransform.identity
+        }
 
         let closeButton = CloseButton()
 
