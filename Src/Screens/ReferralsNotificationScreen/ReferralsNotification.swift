@@ -24,7 +24,6 @@ extension ReferralsNotification: Presentable {
     func materialize() -> (UIViewController, Future<ReferralsNotificationResult>) {
         let bag = DisposeBag()
         let viewController = LightContentViewController()
-        viewController.title = "Hello"
         
         let view = UIView()
         view.backgroundColor = UIColor.darkPurple
