@@ -31,7 +31,7 @@ struct Pager {
 }
 
 extension Pager: Viewable {
-     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
         let presentingViewControllerSize = presentingViewController.view.bounds.size
@@ -60,7 +60,7 @@ extension Pager: Viewable {
             .filter(predicate: { $0.x >= scrollView.contentSize.width - presentingViewControllerSize.width && scrollView.contentSize.width != 0 })
             .onValue { _ in
                 self.onScrolledToEndCallbacker.callAll()
-            }
+        }
         
         bag += scrollView.contentOffsetSignal
             .filter(predicate: { $0.x.remainder(dividingBy: presentingViewControllerSize.width) == 0 })
@@ -76,7 +76,7 @@ extension Pager: Viewable {
             }
             
             let newOffset = CGPoint(x: scrollView.contentOffset.x + presentingViewControllerSize.width, y: scrollView.contentOffset.y)
-
+            
             scrollView.setContentOffset(newOffset, animated: true)
         }
         

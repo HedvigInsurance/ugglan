@@ -14,13 +14,13 @@ struct ApplicationState {
     enum Screen: String {
         case marketing, onboardingChat, offer, loggedIn
     }
-
+    
     static func preserveState(_: Screen) {}
     
     static func getLastNewsSeen() -> String {
         return UserDefaults.standard.string(forKey: ApplicationState.lastNewsSeenKey) ?? "0.0.0"
     }
     
-    static func setLastNewsSeen() { UserDefaults.standard.set(Bundle.appVersion(), forKey: ApplicationState.lastNewsSeenKey)
+    static func setLastNewsSeen() { UserDefaults.standard.set(Bundle.main.appVersion, forKey: ApplicationState.lastNewsSeenKey)
     }
 }

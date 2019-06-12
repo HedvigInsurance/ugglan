@@ -37,7 +37,7 @@ extension ReportBugRow: Viewable {
 
         row.valueStyleSignal.value = .rowValueLink
 
-        let appVersion = Bundle.appVersion()
+        let appVersion = Bundle.main.appVersion
 
         let memberIdSignal = client.fetch(query: MemberIdQuery())
             .valueSignal

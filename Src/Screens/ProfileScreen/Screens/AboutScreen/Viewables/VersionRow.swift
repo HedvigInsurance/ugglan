@@ -20,7 +20,7 @@ extension VersionRow: Viewable {
         let row = RowView()
         row.append(UILabel(value: "Version", style: .rowTitle))
 
-        let appVersion = Bundle.appVersion()
+        let appVersion = Bundle.main.appVersion
 
         row.append(UILabel(value: appVersion, style: .rowTitleDisabled))
 

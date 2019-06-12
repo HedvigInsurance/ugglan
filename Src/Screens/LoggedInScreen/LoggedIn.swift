@@ -56,7 +56,7 @@ extension LoggedIn: Presentable {
             profilePresentation
         )
         
-        let appVersion = Bundle.appVersion()
+        let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
         
         if "1.0.0".compare("0.9.9", options: .numeric) == .orderedDescending {
