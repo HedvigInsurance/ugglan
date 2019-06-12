@@ -277,7 +277,7 @@ extension CommonClaimCard: Viewable {
                 }
             }
         }
-        
+
         bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
         bag += contentView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in

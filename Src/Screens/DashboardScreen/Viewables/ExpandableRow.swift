@@ -36,7 +36,7 @@ struct ExpandableRow<Content: Viewable, ExpandableContent: Viewable> where
 }
 
 extension ExpandableRow: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let containerView = UIView()
@@ -60,15 +60,15 @@ extension ExpandableRow: Viewable {
         expandableStackView.axis = .vertical
 
         let contentWrapperView = UIControl()
-        
+
         bag += contentWrapperView.add(content) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.width.height.equalToSuperview()
             }
         }
-        
+
         expandableStackView.addArrangedSubview(contentWrapperView)
-        
+
         let divider = Divider(backgroundColor: .offWhite)
         bag += expandableStackView.addArranged(divider) { dividerView in
             dividerView.alpha = isOpenSignal.value ? 1 : 0
@@ -116,24 +116,24 @@ extension ExpandableRow: Viewable {
         clippingView.snp.makeConstraints { make in
             make.width.height.centerX.centerY.equalToSuperview()
         }
-        
+
         bag += contentWrapperView.signal(for: .touchUpInside).feedback(type: .impactLight)
-        
+
         bag += contentWrapperView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }
-        
+
         bag += contentWrapperView.delayedTouchCancel(delay: 0.1).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             containerView.transform = CGAffineTransform.identity
         }
-        
+
         bag += contentWrapperView
             .signal(for: .touchUpInside)
             .withLatestFrom(isOpenSignal.atOnce().plain())
             .map { $0.1 }
             .map { !$0 }
             .bindTo(isOpenSignal)
-        
+
         return (containerView, bag)
     }
 }
