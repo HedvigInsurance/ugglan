@@ -27,7 +27,11 @@ extension CollectionKit {
             duration: 0.8
         )
     }
-
+    
+    func hasScrolledToEnd() -> Bool {
+        return view.contentOffset.x == view.frame.size.width
+    }
+    
     func scrollToNextItem() {
         let currentIndex = self.currentIndex()
         let newIndexPath = IndexPath(row: currentIndex + 1, section: 0)

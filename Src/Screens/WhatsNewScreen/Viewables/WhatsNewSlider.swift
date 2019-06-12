@@ -13,8 +13,9 @@ import UIKit
 
 struct WhatsNewSlider {
     let dataSignal = ReadWriteSignal<WhatsNewQuery.Data?>(nil)
-    let onScrolledToPageIndexSignal = ReadWriteSignal<Int>(0)
-    let scrollToNextSignal = ReadWriteSignal<Void>(())
+    let scrollToNextCallbacker: Callbacker<Void>
+    let scrolledToPageIndexCallbacker: Callbacker<Int>
+    let scrolledToEndCallbacker: Callbacker<Void>
 }
 
 extension WhatsNewSlider: Viewable {
@@ -22,18 +23,21 @@ extension WhatsNewSlider: Viewable {
         let bag = DisposeBag()
         let view = UIView()
         
-        let slider = Slider()
+        let scrollToNextSignal = scrollToNextCallbacker.signal()
+        
+        let slider = Slider(
+            scrollToNextSignal: scrollToNextSignal,
+            scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker,
+            scrolledToEndCallbacker: scrolledToEndCallbacker
+        )
         
         bag += view.add(slider)
-        
-        bag += scrollToNextSignal.atOnce().bindTo(slider.scrollToNextSignal)
         
         bag += dataSignal
             .atOnce()
             .compactMap { $0?.news }
             .onValue { news in
                 let newsSliderPages = news.map { newsPost -> SliderPage in
-                    
                     let whatsNewPagerSlide = WhatsNewPagerSlide(
                         title: newsPost.title,
                         paragraph: newsPost.paragraph,
@@ -47,7 +51,7 @@ extension WhatsNewSlider: Viewable {
                 }
                 
                 slider.dataSignal.value = newsSliderPages
-        }
+            }
         
         return (view, bag)
     }

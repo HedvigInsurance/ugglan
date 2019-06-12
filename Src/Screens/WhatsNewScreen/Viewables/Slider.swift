@@ -13,8 +13,9 @@ import UIKit
 
 struct Slider {
     let dataSignal = ReadWriteSignal<[SliderPage]>([])
-    let onScrolledToPageIndexSignal = ReadWriteSignal<Int>(0)
-    let scrollToNextSignal = ReadWriteSignal<Void>(())
+    let scrollToNextSignal: Signal<Void>
+    let scrolledToPageIndexCallbacker: Callbacker<Int>
+    let scrolledToEndCallbacker: Callbacker<Void>
 }
 
 struct DummySlide {}
@@ -64,7 +65,19 @@ extension Slider: Viewable {
             collectionKit.set(Table(rows: extendedSliderPageArray), animation: .none, rowIdentifier: { $0.id })
         }
         
-        // Handle scrollToNextSignal
+        bag += scrollToNextSignal.onValue {
+            collectionKit.scrollToNextItem()
+        }
+        
+        bag += collectionKit.view
+            .contentOffsetSignal.compactMap { _ in collectionKit.currentIndex() }
+            .distinct()
+            .onValue { pageIndex in
+                self.scrolledToPageIndexCallbacker.callAll(with: pageIndex)
+                if (collectionKit.hasScrolledToEnd()) {
+                    self.scrolledToEndCallbacker.callAll()
+                }
+            }
         
         bag += events.wasAdded.onValue {
             collectionKit.view.snp.makeConstraints { make in

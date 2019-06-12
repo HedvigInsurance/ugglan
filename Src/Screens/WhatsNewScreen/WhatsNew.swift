@@ -68,11 +68,15 @@ extension WhatsNew: Presentable {
         
         containerView.addArrangedSubview(stackView)
         
-        let scrollToNextSignal = ReadWriteSignal<Void>(())
+        let scrollToNextCallbacker = Callbacker<Void>()
+        let scrolledToPageIndexCallbacker = Callbacker<Int>()
+        let scrolledToEndCallbacker = Callbacker<Void>()
         
-        let whatsNewSlider = WhatsNewSlider()
-        
-        bag += dataSignal.atOnce().compactMap { $0 }.bindTo(whatsNewSlider.dataSignal)
+        let whatsNewSlider = WhatsNewSlider(
+            scrollToNextCallbacker: scrollToNextCallbacker,
+            scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker,
+            scrolledToEndCallbacker: scrolledToEndCallbacker
+        )
         
         bag += stackView.addArranged(whatsNewSlider) { sliderView in
             sliderView.snp.makeConstraints { make in
@@ -80,16 +84,6 @@ extension WhatsNew: Presentable {
                 make.height.equalTo(400)
             }
         }
-        
-        /*
-        let pager = Pager(presentingViewController: viewController, scrollToNextSignal: scrollToNextSignal.readOnly())
-        
-        bag += stackView.addArranged(pager) { pagerView in
-            pagerView.snp.makeConstraints { make in
-                make.width.centerX.equalToSuperview()
-                make.height.lessThanOrEqualTo(390)
-            }
-        }*/
         
         let pageIndicatorSpacing = Spacing(height: 20)
         bag += stackView.addArranged(pageIndicatorSpacing)
@@ -113,22 +107,23 @@ extension WhatsNew: Presentable {
             }
         }
         
-        // bag += dataSignal.atOnce().bindTo(pager.dataSignal)
+        bag += dataSignal.atOnce().bindTo(whatsNewSlider.dataSignal)
         bag += dataSignal.atOnce().bindTo(pageIndicator.dataSignal)
         bag += dataSignal.atOnce().bindTo(proceedButton.dataSignal)
         
-        // bag += pager.onScrolledToPageSignal.bindTo(pageIndicator.pageIndexSignal)
-        // bag += pager.onScrolledToPageSignal.bindTo(proceedButton.onScrolledToPageIndexSignal)
+        bag += whatsNewSlider.scrolledToPageIndexCallbacker.bindTo(pageIndicator.pageIndexSignal)
+        bag += whatsNewSlider.scrolledToPageIndexCallbacker.bindTo(proceedButton.onScrolledToPageIndexSignal)
         
-        bag += proceedButton.onTapSignal.map { _ -> Void in () }.bindTo(scrollToNextSignal)
-        bag += proceedButton.onTapSignal.map { _ -> Void in () }.bindTo(whatsNewSlider.scrollToNextSignal)
+        bag += proceedButton.onTapSignal.onValue { _ in
+            scrollToNextCallbacker.callAll()
+        }
         
         viewController.view = view
         
         return (viewController, Future { completion in
             bag += merge(
-                closeButton.onTapSignal
-                //pager.onScrolledToEndCallbacker.signal()
+                closeButton.onTapSignal,
+                whatsNewSlider.scrolledToEndCallbacker.signal()
             ).onValue {
                 ApplicationState.setLastNewsSeen()
                 completion(.success)
