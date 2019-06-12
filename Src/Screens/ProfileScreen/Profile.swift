@@ -32,6 +32,16 @@ extension Profile: Presentable {
         let viewController = UIViewController()
         viewController.displayableTitle = "Profil"
         viewController.installChatButton()
+        
+        let openReferralsNotification = NotificationCenter.default.signal(
+            forName: .shouldOpenReferrals
+        ).toVoid()
+        
+        bag += openReferralsNotification.onValue { _ in
+            viewController.present(Referrals(), options: [
+                .largeTitleDisplayMode(.never)
+            ])
+        }
 
         let form = FormView()
 
