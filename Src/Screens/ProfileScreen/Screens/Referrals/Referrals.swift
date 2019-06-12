@@ -103,7 +103,7 @@ extension Referrals: Presentable {
             formView,
             scrollView: scrollView
         )
-        
+
         let referralsProgressBar = ReferralsProgressBar(amountOfBlocks: 20, amountOfCompletedBlocks: 2)
         bag += formView.prepend(referralsProgressBar) { view in
             view.snp.makeConstraints { make in
@@ -113,10 +113,10 @@ extension Referrals: Presentable {
 
         let referralsTitle = ReferralsTitle()
         bag += formView.append(referralsTitle)
-        
+
         let referralsCodeContainer = ReferralsCodeContainer()
         bag += formView.append(referralsCodeContainer)
-        
+
         let referralsInvitationsTable = ReferralsInvitationsTable()
         bag += formView.append(referralsInvitationsTable) { tableView in
             bag += tableView.didLayoutSignal.onValue { _ in

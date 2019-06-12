@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-06-04.
 //
 
-import Foundation
 import Form
+import Foundation
 
 extension TextStyle {
     func lineHeight(_ lineHeight: CGFloat) -> TextStyle {

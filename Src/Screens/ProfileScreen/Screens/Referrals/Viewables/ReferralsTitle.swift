@@ -32,14 +32,14 @@ extension ReferralsTitle: Viewable {
                 make.width.equalToSuperview().inset(20)
             }
         }
-        
+
         let description = MultilineLabel(
             styledText: StyledText(
                 text: String(key: .REFERRAL_PROGRESS_BODY(referralValue: "10")),
                 style: TextStyle.bodyOffBlack.centerAligned
             )
         )
-        
+
         bag += view.addArranged(description) { descriptionView in
             descriptionView.snp.makeConstraints { make in
                 make.width.equalToSuperview().inset(20)

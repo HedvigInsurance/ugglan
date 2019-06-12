@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         bag += navigationController.present(marketingPresentation)
     }
-    
+
     func presentOnboarding() {
         guard let rootViewController = window.rootViewController else { return }
         bag += rootViewController.present(OnboardingChat(intent: .onboard), options: [.prefersNavigationBarHidden(false)])
@@ -63,13 +63,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_: UIApplication) {
         applicationWillTerminateCallbacker.callAll()
     }
-    
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { (dynamiclink, error) in
+
+    func application(_: UIApplication, continue userActivity: NSUserActivity,
+                     restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { _, _ in
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
-            
+
             innerBag += rootViewController.present(ReferralsReceiverConsent(), style: .modal, options: [
                 .prefersNavigationBarHidden(true)
             ]).onValue { result in
@@ -79,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 innerBag.dispose()
             }
         }
-        
+
         return handled
     }
 

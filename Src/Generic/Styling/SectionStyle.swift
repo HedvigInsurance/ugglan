@@ -85,7 +85,7 @@ extension InsettedStyle where Style == SeparatorStyle {
             right: 0
         )
     )
-    
+
     static let insetMediumIcons = InsettedStyle(
         style: .darkGray,
         insets: UIEdgeInsets(
@@ -109,7 +109,7 @@ extension SectionBackgroundStyle {
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
-    
+
     static let whiteMediumIcons = SectionBackgroundStyle(
         background: .white,
         topSeparator: .insetMediumIcons,
