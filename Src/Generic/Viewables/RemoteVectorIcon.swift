@@ -13,13 +13,16 @@ import UIKit
 struct RemoteVectorIcon {
     let pdfUrlStringSignal = ReadWriteSignal<String?>(nil)
     let environment: ApolloEnvironmentConfig
+    let threaded: Bool
 
     init(
         _ pdfUrlString: String? = nil,
-        environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment
+        environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment,
+        threaded: Bool? = false
     ) {
         pdfUrlStringSignal.value = pdfUrlString
         self.environment = environment
+        self.threaded = threaded ?? false
     }
 }
 
@@ -29,7 +32,7 @@ extension RemoteVectorIcon: Viewable {
         let imageView = UIImageView()
 
         let pdfDocumentSignal = ReadWriteSignal<CGPDFDocument?>(nil)
-
+    
         func renderPdfDocument(pdfDocument: CGPDFDocument) {
             let imageViewSize = imageView.frame.size
 
@@ -48,7 +51,7 @@ extension RemoteVectorIcon: Viewable {
             )
             
             imageView.frame.size = imageSize
-
+            
             func render(_ context: CGContext) {
                 context.setFillColor(gray: 1, alpha: 0)
                 context.fill(CGRect(
@@ -62,29 +65,27 @@ extension RemoteVectorIcon: Viewable {
                     x: imageSize.width / rect.width,
                     y: -(imageSize.height / rect.height)
                 )
-
+                
                 context.drawPDFPage(page)
             }
 
-            if #available(iOS 10.0, *) {
-                let renderer = UIGraphicsImageRenderer(size: imageSize)
-
-                let image = renderer.image(actions: { context in
+            let renderer = UIGraphicsImageRenderer(size: imageSize)
+            
+            var image = UIImage()
+            
+            if (self.threaded) {
+                DispatchQueue.global(qos: .background).async {
+                    image = renderer.image(actions: { context in
+                        render(context.cgContext)
+                    })
+                    DispatchQueue.main.async {
+                        imageView.image = image
+                    }
+                }
+            } else {
+                image = renderer.image(actions: { context in
                     render(context.cgContext)
                 })
-
-                imageView.image = image
-            } else {
-                UIGraphicsBeginImageContext(imageSize)
-
-                guard let context = UIGraphicsGetCurrentContext() else { return }
-
-                render(context)
-
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-
-                UIGraphicsEndImageContext()
-
                 imageView.image = image
             }
         }
@@ -99,7 +100,7 @@ extension RemoteVectorIcon: Viewable {
             renderPdfDocument(pdfDocument: pdfDocument)
         }
 
-        bag += pdfUrlStringSignal.atOnce().compactMap { $0 }.map { pdfUrlString -> CFData? in
+        bag += pdfUrlStringSignal.atOnce().compactMap { $0 }.map(on: .background) { pdfUrlString -> CFData? in
             guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
                 return nil
             }
@@ -111,10 +112,8 @@ extension RemoteVectorIcon: Viewable {
             let data = try? Data(contentsOf: url)
 
             if let data = data {
-                defer {
-                    try? Disk.save(data, to: .caches, as: url.absoluteString)
-                }
-
+                try? Disk.save(data, to: .caches, as: url.absoluteString)
+                
                 return data as CFData
             }
 

@@ -31,7 +31,7 @@ extension WhatsNewPagerScreen: Presentable {
         containerView.spacing = 8
         containerView.isLayoutMarginsRelativeArrangement = true
         
-        let image = RemoteVectorIcon()
+        let image = RemoteVectorIcon(threaded: true)
         image.pdfUrlStringSignal.value = imageUrl
         
         bag += containerView.addArranged(image) { imageView in
