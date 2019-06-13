@@ -1,8 +1,8 @@
 //
-//  PageIndicator.swift
+//  PagerDots.swift
 //  project
 //
-//  Created by Gustaf Gunér on 2019-06-06.
+//  Created by Gustaf Gunér on 2019-06-12.
 //
 
 import Foundation
@@ -10,12 +10,12 @@ import Form
 import Flow
 import UIKit
 
-struct PageIndicator {
-    let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?> = ReadWriteSignal(nil)
+struct PagerDots {
     let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+    let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
 }
 
-extension PageIndicator: Viewable {
+extension PagerDots: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -30,13 +30,16 @@ extension PageIndicator: Viewable {
         
         bag += view.didLayoutSignal.onValue {
             stackView.snp.makeConstraints { make in
-                make.centerX.centerY.equalToSuperview()
-                make.height.equalToSuperview()
+                make.height.centerX.centerY.equalToSuperview()
             }
         }
         
-        bag += dataSignal.atOnce().compactMap { $0?.news }.onValue { news in
-            for i in 0...news.count {
+        bag += pageAmountSignal.atOnce().filter { $0 != 0 }.onValue { pageAmount in
+            for subview in stackView.subviews {
+                subview.removeFromSuperview()
+            }
+            
+            for i in 0...pageAmount - 1 {
                 let indicator = UIView()
                 indicator.backgroundColor = i == 0 ? .purple : .gray
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
@@ -48,12 +51,10 @@ extension PageIndicator: Viewable {
                 
                 stackView.addArrangedSubview(indicator)
             }
+            
         }
         
-        bag += pageIndexSignal
-            .animated(style: SpringAnimationStyle.heavyBounce())
-            { pageIndex in
-                
+        bag += pageIndexSignal.animated(style: SpringAnimationStyle.heavyBounce()) { pageIndex in
             for (index, indicator) in stackView.subviews.enumerated() {
                 let indicatorIsActive = index == pageIndex
                 
@@ -65,3 +66,4 @@ extension PageIndicator: Viewable {
         return (view, bag)
     }
 }
+

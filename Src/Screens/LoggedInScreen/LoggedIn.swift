@@ -65,7 +65,11 @@ extension LoggedIn: Presentable {
                 .filter{ $0.data != nil && $0.data!.news.count > 0 }
                 .compactMap { $0.data }
                 .onValue { data in
-                    let whatsNew = WhatsNew(data: data)
+                    var testData = data
+                    testData.news.append(data.news[0])
+                    testData.news.append(data.news[0])
+                    testData.news.append(data.news[0])
+                    let whatsNew = WhatsNew(data: testData)
                     tabBarController.present(whatsNew)
                 }
             

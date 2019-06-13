@@ -14,6 +14,7 @@ struct ProceedButton {
     let onTapSignal: Signal<Void>
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
     
+    let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
     let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?> = ReadWriteSignal(nil)
     let onScrolledToPageIndexSignal = ReadWriteSignal<Int>(0)
     
@@ -54,12 +55,10 @@ extension ProceedButton: Viewable {
                 buttonView.layoutIfNeeded()
             }
         
-        bag += dataSignal
-            .filter(predicate: { $0 != nil })
-            .compactMap { $0!.news.count }
+        bag += pageAmountSignal
             .take(first: 1)
-            .onValue { newsCount in
-                let isMorePages = newsCount > 1
+            .onValue { pageAmount in
+                let isMorePages = pageAmount > 1
                 
                 setButtonTitle(isMorePages: isMorePages)
                 setButtonStyle(isMorePages: isMorePages)
@@ -67,13 +66,11 @@ extension ProceedButton: Viewable {
                 buttonView.alpha = 1
         }
         
-        bag += onScrolledToPageIndexSignal.onValue { pageIndex in
-            if let newsCount = self.dataSignal.value?.news.count {
-                let isMorePages = pageIndex < (newsCount - 1)
-                    
-                setButtonTitle(isMorePages: isMorePages)
-                setButtonStyle(isMorePages: isMorePages)
-            }
+        bag += onScrolledToPageIndexSignal.withLatestFrom(pageAmountSignal).onValue { pageIndex, pageAmount in
+            let isMorePages = pageIndex < (pageAmount - 1)
+            
+            setButtonTitle(isMorePages: isMorePages)
+            setButtonStyle(isMorePages: isMorePages)
         }
         
         return (buttonView, Disposer {

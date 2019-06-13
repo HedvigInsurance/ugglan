@@ -1,5 +1,5 @@
 //
-//  WhatsNewPagerSlide.swift
+//  WhatsNewPagerScreen.swift
 //  project
 //
 //  Created by Gustaf Gunér on 2019-06-12.
@@ -11,13 +11,13 @@ import Form
 import Flow
 import UIKit
 
-struct WhatsNewPagerSlide {
+struct WhatsNewPagerScreen {
     let title: String
     let paragraph: String
     let imageUrl: String
 }
 
-extension WhatsNewPagerSlide: Presentable {
+extension WhatsNewPagerScreen: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         
