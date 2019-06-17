@@ -64,7 +64,7 @@ extension StoriesIndicator: Viewable {
             cellForRow: self
         )
         collectionKit.view.backgroundColor = UIColor.clear
-        
+
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             let numberOfItems = CGFloat(collectionKit.dataSource.collectionView(
                 collectionKit.view,

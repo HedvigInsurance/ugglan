@@ -80,7 +80,7 @@ extension ReferralsReceiverConsentContent: Viewable {
         let gradient = CAGradientLayer()
         gradient.colors = [
             UIColor.offWhite.withAlphaComponent(0.2).cgColor,
-            UIColor.offWhite.cgColor
+            UIColor.offWhite.cgColor,
         ]
         gradient.locations = [0, 0.1, 0.9, 1]
         shadowView.layer.addSublayer(gradient)

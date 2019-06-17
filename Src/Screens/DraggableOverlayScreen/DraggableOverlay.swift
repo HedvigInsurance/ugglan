@@ -130,7 +130,7 @@ extension DraggableOverlay: Presentable {
         }
 
         let overlayContainer = UIView()
-        
+
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
             .compactMap { notification in
@@ -139,17 +139,17 @@ extension DraggableOverlay: Presentable {
             .withLatestFrom(overlayHeightSignal.plain())
             .animated(mapStyle: { keyboardInfo, _ -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo, overlayHeight in
+            }, animations: { keyboardInfo, _ in
                 keyboardHeightSignal.value = keyboardInfo.height
                 overlay.center.y = overlayCenter
                 ease.value = overlay.center.y
                 ease.targetValue = overlay.center.y
-                
+
                 overlay.layoutIfNeeded()
                 view.layoutIfNeeded()
                 overshoot.layoutIfNeeded()
             })
-        
+
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillHideNotification)
             .compactMap { notification in
@@ -158,12 +158,12 @@ extension DraggableOverlay: Presentable {
             .withLatestFrom(overlayHeightSignal.plain())
             .animated(mapStyle: { keyboardInfo, _ -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { _, overlayHeight in
+            }, animations: { _, _ in
                 keyboardHeightSignal.value = 0
                 overlay.center.y = overlayCenter
                 ease.value = overlay.center.y
                 ease.targetValue = overlay.center.y
-                
+
                 overlay.layoutIfNeeded()
                 view.layoutIfNeeded()
                 overshoot.layoutIfNeeded()

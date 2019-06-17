@@ -19,7 +19,7 @@ extension FieldStyle {
             textStyle.lineHeight = 2.4
         }
     }
-    
+
     static let editableRow = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.cursorColor = .purple
         style.text = .rowValueEditableRight

@@ -80,7 +80,7 @@ extension ReferralsNotificationProgressed: Viewable {
         let gradient = CAGradientLayer()
         gradient.colors = [
             UIColor.darkPurple.withAlphaComponent(0.2).cgColor,
-            UIColor.darkPurple.cgColor
+            UIColor.darkPurple.cgColor,
         ]
         gradient.locations = [0, 0.1, 0.9, 1]
         shadowView.layer.addSublayer(gradient)

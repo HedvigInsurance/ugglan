@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-06-14.
 //
 
-import Foundation
 import Form
+import Foundation
 import UIKit
 
 extension String {
@@ -16,12 +16,12 @@ extension String {
         let attributedString = NSMutableAttributedString(text: self, style: fallbackStyle)
         for variable in variables {
             let range = (self as NSString).range(of: variable.key)
-            
+
             for attribute in variable.value.attributes {
                 attributedString.addAttribute(attribute.key, value: attribute.value, range: range)
             }
         }
-        
+
         return attributedString
     }
 }

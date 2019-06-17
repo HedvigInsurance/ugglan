@@ -28,7 +28,7 @@ extension String {
             UIColor.darkGreen,
             UIColor.pink,
             UIColor.darkPink,
-            UIColor.yellow
+            UIColor.yellow,
         ]
 
         return colors[abs(self.deterministicHash) % colors.count]
