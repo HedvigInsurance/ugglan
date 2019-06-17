@@ -99,6 +99,7 @@ extension DraggableOverlay: Presentable {
         }
 
         let overlayHeightSignal = ReadWriteSignal<CGFloat>(0)
+        let keyboardHeightSignal = ReadWriteSignal<CGFloat>(0)
         var dragLimit: CGFloat {
             var safeAreaTop: CGFloat {
                 if #available(iOS 11.0, *) {
@@ -109,7 +110,7 @@ extension DraggableOverlay: Presentable {
             }
             let extraPadding = safeAreaTop + 70
 
-            let limit = overlayHeightSignal.value - (view.frame.height - extraPadding)
+            let limit = (overlayHeightSignal.value + keyboardHeightSignal.value) - (view.frame.height - extraPadding)
 
             return limit >= 0 ? -20 : limit
         }
@@ -125,10 +126,48 @@ extension DraggableOverlay: Presentable {
                 return 0
             }
 
-            return UIScreen.main.bounds.height - (overlayHeightSignal.value / 2)
+            return UIScreen.main.bounds.height - (overlayHeightSignal.value / 2) - keyboardHeightSignal.value
         }
 
         let overlayContainer = UIView()
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillShowNotification)
+            .compactMap { notification in
+                notification.keyboardInfo
+            }
+            .withLatestFrom(overlayHeightSignal.plain())
+            .animated(mapStyle: { keyboardInfo, _ -> AnimationStyle in
+                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo, overlayHeight in
+                keyboardHeightSignal.value = keyboardInfo.height
+                overlay.center.y = overlayCenter
+                ease.value = overlay.center.y
+                ease.targetValue = overlay.center.y
+                
+                overlay.layoutIfNeeded()
+                view.layoutIfNeeded()
+                overshoot.layoutIfNeeded()
+            })
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillHideNotification)
+            .compactMap { notification in
+                notification.keyboardInfo
+            }
+            .withLatestFrom(overlayHeightSignal.plain())
+            .animated(mapStyle: { keyboardInfo, _ -> AnimationStyle in
+                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { _, overlayHeight in
+                keyboardHeightSignal.value = 0
+                overlay.center.y = overlayCenter
+                ease.value = overlay.center.y
+                ease.targetValue = overlay.center.y
+                
+                overlay.layoutIfNeeded()
+                view.layoutIfNeeded()
+                overshoot.layoutIfNeeded()
+            })
 
         bag += overlayHeightSignal.distinct().skip(first: 1).animated(style: SpringAnimationStyle.lightBounce()) { overlayHeight in
             overlay.snp.updateConstraints { make in
@@ -139,7 +178,12 @@ extension DraggableOverlay: Presentable {
             view.layoutIfNeeded()
             overshoot.layoutIfNeeded()
 
-            overlayContainer.applyRadiusMaskFor(topLeft: 19, bottomLeft: Device.hasRoundedCorners ? 19 : 0, bottomRight: Device.hasRoundedCorners ? 19 : 0, topRight: 19)
+            overlayContainer.applyRadiusMaskFor(
+                topLeft: 19,
+                bottomLeft: Device.hasRoundedCorners ? 19 : 0,
+                bottomRight: Device.hasRoundedCorners ? 19 : 0,
+                topRight: 19
+            )
 
             overlay.center.y = overlayCenter
             ease.value = overlay.center.y
@@ -166,7 +210,12 @@ extension DraggableOverlay: Presentable {
             overshoot.layoutIfNeeded()
             view.layoutIfNeeded()
 
-            overlayContainer.applyRadiusMaskFor(topLeft: 19, bottomLeft: Device.hasRoundedCorners ? 19 : 0, bottomRight: Device.hasRoundedCorners ? 19 : 0, topRight: 19)
+            overlayContainer.applyRadiusMaskFor(
+                topLeft: 19,
+                bottomLeft: Device.hasRoundedCorners ? 19 : 0,
+                bottomRight: Device.hasRoundedCorners ? 19 : 0,
+                topRight: 19
+            )
 
             bag += Signal(after: 0.1).onValue { _ in
                 ease.velocity = 0.1
@@ -182,9 +231,7 @@ extension DraggableOverlay: Presentable {
 
             if location.y < dragLimit {
                 let val1 = overlayCenter + (dragLimit * (1 + log10(location.y / dragLimit)))
-
                 let val2 = overlayCenter + dragLimit - 60
-
                 let val = max(val1, val2)
 
                 ease.value = val
@@ -205,7 +252,7 @@ extension DraggableOverlay: Presentable {
             ease.targetValue = overlayCenter
         }
 
-        bag += overlay.install(panGestureRecognizer)
+        bag += view.install(panGestureRecognizer)
 
         overlayContainer.backgroundColor = .white
         overlayContainer.clipsToBounds = true
@@ -261,7 +308,10 @@ extension DraggableOverlay: Presentable {
             bag += navigationController.willShowViewControllerSignal.onValueDisposePrevious { (viewController: UIViewController, _: Bool) in
                 initialViewControllerBag.dispose()
                 let innerBag = bag.innerBag()
-                innerBag += viewController.preferredContentSizeSignal.atOnce().map { size in size.height }.bindTo(overlayHeightSignal)
+                innerBag += viewController.preferredContentSizeSignal
+                    .atOnce()
+                    .map { size in size.height }
+                    .bindTo(overlayHeightSignal)
                 return innerBag
             }
         } else {

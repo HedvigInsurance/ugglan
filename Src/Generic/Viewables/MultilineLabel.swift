@@ -42,7 +42,7 @@ extension MultilineLabel: Viewable {
                 textStyle.lineBreakMode = .byWordWrapping
             }
         }.bindTo(label, \.styledText)
-
+        
         bag += label.didLayoutSignal.onValue {
             if self.usePreferredMaxLayoutWidth {
                 label.preferredMaxLayoutWidth = label.frame.size.width
