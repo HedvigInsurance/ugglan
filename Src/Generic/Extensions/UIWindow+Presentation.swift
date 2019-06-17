@@ -64,6 +64,14 @@ extension UIWindow {
             )
         }
 
+        let presentationEvent = PresentationEvent.willPresent(
+            .init("\(type(of: presentable))"),
+            from: .init(rootViewController?.debugPresentationTitle ?? ""),
+            styleName: "default"
+        )
+
+        presentablePresentationEventHandler(presentationEvent, #file, #function, #line)
+
         rootViewController = viewController.embededInNavigationController(options)
 
         return result

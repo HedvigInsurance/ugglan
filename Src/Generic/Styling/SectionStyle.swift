@@ -85,6 +85,16 @@ extension InsettedStyle where Style == SeparatorStyle {
             right: 0
         )
     )
+
+    static let insetMediumIcons = InsettedStyle(
+        style: .darkGray,
+        insets: UIEdgeInsets(
+            top: 0,
+            left: SectionStyle.sectionPlainRowInsets.left + 45,
+            bottom: 0,
+            right: 0
+        )
+    )
 }
 
 extension SectionBackgroundStyle {
@@ -98,6 +108,12 @@ extension SectionBackgroundStyle {
         background: .white,
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
+    )
+
+    static let whiteMediumIcons = SectionBackgroundStyle(
+        background: .white,
+        topSeparator: .insetMediumIcons,
+        bottomSeparator: .insetMediumIcons
     )
 
     static let whiteRoundedBorder = SectionBackgroundStyle(
@@ -153,6 +169,7 @@ extension SectionStyle.Background {
     static let standard = SectionStyle.Background(style: .white)
     static let highlighted = SectionStyle.Background(style: .purple)
     static let standardLargeIcons = SectionStyle.Background(style: .whiteLargeIcons)
+    static let standardMediumIcons = SectionStyle.Background(style: .whiteMediumIcons)
     static let standardRoundedBorder = SectionStyle.Background(style: .whiteRoundedBorder)
     static let selected = SectionStyle.Background(style: .purpleOpaque)
     static let selectedLargeIcons = SectionStyle.Background(style: .purpleOpaqueLargeIcons)
