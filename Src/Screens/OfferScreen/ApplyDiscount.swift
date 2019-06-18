@@ -21,10 +21,7 @@ extension ApplyDiscount: Presentable {
         let bag = DisposeBag()
 
         let containerView = UIStackView()
-        containerView.axis = .horizontal
-        containerView.alignment = .top
-        containerView.layoutMargins = .zero
-        containerView.isLayoutMarginsRelativeArrangement = true
+        bag += containerView.applySafeAreaBottomLayoutMargin()
 
         viewController.view = containerView
 
@@ -75,9 +72,7 @@ extension ApplyDiscount: Presentable {
             })
         })
 
-        bag += containerView.didLayoutSignal.map { _ in
-            containerView.systemLayoutSizeFitting(CGSize.zero)
-        }.distinct().bindTo(viewController, \.preferredContentSize)
+        bag += containerView.applyPreferredContentSize(on: viewController)
 
         return (viewController, Future { _ in
 

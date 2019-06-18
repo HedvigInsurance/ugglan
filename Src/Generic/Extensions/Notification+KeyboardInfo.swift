@@ -24,8 +24,16 @@ extension Notification {
             let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
             let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
             let animationCurve = UIView.AnimationOptions(rawValue: animationCurveRaw)
+            
+            let safeAreaBottom: CGFloat
+            
+            if #available(iOS 11, *) {
+                safeAreaBottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+            } else {
+                safeAreaBottom = 0
+            }
 
-            return KeyboardInfo(height: keyboardHeight, animationDuration: duration, animationCurve: animationCurve)
+            return KeyboardInfo(height: keyboardHeight - safeAreaBottom, animationDuration: duration, animationCurve: animationCurve)
         }
 
         return nil
