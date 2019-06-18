@@ -212,12 +212,12 @@ extension ReferralsProgressBar: Viewable {
                     boxColor,
                     boxColor,
                     i == amountOfBlocks ? boxColor : UIColor.clear,
-                ].map({ color in
+                ].map { color in
                     let material = SCNMaterial()
                     material.diffuse.contents = color
                     material.locksAmbientWithDiffuse = true
                     return material
-                })
+                }
             } else {
                 boxGeometry.firstMaterial?.diffuse.contents = UIColor.purple
             }

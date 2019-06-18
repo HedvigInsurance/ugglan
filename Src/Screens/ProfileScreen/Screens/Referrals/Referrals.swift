@@ -39,12 +39,12 @@ extension Referrals: Presentable {
 
         let viewController = UIViewController()
         viewController.title = String(key: .REFERRALS_SCREEN_TITLE)
-        
+
         let moreInfoBarButton = UIBarButtonItem(
             title: String(key: .REFERRAL_PROGRESS_TOPBAR_BUTTON),
             style: .navigationBarButton
         )
-        
+
         bag += moreInfoBarButton.onValue { _ in
             viewController.present(
                 DraggableOverlay(
@@ -53,7 +53,7 @@ extension Referrals: Presentable {
                 )
             )
         }
-        
+
         viewController.navigationItem.rightBarButtonItem = moreInfoBarButton
 
         let scrollView = UIScrollView()
@@ -91,7 +91,7 @@ extension Referrals: Presentable {
         bag += formView.append(Spacing(height: 50))
 
         let linkSignal = ReadWriteSignal<String?>(nil)
-        
+
         let button = LoadableButton(
             button: Button(
                 title: String(key: .REFERRALS_SHARE_BUTTON),

@@ -12,7 +12,7 @@ import UIKit
 struct TextField {
     let value: ReadWriteSignal<String>
     let placeholder: ReadWriteSignal<String>
-    
+
     init(value: String, placeholder: String) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
@@ -48,7 +48,7 @@ extension TextField: Viewable {
         let textField = UITextField(value: "", placeholder: "", style: .default)
         bag += value.atOnce().bidirectionallyBindTo(textField)
         bag += placeholder.atOnce().bindTo(textField, \.placeholder)
-        
+
         paddingView.addArrangedSubview(textField)
 
         bag += view.signal(for: .touchDown).onValue { _ in

@@ -66,11 +66,11 @@ extension ApplyDiscount: Presentable {
 
         bag += view.didLayoutSignal.map { _ in
             view.systemLayoutSizeFitting(CGSize.zero)
-        }.onValue({ size in
-            view.snp.remakeConstraints({ make in
+        }.onValue { size in
+            view.snp.remakeConstraints { make in
                 make.height.equalTo(size.height)
-            })
-        })
+            }
+        }
 
         bag += containerView.applyPreferredContentSize(on: viewController)
 

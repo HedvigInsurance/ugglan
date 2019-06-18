@@ -17,7 +17,7 @@ struct Logger {
 
     private static func log(input: LoggingInput) {
         #if DEBUG
-            // don't send anything when debugging
+        // don't send anything when debugging
         #else
             let client = ApolloContainer.shared.client
             client.perform(mutation: LogMutation(input: input), queue: queue).onValue { _ in }

@@ -13,7 +13,7 @@ import Foundation
 struct ApplyDiscountSection {
     let client: ApolloClient
     let presentingViewController: UIViewController
-    
+
     init(presentingViewController: UIViewController, client: ApolloClient = ApolloContainer.shared.client) {
         self.presentingViewController = presentingViewController
         self.client = client
@@ -23,9 +23,9 @@ struct ApplyDiscountSection {
 extension ApplyDiscountSection: Viewable {
     func materialize(events _: ViewableEvents) -> (ButtonSection, Disposable) {
         let bag = DisposeBag()
-        
+
         let buttonSection = ButtonSection(text: String(key: .REFERRAL_ADDCOUPON_HEADLINE), style: .normal)
-        
+
         bag += buttonSection.onSelect.onValue { _ in
             let overlay = DraggableOverlay(
                 presentable: ApplyDiscount(),
@@ -33,8 +33,7 @@ extension ApplyDiscountSection: Viewable {
             )
             self.presentingViewController.present(overlay)
         }
-        
+
         return (buttonSection, bag)
     }
 }
-

@@ -49,13 +49,13 @@ extension MyPayment: Presentable {
 
         let paymentDetailsSection = PaymentDetailsSection()
         bag += form.append(paymentDetailsSection)
-        
+
         let applyDiscountSection = ApplyDiscountSection(presentingViewController: viewController)
         bag += form.append(applyDiscountSection)
 
         let bankDetailsSection = BankDetailsSection()
         bag += form.append(bankDetailsSection)
-        
+
         bag += form.append(Spacing(height: 20))
 
         let buttonSection = ButtonSection(
