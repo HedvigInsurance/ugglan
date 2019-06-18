@@ -91,13 +91,7 @@ extension Referrals: Presentable {
         bag += formView.append(Spacing(height: 50))
 
         let linkSignal = ReadWriteSignal<String?>(nil)
-
-//        bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap {
-//            $0.data?.member.id
-//        }.onValue { memberId in
-//            bag += self.createInvitationLink(memberId: memberId).bindTo(linkSignal)
-//        }
-
+        
         let button = LoadableButton(
             button: Button(
                 title: String(key: .REFERRALS_SHARE_BUTTON),
