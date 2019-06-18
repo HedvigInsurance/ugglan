@@ -75,7 +75,6 @@ extension ApplyDiscount: Presentable {
         bag += containerView.applyPreferredContentSize(on: viewController)
 
         return (viewController, Future { _ in
-
             bag
         })
     }
