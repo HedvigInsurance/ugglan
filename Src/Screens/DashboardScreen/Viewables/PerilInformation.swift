@@ -31,7 +31,7 @@ extension PerilInformation: Presentable {
         viewController.preferredContentSize = CGSize(width: 0, height: 0)
 
         let containerStackView = UIStackView()
-        containerStackView.isLayoutMarginsRelativeArrangement = false
+        bag += containerStackView.applySafeAreaBottomLayoutMargin()
 
         let containerView = UIStackView()
         containerView.spacing = 15
@@ -62,9 +62,7 @@ extension PerilInformation: Presentable {
         let body = MarkdownText(text: description, style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
-        bag += containerStackView.didLayoutSignal.map { _ in
-            containerStackView.systemLayoutSizeFitting(UIScreen.main.bounds.size)
-        }.distinct().bindTo(viewController, \.preferredContentSize)
+        bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         viewController.view = containerStackView
 

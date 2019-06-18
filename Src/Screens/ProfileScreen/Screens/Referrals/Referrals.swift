@@ -35,10 +35,26 @@ struct Referrals {
 
 extension Referrals: Presentable {
     func materialize() -> (UIViewController, Disposable) {
+        let bag = DisposeBag()
+
         let viewController = UIViewController()
         viewController.title = String(key: .REFERRALS_SCREEN_TITLE)
-
-        let bag = DisposeBag()
+        
+        let moreInfoBarButton = UIBarButtonItem(
+            title: String(key: .REFERRAL_PROGRESS_TOPBAR_BUTTON),
+            style: .navigationBarButton
+        )
+        
+        bag += moreInfoBarButton.onValue { _ in
+            viewController.present(
+                DraggableOverlay(
+                    presentable: ReferralsMoreInfo(),
+                    presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
+                )
+            )
+        }
+        
+        viewController.navigationItem.rightBarButtonItem = moreInfoBarButton
 
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .offWhite
