@@ -9,7 +9,15 @@ import Flow
 import Foundation
 import UIKit
 
-struct TextField {}
+struct TextField {
+    let value: ReadWriteSignal<String>
+    let placeholder: ReadWriteSignal<String>
+    
+    init(value: String, placeholder: String) {
+        self.value = ReadWriteSignal(value)
+        self.placeholder = ReadWriteSignal(placeholder)
+    }
+}
 
 extension TextField: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -37,7 +45,10 @@ extension TextField: Viewable {
             make.trailing.leading.top.bottom.equalToSuperview()
         }
 
-        let textField = UITextField(value: "", placeholder: "Kod", style: .default)
+        let textField = UITextField(value: "", placeholder: "", style: .default)
+        bag += value.atOnce().bidirectionallyBindTo(textField)
+        bag += placeholder.atOnce().bindTo(textField, \.placeholder)
+        
         paddingView.addArrangedSubview(textField)
 
         bag += view.signal(for: .touchDown).onValue { _ in

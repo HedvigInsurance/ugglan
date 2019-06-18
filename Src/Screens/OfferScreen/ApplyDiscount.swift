@@ -45,7 +45,7 @@ extension ApplyDiscount: Presentable {
         )
         bag += view.addArranged(descriptionLabel)
 
-        let textField = TextField()
+        let textField = TextField(value: "", placeholder: String(key: .REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
         bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)

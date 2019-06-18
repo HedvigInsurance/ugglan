@@ -38,7 +38,7 @@ extension DiscountTerms: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let termsAndConditionsString = "Terms and Conditions"
+        let termsAndConditionsString = String(key: .REFERRAL_ADDCOUPON_TC_LINK)
         let textStyle = TextStyle.reallySmallTitle.centerAligned
 
         let termsLabelText = String(
