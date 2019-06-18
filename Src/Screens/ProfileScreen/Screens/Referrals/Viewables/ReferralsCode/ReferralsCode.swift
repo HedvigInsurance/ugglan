@@ -5,12 +5,19 @@
 //  Created by Sam Pettersson on 2019-05-31.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import UIKit
 
-struct ReferralsCode {}
+struct ReferralsCode {
+    let client: ApolloClient
+
+    init(client: ApolloClient = ApolloContainer.shared.client) {
+        self.client = client
+    }
+}
 
 extension ReferralsCode: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -24,9 +31,9 @@ extension ReferralsCode: Viewable {
             view.layer.cornerRadius = view.frame.height / 2
         }
 
-        let code = "HDVG87"
+        let codeSignal = client.fetch(query: ReferralCodeQuery()).valueSignal.compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
 
-        bag += view.copySignal.atValue { _ in
+        bag += view.copySignal.withLatestFrom(codeSignal.plain()).atValue { _, code in
             UIPasteboard.general.value = code
         }.feedback(type: .success)
 
@@ -41,8 +48,18 @@ extension ReferralsCode: Viewable {
             style.highlightedColor = .darkPurple
         }
 
-        let codeLabel = MultilineLabel(value: code, style: codeTextStyle)
-        bag += codeContainer.addArranged(codeLabel)
+        let codeLabel = MultilineLabel(value: "HDVGET", style: codeTextStyle)
+        bag += codeSignal.map { code in
+            StyledText(text: code, style: codeTextStyle)
+        }.bindTo(codeLabel.styledTextSignal)
+
+        let loadableCodeLabel = LoadableView(view: codeLabel, initialLoadingState: true)
+
+        bag += Signal(every: 2).onValue { _ in
+            loadableCodeLabel.isLoadingSignal.value = !loadableCodeLabel.isLoadingSignal.value
+        }
+
+        bag += codeContainer.addArranged(loadableCodeLabel)
         view.addSubview(codeContainer)
 
         codeContainer.snp.makeConstraints { make in

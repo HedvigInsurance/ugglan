@@ -20,7 +20,7 @@ extension ReferralsInvitationsTable: Viewable {
             .right(ReferralsInvitationAnonymous(count: 1)),
             .left(ReferralsInvitation(name: "Sam", state: .onboarding)),
             .left(ReferralsInvitation(name: "Anton", state: .member)),
-            .left(ReferralsInvitation(name: "Fredrik", state: .left))
+            .left(ReferralsInvitation(name: "Fredrik", state: .left)),
         ]
 
         let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in

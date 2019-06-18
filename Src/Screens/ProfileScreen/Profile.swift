@@ -39,7 +39,7 @@ extension Profile: Presentable {
 
         bag += openReferralsNotification.onValue { _ in
             viewController.present(Referrals(), options: [
-                .largeTitleDisplayMode(.never)
+                .largeTitleDisplayMode(.never),
             ])
         }
 

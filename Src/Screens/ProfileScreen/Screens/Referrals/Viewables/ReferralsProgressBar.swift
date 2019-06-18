@@ -211,29 +211,40 @@ extension ReferralsProgressBar: Viewable {
                     boxColor,
                     boxColor,
                     boxColor,
-                    i == amountOfBlocks ? boxColor : UIColor.clear
-                ].map { color in
+                    i == amountOfBlocks ? boxColor : UIColor.clear,
+                ].map({ color in
                     let material = SCNMaterial()
                     material.diffuse.contents = color
                     material.locksAmbientWithDiffuse = true
                     return material
-                }
+                })
             } else {
                 boxGeometry.firstMaterial?.diffuse.contents = UIColor.purple
             }
 
             let boxNode = SCNNode(geometry: boxGeometry)
-            boxNode.position = SCNVector3Make(0, Float(2 * i + (20 * i)), 0)
+            boxNode.position = SCNVector3Make(0, Float(2 * i), 0)
             boxNode.physicsBody?.isAffectedByGravity = true
             containerNode.addChildNode(boxNode)
-
-            let baseAnimationTime: Float = 0.75
-            let animationDelay = i < amountOfBlocks - amountOfCompletedBlocks ? TimeInterval(baseAnimationTime + (0.1 * Float(i))) : TimeInterval(baseAnimationTime + (0.1 * Float(amountOfBlocks - amountOfCompletedBlocks)))
-
-            let moveDown = SCNAction.moveBy(x: 0, y: CGFloat(-20 * i), z: 0, duration: animationDelay)
-            moveDown.timingMode = .easeInEaseOut
-            boxNode.runAction(moveDown)
         }
+
+        containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
+        containerNode.opacity = 0
+
+        bag += Signal(after: 1).onValue({ _ in
+            let duration = 0.5
+
+            let action = SCNAction.customAction(duration: duration, action: { node, progress in
+                let scale = 1.0 / (Float(duration) / Float(progress))
+                node.eulerAngles = SCNVector3Make(0, radians(-45 * (scale * 5)), 0)
+                node.scale = SCNVector3(x: 1, y: scale, z: 1)
+                node.opacity = 1
+            })
+
+            action.timingMode = SCNActionTimingMode.easeOut
+
+            containerNode.runAction(action)
+        })
 
         scene.rootNode.addChildNode(currentDiscountLabel())
         scene.rootNode.addChildNode(fullPriceLabel())

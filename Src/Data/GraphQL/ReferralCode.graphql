@@ -1,0 +1,7 @@
+query ReferralCode {
+    memberReferralCampaign {
+        referralInformation {
+            code
+        }
+    }
+}
