@@ -16,7 +16,6 @@ extension Notification {
     }
 
     // parses keyboard info from userInfo if available
-    // containerView: UIView - the view to calculate safe area from
     var keyboardInfo: KeyboardInfo? {
         if let userInfo = userInfo, let keyboardFrame: NSValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardHeight = keyboardFrame.cgRectValue.height
