@@ -112,20 +112,10 @@ extension ReferralsProgressBar {
         )
 
         node.position = SCNVector3Make(
-            -113,
+            -13,
             Float(amountOfBlocks * 2) + 1,
             0
         )
-
-        let moveIn = SCNAction.moveBy(x: 100, y: 0, z: 0, duration: 0.5)
-        moveIn.timingMode = .easeInEaseOut
-
-        let bag = DisposeBag()
-
-        bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
-            bag.dispose()
-            node.runAction(moveIn)
-        }
 
         return node
     }
@@ -140,20 +130,10 @@ extension ReferralsProgressBar {
         )
 
         node.position = SCNVector3Make(
-            -113,
+            -13,
             1,
             0
         )
-
-        let moveIn = SCNAction.moveBy(x: 100, y: 0, z: 0, duration: 0.5)
-        moveIn.timingMode = .easeInEaseOut
-
-        let bag = DisposeBag()
-
-        bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
-            bag.dispose()
-            node.runAction(moveIn)
-        }
 
         return node
     }
@@ -168,20 +148,10 @@ extension ReferralsProgressBar {
         )
 
         node.position = SCNVector3Make(
-            13 + 100,
+            13,
             Float((amountOfBlocks - (amountOfCompletedBlocks / 2)) * 2) + 1,
             0
         )
-
-        let moveIn = SCNAction.moveBy(x: -100, y: 0, z: 0, duration: 0.5)
-        moveIn.timingMode = .easeInEaseOut
-
-        let bag = DisposeBag()
-
-        bag += Signal(after: TimeInterval(0.75 + (Float(amountOfBlocks) * 0.1))).onValue {
-            bag.dispose()
-            node.runAction(moveIn)
-        }
 
         return node
     }
@@ -230,25 +200,40 @@ extension ReferralsProgressBar: Viewable {
 
         containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
         containerNode.opacity = 0
+        
+        let discountLabelNode = currentDiscountLabel()
+        discountLabelNode.opacity = 0
+        scene.rootNode.addChildNode(discountLabelNode)
+        
+        let fullPriceLabelNode = fullPriceLabel()
+        fullPriceLabelNode.opacity = 0
+        scene.rootNode.addChildNode(fullPriceLabelNode)
+        
+        let freeLabelNode = freeLabel()
+        freeLabelNode.opacity = 0
+        scene.rootNode.addChildNode(freeLabelNode)
 
         bag += Signal(after: 1).onValue({ _ in
             let duration = 0.5
 
             let action = SCNAction.customAction(duration: duration, action: { node, progress in
-                let scale = 1.0 / (Float(duration) / Float(progress))
-                node.eulerAngles = SCNVector3Make(0, radians(-45 * (scale * 5)), 0)
-                node.scale = SCNVector3(x: 1, y: scale, z: 1)
+                let realProgress = 1.0 / (Float(duration) / Float(progress))
+                node.eulerAngles = SCNVector3Make(0, radians(-45 * (realProgress * 5)), 0)
+                node.scale = SCNVector3(x: 1, y: realProgress, z: 1)
                 node.opacity = 1
+                
+                if realProgress > 0.8 {
+                    let opacityProgress = CGFloat((realProgress - 0.8) / 0.2)
+                    discountLabelNode.opacity = opacityProgress
+                    fullPriceLabelNode.opacity = opacityProgress
+                    freeLabelNode.opacity = opacityProgress
+                }
             })
 
             action.timingMode = SCNActionTimingMode.easeOut
 
             containerNode.runAction(action)
         })
-
-        scene.rootNode.addChildNode(currentDiscountLabel())
-        scene.rootNode.addChildNode(fullPriceLabel())
-        scene.rootNode.addChildNode(freeLabel())
 
         scene.rootNode.addChildNode(containerNode)
 
