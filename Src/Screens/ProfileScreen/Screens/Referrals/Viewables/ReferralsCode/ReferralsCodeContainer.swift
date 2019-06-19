@@ -10,7 +10,13 @@ import Form
 import Foundation
 import UIKit
 
-struct ReferralsCodeContainer {}
+struct ReferralsCodeContainer {
+    let codeSignal: Signal<String>
+    
+    init(codeSignal: Signal<String>) {
+        self.codeSignal = codeSignal
+    }
+}
 
 extension ReferralsCodeContainer: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
@@ -26,7 +32,7 @@ extension ReferralsCodeContainer: Viewable {
         )
         bag += stackView.addArranged(titleLabel)
 
-        let referralsCode = ReferralsCode()
+        let referralsCode = ReferralsCode(codeSignal: codeSignal)
         bag += stackView.addArranged(referralsCode)
 
         return (stackView, bag)

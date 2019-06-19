@@ -13,9 +13,11 @@ import UIKit
 
 struct ReferralsCode {
     let client: ApolloClient
+    let codeSignal: Signal<String>
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
+    init(codeSignal: Signal<String>, client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
+        self.codeSignal = codeSignal
     }
 }
 
@@ -31,9 +33,7 @@ extension ReferralsCode: Viewable {
             view.layer.cornerRadius = view.frame.height / 2
         }
 
-        let codeSignal = client.fetch(query: ReferralCodeQuery()).valueSignal.compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
-
-        bag += view.copySignal.withLatestFrom(codeSignal.plain()).atValue { _, code in
+        bag += view.copySignal.withLatestFrom(codeSignal).atValue { _, code in
             UIPasteboard.general.value = code
         }.feedback(type: .success)
 
@@ -48,18 +48,12 @@ extension ReferralsCode: Viewable {
             style.highlightedColor = .darkPurple
         }
 
-        let codeLabel = MultilineLabel(value: "HDVGET", style: codeTextStyle)
+        let codeLabel = MultilineLabel(value: "", style: codeTextStyle)
         bag += codeSignal.map { code in
             StyledText(text: code, style: codeTextStyle)
         }.bindTo(codeLabel.styledTextSignal)
 
-        let loadableCodeLabel = LoadableView(view: codeLabel, initialLoadingState: true)
-
-        bag += Signal(every: 2).onValue { _ in
-            loadableCodeLabel.isLoadingSignal.value = !loadableCodeLabel.isLoadingSignal.value
-        }
-
-        bag += codeContainer.addArranged(loadableCodeLabel)
+        bag += codeContainer.addArranged(codeLabel)
         view.addSubview(codeContainer)
 
         codeContainer.snp.makeConstraints { make in

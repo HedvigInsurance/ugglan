@@ -65,32 +65,23 @@ extension Referrals: Presentable {
             formView,
             scrollView: scrollView
         )
-
-        let referralsProgressBar = ReferralsProgressBar(amountOfBlocks: 20, amountOfCompletedBlocks: 2)
-        bag += formView.prepend(referralsProgressBar) { view in
-            view.snp.makeConstraints { make in
-                make.height.equalTo(350)
-            }
-        }
-
-        let referralsTitle = ReferralsTitle()
-        bag += formView.append(referralsTitle)
-
-        let referralsCodeContainer = ReferralsCodeContainer()
-        bag += formView.append(referralsCodeContainer)
-
-        let referralsInvitationsTable = ReferralsInvitationsTable()
-        bag += formView.append(referralsInvitationsTable) { tableView in
-            bag += tableView.didLayoutSignal.onValue { _ in
-                tableView.snp.remakeConstraints { make in
-                    make.height.equalTo(tableView.contentSize.height)
-                }
-            }
-        }
+        
+        let codeSignal = ReadWriteSignal<String?>(nil)
+        
+        bag += client
+            .fetch(query: ReferralCodeQuery())
+            .valueSignal
+            .compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
+            .bindTo(codeSignal)
+        
+        let content = ReferralsContent(codeSignal: codeSignal.readOnly().compactMap { $0 })
+        let loadableContent = LoadableView(view: content, initialLoadingState: true)
+        
+        bag += codeSignal.compactMap { $0 }.map { _ in false }.bindTo(loadableContent.isLoadingSignal)
+        
+        bag += formView.prepend(loadableContent)
 
         bag += formView.append(Spacing(height: 50))
-
-        let linkSignal = ReadWriteSignal<String?>(nil)
 
         let button = LoadableButton(
             button: Button(
@@ -108,13 +99,13 @@ extension Referrals: Presentable {
                 make.centerX.equalToSuperview()
             }
 
-            bag += linkSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
+            bag += codeSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
 
             bag += button.onTapSignal.withLatestFrom(
-                linkSignal.plain()
-            ).compactMap { $1 }.onValue { _ in
+                codeSignal.plain()
+            ).compactMap { $1 }.onValue { code in
                 let activityView = ActivityView(
-                    activityItems: [""],
+                    activityItems: [code],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds
