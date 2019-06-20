@@ -47,11 +47,10 @@ struct Pager {
     let dataSignal = ReadWriteSignal<[PagerScreen]>([])
     let scrollToNextSignal: Signal<Void>
     let scrolledToPageIndexCallbacker: Callbacker<Int>
-    let scrolledToEndCallbacker: Callbacker<Void>
 }
 
 extension Pager: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UICollectionView, Disposable) {
         let bag = DisposeBag()
         
         let flowLayout = UICollectionViewFlowLayout()
@@ -69,7 +68,6 @@ extension Pager: Viewable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.bounces = true
         collectionKit.view.showsHorizontalScrollIndicator = false
-        collectionKit.view.isPrefetchingEnabled = true
         
         if #available(iOS 11.0, *) {
             collectionKit.view.contentInsetAdjustmentBehavior = .never
@@ -92,17 +90,6 @@ extension Pager: Viewable {
             .distinct()
             .onValue { pageIndex in
                 self.scrolledToPageIndexCallbacker.callAll(with: pageIndex)
-                if (collectionKit.hasScrolledToEnd()) {
-                    self.scrolledToEndCallbacker.callAll()
-                }
-        }
-        
-        bag += events.wasAdded.onValue {
-            collectionKit.view.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-                make.width.equalToSuperview()
-                make.height.equalToSuperview()
-            }
         }
         
         return (collectionKit.view, bag)

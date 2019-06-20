@@ -70,7 +70,7 @@ extension LoggedIn: Presentable {
                     testData.news.append(data.news[0])
                     testData.news.append(data.news[0])
                     let whatsNew = WhatsNew(data: testData)
-                    tabBarController.present(whatsNew)
+                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
                 }
             
         }

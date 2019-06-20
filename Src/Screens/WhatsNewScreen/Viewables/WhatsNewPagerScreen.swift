@@ -22,9 +22,7 @@ extension WhatsNewPagerScreen: Presentable {
         let bag = DisposeBag()
         
         let viewController = UIViewController()
-        
-        let view = UIView()
-        
+                
         let containerView = UIStackView()
         containerView.alignment = .center
         containerView.axis = .vertical
@@ -91,15 +89,7 @@ extension WhatsNewPagerScreen: Presentable {
             }
         }
         
-        view.addSubview(containerView)
-        
-        containerView.snp.makeConstraints { make in
-            make.width.equalToSuperview().inset(24)
-            make.centerX.centerY.equalToSuperview()
-            make.bottom.equalTo(0)
-        }
-        
-        viewController.view = view
+        viewController.view = containerView
         
         return (viewController, bag)
     }

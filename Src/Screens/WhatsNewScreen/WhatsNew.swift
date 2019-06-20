@@ -43,7 +43,7 @@ extension WhatsNew: Presentable {
         view.backgroundColor = .offWhite
         
         let containerView = UIStackView()
-        containerView.axis = .horizontal
+        containerView.axis = .vertical
         containerView.alignment = .center
         containerView.isLayoutMarginsRelativeArrangement = true
         
@@ -53,21 +53,6 @@ extension WhatsNew: Presentable {
             make.width.height.centerX.centerY.equalToSuperview()
         }
         
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
-        
-        stackView.edgeInsets = UIEdgeInsets(
-            top: 25,
-            left: 0,
-            bottom: 25,
-            right: 0
-        )
-        
-        containerView.addArrangedSubview(stackView)
-        
         let scrollToNextCallbacker = Callbacker<Void>()
         let scrolledToPageIndexCallbacker = Callbacker<Int>()
         let scrolledToEndCallbacker = Callbacker<Void>()
@@ -75,22 +60,20 @@ extension WhatsNew: Presentable {
         let pager = WhatsNewPager(
             scrollToNextCallbacker: scrollToNextCallbacker,
             scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker,
-            scrolledToEndCallbacker: scrolledToEndCallbacker
+            scrolledToEndCallbacker: scrolledToEndCallbacker,
+            presentingViewController: viewController
         )
         
-        bag += stackView.addArranged(pager) { pagerView in
+        bag += containerView.addArranged(pager) { pagerView in
             pagerView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
                 make.height.equalTo(400)
             }
         }
-        
-        let pageIndicatorSpacing = Spacing(height: 20)
-        bag += stackView.addArranged(pageIndicatorSpacing)
        
         let pagerDots = PagerDots()
         
-        bag += stackView.addArranged(pagerDots) { pagerDotsView in
+        bag += containerView.addArranged(pagerDots) { pagerDotsView in
             pagerDotsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalTo(40)
@@ -101,9 +84,9 @@ extension WhatsNew: Presentable {
             button: Button(title: "", type: .standard(backgroundColor: .blackPurple, textColor: .white))
         )
         
-        bag += stackView.addArranged(proceedButton) { proceedButtonView in
+        bag += containerView.addArranged(proceedButton) { proceedButtonView in
             proceedButtonView.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
+                make.height.equalTo(20)
             }
         }
         
@@ -123,8 +106,8 @@ extension WhatsNew: Presentable {
         
         return (viewController, Future { completion in
             bag += merge(
-                closeButton.onTapSignal
-                //whatsNewSlider.scrolledToEndCallbacker.signal()
+                closeButton.onTapSignal,
+                scrolledToEndCallbacker.providedSignal
             ).onValue {
                 ApplicationState.setLastNewsSeen()
                 completion(.success)

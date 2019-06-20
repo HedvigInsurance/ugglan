@@ -27,22 +27,36 @@ struct WhatsNewPager {
     let scrollToNextCallbacker: Callbacker<Void>
     let scrolledToPageIndexCallbacker: Callbacker<Int>
     let scrolledToEndCallbacker: Callbacker<Void>
+    let presentingViewController: UIViewController
 }
 
 extension WhatsNewPager: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        let view = UIView()
+        let view = UIStackView()
         
         let scrollToNextSignal = scrollToNextCallbacker.signal()
         
         let pager = Pager(
             scrollToNextSignal: scrollToNextSignal,
-            scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker,
-            scrolledToEndCallbacker: scrolledToEndCallbacker
+            scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker
         )
         
-        bag += view.add(pager)
+        bag += view.addArranged(pager) { collectionView in
+            bag += collectionView.contentOffsetSignal.onValue({ point in
+                let slidesScrolledThrough = point.x / collectionView.frame.width + 1
+                let amountOfRealSlides = CGFloat(pager.dataSignal.value.count - 1)
+
+                if slidesScrolledThrough > amountOfRealSlides {
+                    let position = slidesScrolledThrough - amountOfRealSlides
+                    self.presentingViewController.view.alpha = 1 - position
+                    
+                    if position == 1 {
+                        self.scrolledToEndCallbacker.callAll()
+                    }
+                }
+            })
+        }
         
         bag += dataSignal
             .atOnce()
