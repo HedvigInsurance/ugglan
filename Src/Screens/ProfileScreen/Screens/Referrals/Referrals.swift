@@ -25,11 +25,14 @@ enum ReferralsFailure: LocalizedError {
 
 struct Referrals {
     let client: ApolloClient
+    let remoteConfigContainer: RemoteConfigContainer
 
     init(
-        client: ApolloClient = ApolloContainer.shared.client
+        client: ApolloClient = ApolloContainer.shared.client,
+        remoteConfigContainer: RemoteConfigContainer = RemoteConfigContainer.shared
     ) {
         self.client = client
+        self.remoteConfigContainer = remoteConfigContainer
     }
 }
 
@@ -68,13 +71,53 @@ extension Referrals: Presentable {
         
         let codeSignal = ReadWriteSignal<String?>(nil)
         
-        bag += client
-            .fetch(query: ReferralCodeQuery())
+        let referralsScreenQuerySignal = client
+            .fetch(query: ReferralsScreenQuery())
             .valueSignal
+        
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
             .bindTo(codeSignal)
         
-        let content = ReferralsContent(codeSignal: codeSignal.readOnly().compactMap { $0 })
+        let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
+        let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
+        
+        bag += referralsScreenQuerySignal
+            .compactMap { $0.data?.memberReferralCampaign?.receivers?.count }
+            .withLatestFrom(referralsScreenQuerySignal.compactMap { $0.data?.insurance.monthlyCost })
+            .map { (invitationsCount, monthlyCost) in Int(round(Double(monthlyCost) / Double(10.0))) - invitationsCount }
+            .map { count in max(0, count) }
+            .bindTo(peopleLeftToInviteSignal)
+        
+        bag += referralsScreenQuerySignal
+            .compactMap { $0.data?.memberReferralCampaign?.receivers }
+            .map({ invitations -> [InvitationsListRow] in
+                return invitations.map { invitation in
+                    if let activeReferral = invitation?.asActiveReferral {
+                        return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
+                    }
+                    
+                    if let inProgressReferral = invitation?.asInProgressReferral {
+                        return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
+                    }
+                    
+                    if invitation?.asNotInitiatedReferral != nil {
+                        return .right(ReferralsInvitationAnonymous(count: 1))
+                    }
+                    
+                    if let terminatedReferral = invitation?.asTerminatedReferral {
+                        return .left(ReferralsInvitation(name: terminatedReferral.name, state: .left))
+                    }
+                    
+                    return .right(ReferralsInvitationAnonymous(count: 1))
+                }
+            }).bindTo(invitationsSignal)
+        
+        let content = ReferralsContent(
+            codeSignal: codeSignal.readOnly().compactMap { $0 },
+            invitationsSignal: invitationsSignal.readOnly().compactMap { $0 },
+            peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 }
+        )
         let loadableContent = LoadableView(view: content, initialLoadingState: true)
         
         bag += codeSignal.compactMap { $0 }.map { _ in false }.bindTo(loadableContent.isLoadingSignal)
@@ -104,8 +147,16 @@ extension Referrals: Presentable {
             bag += button.onTapSignal.withLatestFrom(
                 codeSignal.plain()
             ).compactMap { $1 }.onValue { code in
+                let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
+                let message = String(key: .REFERRAL_SMS_MESSAGE(
+                        referralCode: code,
+                        referralLink: landingPageUrl,
+                        referralValue: "10"
+                    )
+                )
+                
                 let activityView = ActivityView(
-                    activityItems: [code],
+                    activityItems: [message],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds

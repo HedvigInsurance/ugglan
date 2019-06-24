@@ -10,7 +10,9 @@ import Form
 import Foundation
 import UIKit
 
-struct ReferralsTitle {}
+struct ReferralsTitle {
+    let peopleLeftToInviteSignal: Signal<Int>
+}
 
 extension ReferralsTitle: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
@@ -21,11 +23,15 @@ extension ReferralsTitle: Viewable {
         view.spacing = 8
 
         let title = MultilineLabel(
-            styledText: StyledText(
-                text: String(key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: "10")),
-                style: TextStyle.standaloneLargeTitle.centerAligned
-            )
+            value: "",
+            style: TextStyle.standaloneLargeTitle.centerAligned
         )
+        
+        bag += peopleLeftToInviteSignal.onValue { peopleLeftToInvite in
+            title.styledTextSignal.value.text = String(
+                key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String(peopleLeftToInvite))
+            )
+        }
 
         bag += view.addArranged(title) { titleView in
             titleView.snp.makeConstraints { make in
@@ -34,10 +40,8 @@ extension ReferralsTitle: Viewable {
         }
 
         let description = MultilineLabel(
-            styledText: StyledText(
-                text: String(key: .REFERRAL_PROGRESS_BODY(referralValue: "10")),
-                style: TextStyle.bodyOffBlack.centerAligned
-            )
+            value: String(key: .REFERRAL_PROGRESS_BODY(referralValue: "10")),
+            style: TextStyle.bodyOffBlack.centerAligned
         )
 
         bag += view.addArranged(description) { descriptionView in

@@ -10,26 +10,23 @@ import Form
 import Foundation
 import Presentation
 
-struct ReferralsInvitationsTable {}
+typealias InvitationsListRow = Either<ReferralsInvitation, ReferralsInvitationAnonymous>
+
+struct ReferralsInvitationsTable {
+    let invitationsSignal: Signal<[InvitationsListRow]>
+}
 
 extension ReferralsInvitationsTable: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
-
-        let invitations: [Either<ReferralsInvitation, ReferralsInvitationAnonymous>] = [
-            .right(ReferralsInvitationAnonymous(count: 1)),
-            .left(ReferralsInvitation(name: "Sam", state: .onboarding)),
-            .left(ReferralsInvitation(name: "Anton", state: .member)),
-            .left(ReferralsInvitation(name: "Fredrik", state: .left)),
-        ]
 
         let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in
             style.section.minRowHeight = 72
             style.section.background = SectionStyle.Background.standardLargeIcons
         }
 
-        let tableKit = TableKit<EmptySection, Either<ReferralsInvitation, ReferralsInvitationAnonymous>>(
-            table: Table(rows: invitations),
+        let tableKit = TableKit<EmptySection, InvitationsListRow>(
+            table: Table(rows: []),
             style: tableStyle,
             bag: bag,
             headerForSection: { _, _ in
@@ -47,7 +44,12 @@ extension ReferralsInvitationsTable: Viewable {
                 return headerStackView
             }
         )
+        
         tableKit.view.isScrollEnabled = false
+        
+        bag += invitationsSignal.map { rows in Table<EmptySection, InvitationsListRow>(rows: rows) }.onValue { table in          tableKit.view.isHidden = table.count == 0
+            tableKit.table = table
+        }
 
         return (tableKit.view, bag)
     }

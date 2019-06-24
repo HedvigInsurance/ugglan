@@ -1,0 +1,25 @@
+query ReferralsScreen {
+    insurance {
+        monthlyCost
+    }
+    memberReferralCampaign {
+        referralInformation {
+            code
+        }
+        receivers {
+            ... on ActiveReferral {
+                discount
+                name
+            }
+            ... on InProgressReferral {
+                name
+            }
+            ... on NotInitiatedReferral {
+                name
+            }
+            ... on TerminatedReferral {
+                name
+            }
+        }
+    }
+}

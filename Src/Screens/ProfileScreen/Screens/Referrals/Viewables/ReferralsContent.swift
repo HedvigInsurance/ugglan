@@ -11,6 +11,8 @@ import UIKit
 
 struct ReferralsContent {
     let codeSignal: Signal<String>
+    let invitationsSignal: Signal<[InvitationsListRow]>
+    let peopleLeftToInviteSignal: Signal<Int>
 }
 
 extension ReferralsContent: Viewable {
@@ -27,13 +29,13 @@ extension ReferralsContent: Viewable {
             }
         }
         
-        let referralsTitle = ReferralsTitle()
+        let referralsTitle = ReferralsTitle(peopleLeftToInviteSignal: peopleLeftToInviteSignal)
         bag += stackView.addArranged(referralsTitle)
         
         let referralsCodeContainer = ReferralsCodeContainer(codeSignal: codeSignal)
         bag += stackView.addArranged(referralsCodeContainer)
         
-        let referralsInvitationsTable = ReferralsInvitationsTable()
+        let referralsInvitationsTable = ReferralsInvitationsTable(invitationsSignal: invitationsSignal)
         bag += stackView.addArranged(referralsInvitationsTable) { tableView in
             bag += tableView.didLayoutSignal.onValue { _ in
                 tableView.snp.remakeConstraints { make in
