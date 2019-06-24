@@ -56,6 +56,10 @@ extension WhatsNewPager: Viewable {
                     }
                 }
             })
+            
+            collectionView.snp.makeConstraints { make in
+                make.centerY.equalToSuperview()
+            }
         }
         
         bag += dataSignal

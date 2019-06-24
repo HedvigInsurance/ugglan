@@ -45,12 +45,13 @@ extension WhatsNew: Presentable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.alignment = .center
+        containerView.spacing = 12
         containerView.isLayoutMarginsRelativeArrangement = true
         
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.width.height.centerX.centerY.equalToSuperview()
+            make.width.centerX.centerY.equalToSuperview()
         }
         
         let scrollToNextCallbacker = Callbacker<Void>()
@@ -70,8 +71,11 @@ extension WhatsNew: Presentable {
                 make.height.equalTo(400)
             }
         }
+        
+        let spacing = Spacing(height: 26)
+        bag += containerView.addArranged(spacing)
        
-        let pagerDots = PagerDots()
+        let pagerDots = WhatsNewPagerDots()
         
         bag += containerView.addArranged(pagerDots) { pagerDotsView in
             pagerDotsView.snp.makeConstraints { make in
@@ -87,6 +91,7 @@ extension WhatsNew: Presentable {
         bag += containerView.addArranged(proceedButton) { proceedButtonView in
             proceedButtonView.snp.makeConstraints { make in
                 make.height.equalTo(20)
+                make.centerX.equalToSuperview()
             }
         }
         

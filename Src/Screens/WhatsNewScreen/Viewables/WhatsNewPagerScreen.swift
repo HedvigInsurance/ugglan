@@ -91,6 +91,13 @@ extension WhatsNewPagerScreen: Presentable {
         
         viewController.view = containerView
         
+        bag += viewController.view.didLayoutSignal.onValue { _ in
+            containerView.snp.makeConstraints { make in
+                make.centerX.centerY.equalToSuperview()
+                make.width.equalToSuperview().inset(20)
+            }
+        }
+        
         return (viewController, bag)
     }
 }
