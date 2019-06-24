@@ -12,7 +12,9 @@ query Profile {
         name
         imageUrl
     }
-    insurance {
-        monthlyCost
+    paymentWithDiscount {
+        netPremium {
+            amount
+        }
     }
 }
