@@ -30,9 +30,9 @@ extension LoggedIn {
             .toVoid()
             .onValue {
                 tabBarController.present(TerminatedInsurance(), options: [.prefersNavigationBarHidden(true)])
-        }
+            }
     }
-    
+
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
         return NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
             tabBarController.selectedIndex = 2
@@ -75,7 +75,7 @@ extension LoggedIn: Presentable {
             claimsPresentation,
             profilePresentation
         )
-        
+
         bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)
 

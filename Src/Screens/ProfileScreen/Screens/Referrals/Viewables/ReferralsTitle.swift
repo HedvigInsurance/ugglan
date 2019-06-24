@@ -26,7 +26,7 @@ extension ReferralsTitle: Viewable {
             value: "",
             style: TextStyle.standaloneLargeTitle.centerAligned
         )
-        
+
         bag += peopleLeftToInviteSignal.onValue { peopleLeftToInvite in
             title.styledTextSignal.value.text = String(
                 key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String(peopleLeftToInvite))
