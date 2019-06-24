@@ -11,8 +11,15 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Apollo
 
-struct ApplyDiscount {}
+struct ApplyDiscount {
+    let client: ApolloClient
+    
+    init(client: ApolloClient = ApolloContainer.shared.client) {
+        self.client = client
+    }
+}
 
 extension ApplyDiscount: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
@@ -55,8 +62,10 @@ extension ApplyDiscount: Presentable {
             title: String(key: .REFERRAL_ADDCOUPON_BTN_SUBMIT),
             type: .standard(backgroundColor: .purple, textColor: .white)
         )
+        
+        let loadableSubmitButton = LoadableButton(button: submitButton)
 
-        bag += view.addArranged(submitButton.wrappedIn(UIStackView())) { stackView in
+        bag += view.addArranged(loadableSubmitButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .center
         }
@@ -74,8 +83,32 @@ extension ApplyDiscount: Presentable {
 
         bag += containerView.applyPreferredContentSize(on: viewController)
 
-        return (viewController, Future { _ in
-            bag
+        return (viewController, Future { completion in
+            bag += loadableSubmitButton
+                .onTapSignal
+                .atValue { _ in
+                    loadableSubmitButton.isLoadingSignal.value = true
+                }
+                .withLatestFrom(textField.value.plain())
+                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: RedeemCodeMutation(code: discountCode)) }
+                .atValue { _ in
+                    loadableSubmitButton.isLoadingSignal.value = false
+                }
+                .onValue({ result in
+                    if result.errors != nil {
+                        let alert = Alert(
+                            title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
+                            message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
+                            actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) { }]
+                        )
+                        
+                        viewController.present(alert)
+                    } else {
+                        completion(.success)
+                    }
+                })
+            
+            return bag
         })
     }
 }
