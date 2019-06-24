@@ -69,11 +69,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let url = userActivity.webpageURL else { return false }
         guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
-        
+
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { _, _ in
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
-            
+
             innerBag += rootViewController.present(ReferralsReceiverConsent(referralCode: referralCode), style: .modal, options: [
                 .prefersNavigationBarHidden(true),
             ]).onValue { result in

@@ -200,20 +200,20 @@ extension ReferralsProgressBar: Viewable {
 
         containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
         containerNode.opacity = 0
-        
+
         let discountLabelNode = currentDiscountLabel()
         discountLabelNode.opacity = 0
         scene.rootNode.addChildNode(discountLabelNode)
-        
+
         let fullPriceLabelNode = fullPriceLabel()
         fullPriceLabelNode.opacity = 0
         scene.rootNode.addChildNode(fullPriceLabelNode)
-        
+
         let freeLabelNode = freeLabel()
         freeLabelNode.opacity = 0
         scene.rootNode.addChildNode(freeLabelNode)
 
-        bag += Signal(after: 1).onValue({ _ in
+        bag += Signal(after: 1).onValue { _ in
             let duration = 0.5
 
             let action = SCNAction.customAction(duration: duration, action: { node, progress in
@@ -221,7 +221,7 @@ extension ReferralsProgressBar: Viewable {
                 node.eulerAngles = SCNVector3Make(0, radians(-45 * (realProgress * 5)), 0)
                 node.scale = SCNVector3(x: 1, y: realProgress, z: 1)
                 node.opacity = 1
-                
+
                 if realProgress > 0.8 {
                     let opacityProgress = CGFloat((realProgress - 0.8) / 0.2)
                     discountLabelNode.opacity = opacityProgress
@@ -233,7 +233,7 @@ extension ReferralsProgressBar: Viewable {
             action.timingMode = SCNActionTimingMode.easeOut
 
             containerNode.runAction(action)
-        })
+        }
 
         scene.rootNode.addChildNode(containerNode)
 

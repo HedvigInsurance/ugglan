@@ -12,7 +12,7 @@ import UIKit
 
 struct ReferralsCodeContainer {
     let codeSignal: Signal<String>
-    
+
     init(codeSignal: Signal<String>) {
         self.codeSignal = codeSignal
     }

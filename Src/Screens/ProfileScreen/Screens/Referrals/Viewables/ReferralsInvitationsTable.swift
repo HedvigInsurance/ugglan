@@ -44,10 +44,10 @@ extension ReferralsInvitationsTable: Viewable {
                 return headerStackView
             }
         )
-        
+
         tableKit.view.isScrollEnabled = false
-        
-        bag += invitationsSignal.map { rows in Table<EmptySection, InvitationsListRow>(rows: rows) }.onValue { table in          tableKit.view.isHidden = table.count == 0
+
+        bag += invitationsSignal.map { rows in Table<EmptySection, InvitationsListRow>(rows: rows) }.onValue { table in tableKit.view.isHidden = table.count == 0
             tableKit.table = table
         }
 

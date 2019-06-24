@@ -40,7 +40,7 @@ extension LoadableView: Viewable {
             make.centerX.equalToSuperview()
             make.top.equalTo(10)
         }
-        
+
         func handleStateChange(isLoading: Bool) {
             if isLoading {
                 matter.alpha = 0
@@ -55,16 +55,16 @@ extension LoadableView: Viewable {
                 loadingIndicator.stopAnimating()
                 loadingIndicator.alpha = 0
             }
-            
+
             containerView.layoutIfNeeded()
         }
-        
+
         bag += isLoadingSignal.atOnce().take(first: 1).onValue { isLoading in
             handleStateChange(isLoading: isLoading)
         }
-        
+
         bag += isLoadingSignal.delay(by: 0.25).animated(style: SpringAnimationStyle.lightBounce()) { isLoading in
-           handleStateChange(isLoading: isLoading)
+            handleStateChange(isLoading: isLoading)
         }
 
         return (containerView, Disposer {
