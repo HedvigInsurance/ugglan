@@ -8,7 +8,9 @@ query ReferralsScreen {
         }
         receivers {
             ... on ActiveReferral {
-                discount
+                discount {
+                    amount
+                }
                 name
             }
             ... on InProgressReferral {
