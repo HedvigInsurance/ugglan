@@ -64,6 +64,7 @@ extension ApplyDiscount: Presentable {
         )
         
         let loadableSubmitButton = LoadableButton(button: submitButton)
+        bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
 
         bag += view.addArranged(loadableSubmitButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical

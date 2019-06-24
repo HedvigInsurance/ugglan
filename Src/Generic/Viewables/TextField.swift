@@ -12,10 +12,12 @@ import UIKit
 struct TextField {
     let value: ReadWriteSignal<String>
     let placeholder: ReadWriteSignal<String>
+    let enabledSignal: ReadWriteSignal<Bool>
 
-    init(value: String, placeholder: String) {
+    init(value: String, placeholder: String, enabled: Bool = true) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
+        self.enabledSignal = ReadWriteSignal(enabled)
     }
 }
 
@@ -48,6 +50,7 @@ extension TextField: Viewable {
         let textField = UITextField(value: "", placeholder: "", style: .default)
         bag += value.atOnce().bidirectionallyBindTo(textField)
         bag += placeholder.atOnce().bindTo(textField, \.placeholder)
+        bag += enabledSignal.atOnce().bindTo(textField, \.isEnabled)
 
         paddingView.addArrangedSubview(textField)
 
