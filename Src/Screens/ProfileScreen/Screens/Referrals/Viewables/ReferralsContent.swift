@@ -13,6 +13,7 @@ struct ReferralsContent {
     let codeSignal: Signal<String>
     let invitationsSignal: Signal<[InvitationsListRow]>
     let peopleLeftToInviteSignal: Signal<Int>
+    let incentiveSignal: Signal<Int>
 }
 
 extension ReferralsContent: Viewable {
@@ -29,7 +30,10 @@ extension ReferralsContent: Viewable {
             }
         }
 
-        let referralsTitle = ReferralsTitle(peopleLeftToInviteSignal: peopleLeftToInviteSignal)
+        let referralsTitle = ReferralsTitle(
+            peopleLeftToInviteSignal: peopleLeftToInviteSignal,
+            incentiveSignal: incentiveSignal
+        )
         bag += stackView.addArranged(referralsTitle)
 
         let referralsCodeContainer = ReferralsCodeContainer(codeSignal: codeSignal)

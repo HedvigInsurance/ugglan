@@ -81,11 +81,19 @@ extension Referrals: Presentable {
 
         let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
         let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
+        
+        let incentiveSignal = referralsScreenQuerySignal
+            .compactMap { $0.data?.memberReferralCampaign?.referralInformation.incentive.amount }
+            .toInt()
+            .compactMap { $0 }
+        let netPremiumSignal = referralsScreenQuerySignal
+            .compactMap { $0.data?.paymentWithDiscount?.netPremium.amount }
+            .toInt()
+            .compactMap { $0 }
 
-        bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.memberReferralCampaign?.receivers?.count }
-            .withLatestFrom(referralsScreenQuerySignal.compactMap { $0.data?.insurance.monthlyCost })
-            .map { invitationsCount, monthlyCost in Int(round(Double(monthlyCost) / Double(10.0))) - invitationsCount }
+        bag += netPremiumSignal
+            .withLatestFrom(incentiveSignal)
+            .map { netPremium, incentive in Int(round(Double(netPremium) / Double(incentive))) }
             .map { count in max(0, count) }
             .bindTo(peopleLeftToInviteSignal)
 
@@ -116,7 +124,8 @@ extension Referrals: Presentable {
         let content = ReferralsContent(
             codeSignal: codeSignal.readOnly().compactMap { $0 },
             invitationsSignal: invitationsSignal.readOnly().compactMap { $0 },
-            peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 }
+            peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 },
+            incentiveSignal: incentiveSignal.plain()
         )
         let loadableContent = LoadableView(view: content, initialLoadingState: true)
 

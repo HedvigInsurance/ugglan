@@ -12,6 +12,7 @@ import UIKit
 
 struct ReferralsTitle {
     let peopleLeftToInviteSignal: Signal<Int>
+    let incentiveSignal: Signal<Int>
 }
 
 extension ReferralsTitle: Viewable {
@@ -26,12 +27,11 @@ extension ReferralsTitle: Viewable {
             value: "",
             style: TextStyle.standaloneLargeTitle.centerAligned
         )
-
-        bag += peopleLeftToInviteSignal.onValue { peopleLeftToInvite in
-            title.styledTextSignal.value.text = String(
-                key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String(peopleLeftToInvite))
-            )
-        }
+        
+        bag += peopleLeftToInviteSignal
+            .map { String(key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String($0))) }
+            .map { StyledText(text: $0, style: TextStyle.standaloneLargeTitle.centerAligned) }
+            .bindTo(title.styledTextSignal)
 
         bag += view.addArranged(title) { titleView in
             titleView.snp.makeConstraints { make in
@@ -40,9 +40,14 @@ extension ReferralsTitle: Viewable {
         }
 
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_PROGRESS_BODY(referralValue: "10")),
+            value: "",
             style: TextStyle.bodyOffBlack.centerAligned
         )
+        
+        bag += incentiveSignal
+            .map { String(key: .REFERRAL_PROGRESS_BODY(referralValue: String($0))) }
+            .map { StyledText(text: $0, style: TextStyle.bodyOffBlack.centerAligned) }
+            .bindTo(description.styledTextSignal)
 
         bag += view.addArranged(description) { descriptionView in
             descriptionView.snp.makeConstraints { make in
