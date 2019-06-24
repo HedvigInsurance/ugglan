@@ -66,11 +66,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { _, _ in
+        guard let url = userActivity.webpageURL else { return false }
+        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
+        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
+        
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { _, _ in
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
-
-            innerBag += rootViewController.present(ReferralsReceiverConsent(), style: .modal, options: [
+            
+            innerBag += rootViewController.present(ReferralsReceiverConsent(referralCode: referralCode), style: .modal, options: [
                 .prefersNavigationBarHidden(true),
             ]).onValue { result in
                 if result == .accept {

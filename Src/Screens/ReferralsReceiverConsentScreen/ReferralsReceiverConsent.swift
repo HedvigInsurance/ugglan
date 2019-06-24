@@ -9,12 +9,21 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Apollo
 
 enum ReferralsReceiverConsentResult {
     case accept, decline
 }
 
-struct ReferralsReceiverConsent {}
+struct ReferralsReceiverConsent {
+    let referralCode: String
+    let client: ApolloClient
+    
+    init(referralCode: String, client: ApolloClient = ApolloContainer.shared.client) {
+        self.referralCode = referralCode
+        self.client = client
+    }
+}
 
 extension ReferralsReceiverConsent: Presentable {
     func materialize() -> (UIViewController, Future<ReferralsReceiverConsentResult>) {
@@ -38,8 +47,11 @@ extension ReferralsReceiverConsent: Presentable {
             bag += content.didTapDecline.onValue { _ in
                 completion(.success(.decline))
             }
-
-            bag += content.didTapAccept.onValue { _ in
+            
+            bag += content
+                .didTapAccept
+                .mapLatestToFuture { self.client.perform(mutation: RedeemCodeMutation(code: self.referralCode)) }
+                .onValue { _ in
                 completion(.success(.accept))
             }
 
