@@ -145,7 +145,7 @@ extension ReferralsProgressBar {
         amountOfCompletedBlocks: Int
     ) -> SCNNode {
         let hasDiscount = discount > 0
-        
+
         let node = createLabel(
             text: hasDiscount ? "-\(String(discount))kr" : "Bjud in",
             textColor: hasDiscount ? UIColor.offBlack : UIColor.white,
@@ -162,7 +162,7 @@ extension ReferralsProgressBar {
 
         return node
     }
-    
+
     func render(
         view: SCNView,
         scene: SCNScene,
@@ -172,40 +172,40 @@ extension ReferralsProgressBar {
         netPremium: Int
     ) -> Disposable {
         let bag = DisposeBag()
-        
+
         let blocks: [SCNNode] = []
         let amountOfBlocks = grossPremium / incentive
         let amountOfCompletedBlocks = (grossPremium - netPremium) / incentive
         let discount = grossPremium - netPremium
-        
+
         for i in 1 ... amountOfBlocks {
             let boxGeometry = SCNBox(width: 10.0, height: 2.0, length: 10.0, chamferRadius: 0)
-            
+
             if i > amountOfBlocks - amountOfCompletedBlocks {
                 let boxColor = UIColor.turquoise.withAlphaComponent(0.9)
-                
+
                 boxGeometry.materials = [
                     boxColor,
                     boxColor,
                     boxColor,
                     boxColor,
                     i == amountOfBlocks ? boxColor : UIColor.clear,
-                    ].map { color in
-                        let material = SCNMaterial()
-                        material.diffuse.contents = color
-                        material.locksAmbientWithDiffuse = true
-                        return material
+                ].map { color in
+                    let material = SCNMaterial()
+                    material.diffuse.contents = color
+                    material.locksAmbientWithDiffuse = true
+                    return material
                 }
             } else {
                 boxGeometry.firstMaterial?.diffuse.contents = UIColor.purple
             }
-            
+
             let boxNode = SCNNode(geometry: boxGeometry)
             boxNode.position = SCNVector3Make(0, Float(2 * i), 0)
             boxNode.physicsBody?.isAffectedByGravity = true
             containerNode.addChildNode(boxNode)
         }
-        
+
         let discountLabelNode = currentDiscountLabel(
             discount: discount,
             amountOfBlocks: amountOfBlocks,
@@ -213,24 +213,24 @@ extension ReferralsProgressBar {
         )
         discountLabelNode.opacity = 0
         scene.rootNode.addChildNode(discountLabelNode)
-        
+
         let fullPriceLabelNode = fullPriceLabel(grossPremium: grossPremium, amountOfBlocks: amountOfBlocks)
         fullPriceLabelNode.opacity = 0
         scene.rootNode.addChildNode(fullPriceLabelNode)
-        
+
         let freeLabelNode = freeLabel()
         freeLabelNode.opacity = 0
         scene.rootNode.addChildNode(freeLabelNode)
-        
+
         bag += Signal(after: 1).onValue { _ in
             let duration = 0.5
-            
+
             let action = SCNAction.customAction(duration: duration, action: { node, progress in
                 let realProgress = 1.0 / (Float(duration) / Float(progress))
                 node.eulerAngles = SCNVector3Make(0, radians(-45 * (realProgress * 5)), 0)
                 node.scale = SCNVector3(x: 1, y: realProgress, z: 1)
                 node.opacity = 1
-                
+
                 if realProgress > 0.8 {
                     let opacityProgress = CGFloat((realProgress - 0.8) / 0.2)
                     discountLabelNode.opacity = opacityProgress
@@ -238,14 +238,14 @@ extension ReferralsProgressBar {
                     freeLabelNode.opacity = opacityProgress
                 }
             })
-            
+
             action.timingMode = SCNActionTimingMode.easeOut
-            
+
             containerNode.runAction(action)
         }
-        
+
         scene.rootNode.addChildNode(containerNode)
-        
+
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         cameraNode.camera?.usesOrthographicProjection = true
@@ -253,20 +253,20 @@ extension ReferralsProgressBar {
         cameraNode.position = SCNVector3Make(0, Float(amountOfBlocks) * 2, Float(amountOfBlocks) * 1.75)
         cameraNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
         scene.rootNode.addChildNode(cameraNode)
-        
+
         let lightTemperature: CGFloat = 6500
-        
+
         let ambientLightNode = SCNNode()
         let ambientLight = SCNLight()
         ambientLight.type = .ambient
         ambientLight.color = UIColor.white
         ambientLight.temperature = lightTemperature
         ambientLight.intensity = 800
-        
+
         ambientLightNode.light = ambientLight
-        
+
         scene.rootNode.addChildNode(ambientLightNode)
-        
+
         let sideLightNode = SCNNode()
         let sideLight = SCNLight()
         sideLight.type = .directional
@@ -276,10 +276,10 @@ extension ReferralsProgressBar {
         sideLight.spotOuterAngle = 55
         sideLightNode.eulerAngles = SCNVector3Make(0, radians(-55), 0)
         sideLightNode.position = SCNVector3Make(-70, 35, 60)
-        
+
         sideLightNode.light = sideLight
         cameraNode.addChildNode(sideLightNode)
-        
+
         let topLightNode = SCNNode()
         let topLight = SCNLight()
         topLight.type = .directional
@@ -289,21 +289,21 @@ extension ReferralsProgressBar {
         topLight.spotOuterAngle = 55
         topLightNode.eulerAngles = SCNVector3Make(radians(-90), radians(-55), 0)
         topLightNode.position = SCNVector3Make(-50, 35, 60)
-        
+
         topLightNode.light = topLight
         cameraNode.addChildNode(topLightNode)
-        
+
         view.snp.makeConstraints { make in
             make.height.equalTo(Double(amountOfBlocks) * 17.5)
         }
-        
+
         return Disposer {
             bag.dispose()
-            
-            blocks.forEach({ block in
+
+            blocks.forEach { block in
                 block.removeFromParentNode()
-            })
-            
+            }
+
             discountLabelNode.removeFromParentNode()
             fullPriceLabelNode.removeFromParentNode()
             freeLabelNode.removeFromParentNode()
@@ -324,20 +324,20 @@ extension ReferralsProgressBar: Viewable {
         let containerNode = SCNNode()
         containerNode.physicsBody?.isAffectedByGravity = true
         containerNode.eulerAngles = SCNVector3Make(0, radians(-45), 0)
-        
+
         bag +=
             combineLatest(incentiveSignal, grossPremiumSignal, netPremiumSignal)
-                .onValueDisposePrevious { (arg) -> Disposable? in
-                    let (incentive, grossPremium, netPremium) = arg
-                    return self.render(
-                        view: view,
-                        scene: scene,
-                        containerNode: containerNode,
-                        incentive: incentive,
-                        grossPremium: grossPremium,
-                        netPremium: netPremium
-                    )
-        }
+            .onValueDisposePrevious { (arg) -> Disposable? in
+                let (incentive, grossPremium, netPremium) = arg
+                return self.render(
+                    view: view,
+                    scene: scene,
+                    containerNode: containerNode,
+                    incentive: incentive,
+                    grossPremium: grossPremium,
+                    netPremium: netPremium
+                )
+            }
 
         containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
         containerNode.opacity = 0

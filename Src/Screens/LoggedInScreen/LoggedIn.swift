@@ -64,7 +64,7 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         let referralsPresentation = Presentation(
             referrals,
             style: .default,

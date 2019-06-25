@@ -28,7 +28,7 @@ struct PaymentDetailsSection {
 extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
-        
+
         let dataValueSignal = client.watch(query: MyPaymentQuery())
 
         let section = SectionView(
@@ -52,63 +52,63 @@ extension PaymentDetailsSection: Viewable {
         }.bindTo(paymentTypeRow.valueSignal)
 
         bag += section.append(paymentTypeRow)
-        
+
         let grossPriceRow = KeyValueRow()
         grossPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_PRICE_LABEL)
         grossPriceRow.valueStyleSignal.value = .rowTitleDisabled
-        
+
         bag += dataValueSignal.map { $0.data?.paymentWithDiscount?.grossPremium.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
                     return String(key: .PROFILE_PAYMENT_PRICE(price: String(amount)))
                 }
-                
+
                 return String(key: .PRICE_MISSING)
             }
             .bindTo(grossPriceRow.valueSignal)
-        
+
         bag += section.append(grossPriceRow)
-        
+
         let discountRow = KeyValueRow()
         discountRow.keySignal.value = String(key: .PROFILE_PAYMENT_DISCOUNT_LABEL)
         discountRow.valueStyleSignal.value = .rowTitleDisabled
-        
+
         bag += dataValueSignal.map { $0.data?.paymentWithDiscount?.discount.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
                     return String(key: .PROFILE_PAYMENT_DISCOUNT(discount: String(amount)))
                 }
-                
+
                 return String(key: .PRICE_MISSING)
             }
             .bindTo(discountRow.valueSignal)
-        
+
         bag += section.append(discountRow)
-        
+
         let netPriceRow = KeyValueRow()
         netPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_FINAL_COST_LABEL)
         netPriceRow.valueStyleSignal.value = .rowTitleDisabled
-        
+
         bag += dataValueSignal.map { $0.data?.paymentWithDiscount?.netPremium.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
                     return String(key: .PROFILE_PAYMENT_FINAL_COST(finalCost: String(amount)))
                 }
-                
+
                 return String(key: .PRICE_MISSING)
             }
             .bindTo(netPriceRow.valueSignal)
-        
+
         bag += section.append(netPriceRow)
-        
+
         let applyDiscountButtonRow = ButtonRow(
             text: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
             style: .normalButton
         )
-        
+
         bag += applyDiscountButtonRow.onSelect.onValue { _ in
             let overlay = DraggableOverlay(
                 presentable: ApplyDiscount(),
@@ -116,15 +116,15 @@ extension PaymentDetailsSection: Viewable {
             )
             self.presentingViewController.present(overlay)
         }
-        
+
         bag += section.append(applyDiscountButtonRow)
-        
+
         let hidePriceRowsSignal = dataValueSignal.map { $0.data?.paymentWithDiscount?.discount.amount }.toInt().map { $0 == 0 }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.map { !$0 }.bindTo(applyDiscountButtonRow.isHiddenSignal)
-        
+
         return (section, bag)
     }
 }

@@ -6,16 +6,16 @@
 //  Created by Sam Pettersson on 2019-06-12.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import Presentation
 import UIKit
-import Apollo
 
 struct ApplyDiscount {
     let client: ApolloClient
-    
+
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
@@ -62,7 +62,7 @@ extension ApplyDiscount: Presentable {
             title: String(key: .REFERRAL_ADDCOUPON_BTN_SUBMIT),
             type: .standard(backgroundColor: .purple, textColor: .white)
         )
-        
+
         let loadableSubmitButton = LoadableButton(button: submitButton)
         bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
 
@@ -95,20 +95,20 @@ extension ApplyDiscount: Presentable {
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
-                .onValue({ result in
+                .onValue { result in
                     if result.errors != nil {
                         let alert = Alert(
                             title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
                             message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
-                            actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) { }]
+                            actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
                         )
-                        
+
                         viewController.present(alert)
                     } else {
                         completion(.success)
                     }
-                })
-            
+                }
+
             return bag
         })
     }

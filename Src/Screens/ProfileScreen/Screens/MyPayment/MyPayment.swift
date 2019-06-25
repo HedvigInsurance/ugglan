@@ -60,9 +60,9 @@ extension MyPayment: Presentable {
             style: .normal
         )
         bag += form.append(buttonSection)
-        
+
         let myPaymentQuerySignal = client.watch(query: MyPaymentQuery())
-        
+
         bag += myPaymentQuerySignal
             .map { $0.data?.paymentWithDiscount?.netPremium.amount }
             .toInt()
