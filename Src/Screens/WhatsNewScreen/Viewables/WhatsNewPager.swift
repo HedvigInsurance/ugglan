@@ -56,10 +56,6 @@ extension WhatsNewPager: Viewable {
                     }
                 }
             })
-            
-            collectionView.snp.makeConstraints { make in
-                make.centerY.equalToSuperview()
-            }
         }
         
         bag += dataSignal
@@ -70,7 +66,7 @@ extension WhatsNewPager: Viewable {
                     let whatsNewPagerScreen = WhatsNewPagerScreen(
                         title: newsPost.title,
                         paragraph: newsPost.paragraph,
-                        imageUrl: newsPost.illustration.pdfUrl
+                        icon: RemoteVectorIcon(newsPost.illustration.pdfUrl)
                     )
                     
                     return PagerScreen(

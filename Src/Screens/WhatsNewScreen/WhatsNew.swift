@@ -27,7 +27,7 @@ extension WhatsNew: Presentable {
         let viewController = UIViewController()
 
         viewController.preferredPresentationStyle = .modally(
-            presentationStyle: .overFullScreen,
+            presentationStyle: .formSheet,
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )
@@ -45,13 +45,12 @@ extension WhatsNew: Presentable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.alignment = .center
-        containerView.spacing = 12
         containerView.isLayoutMarginsRelativeArrangement = true
         
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.width.centerX.centerY.equalToSuperview()
+            make.width.height.centerX.centerY.equalToSuperview()
         }
         
         let scrollToNextCallbacker = Callbacker<Void>()
@@ -68,19 +67,29 @@ extension WhatsNew: Presentable {
         bag += containerView.addArranged(pager) { pagerView in
             pagerView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
-                make.height.equalTo(400)
             }
         }
         
-        let spacing = Spacing(height: 26)
-        bag += containerView.addArranged(spacing)
-       
+        let controlsWrapper = UIStackView()
+        controlsWrapper.axis = .vertical
+        controlsWrapper.alignment = .center
+        controlsWrapper.spacing = 16
+        controlsWrapper.distribution = .equalSpacing
+        controlsWrapper.isLayoutMarginsRelativeArrangement = true
+        controlsWrapper.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
+        
+        containerView.addArrangedSubview(controlsWrapper)
+        
+        controlsWrapper.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+        }
+        
         let pagerDots = WhatsNewPagerDots()
         
-        bag += containerView.addArranged(pagerDots) { pagerDotsView in
+        bag += controlsWrapper.addArranged(pagerDots) { pagerDotsView in
             pagerDotsView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.height.equalTo(40)
+                make.width.centerX.equalToSuperview()
+                make.height.equalTo(20)
             }
         }
         
@@ -88,13 +97,8 @@ extension WhatsNew: Presentable {
             button: Button(title: "", type: .standard(backgroundColor: .blackPurple, textColor: .white))
         )
         
-        bag += containerView.addArranged(proceedButton) { proceedButtonView in
-            proceedButtonView.snp.makeConstraints { make in
-                make.height.equalTo(20)
-                make.centerX.equalToSuperview()
-            }
-        }
-        
+        bag += controlsWrapper.addArranged(proceedButton)
+       
         bag += dataSignal.atOnce().bindTo(pager.dataSignal)
         bag += dataSignal.atOnce().filter { $0 != nil }.map { data -> Int in data!.news.count }.bindTo(proceedButton.pageAmountSignal)
         bag += dataSignal.atOnce().filter { $0 != nil }.map { data -> Int in data!.news.count + 1 }.bindTo(pagerDots.pageAmountSignal)

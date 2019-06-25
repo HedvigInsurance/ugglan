@@ -12,6 +12,8 @@ import UIKit
 
 struct RemoteVectorIcon {
     let pdfUrlStringSignal = ReadWriteSignal<String?>(nil)
+    let finishedLoadingSignal: Signal<Void>
+    let finishedLoadingCallback = Callbacker<Void>()
     let environment: ApolloEnvironmentConfig
     let threaded: Bool
 
@@ -21,6 +23,7 @@ struct RemoteVectorIcon {
         threaded: Bool? = false
     ) {
         pdfUrlStringSignal.value = pdfUrlString
+        self.finishedLoadingSignal = finishedLoadingCallback.signal()
         self.environment = environment
         self.threaded = threaded ?? false
     }
@@ -80,6 +83,7 @@ extension RemoteVectorIcon: Viewable {
                     })
                     DispatchQueue.main.async {
                         imageView.image = image
+                        self.finishedLoadingCallback.callAll()
                     }
                 }
             } else {
