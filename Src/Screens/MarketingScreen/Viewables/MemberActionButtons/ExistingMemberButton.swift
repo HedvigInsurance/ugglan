@@ -23,7 +23,7 @@ extension ExistingMemberButton: Viewable {
         let view = UIView()
 
         let button = Button(
-            title: "Redan medlem? Logga in",
+            title: String(key: .MARKETING_LOGIN),
             type: .pillTransparent(backgroundColor: .darkGray, textColor: .white)
         )
 

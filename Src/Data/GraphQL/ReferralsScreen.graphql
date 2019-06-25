@@ -3,6 +3,9 @@ query ReferralsScreen {
         netPremium {
             amount
         }
+        grossPremium {
+            amount
+        }
     }
     memberReferralCampaign {
         referralInformation {

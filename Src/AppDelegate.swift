@@ -101,10 +101,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 viewController.debugPresentationTitle,
                 screenClass: String(describing: mirror.subjectType)
             )
-
-            if viewController.debugPresentationTitle == "LoggedIn" {
-                Analytics.setUserProperty("true", forName: "isMember")
-            }
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.localizationKey?.toString() {

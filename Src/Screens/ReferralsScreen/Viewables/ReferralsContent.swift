@@ -14,6 +14,8 @@ struct ReferralsContent {
     let invitationsSignal: Signal<[InvitationsListRow]>
     let peopleLeftToInviteSignal: Signal<Int>
     let incentiveSignal: Signal<Int>
+    let netPremiumSignal: Signal<Int>
+    let grossPremiumSignal: Signal<Int>
 }
 
 extension ReferralsContent: Viewable {
@@ -23,12 +25,12 @@ extension ReferralsContent: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 15
 
-        let referralsProgressBar = ReferralsProgressBar(amountOfBlocks: 20, amountOfCompletedBlocks: 2)
-        bag += stackView.addArranged(referralsProgressBar) { view in
-            view.snp.makeConstraints { make in
-                make.height.equalTo(350)
-            }
-        }
+        let referralsProgressBar = ReferralsProgressBar(
+            incentiveSignal: incentiveSignal,
+            grossPremiumSignal: grossPremiumSignal,
+            netPremiumSignal: netPremiumSignal
+        )
+        bag += stackView.addArranged(referralsProgressBar)
 
         let referralsTitle = ReferralsTitle(
             peopleLeftToInviteSignal: peopleLeftToInviteSignal,

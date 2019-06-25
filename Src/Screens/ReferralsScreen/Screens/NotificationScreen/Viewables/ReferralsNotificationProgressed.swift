@@ -64,7 +64,7 @@ extension ReferralsNotificationProgressed: Viewable {
         bag += view.addArranged(title)
 
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_SUCCESS_BODY),
+            value: String(key: .REFERRAL_SUCCESS_BODY(referralValue: "10")),
             style: TextStyle.bodyWhite.aligned(to: .center)
         )
         bag += view.addArranged(description)

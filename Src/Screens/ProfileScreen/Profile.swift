@@ -14,14 +14,11 @@ import UIKit
 
 struct Profile {
     let client: ApolloClient
-    let referralsEnabled: Bool
 
     init(
-        client: ApolloClient = ApolloContainer.shared.client,
-        referralsEnabled: Bool = RemoteConfigContainer.shared.referralsEnabled()
+        client: ApolloClient = ApolloContainer.shared.client
     ) {
         self.client = client
-        self.referralsEnabled = referralsEnabled
     }
 }
 
@@ -33,38 +30,7 @@ extension Profile: Presentable {
         viewController.displayableTitle = "Profil"
         viewController.installChatButton()
 
-        let openReferralsNotification = NotificationCenter.default.signal(
-            forName: .shouldOpenReferrals
-        ).toVoid()
-
-        bag += openReferralsNotification.onValue { _ in
-            viewController.present(Referrals(), options: [
-                .largeTitleDisplayMode(.never),
-            ])
-        }
-
         let form = FormView()
-
-        let referralSectionStyle = DynamicSectionStyle.sectionPlain.restyled { (style: inout SectionStyle) in
-            style.background = .highlighted
-        }
-
-        let referralSection = SectionView(rows: [], style: referralSectionStyle)
-
-        let referralRow = ReferralRow(
-            presentingViewController: viewController
-        )
-        bag += referralSection.append(referralRow)
-
-        form.append(referralSection)
-
-        let referralSpacing = Spacing(height: 20)
-        bag += form.append(referralSpacing)
-
-        let referralsHidden = referralsEnabled ? false : true
-
-        referralSection.isHidden = referralsHidden
-        referralSpacing.isHiddenSignal.value = referralsHidden
 
         let profileSection = ProfileSection(
             presentingViewController: viewController

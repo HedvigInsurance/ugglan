@@ -74,6 +74,7 @@ extension Referrals: Presentable {
         let referralsScreenQuerySignal = client
             .fetch(query: ReferralsScreenQuery())
             .valueSignal
+            .wait(until: formView.hasWindowSignal)
 
         bag += referralsScreenQuerySignal
             .compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
@@ -86,8 +87,14 @@ extension Referrals: Presentable {
             .compactMap { $0.data?.memberReferralCampaign?.referralInformation.incentive.amount }
             .toInt()
             .compactMap { $0 }
+        
         let netPremiumSignal = referralsScreenQuerySignal
             .compactMap { $0.data?.paymentWithDiscount?.netPremium.amount }
+            .toInt()
+            .compactMap { $0 }
+        
+        let grossPremiumSignal = referralsScreenQuerySignal
+            .compactMap { $0.data?.paymentWithDiscount?.grossPremium.amount }
             .toInt()
             .compactMap { $0 }
 
@@ -125,7 +132,9 @@ extension Referrals: Presentable {
             codeSignal: codeSignal.readOnly().compactMap { $0 },
             invitationsSignal: invitationsSignal.readOnly().compactMap { $0 },
             peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 },
-            incentiveSignal: incentiveSignal.plain()
+            incentiveSignal: incentiveSignal,
+            netPremiumSignal: netPremiumSignal,
+            grossPremiumSignal: grossPremiumSignal
         )
         let loadableContent = LoadableView(view: content, initialLoadingState: true)
 
@@ -175,5 +184,11 @@ extension Referrals: Presentable {
         }
 
         return (viewController, bag)
+    }
+}
+
+extension Referrals: Tabable {
+    func tabBarItem() -> UITabBarItem {
+        return UITabBarItem(title: String(key: .TAB_REFERRALS_TITLE), image: nil, selectedImage: nil)
     }
 }

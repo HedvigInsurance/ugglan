@@ -50,6 +50,7 @@ extension LoggedIn: Presentable {
 
         let dashboard = Dashboard()
         let claims = Claims()
+        let referrals = Referrals()
         let profile = Profile(client: client)
 
         let dashboardPresentation = Presentation(
@@ -63,6 +64,12 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
+        
+        let referralsPresentation = Presentation(
+            referrals,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
 
         let profilePresentation = Presentation(
             profile,
@@ -73,6 +80,7 @@ extension LoggedIn: Presentable {
         bag += tabBarController.presentTabs(
             dashboardPresentation,
             claimsPresentation,
+            referralsPresentation,
             profilePresentation
         )
 
