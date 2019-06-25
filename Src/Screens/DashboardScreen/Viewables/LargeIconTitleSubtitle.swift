@@ -48,6 +48,7 @@ extension LargeIconTitleSubtitle: Viewable {
 
         containerStackView.alignment = .center
         containerStackView.isLayoutMarginsRelativeArrangement = true
+        containerStackView.isUserInteractionEnabled = false
 
         // Large icon
         let icon = Icon(icon: Asset.homePlain, iconWidth: iconWidth)

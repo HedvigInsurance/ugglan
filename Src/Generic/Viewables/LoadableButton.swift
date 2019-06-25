@@ -27,7 +27,7 @@ extension LoadableButton: Viewable {
         let bag = DisposeBag()
         let (buttonView, disposable) = button.materialize(events: events)
 
-        bag += button.onTapSignal.withLatestFrom(isLoadingSignal.plain()).filter { $1 == false }.onValue { _, _ in
+        bag += button.onTapSignal.withLatestFrom(isLoadingSignal.atOnce().plain()).filter { $1 == false }.onValue { _, _ in
             self.onTapCallbacker.callAll()
         }
 

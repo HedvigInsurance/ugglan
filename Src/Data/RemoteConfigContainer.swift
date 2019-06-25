@@ -36,6 +36,10 @@ class RemoteConfigContainer {
         self.remoteConfig = remoteConfig
     }
 
+    var referralsWebLandingPrefix: String {
+        return remoteConfig.configValue(forKey: "Referrals_WebLanding_Prefix").stringValue ?? ""
+    }
+
     func referralsEnabled() -> Bool {
         return remoteConfig.configValue(forKey: "Referrals_Enabled").boolValue
     }

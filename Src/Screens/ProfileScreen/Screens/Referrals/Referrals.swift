@@ -34,65 +34,30 @@ struct Referrals {
         self.client = client
         self.remoteConfigContainer = remoteConfigContainer
     }
-
-    func createInvitationLink(memberId: String) -> Future<String> {
-        return Future { completion in
-            let incentive = self.remoteConfigContainer.referralsIncentive()
-
-            guard let link = URL(
-                string: String(
-                    key:
-                    .REFERRALS_DYNAMIC_LINK_LANDING(
-                        incentive: String(incentive),
-                        memberId: memberId
-                    )
-                )
-            ) else {
-                return NilDisposer()
-            }
-
-            let domainUriPrefix = self.remoteConfigContainer.dynamicLinkDomainPrefix()
-
-            let linkBuilder = DynamicLinkComponents(
-                link: link,
-                domainURIPrefix: domainUriPrefix
-            )
-
-            linkBuilder?.iOSParameters = DynamicLinkIOSParameters(
-                bundleID: self.remoteConfigContainer.dynamicLinkiOSBundleId()
-            )
-            linkBuilder?.iOSParameters?.appStoreID = self.remoteConfigContainer.dynamicLinkiOSAppStoreId()
-            linkBuilder?.androidParameters = DynamicLinkAndroidParameters(
-                packageName: self.remoteConfigContainer.dynamicLinkAndroidPackageName()
-            )
-
-            linkBuilder?.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-            linkBuilder?.socialMetaTagParameters?.title = String(key: .REFERRAL_SHARE_SOCIAL_TITLE)
-            linkBuilder?.socialMetaTagParameters?.descriptionText = String(key: .REFERRAL_SHARE_SOCIAL_DESCRIPTION)
-
-            if let imageUrl = URL(string: String(key: .REFERRAL_SHARE_SOCIAL_IMAGE_URL)) {
-                linkBuilder?.socialMetaTagParameters?.imageURL = imageUrl
-            }
-
-            linkBuilder?.shorten { url, _, error in
-                if error != nil {
-                    completion(.failure(ReferralsFailure.failedToCreateLink))
-                } else if let url = url {
-                    completion(.success(url.absoluteString))
-                }
-            }
-
-            return NilDisposer()
-        }
-    }
 }
 
 extension Referrals: Presentable {
     func materialize() -> (UIViewController, Disposable) {
+        let bag = DisposeBag()
+
         let viewController = UIViewController()
         viewController.title = String(key: .REFERRALS_SCREEN_TITLE)
 
-        let bag = DisposeBag()
+        let moreInfoBarButton = UIBarButtonItem(
+            title: String(key: .REFERRAL_PROGRESS_TOPBAR_BUTTON),
+            style: .navigationBarButton
+        )
+
+        bag += moreInfoBarButton.onValue { _ in
+            viewController.present(
+                DraggableOverlay(
+                    presentable: ReferralsMoreInfo(),
+                    presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
+                )
+            )
+        }
+
+        viewController.navigationItem.rightBarButtonItem = moreInfoBarButton
 
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .offWhite
@@ -104,40 +69,71 @@ extension Referrals: Presentable {
             scrollView: scrollView
         )
 
-        let referralsIllustration = ReferralsIllustration()
-        bag += formView.prepend(referralsIllustration) { view in
-            view.snp.makeConstraints { make in
-                make.height.equalTo(210)
-            }
-        }
+        let codeSignal = ReadWriteSignal<String?>(nil)
 
-        let referralsTitle = ReferralsTitle()
-        bag += formView.append(referralsTitle)
+        let referralsScreenQuerySignal = client
+            .fetch(query: ReferralsScreenQuery())
+            .valueSignal
 
-        let referralsOfferSender = ReferralsOffer(mode: .sender)
-        bag += formView.append(referralsOfferSender)
+        bag += referralsScreenQuerySignal
+            .compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
+            .bindTo(codeSignal)
 
-        let referralsOfferReceiver = ReferralsOffer(mode: .receiver)
-        bag += formView.append(referralsOfferReceiver)
+        let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
+        let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
+        
+        let incentiveSignal = referralsScreenQuerySignal
+            .compactMap { $0.data?.memberReferralCampaign?.referralInformation.incentive.amount }
+            .toInt()
+            .compactMap { $0 }
+        let netPremiumSignal = referralsScreenQuerySignal
+            .compactMap { $0.data?.paymentWithDiscount?.netPremium.amount }
+            .toInt()
+            .compactMap { $0 }
 
-        let section = SectionView(rows: [], style: .sectionPlain)
+        bag += netPremiumSignal
+            .withLatestFrom(incentiveSignal)
+            .map { netPremium, incentive in Int(round(Double(netPremium) / Double(incentive))) }
+            .map { count in max(0, count) }
+            .bindTo(peopleLeftToInviteSignal)
 
-        let termsRow = ReferralsTermsRow(
-            presentingViewController: viewController
+        bag += referralsScreenQuerySignal
+            .compactMap { $0.data?.memberReferralCampaign?.receivers }
+            .map { invitations -> [InvitationsListRow] in
+                invitations.map { invitation in
+                    if let activeReferral = invitation?.asActiveReferral {
+                        return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
+                    }
+
+                    if let inProgressReferral = invitation?.asInProgressReferral {
+                        return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
+                    }
+
+                    if invitation?.asNotInitiatedReferral != nil {
+                        return .right(ReferralsInvitationAnonymous(count: 1))
+                    }
+
+                    if let terminatedReferral = invitation?.asTerminatedReferral {
+                        return .left(ReferralsInvitation(name: terminatedReferral.name, state: .left))
+                    }
+
+                    return .right(ReferralsInvitationAnonymous(count: 1))
+                }
+            }.bindTo(invitationsSignal)
+
+        let content = ReferralsContent(
+            codeSignal: codeSignal.readOnly().compactMap { $0 },
+            invitationsSignal: invitationsSignal.readOnly().compactMap { $0 },
+            peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 },
+            incentiveSignal: incentiveSignal.plain()
         )
-        bag += section.append(termsRow)
+        let loadableContent = LoadableView(view: content, initialLoadingState: true)
 
-        formView.append(section)
+        bag += codeSignal.compactMap { $0 }.map { _ in false }.bindTo(loadableContent.isLoadingSignal)
+
+        bag += formView.prepend(loadableContent)
 
         bag += formView.append(Spacing(height: 50))
-
-        let linkSignal = ReadWriteSignal<String?>(nil)
-
-        bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap {
-            $0.data?.member.id
-        }.onValue { memberId in
-            bag += self.createInvitationLink(memberId: memberId).bindTo(linkSignal)
-        }
 
         let button = LoadableButton(
             button: Button(
@@ -155,16 +151,20 @@ extension Referrals: Presentable {
                 make.centerX.equalToSuperview()
             }
 
-            bag += linkSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
+            bag += codeSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
 
             bag += button.onTapSignal.withLatestFrom(
-                linkSignal.plain()
-            ).compactMap { $1 }.onValue { link in
-                let incentive = String(self.remoteConfigContainer.referralsIncentive())
-                let shareMessage = String(key: .REFERRALS_SHARE_MESSAGE(incentive: incentive, link: link))
+                codeSignal.plain()
+            ).compactMap { $1 }.onValue { code in
+                let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
+                let message = String(key: .REFERRAL_SMS_MESSAGE(
+                    referralCode: code,
+                    referralLink: landingPageUrl,
+                    referralValue: "10"
+                ))
 
                 let activityView = ActivityView(
-                    activityItems: [shareMessage],
+                    activityItems: [message],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds

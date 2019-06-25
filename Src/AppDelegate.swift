@@ -55,8 +55,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += navigationController.present(marketingPresentation)
     }
 
+    func presentOnboarding() {
+        guard let rootViewController = window.rootViewController else { return }
+        bag += rootViewController.present(OnboardingChat(intent: .onboard), options: [.prefersNavigationBarHidden(false)])
+    }
+
     func applicationWillTerminate(_: UIApplication) {
         applicationWillTerminateCallbacker.callAll()
+    }
+
+    func application(_: UIApplication, continue userActivity: NSUserActivity,
+                     restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard let url = userActivity.webpageURL else { return false }
+        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
+        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
+
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { _, _ in
+            guard let rootViewController = self.window.rootViewController else { return }
+            let innerBag = self.bag.innerBag()
+
+            innerBag += rootViewController.present(ReferralsReceiverConsent(referralCode: referralCode), style: .modal, options: [
+                .prefersNavigationBarHidden(true),
+            ]).onValue { result in
+                if result == .accept {
+                    self.presentOnboarding()
+                }
+                innerBag.dispose()
+            }
+        }
+
+        return handled
     }
 
     func application(

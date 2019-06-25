@@ -56,9 +56,18 @@ extension ExpandableRow: Viewable {
         clippingView.clipsToBounds = true
 
         let expandableStackView = UIStackView()
+        expandableStackView.backgroundColor = .white
         expandableStackView.axis = .vertical
 
-        bag += expandableStackView.addArranged(content)
+        let contentWrapperView = UIControl()
+
+        bag += contentWrapperView.add(content) { buttonView in
+            buttonView.snp.makeConstraints { make in
+                make.width.height.equalToSuperview()
+            }
+        }
+
+        expandableStackView.addArrangedSubview(contentWrapperView)
 
         let divider = Divider(backgroundColor: .offWhite)
         bag += expandableStackView.addArranged(divider) { dividerView in
@@ -108,11 +117,18 @@ extension ExpandableRow: Viewable {
             make.width.height.centerX.centerY.equalToSuperview()
         }
 
-        let tapGesture = UITapGestureRecognizer()
-        bag += containerView.install(tapGesture)
+        bag += contentWrapperView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
-        bag += tapGesture
-            .signal(forState: .ended)
+        bag += contentWrapperView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }
+
+        bag += contentWrapperView.delayedTouchCancel(delay: 0.1).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            containerView.transform = CGAffineTransform.identity
+        }
+
+        bag += contentWrapperView
+            .signal(for: .touchUpInside)
             .withLatestFrom(isOpenSignal.atOnce().plain())
             .map { $0.1 }
             .map { !$0 }

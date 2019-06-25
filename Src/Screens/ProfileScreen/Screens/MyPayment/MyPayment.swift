@@ -47,7 +47,7 @@ extension MyPayment: Presentable {
 
         form.append(updatingMessageSection)
 
-        let paymentDetailsSection = PaymentDetailsSection()
+        let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
 
         let bankDetailsSection = BankDetailsSection()
@@ -60,11 +60,16 @@ extension MyPayment: Presentable {
             style: .normal
         )
         bag += form.append(buttonSection)
+        
+        let myPaymentQuerySignal = client.watch(query: MyPaymentQuery())
+        
+        bag += myPaymentQuerySignal
+            .map { $0.data?.paymentWithDiscount?.netPremium.amount }
+            .toInt()
+            .bindTo(monthlyPaymentCircle.monthlyCostSignal)
 
-        bag += client.watch(query: MyPaymentQuery()).onValueDisposePrevious { result in
+        bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()
-
-            monthlyPaymentCircle.monthlyCostSignal.value = result.data?.insurance.monthlyCost
 
             let hasAlreadyConnected = result.data?.bankAccount != nil
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)

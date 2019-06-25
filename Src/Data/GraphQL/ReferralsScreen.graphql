@@ -1,0 +1,32 @@
+query ReferralsScreen {
+    paymentWithDiscount {
+        netPremium {
+            amount
+        }
+    }
+    memberReferralCampaign {
+        referralInformation {
+            code
+            incentive {
+                amount
+            }
+        }
+        receivers {
+            ... on ActiveReferral {
+                discount {
+                    amount
+                }
+                name
+            }
+            ... on InProgressReferral {
+                name
+            }
+            ... on NotInitiatedReferral {
+                name
+            }
+            ... on TerminatedReferral {
+                name
+            }
+        }
+    }
+}

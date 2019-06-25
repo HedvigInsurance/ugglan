@@ -16,6 +16,7 @@ import UIKit
 struct ButtonRow {
     let text: ReadWriteSignal<String>
     let style: ReadWriteSignal<TextStyle>
+    let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
     private let onSelectCallbacker = Callbacker<Void>()
     let onSelect: Signal<Void>
@@ -38,6 +39,8 @@ extension ButtonRow: Viewable {
         let bag = DisposeBag()
         let row = RowView()
         row.alignment = .center
+        
+        bag += isHiddenSignal.atOnce().bindTo(row, \.isHidden)
 
         bag += events.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
 
