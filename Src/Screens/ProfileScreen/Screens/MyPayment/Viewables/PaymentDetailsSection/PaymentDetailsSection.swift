@@ -57,7 +57,7 @@ extension PaymentDetailsSection: Viewable {
         grossPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_PRICE_LABEL)
         grossPriceRow.valueStyleSignal.value = .rowTitleDisabled
         
-        bag += dataValueSignal.map { $0.data?.paymentWithDiscount?.grossPremium.amount }
+        bag += dataValueSignal.map { $0.data?.insurance.cost?.monthlyGross.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -74,7 +74,7 @@ extension PaymentDetailsSection: Viewable {
         discountRow.keySignal.value = String(key: .PROFILE_PAYMENT_DISCOUNT_LABEL)
         discountRow.valueStyleSignal.value = .rowTitleDisabled
         
-        bag += dataValueSignal.map { $0.data?.paymentWithDiscount?.discount.amount }
+        bag += dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -91,7 +91,7 @@ extension PaymentDetailsSection: Viewable {
         netPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_FINAL_COST_LABEL)
         netPriceRow.valueStyleSignal.value = .rowTitleDisabled
         
-        bag += dataValueSignal.map { $0.data?.paymentWithDiscount?.netPremium.amount }
+        bag += dataValueSignal.map { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -119,7 +119,7 @@ extension PaymentDetailsSection: Viewable {
         
         bag += section.append(applyDiscountButtonRow)
         
-        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.paymentWithDiscount?.discount.amount }.toInt().map { $0 == 0 }
+        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }.toInt().map { $0 == 0 }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)

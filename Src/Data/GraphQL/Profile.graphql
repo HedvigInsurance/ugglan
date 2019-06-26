@@ -7,14 +7,14 @@ query Profile {
         address
         certificateUrl
         personsInHousehold
+        cost {
+            monthlyNet {
+                amount
+            }
+        }
     }
     cashback {
         name
         imageUrl
-    }
-    paymentWithDiscount {
-        netPremium {
-            amount
-        }
     }
 }

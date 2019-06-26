@@ -1,13 +1,15 @@
 query MyPayment {
-    paymentWithDiscount {
-        discount {
-            amount
-        }
-        grossPremium {
-            amount
-        }
-        netPremium {
-            amount
+    insurance {
+        cost {
+            monthlyDiscount {
+                amount
+            }
+            monthlyGross {
+                amount
+            }
+            monthlyNet {
+                amount
+            }
         }
     }
     bankAccount {

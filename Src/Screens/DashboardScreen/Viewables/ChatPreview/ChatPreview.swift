@@ -174,7 +174,8 @@ extension ChatPreview: Viewable {
         func setupSubscription() {
             subscriptionBag += client.subscribe(
                 subscription: ChatPreviewSubscription()
-            ).compactMap { $0.data?.message }
+            )
+                .compactMap { $0.data?.message }
                 .distinct()
                 .onValue { _ in
                     loadData()

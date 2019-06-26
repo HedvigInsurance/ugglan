@@ -77,24 +77,24 @@ extension Referrals: Presentable {
             .wait(until: formView.hasWindowSignal)
 
         bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.memberReferralCampaign?.referralInformation.code }
+            .compactMap { $0.data?.referralInformation.campaign.code }
             .bindTo(codeSignal)
 
         let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
         let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
         
         let incentiveSignal = referralsScreenQuerySignal
-            .compactMap { $0.data?.memberReferralCampaign?.referralInformation.incentive.amount }
+            .compactMap { $0.data?.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount }
             .toInt()
             .compactMap { $0 }
         
         let netPremiumSignal = referralsScreenQuerySignal
-            .compactMap { $0.data?.paymentWithDiscount?.netPremium.amount }
+            .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
             .compactMap { $0 }
         
         let grossPremiumSignal = referralsScreenQuerySignal
-            .compactMap { $0.data?.paymentWithDiscount?.grossPremium.amount }
+            .compactMap { $0.data?.insurance.cost?.monthlyGross.amount }
             .toInt()
             .compactMap { $0 }
 
@@ -105,22 +105,22 @@ extension Referrals: Presentable {
             .bindTo(peopleLeftToInviteSignal)
 
         bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.memberReferralCampaign?.receivers }
+            .compactMap { $0.data?.referralInformation.invitations }
             .map { invitations -> [InvitationsListRow] in
                 invitations.map { invitation in
-                    if let activeReferral = invitation?.asActiveReferral {
+                    if let activeReferral = invitation.asActiveReferral {
                         return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
                     }
 
-                    if let inProgressReferral = invitation?.asInProgressReferral {
+                    if let inProgressReferral = invitation.asInProgressReferral {
                         return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
                     }
 
-                    if invitation?.asNotInitiatedReferral != nil {
+                    if invitation.asNotInitiatedReferral != nil {
                         return .right(ReferralsInvitationAnonymous(count: 1))
                     }
 
-                    if let terminatedReferral = invitation?.asTerminatedReferral {
+                    if let terminatedReferral = invitation.asTerminatedReferral {
                         return .left(ReferralsInvitation(name: terminatedReferral.name, state: .left))
                     }
 

@@ -1,16 +1,15 @@
 query InsurancePrice {
     insurance {
-        monthlyCost
-    }
-    paymentWithDiscount {
-        discount {
-            amount
-        }
-        grossPremium {
-            amount
-        }
-        netPremium {
-            amount
+        cost {
+            monthlyDiscount {
+                amount
+            }
+            monthlyGross {
+                amount
+            }
+            monthlyNet {
+                amount
+            }
         }
     }
 }

@@ -1,20 +1,26 @@
 query ReferralsScreen {
-    paymentWithDiscount {
-        netPremium {
-            amount
-        }
-        grossPremium {
-            amount
-        }
-    }
-    memberReferralCampaign {
-        referralInformation {
-            code
-            incentive {
+    insurance {
+        cost {
+            monthlyNet {
+                amount
+            }
+            monthlyGross {
                 amount
             }
         }
-        receivers {
+    }
+    referralInformation {
+        campaign {
+            code
+            incentive {
+                ... on MonthlyCostDeduction {
+                    amount {
+                        amount
+                    }
+                }
+            }
+        }
+        invitations {
             ... on ActiveReferral {
                 discount {
                     amount

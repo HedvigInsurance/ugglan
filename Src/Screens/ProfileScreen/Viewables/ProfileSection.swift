@@ -97,7 +97,7 @@ extension ProfileSection: Viewable {
 
         bag += dataSignal
             .atOnce()
-            .map { $0?.paymentWithDiscount?.netPremium.amount }
+            .map { $0?.insurance.cost?.monthlyNet.amount }
             .debug()
             .toInt()
             .bindTo(myPaymentRow.monthlyCostSignal)
