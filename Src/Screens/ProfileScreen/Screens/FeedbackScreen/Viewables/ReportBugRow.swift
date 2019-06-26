@@ -37,7 +37,7 @@ extension ReportBugRow: Viewable {
 
         row.valueStyleSignal.value = .rowValueLink
 
-        let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String
+        let appVersion = Bundle.main.appVersion
 
         let memberIdSignal = client.fetch(query: MemberIdQuery())
             .valueSignal
@@ -45,7 +45,7 @@ extension ReportBugRow: Viewable {
 
         bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
             let deviceInfo = String(key: .FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(
-                appVersion: appVersion ?? "",
+                appVersion: appVersion,
                 device: Device.current.description,
                 memberId: memberId,
                 systemName: Device.current.systemName ?? "",

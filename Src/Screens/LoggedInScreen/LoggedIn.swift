@@ -83,6 +83,25 @@ extension LoggedIn: Presentable {
             referralsPresentation,
             profilePresentation
         )
+        
+        let appVersion = Bundle.main.appVersion
+        let lastNewsSeen = ApplicationState.getLastNewsSeen()
+        
+        if "1.0.0".compare("0.9.9", options: .numeric) == .orderedDescending {
+            bag += client
+                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.9.9"))
+                .filter{ $0.data != nil && $0.data!.news.count > 0 }
+                .compactMap { $0.data }
+                .onValue { data in
+                    var testData = data
+                    testData.news.append(data.news[0])
+                    testData.news.append(data.news[0])
+                    testData.news.append(data.news[0])
+                    let whatsNew = WhatsNew(data: testData)
+                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                }
+            
+        }
 
         bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)

@@ -42,7 +42,7 @@ struct MarketingStory: Decodable, Hashable {
             }
 
             return NilDisposer()
-        }
+        }  
     }
 
     func assetType() -> AssetType {

@@ -168,13 +168,13 @@ struct Button {
 
     let title: ReadWriteSignal<String>
     let onTapSignal: Signal<Void>
-    let type: ButtonType
+    let type: ReadWriteSignal<ButtonType>
     let animate: Bool
 
     init(title: String, type: ButtonType, animate: Bool = true) {
         self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
-        self.type = type
+        self.type = ReadWriteSignal<ButtonType>(type)
         self.animate = animate
     }
 }
@@ -182,89 +182,109 @@ struct Button {
 extension Button: Viewable {
     func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
-
-        let style = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
-            style.buttonType = .custom
-
-            let backgroundColor = UIColor.from(
-                apollo: self.type.backgroundColor()
-            ).withAlphaComponent(self.type.backgroundOpacity())
-            let textColor = UIColor.from(apollo: self.type.textColor())
-
-            style.states = [
-                .normal: ButtonStateStyle(
-                    background: BackgroundStyle(
-                        color: backgroundColor,
-                        border: BorderStyle(
-                            width: self.type.borderWidth(),
-                            color: self.type.borderColor(),
-                            cornerRadius: self.type.height() / 2
+        
+        let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
+        let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
+        
+        bag += type.atOnce().onValue { buttonType in
+            styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+                style.buttonType = .custom
+                
+                let backgroundColor = UIColor.from(
+                    apollo: buttonType.backgroundColor()
+                    ).withAlphaComponent(buttonType.backgroundOpacity())
+                let textColor = UIColor.from(apollo: buttonType.textColor())
+                
+                style.states = [
+                    .normal: ButtonStateStyle(
+                        background: BackgroundStyle(
+                            color: backgroundColor,
+                            border: BorderStyle(
+                                width: buttonType.borderWidth(),
+                                color: buttonType.borderColor(),
+                                cornerRadius: buttonType.height() / 2
+                            )
+                        ),
+                        text: TextStyle(
+                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize()),
+                            color: textColor
                         )
                     ),
-                    text: TextStyle(
-                        font: HedvigFonts.circularStdBook!.withSize(self.type.fontSize()),
-                        color: textColor
-                    )
-                ),
-            ]
+                ]
+            }
         }
-
-        let highlightedStyle = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
-            style.buttonType = .custom
-
-            let backgroundColor = UIColor.from(
-                apollo: self.type.backgroundColor()
-            ).darkened(amount: 0.05).withAlphaComponent(self.type.highlightedBackgroundOpacity())
-            let textColor = UIColor.from(apollo: self.type.textColor())
-
-            style.states = [
-                .normal: ButtonStateStyle(
-                    background: BackgroundStyle(
-                        color: backgroundColor,
-                        border: BorderStyle(
-                            width: self.type.borderWidth(),
-                            color: self.type.borderColor(),
-                            cornerRadius: self.type.height() / 2
+        
+        bag += type.atOnce().onValue { buttonType in
+            highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+                style.buttonType = .custom
+                
+                let backgroundColor = UIColor.from(
+                    apollo: buttonType.backgroundColor()
+                    ).darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity())
+                let textColor = UIColor.from(apollo: buttonType.textColor())
+                
+                style.states = [
+                    .normal: ButtonStateStyle(
+                        background: BackgroundStyle(
+                            color: backgroundColor,
+                            border: BorderStyle(
+                                width: buttonType.borderWidth(),
+                                color: buttonType.borderColor(),
+                                cornerRadius: buttonType.height() / 2
+                            )
+                        ),
+                        text: TextStyle(
+                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize()),
+                            color: textColor
                         )
                     ),
-                    text: TextStyle(
-                        font: HedvigFonts.circularStdBook!.withSize(self.type.fontSize()),
-                        color: textColor
-                    )
-                ),
-            ]
+                ]
+            }
         }
 
-        let button = UIButton(title: "", style: style)
+        let button = UIButton(title: "", style: styleSignal.value)
+        
+        bag += styleSignal
+            .atOnce()
+            .compactMap { $0 }
+            .bindTo(
+                transition: button,
+                style: TransitionStyle.crossDissolve(duration: 0.25),
+                button,
+                \.style
+            )
+        
         button.adjustsImageWhenHighlighted = false
 
-        if let icon = self.type.icon() {
+        if let icon = self.type.value.icon() {
             button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
-            if type.iconColor() != nil {
-                button.tintColor = UIColor.from(apollo: type.iconColor()!)
+            if self.type.value.iconColor() != nil {
+                button.tintColor = UIColor.from(apollo: self.type.value.iconColor()!)
             }
 
-            let iconDistance = type.iconDistance()
+            let iconDistance = self.type.value.iconDistance()
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
             button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
 
-        bag += title.atOnce().onValue { title in
+        bag += title.atOnce().withLatestFrom(self.type).onValue { title, type in
             button.setTitle(title)
 
             button.snp.remakeConstraints { make in
-                make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
+                make.width.equalTo(button.intrinsicContentSize.width + type.extraWidthOffset())
             }
         }
-
-        bag += button.signal(for: .touchDown).filter { self.animate }.map({ _ -> ButtonStyle in
-            highlightedStyle
-        }).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
+        
+        bag += button.signal(for: .touchDown).filter { self.animate }
+            .withLatestFrom(highlightedStyleSignal.atOnce().plain())
+            .map({ _, highlightedStyleSignalValue -> ButtonStyle in
+                highlightedStyleSignalValue
+            }).bindTo(
+                transition: button,
+                style: TransitionStyle.crossDissolve(duration: 0.25),
+                button,
+                \.style
+            )
 
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
@@ -273,14 +293,16 @@ extension Button: Viewable {
             ()
         }.bindTo(onTapReadWriteSignal)
 
-        bag += touchUpInside.filter { self.animate }.map { _ -> ButtonStyle in
-            style
-        }.delay(by: 0.1).bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
+        bag += touchUpInside.filter { self.animate }
+            .withLatestFrom(styleSignal.atOnce().plain())
+            .map { _, styleSignalValue -> ButtonStyle in
+                styleSignalValue
+            }.delay(by: 0.1).bindTo(
+                transition: button,
+                style: TransitionStyle.crossDissolve(duration: 0.25),
+                button,
+                \.style
+            )
 
         bag += touchUpInside.flatMapLatest { _ -> ReadWriteSignal<String> in
             self.title.atOnce()
@@ -293,8 +315,10 @@ extension Button: Viewable {
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
-        ).filter { self.animate }.map { _ -> ButtonStyle in
-            style
+        ).filter { self.animate }
+        .withLatestFrom(styleSignal.atOnce().plain())
+        .map { _, styleSignalValue -> ButtonStyle in
+            styleSignalValue
         }.bindTo(
             transition: button,
             style: TransitionStyle.crossDissolve(duration: 0.25),
@@ -303,8 +327,8 @@ extension Button: Viewable {
         )
 
         button.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalTo(button.intrinsicContentSize.width + self.type.extraWidthOffset())
-            make.height.equalTo(self.type.height())
+            make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset())
+            make.height.equalTo(self.type.value.height())
             make.centerX.equalToSuperview()
         }
 

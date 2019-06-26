@@ -62,7 +62,7 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
             () -> AnyPresentable<UIViewController, Disposable> in
             AnyPresentable {
                 let (viewController, future) = presentable.materialize()
-
+                
                 let autoPopFuture = future.onValue { _ in
                     viewController.navigationController?.popViewController(animated: true)
                 }
