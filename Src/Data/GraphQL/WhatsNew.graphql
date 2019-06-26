@@ -1,0 +1,9 @@
+query WhatsNew($locale: Locale!, $sinceVersion: String!) {
+    news(platform: iOS, locale: $locale, sinceVersion: $sinceVersion) {
+        illustration {
+            pdfUrl
+        }
+        title
+        paragraph
+    }
+}
