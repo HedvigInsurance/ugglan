@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-06-24.
 //
 
-import Foundation
 import Flow
+import Foundation
 
 extension CoreSignal where Value == String? {
     func toInt() -> CoreSignal<Kind.DropWrite, Int?> {
@@ -14,7 +14,7 @@ extension CoreSignal where Value == String? {
             if let amount = amount, let double = Double(amount) {
                 return Int(double)
             }
-            
+
             return nil
         }
     }

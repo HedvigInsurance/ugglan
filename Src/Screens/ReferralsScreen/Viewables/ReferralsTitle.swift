@@ -27,7 +27,7 @@ extension ReferralsTitle: Viewable {
             value: "",
             style: TextStyle.standaloneLargeTitle.centerAligned
         )
-        
+
         bag += peopleLeftToInviteSignal
             .map { String(key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String($0))) }
             .map { StyledText(text: $0, style: TextStyle.standaloneLargeTitle.centerAligned) }
@@ -43,7 +43,7 @@ extension ReferralsTitle: Viewable {
             value: "",
             style: TextStyle.bodyOffBlack.centerAligned
         )
-        
+
         bag += incentiveSignal
             .map { String(key: .REFERRAL_PROGRESS_BODY(referralValue: String($0))) }
             .map { StyledText(text: $0, style: TextStyle.bodyOffBlack.centerAligned) }

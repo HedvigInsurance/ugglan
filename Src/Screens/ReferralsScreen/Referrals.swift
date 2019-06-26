@@ -82,17 +82,17 @@ extension Referrals: Presentable {
 
         let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
         let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
-        
+
         let incentiveSignal = referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount }
             .toInt()
             .compactMap { $0 }
-        
+
         let netPremiumSignal = referralsScreenQuerySignal
             .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
             .compactMap { $0 }
-        
+
         let grossPremiumSignal = referralsScreenQuerySignal
             .compactMap { $0.data?.insurance.cost?.monthlyGross.amount }
             .toInt()

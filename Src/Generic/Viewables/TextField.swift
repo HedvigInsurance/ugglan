@@ -17,7 +17,7 @@ struct TextField {
     init(value: String, placeholder: String, enabled: Bool = true) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
-        self.enabledSignal = ReadWriteSignal(enabled)
+        enabledSignal = ReadWriteSignal(enabled)
     }
 }
 

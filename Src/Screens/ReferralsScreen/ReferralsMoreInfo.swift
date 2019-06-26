@@ -41,7 +41,7 @@ extension ReferralsMoreInfo: Presentable {
             stackView.alignment = .center
             stackView.axis = .vertical
         }
-        
+
         bag += button.onTapSignal.onValue { _ in
             guard let url = URL(string: String(key: .REFERRAL_MORE_INFO_LINK)) else { return }
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
