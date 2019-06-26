@@ -182,19 +182,19 @@ struct Button {
 extension Button: Viewable {
     func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
-        
+
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
         let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
-        
+
         bag += type.atOnce().onValue { buttonType in
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
-                
+
                 let backgroundColor = UIColor.from(
                     apollo: buttonType.backgroundColor()
-                    ).withAlphaComponent(buttonType.backgroundOpacity())
+                ).withAlphaComponent(buttonType.backgroundOpacity())
                 let textColor = UIColor.from(apollo: buttonType.textColor())
-                
+
                 style.states = [
                     .normal: ButtonStateStyle(
                         background: BackgroundStyle(
@@ -213,16 +213,16 @@ extension Button: Viewable {
                 ]
             }
         }
-        
+
         bag += type.atOnce().onValue { buttonType in
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
-                
+
                 let backgroundColor = UIColor.from(
                     apollo: buttonType.backgroundColor()
-                    ).darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity())
+                ).darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity())
                 let textColor = UIColor.from(apollo: buttonType.textColor())
-                
+
                 style.states = [
                     .normal: ButtonStateStyle(
                         background: BackgroundStyle(
@@ -243,7 +243,7 @@ extension Button: Viewable {
         }
 
         let button = UIButton(title: "", style: styleSignal.value)
-        
+
         bag += styleSignal
             .atOnce()
             .compactMap { $0 }
@@ -253,28 +253,28 @@ extension Button: Viewable {
                 button,
                 \.style
             )
-        
+
         button.adjustsImageWhenHighlighted = false
 
         if let icon = self.type.value.icon() {
             button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
-            if self.type.value.iconColor() != nil {
-                button.tintColor = UIColor.from(apollo: self.type.value.iconColor()!)
+            if type.value.iconColor() != nil {
+                button.tintColor = UIColor.from(apollo: type.value.iconColor()!)
             }
 
-            let iconDistance = self.type.value.iconDistance()
+            let iconDistance = type.value.iconDistance()
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
             button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
 
-        bag += title.atOnce().withLatestFrom(self.type).onValue { title, type in
+        bag += title.atOnce().withLatestFrom(type).onValue { title, type in
             button.setTitle(title)
 
             button.snp.remakeConstraints { make in
                 make.width.equalTo(button.intrinsicContentSize.width + type.extraWidthOffset())
             }
         }
-        
+
         bag += button.signal(for: .touchDown).filter { self.animate }
             .withLatestFrom(highlightedStyleSignal.atOnce().plain())
             .map({ _, highlightedStyleSignalValue -> ButtonStyle in
@@ -316,15 +316,15 @@ extension Button: Viewable {
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)
         ).filter { self.animate }
-        .withLatestFrom(styleSignal.atOnce().plain())
-        .map { _, styleSignalValue -> ButtonStyle in
-            styleSignalValue
-        }.bindTo(
-            transition: button,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            button,
-            \.style
-        )
+            .withLatestFrom(styleSignal.atOnce().plain())
+            .map { _, styleSignalValue -> ButtonStyle in
+                styleSignalValue
+            }.bindTo(
+                transition: button,
+                style: TransitionStyle.crossDissolve(duration: 0.25),
+                button,
+                \.style
+            )
 
         button.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset())

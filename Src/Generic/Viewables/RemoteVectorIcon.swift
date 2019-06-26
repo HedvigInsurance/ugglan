@@ -23,7 +23,7 @@ struct RemoteVectorIcon {
         threaded: Bool? = false
     ) {
         pdfUrlStringSignal.value = pdfUrlString
-        self.finishedLoadingSignal = finishedLoadingCallback.signal()
+        finishedLoadingSignal = finishedLoadingCallback.signal()
         self.environment = environment
         self.threaded = threaded ?? false
     }
@@ -35,7 +35,7 @@ extension RemoteVectorIcon: Viewable {
         let imageView = UIImageView()
 
         let pdfDocumentSignal = ReadWriteSignal<CGPDFDocument?>(nil)
-    
+
         func renderPdfDocument(pdfDocument: CGPDFDocument) {
             let imageViewSize = imageView.frame.size
 
@@ -47,14 +47,14 @@ extension RemoteVectorIcon: Viewable {
 
             let page = pdfDocument.page(at: 1)!
             let rect = page.getBoxRect(CGPDFBox.mediaBox)
-            
+
             let imageSize = CGSize(
                 width: imageViewSize.width,
                 height: imageViewSize.width * (rect.height / rect.width)
             )
-            
+
             imageView.frame.size = imageSize
-            
+
             func render(_ context: CGContext) {
                 context.setFillColor(gray: 1, alpha: 0)
                 context.fill(CGRect(
@@ -68,15 +68,15 @@ extension RemoteVectorIcon: Viewable {
                     x: imageSize.width / rect.width,
                     y: -(imageSize.height / rect.height)
                 )
-                
+
                 context.drawPDFPage(page)
             }
 
             let renderer = UIGraphicsImageRenderer(size: imageSize)
-            
+
             var image = UIImage()
-            
-            if (self.threaded) {
+
+            if threaded {
                 DispatchQueue.global(qos: .background).async {
                     image = renderer.image(actions: { context in
                         render(context.cgContext)
@@ -91,16 +91,16 @@ extension RemoteVectorIcon: Viewable {
                     render(context.cgContext)
                 })
                 imageView.image = image
-                self.finishedLoadingCallback.callAll()
+                finishedLoadingCallback.callAll()
             }
         }
-        
+
         bag += imageView.didLayoutSignal.map { return imageView.bounds.size }.filter { $0.width != 0 && $0.height != 0 }.distinct()
             .withLatestFrom(pdfDocumentSignal.atOnce().plain().compactMap { $0 })
             .onValue { _, pdfDocument in
                 renderPdfDocument(pdfDocument: pdfDocument)
             }
-        
+
         bag += pdfDocumentSignal.compactMap { $0 }.onValue { pdfDocument in
             renderPdfDocument(pdfDocument: pdfDocument)
         }
@@ -118,7 +118,7 @@ extension RemoteVectorIcon: Viewable {
 
             if let data = data {
                 try? Disk.save(data, to: .caches, as: url.absoluteString)
-                
+
                 return data as CFData
             }
 

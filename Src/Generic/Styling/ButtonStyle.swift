@@ -113,7 +113,7 @@ extension ButtonStyle {
             ),
         ]
     }
-    
+
     static let standardBlackPurple = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
         style.buttonType = .custom
         style.states = [
