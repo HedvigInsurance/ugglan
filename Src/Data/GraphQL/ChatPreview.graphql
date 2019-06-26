@@ -10,6 +10,7 @@ query ChatPreview {
         header {
             fromMyself
             timeStamp
+            markedAsRead
         }
     }
 }

@@ -106,6 +106,8 @@ extension ChatPreview: Viewable {
                 }).filter { message -> Bool in
                     message.body.asMessageBodyText != nil
                 }.filter { message -> Bool in
+                    return !message.header.markedAsRead
+                }.filter { message -> Bool in
                     guard let timeStamp = Int64(message.header.timeStamp) else {
                         return false
                     }
