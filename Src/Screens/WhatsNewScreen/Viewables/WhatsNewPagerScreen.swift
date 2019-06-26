@@ -14,7 +14,7 @@ import UIKit
 struct WhatsNewPagerScreen {
     let title: String
     let paragraph: String
-    let icon: RemoteVectorIcon
+    let iconUrl: String
 }
 
 extension WhatsNewPagerScreen: Presentable {
@@ -22,29 +22,40 @@ extension WhatsNewPagerScreen: Presentable {
         let bag = DisposeBag()
         
         let viewController = UIViewController()
-                
+    
         let containerView = UIStackView()
+        containerView.alpha = 1
         containerView.alignment = .center
         containerView.axis = .horizontal
         containerView.distribution = .fill
         containerView.isLayoutMarginsRelativeArrangement = true
-        containerView.edgeInsets = UIEdgeInsets(
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0
-        )
+        containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    
+        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .purple)
+        let loadingIndicatorBag = DisposeBag()
+        loadingIndicatorBag += containerView.addArranged(loadingIndicator)
+        bag += loadingIndicatorBag
         
         let innerContainerView = UIStackView()
+        innerContainerView.alpha = 0
         innerContainerView.alignment = .center
         innerContainerView.axis = .vertical
         innerContainerView.spacing = 8
         innerContainerView.isLayoutMarginsRelativeArrangement = true
         
+        let icon = RemoteVectorIcon(iconUrl, threaded: true)
+        
         containerView.addArrangedSubview(innerContainerView)
         
         innerContainerView.snp.makeConstraints { make in
             make.width.centerX.equalToSuperview()
+        }
+        
+        bag += icon.finishedLoadingSignal.onValue { _ in
+            bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: {
+                innerContainerView.alpha = 1
+                loadingIndicatorBag.dispose()
+            })
         }
         
         bag += innerContainerView.addArranged(icon) { iconView in

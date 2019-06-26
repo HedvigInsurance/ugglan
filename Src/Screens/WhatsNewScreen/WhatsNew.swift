@@ -27,13 +27,13 @@ extension WhatsNew: Presentable {
         let viewController = UIViewController()
 
         viewController.preferredPresentationStyle = .modally(
-            presentationStyle: .formSheet,
+            presentationStyle: .formSheetOrOverFullscreen,
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )
         
         let closeButton = CloseButton()
-        
+    
         let item = UIBarButtonItem(viewable: closeButton)
         viewController.navigationItem.rightBarButtonItem = item
         
@@ -46,11 +46,11 @@ extension WhatsNew: Presentable {
         containerView.axis = .vertical
         containerView.alignment = .center
         containerView.isLayoutMarginsRelativeArrangement = true
-        
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.width.height.centerX.centerY.equalToSuperview()
+            make.width.centerX.centerY.equalToSuperview()
+            make.height.equalToSuperview().inset(20)
         }
         
         let scrollToNextCallbacker = Callbacker<Void>()
@@ -76,7 +76,7 @@ extension WhatsNew: Presentable {
         controlsWrapper.spacing = 16
         controlsWrapper.distribution = .equalSpacing
         controlsWrapper.isLayoutMarginsRelativeArrangement = true
-        controlsWrapper.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
+        controlsWrapper.edgeInsets = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
         
         containerView.addArrangedSubview(controlsWrapper)
         

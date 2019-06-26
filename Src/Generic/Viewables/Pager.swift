@@ -68,6 +68,7 @@ extension Pager: Viewable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.bounces = true
         collectionKit.view.showsHorizontalScrollIndicator = false
+        collectionKit.view.isPrefetchingEnabled = true
         
         if #available(iOS 11.0, *) {
             collectionKit.view.contentInsetAdjustmentBehavior = .never

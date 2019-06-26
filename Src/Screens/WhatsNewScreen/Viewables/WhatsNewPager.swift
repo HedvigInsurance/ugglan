@@ -62,11 +62,11 @@ extension WhatsNewPager: Viewable {
             .atOnce()
             .compactMap { $0?.news }
             .onValue { news in
-                var newsPagerScreens = news.map { newsPost -> PagerScreen in
+                var newsPagerScreens = news.map { newsPost -> PagerScreen in                    
                     let whatsNewPagerScreen = WhatsNewPagerScreen(
                         title: newsPost.title,
                         paragraph: newsPost.paragraph,
-                        icon: RemoteVectorIcon(newsPost.illustration.pdfUrl)
+                        iconUrl: newsPost.illustration.pdfUrl
                     )
                     
                     return PagerScreen(
