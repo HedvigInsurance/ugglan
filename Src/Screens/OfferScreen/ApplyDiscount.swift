@@ -16,6 +16,12 @@ import UIKit
 struct ApplyDiscount {
     let client: ApolloClient
 
+    private let didRedeemValidCodeCallbacker = Callbacker<Void>()
+
+    var didRedeemValidCodeSignal: Signal<Void> {
+        return didRedeemValidCodeCallbacker.providedSignal
+    }
+
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
@@ -105,6 +111,7 @@ extension ApplyDiscount: Presentable {
 
                         viewController.present(alert)
                     } else {
+                        self.didRedeemValidCodeCallbacker.callAll()
                         completion(.success)
                     }
                 }
