@@ -58,7 +58,7 @@ extension ReferralsNotificationProgressed: Viewable {
         view.addArrangedSubview(headerImageContainer)
 
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_SUCCESS_HEADLINE),
+            value: String(key: .REFERRAL_SUCCESS_HEADLINE(user: "TODO")),
             style: TextStyle.standaloneLargeTitle.colored(UIColor.white).aligned(to: .center)
         )
         bag += view.addArranged(title)

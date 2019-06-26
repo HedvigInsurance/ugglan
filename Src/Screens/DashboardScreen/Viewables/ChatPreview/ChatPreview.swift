@@ -177,11 +177,11 @@ extension ChatPreview: Viewable {
             subscriptionBag += client.subscribe(
                 subscription: ChatPreviewSubscription()
             )
-                .compactMap { $0.data?.message }
-                .distinct()
-                .onValue { _ in
-                    loadData()
-                }
+            .compactMap { $0.data?.message }
+            .distinct()
+            .onValue { _ in
+                loadData()
+            }
         }
 
         loadData()
