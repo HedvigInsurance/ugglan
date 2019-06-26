@@ -94,15 +94,13 @@ extension RemoteVectorIcon: Viewable {
                 self.finishedLoadingCallback.callAll()
             }
         }
-        /*
+        
         bag += imageView.didLayoutSignal.map { return imageView.bounds.size }.filter { $0.width != 0 && $0.height != 0 }.distinct()
             .withLatestFrom(pdfDocumentSignal.atOnce().plain().compactMap { $0 })
             .onValue { _, pdfDocument in
-                print("hej")
-                print(imageView.bounds.size)
                 renderPdfDocument(pdfDocument: pdfDocument)
             }
-        */
+        
         bag += pdfDocumentSignal.compactMap { $0 }.onValue { pdfDocument in
             renderPdfDocument(pdfDocument: pdfDocument)
         }
