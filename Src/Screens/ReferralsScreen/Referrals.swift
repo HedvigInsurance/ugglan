@@ -189,6 +189,10 @@ extension Referrals: Presentable {
 
 extension Referrals: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(title: String(key: .TAB_REFERRALS_TITLE), image: nil, selectedImage: nil)
+        return UITabBarItem(
+            title: String(key: .TAB_REFERRALS_TITLE),
+            image: Asset.referralsTab.image,
+            selectedImage: Asset.referralsTab.image
+        )
     }
 }
