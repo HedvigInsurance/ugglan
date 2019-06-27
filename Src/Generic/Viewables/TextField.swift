@@ -48,6 +48,8 @@ extension TextField: Viewable {
         }
 
         let textField = UITextField(value: "", placeholder: "", style: .default)
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
         bag += value.atOnce().bidirectionallyBindTo(textField)
         bag += placeholder.atOnce().bindTo(textField, \.placeholder)
         bag += enabledSignal.atOnce().bindTo(textField, \.isEnabled)

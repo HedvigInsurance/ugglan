@@ -98,6 +98,7 @@ extension ApplyDiscount: Presentable {
                 }
                 .withLatestFrom(textField.value.plain())
                 .mapLatestToFuture { _, discountCode in self.client.perform(mutation: RedeemCodeMutation(code: discountCode)) }
+                .delay(by: 0.5)
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false
                 }

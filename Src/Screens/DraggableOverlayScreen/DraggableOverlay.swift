@@ -320,12 +320,13 @@ extension DraggableOverlay: Presentable {
 
         return (viewController, Future { completion in
             func hideOverlay() {
+                panGestureRecognizer.isEnabled = false
                 bag += Signal(after: 0.5).onValue {
                     completion(.success)
                     overlay.isHidden = true
                 }
                 animateDimmingViewVisibility(false)
-                ease.targetValue = view.frame.height + (overlay.frame.height / 2)
+                ease.targetValue = view.frame.height + handle.frame.height + (overlay.frame.height / 2)
             }
 
             bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in
