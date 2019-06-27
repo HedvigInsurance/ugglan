@@ -100,8 +100,8 @@ extension WhatsNew: Presentable {
         bag += controlsWrapper.addArranged(proceedButton)
 
         bag += dataSignal.atOnce().bindTo(pager.dataSignal)
-        bag += dataSignal.atOnce().filter { $0 != nil }.map { data -> Int in data!.news.count }.bindTo(proceedButton.pageAmountSignal)
-        bag += dataSignal.atOnce().filter { $0 != nil }.map { data -> Int in data!.news.count + 1 }.bindTo(pagerDots.pageAmountSignal)
+        bag += dataSignal.atOnce().compactMap { data in data?.news.count }.bindTo(proceedButton.pageAmountSignal)
+        bag += dataSignal.atOnce().compactMap { data in data?.news.count }.map { count in count + 1 }.bindTo(pagerDots.pageAmountSignal)
         bag += dataSignal.atOnce().bindTo(proceedButton.dataSignal)
 
         bag += pager.scrolledToPageIndexCallbacker.bindTo(pagerDots.pageIndexSignal)

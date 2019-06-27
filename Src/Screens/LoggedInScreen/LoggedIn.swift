@@ -87,17 +87,13 @@ extension LoggedIn: Presentable {
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
 
-        if "1.0.0".compare("0.9.9", options: .numeric) == .orderedDescending {
+        if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
-                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.9.9"))
-                .filter { $0.data != nil && $0.data!.news.count > 0 }
+                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .compactMap { $0.data }
+                .filter { $0.news.count > 0 }
                 .onValue { data in
-                    var testData = data
-                    testData.news.append(data.news[0])
-                    testData.news.append(data.news[0])
-                    testData.news.append(data.news[0])
-                    let whatsNew = WhatsNew(data: testData)
+                    let whatsNew = WhatsNew(data: data)
                     tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
                 }
         }
