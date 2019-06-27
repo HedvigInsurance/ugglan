@@ -331,7 +331,7 @@ extension ReferralsProgressBar: Viewable {
         containerNode.eulerAngles = SCNVector3Make(0, radians(-45), 0)
 
         bag +=
-            combineLatest(incentiveSignal, grossPremiumSignal, netPremiumSignal)
+            combineLatest(incentiveSignal.distinct(), grossPremiumSignal.distinct(), netPremiumSignal.distinct())
             .onValueDisposePrevious { (arg) -> Disposable? in
                 let (incentive, grossPremium, netPremium) = arg
                 return self.render(

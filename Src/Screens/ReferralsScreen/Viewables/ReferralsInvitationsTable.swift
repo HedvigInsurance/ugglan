@@ -32,7 +32,7 @@ extension ReferralsInvitationsTable: Viewable {
             bag: bag,
             headerForSection: { _, title in
                 let headerStackView = UIStackView()
-                headerStackView.edgeInsets = UIEdgeInsets(top: 0, left: 20, bottom: 10, right: 0)
+                headerStackView.edgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 0)
                 headerStackView.isLayoutMarginsRelativeArrangement = true
 
                 let label = UILabel(
@@ -48,13 +48,13 @@ extension ReferralsInvitationsTable: Viewable {
 
         tableKit.view.isScrollEnabled = false
 
-        bag += invitationsSignal.compactMap { $0 }.map { rows -> [InvitationsListRow] in
+        bag += combineLatest(invitationsSignal.atOnce().compactMap { $0 }.map { rows -> [InvitationsListRow] in
             if rows.isEmpty {
                 return [.right(ReferralsInvitationAnonymous(count: nil))]
             }
 
             return rows
-        }.withLatestFrom(referredBySignal.atOnce().plain()).map { rows, referredBy -> Table<String, InvitationsListRow> in
+        }, referredBySignal.atOnce().plain()).map { rows, referredBy -> Table<String, InvitationsListRow> in
             let rowsSection = (String(key: .REFERRAL_INVITE_TITLE), rows)
 
             if let referredBy = referredBy {
