@@ -27,10 +27,18 @@ extension ApplyDiscountSection: Viewable {
         let buttonSection = ButtonSection(text: String(key: .REFERRAL_ADDCOUPON_HEADLINE), style: .normal)
 
         bag += buttonSection.onSelect.onValue { _ in
+            let applyDiscount = ApplyDiscount()
             let overlay = DraggableOverlay(
-                presentable: ApplyDiscount(),
+                presentable: applyDiscount,
                 presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
             )
+
+            bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
+                ApolloContainer.shared.store.update(query: InsurancePriceQuery(), updater: { (data: inout InsurancePriceQuery.Data) in
+                    data.insurance.cost = InsurancePriceQuery.Data.Insurance.Cost(unsafeResultMap: result.cost.resultMap)
+                })
+            }
+
             self.presentingViewController.present(overlay)
         }
 

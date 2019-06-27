@@ -119,11 +119,11 @@ extension ApplyDiscount: Presentable {
                             message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
                             actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
                         )
-                        
+
                         viewController.present(alert)
                         return
                     }
-                    
+
                     self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
                     completion(.success)
                 }
