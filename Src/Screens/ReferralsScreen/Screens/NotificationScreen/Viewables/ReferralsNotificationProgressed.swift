@@ -11,6 +11,9 @@ import Foundation
 import UIKit
 
 struct ReferralsNotificationProgressed {
+    let incentive: Int
+    let name: String
+    
     var didTapCancel: Signal<Void> {
         return didTapCancelCallbacker.providedSignal
     }
@@ -58,13 +61,13 @@ extension ReferralsNotificationProgressed: Viewable {
         view.addArrangedSubview(headerImageContainer)
 
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_SUCCESS_HEADLINE(user: "TODO")),
+            value: String(key: .REFERRAL_SUCCESS_HEADLINE(user: name)),
             style: TextStyle.standaloneLargeTitle.colored(UIColor.white).aligned(to: .center)
         )
         bag += view.addArranged(title)
 
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_SUCCESS_BODY(referralValue: "10")),
+            value: String(key: .REFERRAL_SUCCESS_BODY(referralValue: String(incentive))),
             style: TextStyle.bodyWhite.aligned(to: .center)
         )
         bag += view.addArranged(description)
