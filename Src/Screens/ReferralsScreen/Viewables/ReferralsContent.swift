@@ -11,9 +11,9 @@ import UIKit
 
 struct ReferralsContent {
     let codeSignal: Signal<String>
-    let referredBySignal: Signal<InvitationsListRow?>
-    let invitationsSignal: Signal<[InvitationsListRow]>
-    let peopleLeftToInviteSignal: Signal<Int>
+    let referredBySignal: ReadSignal<InvitationsListRow?>
+    let invitationsSignal: ReadSignal<[InvitationsListRow]?>
+    let peopleLeftToInviteSignal: ReadSignal<Int?>
     let incentiveSignal: Signal<Int>
     let netPremiumSignal: Signal<Int>
     let grossPremiumSignal: Signal<Int>

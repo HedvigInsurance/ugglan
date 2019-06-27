@@ -124,65 +124,65 @@ extension Referrals: Presentable {
                         return .left(ReferralsInvitation(name: terminatedReferral.name, state: .left))
                     }
 
-                    return .right(ReferralsInvitationAnonymous(count: 1))
+                    return .right(ReferralsInvitationAnonymous(count: 0))
                 }
             }.map { (list) -> [InvitationsListRow] in
                 var result: [InvitationsListRow] = []
-                
-                list.forEach({ row in
+
+                list.forEach { row in
                     if row.right != nil {
                         let resultAnonymousRow = result.first(where: { resultRow -> Bool in
-                            return resultRow.right != nil
+                            resultRow.right != nil
                         })
-                        
+
                         if let resultAnonymousRow = resultAnonymousRow?.right {
                             if let index = result.firstIndex(where: { resultRow -> Bool in
-                                return resultRow.right != nil
+                                resultRow.right != nil
                             }) {
                                 result.remove(at: index)
                             }
-                            
-                            result.append(.right(ReferralsInvitationAnonymous(count: resultAnonymousRow.count + 1)))
+
+                            result.append(.right(ReferralsInvitationAnonymous(count: (resultAnonymousRow.count ?? 0) + 1)))
                         } else {
                             result.append(.right(ReferralsInvitationAnonymous(count: 1)))
                         }
                     } else {
                         result.append(row)
                     }
-                })
-                
+                }
+
                 return result
             }.bindTo(invitationsSignal)
-        
+
         let referredBySignal = ReadWriteSignal<InvitationsListRow?>(nil)
-        
+
         bag += referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.referredBy }
             .map { referral -> InvitationsListRow in
                 if let activeReferral = referral.asActiveReferral {
                     return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
                 }
-                
+
                 if let inProgressReferral = referral.asInProgressReferral {
                     return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
                 }
-                
+
                 if referral.asNotInitiatedReferral != nil {
                     return .right(ReferralsInvitationAnonymous(count: 1))
                 }
-                
+
                 if let terminatedReferral = referral.asTerminatedReferral {
                     return .left(ReferralsInvitation(name: terminatedReferral.name, state: .left))
                 }
-                
+
                 return .right(ReferralsInvitationAnonymous(count: 1))
-        }.bindTo(referredBySignal)
+            }.bindTo(referredBySignal)
 
         let content = ReferralsContent(
             codeSignal: codeSignal.readOnly().compactMap { $0 },
-            referredBySignal: referredBySignal.plain(),
-            invitationsSignal: invitationsSignal.readOnly().compactMap { $0 },
-            peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 },
+            referredBySignal: referredBySignal.readOnly(),
+            invitationsSignal: invitationsSignal.readOnly(),
+            peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly(),
             incentiveSignal: incentiveSignal,
             netPremiumSignal: netPremiumSignal,
             grossPremiumSignal: grossPremiumSignal
