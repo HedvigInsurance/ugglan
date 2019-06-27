@@ -47,7 +47,7 @@ extension ReferralsNotificationProgressed: Viewable {
         headerImageContainer.alignment = .center
 
         let headerImageView = UIImageView()
-        headerImageView.image = Asset.inviteSuccessDark.image
+        headerImageView.image = Asset.inviteSuccess.image
         headerImageView.contentMode = .scaleAspectFit
 
         headerImageView.snp.makeConstraints { make in

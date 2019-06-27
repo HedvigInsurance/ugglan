@@ -47,7 +47,7 @@ extension ReferralsReceiverConsentContent: Viewable {
         headerImageContainer.alignment = .center
 
         let headerImageView = UIImageView()
-        headerImageView.image = Asset.inviteSuccessLight.image
+        headerImageView.image = Asset.inviteSuccess.image
         headerImageView.contentMode = .scaleAspectFit
 
         headerImageView.snp.makeConstraints { make in
