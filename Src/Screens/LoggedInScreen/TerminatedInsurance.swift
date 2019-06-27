@@ -39,7 +39,7 @@ extension TerminatedInsurance: Presentable {
         bag += view.addArranged(button)
 
         bag += button.onTapSignal.onValue { _ in
-            let overlay = DraggableOverlay(presentable: FreeTextChat())
+            let overlay = DraggableOverlay(presentable: FreeTextChat(), adjustsToKeyboard: false)
             viewController.present(overlay)
         }
 

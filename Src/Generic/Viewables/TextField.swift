@@ -13,6 +13,7 @@ struct TextField {
     let value: ReadWriteSignal<String>
     let placeholder: ReadWriteSignal<String>
     let enabledSignal: ReadWriteSignal<Bool>
+    let shouldReturn = Delegate<(String, UITextField), Bool>()
 
     init(value: String, placeholder: String, enabled: Bool = true) {
         self.value = ReadWriteSignal(value)
@@ -53,6 +54,10 @@ extension TextField: Viewable {
         bag += value.atOnce().bidirectionallyBindTo(textField)
         bag += placeholder.atOnce().bindTo(textField, \.placeholder)
         bag += enabledSignal.atOnce().bindTo(textField, \.isEnabled)
+
+        bag += textField.shouldReturn.set { string -> Bool in
+            self.shouldReturn.call((string, textField)) ?? false
+        }
 
         paddingView.addArrangedSubview(textField)
 

@@ -16,15 +16,18 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
     let presentable: P
     let presentationOptions: PresentationOptions
     let backgroundColor: UIColor
+    let adjustsToKeyboard: Bool
 
     init(
         presentable: P,
         presentationOptions: PresentationOptions = .defaults,
-        backgroundColor: UIColor = .white
+        backgroundColor: UIColor = .white,
+        adjustsToKeyboard: Bool = true
     ) {
         self.presentable = presentable
         self.presentationOptions = presentationOptions
         self.backgroundColor = backgroundColor
+        self.adjustsToKeyboard = adjustsToKeyboard
     }
 }
 
@@ -133,6 +136,9 @@ extension DraggableOverlay: Presentable {
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
+            .filter { _ -> Bool in
+                self.adjustsToKeyboard
+            }
             .compactMap { notification in
                 notification.keyboardInfo
             }
@@ -152,6 +158,9 @@ extension DraggableOverlay: Presentable {
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillHideNotification)
+            .filter { _ -> Bool in
+                self.adjustsToKeyboard
+            }
             .compactMap { notification in
                 notification.keyboardInfo
             }
@@ -327,7 +336,7 @@ extension DraggableOverlay: Presentable {
                     overlay.isHidden = true
                 }
                 animateDimmingViewVisibility(false)
-                ease.targetValue = view.frame.height + handle.frame.height + (overlay.frame.height / 2)
+                ease.targetValue = view.frame.height + (handle.frame.height * 3) + (overlay.frame.height / 2)
             }
 
             bag += panGestureRecognizer.signal(forState: .ended).onValue { _ in

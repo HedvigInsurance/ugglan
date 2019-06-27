@@ -90,9 +90,19 @@ extension ApplyDiscount: Presentable {
 
         bag += containerView.applyPreferredContentSize(on: viewController)
 
+        let shouldSubmitCallbacker = Callbacker<Void>()
+        bag += loadableSubmitButton.onTapSignal.onValue { _ in
+            shouldSubmitCallbacker.callAll()
+        }
+
+        bag += textField.shouldReturn.set { _, textField -> Bool in
+            textField.resignFirstResponder()
+            shouldSubmitCallbacker.callAll()
+            return true
+        }
+
         return (viewController, Future { completion in
-            bag += loadableSubmitButton
-                .onTapSignal
+            bag += shouldSubmitCallbacker
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = true
                 }
