@@ -69,11 +69,17 @@ extension Referrals: Presentable {
             scrollView: scrollView
         )
 
+        let query = ReferralsScreenQuery()
+
+        let refreshControl = UIRefreshControl()
+        bag += client.refetchOnRefresh(query: query, refreshControl: refreshControl)
+
+        scrollView.refreshControl = refreshControl
+
         let codeSignal = ReadWriteSignal<String?>(nil)
 
         let referralsScreenQuerySignal = client
-            .fetch(query: ReferralsScreenQuery())
-            .valueSignal
+            .watch(query: query)
             .wait(until: formView.hasWindowSignal)
 
         bag += referralsScreenQuerySignal

@@ -304,6 +304,12 @@ extension ReferralsProgressBar {
                 block.removeFromParentNode()
             }
 
+            containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
+            containerNode.opacity = 0
+
+            ambientLightNode.removeFromParentNode()
+            cameraNode.removeFromParentNode()
+
             discountLabelNode.removeFromParentNode()
             fullPriceLabelNode.removeFromParentNode()
             freeLabelNode.removeFromParentNode()
@@ -344,12 +350,13 @@ extension ReferralsProgressBar: Viewable {
         view.scene = scene
         view.autoenablesDefaultLighting = false
 
-        let pan = UIPanGestureRecognizer()
+        let pan = PanDirectionGestureRecognizer(direction: .horizontal)
 
         let originalAngleY = containerNode.eulerAngles.y
 
         bag += pan.signal(forState: .changed).onValue {
             let translation = pan.translation(in: pan.view)
+
             let newAngleY = radians(Float(translation.x)) + radians(-45)
             containerNode.eulerAngles.y = newAngleY
         }
