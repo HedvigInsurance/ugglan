@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 struct ReferralsTitle {
-    let peopleLeftToInviteSignal: Signal<Int>
+    let peopleLeftToInviteSignal: ReadSignal<Int?>
     let incentiveSignal: Signal<Int>
 }
 
@@ -29,6 +29,8 @@ extension ReferralsTitle: Viewable {
         )
 
         bag += peopleLeftToInviteSignal
+            .atOnce()
+            .compactMap { $0 }
             .map { String(key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String($0))) }
             .map { StyledText(text: $0, style: TextStyle.standaloneLargeTitle.centerAligned) }
             .bindTo(title.styledTextSignal)

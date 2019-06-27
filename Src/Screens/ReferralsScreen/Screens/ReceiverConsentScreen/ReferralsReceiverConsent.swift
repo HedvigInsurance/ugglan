@@ -58,7 +58,7 @@ extension ReferralsReceiverConsent: Presentable {
                             message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
                             actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
                         )
-                        
+
                         viewController.present(alert)
                     } else {
                         completion(.success(.accept))

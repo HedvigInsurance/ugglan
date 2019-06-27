@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 struct ReferralsInvitationAnonymous: Reusable {
-    let count: Int
+    let count: Int?
 
     static func makeAndConfigure() -> (make: UIView, configure: (ReferralsInvitationAnonymous) -> Disposable) {
         let view = UIStackView()
@@ -48,7 +48,13 @@ struct ReferralsInvitationAnonymous: Reusable {
         return (view, { invitation in
             let bag = DisposeBag()
 
-            if invitation.count > 1 {
+            guard let count = invitation.count else {
+                titleLabel.text = String(key: .REFERRAL_INVITE_EMPTYSTATE_TITLE)
+                descriptionLabel.text = String(key: .REFERRAL_INVITE_EMPTYSTATE_DESCRIPTION)
+                return bag
+            }
+
+            if count > 1 {
                 titleLabel.text = String(key: .REFERRAL_INVITE_ANONS)
                 descriptionLabel.text = String(key: .REFERRAL_INVITE_OPENEDSTATE)
             } else {

@@ -13,8 +13,8 @@ import Presentation
 typealias InvitationsListRow = Either<ReferralsInvitation, ReferralsInvitationAnonymous>
 
 struct ReferralsInvitationsTable {
-    let referredBySignal: Signal<InvitationsListRow?>
-    let invitationsSignal: Signal<[InvitationsListRow]>
+    let referredBySignal: ReadSignal<InvitationsListRow?>
+    let invitationsSignal: ReadSignal<[InvitationsListRow]?>
 }
 
 extension ReferralsInvitationsTable: Viewable {
@@ -23,9 +23,9 @@ extension ReferralsInvitationsTable: Viewable {
 
         let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in
             style.section.minRowHeight = 72
-            style.section.background = SectionStyle.Background.standardLargeIcons
+            style.section.background = UIScreen.main.traitCollection.isPad ? SectionStyle.Background.standardLargeIconsRoundedBorder : SectionStyle.Background.standardLargeIcons
         }
-        
+
         let tableKit = TableKit<String, InvitationsListRow>(
             table: Table<String, InvitationsListRow>.init(),
             style: tableStyle,
@@ -48,16 +48,21 @@ extension ReferralsInvitationsTable: Viewable {
 
         tableKit.view.isScrollEnabled = false
 
-        bag += invitationsSignal.withLatestFrom(referredBySignal).map { rows, referredBy -> Table<String, InvitationsListRow> in
+        bag += invitationsSignal.compactMap { $0 }.map { rows -> [InvitationsListRow] in
+            if rows.isEmpty {
+                return [.right(ReferralsInvitationAnonymous(count: nil))]
+            }
+
+            return rows
+        }.withLatestFrom(referredBySignal.atOnce().plain()).map { rows, referredBy -> Table<String, InvitationsListRow> in
             let rowsSection = (String(key: .REFERRAL_INVITE_TITLE), rows)
-            
+
             if let referredBy = referredBy {
                 return Table(sections: [(String(key: .REFERRAL_REFERRED_BY_TITLE), [referredBy]), rowsSection])
             }
-            
+
             return Table(sections: [rowsSection])
         }.onValue { table in
-            tableKit.view.isHidden = table.count == 0
             tableKit.table = table
         }
 

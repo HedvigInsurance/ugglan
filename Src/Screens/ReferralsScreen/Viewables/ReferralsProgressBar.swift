@@ -294,7 +294,7 @@ extension ReferralsProgressBar {
         cameraNode.addChildNode(topLightNode)
 
         view.snp.makeConstraints { make in
-            make.height.equalTo(Double(amountOfBlocks) * 17.5)
+            make.height.equalTo(Double(amountOfBlocks) * 19.5)
         }
 
         return Disposer {
@@ -303,6 +303,12 @@ extension ReferralsProgressBar {
             blocks.forEach { block in
                 block.removeFromParentNode()
             }
+
+            containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
+            containerNode.opacity = 0
+
+            ambientLightNode.removeFromParentNode()
+            cameraNode.removeFromParentNode()
 
             discountLabelNode.removeFromParentNode()
             fullPriceLabelNode.removeFromParentNode()
@@ -318,7 +324,6 @@ extension ReferralsProgressBar: Viewable {
         let bag = DisposeBag()
 
         let scene = SCNScene()
-        scene
         scene.background.contents = UIColor.offWhite
 
         let containerNode = SCNNode()
@@ -345,12 +350,13 @@ extension ReferralsProgressBar: Viewable {
         view.scene = scene
         view.autoenablesDefaultLighting = false
 
-        let pan = UIPanGestureRecognizer()
+        let pan = PanDirectionGestureRecognizer(direction: .horizontal)
 
         let originalAngleY = containerNode.eulerAngles.y
 
         bag += pan.signal(forState: .changed).onValue {
             let translation = pan.translation(in: pan.view)
+
             let newAngleY = radians(Float(translation.x)) + radians(-45)
             containerNode.eulerAngles.y = newAngleY
         }
