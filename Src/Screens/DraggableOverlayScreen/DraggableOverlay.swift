@@ -320,6 +320,7 @@ extension DraggableOverlay: Presentable {
 
         return (viewController, Future { completion in
             func hideOverlay() {
+                overlay.endEditing(true)
                 panGestureRecognizer.isEnabled = false
                 bag += Signal(after: 0.5).onValue {
                     completion(.success)
