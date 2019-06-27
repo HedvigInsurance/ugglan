@@ -16,9 +16,9 @@ import UIKit
 struct ApplyDiscount {
     let client: ApolloClient
 
-    private let didRedeemValidCodeCallbacker = Callbacker<Void>()
+    private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
 
-    var didRedeemValidCodeSignal: Signal<Void> {
+    var didRedeemValidCodeSignal: Signal<RedeemCodeMutation.Data.RedeemCode> {
         return didRedeemValidCodeCallbacker.providedSignal
     }
 
@@ -113,18 +113,19 @@ extension ApplyDiscount: Presentable {
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
                 .onValue { result in
-                    if result.errors != nil {
+                    guard let redeemCode = result.data?.redeemCode else {
                         let alert = Alert(
                             title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
                             message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
                             actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
                         )
-
+                        
                         viewController.present(alert)
-                    } else {
-                        self.didRedeemValidCodeCallbacker.callAll()
-                        completion(.success)
+                        return
                     }
+                    
+                    self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                    completion(.success)
                 }
 
             return bag
