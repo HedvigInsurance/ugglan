@@ -294,7 +294,7 @@ extension ReferralsProgressBar {
         cameraNode.addChildNode(topLightNode)
 
         view.snp.makeConstraints { make in
-            make.height.equalTo(Double(amountOfBlocks) * 17.5)
+            make.height.equalTo(Double(amountOfBlocks) * 19.5)
         }
 
         return Disposer {
@@ -318,7 +318,6 @@ extension ReferralsProgressBar: Viewable {
         let bag = DisposeBag()
 
         let scene = SCNScene()
-        scene
         scene.background.contents = UIColor.offWhite
 
         let containerNode = SCNNode()
