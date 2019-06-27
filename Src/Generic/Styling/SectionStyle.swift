@@ -110,6 +110,12 @@ extension SectionBackgroundStyle {
         bottomSeparator: .insetLargeIcons
     )
 
+    static let whiteLargeIconsRoundedBorder = SectionBackgroundStyle(
+        background: .whiteRoundedBorder,
+        topSeparator: .insetLargeIcons,
+        bottomSeparator: .insetLargeIcons
+    )
+
     static let whiteMediumIcons = SectionBackgroundStyle(
         background: .white,
         topSeparator: .insetMediumIcons,
@@ -169,6 +175,7 @@ extension SectionStyle.Background {
     static let standard = SectionStyle.Background(style: .white)
     static let highlighted = SectionStyle.Background(style: .purple)
     static let standardLargeIcons = SectionStyle.Background(style: .whiteLargeIcons)
+    static let standardLargeIconsRoundedBorder = SectionStyle.Background(style: .whiteLargeIconsRoundedBorder)
     static let standardMediumIcons = SectionStyle.Background(style: .whiteMediumIcons)
     static let standardRoundedBorder = SectionStyle.Background(style: .whiteRoundedBorder)
     static let selected = SectionStyle.Background(style: .purpleOpaque)
@@ -214,6 +221,16 @@ extension SectionStyle {
         footer: .standard
     )
 
+    static let sectionPlainRoundedBorder = SectionStyle(
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
+        background: .standardRoundedBorder,
+        selectedBackground: .selected,
+        header: .standard,
+        footer: .standard
+    )
+
     static let sectionPlainLargeIcons = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
@@ -223,14 +240,24 @@ extension SectionStyle {
         header: .standard,
         footer: .standard
     )
+
+    static let sectionPlainLargeIconsRoundedBorder = SectionStyle(
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
+        background: .standardLargeIconsRoundedBorder,
+        selectedBackground: .selectedLargeIcons,
+        header: .standard,
+        footer: .standard
+    )
 }
 
 extension DynamicSectionStyle {
-    static let sectionPlain = DynamicSectionStyle { _ -> SectionStyle in
-        .sectionPlain
+    static let sectionPlain = DynamicSectionStyle { trait -> SectionStyle in
+        trait.isPad ? .sectionPlainRoundedBorder : .sectionPlain
     }
 
-    static let sectionPlainLargeIcons = DynamicSectionStyle { _ -> SectionStyle in
-        .sectionPlainLargeIcons
+    static let sectionPlainLargeIcons = DynamicSectionStyle { trait -> SectionStyle in
+        trait.isPad ? .sectionPlainLargeIconsRoundedBorder : .sectionPlainLargeIcons
     }
 }
