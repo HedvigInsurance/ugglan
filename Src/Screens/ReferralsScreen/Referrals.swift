@@ -126,6 +126,32 @@ extension Referrals: Presentable {
 
                     return .right(ReferralsInvitationAnonymous(count: 1))
                 }
+            }.map { (list) -> [InvitationsListRow] in
+                var result: [InvitationsListRow] = []
+                
+                list.forEach({ row in
+                    if row.right != nil {
+                        let resultAnonymousRow = result.first(where: { resultRow -> Bool in
+                            return resultRow.right != nil
+                        })
+                        
+                        if let resultAnonymousRow = resultAnonymousRow?.right {
+                            if let index = result.firstIndex(where: { resultRow -> Bool in
+                                return resultRow.right != nil
+                            }) {
+                                result.remove(at: index)
+                            }
+                            
+                            result.append(.right(ReferralsInvitationAnonymous(count: resultAnonymousRow.count + 1)))
+                        } else {
+                            result.append(.right(ReferralsInvitationAnonymous(count: 1)))
+                        }
+                    } else {
+                        result.append(row)
+                    }
+                })
+                
+                return result
             }.bindTo(invitationsSignal)
         
         let referredBySignal = ReadWriteSignal<InvitationsListRow?>(nil)
