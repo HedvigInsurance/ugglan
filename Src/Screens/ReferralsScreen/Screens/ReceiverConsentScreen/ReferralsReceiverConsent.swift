@@ -51,8 +51,18 @@ extension ReferralsReceiverConsent: Presentable {
             bag += content
                 .didTapAccept
                 .mapLatestToFuture { self.client.perform(mutation: RedeemCodeMutation(code: self.referralCode)) }
-                .onValue { _ in
-                    completion(.success(.accept))
+                .onValue { result in
+                    if result.errors != nil {
+                        let alert = Alert(
+                            title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
+                            message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
+                            actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
+                        )
+                        
+                        viewController.present(alert)
+                    } else {
+                        completion(.success(.accept))
+                    }
                 }
 
             return DelayedDisposer(bag, delay: 2)
