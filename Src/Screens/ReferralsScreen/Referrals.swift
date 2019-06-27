@@ -98,8 +98,7 @@ extension Referrals: Presentable {
             .toInt()
             .compactMap { $0 }
 
-        bag += netPremiumSignal
-            .withLatestFrom(incentiveSignal)
+        bag += combineLatest(netPremiumSignal, incentiveSignal)
             .map { netPremium, incentive in Int(round(Double(netPremium) / Double(incentive))) }
             .map { count in max(0, count) }
             .bindTo(peopleLeftToInviteSignal)
