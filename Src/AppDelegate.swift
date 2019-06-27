@@ -68,6 +68,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
         guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
+        
+        if
+            let invitedByMemberId = queryItems.filter({ item in item.name == "invitedBy" }).first?.value,
+            let incentive = queryItems.filter({ item in item.name == "incentive" }).first?.value {
+            
+            Analytics.logEvent("referrals_open", parameters: [
+                "invitedByMemberId": invitedByMemberId,
+                "incentive": incentive
+                ])
+            
+            UserDefaults.standard.set(invitedByMemberId, forKey: "referral_invitedByMemberId")
+            UserDefaults.standard.set(incentive, forKey: "referral_incentive")
+            
+            return true
+        }
+        
+        
+
+        
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
 
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { _, _ in

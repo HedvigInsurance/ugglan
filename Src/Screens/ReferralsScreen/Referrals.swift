@@ -127,9 +127,34 @@ extension Referrals: Presentable {
                     return .right(ReferralsInvitationAnonymous(count: 1))
                 }
             }.bindTo(invitationsSignal)
+        
+        let referredBySignal = ReadWriteSignal<InvitationsListRow?>(nil)
+        
+        bag += referralsScreenQuerySignal
+            .compactMap { $0.data?.referralInformation.referredBy }
+            .map { referral -> InvitationsListRow in
+                if let activeReferral = referral.asActiveReferral {
+                    return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
+                }
+                
+                if let inProgressReferral = referral.asInProgressReferral {
+                    return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
+                }
+                
+                if referral.asNotInitiatedReferral != nil {
+                    return .right(ReferralsInvitationAnonymous(count: 1))
+                }
+                
+                if let terminatedReferral = referral.asTerminatedReferral {
+                    return .left(ReferralsInvitation(name: terminatedReferral.name, state: .left))
+                }
+                
+                return .right(ReferralsInvitationAnonymous(count: 1))
+        }.bindTo(referredBySignal)
 
         let content = ReferralsContent(
             codeSignal: codeSignal.readOnly().compactMap { $0 },
+            referredBySignal: referredBySignal.plain(),
             invitationsSignal: invitationsSignal.readOnly().compactMap { $0 },
             peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly().compactMap { $0 },
             incentiveSignal: incentiveSignal,

@@ -20,6 +20,23 @@ query ReferralsScreen {
                 }
             }
         }
+        referredBy {
+            ... on ActiveReferral {
+                discount {
+                    amount
+                }
+                name
+            }
+            ... on InProgressReferral {
+                name
+            }
+            ... on NotInitiatedReferral {
+                name
+            }
+            ... on TerminatedReferral {
+                name
+            }
+        }
         invitations {
             ... on ActiveReferral {
                 discount {
