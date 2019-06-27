@@ -37,6 +37,10 @@ extension ApplyDiscountSection: Viewable {
                 ApolloContainer.shared.store.update(query: InsurancePriceQuery(), updater: { (data: inout InsurancePriceQuery.Data) in
                     data.insurance.cost = InsurancePriceQuery.Data.Insurance.Cost(unsafeResultMap: result.cost.resultMap)
                 })
+
+                ApolloContainer.shared.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                    data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(unsafeResultMap: result.cost.resultMap)
+                })
             }
 
             self.presentingViewController.present(overlay)
