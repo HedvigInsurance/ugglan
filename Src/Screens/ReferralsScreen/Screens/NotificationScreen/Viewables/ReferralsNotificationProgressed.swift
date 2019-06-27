@@ -13,7 +13,7 @@ import UIKit
 struct ReferralsNotificationProgressed {
     let incentive: Int
     let name: String
-    
+
     var didTapCancel: Signal<Void> {
         return didTapCancelCallbacker.providedSignal
     }
