@@ -121,8 +121,8 @@ extension Referrals: Presentable {
                         return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
                     }
 
-                    if invitation.asNotInitiatedReferral != nil {
-                        return .right(ReferralsInvitationAnonymous(count: 1))
+                    if let acceptedReferral = invitation.asAcceptedReferral {
+                        return .right(ReferralsInvitationAnonymous(count: acceptedReferral.quantity))
                     }
 
                     if let terminatedReferral = invitation.asTerminatedReferral {
@@ -131,32 +131,6 @@ extension Referrals: Presentable {
 
                     return .right(ReferralsInvitationAnonymous(count: 0))
                 }
-            }.map { (list) -> [InvitationsListRow] in
-                var result: [InvitationsListRow] = []
-
-                list.forEach { row in
-                    if row.right != nil {
-                        let resultAnonymousRow = result.first(where: { resultRow -> Bool in
-                            resultRow.right != nil
-                        })
-
-                        if let resultAnonymousRow = resultAnonymousRow?.right {
-                            if let index = result.firstIndex(where: { resultRow -> Bool in
-                                resultRow.right != nil
-                            }) {
-                                result.remove(at: index)
-                            }
-
-                            result.append(.right(ReferralsInvitationAnonymous(count: (resultAnonymousRow.count ?? 0) + 1)))
-                        } else {
-                            result.append(.right(ReferralsInvitationAnonymous(count: 1)))
-                        }
-                    } else {
-                        result.append(row)
-                    }
-                }
-
-                return result
             }.bindTo(invitationsSignal)
 
         let referredBySignal = ReadWriteSignal<InvitationsListRow?>(nil)
@@ -172,8 +146,8 @@ extension Referrals: Presentable {
                     return .left(ReferralsInvitation(name: inProgressReferral.name, state: .onboarding))
                 }
 
-                if referral.asNotInitiatedReferral != nil {
-                    return .right(ReferralsInvitationAnonymous(count: 1))
+                if let acceptedReferral = referral.asAcceptedReferral {
+                    return .right(ReferralsInvitationAnonymous(count: acceptedReferral.quantity))
                 }
 
                 if let terminatedReferral = referral.asTerminatedReferral {

@@ -30,8 +30,8 @@ query ReferralsScreen {
             ... on InProgressReferral {
                 name
             }
-            ... on NotInitiatedReferral {
-                name
+            ... on AcceptedReferral {
+                quantity
             }
             ... on TerminatedReferral {
                 name
@@ -47,8 +47,8 @@ query ReferralsScreen {
             ... on InProgressReferral {
                 name
             }
-            ... on NotInitiatedReferral {
-                name
+            ... on AcceptedReferral {
+                quantity
             }
             ... on TerminatedReferral {
                 name
