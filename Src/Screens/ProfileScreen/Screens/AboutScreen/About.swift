@@ -55,6 +55,16 @@ extension About: Presentable {
         let memberIdRow = MemberIdRow()
         bag += versionSection.append(memberIdRow)
 
+        let activatePushNotificationsRow = ButtonRow(
+            text: "Aktivera pushnotiser",
+            style: .normalButton
+        )
+        bag += versionSection.append(activatePushNotificationsRow)
+
+        bag += activatePushNotificationsRow.onSelect.onValue { _ in
+            UIApplication.shared.appDelegate.registerForPushNotifications()
+        }
+
         bag += form.append(Spacing(height: 15))
 
         let year = Calendar.current.component(.year, from: Date())
