@@ -11,9 +11,9 @@ import SceneKit
 import SpriteKit
 
 struct ReferralsProgressBar {
-    let incentiveSignal: Signal<Int>
-    let grossPremiumSignal: Signal<Int>
-    let netPremiumSignal: Signal<Int>
+    let incentiveSignal: ReadSignal<Int?>
+    let grossPremiumSignal: ReadSignal<Int?>
+    let netPremiumSignal: ReadSignal<Int?>
 }
 
 func radians(_ degrees: Float) -> Float {
@@ -294,7 +294,7 @@ extension ReferralsProgressBar {
         cameraNode.addChildNode(topLightNode)
 
         view.snp.makeConstraints { make in
-            make.height.equalTo(Double(amountOfBlocks) * 19.5)
+            make.height.equalTo(Double(amountOfBlocks) * 22)
         }
 
         return Disposer {
@@ -331,7 +331,11 @@ extension ReferralsProgressBar: Viewable {
         containerNode.eulerAngles = SCNVector3Make(0, radians(-45), 0)
 
         bag +=
-            combineLatest(incentiveSignal.distinct(), grossPremiumSignal.distinct(), netPremiumSignal.distinct())
+            combineLatest(
+                incentiveSignal.atOnce().compactMap { $0 }.distinct(),
+                grossPremiumSignal.atOnce().compactMap { $0 }.distinct(),
+                netPremiumSignal.atOnce().compactMap { $0 }.distinct()
+            )
             .onValueDisposePrevious { (arg) -> Disposable? in
                 let (incentive, grossPremium, netPremium) = arg
                 return self.render(

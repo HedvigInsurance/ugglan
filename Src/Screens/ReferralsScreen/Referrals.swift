@@ -89,22 +89,28 @@ extension Referrals: Presentable {
         let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
         let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
 
-        let incentiveSignal = referralsScreenQuerySignal
+        let incentiveSignal = ReadWriteSignal<Int?>(nil)
+
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount }
             .toInt()
-            .compactMap { $0 }
+            .bindTo(incentiveSignal)
 
-        let netPremiumSignal = referralsScreenQuerySignal
+        let netPremiumSignal = ReadWriteSignal<Int?>(nil)
+
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
-            .compactMap { $0 }
+            .bindTo(netPremiumSignal)
 
-        let grossPremiumSignal = referralsScreenQuerySignal
+        let grossPremiumSignal = ReadWriteSignal<Int?>(nil)
+
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.insurance.cost?.monthlyGross.amount }
             .toInt()
-            .compactMap { $0 }
+            .bindTo(grossPremiumSignal)
 
-        bag += combineLatest(netPremiumSignal, incentiveSignal)
+        bag += combineLatest(netPremiumSignal.compactMap { $0 }, incentiveSignal.compactMap { $0 })
             .map { netPremium, incentive in Int(round(Double(netPremium) / Double(incentive))) }
             .map { count in max(0, count) }
             .bindTo(peopleLeftToInviteSignal)
@@ -162,9 +168,9 @@ extension Referrals: Presentable {
             referredBySignal: referredBySignal.readOnly(),
             invitationsSignal: invitationsSignal.readOnly(),
             peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly(),
-            incentiveSignal: incentiveSignal,
-            netPremiumSignal: netPremiumSignal,
-            grossPremiumSignal: grossPremiumSignal
+            incentiveSignal: incentiveSignal.readOnly(),
+            netPremiumSignal: netPremiumSignal.readOnly(),
+            grossPremiumSignal: grossPremiumSignal.readOnly()
         )
         let loadableContent = LoadableView(view: content, initialLoadingState: true)
 

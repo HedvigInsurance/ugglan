@@ -14,9 +14,9 @@ struct ReferralsContent {
     let referredBySignal: ReadSignal<InvitationsListRow?>
     let invitationsSignal: ReadSignal<[InvitationsListRow]?>
     let peopleLeftToInviteSignal: ReadSignal<Int?>
-    let incentiveSignal: Signal<Int>
-    let netPremiumSignal: Signal<Int>
-    let grossPremiumSignal: Signal<Int>
+    let incentiveSignal: ReadSignal<Int?>
+    let netPremiumSignal: ReadSignal<Int?>
+    let grossPremiumSignal: ReadSignal<Int?>
 }
 
 extension ReferralsContent: Viewable {
@@ -26,12 +26,30 @@ extension ReferralsContent: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 15
 
-        let referralsProgressBar = ReferralsProgressBar(
-            incentiveSignal: incentiveSignal,
-            grossPremiumSignal: grossPremiumSignal,
-            netPremiumSignal: netPremiumSignal
-        )
-        bag += stackView.addArranged(referralsProgressBar)
+        let progressBarContainer = UIStackView()
+
+        bag += grossPremiumSignal.compactMap { $0 }.distinct().onValueDisposePrevious { grossPremium in
+            let innerBag = DisposeBag()
+
+            if grossPremium > 250 {
+                let referralsProgressHighPremium = ReferralsProgressHighPremium(
+                    grossPremiumSignal: self.grossPremiumSignal,
+                    netPremiumSignal: self.netPremiumSignal
+                )
+                innerBag += progressBarContainer.addArranged(referralsProgressHighPremium)
+            } else {
+                let referralsProgressBar = ReferralsProgressBar(
+                    incentiveSignal: self.incentiveSignal,
+                    grossPremiumSignal: self.grossPremiumSignal,
+                    netPremiumSignal: self.netPremiumSignal
+                )
+                innerBag += progressBarContainer.addArranged(referralsProgressBar)
+            }
+
+            return innerBag
+        }
+
+        stackView.addArrangedSubview(progressBarContainer)
 
         let referralsTitle = ReferralsTitle(
             peopleLeftToInviteSignal: peopleLeftToInviteSignal,

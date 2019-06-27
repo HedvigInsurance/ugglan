@@ -12,7 +12,7 @@ import UIKit
 
 struct ReferralsTitle {
     let peopleLeftToInviteSignal: ReadSignal<Int?>
-    let incentiveSignal: Signal<Int>
+    let incentiveSignal: ReadSignal<Int?>
 }
 
 extension ReferralsTitle: Viewable {
@@ -47,6 +47,8 @@ extension ReferralsTitle: Viewable {
         )
 
         bag += incentiveSignal
+            .atOnce()
+            .compactMap { $0 }
             .map { String(key: .REFERRAL_PROGRESS_BODY(referralValue: String($0))) }
             .map { StyledText(text: $0, style: TextStyle.bodyOffBlack.centerAligned) }
             .bindTo(description.styledTextSignal)
