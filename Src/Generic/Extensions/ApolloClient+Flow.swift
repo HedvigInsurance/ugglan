@@ -12,7 +12,7 @@ import Foundation
 import Presentation
 import UIKit
 
-fileprivate extension Error {
+private extension Error {
     var isIgnorable: Bool {
         return localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError")
     }
@@ -82,7 +82,7 @@ extension ApolloClient {
                     if result != nil {
                         completion(.success(result!))
                     } else {
-                        if  error?.isIgnorable ?? false {
+                        if error?.isIgnorable ?? false {
                             return
                         }
 

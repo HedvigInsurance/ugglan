@@ -59,13 +59,13 @@ extension TextField: Viewable {
         textField.snp.makeConstraints { make in
             make.height.equalTo(34)
         }
-        
+
         bag += textField.shouldReturn.set { string -> Bool in
             self.shouldReturn.call((string, textField)) ?? false
         }
-        
+
         paddingView.addArrangedSubview(textField)
-        
+
         bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
             textField.becomeFirstResponder()
         }

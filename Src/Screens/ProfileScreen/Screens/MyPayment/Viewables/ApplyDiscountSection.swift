@@ -40,9 +40,7 @@ extension ApplyDiscountSection: Viewable {
             )
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                print(result)
                 self.store.update(query: InsurancePriceQuery(), updater: { (data: inout InsurancePriceQuery.Data) in
-
                     data.insurance.cost = InsurancePriceQuery.Data.Insurance.Cost(
                         monthlyDiscount: InsurancePriceQuery.Data.Insurance.Cost.MonthlyDiscount(amount: result.cost.monthlyDiscount.amount),
                         monthlyGross: InsurancePriceQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount),

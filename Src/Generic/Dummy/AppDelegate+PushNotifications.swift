@@ -8,5 +8,5 @@
 import Foundation
 
 extension AppDelegate {
-    func registerForPushNotifications () {}
+    func registerForPushNotifications() {}
 }

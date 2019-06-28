@@ -41,19 +41,19 @@ extension ReferralsReceiverConsentContent: Viewable {
         view.spacing = 28
         view.axis = .vertical
         view.alignment = .center
-        
+
         let logoImageContainer = UIStackView()
         logoImageContainer.axis = .horizontal
         logoImageContainer.alignment = .center
-        
+
         let logoImageView = UIImageView()
         logoImageView.image = Asset.wordmark.image
         logoImageView.contentMode = .scaleAspectFit
-        
+
         logoImageView.snp.makeConstraints { make in
             make.height.equalTo(30)
         }
-        
+
         logoImageContainer.addArrangedSubview(logoImageView)
         view.addArrangedSubview(logoImageContainer)
 

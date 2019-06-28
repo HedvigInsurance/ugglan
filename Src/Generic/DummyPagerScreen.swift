@@ -16,7 +16,7 @@ extension DummyPagerScreen: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         return (viewController, bag)
     }
 }
