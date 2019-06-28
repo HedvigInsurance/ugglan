@@ -58,13 +58,13 @@ extension ReferralsReceiverConsentContent: Viewable {
         view.addArrangedSubview(headerImageContainer)
 
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10", user: "Lucas")),
+            value: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
             style: TextStyle.standaloneLargeTitle.colored(.offBlack).aligned(to: .center)
         )
         bag += view.addArranged(title)
 
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_STARTSCREEN_BODY),
+            value: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
             style: TextStyle.bodyOffBlack.aligned(to: .center)
         )
         bag += view.addArranged(description)
