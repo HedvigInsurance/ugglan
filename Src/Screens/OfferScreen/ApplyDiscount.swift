@@ -43,6 +43,7 @@ extension ApplyDiscount: Presentable {
         view.axis = .vertical
         view.layoutMargins = UIEdgeInsets(horizontalInset: 24, verticalInset: 32)
         view.isLayoutMarginsRelativeArrangement = true
+        view.isUserInteractionEnabled = true
 
         containerView.addArrangedSubview(view)
 
@@ -60,6 +61,7 @@ extension ApplyDiscount: Presentable {
 
         let textField = TextField(value: "", placeholder: String(key: .REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
         bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
+            stackView.isUserInteractionEnabled = true
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
         }
