@@ -26,6 +26,7 @@ extension TextField: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
+        view.isUserInteractionEnabled = true
 
         view.snp.makeConstraints { make in
             make.height.equalTo(40)
@@ -38,10 +39,10 @@ extension TextField: Viewable {
         }
 
         let paddingView = UIStackView()
-        paddingView.isUserInteractionEnabled = false
+        paddingView.isUserInteractionEnabled = true
         paddingView.axis = .vertical
         paddingView.isLayoutMarginsRelativeArrangement = true
-        paddingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 10)
+        paddingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 3)
         view.addSubview(paddingView)
 
         paddingView.snp.makeConstraints { make in
@@ -55,13 +56,17 @@ extension TextField: Viewable {
         bag += placeholder.atOnce().bindTo(textField, \.placeholder)
         bag += enabledSignal.atOnce().bindTo(textField, \.isEnabled)
 
+        textField.snp.makeConstraints { make in
+            make.height.equalTo(34)
+        }
+        
         bag += textField.shouldReturn.set { string -> Bool in
             self.shouldReturn.call((string, textField)) ?? false
         }
-
+        
         paddingView.addArrangedSubview(textField)
-
-        bag += view.signal(for: .touchDown).onValue { _ in
+        
+        bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
             textField.becomeFirstResponder()
         }
 
