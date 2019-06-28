@@ -12,11 +12,17 @@ import Foundation
 
 struct ApplyDiscountSection {
     let client: ApolloClient
+    let store: ApolloStore
     let presentingViewController: UIViewController
 
-    init(presentingViewController: UIViewController, client: ApolloClient = ApolloContainer.shared.client) {
+    init(
+        presentingViewController: UIViewController,
+        client: ApolloClient = ApolloContainer.shared.client,
+        store: ApolloStore = ApolloContainer.shared.store
+    ) {
         self.presentingViewController = presentingViewController
         self.client = client
+        self.store = store
     }
 }
 
@@ -34,12 +40,22 @@ extension ApplyDiscountSection: Viewable {
             )
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                ApolloContainer.shared.store.update(query: InsurancePriceQuery(), updater: { (data: inout InsurancePriceQuery.Data) in
-                    data.insurance.cost = InsurancePriceQuery.Data.Insurance.Cost(unsafeResultMap: result.cost.resultMap)
+                print(result)
+                self.store.update(query: InsurancePriceQuery(), updater: { (data: inout InsurancePriceQuery.Data) in
+
+                    data.insurance.cost = InsurancePriceQuery.Data.Insurance.Cost(
+                        monthlyDiscount: InsurancePriceQuery.Data.Insurance.Cost.MonthlyDiscount(amount: result.cost.monthlyDiscount.amount),
+                        monthlyGross: InsurancePriceQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount),
+                        monthlyNet: InsurancePriceQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount)
+                    )
                 })
 
-                ApolloContainer.shared.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-                    data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(unsafeResultMap: result.cost.resultMap)
+                self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                    data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(
+                        monthlyDiscount: MyPaymentQuery.Data.Insurance.Cost.MonthlyDiscount(amount: result.cost.monthlyDiscount.amount),
+                        monthlyGross: MyPaymentQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount),
+                        monthlyNet: MyPaymentQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount)
+                    )
                 })
             }
 

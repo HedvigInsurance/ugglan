@@ -29,7 +29,7 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery())
+        let dataValueSignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         let section = SectionView(
             header: String(key: .MY_PAYMENT_PAYMENT_ROW_LABEL),
