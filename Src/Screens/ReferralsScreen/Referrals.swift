@@ -145,7 +145,7 @@ extension Referrals: Presentable {
             .compactMap { $0.data?.referralInformation.referredBy }
             .map { referral -> InvitationsListRow in
                 if let activeReferral = referral.asActiveReferral {
-                    return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
+                    return .left(ReferralsInvitation(name: activeReferral.name, state: .invitedYou))
                 }
 
                 if let inProgressReferral = referral.asInProgressReferral {
