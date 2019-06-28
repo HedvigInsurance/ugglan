@@ -37,8 +37,6 @@ extension Welcome: Presentable {
         let item = UIBarButtonItem(viewable: closeButton)
         viewController.navigationItem.rightBarButtonItem = item
         
-        viewController.displayableTitle = ""
-        
         let view = UIView()
         view.backgroundColor = .offWhite
         

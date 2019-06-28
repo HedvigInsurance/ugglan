@@ -37,7 +37,7 @@ extension WelcomePagerProceedButton: Viewable {
         }
         
         func setButtonTitle(isMorePages: Bool) {
-            buttonTitleSignal.value = isMorePages ? String(key: .REFERRAL_RECIEVER_WELCOME_BTN_SKIP) : String(key: .REFERRAL_RECIEVER_WELCOME_BTN_CTA)
+            buttonTitleSignal.value = isMorePages ? String(key: .NEW_MEMBER_PROCEED) : String(key: .NEW_MEMBER_DISMISS)
         }
         
         bag += button.onTapSignal.bindTo(onTapReadWriteSignal)
