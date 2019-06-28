@@ -41,9 +41,24 @@ extension ReferralsNotificationProgressed: Viewable {
         scrollView.embedView(containerView, scrollAxis: .vertical)
 
         let view = UIStackView()
-        view.spacing = 15
+        view.spacing = 28
         view.axis = .vertical
         view.alignment = .center
+        
+        let logoImageContainer = UIStackView()
+        logoImageContainer.axis = .horizontal
+        logoImageContainer.alignment = .center
+        
+        let logoImageView = UIImageView()
+        logoImageView.image = Asset.wordmarkWhite.image
+        logoImageView.contentMode = .scaleAspectFit
+        
+        logoImageView.snp.makeConstraints { make in
+            make.height.equalTo(30)
+        }
+        
+        logoImageContainer.addArrangedSubview(logoImageView)
+        view.addArrangedSubview(logoImageContainer)
 
         let headerImageContainer = UIStackView()
         headerImageContainer.axis = .horizontal
