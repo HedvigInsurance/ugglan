@@ -12,10 +12,12 @@ import UIKit
 
 struct ReferralsInvitation: Reusable {
     enum InviteState {
-        case onboarding, member, left
+        case onboarding, member, left, invitedYou
 
         var description: String {
             switch self {
+            case .invitedYou:
+                return String(key: .REFERRAL_INVITE_INVITEDYOUSTATE)
             case .onboarding:
                 return String(key: .REFERRAL_INVITE_STARTEDSTATE)
             case .member:
@@ -107,7 +109,7 @@ struct ReferralsInvitation: Reusable {
                 iconContainer.snp.remakeConstraints { make in
                     make.width.equalTo(16)
                 }
-            case .member:
+            case .member, .invitedYou:
                 bag += iconContainer.addArranged(ReferralsInvitationMemberIcon())
 
                 iconContainer.snp.remakeConstraints { make in
