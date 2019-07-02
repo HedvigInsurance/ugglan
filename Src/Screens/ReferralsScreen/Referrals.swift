@@ -203,7 +203,6 @@ extension Referrals: Presentable {
             ).compactMap { $1 }.onValue { code in
                 let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
                 let message = String(key: .REFERRAL_SMS_MESSAGE(
-                    referralCode: code,
                     referralLink: landingPageUrl,
                     referralValue: "10"
                 ))
