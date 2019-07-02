@@ -82,7 +82,7 @@ extension WelcomePagerScreen: Presentable {
             }
 
             bag += titleLabel.intrinsicContentSizeSignal.onValue { size in
-                titleLabelView.snp.makeConstraints { make in
+                titleLabelView.snp.updateConstraints { make in
                     make.height.equalTo(size.height)
                 }
             }
@@ -103,7 +103,7 @@ extension WelcomePagerScreen: Presentable {
             }
 
             bag += bodyLabel.intrinsicContentSizeSignal.onValue { size in
-                bodyLabelView.snp.makeConstraints { make in
+                bodyLabelView.snp.updateConstraints { make in
                     make.height.equalTo(size.height)
                 }
             }
