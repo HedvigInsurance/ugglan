@@ -173,7 +173,7 @@ extension ReferralsProgressBar {
     ) -> Disposable {
         let bag = DisposeBag()
 
-        let blocks: [SCNNode] = []
+        var blocks: [SCNNode] = []
         let amountOfBlocks = grossPremium / incentive
         let amountOfCompletedBlocks = (grossPremium - netPremium) / incentive
         let discount = grossPremium - netPremium
@@ -204,6 +204,7 @@ extension ReferralsProgressBar {
             boxNode.position = SCNVector3Make(0, Float(2 * i), 0)
             boxNode.physicsBody?.isAffectedByGravity = true
             containerNode.addChildNode(boxNode)
+            blocks.append(boxNode)
         }
 
         let discountLabelNode = currentDiscountLabel(
@@ -242,6 +243,75 @@ extension ReferralsProgressBar {
             action.timingMode = SCNActionTimingMode.easeOut
 
             containerNode.runAction(action)
+        }
+        
+        func getBlockColorGeometry(color: UIColor) -> SCNBox {
+            let boxColor = color.withAlphaComponent(0.9)
+            let boxGeometry = SCNBox(width: 10.0, height: 2.0, length: 10.0, chamferRadius: 0)
+            
+            boxGeometry.materials = [
+                boxColor,
+                boxColor,
+                boxColor,
+                boxColor,
+                boxColor
+                ].map { color in
+                    let material = SCNMaterial()
+                    material.diffuse.contents = color
+                    material.locksAmbientWithDiffuse = true
+                    return material
+            }
+            
+            return boxGeometry
+        }
+        
+        func transitionColor(from: UIColor, to: UIColor, percentage: CGFloat) -> UIColor {
+            let fromComponents = from.cgColor.components!
+            let toComponents = to.cgColor.components!
+            
+            let color = UIColor(red: fromComponents[0] + (toComponents[0] - fromComponents[0]) * percentage,
+                                green: fromComponents[1] + (toComponents[1] - fromComponents[1]) * percentage,
+                                blue: fromComponents[2] + (toComponents[2] - fromComponents[2]) * percentage,
+                                alpha: fromComponents[3] + (toComponents[3] - fromComponents[3]) * percentage)
+            return color
+        }
+        
+        bag += Signal(after: 3).onValue { _ in
+            var actions: [SCNAction] = []
+            let duration = 0.3
+            for i in stride(from: blocks.count - 1, to: -1, by: -1) {
+                let action = SCNAction.customAction(duration: duration, action: { node, progress in
+                    let percentage = progress / CGFloat(duration)
+                    blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
+                        from: UIColor.purple,
+                        to: UIColor.turquoise.withAlphaComponent(0.9),
+                        percentage: percentage
+                    )
+                })
+                action.timingMode = SCNActionTimingMode.easeOut
+                actions.append(action)
+            }
+            
+            let finalDuration = 0.8
+            let finalAction = SCNAction.customAction(duration: finalDuration, action: { node, progress in
+                let percentage = progress / CGFloat(duration)
+                
+                let colorTransition = transitionColor(
+                    from: UIColor.turquoise.withAlphaComponent(0.9),
+                    to: UIColor.purple,
+                    percentage: percentage
+                )
+                
+                for block in blocks {
+                    block.geometry?.firstMaterial?.diffuse.contents = colorTransition
+                }
+            })
+            
+            finalAction.timingMode = SCNActionTimingMode.easeOut
+            actions.append(finalAction)
+            
+            let act = SCNAction.repeatForever(SCNAction.sequence(actions))
+            containerNode.runAction(act)
         }
 
         scene.rootNode.addChildNode(containerNode)
