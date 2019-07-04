@@ -64,8 +64,10 @@ extension ReferralsContent: Viewable {
         let referralsInvitationsTable = ReferralsInvitationsTable(referredBySignal: referredBySignal, invitationsSignal: invitationsSignal)
         bag += stackView.addArranged(referralsInvitationsTable) { tableView in
             bag += tableView.didLayoutSignal.onValue { _ in
-                tableView.snp.remakeConstraints { make in
-                    make.height.equalTo(tableView.contentSize.height)
+                bag += referralsInvitationsTable.changedDataSignal.onValue { _ in
+                    tableView.snp.remakeConstraints { make in
+                        make.height.equalTo(tableView.contentSize.height)
+                    }
                 }
             }
         }

@@ -15,6 +15,13 @@ typealias InvitationsListRow = Either<ReferralsInvitation, ReferralsInvitationAn
 struct ReferralsInvitationsTable {
     let referredBySignal: ReadSignal<InvitationsListRow?>
     let invitationsSignal: ReadSignal<[InvitationsListRow]?>
+    let changedDataSignal: ReadWriteSignal<Bool>
+    
+    init(referredBySignal: ReadSignal<InvitationsListRow?>, invitationsSignal: ReadSignal<[InvitationsListRow]?>, changedDataSignal: ReadWriteSignal<Bool> = ReadWriteSignal<Bool>(false)) {
+        self.referredBySignal = referredBySignal
+        self.invitationsSignal = invitationsSignal
+        self.changedDataSignal = changedDataSignal
+    }
 }
 
 extension ReferralsInvitationsTable: Viewable {
@@ -45,7 +52,7 @@ extension ReferralsInvitationsTable: Viewable {
                 return headerStackView
             }
         )
-
+        
         tableKit.view.isScrollEnabled = false
 
         bag += combineLatest(invitationsSignal.atOnce().compactMap { $0 }.map { rows -> [InvitationsListRow] in
@@ -64,6 +71,7 @@ extension ReferralsInvitationsTable: Viewable {
             return Table(sections: [rowsSection])
         }.onValue { table in
             tableKit.table = table
+            self.changedDataSignal.value = true
         }
 
         return (tableKit.view, bag)
