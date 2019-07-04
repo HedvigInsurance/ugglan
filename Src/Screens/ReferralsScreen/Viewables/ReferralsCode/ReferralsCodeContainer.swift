@@ -12,9 +12,11 @@ import UIKit
 
 struct ReferralsCodeContainer {
     let codeSignal: Signal<String>
+    let presentingViewController: UIViewController
 
-    init(codeSignal: Signal<String>) {
+    init(codeSignal: Signal<String>, presentingViewController: UIViewController) {
         self.codeSignal = codeSignal
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -32,7 +34,7 @@ extension ReferralsCodeContainer: Viewable {
         )
         bag += stackView.addArranged(titleLabel)
 
-        let referralsCode = ReferralsCode(codeSignal: codeSignal)
+        let referralsCode = ReferralsCode(codeSignal: codeSignal, presentingViewController: presentingViewController)
         bag += stackView.addArranged(referralsCode)
 
         return (stackView, bag)
