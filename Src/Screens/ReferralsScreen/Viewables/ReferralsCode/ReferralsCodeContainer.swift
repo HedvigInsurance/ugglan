@@ -35,7 +35,11 @@ extension ReferralsCodeContainer: Viewable {
         bag += stackView.addArranged(titleLabel)
 
         let referralsCode = ReferralsCode(codeSignal: codeSignal, presentingViewController: presentingViewController)
-        bag += stackView.addArranged(referralsCode)
+        bag += stackView.addArranged(referralsCode) { referralsCodeView in
+            referralsCodeView.snp.makeConstraints { make in
+                make.trailing.leading.equalToSuperview().inset(16)
+            }
+        }
 
         return (stackView, bag)
     }
