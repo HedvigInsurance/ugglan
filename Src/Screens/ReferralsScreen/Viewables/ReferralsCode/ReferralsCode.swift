@@ -45,11 +45,11 @@ extension ReferralsCode: Viewable {
                 tintColor: nil,
                 actions: [
                     Alert.Action(
-                        title: "Avbryt",
+                        title: String(key: .REFERRAL_ERROR_REPLACECODE_BTN_CANCEL),
                         style: .cancel
                     ) { false },
                     Alert.Action(
-                        title: "Kopiera",
+                        title: String(key: .REFERRALS_CODE_SHEET_COPY),
                         style: .default
                     ) { true },
                 ]
