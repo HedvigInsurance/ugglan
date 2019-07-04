@@ -8,16 +8,19 @@
 import Apollo
 import Flow
 import Form
+import Presentation
 import Foundation
 import UIKit
 
 struct ReferralsCode {
     let client: ApolloClient
     let codeSignal: Signal<String>
+    let presentingViewController: UIViewController
 
-    init(codeSignal: Signal<String>, client: ApolloClient = ApolloContainer.shared.client) {
+    init(codeSignal: Signal<String>, client: ApolloClient = ApolloContainer.shared.client, presentingViewController: UIViewController) {
         self.client = client
         self.codeSignal = codeSignal
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -32,7 +35,34 @@ extension ReferralsCode: Viewable {
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = view.frame.height / 2
         }
-
+        
+        let tapGesture = UITapGestureRecognizer()
+        bag += view.install(tapGesture)
+        bag += tapGesture.signal(forState: .ended).withLatestFrom(codeSignal).atValue { _, code in
+            let alert = Alert<Bool>(
+                title: nil,
+                message: nil,
+                tintColor: nil,
+                actions: [
+                    Alert.Action(
+                        title: "Avbryt",
+                        style: .cancel
+                    ) { false },
+                    Alert.Action(
+                        title: "Kopiera",
+                        style: .default
+                    ) { true },
+                ]
+            )
+            
+            bag += self.presentingViewController.present(alert, style: .sheet(from: view, rect: view.bounds)).onValue { shouldCopy in
+                if shouldCopy {
+                    UIPasteboard.general.value = code
+                    bag += Signal(after: 0).feedback(type: .success)
+                }
+            }
+        }.feedback(type: .impactMedium)
+        
         bag += view.copySignal.withLatestFrom(codeSignal).atValue { _, code in
             UIPasteboard.general.value = code
         }.feedback(type: .success)

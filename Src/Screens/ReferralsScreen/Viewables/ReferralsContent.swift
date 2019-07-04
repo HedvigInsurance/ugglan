@@ -17,6 +17,7 @@ struct ReferralsContent {
     let incentiveSignal: ReadSignal<Int?>
     let netPremiumSignal: ReadSignal<Int?>
     let grossPremiumSignal: ReadSignal<Int?>
+    let presentingViewController: UIViewController
 }
 
 extension ReferralsContent: Viewable {
@@ -57,7 +58,7 @@ extension ReferralsContent: Viewable {
         )
         bag += stackView.addArranged(referralsTitle)
 
-        let referralsCodeContainer = ReferralsCodeContainer(codeSignal: codeSignal)
+        let referralsCodeContainer = ReferralsCodeContainer(codeSignal: codeSignal, presentingViewController: presentingViewController)
         bag += stackView.addArranged(referralsCodeContainer)
 
         let referralsInvitationsTable = ReferralsInvitationsTable(referredBySignal: referredBySignal, invitationsSignal: invitationsSignal)

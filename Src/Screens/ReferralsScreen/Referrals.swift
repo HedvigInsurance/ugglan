@@ -170,7 +170,8 @@ extension Referrals: Presentable {
             peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly(),
             incentiveSignal: incentiveSignal.readOnly(),
             netPremiumSignal: netPremiumSignal.readOnly(),
-            grossPremiumSignal: grossPremiumSignal.readOnly()
+            grossPremiumSignal: grossPremiumSignal.readOnly(),
+            presentingViewController: viewController
         )
         let loadableContent = LoadableView(view: content, initialLoadingState: true)
 
