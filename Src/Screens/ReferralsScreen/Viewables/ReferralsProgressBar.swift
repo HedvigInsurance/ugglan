@@ -132,7 +132,7 @@ extension ReferralsProgressBar {
 
         node.position = SCNVector3Make(
             -13,
-            Float((blockHeight + dividerHeight) / 2),
+            -Float((blockHeight + dividerHeight) / 2),
             0
         )
 
@@ -158,7 +158,7 @@ extension ReferralsProgressBar {
 
         node.position = SCNVector3Make(
             13,
-            Float((Float(amountOfBlocks - 1 - (amountOfCompletedBlocks / 2))) * Float(blockHeight + dividerHeight)) + Float((blockHeight + dividerHeight) / 2),
+            Float((Float(amountOfBlocks - 1 - (amountOfCompletedBlocks / 2))) * Float(blockHeight + dividerHeight)) + (hasDiscount ? Float(0) : Float((blockHeight + dividerHeight) / 2)),
             0
         )
 
@@ -180,13 +180,13 @@ extension ReferralsProgressBar {
         let amountOfCompletedBlocks = (grossPremium - netPremium) / incentive
         let discount = grossPremium - netPremium
         
-        let blockHeight: CGFloat = max(CGFloat(20 / amountOfBlocks), 1.3)
+        let blockHeight: CGFloat = 2.0
         let dividerHeight: CGFloat = 0.20
 
         for i in 1 ... amountOfBlocks {
             let boxGeometry = SCNBox(width: 10.0, height: blockHeight, length: 10.0, chamferRadius: 0)
 
-            if i > amountOfBlocks - amountOfCompletedBlocks {
+            if i >= amountOfBlocks - amountOfCompletedBlocks && amountOfCompletedBlocks != 0 {
                 let boxColor = UIColor.turquoise
 
                 boxGeometry.materials = [
@@ -213,7 +213,7 @@ extension ReferralsProgressBar {
             
             if (i != amountOfBlocks) {
                 let dividerGeometry = SCNBox(width: 10.0, height: dividerHeight, length: 10.0, chamferRadius: 0)
-                dividerGeometry.firstMaterial?.diffuse.contents = i > amountOfBlocks - amountOfCompletedBlocks ? UIColor.turquoise.lighter(amount: 0.1) : UIColor.purple.lighter(amount: 0.1)
+                dividerGeometry.firstMaterial?.diffuse.contents = i > amountOfBlocks - amountOfCompletedBlocks - 1 ? UIColor.turquoise.lighter(amount: 0.1) : UIColor.purple.lighter(amount: 0.1)
                 
                 let dividerNode = SCNNode(geometry: dividerGeometry)
                 dividerNode.position = SCNVector3Make(
@@ -279,101 +279,105 @@ extension ReferralsProgressBar {
             return color
         }
         
-        
-        bag += Signal(after: 3).onValue { _ in
-            var blockActions: [SCNAction] = []
-            let duration = 0.2
-            
-            for i in stride(from: blocks.count - 1, to: -1, by: -2) {
-                let action = SCNAction.customAction(duration: duration, action: { node, progress in
-                    let percentage = progress / CGFloat(duration)
-                    
-                    blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                        from: UIColor.purple,
-                        to: UIColor.turquoise,
-                        percentage: percentage
-                    )
-                    if i > 0 {
-                        blocks[i - 1].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                            from: UIColor.purple.lighter(amount: 0.1),
-                            to: UIColor.turquoise.lighter(amount: 0.1),
+        if (discount == 0) {
+            bag += Signal(after: 3).onValue { _ in
+                var blockActions: [SCNAction] = []
+                let idleAction = SCNAction.wait(duration: 7)
+                let duration = 0.2
+                
+                for i in stride(from: blocks.count - 1, to: -1, by: -2) {
+                    let action = SCNAction.customAction(duration: duration, action: { node, progress in
+                        let percentage = progress / CGFloat(duration)
+                        
+                        blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
+                            from: UIColor.purple,
+                            to: UIColor.turquoise,
                             percentage: percentage
                         )
+                        if i > 0 {
+                            blocks[i - 1].geometry?.firstMaterial?.diffuse.contents = transitionColor(
+                                from: UIColor.purple.lighter(amount: 0.1),
+                                to: UIColor.turquoise.lighter(amount: 0.1),
+                                percentage: percentage
+                            )
+                        }
+                    })
+                    
+                    action.timingMode = SCNActionTimingMode.easeInEaseOut
+                    blockActions.append(action)
+                }
+                
+                let blockDelayAction = SCNAction.wait(duration: 0.7)
+                blockActions.append(blockDelayAction)
+                
+                let finalBlockAction = SCNAction.customAction(duration: duration, action: { node, progress in
+                    for i in stride(from: blocks.count - 1, to: -1, by: -2) {
+                        let percentage = progress / CGFloat(duration)
+                        blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
+                            from: UIColor.turquoise,
+                            to: UIColor.purple,
+                            percentage: percentage
+                        )
+                        if i > 0 {
+                            blocks[i - 1].geometry?.firstMaterial?.diffuse.contents = transitionColor(
+                                from: UIColor.turquoise.lighter(amount: 0.1),
+                                to: UIColor.purple.lighter(amount: 0.1),
+                                percentage: percentage
+                            )
+                        }
                     }
                 })
                 
-                action.timingMode = SCNActionTimingMode.easeInEaseOut
-                blockActions.append(action)
-            }
-            
-            let blockDelayAction = SCNAction.wait(duration: 0.7)
-            blockActions.append(blockDelayAction)
-            
-            let finalBlockAction = SCNAction.customAction(duration: duration, action: { node, progress in
+                finalBlockAction.timingMode = SCNActionTimingMode.easeOut
+                blockActions.append(finalBlockAction)
+                blockActions.append(idleAction)
+                
+                var labelActions: [SCNAction] = []
+                
                 for i in stride(from: blocks.count - 1, to: -1, by: -2) {
-                    let percentage = progress / CGFloat(duration)
-                    blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                        from: UIColor.turquoise,
-                        to: UIColor.purple,
-                        percentage: percentage
-                    )
-                    if i > 0 {
-                        blocks[i - 1].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                            from: UIColor.turquoise.lighter(amount: 0.1),
-                            to: UIColor.purple.lighter(amount: 0.1),
-                            percentage: percentage
-                        )
-                    }
-                }
-            })
-            
-            finalBlockAction.timingMode = SCNActionTimingMode.easeOut
-            blockActions.append(finalBlockAction)
-            
-            var labelActions: [SCNAction] = []
-            
-            for i in stride(from: blocks.count - 1, to: -1, by: -2) {
-                let action = SCNAction.move(by: SCNVector3Make(
-                    0,
-                    -Float(blockHeight + dividerHeight),
-                    0
-                ), duration: 0.2)
-                
-                action.timingMode = SCNActionTimingMode.linear
-                labelActions.append(action)
-                
-                let stringAction = SCNAction.customAction(duration: 0.0, action: { node, progress in
-                    let blockIndex = Int(ceil(Float(i) / 2.0))
+                    let action = SCNAction.move(by: SCNVector3Make(
+                        0,
+                        -Float(blockHeight + dividerHeight),
+                        0
+                    ), duration: 0.2)
                     
-                    (discountLabelNode.childNodes[0].geometry as! SCNText).string = blockIndex == 0 ? "Gratis!" : "-\((amountOfBlocks - blockIndex) * 10) kr"
+                    action.timingMode = SCNActionTimingMode.linear
+                    labelActions.append(action)
+                    
+                    let stringAction = SCNAction.customAction(duration: 0.0, action: { node, progress in
+                        let blockIndex = Int(ceil(Float(i) / 2.0))
+                        
+                        (discountLabelNode.childNodes[0].geometry as! SCNText).string = blockIndex == 0 ? "Gratis!" : "-\((amountOfBlocks - blockIndex) * 10) kr"
+                    });
+                    
+                    labelActions.append(stringAction)
+                }
+                
+                let labelDelayAction = SCNAction.wait(duration: 0.6)
+                labelActions.append(labelDelayAction)
+                
+                let finalLabelStringAction = SCNAction.customAction(duration: 0.0, action: { node, progress in
+                    (discountLabelNode.childNodes[0].geometry as! SCNText).string = "Bjud in"
                 });
                 
-                labelActions.append(stringAction)
+                labelActions.append(finalLabelStringAction)
+                
+                let finalLabelAction = SCNAction.move(by: SCNVector3Make(
+                    0,
+                    Float(blockHeight + dividerHeight) * Float(amountOfBlocks),
+                    0
+                ), duration: 0.3)
+                
+                finalLabelAction.timingMode = SCNActionTimingMode.easeInEaseOut
+                labelActions.append(finalLabelAction)
+                labelActions.append(idleAction)
+                
+                let act = SCNAction.repeatForever(SCNAction.sequence(blockActions))
+                containerNode.runAction(act)
+                
+                let labelAct = SCNAction.repeatForever(SCNAction.sequence(labelActions))
+                discountLabelNode.runAction(labelAct)
             }
-            
-            let labelDelayAction = SCNAction.wait(duration: 0.6)
-            labelActions.append(labelDelayAction)
-            
-            let finalLabelStringAction = SCNAction.customAction(duration: 0.0, action: { node, progress in
-                (discountLabelNode.childNodes[0].geometry as! SCNText).string = "Bjud in"
-            });
-            
-            labelActions.append(finalLabelStringAction)
-            
-            let finalLabelAction = SCNAction.move(by: SCNVector3Make(
-                0,
-                Float(blockHeight + dividerHeight) * Float(amountOfBlocks),
-                0
-            ), duration: 0.3)
-            
-            finalLabelAction.timingMode = SCNActionTimingMode.easeInEaseOut
-            labelActions.append(finalLabelAction)
-            
-            let act = SCNAction.repeatForever(SCNAction.sequence(blockActions))
-            containerNode.runAction(act)
-            
-            let labelAct = SCNAction.repeatForever(SCNAction.sequence(labelActions))
-            discountLabelNode.runAction(labelAct)
         }
 
         scene.rootNode.addChildNode(containerNode)
@@ -382,7 +386,7 @@ extension ReferralsProgressBar {
         cameraNode.camera = SCNCamera()
         cameraNode.camera?.usesOrthographicProjection = true
         cameraNode.camera?.orthographicScale = (Double(amountOfBlocks) * 1.1) + 3
-        cameraNode.position = SCNVector3Make(0, Float(amountOfBlocks) * 2, Float(amountOfBlocks) * 1.75)
+        cameraNode.position = SCNVector3Make(0, Float(amountOfBlocks) * Float(blockHeight), Float(amountOfBlocks) * Float(blockHeight) * 0.875)
         cameraNode.eulerAngles = SCNVector3Make(radians(-30), 0, 0)
         scene.rootNode.addChildNode(cameraNode)
 
@@ -426,7 +430,7 @@ extension ReferralsProgressBar {
         cameraNode.addChildNode(topLightNode)
 
         view.snp.makeConstraints { make in
-            make.height.equalTo(Double(amountOfBlocks) * 22)
+            make.height.equalTo(amountOfBlocks * 22)
         }
 
         return Disposer {
@@ -475,8 +479,8 @@ extension ReferralsProgressBar: Viewable {
                     scene: scene,
                     containerNode: containerNode,
                     incentive: incentive,
-                    grossPremium: grossPremium,
-                    netPremium: netPremium
+                    grossPremium: 139,
+                    netPremium: 139
                 )
             }
         

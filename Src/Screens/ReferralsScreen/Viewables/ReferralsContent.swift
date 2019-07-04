@@ -31,7 +31,7 @@ extension ReferralsContent: Viewable {
         bag += grossPremiumSignal.compactMap { $0 }.distinct().onValueDisposePrevious { grossPremium in
             let innerBag = DisposeBag()
 
-            if grossPremium > 250 {
+            if grossPremium > 200 {
                 let referralsProgressHighPremium = ReferralsProgressHighPremium(
                     grossPremiumSignal: self.grossPremiumSignal,
                     netPremiumSignal: self.netPremiumSignal
