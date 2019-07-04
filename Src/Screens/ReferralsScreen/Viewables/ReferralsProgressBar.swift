@@ -479,8 +479,8 @@ extension ReferralsProgressBar: Viewable {
                     scene: scene,
                     containerNode: containerNode,
                     incentive: incentive,
-                    grossPremium: 139,
-                    netPremium: 139
+                    grossPremium: grossPremium,
+                    netPremium: netPremium
                 )
             }
         
