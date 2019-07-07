@@ -114,9 +114,10 @@ extension ApplyDiscount: Presentable {
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
-                .compactMap { $0.data }
-                .onValue { data in
-                    if Float(data.redeemCode.cost.monthlyDiscount.amount) == 0.0 {
+                .filter { $0.data != nil }
+                .onValue { result in
+                    print(result)
+                    if result.errors != nil {
                         let alert = Alert(
                             title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
                             message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
@@ -127,7 +128,7 @@ extension ApplyDiscount: Presentable {
                         return
                     }
                     
-                    self.didRedeemValidCodeCallbacker.callAll(with: data.redeemCode)
+                    self.didRedeemValidCodeCallbacker.callAll(with: result.data!.redeemCode)
                     completion(.success)
                 }
 

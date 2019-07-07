@@ -127,9 +127,9 @@ extension PaymentDetailsSection: Viewable {
                 })
                 
                 let alert = Alert(
-                    title: "Rabattkod tillagd!",
-                    message: "Grattis! Din hemförsäkring är nu 10 kr billigare.",
-                    actions: [Alert.Action(title: "OK, nice!") {}]
+                    title: String(key: .REFERRAL_REDEEM_SUCCESS_HEADLINE),
+                    message: String(key: .REFERRAL_REDEEM_SUCCESS_BODY),
+                    actions: [Alert.Action(title: String(key: .REFERRAL_REDEEM_SUCCESS_BTN)) {}]
                 )
                 self.presentingViewController.present(alert)
             }
