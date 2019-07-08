@@ -48,7 +48,8 @@ extension ReferralsProgressHighPremium: Viewable {
                 text: String(key: .REFERRAL_PROGRESS_HIGH_PREMIUM_DESCRIPTION(monthlyCost: String(netPremium))),
                 style: .blockRowDescription
             )
-            discountAmountLabel.styledTextSignal.value = StyledText(text: "-\(grossPremium - netPremium) kr", style: discountAmountTextStyle)
+            let discount = grossPremium - netPremium
+            discountAmountLabel.styledTextSignal.value = StyledText(text: discount > 0 ? "-\(discount) kr" : "\(discount) kr", style: discountAmountTextStyle)
         }
 
         backgroundView.addSubview(contentView)
