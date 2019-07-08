@@ -61,12 +61,14 @@ extension ReferralsCode: Viewable {
                 if shouldCopy {
                     UIPasteboard.general.value = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
                     bag += Signal(after: 0).feedback(type: .success)
+                    PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: self.presentingViewController)
                 }
             }
         }.feedback(type: .impactMedium)
         
         bag += view.copySignal.withLatestFrom(codeSignal).atValue { _, code in
             UIPasteboard.general.value = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
+            PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: self.presentingViewController)
         }.feedback(type: .success)
 
         let codeContainer = UIStackView()
