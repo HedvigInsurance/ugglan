@@ -11,13 +11,15 @@ import Presentation
 import UIKit
 
 struct PushNotificationsRegistrer {
-    func ask(title: String, message: String, viewController: UIViewController) {
+    static func ask(title: String, message: String, viewController: UIViewController) {
         guard !PushNotificationsState.hasAskedForActivatingPushNotifications else {
             return
         }
         guard !UIApplication.shared.isRegisteredForRemoteNotifications else {
             return
         }
+        
+        PushNotificationsState.didAskForPushNotifications()
         
         let alert = Alert(
             title: title,

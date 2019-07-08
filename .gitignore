@@ -32,6 +32,7 @@ xcuserdata/
 *.xcscmblueprint
 .DS_Store
 node_modules
+.idea/
 
 ## Obj-C/Swift specific
 *.hmap

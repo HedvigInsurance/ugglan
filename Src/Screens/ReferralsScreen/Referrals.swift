@@ -7,6 +7,7 @@
 
 import Apollo
 import Firebase
+import FirebaseAnalytics
 #if canImport(FirebaseDynamicLinks)
     import FirebaseDynamicLinks
 #endif
@@ -214,8 +215,17 @@ extension Referrals: Presentable {
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds
                 )
-
+                
                 viewController.present(activityView)
+
+                bag += activityView.completionSignal.onValue { activity, success in
+                    if success {
+                        PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: viewController)
+                        if activity != nil {
+                            Analytics.logEvent("referral_share_\(String(describing: activity?.rawValue))", parameters: nil)
+                        }
+                    }
+                }
             }
         }
 

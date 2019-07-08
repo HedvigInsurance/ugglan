@@ -17,10 +17,10 @@ extension PresentationStyle {
             from.present(viewController, animated: true) {
                 completion(.success)
             }
-
+            
             return NilDisposer()
         }
-
+        
         return (future, { Future() })
     }
 }
@@ -30,6 +30,16 @@ struct ActivityView {
     let applicationActivities: [UIActivity]?
     let sourceView: UIView?
     let sourceRect: CGRect?
+
+    let completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)>
+    
+    init(activityItems: [Any], applicationActivities: [UIActivity]?, sourceView: UIView?, sourceRect: CGRect?, completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)> = ReadWriteSignal<(UIActivity.ActivityType?, Bool)>((nil, false))) {
+        self.activityItems = activityItems
+        self.applicationActivities = applicationActivities
+        self.sourceView = sourceView
+        self.sourceRect = sourceRect
+        self.completionSignal = completionSignal
+    }
 }
 
 extension ActivityView: Presentable {
@@ -43,6 +53,10 @@ extension ActivityView: Presentable {
         if let popover = viewController.popoverPresentationController, let sourceRect = sourceRect {
             popover.sourceView = sourceView
             popover.sourceRect = sourceRect
+        }
+
+        viewController.completionWithItemsHandler = { activity, success, _, _ in
+            self.completionSignal.value = (activity, success)
         }
 
         return (viewController, NilDisposer())
