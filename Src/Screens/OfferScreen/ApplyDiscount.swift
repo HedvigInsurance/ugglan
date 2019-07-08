@@ -114,9 +114,7 @@ extension ApplyDiscount: Presentable {
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
-                .filter { $0.data != nil }
                 .onValue { result in
-                    print(result)
                     if result.errors != nil {
                         let alert = Alert(
                             title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
@@ -128,8 +126,10 @@ extension ApplyDiscount: Presentable {
                         return
                     }
                     
-                    self.didRedeemValidCodeCallbacker.callAll(with: result.data!.redeemCode)
-                    completion(.success)
+                    if let redeemCode = result.data?.redeemCode {
+                        self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                        completion(.success)
+                    }
                 }
 
             return bag
