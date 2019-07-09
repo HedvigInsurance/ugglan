@@ -30,7 +30,7 @@ extension ReferralsMoreInfo: Presentable {
 
         containerStackView.addArrangedSubview(containerView)
 
-        let title = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_MORE_INFO_HEADLINE), style: .standaloneLargeTitle)
+        let title = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_MORE_INFO_HEADLINE), style: .draggableOverlayTitle)
         bag += containerView.addArranged(title)
 
         let body = MarkdownText(text: String(key: .REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH(referralValue: "10")), style: .bodyOffBlack)

@@ -20,26 +20,24 @@ extension CharityInformation: Presentable {
         let viewController = UIViewController()
 
         let containerStackView = UIStackView()
-        containerStackView.isLayoutMarginsRelativeArrangement = false
         containerStackView.alignment = .leading
+        bag += containerStackView.applySafeAreaBottomLayoutMargin()
 
         let containerView = UIStackView()
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.axis = .vertical
-        containerView.spacing = 10
+        containerView.spacing = 15
 
         containerStackView.addArrangedSubview(containerView)
 
-        let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .standaloneLargeTitle)
+        let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .draggableOverlayTitle)
         bag += containerView.addArranged(titleLabel)
 
         let body = MarkdownText(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
-
-        bag += containerStackView.didLayoutSignal.map {
-            containerStackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        }.distinct().bindTo(viewController, \.preferredContentSize)
+        
+        bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         viewController.view = containerStackView
 

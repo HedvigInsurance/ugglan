@@ -26,6 +26,7 @@ extension HonestyPledge: Presentable {
 
         let containerStackView = UIStackView()
         containerStackView.alignment = .leading
+        bag += containerStackView.applySafeAreaBottomLayoutMargin()
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -35,7 +36,7 @@ extension HonestyPledge: Presentable {
 
         containerStackView.addArrangedSubview(stackView)
 
-        let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .standaloneLargeTitle)
+        let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .draggableOverlayTitle)
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
@@ -44,15 +45,18 @@ extension HonestyPledge: Presentable {
         )
         bag += stackView.addArranged(descriptionLabel)
 
+        let pusherView = UIView()
+        pusherView.snp.makeConstraints { make in
+            make.height.equalTo(10)
+        }
+        stackView.addArrangedSubview(pusherView)
+        
         let slideToClaim = SlideToClaim()
         bag += stackView.addArranged(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
-            slideToClaimStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
             slideToClaimStackView.isLayoutMarginsRelativeArrangement = true
         }
 
-        bag += stackView.didLayoutSignal.map {
-            stackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        }.distinct().bindTo(viewController, \.preferredContentSize)
+        bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         viewController.view = containerStackView
 
