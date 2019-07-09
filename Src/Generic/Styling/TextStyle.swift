@@ -154,8 +154,8 @@ extension TextStyle {
         style.color = .purple
     }
 
-    static let drabbableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBold!.withSize(18)
+    static let draggableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(24)
         style.color = .black
     }
 
