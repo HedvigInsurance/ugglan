@@ -126,6 +126,12 @@ extension PaymentDetailsSection: Viewable {
                     )
                 })
                 
+                self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
+                    data.insurance.cost = ReferralsScreenQuery.Data.Insurance.Cost(
+                        monthlyNet: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount), monthlyGross: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount)
+                    )
+                })
+                
                 let alert = Alert(
                     title: String(key: .REFERRAL_REDEEM_SUCCESS_HEADLINE),
                     message: String(key: .REFERRAL_REDEEM_SUCCESS_BODY),
