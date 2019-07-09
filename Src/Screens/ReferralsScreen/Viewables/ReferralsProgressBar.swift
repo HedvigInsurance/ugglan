@@ -177,7 +177,7 @@ extension ReferralsProgressBar {
 
         var blocks: [SCNNode] = []
         let amountOfBlocks = Int(ceil(Float(grossPremium) / Float(incentive)))
-        let amountOfCompletedBlocks = (grossPremium - netPremium) / incentive
+        let amountOfCompletedBlocks = Int(ceil(Float(grossPremium - netPremium) / Float(incentive)))
         let discount = grossPremium - netPremium
         
         let blockHeight: CGFloat = 2.0
@@ -185,8 +185,8 @@ extension ReferralsProgressBar {
 
         for i in 1 ... amountOfBlocks {
             let boxGeometry = SCNBox(width: 10.0, height: blockHeight, length: 10.0, chamferRadius: 0)
-
-            if i >= amountOfBlocks - amountOfCompletedBlocks && amountOfCompletedBlocks != 0 {
+            
+            if i > amountOfBlocks - amountOfCompletedBlocks && amountOfCompletedBlocks != 0 {
                 let boxColor = UIColor.turquoise
 
                 boxGeometry.materials = [
@@ -246,7 +246,7 @@ extension ReferralsProgressBar {
         freeLabelNode.opacity = 0
         scene.rootNode.addChildNode(freeLabelNode)
 
-        bag += Signal(after: 1).onValue { _ in
+        bag += Signal(after: 0.5).onValue { _ in
             let duration = 0.5
 
             let action = SCNAction.customAction(duration: duration, action: { node, progress in
