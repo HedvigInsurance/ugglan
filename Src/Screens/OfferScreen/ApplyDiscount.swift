@@ -41,7 +41,7 @@ extension ApplyDiscount: Presentable {
         let view = UIStackView()
         view.spacing = 5
         view.axis = .vertical
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 24, verticalInset: 32)
+        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         view.isLayoutMarginsRelativeArrangement = true
         view.isUserInteractionEnabled = true
 
