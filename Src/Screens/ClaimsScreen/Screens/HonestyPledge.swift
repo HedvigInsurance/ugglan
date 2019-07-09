@@ -36,7 +36,7 @@ extension HonestyPledge: Presentable {
 
         containerStackView.addArrangedSubview(stackView)
 
-        let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .standaloneLargeTitle)
+        let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .draggableOverlayTitle)
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(

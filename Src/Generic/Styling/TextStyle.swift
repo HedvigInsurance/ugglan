@@ -155,7 +155,7 @@ extension TextStyle {
     }
 
     static let draggableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBold!.withSize(24)
+        style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.color = .black
     }
 

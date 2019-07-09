@@ -49,7 +49,7 @@ extension ApplyDiscount: Presentable {
 
         let titleLabel = MultilineLabel(
             value: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
-            style: .standaloneLargeTitle
+            style: .draggableOverlayTitle
         )
         bag += view.addArranged(titleLabel)
 
