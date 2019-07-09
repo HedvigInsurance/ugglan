@@ -14,7 +14,7 @@ import UIKit
 
 private extension Error {
     var isIgnorable: Bool {
-        return localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError")
+        return localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
     }
 }
 
