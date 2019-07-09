@@ -82,15 +82,14 @@ extension ReferralsCode: Viewable {
         ).centerAligned.lineHeight(2.4).resized(to: 16).restyled { (style: inout TextStyle) in
             style.highlightedColor = .darkPurple
         }
-
-        let formattedLinkPrefix = remoteConfigContainer.referralsWebLandingPrefix.replacingOccurrences(of: "(^\\w+:|^)\\/\\/", with: "", options: .regularExpression, range: nil)
         
         let codeLabelWrapper = UIView()
         let codeLabel = MultilineLabel(value: "", style: codeTextStyle)
-        bag += codeSignal.map { code in
-            StyledText(text: "\(formattedLinkPrefix)\(code)", style: codeTextStyle)
+        bag += codeSignal.withLatestFrom(remoteConfigContainer.fetched.atOnce().filter { $0 != false }).map { code, _ in
+            let formattedLinkPrefix = self.remoteConfigContainer.referralsWebLandingPrefix.replacingOccurrences(of: "(^\\w+:|^)\\/\\/", with: "", options: .regularExpression, range: nil)
+            return StyledText(text: "\(formattedLinkPrefix)\(code)", style: codeTextStyle)
         }.bindTo(codeLabel.styledTextSignal)
-
+        
         bag += codeLabelWrapper.add(codeLabel) { codeLabelView in
             codeLabelView.snp.makeConstraints { make in
                 make.leading.trailing.top.bottom.equalToSuperview()
