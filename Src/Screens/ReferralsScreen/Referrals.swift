@@ -103,14 +103,6 @@ extension Referrals: Presentable {
             .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
             .bindTo(netPremiumSignal)
-        
-        bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
-            .toInt()
-            .distinct()
-            .onValue { _ in
-                _ = self.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
-            }
 
         let grossPremiumSignal = ReadWriteSignal<Int?>(nil)
 
