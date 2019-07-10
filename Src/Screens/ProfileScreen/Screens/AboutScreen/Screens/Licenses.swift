@@ -51,7 +51,7 @@ extension Licenses: Presentable {
 
         viewController.title = String(key: .LICENSES_SCREEN_TITLE)
 
-        let acknowListViewController = AcknowListViewController()
+        let acknowListViewController = AcknowListViewController(fileNamed: "Pods-Hedvig-acknowledgements")
 
         let tableKit = TableKit<EmptySection, Acknow>(
             table: Table(),
