@@ -18,4 +18,53 @@ query MyPayment {
     }
     nextChargeDate
     directDebitStatus
+    referralInformation {
+        campaign {
+            code
+            incentive {
+                ... on MonthlyCostDeduction {
+                    amount {
+                        amount
+                    }
+                }
+                ... on FreeMonths {
+                    quantity
+                }
+            }
+        }
+        referredBy {
+            ... on ActiveReferral {
+                discount {
+                    amount
+                }
+                name
+            }
+            ... on InProgressReferral {
+                name
+            }
+            ... on AcceptedReferral {
+                quantity
+            }
+            ... on TerminatedReferral {
+                name
+            }
+        }
+        invitations {
+            ... on ActiveReferral {
+                discount {
+                    amount
+                }
+                name
+            }
+            ... on InProgressReferral {
+                name
+            }
+            ... on AcceptedReferral {
+                quantity
+            }
+            ... on TerminatedReferral {
+                name
+            }
+        }
+    }
 }

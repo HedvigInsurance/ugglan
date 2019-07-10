@@ -40,6 +40,21 @@ extension PaymentDetailsSection: Viewable {
             footer: nil,
             style: .sectionPlain
         )
+        
+        let freeMonthsRow = KeyValueRow()
+        freeMonthsRow.isHiddenSignal.value = true
+        freeMonthsRow.keySignal.value = "Gratis månader"
+        
+        bag += section.append(freeMonthsRow)
+        
+        bag += dataValueSignal
+            .compactMap { $0.data?.referralInformation.campaign.incentive }
+            .filter { $0.__typename == "FreeMonths" }
+            .onValue { incentive in
+                freeMonthsRow.valueSignal.value = "3"
+                freeMonthsRow.isHiddenSignal.value = false
+                // freeMonthsRow.valueSignal = incentive.quantity
+            }
 
         let paymentTypeRow = KeyValueRow()
         paymentTypeRow.keySignal.value = String(key: .MY_PAYMENT_TYPE)
