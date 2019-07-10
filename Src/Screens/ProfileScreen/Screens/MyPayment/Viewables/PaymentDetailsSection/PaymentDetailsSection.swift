@@ -128,7 +128,8 @@ extension PaymentDetailsSection: Viewable {
                 
                 self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
                     data.insurance.cost = ReferralsScreenQuery.Data.Insurance.Cost(
-                        monthlyNet: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount), monthlyGross: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount)
+                        monthlyNet: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount),
+                        monthlyGross: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount)
                     )
                 })
                 

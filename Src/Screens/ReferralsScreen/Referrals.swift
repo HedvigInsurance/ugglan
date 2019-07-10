@@ -69,20 +69,20 @@ extension Referrals: Presentable {
             formView,
             scrollView: scrollView
         )
-
+        
         let query = ReferralsScreenQuery()
 
         let refreshControl = UIRefreshControl()
         bag += client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
         scrollView.refreshControl = refreshControl
-
+    
         let codeSignal = ReadWriteSignal<String?>(nil)
 
         let referralsScreenQuerySignal = client
             .watch(query: query)
             .wait(until: formView.hasWindowSignal)
-
+        
         bag += referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.campaign.code }
             .bindTo(codeSignal)
@@ -103,6 +103,14 @@ extension Referrals: Presentable {
             .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
             .bindTo(netPremiumSignal)
+        
+        bag += referralsScreenQuerySignal
+            .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
+            .toInt()
+            .distinct()
+            .onValue { _ in
+                _ = self.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
+            }
 
         let grossPremiumSignal = ReadWriteSignal<Int?>(nil)
 
