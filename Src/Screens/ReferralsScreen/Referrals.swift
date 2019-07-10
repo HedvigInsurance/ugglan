@@ -224,16 +224,8 @@ extension Referrals: Presentable {
                     if success {
                         PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: viewController)
                         if activity != nil {
-                            let components = activity?.rawValue.components(separatedBy: ".")
-                            var trackingString = ""
-                            if components?.count ?? 0 > 3 {
-                                let droppedComponents = components?.dropFirst(3)
-                                trackingString = droppedComponents?.joined(separator: "_") ?? ""
-                            } else {
-                                trackingString = components?.joined(separator: "_") ?? ""
-                            }
-                            print("ref_share_\(trackingString)")
-                            Analytics.logEvent("ref_share_\(trackingString)", parameters: nil)
+                            let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
+                            Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
                         }
                     }
                 }
