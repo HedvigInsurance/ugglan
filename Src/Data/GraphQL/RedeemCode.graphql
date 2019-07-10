@@ -11,5 +11,19 @@ mutation RedeemCode($code: String!) {
                 amount
             }
         }
+        campaigns {
+            code
+            incentive {
+                ... on FreeMonths {
+                    quantity
+                }
+                ... on MonthlyCostDeduction {
+                    amount {
+                        amount
+                        currency
+                    }
+                }
+            }
+        }
     }
 }
