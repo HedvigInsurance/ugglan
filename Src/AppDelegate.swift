@@ -18,98 +18,6 @@ import UIKit
 
 let log = Logger.self
 
-struct AppNotification {
-    let body: String
-}
-
-extension AppNotification : Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let bag = DisposeBag()
-        
-        let view = UIView()
-        
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 8
-        view.layer.shadowOpacity = 0.1
-        view.layer.shadowOffset = CGSize(width: 0, height: 0)
-        view.layer.shadowRadius = 8
-        view.layer.shadowColor = UIColor.darkGray.cgColor
-        
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
-    
-        view.addSubview(stackView)
-        
-        stackView.snp.makeConstraints { make in
-            make.width.height.centerX.centerY.equalToSuperview()
-        }
-        
-        let text = MultilineLabel(value: body, style: .bodyOffBlack)
-        
-        bag += stackView.addArranged(text)
-        
-        return (view, bag)
-    }
-}
-
-struct AppNotifications {
-    let notificationSignal: ReadWriteSignal<String>
-}
-
-extension AppNotifications : Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let bag = DisposeBag()
-        
-        let view = UIView()
-        
-        let stackView = UIStackView()
-        stackView.edgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        stackView.axis = .vertical
-        stackView.spacing = 10
-        
-        view.addSubview(stackView)
-        
-        bag += notificationSignal.onValue { data in
-            let appNotification = AppNotification(body: data)
-
-            bag += stackView.addArranged(appNotification) { appNotificationView in
-                appNotificationView.layer.opacity = 0
-                appNotificationView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-                
-                appNotificationView.snp.makeConstraints { make in
-                    make.width.equalToSuperview().inset(16)
-                    make.height.equalTo(66)
-                }
-                
-                bag += Signal(after: 0).feedback(type: .impactMedium)
-                
-                bag += Signal(after: 0).animated(style: SpringAnimationStyle.heavyBounce()) { _ in
-                    appNotificationView.layer.opacity = 1
-                    appNotificationView.transform = CGAffineTransform.identity
-                }
-                
-                bag += Signal(after: 4).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-                    appNotificationView.layer.opacity = 0
-                    appNotificationView.transform = CGAffineTransform(translationX: -100, y: 0)
-                }.animated(style: AnimationStyle.easeOut(duration: 0.3)) { _ in
-                    appNotificationView.isHidden = true
-                }.onValue { _ in
-                    stackView.removeArrangedSubview(appNotificationView)
-                }
-            }
-        }
-        
-        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
-            make.width.height.equalToSuperview()
-        }
-        
-        return (view, bag)
-    }
-}
-
-
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
@@ -118,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
     
-    let notificationSignal = ReadWriteSignal<String>("")
+    let notificationSignal = ReadWriteSignal<AppNotification?>(nil)
 
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
@@ -132,6 +40,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = navigationController
 
         presentMarketing()
+    }
+    
+    func sendAppNotification(body: String, duration: TimeInterval = 5.0) {
+        self.notificationSignal.value = AppNotification(body: body, duration: duration)
     }
 
     func presentMarketing() {
@@ -158,19 +70,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
             self.bag += Signal(after: 1).onValue { _  in
-                self.notificationSignal.value = "Notific 1"
+                self.sendAppNotification(body: "Notification 1")
             }
             
             self.bag += Signal(after: 3).onValue { _  in
-                self.notificationSignal.value = "Notis 2"
+                self.sendAppNotification(body: "Notification 2")
             }
             
             self.bag += Signal(after: 5).onValue { _  in
-                self.notificationSignal.value = "Notis 3"
+                self.sendAppNotification(body: "Notification 3")
             }
             
             self.bag += Signal(after: 7).onValue { _  in
-                self.notificationSignal.value = "Notis 4"
+                self.sendAppNotification(body: "Notification 4")
             }
         }
 
