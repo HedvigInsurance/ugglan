@@ -45,6 +45,14 @@ extension MyInfo: Presentable {
         )
         bag += form.append(contactDetailsSection)
 
+        let notificationButton = Button(title: "Click me", type: .standard(backgroundColor: .purple, textColor: .white))
+        
+        bag += form.append(notificationButton)
+        
+        bag += notificationButton.onTapSignal.onValue { _ in
+            UIApplication.shared.appDelegate.sendAppNotification(body: "Hej 😇")
+        }
+        
         let cancelButton = UIBarButtonItem(
             title: String(key: .MY_INFO_CANCEL_BUTTON),
             style: .navigationBarButton

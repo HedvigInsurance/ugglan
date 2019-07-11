@@ -68,22 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     make.width.equalTo(UIScreen.main.bounds.width)
                 }
             }
-            
-            self.bag += Signal(after: 1).onValue { _  in
-                self.sendAppNotification(body: "Notification 1")
-            }
-            
-            self.bag += Signal(after: 3).onValue { _  in
-                self.sendAppNotification(body: "Notification 2")
-            }
-            
-            self.bag += Signal(after: 5).onValue { _  in
-                self.sendAppNotification(body: "Notification 3")
-            }
-            
-            self.bag += Signal(after: 7).onValue { _  in
-                self.sendAppNotification(body: "Notification 4")
-            }
         }
 
         bag += navigationController.present(marketingPresentation)

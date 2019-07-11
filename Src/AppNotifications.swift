@@ -68,7 +68,6 @@ extension AppNotifications : Viewable {
         view.addSubview(stackView)
         
         bag += notificationSignal.compactMap { $0 }.onValue { notification in
-            
             bag += stackView.addArranged(notification, atIndex: 0) { appNotificationView in
                 appNotificationView.layer.opacity = 0
                 appNotificationView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
@@ -79,22 +78,74 @@ extension AppNotifications : Viewable {
                     make.height.equalTo(66)
                 }
                 
-                bag += Signal(after: 0).feedback(type: .impactMedium)
+                let innerBag = bag.innerBag()
                 
-                bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+                let pauseSignal = ReadWriteSignal<Bool>(false)
+                
+                let panGestureRecognizer = UIPanGestureRecognizer()
+                innerBag += appNotificationView.install(panGestureRecognizer)
+                
+                innerBag += panGestureRecognizer.signal(forState: .began).onValue {
+                    pauseSignal.value = true
+                }
+                
+                innerBag += panGestureRecognizer.signal(forState: .changed).onValue {
+                    let location = panGestureRecognizer.translation(in: appNotificationView)
+                    appNotificationView.transform = CGAffineTransform(translationX: location.x, y: 0)
+                }
+                
+                innerBag += Signal(after: 0).feedback(type: .impactMedium)
+                
+                innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
                     appNotificationView.isHidden = false
                 }.animated(style: SpringAnimationStyle.heavyBounce()) { _ in
                     appNotificationView.layer.opacity = 1
                     appNotificationView.transform = CGAffineTransform.identity
                 }
                 
-                bag += Signal(after: notification.duration).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-                    appNotificationView.layer.opacity = 0
-                    appNotificationView.transform = CGAffineTransform(translationX: -100, y: 0)
-                    }.animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
-                        appNotificationView.isHidden = true
-                    }.onValue { _ in
-                        stackView.removeArrangedSubview(appNotificationView)
+                let hideBag = DisposeBag()
+                
+                func hideNotification() {
+                    hideBag += Signal(after: 0)
+                        .animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+                            appNotificationView.layer.opacity = 0
+                            appNotificationView.transform = CGAffineTransform(translationX: -appNotificationView.frame.width, y: 0)
+                        }.animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+                            appNotificationView.isHidden = true
+                        }.onValue { _ in
+                            stackView.removeArrangedSubview(appNotificationView)
+                            innerBag.dispose()
+                    }
+                }
+                
+                let hideAction = Signal(after: notification.duration).onValue { _ in
+                    hideNotification()
+                }
+                
+                hideBag += hideAction
+                innerBag += hideBag
+                
+                innerBag += panGestureRecognizer.signal(forState: .ended).onValue {
+                    let location = panGestureRecognizer.translation(in: appNotificationView)
+                    if (location.x <= -80) {
+                        hideAction.dispose()
+                        hideNotification()
+                    } else {
+                        innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+                            appNotificationView.transform = CGAffineTransform(translationX: 0, y: 0)
+                        }
+                    }
+                    pauseSignal.value = false
+                }
+                
+                innerBag += pauseSignal.distinct().onValue { pause in
+                    if pause {
+                        hideBag.dispose()
+                    } else {
+                        hideBag += Signal(after: 3).onValue { _ in
+                            hideNotification()
+                        }
+                    }
                 }
             }
         }
