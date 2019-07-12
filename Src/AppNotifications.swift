@@ -31,16 +31,17 @@ extension AppNotification : Viewable {
         let view = UIView()
         
         view.backgroundColor = .white
-        view.layer.cornerRadius = 8
-        view.layer.shadowOpacity = 0.1
+        view.layer.cornerRadius = 32
+        view.layer.shadowOpacity = 0.15
         view.layer.shadowOffset = CGSize(width: 0, height: 0)
-        view.layer.shadowRadius = 8
+        view.layer.shadowRadius = 12
         view.layer.shadowColor = UIColor.darkGray.cgColor
 
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
-        
+        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 5, verticalInset: 5)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 26, verticalInset: 15)
+
         view.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
@@ -50,29 +51,24 @@ extension AppNotification : Viewable {
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
         symbolContainer.alignment = .center
-        symbolContainer.edgeInsets = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
+        symbolContainer.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
         
         stackView.addArrangedSubview(symbolContainer)
         
         symbolContainer.snp.makeConstraints { make in
-            make.width.equalTo(50)
-            // make.height.equalToSuperview().inset(10)
+            make.width.equalTo(40)
         }
         
         let symbol = UILabel()
-        // symbol.textAlignment = .center
-        symbol.text = "🎉"
-        symbol.font = HedvigFonts.circularStdBook?.withSize(26)
+        symbol.text = "🤑"
+        symbol.font = HedvigFonts.circularStdBook?.withSize(24)
         
         symbolContainer.addArrangedSubview(symbol)
         
         let textContainer = UIStackView()
         textContainer.axis = .vertical
         
-        let titleLabel = MultilineLabel(value: "Grattis!", style: .boldSmallTitle)
-        bag += textContainer.addArranged(titleLabel)
-        
-        let bodyLabel = MultilineLabel(value: body, style: .bodyOffBlack)
+        let bodyLabel = MultilineLabel(value: "Grattis! Din hemförsäkring blev just 10 kr/mån billigare", style: .toastBody)
         bag += textContainer.addArranged(bodyLabel)
         
         stackView.addArrangedSubview(textContainer)
@@ -92,22 +88,18 @@ extension AppNotifications : Viewable {
         let view = UIView()
         
         let stackView = UIStackView()
-        stackView.edgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        stackView.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         stackView.axis = .vertical
-        stackView.spacing = 10
+        stackView.spacing = 14
+        stackView.alignment = .center
         
         view.addSubview(stackView)
         
         bag += notificationSignal.compactMap { $0 }.onValue { notification in
-            bag += stackView.addArranged(notification, atIndex: 0) { appNotificationView in
+            bag += stackView.addArranged(notification) { appNotificationView in
                 appNotificationView.layer.opacity = 0
                 appNotificationView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
                 appNotificationView.isHidden = true
-                
-                appNotificationView.snp.makeConstraints { make in
-                    make.width.equalToSuperview().inset(16)
-                    make.height.equalTo(70)
-                }
                 
                 let innerBag = bag.innerBag()
                 

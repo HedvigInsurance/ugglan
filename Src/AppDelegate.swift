@@ -61,9 +61,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
             self.bag += self.window.rootViewController!.view.add(appNotifications) { appNotificationsView in
                 appNotificationsView.snp.makeConstraints { make in
+                    
                     if #available(iOS 11.0, *) {
-                        make.top.equalTo(self.window.rootViewController!.view.safeAreaInsets.top)
+                        make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
                     }
+                    
+                    make.centerX.equalToSuperview()
+                    
+                    // make.bottom.equalTo(-200)
                     
                     make.width.equalTo(UIScreen.main.bounds.width)
                 }
