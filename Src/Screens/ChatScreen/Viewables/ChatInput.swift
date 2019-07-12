@@ -20,7 +20,7 @@ struct ChatInput {
     }
 }
 
-class CustomShitView: UIView {
+class ViewWithFixedIntrinsicSize: UIVisualEffectView {
     override var intrinsicContentSize: CGSize {
         return CGSize(width: 300, height: 200)
     }
@@ -30,10 +30,9 @@ extension ChatInput: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
-        let effect = UIBlurEffect()
-        let backgroundView = UIVisualEffectView(effect: effect)
+        let effect = UIBlurEffect(style: .light)
+        let backgroundView = ViewWithFixedIntrinsicSize(effect: effect)
         backgroundView.autoresizingMask = .flexibleHeight
-        backgroundView.backgroundColor = .red
         
         let containerView = UIStackView()
         backgroundView.contentView.addSubview(containerView)
