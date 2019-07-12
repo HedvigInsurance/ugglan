@@ -79,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     
                     make.centerX.equalToSuperview()
                     
-                    make.width.equalTo(UIScreen.main.bounds.width)
+                    // make.width.equalTo(UIScreen.main.bounds.width)
                 }
             }
         }

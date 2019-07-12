@@ -48,6 +48,11 @@ enum AppNotificationSymbol {
     }
 }
 
+enum NotificationHideDirection {
+    case left
+    case right
+}
+
 struct AppNotification {
     let symbol: AppNotificationSymbol
     let body: String
@@ -60,21 +65,21 @@ extension AppNotification : Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
-        let view = UIView()
+        let containerView = UIView()
         
-        view.backgroundColor = backgroundColor
-        view.layer.cornerRadius = 30
-        view.layer.shadowOpacity = 0.15
-        view.layer.shadowOffset = CGSize(width: 0, height: 0)
-        view.layer.shadowRadius = 10
-        view.layer.shadowColor = UIColor.darkGray.cgColor
+        containerView.backgroundColor = backgroundColor
+        containerView.layer.cornerRadius = 30
+        containerView.layer.shadowOpacity = 0.15
+        containerView.layer.shadowOffset = CGSize(width: 0, height: 0)
+        containerView.layer.shadowRadius = 10
+        containerView.layer.shadowColor = UIColor.darkGray.cgColor
 
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.edgeInsets = UIEdgeInsets(horizontalInset: 5, verticalInset: 5)
         stackView.layoutMargins = UIEdgeInsets(horizontalInset: 26, verticalInset: 15)
 
-        view.addSubview(stackView)
+        containerView.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
             make.width.height.centerX.centerY.equalToSuperview()
@@ -101,7 +106,7 @@ extension AppNotification : Viewable {
         
         stackView.addArrangedSubview(textContainer)
         
-        return (view, bag)
+        return (containerView, bag)
     }
 }
 
@@ -113,7 +118,7 @@ extension AppNotifications : Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
-        let view = UIView()
+        let containerView = UIStackView()
         
         let stackView = UIStackView()
         stackView.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
@@ -121,7 +126,7 @@ extension AppNotifications : Viewable {
         stackView.spacing = 14
         stackView.alignment = .center
         
-        view.addSubview(stackView)
+        containerView.addArrangedSubview(stackView)
         
         bag += notificationSignal.compactMap { $0 }.onValue { notification in
             bag += stackView.addArranged(notification) { appNotificationView in
@@ -142,26 +147,27 @@ extension AppNotifications : Viewable {
                 
                 innerBag += panGestureRecognizer.signal(forState: .changed).onValue {
                     let location = panGestureRecognizer.translation(in: appNotificationView)
+                    appNotificationView.layer.opacity = Float(1 - (abs(location.x) / (UIScreen.main.bounds.width / 2)))
                     appNotificationView.transform = CGAffineTransform(translationX: location.x, y: 0)
                 }
                 
                 innerBag += Signal(after: 0).feedback(type: .impactMedium)
                 
-                innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+                innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
                     appNotificationView.isHidden = false
-                }.animated(style: SpringAnimationStyle.heavyBounce()) { _ in
+                }.animated(style: SpringAnimationStyle.heavyBounce(delay: 0, duration: 0.3)) { _ in
                     appNotificationView.layer.opacity = 1
                     appNotificationView.transform = CGAffineTransform.identity
                 }
                 
                 let hideBag = DisposeBag()
                 
-                func hideNotification() {
+                func hideNotification(direction: NotificationHideDirection = .left) {
                     hideBag += Signal(after: 0)
-                        .animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+                        .animated(style: AnimationStyle.easeOut(duration: 0.3)) { _ in
                             appNotificationView.layer.opacity = 0
-                            appNotificationView.transform = CGAffineTransform(translationX: -appNotificationView.frame.width, y: 0)
-                        }.animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+                            appNotificationView.transform = CGAffineTransform(translationX: (direction == .left ? -1 : 1) * appNotificationView.frame.width, y: 0)
+                        }.animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
                             appNotificationView.isHidden = true
                         }.onValue { _ in
                             stackView.removeArrangedSubview(appNotificationView)
@@ -178,11 +184,13 @@ extension AppNotifications : Viewable {
                 
                 innerBag += panGestureRecognizer.signal(forState: .ended).onValue {
                     let location = panGestureRecognizer.translation(in: appNotificationView)
-                    if (location.x <= -80) {
+                    
+                    if (abs(location.x) > 80) {
                         hideAction.dispose()
-                        hideNotification()
+                        hideNotification(direction: location.x < 0 ? .left : .right)
                     } else {
                         innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
+                            appNotificationView.layer.opacity = 1
                             appNotificationView.transform = CGAffineTransform(translationX: 0, y: 0)
                         }
                     }
@@ -205,6 +213,6 @@ extension AppNotifications : Viewable {
             make.width.height.equalToSuperview()
         }
         
-        return (view, bag)
+        return (containerView, bag)
     }
 }
