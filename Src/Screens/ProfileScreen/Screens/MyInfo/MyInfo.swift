@@ -61,7 +61,7 @@ extension MyInfo: Presentable {
                 viewController.navigationItem.setLeftBarButtonItems([], animated: true)
                 
                 UIApplication.shared.appDelegate.createToast(
-                    symbol: .character(String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_SYMBOL)),
+                    symbol: .left(Character(String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_SYMBOL))),
                     body: String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY)
                 )
             } else {

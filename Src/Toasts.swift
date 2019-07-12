@@ -15,43 +15,7 @@ enum ToastHideDirection {
     case right
 }
 
-enum ToastSymbol {
-    case character(_ character: String)
-    case asset(_ asset: ImageAsset)
-    
-    func getView() -> UIView {
-        if case .character(let value) = self {
-            let symbol = UILabel()
-            symbol.text = value
-            symbol.font = HedvigFonts.circularStdBook?.withSize(24)
-            
-            return symbol
-        }
-        
-        if case .asset(let value) = self {
-            let symbol = UIImageView()
-            symbol.image = value.image
-            symbol.contentMode = .scaleAspectFit
-            
-            symbol.snp.makeConstraints { make in
-                make.width.equalTo(20)
-            }
-            
-            return symbol
-        }
-        
-        return UIView()
-    }
-    
-    func getContainerEdgeInsets() -> UIEdgeInsets {
-        switch self {
-        case .character((_)):
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 6)
-        case .asset((_)):
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
-        }
-    }
-}
+typealias ToastSymbol = Either<Character, ImageAsset>
 
 struct Toast {
     let symbol: ToastSymbol
@@ -62,6 +26,28 @@ struct Toast {
 }
 
 extension Toast : Viewable {
+    func getView() -> UIView {
+        if let character = symbol.left {
+            let view = UILabel()
+            view.text = String(character)
+            view.font = HedvigFonts.circularStdBook?.withSize(24)
+            
+            return view
+        } else {
+            let imageAsset = symbol.right!
+            
+            let view = UIImageView()
+            view.image = imageAsset.image
+            view.contentMode = .scaleAspectFit
+            
+            view.snp.makeConstraints { make in
+                make.width.equalTo(20)
+            }
+            
+            return view
+        }
+    }
+    
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -87,7 +73,7 @@ extension Toast : Viewable {
         
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
-        symbolContainer.edgeInsets = symbol.getContainerEdgeInsets()
+        symbolContainer.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: symbol.left != nil ? 6 : 16)
         
         stackView.addArrangedSubview(symbolContainer)
         
@@ -95,7 +81,8 @@ extension Toast : Viewable {
             make.width.equalTo(40)
         }
         
-        let symbolView = symbol.getView()
+        let symbolView = getView()
+        
         symbolContainer.addArrangedSubview(symbolView)
         
         let textContainer = UIStackView()
