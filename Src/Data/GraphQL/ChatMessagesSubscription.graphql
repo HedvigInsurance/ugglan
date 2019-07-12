@@ -1,0 +1,23 @@
+subscription ChatMessages_ {
+message {
+globalId
+id
+body {
+... on MessageBodySingleSelect {
+type
+id
+text
+}
+}
+header {
+messageId
+fromMyself
+timeStamp
+richTextChatCompatible
+editAllowed
+shouldRequestPushNotifications
+pollingInterval
+loadingIndicator
+}
+}
+}
