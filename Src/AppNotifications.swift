@@ -9,6 +9,11 @@ import Foundation
 import Flow
 import UIKit
 
+enum AppNotificationType {
+    case success
+    case error
+}
+
 struct AppNotification {
     let body: String
     let duration: TimeInterval
@@ -31,7 +36,7 @@ extension AppNotification : Viewable {
         view.layer.shadowOffset = CGSize(width: 0, height: 0)
         view.layer.shadowRadius = 8
         view.layer.shadowColor = UIColor.darkGray.cgColor
-        
+
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.edgeInsets = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
@@ -42,9 +47,35 @@ extension AppNotification : Viewable {
             make.width.height.centerX.centerY.equalToSuperview()
         }
         
-        let text = MultilineLabel(value: body, style: .bodyOffBlack)
+        let symbolContainer = UIStackView()
+        symbolContainer.axis = .horizontal
+        symbolContainer.alignment = .center
+        symbolContainer.edgeInsets = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
         
-        bag += stackView.addArranged(text)
+        stackView.addArrangedSubview(symbolContainer)
+        
+        symbolContainer.snp.makeConstraints { make in
+            make.width.equalTo(50)
+            // make.height.equalToSuperview().inset(10)
+        }
+        
+        let symbol = UILabel()
+        // symbol.textAlignment = .center
+        symbol.text = "🎉"
+        symbol.font = HedvigFonts.circularStdBook?.withSize(26)
+        
+        symbolContainer.addArrangedSubview(symbol)
+        
+        let textContainer = UIStackView()
+        textContainer.axis = .vertical
+        
+        let titleLabel = MultilineLabel(value: "Grattis!", style: .boldSmallTitle)
+        bag += textContainer.addArranged(titleLabel)
+        
+        let bodyLabel = MultilineLabel(value: body, style: .bodyOffBlack)
+        bag += textContainer.addArranged(bodyLabel)
+        
+        stackView.addArrangedSubview(textContainer)
         
         return (view, bag)
     }
@@ -75,7 +106,7 @@ extension AppNotifications : Viewable {
                 
                 appNotificationView.snp.makeConstraints { make in
                     make.width.equalToSuperview().inset(16)
-                    make.height.equalTo(66)
+                    make.height.equalTo(70)
                 }
                 
                 let innerBag = bag.innerBag()

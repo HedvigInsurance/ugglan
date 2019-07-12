@@ -50,7 +50,7 @@ extension MyInfo: Presentable {
         bag += form.append(notificationButton)
         
         bag += notificationButton.onTapSignal.onValue { _ in
-            UIApplication.shared.appDelegate.sendAppNotification(body: "Hej 😇")
+            UIApplication.shared.appDelegate.sendAppNotification(body: "Din hemförsäkring blev 10 kr billigare!")
         }
         
         let cancelButton = UIBarButtonItem(
