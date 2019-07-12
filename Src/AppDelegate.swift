@@ -69,17 +69,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let loggedIn = LoggedIn()
             self.bag += self.window.present(loggedIn, options: [], animated: true)
             
-            let toasts = Toasts(toastSignal: self.toastSignal)
-        
-            self.bag += self.window.rootViewController!.view.add(toasts) { toastsView in
-                toastsView.snp.makeConstraints { make in
-                    if #available(iOS 11.0, *) {
-                        make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
-                    } else {
-                        make.bottom.equalTo(-80)
+            if let rootViewController = self.window.rootViewController {
+                let toasts = Toasts(toastSignal: self.toastSignal)
+                
+                self.bag += rootViewController.view.add(toasts) { toastsView in
+                    toastsView.snp.makeConstraints { make in
+                        if #available(iOS 11.0, *) {
+                            make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
+                        } else {
+                            make.bottom.equalTo(-80)
+                        }
+                        
+                        make.centerX.equalToSuperview()
                     }
-                    
-                    make.centerX.equalToSuperview()
                 }
             }
         }
