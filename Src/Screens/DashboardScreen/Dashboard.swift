@@ -24,7 +24,7 @@ struct Dashboard {
 }
 
 var dashboardOpenFreeTextChat: (_ presentingViewController: UIViewController) -> Void = { presentingViewController in
-    let chatOverlay = DraggableOverlay(presentable: FreeTextChat())
+    let chatOverlay = DraggableOverlay(presentable: FreeTextChat(), adjustsToKeyboard: false)
     presentingViewController.present(chatOverlay, style: .default, options: [.prefersNavigationBarHidden(false)])
 }
 

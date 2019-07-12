@@ -301,8 +301,10 @@ extension DraggableOverlay: Presentable {
         }
 
         viewController.addChild(embeddedChildScreen)
-
         overlayContainer.addSubview(embeddedChildScreen.view)
+
+        embeddedChildScreen.becomeFirstResponder()
+        embeddedChildScreen.didMove(toParent: viewController)
 
         embeddedChildScreen.view.snp.makeConstraints { make in
             make.width.equalTo(overlay.snp.width)

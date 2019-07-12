@@ -8,6 +8,54 @@ type
 id
 text
 }
+
+... on MessageBodyMultipleSelect {
+type
+id
+text
+}
+
+... on MessageBodyText {
+type
+id
+text
+}
+
+... on MessageBodyNumber {
+type
+id
+text
+}
+
+... on MessageBodyAudio {
+type
+id
+text
+}
+
+... on MessageBodyBankIdCollect {
+type
+id
+text
+}
+
+... on MessageBodyFile {
+type
+id
+text
+}
+
+... on MessageBodyParagraph {
+type
+id
+text
+}
+
+... on MessageBodyUndefined {
+type
+id
+text
+}
 }
 header {
 messageId
