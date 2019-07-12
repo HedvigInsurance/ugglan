@@ -1,5 +1,5 @@
 //
-//  AppNotifications.swift
+//  Toasts.swift
 //  project
 //
 //  Created by Gustaf Gunér on 2019-07-11.
@@ -10,9 +10,14 @@ import Flow
 import Form
 import UIKit
 
-enum AppNotificationSymbol {
+enum ToastHideDirection {
+    case left
+    case right
+}
+
+enum ToastSymbol {
     case character(_ character: String)
-    case imageAsset(_ asset: ImageAsset)
+    case asset(_ asset: ImageAsset)
     
     func getView() -> UIView {
         if case .character(let value) = self {
@@ -23,7 +28,7 @@ enum AppNotificationSymbol {
             return symbol
         }
         
-        if case .imageAsset(let value) = self {
+        if case .asset(let value) = self {
             let symbol = UIImageView()
             symbol.image = value.image
             symbol.contentMode = .scaleAspectFit
@@ -42,26 +47,21 @@ enum AppNotificationSymbol {
         switch self {
         case .character((_)):
             return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 6)
-        case .imageAsset((_)):
+        case .asset((_)):
             return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
         }
     }
 }
 
-enum NotificationHideDirection {
-    case left
-    case right
-}
-
-struct AppNotification {
-    let symbol: AppNotificationSymbol
+struct Toast {
+    let symbol: ToastSymbol
     let body: String
     let textColor: UIColor
     let backgroundColor: UIColor
     let duration: TimeInterval
 }
 
-extension AppNotification : Viewable {
+extension Toast : Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -110,11 +110,11 @@ extension AppNotification : Viewable {
     }
 }
 
-struct AppNotifications {
-    let notificationSignal: ReadWriteSignal<AppNotification?>
+struct Toasts {
+    let toastSignal: ReadWriteSignal<Toast?>
 }
 
-extension AppNotifications : Viewable {
+extension Toasts : Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
@@ -128,70 +128,70 @@ extension AppNotifications : Viewable {
         
         containerView.addArrangedSubview(stackView)
         
-        bag += notificationSignal.compactMap { $0 }.onValue { notification in
-            bag += stackView.addArranged(notification) { appNotificationView in
-                appNotificationView.layer.opacity = 0
-                appNotificationView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-                appNotificationView.isHidden = true
+        bag += toastSignal.compactMap { $0 }.onValue { toast in
+            bag += stackView.addArranged(toast) { toastView in
+                toastView.layer.opacity = 0
+                toastView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                toastView.isHidden = true
                 
                 let innerBag = bag.innerBag()
                 
                 let pauseSignal = ReadWriteSignal<Bool>(false)
                 
                 let panGestureRecognizer = UIPanGestureRecognizer()
-                innerBag += appNotificationView.install(panGestureRecognizer)
+                innerBag += toastView.install(panGestureRecognizer)
                 
                 innerBag += panGestureRecognizer.signal(forState: .began).onValue {
                     pauseSignal.value = true
                 }
                 
                 innerBag += panGestureRecognizer.signal(forState: .changed).onValue {
-                    let location = panGestureRecognizer.translation(in: appNotificationView)
-                    appNotificationView.layer.opacity = Float(1 - (abs(location.x) / (UIScreen.main.bounds.width / 2)))
-                    appNotificationView.transform = CGAffineTransform(translationX: location.x, y: 0)
+                    let location = panGestureRecognizer.translation(in: toastView)
+                    toastView.layer.opacity = Float(1 - (abs(location.x) / (UIScreen.main.bounds.width / 2)))
+                    toastView.transform = CGAffineTransform(translationX: location.x, y: 0)
                 }
                 
                 innerBag += Signal(after: 0).feedback(type: .impactMedium)
                 
                 innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
-                    appNotificationView.isHidden = false
+                    toastView.isHidden = false
                 }.animated(style: SpringAnimationStyle.heavyBounce(delay: 0, duration: 0.3)) { _ in
-                    appNotificationView.layer.opacity = 1
-                    appNotificationView.transform = CGAffineTransform.identity
+                    toastView.layer.opacity = 1
+                    toastView.transform = CGAffineTransform.identity
                 }
                 
                 let hideBag = DisposeBag()
                 
-                func hideNotification(direction: NotificationHideDirection = .left) {
+                func hideToast(direction: ToastHideDirection = .left) {
                     hideBag += Signal(after: 0)
                         .animated(style: AnimationStyle.easeOut(duration: 0.3)) { _ in
-                            appNotificationView.layer.opacity = 0
-                            appNotificationView.transform = CGAffineTransform(translationX: (direction == .left ? -1 : 1) * appNotificationView.frame.width, y: 0)
+                            toastView.layer.opacity = 0
+                            toastView.transform = CGAffineTransform(translationX: (direction == .left ? -1 : 1) * toastView.frame.width, y: 0)
                         }.animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
-                            appNotificationView.isHidden = true
+                            toastView.isHidden = true
                         }.onValue { _ in
-                            stackView.removeArrangedSubview(appNotificationView)
+                            stackView.removeArrangedSubview(toastView)
                             innerBag.dispose()
                     }
                 }
                 
-                let hideAction = Signal(after: notification.duration).onValue { _ in
-                    hideNotification()
+                let hideAction = Signal(after: toast.duration).onValue { _ in
+                    hideToast()
                 }
                 
                 hideBag += hideAction
                 innerBag += hideBag
                 
                 innerBag += panGestureRecognizer.signal(forState: .ended).onValue {
-                    let location = panGestureRecognizer.translation(in: appNotificationView)
+                    let location = panGestureRecognizer.translation(in: toastView)
                     
                     if (abs(location.x) > 80) {
                         hideAction.dispose()
-                        hideNotification(direction: location.x < 0 ? .left : .right)
+                        hideToast(direction: location.x < 0 ? .left : .right)
                     } else {
                         innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.2)) { _ in
-                            appNotificationView.layer.opacity = 1
-                            appNotificationView.transform = CGAffineTransform(translationX: 0, y: 0)
+                            toastView.layer.opacity = 1
+                            toastView.transform = CGAffineTransform(translationX: 0, y: 0)
                         }
                     }
                     pauseSignal.value = false
@@ -202,7 +202,7 @@ extension AppNotifications : Viewable {
                         hideBag.dispose()
                     } else {
                         hideBag += Signal(after: 3).onValue { _ in
-                            hideNotification()
+                            hideToast()
                         }
                     }
                 }

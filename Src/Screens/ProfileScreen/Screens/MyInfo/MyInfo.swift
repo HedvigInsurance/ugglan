@@ -44,7 +44,7 @@ extension MyInfo: Presentable {
             state: state
         )
         bag += form.append(contactDetailsSection)
-        
+
         let cancelButton = UIBarButtonItem(
             title: String(key: .MY_INFO_CANCEL_BUTTON),
             style: .navigationBarButton
@@ -59,6 +59,11 @@ extension MyInfo: Presentable {
             if result.isSuccess() {
                 saveButton.remove()
                 viewController.navigationItem.setLeftBarButtonItems([], animated: true)
+                
+                UIApplication.shared.appDelegate.createToast(
+                    symbol: .character(String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_SYMBOL)),
+                    body: String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY)
+                )
             } else {
                 saveButton.stopAnimating()
             }

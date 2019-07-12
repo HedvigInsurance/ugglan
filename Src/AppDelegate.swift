@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
     
-    let notificationSignal = ReadWriteSignal<AppNotification?>(nil)
+    let toastSignal = ReadWriteSignal<Toast?>(nil)
 
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
@@ -42,14 +42,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         presentMarketing()
     }
     
-    func sendAppNotification(
-        symbol: AppNotificationSymbol,
+    func createToast(
+        symbol: ToastSymbol,
         body: String,
         textColor: UIColor = UIColor.offBlack,
         backgroundColor: UIColor = UIColor.white,
         duration: TimeInterval = 5.0
     ) {
-        self.notificationSignal.value = AppNotification(
+        self.toastSignal.value = Toast(
             symbol: symbol,
             body: body,
             textColor: textColor,
@@ -69,17 +69,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let loggedIn = LoggedIn()
             self.bag += self.window.present(loggedIn, options: [], animated: true)
             
-            let appNotifications = AppNotifications(notificationSignal: self.notificationSignal)
+            let toasts = Toasts(toastSignal: self.toastSignal)
         
-            self.bag += self.window.rootViewController!.view.add(appNotifications) { appNotificationsView in
-                appNotificationsView.snp.makeConstraints { make in
+            self.bag += self.window.rootViewController!.view.add(toasts) { toastsView in
+                toastsView.snp.makeConstraints { make in
                     if #available(iOS 11.0, *) {
                         make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
                     }
                     
                     make.centerX.equalToSuperview()
-                    
-                    // make.width.equalTo(UIScreen.main.bounds.width)
                 }
             }
         }
