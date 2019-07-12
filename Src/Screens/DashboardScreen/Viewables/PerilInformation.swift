@@ -52,7 +52,7 @@ extension PerilInformation: Presentable {
         }
 
         let titleLabel = UILabel()
-        titleLabel.style = .standaloneLargeTitle
+        titleLabel.style = .draggableOverlayTitle
         titleLabel.textAlignment = .left
 
         bag += titleLabel.setDynamicText(DynamicString(title))

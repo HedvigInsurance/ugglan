@@ -12,6 +12,12 @@ import Foundation
 import Presentation
 import UIKit
 
+private extension Error {
+    var isIgnorable: Bool {
+        return localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
+    }
+}
+
 extension ApolloClient {
     func fetch<Query: GraphQLQuery>(
         query: Query,
@@ -27,21 +33,32 @@ extension ApolloClient {
                     if result != nil {
                         completion(.success(result!))
                     } else {
-                        if error?.localizedDescription == "cancelled" {
+                        if error?.isIgnorable ?? false {
                             return
                         }
-
+                        
                         log.error(error?.localizedDescription)
-
-                        self.showNetworkErrorMessage { [unowned self] in
-                            self.fetch(
-                                query: query,
-                                cachePolicy: cachePolicy,
-                                queue: queue
-                            ).onResult { result in
-                                completion(result)
+                        
+                        self.self.fetch(
+                            query: query,
+                            cachePolicy: cachePolicy,
+                            queue: queue,
+                            resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, error: Error?) in
+                                if result != nil {
+                                    completion(.success(result!))
+                                } else {
+                                    self.showNetworkErrorMessage { [unowned self] in
+                                        self.fetch(
+                                            query: query,
+                                            cachePolicy: cachePolicy,
+                                            queue: queue
+                                            ).onResult { result in
+                                                completion(result)
+                                            }
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
                 }
             )
@@ -76,17 +93,27 @@ extension ApolloClient {
                     if result != nil {
                         completion(.success(result!))
                     } else {
-                        if error?.localizedDescription == "cancelled" {
+                        if error?.isIgnorable ?? false {
                             return
                         }
 
                         log.error(error?.localizedDescription)
-
-                        self.showNetworkErrorMessage { [unowned self] in
-                            self.perform(mutation: mutation, queue: queue).onResult { result in
-                                completion(result)
+                        
+                        self.self.perform(
+                            mutation: mutation,
+                            queue: queue,
+                            resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, error: Error?) in
+                                if result != nil {
+                                    completion(.success(result!))
+                                } else {
+                                    self.showNetworkErrorMessage { [unowned self] in
+                                        self.perform(mutation: mutation, queue: queue).onResult { result in
+                                            completion(result)
+                                        }
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
                 }
             )
@@ -109,15 +136,21 @@ extension ApolloClient {
                 if let result = result {
                     callbacker(result)
                 } else {
-                    if error?.localizedDescription == "cancelled" {
+                    if error?.isIgnorable ?? false {
                         return
                     }
 
                     log.error(error?.localizedDescription)
-
-                    self.showNetworkErrorMessage { [unowned self] in
-                        bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue { result in
+                    
+                    _ = self.self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, error in
+                        if let result = result {
                             callbacker(result)
+                        } else {
+                            self.showNetworkErrorMessage { [unowned self] in
+                                bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue { result in
+                                    callbacker(result)
+                                }
+                            }
                         }
                     }
                 }

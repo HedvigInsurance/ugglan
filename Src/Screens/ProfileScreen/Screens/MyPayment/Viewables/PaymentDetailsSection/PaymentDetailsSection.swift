@@ -11,17 +11,21 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Presentation
 
 struct PaymentDetailsSection {
     let client: ApolloClient
+    let store: ApolloStore
     let presentingViewController: UIViewController
 
     init(
         presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client
+        client: ApolloClient = ApolloContainer.shared.client,
+        store: ApolloStore = ApolloContainer.shared.store
     ) {
         self.presentingViewController = presentingViewController
         self.client = client
+        self.store = store
     }
 }
 
@@ -29,7 +33,7 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery())
+        let dataValueSignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         let section = SectionView(
             header: String(key: .MY_PAYMENT_PAYMENT_ROW_LABEL),
@@ -103,22 +107,45 @@ extension PaymentDetailsSection: Viewable {
             .bindTo(netPriceRow.valueSignal)
 
         bag += section.append(netPriceRow)
-
-        let applyDiscountButtonRow = ButtonRow(
-            text: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
-            style: .normalButton
-        )
+        
+        let applyDiscountButtonRow = ButtonRow(text: String(key: .REFERRAL_ADDCOUPON_HEADLINE), style: .normalButton)
 
         bag += applyDiscountButtonRow.onSelect.onValue { _ in
+            let applyDiscount = ApplyDiscount()
             let overlay = DraggableOverlay(
-                presentable: ApplyDiscount(),
+                presentable: applyDiscount,
                 presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
             )
+            
+            bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
+                self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                    data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(
+                        monthlyDiscount: MyPaymentQuery.Data.Insurance.Cost.MonthlyDiscount(amount: result.cost.monthlyDiscount.amount),
+                        monthlyGross: MyPaymentQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount),
+                        monthlyNet: MyPaymentQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount)
+                    )
+                })
+                
+                self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
+                    data.insurance.cost = ReferralsScreenQuery.Data.Insurance.Cost(
+                        monthlyNet: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount),
+                        monthlyGross: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount)
+                    )
+                })
+                
+                let alert = Alert(
+                    title: String(key: .REFERRAL_REDEEM_SUCCESS_HEADLINE),
+                    message: String(key: .REFERRAL_REDEEM_SUCCESS_BODY),
+                    actions: [Alert.Action(title: String(key: .REFERRAL_REDEEM_SUCCESS_BTN)) {}]
+                )
+                self.presentingViewController.present(alert)
+            }
+            
             self.presentingViewController.present(overlay)
         }
 
         bag += section.append(applyDiscountButtonRow)
-
+        
         let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }.toInt().map { $0 == 0 }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)

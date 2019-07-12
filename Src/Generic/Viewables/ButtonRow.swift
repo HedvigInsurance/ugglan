@@ -61,7 +61,7 @@ extension ButtonRow: Viewable {
 
         bag += events.onSelect.flatMapLatest { self.text.atOnce() }.onValue { title in
             if let localizationKey = title.localizationKey?.toString() {
-                Analytics.logEvent("button_row_tap_\(localizationKey)", parameters: nil)
+                Analytics.logEvent("tap_\(localizationKey)", parameters: nil)
             }
         }
 

@@ -38,9 +38,24 @@ extension ReferralsReceiverConsentContent: Viewable {
         scrollView.embedView(containerView, scrollAxis: .vertical)
 
         let view = UIStackView()
-        view.spacing = 15
+        view.spacing = 28
         view.axis = .vertical
         view.alignment = .center
+
+        let logoImageContainer = UIStackView()
+        logoImageContainer.axis = .horizontal
+        logoImageContainer.alignment = .center
+
+        let logoImageView = UIImageView()
+        logoImageView.image = Asset.wordmark.image
+        logoImageView.contentMode = .scaleAspectFit
+
+        logoImageView.snp.makeConstraints { make in
+            make.height.equalTo(30)
+        }
+
+        logoImageContainer.addArrangedSubview(logoImageView)
+        view.addArrangedSubview(logoImageContainer)
 
         let headerImageContainer = UIStackView()
         headerImageContainer.axis = .horizontal
@@ -58,13 +73,13 @@ extension ReferralsReceiverConsentContent: Viewable {
         view.addArrangedSubview(headerImageContainer)
 
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10", user: "Lucas")),
-            style: TextStyle.standaloneLargeTitle.colored(.offBlack).aligned(to: .center)
+            value: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
+            style: TextStyle.standaloneLargeTitle.colored(.black).aligned(to: .center)
         )
         bag += view.addArranged(title)
 
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_STARTSCREEN_BODY),
+            value: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
             style: TextStyle.bodyOffBlack.aligned(to: .center)
         )
         bag += view.addArranged(description)
@@ -110,7 +125,7 @@ extension ReferralsReceiverConsentContent: Viewable {
 
         let declineButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
-            type: .pillTransparent(backgroundColor: .blackPurple, textColor: .white)
+            type: .pillTransparent(backgroundColor: .lightGray, textColor: .offBlack)
         )
         bag += buttonsContainer.addArranged(declineButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical

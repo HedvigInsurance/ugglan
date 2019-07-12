@@ -14,7 +14,10 @@ enum ReferralsNotificationResult {
     case cancel, openReferrals
 }
 
-struct ReferralsNotification {}
+struct ReferralsNotification {
+    let incentive: Int
+    let name: String
+}
 
 extension Notification.Name {
     static let shouldOpenReferrals = Notification.Name("shouldOpenReferrals")
@@ -28,7 +31,7 @@ extension ReferralsNotification: Presentable {
         let view = UIView()
         view.backgroundColor = UIColor.darkPurple
 
-        let progressed = ReferralsNotificationProgressed()
+        let progressed = ReferralsNotificationProgressed(incentive: incentive, name: name)
 
         bag += view.add(progressed) { view in
             view.snp.makeConstraints { make in

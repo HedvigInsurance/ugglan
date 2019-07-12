@@ -14,9 +14,11 @@ import UIKit
 
 struct LoggedIn {
     let client: ApolloClient
+    let displayNews: Bool
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
+    init(client: ApolloClient = ApolloContainer.shared.client, displayNews: Bool = true) {
         self.client = client
+        self.displayNews = displayNews
     }
 }
 
@@ -87,7 +89,7 @@ extension LoggedIn: Presentable {
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
 
-        if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
+        if displayNews && appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
                 .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .compactMap { $0.data }

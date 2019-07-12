@@ -7,6 +7,7 @@
 
 import Apollo
 import Firebase
+import FirebaseAnalytics
 #if canImport(FirebaseDynamicLinks)
     import FirebaseDynamicLinks
 #endif
@@ -68,20 +69,20 @@ extension Referrals: Presentable {
             formView,
             scrollView: scrollView
         )
-
+        
         let query = ReferralsScreenQuery()
 
         let refreshControl = UIRefreshControl()
         bag += client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
         scrollView.refreshControl = refreshControl
-
+    
         let codeSignal = ReadWriteSignal<String?>(nil)
 
         let referralsScreenQuerySignal = client
             .watch(query: query)
             .wait(until: formView.hasWindowSignal)
-
+        
         bag += referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.campaign.code }
             .bindTo(codeSignal)
@@ -89,22 +90,28 @@ extension Referrals: Presentable {
         let invitationsSignal = ReadWriteSignal<[InvitationsListRow]?>(nil)
         let peopleLeftToInviteSignal = ReadWriteSignal<Int?>(nil)
 
-        let incentiveSignal = referralsScreenQuerySignal
+        let incentiveSignal = ReadWriteSignal<Int?>(nil)
+
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount?.amount }
             .toInt()
-            .compactMap { $0 }
+            .bindTo(incentiveSignal)
 
-        let netPremiumSignal = referralsScreenQuerySignal
+        let netPremiumSignal = ReadWriteSignal<Int?>(nil)
+
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.insurance.cost?.monthlyNet.amount }
             .toInt()
-            .compactMap { $0 }
+            .bindTo(netPremiumSignal)
 
-        let grossPremiumSignal = referralsScreenQuerySignal
+        let grossPremiumSignal = ReadWriteSignal<Int?>(nil)
+
+        bag += referralsScreenQuerySignal
             .compactMap { $0.data?.insurance.cost?.monthlyGross.amount }
             .toInt()
-            .compactMap { $0 }
+            .bindTo(grossPremiumSignal)
 
-        bag += combineLatest(netPremiumSignal, incentiveSignal)
+        bag += combineLatest(netPremiumSignal.compactMap { $0 }, incentiveSignal.compactMap { $0 })
             .map { netPremium, incentive in Int(round(Double(netPremium) / Double(incentive))) }
             .map { count in max(0, count) }
             .bindTo(peopleLeftToInviteSignal)
@@ -139,7 +146,7 @@ extension Referrals: Presentable {
             .compactMap { $0.data?.referralInformation.referredBy }
             .map { referral -> InvitationsListRow in
                 if let activeReferral = referral.asActiveReferral {
-                    return .left(ReferralsInvitation(name: activeReferral.name, state: .member))
+                    return .left(ReferralsInvitation(name: activeReferral.name, state: .invitedYou))
                 }
 
                 if let inProgressReferral = referral.asInProgressReferral {
@@ -162,9 +169,10 @@ extension Referrals: Presentable {
             referredBySignal: referredBySignal.readOnly(),
             invitationsSignal: invitationsSignal.readOnly(),
             peopleLeftToInviteSignal: peopleLeftToInviteSignal.readOnly(),
-            incentiveSignal: incentiveSignal,
-            netPremiumSignal: netPremiumSignal,
-            grossPremiumSignal: grossPremiumSignal
+            incentiveSignal: incentiveSignal.readOnly(),
+            netPremiumSignal: netPremiumSignal.readOnly(),
+            grossPremiumSignal: grossPremiumSignal.readOnly(),
+            presentingViewController: viewController
         )
         let loadableContent = LoadableView(view: content, initialLoadingState: true)
 
@@ -195,9 +203,10 @@ extension Referrals: Presentable {
             bag += button.onTapSignal.withLatestFrom(
                 codeSignal.plain()
             ).compactMap { $1 }.onValue { code in
+                Analytics.logEvent("click_referral", parameters: nil)
+                
                 let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
                 let message = String(key: .REFERRAL_SMS_MESSAGE(
-                    referralCode: code,
                     referralLink: landingPageUrl,
                     referralValue: "10"
                 ))
@@ -208,8 +217,18 @@ extension Referrals: Presentable {
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds
                 )
-
+                
                 viewController.present(activityView)
+
+                bag += activityView.completionSignal.onValue { activity, success in
+                    if success {
+                        PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: viewController)
+                        if activity != nil {
+                            let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
+                            Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
+                        }
+                    }
+                }
             }
         }
 

@@ -11,6 +11,9 @@ import Foundation
 import UIKit
 
 struct ReferralsNotificationProgressed {
+    let incentive: Int
+    let name: String
+
     var didTapCancel: Signal<Void> {
         return didTapCancelCallbacker.providedSignal
     }
@@ -38,9 +41,24 @@ extension ReferralsNotificationProgressed: Viewable {
         scrollView.embedView(containerView, scrollAxis: .vertical)
 
         let view = UIStackView()
-        view.spacing = 15
+        view.spacing = 28
         view.axis = .vertical
         view.alignment = .center
+
+        let logoImageContainer = UIStackView()
+        logoImageContainer.axis = .horizontal
+        logoImageContainer.alignment = .center
+
+        let logoImageView = UIImageView()
+        logoImageView.image = Asset.wordmarkWhite.image
+        logoImageView.contentMode = .scaleAspectFit
+
+        logoImageView.snp.makeConstraints { make in
+            make.height.equalTo(30)
+        }
+
+        logoImageContainer.addArrangedSubview(logoImageView)
+        view.addArrangedSubview(logoImageContainer)
 
         let headerImageContainer = UIStackView()
         headerImageContainer.axis = .horizontal
@@ -58,13 +76,13 @@ extension ReferralsNotificationProgressed: Viewable {
         view.addArrangedSubview(headerImageContainer)
 
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_SUCCESS_HEADLINE(user: "TODO")),
+            value: String(key: .REFERRAL_SUCCESS_HEADLINE(user: name)),
             style: TextStyle.standaloneLargeTitle.colored(UIColor.white).aligned(to: .center)
         )
         bag += view.addArranged(title)
 
         let description = MultilineLabel(
-            value: String(key: .REFERRAL_SUCCESS_BODY(referralValue: "10")),
+            value: String(key: .REFERRAL_SUCCESS_BODY(referralValue: String(incentive))),
             style: TextStyle.bodyWhite.aligned(to: .center)
         )
         bag += view.addArranged(description)

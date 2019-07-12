@@ -1,8 +1,8 @@
 //
-//  WhatsNewPager.swift
+//  WelcomePager.swift
 //  project
 //
-//  Created by Gustaf Gunér on 2019-06-12.
+//  Created by Gustaf Gunér on 2019-06-28.
 //
 
 import Flow
@@ -11,15 +11,15 @@ import Foundation
 import Presentation
 import UIKit
 
-struct WhatsNewPager {
-    let dataSignal = ReadWriteSignal<WhatsNewQuery.Data?>(nil)
+struct WelcomePager {
+    let dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(nil)
     let scrollToNextCallbacker: Callbacker<Void>
     let scrolledToPageIndexCallbacker: Callbacker<Int>
     let scrolledToEndCallbacker: Callbacker<Void>
     let presentingViewController: UIViewController
 }
 
-extension WhatsNewPager: Viewable {
+extension WelcomePager: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIStackView()
@@ -49,24 +49,24 @@ extension WhatsNewPager: Viewable {
 
         bag += dataSignal
             .atOnce()
-            .compactMap { $0?.news }
-            .onValue { news in
-                var newsPagerScreens = news.map { newsPost -> PagerScreen in
-                    let whatsNewPagerScreen = WhatsNewPagerScreen(
-                        title: newsPost.title,
-                        paragraph: newsPost.paragraph,
-                        iconUrl: newsPost.illustration.pdfUrl
+            .compactMap { $0?.welcome }
+            .onValue { welcome in
+                var welcomePagerScreens = welcome.map { welcomePost -> PagerScreen in
+                    let welcomePagerScreen = WelcomePagerScreen(
+                        title: welcomePost.title,
+                        paragraph: welcomePost.paragraph,
+                        iconUrl: welcomePost.illustration.pdfUrl
                     )
 
                     return PagerScreen(
                         id: UUID(),
-                        content: AnyPresentable(whatsNewPagerScreen)
+                        content: AnyPresentable(welcomePagerScreen)
                     )
                 }
 
-                newsPagerScreens.append(PagerScreen(id: UUID(), content: AnyPresentable(DummyPagerScreen())))
+                welcomePagerScreens.append(PagerScreen(id: UUID(), content: AnyPresentable(DummyPagerScreen())))
 
-                pager.dataSignal.value = newsPagerScreens
+                pager.dataSignal.value = welcomePagerScreens
             }
 
         return (view, bag)

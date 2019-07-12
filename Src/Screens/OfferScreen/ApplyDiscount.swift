@@ -41,14 +41,15 @@ extension ApplyDiscount: Presentable {
         let view = UIStackView()
         view.spacing = 5
         view.axis = .vertical
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 24, verticalInset: 32)
+        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         view.isLayoutMarginsRelativeArrangement = true
+        view.isUserInteractionEnabled = true
 
         containerView.addArrangedSubview(view)
 
         let titleLabel = MultilineLabel(
             value: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
-            style: .standaloneLargeTitle
+            style: .draggableOverlayTitle
         )
         bag += view.addArranged(titleLabel)
 
@@ -60,6 +61,7 @@ extension ApplyDiscount: Presentable {
 
         let textField = TextField(value: "", placeholder: String(key: .REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
         bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
+            stackView.isUserInteractionEnabled = true
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
         }
@@ -113,19 +115,21 @@ extension ApplyDiscount: Presentable {
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
                 .onValue { result in
-                    guard let redeemCode = result.data?.redeemCode else {
+                    if result.errors != nil {
                         let alert = Alert(
                             title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
                             message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
                             actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
                         )
-
+                        
                         viewController.present(alert)
                         return
                     }
-
-                    self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
-                    completion(.success)
+                    
+                    if let redeemCode = result.data?.redeemCode {
+                        self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                        completion(.success)
+                    }
                 }
 
             return bag

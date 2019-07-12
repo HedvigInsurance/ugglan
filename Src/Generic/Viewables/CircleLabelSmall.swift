@@ -50,9 +50,6 @@ extension CircleLabelSmall: Viewable {
         case .green:
             circleView.backgroundColor = UIColor.darkGreen
             titleLabel.textColor = UIColor.white
-        default:
-            circleView.backgroundColor = UIColor.gray
-            titleLabel.textColor = UIColor.white
         }
 
         labelsContainer.addArrangedSubview(titleLabel)

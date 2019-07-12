@@ -77,6 +77,13 @@ class ApolloContainer {
         _client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
     }
 
+    func deleteToken() {
+        try? Disk.remove(
+            "authorization-token.json",
+            from: .applicationSupport
+        )
+    }
+
     func retreiveToken() -> AuthorizationToken? {
         return try? Disk.retrieve(
             "authorization-token.json",

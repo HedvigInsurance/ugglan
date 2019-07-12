@@ -61,7 +61,7 @@ extension MyPayment: Presentable {
         )
         bag += form.append(buttonSection)
 
-        let myPaymentQuerySignal = client.watch(query: MyPaymentQuery())
+        let myPaymentQuerySignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         bag += myPaymentQuerySignal
             .map { $0.data?.insurance.cost?.monthlyNet.amount }

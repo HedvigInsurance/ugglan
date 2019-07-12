@@ -6,6 +6,7 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Form
 import Presentation
@@ -13,6 +14,12 @@ import UIKit
 
 struct About {
     let presentingViewController: UIViewController
+    let client: ApolloClient
+
+    init(presentingViewController: UIViewController, client: ApolloClient = ApolloContainer.shared.client) {
+        self.presentingViewController = presentingViewController
+        self.client = client
+    }
 }
 
 extension About: Presentable {
@@ -54,6 +61,33 @@ extension About: Presentable {
 
         let memberIdRow = MemberIdRow()
         bag += versionSection.append(memberIdRow)
+
+        let activatePushNotificationsRow = ButtonRow(
+            text: "Aktivera pushnotiser",
+            style: .normalButton
+        )
+        bag += versionSection.append(activatePushNotificationsRow)
+
+        bag += activatePushNotificationsRow.onSelect.onValue { _ in
+            UIApplication.shared.appDelegate.registerForPushNotifications()
+        }
+
+        let showWhatsNew = ButtonRow(
+            text: "Visa intro",
+            style: .normalButton
+        )
+        bag += versionSection.append(showWhatsNew)
+
+        bag += showWhatsNew.onSelect.onValue { _ in
+            bag += self.client
+                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.0.0"))
+                .compactMap { $0.data }
+                .filter { $0.news.count > 0 }
+                .onValue { data in
+                    let whatsNew = WhatsNew(data: data)
+                    self.presentingViewController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                }
+        }
 
         bag += form.append(Spacing(height: 15))
 

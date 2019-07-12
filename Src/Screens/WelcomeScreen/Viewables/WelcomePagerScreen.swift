@@ -1,8 +1,8 @@
 //
-//  WhatsNewPagerScreen.swift
+//  WelcomePagerScreen.swift
 //  project
 //
-//  Created by Gustaf Gunér on 2019-06-12.
+//  Created by Gustaf Gunér on 2019-06-28.
 //
 
 import Flow
@@ -11,13 +11,13 @@ import Foundation
 import Presentation
 import UIKit
 
-struct WhatsNewPagerScreen {
+struct WelcomePagerScreen {
     let title: String
     let paragraph: String
     let iconUrl: String
 }
 
-extension WhatsNewPagerScreen: Presentable {
+extension WelcomePagerScreen: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
