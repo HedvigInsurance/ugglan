@@ -75,6 +75,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 toastsView.snp.makeConstraints { make in
                     if #available(iOS 11.0, *) {
                         make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
+                    } else {
+                        make.bottom.equalTo(-80)
                     }
                     
                     make.centerX.equalToSuperview()
