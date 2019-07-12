@@ -42,8 +42,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         presentMarketing()
     }
     
-    func sendAppNotification(symbol: AppNotificationSymbol, body: String, duration: TimeInterval = 5.0) {
-        self.notificationSignal.value = AppNotification(symbol: symbol, body: body, duration: duration)
+    func sendAppNotification(
+        symbol: AppNotificationSymbol,
+        body: String,
+        textColor: UIColor = UIColor.offBlack,
+        backgroundColor: UIColor = UIColor.white,
+        duration: TimeInterval = 5.0
+    ) {
+        self.notificationSignal.value = AppNotification(
+            symbol: symbol,
+            body: body,
+            textColor: textColor,
+            backgroundColor: backgroundColor,
+            duration: duration
+        )
     }
 
     func presentMarketing() {

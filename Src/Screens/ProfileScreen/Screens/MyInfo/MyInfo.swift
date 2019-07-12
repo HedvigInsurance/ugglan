@@ -51,15 +51,8 @@ extension MyInfo: Presentable {
         
         bag += notificationButton.onTapSignal.onValue { _ in
             UIApplication.shared.appDelegate.sendAppNotification(
-                symbol: .imageAsset(Asset.greenCircularCheckmark),
-                body: "Cash is king!"
-            )
-        }
-        
-        bag += notificationButton.onTapSignal.onValue { _ in
-            UIApplication.shared.appDelegate.sendAppNotification(
-                symbol: .character("💸"),
-                body: "Cash is king!"
+                symbol: .character("🤚"),
+                body: "Welcome"
             )
         }
         

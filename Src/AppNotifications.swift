@@ -7,11 +7,12 @@
 
 import Foundation
 import Flow
+import Form
 import UIKit
 
 enum AppNotificationSymbol {
-    case imageAsset(_ asset: ImageAsset)
     case character(_ character: String)
+    case imageAsset(_ asset: ImageAsset)
     
     func getView() -> UIView {
         if case .character(let value) = self {
@@ -36,11 +37,22 @@ enum AppNotificationSymbol {
         
         return UIView()
     }
+    
+    func getContainerEdgeInsets() -> UIEdgeInsets {
+        switch self {
+        case .character((_)):
+            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 6)
+        case .imageAsset((_)):
+            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
+        }
+    }
 }
 
 struct AppNotification {
     let symbol: AppNotificationSymbol
     let body: String
+    let textColor: UIColor
+    let backgroundColor: UIColor
     let duration: TimeInterval
 }
 
@@ -50,8 +62,8 @@ extension AppNotification : Viewable {
         
         let view = UIView()
         
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 32
+        view.backgroundColor = backgroundColor
+        view.layer.cornerRadius = 30
         view.layer.shadowOpacity = 0.15
         view.layer.shadowOffset = CGSize(width: 0, height: 0)
         view.layer.shadowRadius = 10
@@ -70,8 +82,7 @@ extension AppNotification : Viewable {
         
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
-        symbolContainer.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 6)
-        // symbolContainer.alignment = .center
+        symbolContainer.edgeInsets = symbol.getContainerEdgeInsets()
         
         stackView.addArrangedSubview(symbolContainer)
         
@@ -85,7 +96,7 @@ extension AppNotification : Viewable {
         let textContainer = UIStackView()
         textContainer.axis = .vertical
         
-        let bodyLabel = MultilineLabel(value: body, style: .toastBody)
+        let bodyLabel = MultilineLabel(value: body, style: TextStyle.toastBody.colored(textColor))
         bag += textContainer.addArranged(bodyLabel)
         
         stackView.addArrangedSubview(textContainer)
