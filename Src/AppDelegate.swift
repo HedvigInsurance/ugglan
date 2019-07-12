@@ -42,8 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         presentMarketing()
     }
     
-    func sendAppNotification(body: String, duration: TimeInterval = 5.0) {
-        self.notificationSignal.value = AppNotification(body: body, duration: duration)
+    func sendAppNotification(symbol: AppNotificationSymbol, body: String, duration: TimeInterval = 5.0) {
+        self.notificationSignal.value = AppNotification(symbol: symbol, body: body, duration: duration)
     }
 
     func presentMarketing() {
@@ -61,14 +61,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
             self.bag += self.window.rootViewController!.view.add(appNotifications) { appNotificationsView in
                 appNotificationsView.snp.makeConstraints { make in
-                    
                     if #available(iOS 11.0, *) {
                         make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
                     }
                     
                     make.centerX.equalToSuperview()
-                    
-                    // make.bottom.equalTo(-200)
                     
                     make.width.equalTo(UIScreen.main.bounds.width)
                 }

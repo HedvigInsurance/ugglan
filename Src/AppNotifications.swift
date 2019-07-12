@@ -9,19 +9,39 @@ import Foundation
 import Flow
 import UIKit
 
-enum AppNotificationType {
-    case success
-    case error
+enum AppNotificationSymbol {
+    case imageAsset(_ asset: ImageAsset)
+    case character(_ character: String)
+    
+    func getView() -> UIView {
+        if case .character(let value) = self {
+            let symbol = UILabel()
+            symbol.text = value
+            symbol.font = HedvigFonts.circularStdBook?.withSize(24)
+            
+            return symbol
+        }
+        
+        if case .imageAsset(let value) = self {
+            let symbol = UIImageView()
+            symbol.image = value.image
+            symbol.contentMode = .scaleAspectFit
+            
+            symbol.snp.makeConstraints { make in
+                make.width.equalTo(20)
+            }
+            
+            return symbol
+        }
+        
+        return UIView()
+    }
 }
 
 struct AppNotification {
+    let symbol: AppNotificationSymbol
     let body: String
     let duration: TimeInterval
-    
-    init(body: String, duration: TimeInterval) {
-        self.body = body
-        self.duration = duration
-    }
 }
 
 extension AppNotification : Viewable {
@@ -34,7 +54,7 @@ extension AppNotification : Viewable {
         view.layer.cornerRadius = 32
         view.layer.shadowOpacity = 0.15
         view.layer.shadowOffset = CGSize(width: 0, height: 0)
-        view.layer.shadowRadius = 12
+        view.layer.shadowRadius = 10
         view.layer.shadowColor = UIColor.darkGray.cgColor
 
         let stackView = UIStackView()
@@ -50,8 +70,8 @@ extension AppNotification : Viewable {
         
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
-        symbolContainer.alignment = .center
-        symbolContainer.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
+        symbolContainer.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 6)
+        // symbolContainer.alignment = .center
         
         stackView.addArrangedSubview(symbolContainer)
         
@@ -59,16 +79,13 @@ extension AppNotification : Viewable {
             make.width.equalTo(40)
         }
         
-        let symbol = UILabel()
-        symbol.text = "🤑"
-        symbol.font = HedvigFonts.circularStdBook?.withSize(24)
-        
-        symbolContainer.addArrangedSubview(symbol)
+        let symbolView = symbol.getView()
+        symbolContainer.addArrangedSubview(symbolView)
         
         let textContainer = UIStackView()
         textContainer.axis = .vertical
         
-        let bodyLabel = MultilineLabel(value: "Grattis! Din hemförsäkring blev just 10 kr/mån billigare", style: .toastBody)
+        let bodyLabel = MultilineLabel(value: body, style: .toastBody)
         bag += textContainer.addArranged(bodyLabel)
         
         stackView.addArrangedSubview(textContainer)
