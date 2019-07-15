@@ -245,6 +245,10 @@ class AccessoryViewController<Accessory: Viewable>: UIViewController where Acces
     }
 }
 
+func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+    return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+}
+
 extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
@@ -284,10 +288,49 @@ extension Chat: Presentable {
         let tableKit = TableKit<EmptySection, Message>(table: Table(), style: style, view: nil, bag: bag, headerForSection: nil, footerForSection: nil)
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
+        if #available(iOS 11.0, *) {
+            tableKit.view.contentInsetAdjustmentBehavior = .automatic
+        }
         
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
-            cell.contentView.transform =  CGAffineTransform(scaleX: 1, y: -1)
+            cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         }
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillShowNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(mapStyle: { keyboardInfo -> AnimationStyle in
+                return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo in
+                let insets =  UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                tableKit.view.contentInset = insets
+                tableKit.view.scrollIndicatorInsets = insets
+                tableKit.view.layoutIfNeeded()
+            })
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillHideNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(mapStyle: { keyboardInfo -> AnimationStyle in
+                return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo in
+                let insets =  UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                tableKit.view.contentInset = insets
+                tableKit.view.scrollIndicatorInsets = insets
+                tableKit.view.layoutIfNeeded()
+            })
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(mapStyle: { keyboardInfo -> AnimationStyle in
+                return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo in
+                let insets =  UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                tableKit.view.contentInset = insets
+                tableKit.view.scrollIndicatorInsets = insets
+                tableKit.view.layoutIfNeeded()
+            })
         
         let messagesSignal = ReadWriteSignal<[Message]>([])
         
@@ -303,6 +346,12 @@ extension Chat: Presentable {
         
         bag += messagesSignal.compactMap { messages in messages.compactMap { $0.body.count > 0 ? $0 : nil } }.onValue { messages in
             tableKit.set(Table(rows: messages), animation: .automatic, rowIdentifier: { $0.globalId })
+            let cell = tableKit.view.cellForRow(at: IndexPath(item: 0, section: 0))
+            cell?.alpha = 0
+            
+            bag += Signal(after: 0.25).animated(style: SpringAnimationStyle.heavyBounce(), animations: { _ in
+                cell?.alpha = 1
+            })
         }
         
         bag += client.subscribe(subscription: ChatMessagesSubscription())

@@ -20,7 +20,7 @@ struct ChatInput {
     }
 }
 
-class ViewWithFixedIntrinsicSize: UIVisualEffectView {
+class ViewWithFixedIntrinsicSize: UIView {
     override var intrinsicContentSize: CGSize {
         return CGSize(width: 300, height: 200)
     }
@@ -30,12 +30,19 @@ extension ChatInput: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         
-        let effect = UIBlurEffect(style: .light)
-        let backgroundView = ViewWithFixedIntrinsicSize(effect: effect)
+        let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
         
+        let effect = UIBlurEffect(style: .light)
+        let effectView = UIVisualEffectView(effect: effect)
+        backgroundView.addSubview(effectView)
+
+        effectView.snp.makeConstraints { make in
+            make.width.height.leading.trailing.equalToSuperview()
+        }
+        
         let containerView = UIStackView()
-        backgroundView.contentView.addSubview(containerView)
+        backgroundView.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
