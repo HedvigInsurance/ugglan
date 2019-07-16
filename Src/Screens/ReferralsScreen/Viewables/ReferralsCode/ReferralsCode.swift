@@ -70,17 +70,17 @@ extension ReferralsCode: Viewable {
         }
         
         let codeLabelWrapper = UIView()
-        let codeLabel = MultilineLabel(value: "", style: codeTextStyle)
+        let codeLabel = UILabel(value: "", style: codeTextStyle)
         bag += codeSignal.withLatestFrom(remoteConfigContainer.fetched.atOnce().filter { $0 != false }).map { code, _ in
             let formattedLinkPrefix = self.remoteConfigContainer.referralsWebLandingPrefix.replacingOccurrences(of: "(^\\w+:|^)\\/\\/", with: "", options: .regularExpression, range: nil)
             return StyledText(text: "\(formattedLinkPrefix)\(code)", style: codeTextStyle)
-        }.bindTo(codeLabel.styledTextSignal)
+        }.bindTo(codeLabel, \.styledText)
         
-        bag += codeLabelWrapper.add(codeLabel) { codeLabelView in
-            codeLabelView.snp.makeConstraints { make in
-                make.leading.trailing.top.bottom.equalToSuperview()
-            }
+        codeLabelWrapper.addSubview(codeLabel)
+        codeLabel.snp.makeConstraints { make in
+            make.leading.trailing.top.bottom.equalToSuperview()
         }
+        
         codeContainer.addArrangedSubview(codeLabelWrapper)
         
         let copyIconWrapper = UIView()
