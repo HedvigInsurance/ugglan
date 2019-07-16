@@ -15,12 +15,23 @@ enum ToastHideDirection {
     case right
 }
 
-enum ToastSymbol {
+enum ToastSymbol: Equatable {
+    static func == (lhs: ToastSymbol, rhs: ToastSymbol) -> Bool {
+        switch (lhs, rhs) {
+        case (let .character(lhsCharacter), let .character(rhsCharacter)):
+            return lhsCharacter == rhsCharacter
+        case (let .icon(lhsIcon), let .icon(rhsIcon)):
+            return lhsIcon.image == rhsIcon.image
+        default:
+            return false
+        }
+    }
+    
     case character(_ character: Character)
     case icon(_ icon: ImageAsset)
 }
 
-struct Toast {
+struct Toast: Equatable {
     let symbol: ToastSymbol
     let body: String
     let textColor: UIColor

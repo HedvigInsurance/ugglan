@@ -14,15 +14,9 @@ struct PushNotificationsRegister: Presentable {
     let title: String
     let message: String
     
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController?, Future<Void>) {
         guard !PushNotificationsState.hasAskedForActivatingPushNotifications, !UIApplication.shared.isRegisteredForRemoteNotifications else {
-            let emptyViewController = UIViewController()
-            emptyViewController.preferredPresentationStyle = .modally(
-                presentationStyle: .overCurrentContext,
-                transitionStyle: .none,
-                capturesStatusBarAppearance: nil
-            )
-            return (emptyViewController, Future(()))
+            return (nil, Future(()))
         }
         
         PushNotificationsState.didAskForPushNotifications()
@@ -38,6 +32,8 @@ struct PushNotificationsRegister: Presentable {
             ]
         )
         
-        return alert.materialize()
+        let (viewController, future) = alert.materialize()
+        
+        return (viewController, future)
     }
 }

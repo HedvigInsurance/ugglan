@@ -43,13 +43,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         self.bag += window.add(toasts) { toastsView in
             toastsView.snp.makeConstraints { make in
+                let position: CGFloat = 69
                 if #available(iOS 11.0, *) {
                     let hasModal = self.window.rootViewController?.presentedViewController != nil
                     let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
-                    let extraPadding: CGFloat = hasModal ? 0 : 70
+                    let extraPadding: CGFloat = hasModal ? 0 : position
                     make.bottom.equalTo(-(safeAreaBottom + extraPadding))
                 } else {
-                    make.bottom.equalTo(-70)
+                    make.bottom.equalTo(-position)
                 }
                 
                 make.centerX.equalToSuperview()
@@ -59,6 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let innerBag = DisposeBag()
         innerBag += toasts.idleSignal.onValue { _ in
             innerBag.dispose()
+            self.toastSignal.value = nil
             self.toastWindow = nil
         }
         
@@ -81,19 +83,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         backgroundColor: UIColor = UIColor.white,
         duration: TimeInterval = 5.0
     ) {
-        if self.toastWindow == nil {
-            self.toastWindow = createToastWindow()
+        DispatchQueue.main.async {
+            if self.toastWindow == nil {
+                self.toastWindow = self.createToastWindow()
+            }
+            
+            self.toastWindow?.makeKeyAndVisible()
+            
+            let toast = Toast(
+                symbol: symbol,
+                body: body,
+                textColor: textColor,
+                backgroundColor: backgroundColor,
+                duration: duration
+            )
+            
+            if self.toastSignal.value != toast {
+                self.toastSignal.value = toast
+            }
         }
-        
-        self.toastWindow?.makeKeyAndVisible()
-        
-        self.toastSignal.value = Toast(
-            symbol: symbol,
-            body: body,
-            textColor: textColor,
-            backgroundColor: backgroundColor,
-            duration: duration
-        )
     }
 
     func presentMarketing() {
