@@ -28,7 +28,7 @@ extension TextStyle {
     
     static let toastBody = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .offBlack
-        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
     }
 
     static let bodyWhite = TextStyle.body.restyled { (style: inout TextStyle) in

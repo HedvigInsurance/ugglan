@@ -46,10 +46,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if #available(iOS 11.0, *) {
                     let hasModal = self.window.rootViewController?.presentedViewController != nil
                     let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
-                    let extraPadding: CGFloat = hasModal ? 0 : 80
+                    let extraPadding: CGFloat = hasModal ? 0 : 70
                     make.bottom.equalTo(-(safeAreaBottom + extraPadding))
                 } else {
-                    make.bottom.equalTo(-80)
+                    make.bottom.equalTo(-70)
                 }
                 
                 make.centerX.equalToSuperview()
