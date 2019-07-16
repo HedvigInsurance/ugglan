@@ -67,7 +67,7 @@ extension NewMemberButton: Viewable {
         }
 
         bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(button.type.value.height())
+            make.height.equalTo(button.type.value.height)
             make.width.equalToSuperview()
         }
 

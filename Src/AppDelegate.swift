@@ -152,7 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         }
         alertActionWasPressed = { _, title in
-            if let localizationKey = title.localizationKey?.toString() {
+            if let localizationKey = title.localizationKey?.description {
                 Analytics.logEvent(
                     "alert_action_tap_\(localizationKey)",
                     parameters: nil
