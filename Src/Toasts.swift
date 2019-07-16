@@ -15,7 +15,10 @@ enum ToastHideDirection {
     case right
 }
 
-typealias ToastSymbol = Either<Character, ImageAsset>
+enum ToastSymbol {
+    case character(_ character: Character)
+    case icon(_ icon: ImageAsset)
+}
 
 struct Toast {
     let symbol: ToastSymbol
@@ -26,18 +29,16 @@ struct Toast {
 }
 
 extension Toast : Viewable {
-    func getView() -> UIView {
-        if let character = symbol.left {
+    var symbolView: UIView {
+        switch self.symbol {
+        case let .character(character):
             let view = UILabel()
             view.text = String(character)
-            view.font = HedvigFonts.circularStdBook?.withSize(24)
-            
+            view.font = HedvigFonts.circularStdBook?.withSize(15)
             return view
-        } else {
-            let imageAsset = symbol.right!
-            
+        case let .icon(icon):
             let view = UIImageView()
-            view.image = imageAsset.image
+            view.image = icon.image
             view.contentMode = .scaleAspectFit
             
             view.snp.makeConstraints { make in
@@ -54,16 +55,19 @@ extension Toast : Viewable {
         let containerView = UIView()
         
         containerView.backgroundColor = backgroundColor
-        containerView.layer.cornerRadius = 30
         containerView.layer.shadowOpacity = 0.15
         containerView.layer.shadowOffset = CGSize(width: 0, height: 0)
         containerView.layer.shadowRadius = 10
         containerView.layer.shadowColor = UIColor.darkGray.cgColor
+        
+        bag += containerView.didLayoutSignal.onValue {
+            containerView.layer.cornerRadius = containerView.frame.height
+        }
 
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 5, verticalInset: 5)
         stackView.layoutMargins = UIEdgeInsets(horizontalInset: 26, verticalInset: 15)
+        stackView.isLayoutMarginsRelativeArrangement = true
 
         containerView.addSubview(stackView)
         
@@ -73,15 +77,12 @@ extension Toast : Viewable {
         
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
-        symbolContainer.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: symbol.left != nil ? 6 : 16)
         
         stackView.addArrangedSubview(symbolContainer)
         
         symbolContainer.snp.makeConstraints { make in
-            make.width.equalTo(40)
+            make.width.equalTo(30)
         }
-        
-        let symbolView = getView()
         
         symbolContainer.addArrangedSubview(symbolView)
         
@@ -99,6 +100,10 @@ extension Toast : Viewable {
 
 struct Toasts {
     let toastSignal: ReadWriteSignal<Toast?>
+    private let idleCallbacker = Callbacker<Void>()
+    var idleSignal: Signal<Void> {
+        return idleCallbacker.providedSignal
+    }
 }
 
 extension Toasts : Viewable {
@@ -158,6 +163,12 @@ extension Toasts : Viewable {
                             toastView.isHidden = true
                         }.onValue { _ in
                             stackView.removeArrangedSubview(toastView)
+                            toastView.removeFromSuperview()
+                                                        
+                            if stackView.subviews.isEmpty {
+                                self.idleCallbacker.callAll()
+                            }
+                            
                             innerBag.dispose()
                     }
                 }

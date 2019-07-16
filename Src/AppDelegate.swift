@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
+    var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
     
@@ -31,6 +32,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
+    }
+
+    func createToastWindow() -> UIWindow {
+        let window = PassTroughWindow(frame: UIScreen.main.bounds)
+        window.isOpaque = false
+        window.backgroundColor = UIColor.transparent
+        
+        let toasts = Toasts(toastSignal: self.toastSignal)
+        
+        self.bag += window.add(toasts) { toastsView in
+            toastsView.snp.makeConstraints { make in
+                if #available(iOS 11.0, *) {
+                    let hasModal = self.window.rootViewController?.presentedViewController != nil
+                    let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
+                    let extraPadding: CGFloat = hasModal ? 0 : 80
+                    make.bottom.equalTo(-(safeAreaBottom + extraPadding))
+                } else {
+                    make.bottom.equalTo(-80)
+                }
+                
+                make.centerX.equalToSuperview()
+            }
+        }
+        
+        let innerBag = DisposeBag()
+        innerBag += toasts.idleSignal.onValue { _ in
+            innerBag.dispose()
+            self.toastWindow = nil
+        }
+        
+        return window
     }
 
     func logout() {
@@ -49,6 +81,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         backgroundColor: UIColor = UIColor.white,
         duration: TimeInterval = 5.0
     ) {
+        if self.toastWindow == nil {
+            self.toastWindow = createToastWindow()
+        }
+        
+        self.toastWindow?.makeKeyAndVisible()
+        
         self.toastSignal.value = Toast(
             symbol: symbol,
             body: body,
@@ -68,22 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ).onValue { _ in
             let loggedIn = LoggedIn()
             self.bag += self.window.present(loggedIn, options: [], animated: true)
-            
-            if let rootViewController = self.window.rootViewController {
-                let toasts = Toasts(toastSignal: self.toastSignal)
-                
-                self.bag += rootViewController.view.add(toasts) { toastsView in
-                    toastsView.snp.makeConstraints { make in
-                        if #available(iOS 11.0, *) {
-                            make.bottom.equalTo(-(self.window.rootViewController!.view.safeAreaInsets.bottom + 80))
-                        } else {
-                            make.bottom.equalTo(-80)
-                        }
-                        
-                        make.centerX.equalToSuperview()
-                    }
-                }
-            }
         }
 
         bag += navigationController.present(marketingPresentation)
