@@ -20,7 +20,7 @@ enum ButtonType {
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
     case iconTransparent(textColor: HedvigColor, icon: ImageAsset)
 
-    func backgroundOpacity() -> CGFloat {
+    var backgroundOpacity: CGFloat {
         switch self {
         case .standard, .standardSmall:
             return 1
@@ -33,7 +33,7 @@ enum ButtonType {
         }
     }
 
-    func highlightedBackgroundOpacity() -> CGFloat {
+    var highlightedBackgroundOpacity: CGFloat {
         switch self {
         case .standard, .standardSmall:
             return 1
@@ -46,7 +46,7 @@ enum ButtonType {
         }
     }
 
-    func backgroundColor() -> HedvigColor {
+    var backgroundColor: HedvigColor {
         switch self {
         case let .standard((backgroundColor, _)):
             return backgroundColor
@@ -61,7 +61,7 @@ enum ButtonType {
         }
     }
 
-    func textColor() -> HedvigColor {
+    var textColor: HedvigColor {
         switch self {
         case let .standard((_, textColor)):
             return textColor
@@ -76,7 +76,7 @@ enum ButtonType {
         }
     }
 
-    func height() -> CGFloat {
+    var height: CGFloat {
         switch self {
         case .standard:
             return 50
@@ -91,7 +91,7 @@ enum ButtonType {
         }
     }
 
-    func fontSize() -> CGFloat {
+    var fontSize: CGFloat {
         switch self {
         case .standard, .standardSmall, .outline:
             return 15
@@ -102,7 +102,7 @@ enum ButtonType {
         }
     }
 
-    func extraWidthOffset() -> CGFloat {
+    var extraWidthOffset: CGFloat {
         switch self {
         case .standard:
             return 50
@@ -117,7 +117,7 @@ enum ButtonType {
         }
     }
 
-    func icon() -> ImageAsset? {
+    var icon: ImageAsset? {
         switch self {
         case let .iconTransparent((_, icon)):
             return icon
@@ -126,16 +126,16 @@ enum ButtonType {
         }
     }
 
-    func iconColor() -> HedvigColor? {
+    var iconColor: HedvigColor? {
         switch self {
         case .iconTransparent((_, _)):
-            return textColor()
+            return textColor
         default:
             return nil
         }
     }
 
-    func iconDistance() -> CGFloat {
+    var iconDistance: CGFloat {
         switch self {
         case .iconTransparent((_, _)):
             return 7
@@ -144,7 +144,7 @@ enum ButtonType {
         }
     }
 
-    func borderWidth() -> CGFloat {
+    var borderWidth: CGFloat {
         switch self {
         case .outline((_, _)):
             return 1
@@ -153,7 +153,7 @@ enum ButtonType {
         }
     }
 
-    func borderColor() -> UIColor {
+    var borderColor: UIColor {
         switch self {
         case let .outline((borderColor, _)):
             return UIColor.from(apollo: borderColor)
@@ -191,22 +191,22 @@ extension Button: Viewable {
                 style.buttonType = .custom
 
                 let backgroundColor = UIColor.from(
-                    apollo: buttonType.backgroundColor()
-                ).withAlphaComponent(buttonType.backgroundOpacity())
-                let textColor = UIColor.from(apollo: buttonType.textColor())
+                    apollo: buttonType.backgroundColor
+                ).withAlphaComponent(buttonType.backgroundOpacity)
+                let textColor = UIColor.from(apollo: buttonType.textColor)
 
                 style.states = [
                     .normal: ButtonStateStyle(
                         background: BackgroundStyle(
                             color: backgroundColor,
                             border: BorderStyle(
-                                width: buttonType.borderWidth(),
-                                color: buttonType.borderColor(),
-                                cornerRadius: buttonType.height() / 2
+                                width: buttonType.borderWidth,
+                                color: buttonType.borderColor,
+                                cornerRadius: buttonType.height / 2
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize()),
+                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
                             color: textColor
                         )
                     ),
@@ -219,22 +219,22 @@ extension Button: Viewable {
                 style.buttonType = .custom
 
                 let backgroundColor = UIColor.from(
-                    apollo: buttonType.backgroundColor()
-                ).darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity())
-                let textColor = UIColor.from(apollo: buttonType.textColor())
+                    apollo: buttonType.backgroundColor
+                ).darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                let textColor = UIColor.from(apollo: buttonType.textColor)
 
                 style.states = [
                     .normal: ButtonStateStyle(
                         background: BackgroundStyle(
                             color: backgroundColor,
                             border: BorderStyle(
-                                width: buttonType.borderWidth(),
-                                color: buttonType.borderColor(),
-                                cornerRadius: buttonType.height() / 2
+                                width: buttonType.borderWidth,
+                                color: buttonType.borderColor,
+                                cornerRadius: buttonType.height / 2
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize()),
+                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
                             color: textColor
                         )
                     ),
@@ -256,13 +256,13 @@ extension Button: Viewable {
 
         button.adjustsImageWhenHighlighted = false
 
-        if let icon = self.type.value.icon() {
+        if let icon = self.type.value.icon {
             button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
-            if type.value.iconColor() != nil {
-                button.tintColor = UIColor.from(apollo: type.value.iconColor()!)
+            if let iconColor = type.value.iconColor {
+                button.tintColor = UIColor.from(apollo: iconColor)
             }
 
-            let iconDistance = type.value.iconDistance()
+            let iconDistance = type.value.iconDistance
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
             button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
         }
@@ -271,7 +271,7 @@ extension Button: Viewable {
             button.setTitle(title)
 
             button.snp.remakeConstraints { make in
-                make.width.equalTo(button.intrinsicContentSize.width + type.extraWidthOffset())
+                make.width.equalTo(button.intrinsicContentSize.width + type.extraWidthOffset)
             }
         }
 
@@ -304,10 +304,8 @@ extension Button: Viewable {
                 \.style
             )
 
-        bag += touchUpInside.flatMapLatest { _ -> ReadWriteSignal<String> in
-            self.title.atOnce()
-        }.onValue { title in
-            if let localizationKey = title.localizationKey?.toString() {
+        bag += touchUpInside.withLatestFrom(title.atOnce().plain()).onValue { _, title in
+            if let localizationKey = title.localizationKey?.description {
                 Analytics.logEvent("tap_\(localizationKey)", parameters: nil)
             }
         }
@@ -327,8 +325,8 @@ extension Button: Viewable {
             )
 
         button.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset())
-            make.height.equalTo(self.type.value.height())
+            make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset)
+            make.height.equalTo(self.type.value.height)
             make.centerX.equalToSuperview()
         }
 
