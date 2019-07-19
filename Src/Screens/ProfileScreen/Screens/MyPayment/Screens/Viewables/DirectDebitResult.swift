@@ -122,7 +122,7 @@ extension DirectDebitResult: Viewable {
         stackView.addArrangedSubview(buttonContainer)
 
         buttonContainer.snp.makeConstraints { make in
-            make.height.equalTo(button.type.value.height())
+            make.height.equalTo(button.type.value.height)
         }
 
         bag += events.wasAdded.delay(by: 0.5).animated(style: SpringAnimationStyle.heavyBounce()) {

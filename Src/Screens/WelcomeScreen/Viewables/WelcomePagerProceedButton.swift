@@ -49,7 +49,7 @@ extension WelcomePagerProceedButton: Viewable {
                 buttonView.setTitle(title)
 
                 buttonView.snp.remakeConstraints { make in
-                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset())
+                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset)
                 }
 
                 buttonView.layoutIfNeeded()

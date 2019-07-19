@@ -3,12 +3,15 @@ query InsurancePrice {
         cost {
             monthlyDiscount {
                 amount
+                currency
             }
             monthlyGross {
                 amount
+                currency
             }
             monthlyNet {
                 amount
+                currency
             }
         }
     }
