@@ -23,12 +23,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
+    var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
+    
+    let toastSignal = ReadWriteSignal<Toast?>(nil)
 
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
+    }
+
+    func createToastWindow() -> UIWindow {
+        let window = PassTroughWindow(frame: UIScreen.main.bounds)
+        window.isOpaque = false
+        window.backgroundColor = UIColor.transparent
+        
+        let toasts = Toasts(toastSignal: self.toastSignal)
+        
+        self.bag += window.add(toasts) { toastsView in
+            toastsView.snp.makeConstraints { make in
+                let position: CGFloat = 69
+                if #available(iOS 11.0, *) {
+                    let hasModal = self.window.rootViewController?.presentedViewController != nil
+                    let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
+                    let extraPadding: CGFloat = hasModal ? 0 : position
+                    make.bottom.equalTo(-(safeAreaBottom + extraPadding))
+                } else {
+                    make.bottom.equalTo(-position)
+                }
+                
+                make.centerX.equalToSuperview()
+            }
+        }
+        
+        let innerBag = DisposeBag()
+        innerBag += toasts.idleSignal.onValue { _ in
+            innerBag.dispose()
+            self.toastSignal.value = nil
+            self.toastWindow = nil
+        }
+        
+        return window
     }
 
     func logout() {
@@ -38,6 +74,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = navigationController
 
         presentMarketing()
+    }
+    
+    func createToast(
+        symbol: ToastSymbol,
+        body: String,
+        textColor: UIColor = UIColor.offBlack,
+        backgroundColor: UIColor = UIColor.white,
+        duration: TimeInterval = 5.0
+    ) {
+        DispatchQueue.main.async {
+            if self.toastWindow == nil {
+                self.toastWindow = self.createToastWindow()
+            }
+            
+            self.toastWindow?.makeKeyAndVisible()
+            
+            let toast = Toast(
+                symbol: symbol,
+                body: body,
+                textColor: textColor,
+                backgroundColor: backgroundColor,
+                duration: duration
+            )
+            
+            if self.toastSignal.value != toast {
+                self.toastSignal.value = toast
+            }
+        }
     }
 
     func presentMarketing() {

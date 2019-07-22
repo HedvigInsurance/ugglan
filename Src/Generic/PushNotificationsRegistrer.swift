@@ -10,13 +10,13 @@ import Flow
 import Presentation
 import UIKit
 
-struct PushNotificationsRegistrer {
-    static func ask(title: String, message: String, viewController: UIViewController) {
-        guard !PushNotificationsState.hasAskedForActivatingPushNotifications else {
-            return
-        }
-        guard !UIApplication.shared.isRegisteredForRemoteNotifications else {
-            return
+struct PushNotificationsRegister: Presentable {
+    let title: String
+    let message: String
+    
+    func materialize() -> (UIViewController?, Future<Void>) {
+        guard !PushNotificationsState.hasAskedForActivatingPushNotifications, !UIApplication.shared.isRegisteredForRemoteNotifications else {
+            return (nil, Future(()))
         }
         
         PushNotificationsState.didAskForPushNotifications()
@@ -32,6 +32,8 @@ struct PushNotificationsRegistrer {
             ]
         )
         
-        viewController.present(alert)
+        let (viewController, future) = alert.materialize()
+        
+        return (viewController, future)
     }
 }

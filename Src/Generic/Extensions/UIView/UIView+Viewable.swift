@@ -149,9 +149,9 @@ extension UIStackView {
             wasAddedCallbacker: wasAddedCallbacker
         )
         let (matter, result) = viewable.materialize(events: viewableEvents)
-
+        
         addArrangedSubview(matter)
-
+        
         wasAddedCallbacker.callAll()
 
         return (matter, result, Disposer {
