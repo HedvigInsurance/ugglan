@@ -14,12 +14,12 @@ import XCTest
 class UITests: FBSnapshotTestCase {
     override func setUp() {
         super.setUp()
-
+        
+        FontLoader.loadFonts()
+        
         #if RECORD_MODE
             recordMode = true
         #endif
-
-        FontLoader.loadFonts(fontNames: ["Merriweather-Light", "CircularStd-Bold", "CircularStd-Book", "SoRay-ExtraBold"])
     }
 
     func testExample() {
@@ -39,7 +39,7 @@ class UITests: FBSnapshotTestCase {
                 make.height.equalTo(buttonView.snp.height)
             }
         }
-
+        
         FBSnapshotVerifyView(view)
 
         bag.dispose()
