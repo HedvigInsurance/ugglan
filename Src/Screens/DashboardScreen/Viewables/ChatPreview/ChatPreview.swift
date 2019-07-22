@@ -89,6 +89,7 @@ extension ChatPreview: Viewable {
         }
 
         bag += Chat.lastOpenedChatSignal.onValue { _ in
+            self.presentingViewController.updateTabBarItemBadge(value: nil)
             animateVisibility(visible: false)
         }
 
@@ -140,9 +141,6 @@ extension ChatPreview: Viewable {
                 .compactMap { $0.compactMap { $0 } }
                 .plain()
                 .flatMapLatest { getMessagesToShow(messages: $0) }
-                .atValue { messages in
-                    self.presentingViewController.updateTabBarItemBadge(value: messages.count > 0 ? String(messages.count) : nil)
-                }
                 .wait(until: containerView.hasWindowSignal)
                 .onValue { messages in
                     let onlyExistingMessages = messages.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
@@ -156,6 +154,8 @@ extension ChatPreview: Viewable {
                     let messagesToShow = messages.filter { message -> Bool in
                         handledMessageGlobalIds.first { message.globalId == $0 } == nil
                     }
+                    
+                    self.presentingViewController.updateTabBarItemBadge(value: messagesToShow.count > 0 ? String(messagesToShow.count) : nil)
 
                     guard messagesToShow.count != 0 else {
                         animateVisibility(visible: false)
