@@ -59,7 +59,11 @@ extension ChatPreview: Viewable {
         messageBubbleContainer.spacing = 8
         containerView.addArrangedSubview(messageBubbleContainer)
 
-        let openChatButton = Button(title: String(key: .CHAT_PREVIEW_OPEN_CHAT), type: .standardSmall(backgroundColor: .purple, textColor: .white))
+        let openChatButton = Button(
+            title: String(key: .CHAT_PREVIEW_OPEN_CHAT),
+            type: .standardSmall(backgroundColor: .purple, textColor: .white)
+        )
+        
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .trailing
