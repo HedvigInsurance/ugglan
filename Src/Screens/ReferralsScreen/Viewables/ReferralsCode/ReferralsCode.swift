@@ -48,7 +48,7 @@ extension ReferralsCode: Viewable {
             )
             
             self.presentingViewController.present(registrer).onValue({ _ in
-                UIPasteboard.general.value = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
+                UIPasteboard.general.value = "\(code)"
                 UIApplication.shared.appDelegate.createToast(
                     symbol: .character("🎉"),
                     body: String(key: .COPIED)
@@ -71,9 +71,8 @@ extension ReferralsCode: Viewable {
         
         let codeLabelWrapper = UIView()
         let codeLabel = UILabel(value: "", style: codeTextStyle)
-        bag += codeSignal.withLatestFrom(remoteConfigContainer.fetched.atOnce().filter { $0 != false }).map { code, _ in
-            let formattedLinkPrefix = self.remoteConfigContainer.referralsWebLandingPrefix.replacingOccurrences(of: "(^\\w+:|^)\\/\\/", with: "", options: .regularExpression, range: nil)
-            return StyledText(text: "\(formattedLinkPrefix)\(code)", style: codeTextStyle)
+        bag += codeSignal.map { code in
+            return StyledText(text: code, style: codeTextStyle)
         }.bindTo(codeLabel, \.styledText)
         
         codeLabelWrapper.addSubview(codeLabel)
