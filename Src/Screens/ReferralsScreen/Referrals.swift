@@ -202,9 +202,7 @@ extension Referrals: Presentable {
 
             bag += button.onTapSignal.withLatestFrom(
                 codeSignal.plain()
-            ).compactMap { $1 }.onValue { code in
-                Analytics.logEvent("click_referral", parameters: nil)
-                
+            ).compactMap { $1 }.onValue { code in                
                 let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
                 let message = String(key: .REFERRAL_SMS_MESSAGE(
                     referralLink: landingPageUrl,
