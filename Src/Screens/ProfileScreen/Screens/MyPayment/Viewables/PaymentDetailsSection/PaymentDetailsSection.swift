@@ -43,17 +43,15 @@ extension PaymentDetailsSection: Viewable {
         
         let freeMonthsRow = KeyValueRow()
         freeMonthsRow.isHiddenSignal.value = true
-        freeMonthsRow.keySignal.value = "Gratis månader"
+        freeMonthsRow.keySignal.value = String(key: .MY_PAYMENT_FREE_UNTIL_MESSAGE)
         
         bag += section.append(freeMonthsRow)
         
         bag += dataValueSignal
-            .compactMap { $0.data?.referralInformation.campaign.incentive }
-            .filter { $0.__typename == "FreeMonths" }
-            .onValue { incentive in
-                freeMonthsRow.valueSignal.value = "3"
+            .compactMap { $0.data?.insurance.cost?.freeUntil }
+            .onValue { freeUntilDate in
+                freeMonthsRow.valueSignal.value = freeUntilDate
                 freeMonthsRow.isHiddenSignal.value = false
-                // freeMonthsRow.valueSignal = incentive.quantity
             }
 
         let paymentTypeRow = KeyValueRow()
@@ -162,10 +160,11 @@ extension PaymentDetailsSection: Viewable {
         bag += section.append(applyDiscountButtonRow)
         
         let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }.toInt().map { $0 == 0 }
+        let hasFreeMonths = dataValueSignal.map { $0.data?.insurance.cost?.freeUntil != nil }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)
-        bag += hidePriceRowsSignal.map { !$0 }.bindTo(applyDiscountButtonRow.isHiddenSignal)
+        bag += combineLatest(hidePriceRowsSignal, hasFreeMonths).map { !$0 || $1 }.bindTo(applyDiscountButtonRow.isHiddenSignal)
 
         return (section, bag)
     }
