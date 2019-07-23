@@ -56,7 +56,8 @@ class ApolloContainer {
                     "monthlyDiscount": [
                         "__typename": "MonetaryAmountV2",
                         "amount": "0.00"
-                    ]
+                    ],
+                    "freeUntil": Date(timeIntervalSinceNow: 0).description
                 ],
                 "perilCategories": [
                     [
