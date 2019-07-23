@@ -28,6 +28,18 @@ extension Chat: Presentable {
 
         let view = UIView()
         view.backgroundColor = .purple
+        
+        let dummyButton = Button(title: "yoo", type: .outline(borderColor: .white, textColor: .white))
+        bag += view.add(dummyButton) { dummyButton in
+            dummyButton.snp.makeConstraints({ make in
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+            })
+        }
+        
+        bag += dummyButton.onTapSignal.onValue { _ in
+            UIApplication.shared.appDelegate.createToast(symbol: .character("🤖"), body: "HELLO BITCH")
+        }
 
         viewController.view = view
 

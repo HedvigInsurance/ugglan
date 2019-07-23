@@ -62,7 +62,7 @@ class MarketingStoryVideoCell: UICollectionViewCell {
     }
 
     func end() {
-        if let duration = videoPlayer.currentItem?.duration {
+        if let duration = videoPlayer.currentItem?.duration, !duration.isIndefinite {
             videoPlayer.seek(to: duration, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.positiveInfinity)
         }
     }
