@@ -26,7 +26,7 @@ targets:
       - Ugglan
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
-      - location: Carthage/Build/iOS/FBSnapshotTestCase.framework
+      - location: Carthage/Build/iOS/SnapshotTesting.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
       - location: Carthage/Build/iOS/ApolloSQLite.framework
@@ -70,7 +70,7 @@ targets:
       - script: scripts/copy-frameworks.sh
         shell: /bin/bash
         inputs:
-          - $(SRCROOT)/Carthage/Build/iOS/FBSnapshotTestCase.framework
+          - $(SRCROOT)/Carthage/Build/iOS/SnapshotTesting.framework
           - $(SRCROOT)/Carthage/Build/iOS/DeviceKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Apollo.framework
           - $(SRCROOT)/Carthage/Build/iOS/ApolloSQLite.framework
@@ -90,7 +90,7 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
         outputs:
-          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSnapshotTestCase.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapshotTesting.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloSQLite.framework
@@ -252,8 +252,6 @@ schemes:
       arguments: -AppleLanguages (en-GB)
       environment:
         OS_ACTIVITY_MODE: disable
-        FB_REFERENCE_IMAGE_DIR: $(SOURCE_ROOT)/UITestsImages/ReferenceImages
-        IMAGE_DIFF_DIR: $(SOURCE_ROOT)/UITestsImages/FailureDiffs
   Release:
     archive:
       name: ugglan.xcarchive

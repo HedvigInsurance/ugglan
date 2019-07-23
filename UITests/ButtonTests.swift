@@ -6,23 +6,13 @@
 //
 
 import Apollo
-import FBSnapshotTestCase
+import SnapshotTesting
 import Flow
 import UIKit
 import XCTest
 
-class UITests: FBSnapshotTestCase {
-    override func setUp() {
-        super.setUp()
-        
-        FontLoader.loadFonts()
-        
-        #if RECORD_MODE
-            recordMode = true
-        #endif
-    }
-
-    func testExample() {
+class ButtonTests: SnapShotTestCase {
+    func testStandard() {
         let bag = DisposeBag()
         let view = UIView()
 
@@ -40,7 +30,9 @@ class UITests: FBSnapshotTestCase {
             }
         }
         
-        FBSnapshotVerifyView(view)
+        view.layoutIfNeeded()
+        
+        assertSnapshot(matching: view, as: .image)
 
         bag.dispose()
     }
@@ -68,8 +60,10 @@ class UITests: FBSnapshotTestCase {
                 make.width.equalTo(buttonView.snp.width)
             }
         }
+        
+        view.layoutIfNeeded()
 
-        FBSnapshotVerifyView(view)
+        assertSnapshot(matching: view, as: .image)
 
         bag.dispose()
     }

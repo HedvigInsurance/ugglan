@@ -6,14 +6,14 @@
 //
 
 import Apollo
-import FBSnapshotTestCase
+import SnapshotTesting
 import Flow
 import UIKit
 import XCTest
 import Presentation
 import Form
 
-class ScreenShots: ScreenShotTestCase {
+class ScreenShots: SnapShotTestCase {
     func testDashboard() {
         let bag = DisposeBag()
         
@@ -21,34 +21,29 @@ class ScreenShots: ScreenShotTestCase {
             remoteConfig: RemoteConfigContainer()
         )
         
-        let waitForRender = expectation(description: "wait for render")
+        let tabBarController = UITabBarController()
         
-        let windows = self.screenShotWindows.map { (arg) -> (UIWindow, String) in
-            let (window, identifier) = arg
-            let tabBarController = UITabBarController()
-            
-            let dashboardPresentation = Presentation(
-                dashboard,
-                style: .default,
-                options: [.defaults, .prefersLargeTitles(true)]
-            )
-            
-            bag += tabBarController.presentTabs(dashboardPresentation)
-            window.rootViewController = tabBarController
-            window.makeKeyAndVisible()
-            
-            return (window, identifier)
-        }
+        let dashboardPresentation = Presentation(
+            dashboard,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
         
-        bag += Signal(after: 2).onValue { _ in
-            windows.forEach { window, identifier in
-                self.FBSnapshotVerifyView(window, identifier: identifier)
-            }
+        bag += tabBarController.presentTabs(dashboardPresentation)
+        
+        let waitForData = expectation(description: "wait for data")
+        
+        bag += ApolloContainer.shared.client.watch(query: DashboardQuery()).onValue { _ in
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneSe))
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneX))
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPhone8))
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPadPro10_5))
             
-            waitForRender.fulfill()
             bag.dispose()
+            
+            waitForData.fulfill()
         }
         
-        wait(for: [waitForRender], timeout: 5)
+        wait(for: [waitForData], timeout: 5)
     }
 }
