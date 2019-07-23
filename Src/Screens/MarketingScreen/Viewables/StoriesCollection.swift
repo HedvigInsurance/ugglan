@@ -137,7 +137,7 @@ extension StoriesCollection: Viewable {
             }
         }
 
-        bag += marketingStories.atOnce().onValue { rows in
+        bag += marketingStories.atOnce().distinct().onValue { rows in
             collectionKit.set(Table(rows: rows))
         }
 
