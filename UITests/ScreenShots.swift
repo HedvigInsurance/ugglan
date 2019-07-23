@@ -14,9 +14,7 @@ import Presentation
 import Form
 
 class ScreenShots: SnapShotTestCase {
-    func testDashboard() {
-        let bag = DisposeBag()
-        
+    func testDashboard() {        
         let dashboard = Dashboard(
             remoteConfig: RemoteConfigContainer()
         )
@@ -31,19 +29,11 @@ class ScreenShots: SnapShotTestCase {
         
         bag += tabBarController.presentTabs(dashboardPresentation)
         
-        let waitForData = expectation(description: "wait for data")
-        
-        bag += ApolloContainer.shared.client.watch(query: DashboardQuery()).onValue { _ in
+        waitForQuery(DashboardQuery()) {
             assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneSe))
             assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneX))
             assertSnapshot(matching: tabBarController, as: .image(on: .iPhone8))
             assertSnapshot(matching: tabBarController, as: .image(on: .iPadPro10_5))
-            
-            bag.dispose()
-            
-            waitForData.fulfill()
         }
-        
-        wait(for: [waitForData], timeout: 5)
     }
 }

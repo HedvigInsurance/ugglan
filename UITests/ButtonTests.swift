@@ -13,7 +13,6 @@ import XCTest
 
 class ButtonTests: SnapShotTestCase {
     func testStandard() {
-        let bag = DisposeBag()
         let view = UIView()
 
         let button = Button(
@@ -33,12 +32,9 @@ class ButtonTests: SnapShotTestCase {
         view.layoutIfNeeded()
         
         assertSnapshot(matching: view, as: .image)
-
-        bag.dispose()
     }
 
     func testLoadableButton() {
-        let bag = DisposeBag()
         let view = UIView()
 
         let button = Button(
@@ -64,7 +60,5 @@ class ButtonTests: SnapShotTestCase {
         view.layoutIfNeeded()
 
         assertSnapshot(matching: view, as: .image)
-
-        bag.dispose()
     }
 }
