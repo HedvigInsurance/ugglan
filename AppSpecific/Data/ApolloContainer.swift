@@ -46,7 +46,7 @@ class ApolloContainer {
     }
 
     private init() {}
-
+    
     func createClient(token: String?) {
         let authPayloads = [
             "Authorization": token ?? "",

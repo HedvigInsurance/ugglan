@@ -218,20 +218,24 @@ extension Referrals: Presentable {
                 
                 viewController.present(activityView)
 
-                bag += activityView.completionSignal.onValue { activity, success in
+                bag += activityView.completionSignal.onValueDisposePrevious { activity, success in
+                    let innerBag = bag.innerBag()
+                    
                     if success {
                         let register = PushNotificationsRegister(
                             title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
                             message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
                         )
                         
-                        viewController.present(register)
+                        innerBag += viewController.present(register)
                         
                         if activity != nil {
                             let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
                             Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
                         }
                     }
+                    
+                    return innerBag
                 }
             }
         }

@@ -99,7 +99,7 @@ extension LoadableButton: Viewable {
             setLoadingState(isLoading: isLoading, animate: true)
         }
 
-        bag += events.wasAdded.withLatestFrom(isLoadingSignal.atOnce().plain()).onValue { _, isLoading in
+        bag += buttonView.didMoveToWindowSignal.withLatestFrom(isLoadingSignal.atOnce().plain()).onValue { _, isLoading in
             setLoadingState(isLoading: isLoading, animate: false)
         }
 

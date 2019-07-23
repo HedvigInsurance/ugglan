@@ -1,0 +1,30 @@
+//
+//  ApolloMockNetworkTransport.swift
+//  UITests
+//
+//  Created by Sam Pettersson on 2019-07-22.
+//
+
+import Foundation
+import Apollo
+import Dispatch
+
+public final class MockNetworkTransport: NetworkTransport {
+    let body: JSONObject
+    
+    public init(body: JSONObject) {
+        self.body = body
+    }
+    
+    public func send<Operation>(operation: Operation, completionHandler: @escaping (_ response: GraphQLResponse<Operation>?, _ error: Error?) -> Void) -> Cancellable {
+        DispatchQueue.global(qos: .default).async {
+            completionHandler(GraphQLResponse(operation: operation, body: self.body), nil)
+        }
+        return MockTask()
+    }
+}
+
+private final class MockTask: Cancellable {
+    func cancel() {
+    }
+}

@@ -15,6 +15,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import UserNotifications
 
 let log = Logger.self
 
@@ -164,6 +165,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         return handled
+    }
+    
+    func registerForPushNotifications() {
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: { _, _ in }
+        )
+        
+        UIApplication.shared.registerForRemoteNotifications()
     }
 
     func application(

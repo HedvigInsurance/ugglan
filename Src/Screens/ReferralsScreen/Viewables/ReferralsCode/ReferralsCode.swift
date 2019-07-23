@@ -41,19 +41,19 @@ extension ReferralsCode: Viewable {
         let touchUpInsideSignal = view.signal(for: .touchUpInside)
         bag += touchUpInsideSignal.feedback(type: .success)
         
-        bag += touchUpInsideSignal.withLatestFrom(codeSignal).onValue { _, code in
-            let registrer = PushNotificationsRegister(
+        bag += touchUpInsideSignal.withLatestFrom(codeSignal).onValueDisposePrevious { _, code in
+            let register = PushNotificationsRegister(
                 title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
                 message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
             )
             
-            self.presentingViewController.present(registrer).onValue({ _ in
+            return self.presentingViewController.present(register).onValue { _ in
                 UIPasteboard.general.value = code
                 UIApplication.shared.appDelegate.createToast(
                     symbol: .character("🎉"),
                     body: String(key: .COPIED)
                 )
-            })
+            }.disposable
         }
 
         let codeContainer = UIStackView()

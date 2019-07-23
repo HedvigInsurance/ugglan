@@ -68,8 +68,13 @@ extension About: Presentable {
         )
         bag += versionSection.append(activatePushNotificationsRow)
 
-        bag += activatePushNotificationsRow.onSelect.onValue { _ in
-            UIApplication.shared.appDelegate.registerForPushNotifications()
+        bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
+            let register = PushNotificationsRegister(
+                title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                message: "",
+                forceAsk: true
+            )
+            return self.presentingViewController.present(register).disposable
         }
 
         let showWhatsNew = ButtonRow(
