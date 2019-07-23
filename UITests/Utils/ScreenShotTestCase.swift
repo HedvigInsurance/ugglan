@@ -41,4 +41,14 @@ class SnapShotTestCase: XCTestCase {
         
         wait(for: [waitForQuery], timeout: 5)
     }
+    
+    func materializeViewable<View: Viewable>(
+        _ viewable: View,
+        onCreated: (_ view: View.Matter) -> Void
+    ) where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Disposable {
+        let (matter, result) = viewable.materialize(events: ViewableEvents(wasAddedCallbacker: Callbacker()))
+        matter.layoutIfNeeded()
+        bag += result
+        onCreated(matter)
+    }
 }

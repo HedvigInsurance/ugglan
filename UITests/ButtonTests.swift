@@ -13,8 +13,6 @@ import XCTest
 
 class ButtonTests: SnapShotTestCase {
     func testStandard() {
-        let view = UIView()
-
         let button = Button(
             title: "Lorem ipsum",
             type: .standard(
@@ -22,21 +20,13 @@ class ButtonTests: SnapShotTestCase {
                 textColor: .white
             )
         )
-        bag += view.add(button) { buttonView in
-            view.snp.makeConstraints { make in
-                make.width.equalTo(buttonView.snp.width)
-                make.height.equalTo(buttonView.snp.height)
-            }
+        
+        materializeViewable(button) { view in
+            assertSnapshot(matching: view, as: .image)
         }
-        
-        view.layoutIfNeeded()
-        
-        assertSnapshot(matching: view, as: .image)
     }
 
     func testLoadableButton() {
-        let view = UIView()
-
         let button = Button(
             title: "testa",
             type: .standard(
@@ -50,15 +40,8 @@ class ButtonTests: SnapShotTestCase {
             initialLoadingState: true
         )
 
-        bag += view.add(loadableButton) { buttonView in
-            view.snp.makeConstraints { make in
-                make.height.equalTo(buttonView.snp.height)
-                make.width.equalTo(buttonView.snp.width)
-            }
+        materializeViewable(loadableButton) { view in
+            assertSnapshot(matching: view, as: .image)
         }
-        
-        view.layoutIfNeeded()
-
-        assertSnapshot(matching: view, as: .image)
     }
 }
