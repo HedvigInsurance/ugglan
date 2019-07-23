@@ -32,11 +32,13 @@ class SnapShotTestCase: XCTestCase {
     }
     
     func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
+        let bag = DisposeBag()
         let waitForQuery = expectation(description: "wait for query")
         
-        bag += ApolloContainer.shared.client.fetch(query: query).onValue { _ in
+        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
             onFetched()
             waitForQuery.fulfill()
+            bag.dispose()
         }
         
         wait(for: [waitForQuery], timeout: 5)
