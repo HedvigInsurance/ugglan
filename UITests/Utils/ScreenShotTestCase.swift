@@ -36,9 +36,7 @@ class SnapShotTestCase: XCTestCase {
         
         bag += ApolloContainer.shared.client.fetch(query: query).onValue { _ in
             onFetched()
-            self.bag += Signal(after: 1).onValue({ _ in
-                waitForQuery.fulfill()
-            })
+            waitForQuery.fulfill()
         }
         
         wait(for: [waitForQuery], timeout: 5)

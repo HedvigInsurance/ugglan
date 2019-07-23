@@ -14,6 +14,16 @@ import Presentation
 import Form
 
 class ScreenShots: SnapShotTestCase {
+    func testChat() {
+        let chat = Chat()
+        
+        let (viewController, future) = chat.materialize()
+        
+        bag += future.disposable
+        
+        assertSnapshot(matching: viewController, as: .image(on: .iPhoneSe))
+    }
+    
     func testDashboard() {        
         let dashboard = Dashboard(
             remoteConfig: RemoteConfigContainer()
