@@ -220,7 +220,11 @@ extension Referrals: Presentable {
 
                 bag += activityView.completionSignal.onValue { activity, success in
                     if success {
-                        PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: viewController)
+                        PushNotificationsRegistrer.ask(
+                            title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                            message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE),
+                            viewController: viewController
+                        )
                         if activity != nil {
                             let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
                             Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
