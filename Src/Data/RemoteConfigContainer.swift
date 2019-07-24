@@ -29,8 +29,9 @@ class RemoteConfigContainer {
         self.fetched = fetched
 
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
-            remoteConfig.activateFetched()
-            fetched.value = true
+            remoteConfig.activate(completionHandler: { _ in
+                 fetched.value = true
+            })
         })
 
         self.remoteConfig = remoteConfig
