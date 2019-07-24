@@ -34,7 +34,7 @@ class SnapShotTestCase: XCTestCase {
     func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
         let waitForQuery = expectation(description: "wait for query")
         
-        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { data in
+        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).delay(by: 0.2).onValue { data in
             onFetched()
             waitForQuery.fulfill()
         }
