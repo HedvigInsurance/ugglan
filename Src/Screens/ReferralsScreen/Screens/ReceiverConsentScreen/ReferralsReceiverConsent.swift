@@ -40,7 +40,7 @@ extension ReferralsReceiverConsent: Presentable {
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
         }
-        
+
         bag += view.didMoveToWindowSignal.onValue { _ in
             UIApplication.shared.keyWindow?.endEditing(true)
         }

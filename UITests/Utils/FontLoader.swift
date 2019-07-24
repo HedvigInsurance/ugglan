@@ -8,11 +8,11 @@
 import Foundation
 import UIKit
 
-struct FontLoader {    
+struct FontLoader {
     static func loadFonts() {
         let fileManager = FileManager.default
         let bundleURL = Bundle(for: AppDelegate.self).bundleURL
-        
+
         do {
             let contents = try fileManager.contentsOfDirectory(at: bundleURL, includingPropertiesForKeys: [], options: .skipsHiddenFiles)
             for url in contents {

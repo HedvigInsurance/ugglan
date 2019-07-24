@@ -63,7 +63,7 @@ extension ChatPreview: Viewable {
             title: String(key: .CHAT_PREVIEW_OPEN_CHAT),
             type: .standardSmall(backgroundColor: .purple, textColor: .white)
         )
-        
+
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .trailing
@@ -149,7 +149,7 @@ extension ChatPreview: Viewable {
                     let onlyExistingMessages = messages.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
                         message.globalId == globalId
                     })
-                    
+
                     self.presentingViewController.updateTabBarItemBadge(
                         value: messages.count > 0 ? String(messages.count) : nil
                     )

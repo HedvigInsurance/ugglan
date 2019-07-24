@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
-    
+
     let toastSignal = ReadWriteSignal<Toast?>(nil)
 
     override init() {
@@ -39,10 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let window = PassTroughWindow(frame: UIScreen.main.bounds)
         window.isOpaque = false
         window.backgroundColor = UIColor.transparent
-        
-        let toasts = Toasts(toastSignal: self.toastSignal)
-        
-        self.bag += window.add(toasts) { toastsView in
+
+        let toasts = Toasts(toastSignal: toastSignal)
+
+        bag += window.add(toasts) { toastsView in
             toastsView.snp.makeConstraints { make in
                 let position: CGFloat = 69
                 if #available(iOS 11.0, *) {
@@ -53,18 +53,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 } else {
                     make.bottom.equalTo(-position)
                 }
-                
+
                 make.centerX.equalToSuperview()
             }
         }
-        
+
         let innerBag = DisposeBag()
         innerBag += toasts.idleSignal.onValue { _ in
             innerBag.dispose()
             self.toastSignal.value = nil
             self.toastWindow = nil
         }
-        
+
         return window
     }
 
@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         presentMarketing()
     }
-    
+
     func createToast(
         symbol: ToastSymbol,
         body: String,
@@ -88,9 +88,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if self.toastWindow == nil {
                 self.toastWindow = self.createToastWindow()
             }
-            
+
             self.toastWindow?.makeKeyAndVisible()
-            
+
             let toast = Toast(
                 symbol: symbol,
                 body: body,
@@ -98,7 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 backgroundColor: backgroundColor,
                 duration: duration
             )
-            
+
             if self.toastSignal.value != toast {
                 self.toastSignal.value = toast
             }
@@ -166,14 +166,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         return handled
     }
-    
+
     func registerForPushNotifications() {
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
             options: authOptions,
             completionHandler: { _, _ in }
         )
-        
+
         UIApplication.shared.registerForRemoteNotifications()
     }
 

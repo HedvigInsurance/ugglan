@@ -32,25 +32,25 @@ extension ApolloClient {
             Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION)) { true },
             Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_CANCEL_ACTION)) { false }
         )
-        
+
         DispatchQueue.main.async {
             var window: UIWindow? = UIWindow()
             window!.makeKeyAndVisible()
             window!.backgroundColor = UIColor.clear
-            
+
             let viewController = UIViewController()
             viewController.view.backgroundColor = UIColor.clear
             window!.rootViewController = viewController
-            
+
             let bag = DisposeBag()
-            
+
             bag += viewController.present(alert).onValue { shouldRetry in
                 if shouldRetry {
                     ApolloClient.retryQueue.forEach { retry in
                         retry()
                     }
                 }
-                
+
                 ApolloClient.retryQueue = []
                 ApolloClient.isShowingNetworkErrorMessage = false
                 bag.dispose()

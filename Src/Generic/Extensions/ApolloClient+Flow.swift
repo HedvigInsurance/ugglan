@@ -36,14 +36,14 @@ extension ApolloClient {
                         if error?.isIgnorable ?? false {
                             return
                         }
-                        
+
                         log.error(error?.localizedDescription)
-                        
+
                         self.self.fetch(
                             query: query,
                             cachePolicy: cachePolicy,
                             queue: queue,
-                            resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, error: Error?) in
+                            resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, _: Error?) in
                                 if result != nil {
                                     completion(.success(result!))
                                 } else {
@@ -52,9 +52,9 @@ extension ApolloClient {
                                             query: query,
                                             cachePolicy: cachePolicy,
                                             queue: queue
-                                            ).onResult { result in
-                                                completion(result)
-                                            }
+                                        ).onResult { result in
+                                            completion(result)
+                                        }
                                     }
                                 }
                             }
@@ -98,11 +98,11 @@ extension ApolloClient {
                         }
 
                         log.error(error?.localizedDescription)
-                        
+
                         self.self.perform(
                             mutation: mutation,
                             queue: queue,
-                            resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, error: Error?) in
+                            resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, _: Error?) in
                                 if result != nil {
                                     completion(.success(result!))
                                 } else {
@@ -141,8 +141,8 @@ extension ApolloClient {
                     }
 
                     log.error(error?.localizedDescription)
-                    
-                    _ = self.self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, error in
+
+                    _ = self.self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, _ in
                         if let result = result {
                             callbacker(result)
                         } else {
