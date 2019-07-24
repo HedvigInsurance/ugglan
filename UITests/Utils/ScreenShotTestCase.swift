@@ -35,7 +35,10 @@ class SnapShotTestCase: XCTestCase {
         let bag = DisposeBag()
         let waitForQuery = expectation(description: "wait for query")
         
-        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+        print("starting to wait for query")
+        
+        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { data in
+            print("got data now", data)
             onFetched()
             waitForQuery.fulfill()
             bag.dispose()
