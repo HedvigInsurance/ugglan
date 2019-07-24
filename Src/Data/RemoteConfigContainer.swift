@@ -30,7 +30,7 @@ class RemoteConfigContainer {
 
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
             remoteConfig.activate(completionHandler: { _ in
-                 fetched.value = true
+                fetched.value = true
             })
         })
 

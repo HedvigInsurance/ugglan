@@ -6,42 +6,42 @@
 //
 
 import Apollo
-import SnapshotTesting
 import Flow
+import Form
+import Presentation
+import SnapshotTesting
 import UIKit
 import XCTest
-import Presentation
-import Form
 
 class SnapShotTestCase: XCTestCase {
     let bag = DisposeBag()
-    
+
     override func setUp() {
         super.setUp()
-        
+
         FontLoader.loadFonts()
         DefaultStyling.installCustom()
-        
+
         #if RECORD_MODE
-        record = true
+            record = true
         #endif
     }
-    
+
     override func tearDown() {
         bag.dispose()
     }
-    
+
     func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
         let waitForQuery = expectation(description: "wait for query")
-        
-        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).delay(by: 0.2).onValue { data in
+
+        bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).delay(by: 0.2).onValue { _ in
             onFetched()
             waitForQuery.fulfill()
         }
-        
+
         wait(for: [waitForQuery], timeout: 20)
     }
-    
+
     func materializeViewable<View: Viewable>(
         _ viewable: View,
         onCreated: (_ view: View.Matter) -> Void

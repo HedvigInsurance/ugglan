@@ -25,7 +25,7 @@ class ButtonTests: SnapShotTestCase {
             assertSnapshot(matching: view, as: .image)
         }
     }
-    
+
     func testStandardWithDifferentText() {
         let button = Button(
             title: "Mauris velit consectetur interdum eget habitasse velit nisi, tempor venenatis scelerisque donec",
@@ -34,12 +34,12 @@ class ButtonTests: SnapShotTestCase {
                 textColor: .white
             )
         )
-        
+
         materializeViewable(button) { view in
             assertSnapshot(matching: view, as: .image)
         }
     }
-    
+
     func testStandardWithDifferentColors() {
         let button = Button(
             title: "Lorem ipsum",
@@ -48,18 +48,18 @@ class ButtonTests: SnapShotTestCase {
                 textColor: .black
             )
         )
-        
+
         materializeViewable(button) { view in
             assertSnapshot(matching: view, as: .image)
         }
     }
-    
+
     func testPillTransparent() {
         let button = Button(
             title: "Lorem ipsum",
             type: .pillTransparent(backgroundColor: .black, textColor: .white)
         )
-        
+
         materializeViewable(button) { view in
             assertSnapshot(matching: view, as: .image)
         }
@@ -83,10 +83,10 @@ class ButtonTests: SnapShotTestCase {
             assertSnapshot(matching: view, as: .image)
         }
     }
-    
+
     func testChatButton() {
         let chatButton = ChatButton(presentingViewController: UIViewController())
-        
+
         materializeViewable(chatButton) { view in
             assertSnapshot(matching: view, as: .image)
         }

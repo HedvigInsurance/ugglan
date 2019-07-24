@@ -26,7 +26,7 @@ extension ApolloClient {
     ) -> Future<GraphQLResult<Query.Data>> {
         return fetch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
     }
-    
+
     private func fetch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
@@ -47,16 +47,15 @@ extension ApolloClient {
                         }
 
                         log.error(error?.localizedDescription)
-                        
-                        
+
                         let retryHandler = { [unowned self] () -> Void in
                             self.fetch(
                                 query: query,
                                 cachePolicy: cachePolicy,
                                 queue: queue,
                                 numberOfRetries: numberOfRetries + 1
-                                ).onResult { result in
-                                    completion(result)
+                            ).onResult { result in
+                                completion(result)
                             }
                         }
 
@@ -86,7 +85,7 @@ extension ApolloClient {
             }
         }
     }
-    
+
     func perform<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
@@ -112,7 +111,7 @@ extension ApolloClient {
                         }
 
                         log.error(error?.localizedDescription)
-                        
+
                         let retryHandler = { [unowned self] () -> Void in
                             self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
                                 completion(result)
@@ -133,7 +132,7 @@ extension ApolloClient {
             }
         }
     }
-    
+
     func watch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
@@ -160,7 +159,7 @@ extension ApolloClient {
                     }
 
                     log.error(error?.localizedDescription)
-                    
+
                     let retryHandler = { [unowned self] in
                         bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: numberOfRetries + 1).onValue { result in
                             callbacker(result)
@@ -185,12 +184,12 @@ extension ApolloClient {
     func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
         return Signal { callbacker in
             let bag = DisposeBag()
-            
+
             let subscriber = self.subscribe(subscription: subscription, queue: queue, resultHandler: { result, error in
                 if !(error?.isIgnorable ?? false) {
                     log.error(error?.localizedDescription)
                 }
-                
+
                 if let result = result {
                     callbacker(result)
                 }
