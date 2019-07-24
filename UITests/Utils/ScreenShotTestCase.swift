@@ -28,23 +28,18 @@ class SnapShotTestCase: XCTestCase {
     }
     
     override func tearDown() {
-        // bag.dispose()
+        bag.dispose()
     }
     
     func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
-        let bag = DisposeBag()
         let waitForQuery = expectation(description: "wait for query")
         
-        print("starting to wait for query")
-        
         bag += ApolloContainer.shared.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { data in
-            print("got data now", data)
             onFetched()
             waitForQuery.fulfill()
-            bag.dispose()
         }
         
-        wait(for: [waitForQuery], timeout: 5)
+        wait(for: [waitForQuery], timeout: 20)
     }
     
     func materializeViewable<View: Viewable>(
