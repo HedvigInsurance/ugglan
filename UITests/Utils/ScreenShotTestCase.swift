@@ -28,7 +28,7 @@ class SnapShotTestCase: XCTestCase {
     }
     
     override func tearDown() {
-        bag.dispose()
+        // bag.dispose()
     }
     
     func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
