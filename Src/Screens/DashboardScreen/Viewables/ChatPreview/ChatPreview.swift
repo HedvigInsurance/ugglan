@@ -84,6 +84,7 @@ extension ChatPreview: Viewable {
                 .animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                     containerView.isHidden = !visible
                     containerView.alpha = visible ? 1 : 0
+                    containerView.layoutSuperviewsIfNeeded()
                 }).onValue { _ in
                     if !visible {
                         handledMessageGlobalIds = []
