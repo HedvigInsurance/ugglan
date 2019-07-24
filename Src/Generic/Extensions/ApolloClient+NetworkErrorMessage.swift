@@ -14,10 +14,10 @@ import UIKit
 
 extension ApolloClient {
     static var isShowingNetworkErrorMessage = false
-    static var retryQueue: [() -> Void] = []
+    static var retryQueue: [(DispatchQueue, () -> Void)] = []
 
-    func showNetworkErrorMessage(onRetry: @escaping () -> Void) {
-        ApolloClient.retryQueue.append(onRetry)
+    func showNetworkErrorMessage(queue: DispatchQueue, onRetry: @escaping () -> Void) {
+        ApolloClient.retryQueue.append((queue, onRetry))
 
         if ApolloClient.isShowingNetworkErrorMessage {
             return
@@ -46,8 +46,10 @@ extension ApolloClient {
 
             bag += viewController.present(alert).onValue { shouldRetry in
                 if shouldRetry {
-                    ApolloClient.retryQueue.forEach { retry in
-                        retry()
+                    ApolloClient.retryQueue.forEach { queue, retry in
+                        queue.async {
+                            retry()
+                        }
                     }
                 }
 

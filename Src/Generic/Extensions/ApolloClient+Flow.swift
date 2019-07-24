@@ -24,41 +24,47 @@ extension ApolloClient {
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Future<GraphQLResult<Query.Data>> {
+        return fetch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
+    }
+    
+    private func fetch<Query: GraphQLQuery>(
+        query: Query,
+        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
+        queue: DispatchQueue = DispatchQueue.main,
+        numberOfRetries: Int = 0
+    ) -> Future<GraphQLResult<Query.Data>> {
         return Future<GraphQLResult<Query.Data>> { completion in
             let cancellable = self.fetch(
                 query: query,
                 cachePolicy: cachePolicy,
                 queue: queue,
                 resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, error: Error?) in
-                    if result != nil {
-                        completion(.success(result!))
+                    if let result = result {
+                        completion(.success(result))
                     } else {
                         if error?.isIgnorable ?? false {
                             return
                         }
 
                         log.error(error?.localizedDescription)
-
-                        self.self.fetch(
-                            query: query,
-                            cachePolicy: cachePolicy,
-                            queue: queue,
-                            resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, _: Error?) in
-                                if result != nil {
-                                    completion(.success(result!))
-                                } else {
-                                    self.showNetworkErrorMessage { [unowned self] in
-                                        self.fetch(
-                                            query: query,
-                                            cachePolicy: cachePolicy,
-                                            queue: queue
-                                        ).onResult { result in
-                                            completion(result)
-                                        }
-                                    }
-                                }
+                        
+                        
+                        let retryHandler = { [unowned self] () -> Void in
+                            self.fetch(
+                                query: query,
+                                cachePolicy: cachePolicy,
+                                queue: queue,
+                                numberOfRetries: numberOfRetries + 1
+                                ).onResult { result in
+                                    completion(result)
                             }
-                        )
+                        }
+
+                        if numberOfRetries == 0 {
+                            retryHandler()
+                        } else {
+                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        }
                     }
                 }
             )
@@ -80,40 +86,44 @@ extension ApolloClient {
             }
         }
     }
-
+    
     func perform<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
+    ) -> Future<GraphQLResult<Mutation.Data>> {
+        return perform(mutation: mutation, queue: queue, numberOfRetries: 0)
+    }
+
+    private func perform<Mutation: GraphQLMutation>(
+        mutation: Mutation,
+        queue: DispatchQueue = DispatchQueue.main,
+        numberOfRetries: Int = 0
     ) -> Future<GraphQLResult<Mutation.Data>> {
         return Future<GraphQLResult<Mutation.Data>> { completion in
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
                 resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, error: Error?) in
-                    if result != nil {
-                        completion(.success(result!))
+                    if let result = result {
+                        completion(.success(result))
                     } else {
                         if error?.isIgnorable ?? false {
                             return
                         }
 
                         log.error(error?.localizedDescription)
-
-                        self.self.perform(
-                            mutation: mutation,
-                            queue: queue,
-                            resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, _: Error?) in
-                                if result != nil {
-                                    completion(.success(result!))
-                                } else {
-                                    self.showNetworkErrorMessage { [unowned self] in
-                                        self.perform(mutation: mutation, queue: queue).onResult { result in
-                                            completion(result)
-                                        }
-                                    }
-                                }
+                        
+                        let retryHandler = { [unowned self] () -> Void in
+                            self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
+                                completion(result)
                             }
-                        )
+                        }
+
+                        if numberOfRetries == 0 {
+                            retryHandler()
+                        } else {
+                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        }
                     }
                 }
             )
@@ -123,11 +133,20 @@ extension ApolloClient {
             }
         }
     }
-
-    public func watch<Query: GraphQLQuery>(
+    
+    func watch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
+    ) -> Signal<GraphQLResult<Query.Data>> {
+        return watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
+    }
+
+    private func watch<Query: GraphQLQuery>(
+        query: Query,
+        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
+        queue: DispatchQueue = DispatchQueue.main,
+        numberOfRetries: Int = 0
     ) -> Signal<GraphQLResult<Query.Data>> {
         return Signal { callbacker in
             let bag = DisposeBag()
@@ -141,17 +160,17 @@ extension ApolloClient {
                     }
 
                     log.error(error?.localizedDescription)
-
-                    _ = self.self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, _ in
-                        if let result = result {
+                    
+                    let retryHandler = { [unowned self] in
+                        bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: numberOfRetries + 1).onValue { result in
                             callbacker(result)
-                        } else {
-                            self.showNetworkErrorMessage { [unowned self] in
-                                bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue).onValue { result in
-                                    callbacker(result)
-                                }
-                            }
                         }
+                    }
+
+                    if numberOfRetries == 0 {
+                        retryHandler()
+                    } else {
+                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
                     }
                 }
             }
@@ -163,12 +182,15 @@ extension ApolloClient {
         }
     }
 
-    func subscribe<Subscription>(subscription: Subscription, queue _: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
+    func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
         return Signal { callbacker in
             let bag = DisposeBag()
-
-            let subscriber = self.subscribe(subscription: subscription, resultHandler: { result, error in
-                log.error(error?.localizedDescription)
+            
+            let subscriber = self.subscribe(subscription: subscription, queue: queue, resultHandler: { result, error in
+                if !(error?.isIgnorable ?? false) {
+                    log.error(error?.localizedDescription)
+                }
+                
                 if let result = result {
                     callbacker(result)
                 }
