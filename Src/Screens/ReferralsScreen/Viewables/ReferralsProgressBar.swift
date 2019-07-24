@@ -158,7 +158,7 @@ extension ReferralsProgressBar {
 
         node.position = SCNVector3Make(
             13,
-            Float((Float(amountOfBlocks - 1 - (amountOfCompletedBlocks / 2))) * Float(blockHeight + dividerHeight)) + (hasDiscount ? Float(0) : Float((blockHeight + dividerHeight) / 2)),
+            Float(Float(amountOfBlocks - 1 - (amountOfCompletedBlocks / 2)) * Float(blockHeight + dividerHeight)) + (hasDiscount ? Float(0) : Float((blockHeight + dividerHeight) / 2)),
             0
         )
 
@@ -179,14 +179,14 @@ extension ReferralsProgressBar {
         let amountOfBlocks = Int(ceil(Float(grossPremium) / Float(incentive)))
         let amountOfCompletedBlocks = Int(ceil(Float(grossPremium - netPremium) / Float(incentive)))
         let discount = grossPremium - netPremium
-        
+
         let blockHeight: CGFloat = 2.0
         let dividerHeight: CGFloat = 0.20
 
         for i in 1 ... amountOfBlocks {
             let boxGeometry = SCNBox(width: 10.0, height: blockHeight, length: 10.0, chamferRadius: 0)
-            
-            if i > amountOfBlocks - amountOfCompletedBlocks && amountOfCompletedBlocks != 0 {
+
+            if i > amountOfBlocks - amountOfCompletedBlocks, amountOfCompletedBlocks != 0 {
                 let boxColor = UIColor.turquoise
 
                 boxGeometry.materials = [
@@ -210,11 +210,11 @@ extension ReferralsProgressBar {
             boxNode.physicsBody?.isAffectedByGravity = true
             containerNode.addChildNode(boxNode)
             blocks.append(boxNode)
-            
-            if (i != amountOfBlocks) {
+
+            if i != amountOfBlocks {
                 let dividerGeometry = SCNBox(width: 10.0, height: dividerHeight, length: 10.0, chamferRadius: 0)
                 dividerGeometry.firstMaterial?.diffuse.contents = i > amountOfBlocks - amountOfCompletedBlocks - 1 ? UIColor.turquoise.lighter(amount: 0.1) : UIColor.purple.lighter(amount: 0.1)
-                
+
                 let dividerNode = SCNNode(geometry: dividerGeometry)
                 dividerNode.position = SCNVector3Make(
                     0,
@@ -225,7 +225,6 @@ extension ReferralsProgressBar {
                 containerNode.addChildNode(dividerNode)
                 blocks.append(dividerNode)
             }
-            
         }
 
         let discountLabelNode = currentDiscountLabel(
@@ -267,28 +266,28 @@ extension ReferralsProgressBar {
 
             containerNode.runAction(action)
         }
-        
+
         func transitionColor(from: UIColor, to: UIColor, percentage: CGFloat) -> UIColor {
             let fromComponents = from.cgColor.components!
             let toComponents = to.cgColor.components!
-            
+
             let color = UIColor(red: fromComponents[0] + (toComponents[0] - fromComponents[0]) * percentage,
                                 green: fromComponents[1] + (toComponents[1] - fromComponents[1]) * percentage,
                                 blue: fromComponents[2] + (toComponents[2] - fromComponents[2]) * percentage,
                                 alpha: fromComponents[3] + (toComponents[3] - fromComponents[3]) * percentage)
             return color
         }
-        
-        if (discount == 0) {
+
+        if discount == 0 {
             bag += Signal(after: 3).onValue { _ in
                 var blockActions: [SCNAction] = []
                 let idleAction = SCNAction.wait(duration: 7)
                 let duration = 0.2
-                
+
                 for i in stride(from: blocks.count - 1, to: -1, by: -2) {
-                    let action = SCNAction.customAction(duration: duration, action: { node, progress in
+                    let action = SCNAction.customAction(duration: duration, action: { _, progress in
                         let percentage = progress / CGFloat(duration)
-                        
+
                         blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
                             from: UIColor.purple,
                             to: UIColor.turquoise,
@@ -302,15 +301,15 @@ extension ReferralsProgressBar {
                             )
                         }
                     })
-                    
+
                     action.timingMode = SCNActionTimingMode.easeInEaseOut
                     blockActions.append(action)
                 }
-                
+
                 let blockDelayAction = SCNAction.wait(duration: 0.7)
                 blockActions.append(blockDelayAction)
-                
-                let finalBlockAction = SCNAction.customAction(duration: duration, action: { node, progress in
+
+                let finalBlockAction = SCNAction.customAction(duration: duration, action: { _, progress in
                     for i in stride(from: blocks.count - 1, to: -1, by: -2) {
                         let percentage = progress / CGFloat(duration)
                         blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
@@ -327,54 +326,54 @@ extension ReferralsProgressBar {
                         }
                     }
                 })
-                
+
                 finalBlockAction.timingMode = SCNActionTimingMode.easeOut
                 blockActions.append(finalBlockAction)
                 blockActions.append(idleAction)
-                
+
                 var labelActions: [SCNAction] = []
-                
+
                 for i in stride(from: blocks.count - 1, to: -1, by: -2) {
                     let action = SCNAction.move(by: SCNVector3Make(
                         0,
                         -Float(blockHeight + dividerHeight),
                         0
                     ), duration: 0.2)
-                    
+
                     action.timingMode = SCNActionTimingMode.linear
                     labelActions.append(action)
-                    
-                    let stringAction = SCNAction.customAction(duration: 0.0, action: { node, progress in
+
+                    let stringAction = SCNAction.customAction(duration: 0.0, action: { _, _ in
                         let blockIndex = Int(ceil(Float(i) / 2.0))
-                        
+
                         (discountLabelNode.childNodes[0].geometry as! SCNText).string = blockIndex == 0 ? "Gratis!" : "-\((amountOfBlocks - blockIndex) * 10) kr"
-                    });
-                    
+                    })
+
                     labelActions.append(stringAction)
                 }
-                
+
                 let labelDelayAction = SCNAction.wait(duration: 0.6)
                 labelActions.append(labelDelayAction)
-                
-                let finalLabelStringAction = SCNAction.customAction(duration: 0.0, action: { node, progress in
+
+                let finalLabelStringAction = SCNAction.customAction(duration: 0.0, action: { _, _ in
                     (discountLabelNode.childNodes[0].geometry as! SCNText).string = "Bjud in"
-                });
-                
+                })
+
                 labelActions.append(finalLabelStringAction)
-                
+
                 let finalLabelAction = SCNAction.move(by: SCNVector3Make(
                     0,
                     Float(blockHeight + dividerHeight) * Float(amountOfBlocks),
                     0
                 ), duration: 0.3)
-                
+
                 finalLabelAction.timingMode = SCNActionTimingMode.easeInEaseOut
                 labelActions.append(finalLabelAction)
                 labelActions.append(idleAction)
-                
+
                 let act = SCNAction.repeatForever(SCNAction.sequence(blockActions))
                 containerNode.runAction(act)
-                
+
                 let labelAct = SCNAction.repeatForever(SCNAction.sequence(labelActions))
                 discountLabelNode.runAction(labelAct)
             }
@@ -483,7 +482,7 @@ extension ReferralsProgressBar: Viewable {
                     netPremium: netPremium
                 )
             }
-        
+
         containerNode.scale = SCNVector3(x: 1, y: 0, z: 1)
         containerNode.opacity = 0
 

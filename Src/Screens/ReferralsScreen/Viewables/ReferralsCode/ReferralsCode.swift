@@ -8,8 +8,8 @@
 import Apollo
 import Flow
 import Form
-import Presentation
 import Foundation
+import Presentation
 import UIKit
 
 struct ReferralsCode {
@@ -37,16 +37,16 @@ extension ReferralsCode: Viewable {
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = view.frame.height / 2
         }
-        
+
         let touchUpInsideSignal = view.signal(for: .touchUpInside)
         bag += touchUpInsideSignal.feedback(type: .success)
-        
+
         bag += touchUpInsideSignal.withLatestFrom(codeSignal).onValueDisposePrevious { _, code in
             let register = PushNotificationsRegister(
                 title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
                 message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
             )
-            
+
             return self.presentingViewController.present(register).onValue { _ in
                 UIPasteboard.general.value = code
                 UIApplication.shared.appDelegate.createToast(
@@ -68,20 +68,20 @@ extension ReferralsCode: Viewable {
         ).centerAligned.lineHeight(2.4).resized(to: 16).restyled { (style: inout TextStyle) in
             style.highlightedColor = .darkPurple
         }
-        
+
         let codeLabelWrapper = UIView()
         let codeLabel = UILabel(value: "", style: codeTextStyle)
         bag += codeSignal.map { code in
-            return StyledText(text: code, style: codeTextStyle)
+            StyledText(text: code, style: codeTextStyle)
         }.bindTo(codeLabel, \.styledText)
-        
+
         codeLabelWrapper.addSubview(codeLabel)
         codeLabel.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
         }
-        
+
         codeContainer.addArrangedSubview(codeLabelWrapper)
-        
+
         let copyIconWrapper = UIView()
         copyIconWrapper.snp.makeConstraints { make in
             make.width.equalTo(20)
@@ -93,9 +93,9 @@ extension ReferralsCode: Viewable {
             make.width.height.equalTo(16)
             make.centerX.centerY.equalToSuperview()
         }
-        
+
         codeContainer.addArrangedSubview(copyIconWrapper)
-        
+
         view.addSubview(codeContainer)
 
         codeContainer.snp.makeConstraints { make in

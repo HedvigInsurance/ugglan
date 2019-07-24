@@ -6,29 +6,29 @@
 //
 
 import Apollo
-import SnapshotTesting
 import Flow
+import Form
+import Presentation
+import SnapshotTesting
 import UIKit
 import XCTest
-import Presentation
-import Form
 
 class ScreenShots: SnapShotTestCase {
-    func testDashboard() {        
+    func testDashboard() {
         let dashboard = Dashboard(
             remoteConfig: RemoteConfigContainer()
         )
-        
+
         let tabBarController = UITabBarController()
-        
+
         let dashboardPresentation = Presentation(
             dashboard,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         bag += tabBarController.presentTabs(dashboardPresentation)
-        
+
         waitForQuery(DashboardQuery()) {
             assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneSe))
             assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneX))

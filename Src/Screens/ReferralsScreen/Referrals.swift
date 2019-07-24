@@ -69,20 +69,20 @@ extension Referrals: Presentable {
             formView,
             scrollView: scrollView
         )
-        
+
         let query = ReferralsScreenQuery()
 
         let refreshControl = UIRefreshControl()
         bag += client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
         scrollView.refreshControl = refreshControl
-    
+
         let codeSignal = ReadWriteSignal<String?>(nil)
 
         let referralsScreenQuerySignal = client
             .watch(query: query)
             .wait(until: formView.hasWindowSignal)
-        
+
         bag += referralsScreenQuerySignal
             .compactMap { $0.data?.referralInformation.campaign.code }
             .bindTo(codeSignal)
@@ -202,7 +202,7 @@ extension Referrals: Presentable {
 
             bag += button.onTapSignal.withLatestFrom(
                 codeSignal.plain()
-            ).compactMap { $1 }.onValue { code in                
+            ).compactMap { $1 }.onValue { code in
                 let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
                 let message = String(key: .REFERRAL_SMS_MESSAGE(
                     referralLink: landingPageUrl,
@@ -215,26 +215,26 @@ extension Referrals: Presentable {
                     sourceView: buttonView,
                     sourceRect: buttonView.bounds
                 )
-                
+
                 viewController.present(activityView)
 
                 bag += activityView.completionSignal.onValueDisposePrevious { activity, success in
                     let innerBag = bag.innerBag()
-                    
+
                     if success {
                         let register = PushNotificationsRegister(
                             title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
                             message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
                         )
-                        
+
                         innerBag += viewController.present(register)
-                        
+
                         if activity != nil {
                             let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
                             Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
                         }
                     }
-                    
+
                     return innerBag
                 }
             }

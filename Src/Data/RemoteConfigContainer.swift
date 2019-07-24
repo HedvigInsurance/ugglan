@@ -27,7 +27,7 @@ class RemoteConfigContainer {
         let fetched = ReadWriteSignal<Bool>(false)
 
         self.fetched = fetched
-        
+
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
             remoteConfig.activateFetched()
             fetched.value = true

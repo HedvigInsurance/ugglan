@@ -7,7 +7,7 @@
 
 import Apollo
 #if canImport(ApolloWebSocket)
-import ApolloWebSocket
+    import ApolloWebSocket
 #endif
 import Disk
 import FirebaseRemoteConfig
@@ -22,12 +22,12 @@ struct ApolloEnvironmentConfig {
 
 class ApolloContainer {
     static let shared = ApolloContainer()
-    
+
     private var _client: ApolloClient?
     private var _store: ApolloStore?
-    
+
     let initialRecords: RecordSet = [:]
-    
+
     let networkTransport = MockNetworkTransport(body: [
         "data": [
             "messages": [],
@@ -185,7 +185,7 @@ class ApolloContainer {
             ]
         ]
     ])
-    
+
     let cache: InMemoryNormalizedCache
     let store: ApolloStore
     let client: ApolloClient
@@ -194,22 +194,22 @@ class ApolloContainer {
         wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
         assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
     )
-    
+
     init() {
         cache = InMemoryNormalizedCache(records: initialRecords)
         store = ApolloStore(cache: cache)
-        
+
         WebSocketTransport.provider = MockWebSocket.self
         let websocketTransport = WebSocketTransport(request: URLRequest(url: URL(string: "http://localhost/dummy_url")!))
-        
+
         let splitNetworkTransport = SplitNetworkTransport(
             httpNetworkTransport: networkTransport,
             webSocketNetworkTransport: websocketTransport
         )
-        
+
         client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
     }
-    
+
     func initClient() -> Future<ApolloClient> {
         return Future(client)
     }

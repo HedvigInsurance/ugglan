@@ -6,8 +6,8 @@
 //
 
 import Apollo
-import SnapshotTesting
 import Flow
+import SnapshotTesting
 import UIKit
 import XCTest
 
@@ -20,7 +20,7 @@ class ButtonTests: SnapShotTestCase {
                 textColor: .white
             )
         )
-        
+
         materializeViewable(button) { view in
             assertSnapshot(matching: view, as: .image)
         }

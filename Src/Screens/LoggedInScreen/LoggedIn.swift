@@ -89,7 +89,7 @@ extension LoggedIn: Presentable {
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
 
-        if displayNews && appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
+        if displayNews, appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
                 .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .compactMap { $0.data }

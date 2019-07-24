@@ -5,9 +5,9 @@
 //  Created by Gustaf Gunér on 2019-07-11.
 //
 
-import Foundation
 import Flow
 import Form
+import Foundation
 import UIKit
 
 enum ToastHideDirection {
@@ -18,15 +18,15 @@ enum ToastHideDirection {
 enum ToastSymbol: Equatable {
     static func == (lhs: ToastSymbol, rhs: ToastSymbol) -> Bool {
         switch (lhs, rhs) {
-        case (let .character(lhsCharacter), let .character(rhsCharacter)):
+        case let (.character(lhsCharacter), .character(rhsCharacter)):
             return lhsCharacter == rhsCharacter
-        case (let .icon(lhsIcon), let .icon(rhsIcon)):
+        case let (.icon(lhsIcon), .icon(rhsIcon)):
             return lhsIcon.image == rhsIcon.image
         default:
             return false
         }
     }
-    
+
     case character(_ character: Character)
     case icon(_ icon: ImageAsset)
 }
@@ -39,9 +39,9 @@ struct Toast: Equatable {
     let duration: TimeInterval
 }
 
-extension Toast : Viewable {
+extension Toast: Viewable {
     var symbolView: UIView {
-        switch self.symbol {
+        switch symbol {
         case let .character(character):
             let view = UILabel()
             view.text = String(character)
@@ -51,26 +51,26 @@ extension Toast : Viewable {
             let view = UIImageView()
             view.image = icon.image
             view.contentMode = .scaleAspectFit
-            
+
             view.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
-            
+
             return view
         }
     }
-    
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        
+
         let containerView = UIView()
-        
+
         containerView.backgroundColor = backgroundColor
         containerView.layer.shadowOpacity = 0.15
         containerView.layer.shadowOffset = CGSize(width: 0, height: 0)
         containerView.layer.shadowRadius = 10
         containerView.layer.shadowColor = UIColor.darkGray.cgColor
-        
+
         bag += containerView.didLayoutSignal.onValue {
             containerView.layer.cornerRadius = containerView.frame.height
         }
@@ -81,30 +81,30 @@ extension Toast : Viewable {
         stackView.isLayoutMarginsRelativeArrangement = true
 
         containerView.addSubview(stackView)
-        
+
         stackView.snp.makeConstraints { make in
             make.width.height.centerX.centerY.equalToSuperview()
         }
-        
+
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
-        
+
         stackView.addArrangedSubview(symbolContainer)
-        
+
         symbolContainer.snp.makeConstraints { make in
             make.width.equalTo(30)
         }
-        
+
         symbolContainer.addArrangedSubview(symbolView)
-        
+
         let textContainer = UIStackView()
         textContainer.axis = .vertical
-        
+
         let bodyLabel = MultilineLabel(value: body, style: TextStyle.toastBody.colored(textColor))
         bag += textContainer.addArranged(bodyLabel)
-        
+
         stackView.addArrangedSubview(textContainer)
-        
+
         return (containerView, bag)
     }
 }
@@ -117,54 +117,54 @@ struct Toasts {
     }
 }
 
-extension Toasts : Viewable {
+extension Toasts: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        
+
         let containerView = UIStackView()
-        
+
         let stackView = UIStackView()
         stackView.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         stackView.axis = .vertical
         stackView.spacing = 14
         stackView.alignment = .center
-        
+
         containerView.addArrangedSubview(stackView)
-        
+
         bag += toastSignal.compactMap { $0 }.onValue { toast in
             bag += stackView.addArranged(toast) { toastView in
                 toastView.layer.opacity = 0
                 toastView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
                 toastView.isHidden = true
-                
+
                 let innerBag = bag.innerBag()
-                
+
                 let pauseSignal = ReadWriteSignal<Bool>(false)
-                
+
                 let panGestureRecognizer = UIPanGestureRecognizer()
                 innerBag += toastView.install(panGestureRecognizer)
-                
+
                 innerBag += panGestureRecognizer.signal(forState: .began).onValue {
                     pauseSignal.value = true
                 }
-                
+
                 innerBag += panGestureRecognizer.signal(forState: .changed).onValue {
                     let location = panGestureRecognizer.translation(in: toastView)
                     toastView.layer.opacity = Float(1 - (abs(location.x) / (UIScreen.main.bounds.width / 2)))
                     toastView.transform = CGAffineTransform(translationX: location.x, y: 0)
                 }
-                
+
                 innerBag += Signal(after: 0).feedback(type: .impactMedium)
-                
+
                 innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
                     toastView.isHidden = false
                 }.animated(style: SpringAnimationStyle.heavyBounce(delay: 0, duration: 0.3)) { _ in
                     toastView.layer.opacity = 1
                     toastView.transform = CGAffineTransform.identity
                 }
-                
+
                 let hideBag = DisposeBag()
-                
+
                 func hideToast(direction: ToastHideDirection = .left) {
                     hideBag += Signal(after: 0)
                         .animated(style: AnimationStyle.easeOut(duration: 0.3)) { _ in
@@ -175,26 +175,26 @@ extension Toasts : Viewable {
                         }.onValue { _ in
                             stackView.removeArrangedSubview(toastView)
                             toastView.removeFromSuperview()
-                                                        
+
                             if stackView.subviews.isEmpty {
                                 self.idleCallbacker.callAll()
                             }
-                            
+
                             innerBag.dispose()
-                    }
+                        }
                 }
-                
+
                 let hideAction = Signal(after: toast.duration).onValue { _ in
                     hideToast()
                 }
-                
+
                 hideBag += hideAction
                 innerBag += hideBag
-                
+
                 innerBag += panGestureRecognizer.signal(forState: .ended).onValue {
                     let location = panGestureRecognizer.translation(in: toastView)
-                    
-                    if (abs(location.x) > 80) {
+
+                    if abs(location.x) > 80 {
                         hideAction.dispose()
                         hideToast(direction: location.x < 0 ? .left : .right)
                     } else {
@@ -205,7 +205,7 @@ extension Toasts : Viewable {
                     }
                     pauseSignal.value = false
                 }
-                
+
                 innerBag += pauseSignal.distinct().onValue { pause in
                     if pause {
                         hideBag.dispose()
@@ -217,11 +217,11 @@ extension Toasts : Viewable {
                 }
             }
         }
-        
-        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
+
+        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.height.equalToSuperview()
         }
-        
+
         return (containerView, bag)
     }
 }
