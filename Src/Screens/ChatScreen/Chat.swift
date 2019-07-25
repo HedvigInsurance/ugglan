@@ -302,9 +302,10 @@ extension Chat: Presentable {
             .animated(mapStyle: { keyboardInfo -> AnimationStyle in
                 return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                let insets =  UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
                 tableKit.view.contentInset = insets
                 tableKit.view.scrollIndicatorInsets = insets
+                
                 tableKit.view.layoutIfNeeded()
             })
         
@@ -314,7 +315,7 @@ extension Chat: Presentable {
             .animated(mapStyle: { keyboardInfo -> AnimationStyle in
                 return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                let insets =  UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
                 tableKit.view.contentInset = insets
                 tableKit.view.scrollIndicatorInsets = insets
                 tableKit.view.layoutIfNeeded()
@@ -326,7 +327,7 @@ extension Chat: Presentable {
             .animated(mapStyle: { keyboardInfo -> AnimationStyle in
                 return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                let insets =  UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
                 tableKit.view.contentInset = insets
                 tableKit.view.scrollIndicatorInsets = insets
                 tableKit.view.layoutIfNeeded()

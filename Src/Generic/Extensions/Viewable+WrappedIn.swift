@@ -20,6 +20,19 @@ struct ContainerStackViewable<V: Viewable, Matter: UIView, ContainerView: UIStac
     }
 }
 
+struct ContainerStackViewableSignal<V: Viewable, Matter: UIView, ContainerView: UIStackView, SignalValue>: Viewable where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Signal<SignalValue> {
+    let viewable: V
+    let container: ContainerView
+    
+    func materialize(events _: ViewableEvents) -> (ContainerView, Signal<SignalValue>) {
+        return (container, Signal { callback in
+            let bag = DisposeBag()
+            bag += self.container.addArranged(self.viewable).onValue(callback)
+            return bag
+        })
+    }
+}
+
 struct ContainerViewable<V: Viewable, Matter: UIView, ContainerView: UIView>: Viewable where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Disposable {
     let viewable: V
     let container: ContainerView
@@ -38,5 +51,11 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
 
     func wrappedIn(_ view: UIView) -> ContainerViewable<Self, Self.Matter, UIView> {
         return ContainerViewable(viewable: self, container: view)
+    }
+}
+
+extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
+    func wrappedIn<SignalValue>(_ stackView: UIStackView) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
+        return ContainerStackViewableSignal(viewable: self, container: stackView)
     }
 }

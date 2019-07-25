@@ -11,12 +11,10 @@ import UIKit
 import Apollo
 
 struct ChatInput {
-    let client: ApolloClient
     let currentGlobalIdSignal: ReadSignal<GraphQLID?>
     
-    init(currentGlobalIdSignal: ReadSignal<GraphQLID?>, client: ApolloClient = ApolloContainer.shared.client) {
+    init(currentGlobalIdSignal: ReadSignal<GraphQLID?>) {
         self.currentGlobalIdSignal = currentGlobalIdSignal
-        self.client = client
     }
 }
 
@@ -48,18 +46,10 @@ extension ChatInput: Viewable {
             make.leading.trailing.top.bottom.equalToSuperview()
         }
         
-        let textField = TextField(value: "Skriv här...", placeholder: "Bla bla")
+        let textField = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
         bag += containerView.addArranged(textField.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
-        }
-        
-        bag += textField.shouldReturn.set { (value, _) -> Bool in
-            if let currentGlobalId = self.currentGlobalIdSignal.value {
-                bag += self.client.perform(mutation: SendChatTextResponseMutation(globalId: currentGlobalId, text: value))
-            }
-            
-            return false
         }
         
         return (backgroundView, bag)

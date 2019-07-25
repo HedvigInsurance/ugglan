@@ -177,6 +177,27 @@ extension UIStackView {
             disposable.dispose()
         }
     }
+    
+    func addArranged<V: Viewable, MatterView: UIView, SignalValue>(
+        _ viewable: V,
+        onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
+    ) -> V.Result where
+        V.Matter == MatterView,
+        V.Result == Signal<SignalValue>,
+        V.Events == ViewableEvents {
+        let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
+        
+        onCreate(matter)
+            
+            return Signal { callback in
+                let bag = DisposeBag()
+                bag += result.onValue(callback)
+                return Disposer {
+                    disposable.dispose()
+                    bag.dispose()
+                }
+            }
+    }
 
     func addArranged<V: Viewable, Matter: Viewable, View: UIView>(
         _ viewable: V,

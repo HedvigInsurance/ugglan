@@ -258,12 +258,10 @@ extension DraggableOverlay: Presentable {
             if let inputAccessoryView = childScreen.inputAccessoryView {
                 let translationY = position - overlayCenter
                 
-                if translationY > 0 {
-                    inputAccessoryView.transform = CGAffineTransform(
-                        translationX: 0,
-                        y: translationY
-                    )
-                }
+                inputAccessoryView.transform = CGAffineTransform(
+                    translationX: 0,
+                    y: translationY
+                )
             }
         }
 
