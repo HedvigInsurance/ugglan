@@ -15,6 +15,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import UserNotifications
 
 let log = Logger.self
 
@@ -23,12 +24,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
+    var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
+
+    let toastSignal = ReadWriteSignal<Toast?>(nil)
 
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
+        toastWindow = createToastWindow()
+    }
+
+    func createToastWindow() -> UIWindow {
+        let window = PassTroughWindow(frame: UIScreen.main.bounds)
+        window.isOpaque = false
+        window.backgroundColor = UIColor.transparent
+
+        let toasts = Toasts(toastSignal: toastSignal)
+
+        bag += window.add(toasts) { toastsView in
+            bag += toastSignal.onValue { _ in
+                window.makeKeyAndVisible()
+
+                toastsView.snp.remakeConstraints { make in
+                    let position: CGFloat = 69
+                    if #available(iOS 11.0, *) {
+                        let hasModal = self.window.rootViewController?.presentedViewController != nil
+                        let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
+                        let extraPadding: CGFloat = hasModal ? 0 : position
+                        make.bottom.equalTo(-(safeAreaBottom + extraPadding))
+                    } else {
+                        make.bottom.equalTo(-position)
+                    }
+
+                    make.centerX.equalToSuperview()
+                }
+            }
+        }
+
+        bag += toasts.idleSignal.onValue { _ in
+            self.toastSignal.value = nil
+            self.window.makeKeyAndVisible()
+        }
+
+        return window
     }
 
     func logout() {
@@ -38,6 +78,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = navigationController
 
         presentMarketing()
+    }
+
+    func createToast(
+        symbol: ToastSymbol,
+        body: String,
+        textColor: UIColor = UIColor.offBlack,
+        backgroundColor: UIColor = UIColor.white,
+        duration: TimeInterval = 5.0
+    ) {
+        bag += Signal(after: 0).withLatestFrom(toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
+            let toast = Toast(
+                symbol: symbol,
+                body: body,
+                textColor: textColor,
+                backgroundColor: backgroundColor,
+                duration: duration
+            )
+
+            if toast != previousToast {
+                self.toastSignal.value = toast
+            }
+        }
     }
 
     func presentMarketing() {
@@ -74,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let incentive = queryItems.filter({ item in item.name == "incentive" }).first?.value {
             Analytics.logEvent("referrals_open", parameters: [
                 "invitedByMemberId": invitedByMemberId,
-                "incentive": incentive
+                "incentive": incentive,
             ])
 
             UserDefaults.standard.set(invitedByMemberId, forKey: "referral_invitedByMemberId")
@@ -102,6 +164,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return handled
     }
 
+    func registerForPushNotifications() {
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: { _, _ in }
+        )
+
+        UIApplication.shared.registerForRemoteNotifications()
+    }
+
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
@@ -118,7 +190,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         }
         alertActionWasPressed = { _, title in
-            if let localizationKey = title.localizationKey?.toString() {
+            if let localizationKey = title.localizationKey?.description {
                 Analytics.logEvent(
                     "alert_action_tap_\(localizationKey)",
                     parameters: nil

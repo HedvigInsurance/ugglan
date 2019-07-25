@@ -10,8 +10,8 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import Presentation
+import UIKit
 
 struct PaymentDetailsSection {
     let client: ApolloClient
@@ -40,6 +40,19 @@ extension PaymentDetailsSection: Viewable {
             footer: nil,
             style: .sectionPlain
         )
+
+        let freeMonthsRow = KeyValueRow()
+        freeMonthsRow.isHiddenSignal.value = true
+        freeMonthsRow.keySignal.value = String(key: .MY_PAYMENT_FREE_UNTIL_MESSAGE)
+
+        bag += section.append(freeMonthsRow)
+
+        bag += dataValueSignal
+            .compactMap { $0.data?.insurance.cost?.freeUntil }
+            .onValue { freeUntilDate in
+                freeMonthsRow.valueSignal.value = freeUntilDate
+                freeMonthsRow.isHiddenSignal.value = false
+            }
 
         let paymentTypeRow = KeyValueRow()
         paymentTypeRow.keySignal.value = String(key: .MY_PAYMENT_TYPE)
@@ -107,7 +120,7 @@ extension PaymentDetailsSection: Viewable {
             .bindTo(netPriceRow.valueSignal)
 
         bag += section.append(netPriceRow)
-        
+
         let applyDiscountButtonRow = ButtonRow(text: String(key: .REFERRAL_ADDCOUPON_HEADLINE), style: .normalButton)
 
         bag += applyDiscountButtonRow.onSelect.onValue { _ in
@@ -116,7 +129,7 @@ extension PaymentDetailsSection: Viewable {
                 presentable: applyDiscount,
                 presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
             )
-            
+
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
                 self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                     data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(
@@ -125,14 +138,14 @@ extension PaymentDetailsSection: Viewable {
                         monthlyNet: MyPaymentQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount)
                     )
                 })
-                
+
                 self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
                     data.insurance.cost = ReferralsScreenQuery.Data.Insurance.Cost(
                         monthlyNet: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount),
                         monthlyGross: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount)
                     )
                 })
-                
+
                 let alert = Alert(
                     title: String(key: .REFERRAL_REDEEM_SUCCESS_HEADLINE),
                     message: String(key: .REFERRAL_REDEEM_SUCCESS_BODY),
@@ -140,17 +153,18 @@ extension PaymentDetailsSection: Viewable {
                 )
                 self.presentingViewController.present(alert)
             }
-            
+
             self.presentingViewController.present(overlay)
         }
 
         bag += section.append(applyDiscountButtonRow)
-        
+
         let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }.toInt().map { $0 == 0 }
+        let hasFreeMonths = dataValueSignal.map { $0.data?.insurance.cost?.freeUntil != nil }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)
-        bag += hidePriceRowsSignal.map { !$0 }.bindTo(applyDiscountButtonRow.isHiddenSignal)
+        bag += combineLatest(hidePriceRowsSignal, hasFreeMonths).map { !$0 || $1 }.bindTo(applyDiscountButtonRow.isHiddenSignal)
 
         return (section, bag)
     }

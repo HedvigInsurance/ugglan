@@ -48,9 +48,9 @@ extension LoadableButton: Viewable {
             func setButtonWidth() {
                 buttonView.snp.updateConstraints { make in
                     if isLoading {
-                        make.width.equalTo(self.button.type.value.height())
+                        make.width.equalTo(self.button.type.value.height)
                     } else {
-                        make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset())
+                        make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset)
                     }
                 }
             }
@@ -99,7 +99,7 @@ extension LoadableButton: Viewable {
             setLoadingState(isLoading: isLoading, animate: true)
         }
 
-        bag += events.wasAdded.withLatestFrom(isLoadingSignal.atOnce().plain()).onValue { _, isLoading in
+        bag += buttonView.didMoveToWindowSignal.withLatestFrom(isLoadingSignal.atOnce().plain()).onValue { _, isLoading in
             setLoadingState(isLoading: isLoading, animate: false)
         }
 

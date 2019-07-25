@@ -50,7 +50,7 @@ extension HonestyPledge: Presentable {
             make.height.equalTo(10)
         }
         stackView.addArrangedSubview(pusherView)
-        
+
         let slideToClaim = SlideToClaim()
         bag += stackView.addArranged(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
             slideToClaimStackView.isLayoutMarginsRelativeArrangement = true

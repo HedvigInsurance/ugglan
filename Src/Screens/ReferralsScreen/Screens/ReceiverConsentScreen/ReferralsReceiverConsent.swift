@@ -41,6 +41,10 @@ extension ReferralsReceiverConsent: Presentable {
             }
         }
 
+        bag += view.didMoveToWindowSignal.onValue { _ in
+            UIApplication.shared.keyWindow?.endEditing(true)
+        }
+
         viewController.view = view
 
         return (viewController, Future { completion in

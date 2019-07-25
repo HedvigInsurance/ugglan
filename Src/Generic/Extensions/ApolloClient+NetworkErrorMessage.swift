@@ -14,10 +14,10 @@ import UIKit
 
 extension ApolloClient {
     static var isShowingNetworkErrorMessage = false
-    static var retryQueue: [() -> Void] = []
+    static var retryQueue: [(DispatchQueue, () -> Void)] = []
 
-    func showNetworkErrorMessage(onRetry: @escaping () -> Void) {
-        ApolloClient.retryQueue.append(onRetry)
+    func showNetworkErrorMessage(queue: DispatchQueue, onRetry: @escaping () -> Void) {
+        ApolloClient.retryQueue.append((queue, onRetry))
 
         if ApolloClient.isShowingNetworkErrorMessage {
             return
@@ -33,27 +33,31 @@ extension ApolloClient {
             Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_CANCEL_ACTION)) { false }
         )
 
-        var window: UIWindow? = UIWindow()
-        window!.makeKeyAndVisible()
-        window!.backgroundColor = UIColor.clear
+        DispatchQueue.main.async {
+            var window: UIWindow? = UIWindow()
+            window!.makeKeyAndVisible()
+            window!.backgroundColor = UIColor.clear
 
-        let viewController = UIViewController()
-        viewController.view.backgroundColor = UIColor.clear
-        window!.rootViewController = viewController
+            let viewController = UIViewController()
+            viewController.view.backgroundColor = UIColor.clear
+            window!.rootViewController = viewController
 
-        let bag = DisposeBag()
+            let bag = DisposeBag()
 
-        bag += viewController.present(alert).onValue { shouldRetry in
-            if shouldRetry {
-                ApolloClient.retryQueue.forEach { retry in
-                    retry()
+            bag += viewController.present(alert).onValue { shouldRetry in
+                if shouldRetry {
+                    ApolloClient.retryQueue.forEach { queue, retry in
+                        queue.async {
+                            retry()
+                        }
+                    }
                 }
-            }
 
-            ApolloClient.retryQueue = []
-            ApolloClient.isShowingNetworkErrorMessage = false
-            bag.dispose()
-            window = nil
+                ApolloClient.retryQueue = []
+                ApolloClient.isShowingNetworkErrorMessage = false
+                bag.dispose()
+                window = nil
+            }
         }
     }
 }

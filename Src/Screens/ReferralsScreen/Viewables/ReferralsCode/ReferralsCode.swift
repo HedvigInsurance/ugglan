@@ -8,8 +8,8 @@
 import Apollo
 import Flow
 import Form
-import Presentation
 import Foundation
+import Presentation
 import UIKit
 
 struct ReferralsCode {
@@ -29,7 +29,7 @@ struct ReferralsCode {
 extension ReferralsCode: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        let view = UIView()
+        let view = UIControl()
         view.backgroundColor = .white
         view.layer.borderColor = UIColor.offLightGray.cgColor
         view.layer.borderWidth = 1
@@ -37,41 +37,27 @@ extension ReferralsCode: Viewable {
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = view.frame.height / 2
         }
-        
-        let tapGesture = UITapGestureRecognizer()
-        bag += view.install(tapGesture)
-        bag += tapGesture.signal(forState: .ended).withLatestFrom(codeSignal).atValue { _, code in
-            let alert = Alert<Bool>(
-                title: nil,
-                message: nil,
-                tintColor: nil,
-                actions: [
-                    Alert.Action(
-                        title: String(key: .REFERRAL_ERROR_REPLACECODE_BTN_CANCEL),
-                        style: .cancel
-                    ) { false },
-                    Alert.Action(
-                        title: String(key: .REFERRALS_CODE_SHEET_COPY),
-                        style: .default
-                    ) { true },
-                ]
+
+        let touchUpInsideSignal = view.signal(for: .touchUpInside)
+        bag += touchUpInsideSignal.feedback(type: .success)
+
+        bag += touchUpInsideSignal.withLatestFrom(codeSignal).onValueDisposePrevious { _, code in
+            let register = PushNotificationsRegister(
+                title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
             )
-            
-            bag += self.presentingViewController.present(alert, style: .sheet(from: view, rect: view.bounds)).onValue { shouldCopy in
-                if shouldCopy {
-                    UIPasteboard.general.value = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
-                    bag += Signal(after: 0).feedback(type: .success)
-                    PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: self.presentingViewController)
-                }
-            }
-        }.feedback(type: .impactMedium)
-        
-        bag += view.copySignal.withLatestFrom(codeSignal).atValue { _, code in
-            UIPasteboard.general.value = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
-            PushNotificationsRegistrer.ask(title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE), message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE), viewController: self.presentingViewController)
-        }.feedback(type: .success)
+
+            return self.presentingViewController.present(register).onValue { _ in
+                UIPasteboard.general.value = code
+                UIApplication.shared.appDelegate.createToast(
+                    symbol: .character("🎉"),
+                    body: String(key: .COPIED)
+                )
+            }.disposable
+        }
 
         let codeContainer = UIStackView()
+        codeContainer.isUserInteractionEnabled = false
         codeContainer.spacing = 10
         codeContainer.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 12)
         codeContainer.isLayoutMarginsRelativeArrangement = true
@@ -82,21 +68,20 @@ extension ReferralsCode: Viewable {
         ).centerAligned.lineHeight(2.4).resized(to: 16).restyled { (style: inout TextStyle) in
             style.highlightedColor = .darkPurple
         }
-        
+
         let codeLabelWrapper = UIView()
-        let codeLabel = MultilineLabel(value: "", style: codeTextStyle)
-        bag += codeSignal.withLatestFrom(remoteConfigContainer.fetched.atOnce().filter { $0 != false }).map { code, _ in
-            let formattedLinkPrefix = self.remoteConfigContainer.referralsWebLandingPrefix.replacingOccurrences(of: "(^\\w+:|^)\\/\\/", with: "", options: .regularExpression, range: nil)
-            return StyledText(text: "\(formattedLinkPrefix)\(code)", style: codeTextStyle)
-        }.bindTo(codeLabel.styledTextSignal)
-        
-        bag += codeLabelWrapper.add(codeLabel) { codeLabelView in
-            codeLabelView.snp.makeConstraints { make in
-                make.leading.trailing.top.bottom.equalToSuperview()
-            }
+        let codeLabel = UILabel(value: "", style: codeTextStyle)
+        bag += codeSignal.map { code in
+            StyledText(text: code, style: codeTextStyle)
+        }.bindTo(codeLabel, \.styledText)
+
+        codeLabelWrapper.addSubview(codeLabel)
+        codeLabel.snp.makeConstraints { make in
+            make.leading.trailing.top.bottom.equalToSuperview()
         }
+
         codeContainer.addArrangedSubview(codeLabelWrapper)
-        
+
         let copyIconWrapper = UIView()
         copyIconWrapper.snp.makeConstraints { make in
             make.width.equalTo(20)
@@ -108,9 +93,9 @@ extension ReferralsCode: Viewable {
             make.width.height.equalTo(16)
             make.centerX.centerY.equalToSuperview()
         }
-        
+
         codeContainer.addArrangedSubview(copyIconWrapper)
-        
+
         view.addSubview(codeContainer)
 
         codeContainer.snp.makeConstraints { make in

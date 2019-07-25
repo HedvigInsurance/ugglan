@@ -17,10 +17,10 @@ extension PresentationStyle {
             from.present(viewController, animated: true) {
                 completion(.success)
             }
-            
+
             return NilDisposer()
         }
-        
+
         return (future, { Future() })
     }
 }
@@ -32,7 +32,7 @@ struct ActivityView {
     let sourceRect: CGRect?
 
     let completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)>
-    
+
     init(activityItems: [Any], applicationActivities: [UIActivity]?, sourceView: UIView?, sourceRect: CGRect?, completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)> = ReadWriteSignal<(UIActivity.ActivityType?, Bool)>((nil, false))) {
         self.activityItems = activityItems
         self.applicationActivities = applicationActivities

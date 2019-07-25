@@ -36,7 +36,7 @@ extension CharityInformation: Presentable {
 
         let body = MarkdownText(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
-        
+
         bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         viewController.view = containerStackView

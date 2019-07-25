@@ -24,7 +24,7 @@ struct CircleLabel {
 }
 
 extension CircleLabel: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
         let bag = DisposeBag()
 
@@ -67,10 +67,12 @@ extension CircleLabel: Viewable {
             make.center.equalToSuperview()
         }
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-            make.center.equalToSuperview()
+        bag += view.didMoveToWindowSignal.onValue { _ in
+            view.snp.makeConstraints({ make in
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+                make.center.equalToSuperview()
+            })
         }
 
         return (view, bag)

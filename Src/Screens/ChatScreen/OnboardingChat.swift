@@ -31,6 +31,12 @@ extension OnboardingChat: Presentable {
 
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
 
+        Chat.didOpen()
+
+        bag += Disposer {
+            Chat.didClose()
+        }
+
         let view = UIView()
         view.backgroundColor = .purple
 

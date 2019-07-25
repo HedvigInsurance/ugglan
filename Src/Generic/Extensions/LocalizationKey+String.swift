@@ -9,7 +9,7 @@
 import Foundation
 
 extension Localization.Key {
-    func toString() -> String {
+    var description: String {
         var stringifiedKey = String(describing: self)
 
         if let parenthesisRange = stringifiedKey.range(of: "(") {

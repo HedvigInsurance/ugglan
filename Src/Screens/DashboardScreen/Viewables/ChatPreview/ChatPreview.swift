@@ -59,7 +59,11 @@ extension ChatPreview: Viewable {
         messageBubbleContainer.spacing = 8
         containerView.addArrangedSubview(messageBubbleContainer)
 
-        let openChatButton = Button(title: String(key: .CHAT_PREVIEW_OPEN_CHAT), type: .standardSmall(backgroundColor: .purple, textColor: .white))
+        let openChatButton = Button(
+            title: String(key: .CHAT_PREVIEW_OPEN_CHAT),
+            type: .standardSmall(backgroundColor: .purple, textColor: .white)
+        )
+
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .trailing
@@ -80,6 +84,7 @@ extension ChatPreview: Viewable {
                 .animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                     containerView.isHidden = !visible
                     containerView.alpha = visible ? 1 : 0
+                    containerView.layoutSuperviewsIfNeeded()
                 }).onValue { _ in
                     if !visible {
                         handledMessageGlobalIds = []
@@ -89,6 +94,7 @@ extension ChatPreview: Viewable {
         }
 
         bag += Chat.lastOpenedChatSignal.onValue { _ in
+            self.presentingViewController.updateTabBarItemBadge(value: nil)
             animateVisibility(visible: false)
         }
 
@@ -140,14 +146,14 @@ extension ChatPreview: Viewable {
                 .compactMap { $0.compactMap { $0 } }
                 .plain()
                 .flatMapLatest { getMessagesToShow(messages: $0) }
-                .atValue { messages in
-                    self.presentingViewController.updateTabBarItemBadge(value: messages.count > 0 ? String(messages.count) : nil)
-                }
-                .wait(until: containerView.hasWindowSignal)
                 .onValue { messages in
                     let onlyExistingMessages = messages.elementsEqual(handledMessageGlobalIds, by: { (message, globalId) -> Bool in
                         message.globalId == globalId
                     })
+
+                    self.presentingViewController.updateTabBarItemBadge(
+                        value: messages.count > 0 ? String(messages.count) : nil
+                    )
 
                     guard !onlyExistingMessages else {
                         return
