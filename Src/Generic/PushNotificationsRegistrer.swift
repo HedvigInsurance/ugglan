@@ -46,7 +46,7 @@ struct PushNotificationsRegister: Presentable {
                 }),
                 Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW), action: {
                     ()
-                })
+                }),
             ]
         )
 

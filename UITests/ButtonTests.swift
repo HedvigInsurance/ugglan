@@ -5,8 +5,6 @@
 //  Created by Sam Pettersson on 2019-03-30.
 //
 
-import Apollo
-import Flow
 import SnapshotTesting
 import UIKit
 import XCTest

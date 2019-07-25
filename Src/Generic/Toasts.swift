@@ -175,7 +175,7 @@ extension Toasts: Viewable {
                         }.onValue { _ in
                             stackView.removeArrangedSubview(toastView)
                             toastView.removeFromSuperview()
-                            
+
                             if stackView.subviews.isEmpty {
                                 self.idleCallbacker.callAll()
                             }

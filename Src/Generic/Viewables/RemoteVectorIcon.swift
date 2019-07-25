@@ -38,7 +38,7 @@ extension RemoteVectorIcon: Viewable {
 
         func renderPdfDocument(pdfDocument: CGPDFDocument) {
             let imageViewSize = imageView.frame.size
-
+            
             if let image = imageView.image {
                 if image.size == imageViewSize {
                     return
@@ -121,7 +121,7 @@ extension RemoteVectorIcon: Viewable {
 
                 return data as CFData
             }
-
+            
             return nil
         }.map { data in
             guard let data = data else { return nil }

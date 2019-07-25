@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
-        self.toastWindow = self.createToastWindow()
+        toastWindow = createToastWindow()
     }
 
     func createToastWindow() -> UIWindow {
@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += window.add(toasts) { toastsView in
             bag += toastSignal.onValue { _ in
                 window.makeKeyAndVisible()
-                
+
                 toastsView.snp.remakeConstraints { make in
                     let position: CGFloat = 69
                     if #available(iOS 11.0, *) {
@@ -57,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     } else {
                         make.bottom.equalTo(-position)
                     }
-                    
+
                     make.centerX.equalToSuperview()
                 }
             }
@@ -95,7 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 backgroundColor: backgroundColor,
                 duration: duration
             )
-            
+
             if toast != previousToast {
                 self.toastSignal.value = toast
             }
@@ -136,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let incentive = queryItems.filter({ item in item.name == "incentive" }).first?.value {
             Analytics.logEvent("referrals_open", parameters: [
                 "invitedByMemberId": invitedByMemberId,
-                "incentive": incentive
+                "incentive": incentive,
             ])
 
             UserDefaults.standard.set(invitedByMemberId, forKey: "referral_invitedByMemberId")
