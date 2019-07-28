@@ -12,7 +12,6 @@ import WebKit
 class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
     let presentingViewController: UIViewController
 
-    @available(iOS 11.0, *)
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else { return }
 
@@ -35,7 +34,6 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
         }
     }
 
-    @available(iOS 11.0, *)
     func webView(_: WKWebView, stop _: WKURLSchemeTask) {
         // do nothing
     }
@@ -47,11 +45,9 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
 
 extension WKWebViewConfiguration {
     func addOpenBankIDBehaviour(_ presentingViewController: UIViewController) {
-        if #available(iOS 11.0, *) {
-            self.setURLSchemeHandler(
-                OpenBankIdHandler(presentingViewController),
-                forURLScheme: "bankid"
-            )
-        }
+        setURLSchemeHandler(
+            OpenBankIdHandler(presentingViewController),
+            forURLScheme: "bankid"
+        )
     }
 }
