@@ -33,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
+        toastWindow = createToastWindow()
     }
 
     func createToastWindow() -> UIWindow {
@@ -43,26 +44,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let toasts = Toasts(toastSignal: toastSignal)
 
         bag += window.add(toasts) { toastsView in
-            toastsView.snp.makeConstraints { make in
-                let position: CGFloat = 69
-                if #available(iOS 11.0, *) {
-                    let hasModal = self.window.rootViewController?.presentedViewController != nil
-                    let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
-                    let extraPadding: CGFloat = hasModal ? 0 : position
-                    make.bottom.equalTo(-(safeAreaBottom + extraPadding))
-                } else {
-                    make.bottom.equalTo(-position)
-                }
+            bag += toastSignal.onValue { _ in
+                window.makeKeyAndVisible()
 
-                make.centerX.equalToSuperview()
+                toastsView.snp.remakeConstraints { make in
+                    let position: CGFloat = 69
+                    if #available(iOS 11.0, *) {
+                        let hasModal = self.window.rootViewController?.presentedViewController != nil
+                        let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
+                        let extraPadding: CGFloat = hasModal ? 0 : position
+                        make.bottom.equalTo(-(safeAreaBottom + extraPadding))
+                    } else {
+                        make.bottom.equalTo(-position)
+                    }
+
+                    make.centerX.equalToSuperview()
+                }
             }
         }
 
-        let innerBag = DisposeBag()
-        innerBag += toasts.idleSignal.onValue { _ in
-            innerBag.dispose()
+        bag += toasts.idleSignal.onValue { _ in
             self.toastSignal.value = nil
-            self.toastWindow = nil
+            self.window.makeKeyAndVisible()
         }
 
         return window
@@ -84,13 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         backgroundColor: UIColor = UIColor.white,
         duration: TimeInterval = 5.0
     ) {
-        DispatchQueue.main.async {
-            if self.toastWindow == nil {
-                self.toastWindow = self.createToastWindow()
-            }
-
-            self.toastWindow?.makeKeyAndVisible()
-
+        bag += Signal(after: 0).withLatestFrom(toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
             let toast = Toast(
                 symbol: symbol,
                 body: body,
@@ -99,7 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 duration: duration
             )
 
-            if self.toastSignal.value != toast {
+            if toast != previousToast {
                 self.toastSignal.value = toast
             }
         }
@@ -139,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let incentive = queryItems.filter({ item in item.name == "incentive" }).first?.value {
             Analytics.logEvent("referrals_open", parameters: [
                 "invitedByMemberId": invitedByMemberId,
-                "incentive": incentive
+                "incentive": incentive,
             ])
 
             UserDefaults.standard.set(invitedByMemberId, forKey: "referral_invitedByMemberId")

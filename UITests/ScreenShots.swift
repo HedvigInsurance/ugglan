@@ -46,4 +46,25 @@ class ScreenShots: SnapShotTestCase {
             assertSnapshot(matching: tabBarController, as: .image(on: .iPadPro10_5))
         }
     }
+
+    func testClaims() {
+        let claims = Claims()
+
+        let tabBarController = UITabBarController()
+
+        let claimsPresentation = Presentation(
+            claims,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
+
+        bag += tabBarController.presentTabs(claimsPresentation)
+
+        waitForQuery(CommonClaimsQuery(locale: .svSe)) {
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneSe))
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPhoneX))
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPhone8))
+            assertSnapshot(matching: tabBarController, as: .image(on: .iPadPro10_5))
+        }
+    }
 }
