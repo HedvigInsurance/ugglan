@@ -34,7 +34,7 @@ extension ChatTextView: Viewable {
             })
             }.withLatestFrom(textView.value.plain()).onValue({ _, textFieldValue in
                 textView.value.value = ""
-                if let currentGlobalId = self.currentGlobalIdSignal.value {
+                if let currentGlobalId = self.currentGlobalIdSignal.value, textFieldValue != "" {
                     bag += self.client.perform(mutation: SendChatTextResponseMutation(globalId: currentGlobalId, text: textFieldValue))
                 }
             })

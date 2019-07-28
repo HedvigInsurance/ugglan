@@ -1,17 +1,17 @@
 //
-//  SendButton.swift
-//  UITests
+//  AttachFileButton.swift
+//  project
 //
-//  Created by Sam Pettersson on 2019-07-25.
+//  Created by Sam Pettersson on 2019-07-26.
 //
 
 import Foundation
 import Flow
 import UIKit
 
-struct SendButton {}
+struct AttachFileButton {}
 
-extension SendButton: Viewable {
+extension AttachFileButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
@@ -42,8 +42,8 @@ extension SendButton: Viewable {
             touchUpInside,
             control.signal(for: .touchCancel),
             control.signal(for: .touchUpOutside)
-        ).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            control.backgroundColor = UIColor.purple
+            ).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+                control.backgroundColor = UIColor.purple
         }
         
         return (control, Signal { callback in

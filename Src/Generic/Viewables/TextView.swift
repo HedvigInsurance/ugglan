@@ -41,7 +41,7 @@ extension TextView: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor.white.adjustedAlpha(amount: 0.8)
         view.isUserInteractionEnabled = true
         
         view.layer.borderWidth = 1
