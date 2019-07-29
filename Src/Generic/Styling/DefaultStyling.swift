@@ -78,12 +78,10 @@ extension DefaultStyling {
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ], for: .selected)
 
-        if #available(iOS 11.0, *) {
-            UINavigationBar.appearance().largeTitleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.black,
-                NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
-            ]
-        }
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.black,
+            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
+        ]
 
         current = .custom
     }

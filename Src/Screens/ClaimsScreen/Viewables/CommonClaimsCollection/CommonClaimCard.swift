@@ -77,12 +77,7 @@ struct CommonClaimCard {
 
     var safeAreaTop: CGFloat {
         let keyWindow = UIApplication.shared.keyWindow
-
-        if #available(iOS 11.0, *) {
-            return keyWindow?.safeAreaInsets.top ?? 0
-        } else {
-            return keyWindow?.layoutMargins.top ?? 0
-        }
+        return keyWindow?.safeAreaInsets.top ?? 0
     }
 
     var includeButton: Bool {

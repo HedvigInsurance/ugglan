@@ -75,12 +75,9 @@ extension StoriesCollection: Viewable {
         collectionKit.view.bounces = false
         collectionKit.view.showsHorizontalScrollIndicator = false
         collectionKit.view.isPrefetchingEnabled = true
+        collectionKit.view.contentInsetAdjustmentBehavior = .never
 
-        if #available(iOS 11.0, *) {
-            collectionKit.view.contentInsetAdjustmentBehavior = .never
-        }
-
-        bag += pausedCallbacker.signal().onValue({ paused in
+        bag += pausedCallbacker.signal().onValue { paused in
             let cell = collectionKit.view.cellForItem(
                 at: IndexPath(row: collectionKit.currentIndex(), section: 0)
             )
@@ -92,13 +89,13 @@ extension StoriesCollection: Viewable {
                     cell.resume()
                 }
             }
-        })
+        }
 
-        bag += collectionKit.delegate.sizeForItemAt.set({ (_) -> CGSize in
+        bag += collectionKit.delegate.sizeForItemAt.set { (_) -> CGSize in
             collectionKit.view.frame.size
-        })
+        }
 
-        bag += collectionKit.delegate.willDisplayCell.onValue({ cell, index in
+        bag += collectionKit.delegate.willDisplayCell.onValue { cell, index in
             if let cell = cell as? MarketingStoryVideoCell {
                 cell.restart()
             }
@@ -108,7 +105,7 @@ extension StoriesCollection: Viewable {
             }) {
                 bag += nextRow.element.cacheData()
             }
-        })
+        }
 
         bag += scrollToSignal.onValue { direction in
             switch direction {

@@ -105,11 +105,7 @@ extension DraggableOverlay: Presentable {
         let keyboardHeightSignal = ReadWriteSignal<CGFloat>(0)
         var dragLimit: CGFloat {
             var safeAreaTop: CGFloat {
-                if #available(iOS 11.0, *) {
-                    return view.safeAreaInsets.top
-                } else {
-                    return 0
-                }
+                return view.safeAreaInsets.top
             }
             let extraPadding = safeAreaTop + 70
 
@@ -122,11 +118,7 @@ extension DraggableOverlay: Presentable {
 
         var overlayCenter: CGFloat {
             var bottomPadding: CGFloat {
-                if #available(iOS 11.0, *) {
-                    return view.safeAreaInsets.bottom
-                }
-
-                return 0
+                return view.safeAreaInsets.bottom
             }
 
             return UIScreen.main.bounds.height - (overlayHeightSignal.value / 2) - keyboardHeightSignal.value

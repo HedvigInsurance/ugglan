@@ -14,13 +14,11 @@ extension UIStackView {
     func applySafeAreaBottomLayoutMargin() -> Disposable {
         let bag = DisposeBag()
 
-        if #available(iOS 11, *) {
-            bag += didMoveToWindowSignal.onValue { _ in
-                let safeAreaBottom = self.window?.safeAreaInsets.bottom ?? 0
-                self.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: safeAreaBottom, right: 0)
-                self.isLayoutMarginsRelativeArrangement = true
-                self.insetsLayoutMarginsFromSafeArea = false
-            }
+        bag += didMoveToWindowSignal.onValue { _ in
+            let safeAreaBottom = self.window?.safeAreaInsets.bottom ?? 0
+            self.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: safeAreaBottom, right: 0)
+            self.isLayoutMarginsRelativeArrangement = true
+            self.insetsLayoutMarginsFromSafeArea = false
         }
 
         return bag

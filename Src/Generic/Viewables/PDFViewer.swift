@@ -35,70 +35,49 @@ extension PDFViewer: Viewable {
 
         bag += dataFetchSignal.bindTo(dataReadWriteSignal)
 
-        if #available(iOS 11, *) {
-            let pdfView = PDFView()
-            pdfView.backgroundColor = .offWhite
-            pdfView.maxScaleFactor = 3
-            pdfView.autoScales = true
+        let pdfView = PDFView()
+        pdfView.backgroundColor = .offWhite
+        pdfView.maxScaleFactor = 3
+        pdfView.autoScales = true
 
-            // for some reason layouting works with this...
-            bag += pdfView.didLayoutSignal.onValue { _ in
-            }
-
-            bag += dataFetchSignal.onValue { pdfData in
-                guard let pdfData = pdfData else { return }
-                pdfView.document = PDFDocument(data: pdfData)
-            }
-
-            let loadingView = UIView()
-            loadingView.alpha = 1
-            loadingView.backgroundColor = .offWhite
-            pdfView.addSubview(loadingView)
-
-            loadingView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.height.equalToSuperview()
-                make.center.equalToSuperview()
-            }
-
-            let activityIndicator = UIActivityIndicatorView()
-            activityIndicator.startAnimating()
-            activityIndicator.style = .gray
-
-            loadingView.addSubview(activityIndicator)
-
-            activityIndicator.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-            }
-
-            bag += dataFetchSignal.delay(by: 1).animated(
-                style: AnimationStyle.easeOut(duration: 0.5)
-            ) { _ in
-                loadingView.alpha = 0
-            }.onValue { _ in
-                loadingView.removeFromSuperview()
-            }
-
-            return (pdfView, bag)
+        // for some reason layouting works with this...
+        bag += pdfView.didLayoutSignal.onValue { _ in
         }
 
-        let webView = UIWebView()
-        webView.backgroundColor = .offWhite
-
-        bag += webView.didFinishLoadSignal.onValue {
-            webView.scrollView.contentOffset = CGPoint(x: 0, y: -webView.layoutMargins.top)
+        bag += dataFetchSignal.onValue { pdfData in
+            guard let pdfData = pdfData else { return }
+            pdfView.document = PDFDocument(data: pdfData)
         }
 
-        bag += dataFetchSignal.withLatestFrom(url).onValue { pdfData, pdfUrl in
-            guard let pdfData = pdfData, let pdfUrl = pdfUrl else { return }
-            webView.load(
-                pdfData,
-                mimeType: "application/pdf",
-                textEncodingName: "utf-8",
-                baseURL: pdfUrl
-            )
+        let loadingView = UIView()
+        loadingView.alpha = 1
+        loadingView.backgroundColor = .offWhite
+        pdfView.addSubview(loadingView)
+
+        loadingView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalToSuperview()
+            make.center.equalToSuperview()
         }
 
-        return (webView, bag)
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.startAnimating()
+        activityIndicator.style = .gray
+
+        loadingView.addSubview(activityIndicator)
+
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        bag += dataFetchSignal.delay(by: 1).animated(
+            style: AnimationStyle.easeOut(duration: 0.5)
+        ) { _ in
+            loadingView.alpha = 0
+        }.onValue { _ in
+            loadingView.removeFromSuperview()
+        }
+
+        return (pdfView, bag)
     }
 }

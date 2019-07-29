@@ -69,14 +69,11 @@ extension Pager: Viewable {
         collectionKit.view.bounces = true
         collectionKit.view.showsHorizontalScrollIndicator = false
         collectionKit.view.isPrefetchingEnabled = true
+        collectionKit.view.contentInsetAdjustmentBehavior = .never
 
-        if #available(iOS 11.0, *) {
-            collectionKit.view.contentInsetAdjustmentBehavior = .never
-        }
-
-        bag += collectionKit.delegate.sizeForItemAt.set({ (_) -> CGSize in
+        bag += collectionKit.delegate.sizeForItemAt.set { (_) -> CGSize in
             collectionKit.view.frame.size
-        })
+        }
 
         bag += dataSignal.atOnce().onValue { sliderPageArray in
             collectionKit.set(Table(rows: sliderPageArray), animation: .none, rowIdentifier: { $0.id })

@@ -71,12 +71,9 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
 
         bag += viewController.install(view) { scrollView in
             bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
-
-            if #available(iOS 11.0, *) {
-                scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
-                scrollView.insetsLayoutMarginsFromSafeArea = false
-                scrollView.contentInsetAdjustmentBehavior = .never
-            }
+            scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
+            scrollView.insetsLayoutMarginsFromSafeArea = false
+            scrollView.contentInsetAdjustmentBehavior = .never
         }
 
         return (viewController, Future { completion in
