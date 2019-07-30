@@ -57,10 +57,23 @@ extension ChatInput: Viewable {
             make.leading.trailing.top.bottom.equalToSuperview()
         }
         
+        let attachFileButton = AttachFileButton()
+        
+        bag += containerView.addArranged(attachFileButton.wrappedIn({
+           let stackView = UIStackView()
+            stackView.alignment = .center
+            return stackView
+        }()).wrappedIn(UIStackView())) { stackView in
+            stackView.isLayoutMarginsRelativeArrangement = true
+            stackView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 0)
+        }.onValue({ _ in
+            print("button tap")
+        })
+        
         let textField = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
         bag += containerView.addArranged(textField.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
-            stackView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
+            stackView.layoutMargins =  UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 20)
         }
         
         return (backgroundView, bag)

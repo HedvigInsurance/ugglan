@@ -16,10 +16,10 @@ extension AttachFileButton: Viewable {
         let bag = DisposeBag()
         let control = UIControl()
         control.backgroundColor = .purple
-        control.layer.cornerRadius = 15
+        control.layer.cornerRadius = 17.5
         
         control.snp.makeConstraints { make in
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(35)
         }
         
         let icon = Icon(icon: Asset.arrowUp, iconWidth: 15)
