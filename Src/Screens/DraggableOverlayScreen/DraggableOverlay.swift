@@ -246,10 +246,10 @@ extension DraggableOverlay: Presentable {
 
         bag += ease.addSpring(tension: 200, damping: 20, mass: 1) { position in
             overlay.center.y = position
-            
+
             if let inputAccessoryView = childScreen.inputAccessoryView {
                 let translationY = position - overlayCenter
-                
+
                 inputAccessoryView.transform = CGAffineTransform(
                     translationX: 0,
                     y: translationY

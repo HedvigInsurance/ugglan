@@ -54,15 +54,15 @@ extension SignalProvider {
 
         return bag
     }
-    
+
     func bindTo<T>(
         animate style: SpringAnimationStyle,
         on scheduler: Scheduler = .current,
         _ value: T,
         _ keyPath: ReferenceWritableKeyPath<T, Value>
-        ) -> Disposable {
+    ) -> Disposable {
         let bag = DisposeBag()
-        
+
         bag += bindTo(on: scheduler) { newValue in
             UIView.animate(
                 withDuration: style.duration,
@@ -71,12 +71,12 @@ extension SignalProvider {
                 initialSpringVelocity: style.velocity,
                 options: style.options,
                 animations: {
-                     value[keyPath: keyPath] = newValue
-            },
+                    value[keyPath: keyPath] = newValue
+                },
                 completion: nil
-            )   
+            )
         }
-        
+
         return bag
     }
 

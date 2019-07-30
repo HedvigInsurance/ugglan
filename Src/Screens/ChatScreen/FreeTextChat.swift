@@ -5,15 +5,15 @@
 //  Created by Gustaf Gunér on 2019-05-22.
 //
 
+import Apollo
 import Flow
 import Form
 import Presentation
 import UIKit
-import Apollo
 
 struct FreeTextChat {
     let client: ApolloClient
-    
+
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
@@ -22,16 +22,15 @@ struct FreeTextChat {
 extension FreeTextChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-                let (viewController, future) = Chat().materialize()
-        
+        let (viewController, future) = Chat().materialize()
+
         bag += client.perform(mutation: TriggerFreeTextChatMutation()).disposable
 
-        
         return (viewController, Future { completion in
             bag += future.onResult { result in
                 completion(result)
             }
-            
+
             return bag
         })
     }

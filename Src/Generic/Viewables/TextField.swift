@@ -55,7 +55,7 @@ extension TextField: Viewable {
         bag += value.atOnce().bidirectionallyBindTo(textField)
         bag += placeholder.atOnce().bindTo(textField, \.placeholder)
         bag += enabledSignal.atOnce().bindTo(textField, \.isEnabled)
-        
+
         textField.snp.makeConstraints { make in
             make.height.equalTo(34)
         }

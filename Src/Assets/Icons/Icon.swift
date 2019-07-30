@@ -16,6 +16,7 @@ class Icon: UIView {
             setup()
         }
     }
+
     var iconWidth: CGFloat {
         didSet {
             image.snp.remakeConstraints { make in
@@ -49,7 +50,7 @@ class Icon: UIView {
         addSubview(image)
 
         image.contentMode = .scaleAspectFit
-        
+
         image.snp.makeConstraints { make in
             make.width.equalTo(iconWidth)
             make.height.equalToSuperview()

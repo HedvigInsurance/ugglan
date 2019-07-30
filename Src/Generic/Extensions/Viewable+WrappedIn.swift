@@ -23,7 +23,7 @@ struct ContainerStackViewable<V: Viewable, Matter: UIView, ContainerView: UIStac
 struct ContainerStackViewableSignal<V: Viewable, Matter: UIView, ContainerView: UIStackView, SignalValue>: Viewable where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Signal<SignalValue> {
     let viewable: V
     let container: ContainerView
-    
+
     func materialize(events _: ViewableEvents) -> (ContainerView, Signal<SignalValue>) {
         return (container, Signal { callback in
             let bag = DisposeBag()
