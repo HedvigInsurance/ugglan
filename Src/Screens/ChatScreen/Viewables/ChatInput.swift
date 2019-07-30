@@ -62,14 +62,14 @@ extension ChatInput: Viewable {
         contentView.axis = .horizontal
         containerView.addArrangedSubview(contentView)
 
-        let padding: CGFloat = 15
+        let padding: CGFloat = 10
 
         let attachFilePaneIsOpenSignal = ReadWriteSignal(false)
         let attachFileButton = AttachFileButton(isOpenSignal: attachFilePaneIsOpenSignal.readOnly())
 
         bag += contentView.addArranged(attachFileButton.wrappedIn({
             let stackView = UIStackView()
-            stackView.alignment = .center
+            stackView.alignment = .bottom
             return stackView
         }()).wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
@@ -89,7 +89,7 @@ extension ChatInput: Viewable {
 
         bag += contentView.addArranged(attachGIFButton.wrappedIn({
             let stackView = UIStackView()
-            stackView.alignment = .center
+            stackView.alignment = .bottom
             return stackView
         }()).wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
