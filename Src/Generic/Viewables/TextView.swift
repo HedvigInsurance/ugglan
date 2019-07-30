@@ -16,6 +16,12 @@ struct TextView {
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<(String, UITextField), Bool>()
     
+    private let didBeginEditingCallbacker: Callbacker<Void> = Callbacker()
+    
+    var didBeginEditingSignal: Signal<Void> {
+        return didBeginEditingCallbacker.providedSignal
+    }
+    
     init(value: String, placeholder: String, enabled: Bool = true) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
@@ -36,6 +42,10 @@ extension UITextView: SignalProvider {
             }.readable(initial: text ?? "").writable(setValue: { newValue in
                 self.text = newValue
             })
+    }
+    
+    public var didBeginEditingSignal: Signal<Void> {
+        return NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
     }
 }
 
@@ -76,6 +86,10 @@ extension TextView: Viewable {
         
         view.snp.makeConstraints({ make in
             make.height.equalTo(40)
+        })
+        
+        bag += textView.didBeginEditingSignal.onValue({ _ in
+            self.didBeginEditingCallbacker.callAll()
         })
         
         bag += merge(

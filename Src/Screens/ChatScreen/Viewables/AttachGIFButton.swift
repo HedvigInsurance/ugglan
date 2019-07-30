@@ -1,19 +1,17 @@
 //
-//  AttachFileButton.swift
+//  AttachGIFButton.swift
 //  project
 //
-//  Created by Sam Pettersson on 2019-07-26.
+//  Created by Sam Pettersson on 2019-07-30.
 //
 
 import Foundation
 import Flow
 import UIKit
 
-struct AttachFileButton {
-    let isOpenSignal: ReadSignal<Bool>
-}
+struct AttachGIFButton {}
 
-extension AttachFileButton: Viewable {
+extension AttachGIFButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
@@ -25,26 +23,6 @@ extension AttachFileButton: Viewable {
         }
         
         let icon = Icon(icon: Asset.arrowUp, iconWidth: 15)
-        icon.image.tintColor = UIColor.white
-        
-        bag += isOpenSignal.atOnce().map({ isOpen -> ImageAsset in
-            isOpen ? Asset.close : Asset.arrowUp
-        }).bindTo(
-            transition: icon,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            icon,
-            \.icon
-        )
-        
-        bag += isOpenSignal.atOnce().map({ isOpen -> CGFloat in
-            isOpen ? 10 : 15
-        }).bindTo(
-            transition: icon,
-            style: TransitionStyle.crossDissolve(duration: 0.25),
-            icon,
-            \.iconWidth
-        )
-        
         control.addSubview(icon)
         
         icon.snp.makeConstraints { make in
@@ -74,3 +52,4 @@ extension AttachFileButton: Viewable {
         })
     }
 }
+

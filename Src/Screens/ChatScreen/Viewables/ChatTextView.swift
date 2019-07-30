@@ -14,6 +14,12 @@ struct ChatTextView {
     let client: ApolloClient
     let currentGlobalIdSignal: ReadSignal<GraphQLID?>
     
+    private let didBeginEditingCallbacker = Callbacker<Void>()
+    
+    var didBeginEditingSignal: Signal<Void> {
+        return didBeginEditingCallbacker.providedSignal
+    }
+    
     init(currentGlobalIdSignal: ReadSignal<GraphQLID?>, client: ApolloClient = ApolloContainer.shared.client) {
         self.currentGlobalIdSignal = currentGlobalIdSignal
         self.client = client
@@ -26,6 +32,10 @@ extension ChatTextView: Viewable {
         let (view, result) = textView.materialize(events: events)
         
         let bag = DisposeBag()
+        
+        bag += textView.didBeginEditingSignal.onValue { _ in
+            self.didBeginEditingCallbacker.callAll()
+        }
         
         bag += view.add(SendButton()) { buttonView in
             buttonView.snp.makeConstraints({ make in

@@ -51,15 +51,21 @@ extension ChatInput: Viewable {
         }
         
         let containerView = UIStackView()
+        containerView.axis = .vertical
         backgroundView.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
         }
         
-        let attachFileButton = AttachFileButton()
+        let contentView = UIStackView()
+        contentView.axis = .horizontal
+        containerView.addArrangedSubview(contentView)
         
-        bag += containerView.addArranged(attachFileButton.wrappedIn({
+        let attachFilePaneIsOpenSignal = ReadWriteSignal(false)
+        let attachFileButton = AttachFileButton(isOpenSignal: attachFilePaneIsOpenSignal.readOnly())
+        
+        bag += contentView.addArranged(attachFileButton.wrappedIn({
            let stackView = UIStackView()
             stackView.alignment = .center
             return stackView
@@ -67,14 +73,19 @@ extension ChatInput: Viewable {
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 0)
         }.onValue({ _ in
-            print("button tap")
+           attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
+           contentView.firstResponder?.resignFirstResponder()
         })
         
-        let textField = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
-        bag += containerView.addArranged(textField.wrappedIn(UIStackView())) { stackView in
+        let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
+        bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
+        
+        bag += contentView.addArranged(textView.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins =  UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 20)
         }
+        
+        bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))
         
         return (backgroundView, bag)
     }
