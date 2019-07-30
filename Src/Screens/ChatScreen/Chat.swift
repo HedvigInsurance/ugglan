@@ -318,38 +318,28 @@ extension Chat: Presentable {
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
             .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { keyboardInfo -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
+            .onValue({ keyboardInfo in
                 let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
                 tableKit.view.contentInset = insets
                 tableKit.view.scrollIndicatorInsets = insets
-
                 tableKit.view.layoutIfNeeded()
+                
+                var newContentOffset = tableKit.view.contentOffset
+                
+                if newContentOffset.y < 30 {
+                    newContentOffset.y = -(keyboardInfo.height + tableKit.view.safeAreaInsets.bottom)
+                }
+                
+                tableKit.view.contentOffset = newContentOffset
             })
-
+        
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillHideNotification)
             .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { keyboardInfo -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
+            .onValue({ keyboardInfo in
                 let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
                 tableKit.view.contentInset = insets
                 tableKit.view.scrollIndicatorInsets = insets
-                tableKit.view.layoutIfNeeded()
-            })
-
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { keyboardInfo -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
-                let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
-                tableKit.view.contentInset = insets
-                tableKit.view.scrollIndicatorInsets = insets
-                tableKit.view.layoutIfNeeded()
             })
 
         let messagesSignal = ReadWriteSignal<[Message]>([])
