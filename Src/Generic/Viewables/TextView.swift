@@ -15,6 +15,7 @@ struct TextView {
     let placeholder: ReadWriteSignal<String>
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<(String, UITextField), Bool>()
+    let insets: UIEdgeInsets
 
     private let didBeginEditingCallbacker: Callbacker<Void> = Callbacker()
 
@@ -22,9 +23,15 @@ struct TextView {
         return didBeginEditingCallbacker.providedSignal
     }
 
-    init(value: String, placeholder: String, enabled: Bool = true) {
+    init(
+        value: String,
+        placeholder: String,
+        insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
+        enabled: Bool = true
+    ) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
+        self.insets = insets
         enabledSignal = ReadWriteSignal(enabled)
     }
 }
@@ -53,7 +60,7 @@ extension TextView: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = UIColor.darkGray.withAlphaComponent(0.2)
+        view.backgroundColor = UIColor.darkGray.lighter(amount: 0.3)
         view.isUserInteractionEnabled = true
 
         view.layer.borderWidth = 1 / UIScreen.main.scale
@@ -66,7 +73,7 @@ extension TextView: Viewable {
         paddingView.isUserInteractionEnabled = true
         paddingView.axis = .vertical
         paddingView.isLayoutMarginsRelativeArrangement = true
-        paddingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 3)
+        paddingView.layoutMargins = insets
         view.addSubview(paddingView)
 
         paddingView.snp.makeConstraints { make in
@@ -91,24 +98,30 @@ extension TextView: Viewable {
         bag += textView.didBeginEditingSignal.onValue({ _ in
             self.didBeginEditingCallbacker.callAll()
         })
+        
+        let contentHeightSignal = ReadWriteSignal<CGFloat>(0)
 
         bag += merge(
             textView.toVoid(),
             value.toVoid()
         ).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-            let numberOfLines = textView.value.components(separatedBy: "\n").count
-            let contentHeight = min(120, numberOfLines * 34)
+            let cappedContentHeight = min(120, textView.contentSize.height)
 
             textView.snp.remakeConstraints { make in
-                make.height.equalTo(contentHeight)
+                make.height.equalTo(cappedContentHeight)
             }
 
             view.snp.remakeConstraints({ make in
-                make.height.equalTo(contentHeight + 6)
+                make.height.equalTo(cappedContentHeight + 6)
             })
-
+            
             textView.layoutSuperviewsIfNeeded()
-            textView.contentOffset = CGPoint(x: 0, y: contentHeight - 34)
+            
+            if textView.contentSize.height != contentHeightSignal.value {
+                textView.scrollToBottom(animated: false)
+            }
+            
+            contentHeightSignal.value = textView.contentSize.height
         }
 
         paddingView.addArrangedSubview(textView)

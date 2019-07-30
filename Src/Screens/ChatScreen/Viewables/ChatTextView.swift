@@ -28,7 +28,11 @@ struct ChatTextView {
 
 extension ChatTextView: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let textView = TextView(value: "", placeholder: "Aa")
+        let textView = TextView(
+            value: "",
+            placeholder: "Aa",
+            insets: UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 40)
+        )
         let (view, result) = textView.materialize(events: events)
 
         let bag = DisposeBag()

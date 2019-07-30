@@ -65,7 +65,11 @@ extension ChatInput: Viewable {
         let padding: CGFloat = 10
 
         let attachFilePaneIsOpenSignal = ReadWriteSignal(false)
-        let attachFileButton = AttachFileButton(isOpenSignal: attachFilePaneIsOpenSignal.readOnly())
+        let attachGIFPaneIsOpenSignal = ReadWriteSignal(false)
+
+        let attachFileButton = AttachFileButton(
+            isOpenSignal: attachFilePaneIsOpenSignal.readOnly()
+        )
 
         bag += contentView.addArranged(attachFileButton.wrappedIn({
             let stackView = UIStackView()
@@ -79,13 +83,19 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
+            
+            bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
+               stackView.isHidden = isHidden
+                stackView.alpha = isHidden ? 0 : 1
+            }
         }.onValue({ _ in
             attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
         })
 
-        let attachGIFPaneIsOpenSignal = ReadWriteSignal(false)
-        let attachGIFButton = AttachGIFButton(isOpenSignal: attachGIFPaneIsOpenSignal.readOnly())
+        let attachGIFButton = AttachGIFButton(
+            isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()
+        )
 
         bag += contentView.addArranged(attachGIFButton.wrappedIn({
             let stackView = UIStackView()
@@ -99,13 +109,22 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
+            
+            bag += attachFilePaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
+                stackView.isHidden = isHidden
+                stackView.alpha = isHidden ? 0 : 1
+            }
         }.onValue({ _ in
-            attachGIFPaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
+            attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
         })
+        
+        bag += attachFilePaneIsOpenSignal.filter { $0 }.map { _ in false }.bindTo(attachGIFPaneIsOpenSignal)
+        bag += attachGIFPaneIsOpenSignal.filter { $0 }.map { _ in false }.bindTo(attachFilePaneIsOpenSignal)
 
         let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
+        bag += textView.didBeginEditingSignal.map { false }.bindTo(attachGIFPaneIsOpenSignal)
 
         bag += contentView.addArranged(textView.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
@@ -118,6 +137,7 @@ extension ChatInput: Viewable {
         }
 
         bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))
+        bag += containerView.addArranged(AttachGIFPane(isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()))
 
         return (backgroundView, bag)
     }
