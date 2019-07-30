@@ -30,6 +30,7 @@ extension ChatInput: Viewable {
         
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
+        backgroundView.backgroundColor = UIColor.offWhite.withAlphaComponent(0.8)
         
         let effect = UIBlurEffect(style: .light)
         let effectView = UIVisualEffectView(effect: effect)
@@ -37,6 +38,16 @@ extension ChatInput: Viewable {
 
         effectView.snp.makeConstraints { make in
             make.width.height.leading.trailing.equalToSuperview()
+        }
+        
+        let topBorderView = UIView()
+        topBorderView.backgroundColor = .lightGray
+        backgroundView.addSubview(topBorderView)
+        
+        topBorderView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalTo(1 / UIScreen.main.scale)
         }
         
         let containerView = UIStackView()

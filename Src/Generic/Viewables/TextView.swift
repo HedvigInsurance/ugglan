@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import Form
 
 struct TextView {
     let value: ReadWriteSignal<String>
@@ -21,6 +22,7 @@ struct TextView {
         enabledSignal = ReadWriteSignal(enabled)
     }
 }
+
 extension UITextView: SignalProvider {
     public var providedSignal: ReadWriteSignal<String> {
         return Signal { callback in
@@ -41,10 +43,10 @@ extension TextView: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = UIColor.white.adjustedAlpha(amount: 0.8)
+        view.backgroundColor = UIColor.darkGray.withAlphaComponent(0.2)
         view.isUserInteractionEnabled = true
         
-        view.layer.borderWidth = 1
+        view.layer.borderWidth = 1 / UIScreen.main.scale
         view.layer.borderColor = UIColor.lightGray.cgColor
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = min(view.frame.height / 2, 20)
@@ -65,9 +67,8 @@ extension TextView: Viewable {
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
+        textView.backgroundColor = .clear
         bag += value.atOnce().bidirectionallyBindTo(textView)
-        //bag += placeholder.atOnce().bindTo(textView, \.placeholder)
-        //bag += enabledSignal.atOnce().bindTo(textView, \.isEnabled)
         
         textView.snp.remakeConstraints { make in
             make.height.equalTo(34)
@@ -77,8 +78,12 @@ extension TextView: Viewable {
             make.height.equalTo(40)
         })
         
-        bag += textView.animated(style: SpringAnimationStyle.lightBounce()) { _ in
-            let contentHeight = min(80, textView.contentSize.height)
+        bag += merge(
+            textView.toVoid(),
+            value.toVoid()
+        ).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            let numberOfLines = textView.value.components(separatedBy: "\n").count
+            let contentHeight = min(120, numberOfLines * 34)
             
             textView.snp.remakeConstraints { make in
                 make.height.equalTo(contentHeight)
@@ -89,10 +94,23 @@ extension TextView: Viewable {
             })
             
             textView.layoutSuperviewsIfNeeded()
-            textView.contentOffset = CGPoint(x: 0, y: textView.contentSize.height - textView.bounds.size.height)
+            textView.contentOffset = CGPoint(x: 0, y: contentHeight - 34)
         }
         
         paddingView.addArrangedSubview(textView)
+        
+        let placeholderLabel = UILabel(value: "Aa", style: TextStyle.body.colored(.darkGray).resized(to: 14))
+        paddingView.addSubview(placeholderLabel)
+        
+        placeholderLabel.snp.makeConstraints { make in
+            make.left.equalTo(paddingView.layoutMargins.left + 5)
+            make.centerY.equalToSuperview().offset(2)
+            make.width.equalToSuperview()
+        }
+        
+        bag += textView.onValue { value in
+            placeholderLabel.alpha = value.isEmpty ? 1 : 0
+        }
         
         bag += view.signal(for: .touchDown).filter { !textView.isFirstResponder }.onValue { _ in
             textView.becomeFirstResponder()

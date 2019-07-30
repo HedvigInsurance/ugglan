@@ -30,61 +30,83 @@ struct Message: Equatable, Hashable {
     }
     
     let globalId: GraphQLID
+    let id: GraphQLID
     let body: String
     let fromMyself: Bool
     private let index: Int
-    private let listSignal: ReadWriteSignal<[Message]>
+    private let getList: () -> [Message]
     
     var next: Message? {
-        let nextIndex = listSignal.value.index(after: index)
+        let nextIndex = index + 1
+        let list = getList()
         
-        if nextIndex > listSignal.value.endIndex {
+        if nextIndex > list.endIndex {
             return nil
         }
         
-        return listSignal.value[nextIndex]
+        return list[nextIndex]
     }
     
     var previous: Message? {
-        let previousIndex = listSignal.value.index(before: index)
+        let previousIndex = index - 1
+        let list = getList()
         
-        if previousIndex < listSignal.value.startIndex {
+        if previousIndex < list.startIndex {
             return nil
         }
         
-        return listSignal.value[previousIndex]
+        return list[previousIndex]
     }
     
-    var bottomRightRadius: CGFloat {
-        return 5
+    enum Radius {
+        case halfHeight, fixed(value: CGFloat)
     }
     
-    var bottomLeftRadius: CGFloat {
-        return 5
+    var bottomRightRadius: Radius {
+        if let nextFromMyself = next?.fromMyself, nextFromMyself == fromMyself {
+            return .fixed(value: 5)
+        }
+ 
+        return .halfHeight
     }
     
-    var topRightRadius: CGFloat {
-        return 5
+    var bottomLeftRadius: Radius {
+        return .halfHeight
     }
     
-    var topLeftRadius: CGFloat {
-        if !fromMyself, let prevFromMyself = previous?.fromMyself, prevFromMyself == fromMyself {
-            return 5
+    var topRightRadius: Radius {
+        if let prevFromMyself = previous?.fromMyself, prevFromMyself == fromMyself {
+            return .fixed(value: 5)
         }
         
-        return 20
+        return .halfHeight
+    }
+    
+    var topLeftRadius: Radius {
+        return .halfHeight
+    }
+    
+    func absoluteRadiusValue(radius: Radius, view: UIView) -> CGFloat {
+        switch radius {
+        case let .fixed(value):
+            return value
+        case .halfHeight:
+            return min(view.frame.height / 2, 20)
+        }
     }
     
     init(from message: Message, index: Int) {
         self.body = message.body
         self.fromMyself = message.fromMyself
         self.index = index
-        self.listSignal = message.listSignal
+        self.getList = message.getList
         self.globalId = message.globalId
+        self.id = message.id
     }
     
-    init(from message: ChatMessagesQuery.Data.Message, index: Int, listSignal: ReadWriteSignal<[Message]>) {
+    init(from message: ChatMessagesQuery.Data.Message, index: Int, getList: @escaping () -> [Message]) {
         self.globalId = message.globalId
+        self.id = message.id
         
         if let singleSelect = message.body.asMessageBodySingleSelect {
             self.body = singleSelect.text
@@ -110,11 +132,12 @@ struct Message: Equatable, Hashable {
         
         self.fromMyself = message.header.fromMyself
         self.index = index
-        self.listSignal = listSignal
+        self.getList = getList
     }
     
-    init(from message: ChatMessagesSubscription.Data.Message, index: Int, listSignal: ReadWriteSignal<[Message]>) {
+    init(from message: ChatMessagesSubscription.Data.Message, index: Int, getList: @escaping () -> [Message]) {
         self.globalId = message.globalId
+        self.id = message.id
         
         if let singleSelect = message.body.asMessageBodySingleSelect {
             self.body = singleSelect.text
@@ -140,7 +163,7 @@ struct Message: Equatable, Hashable {
         
         self.fromMyself = message.header.fromMyself
         self.index = index
-        self.listSignal = listSignal
+        self.getList = getList
     }
 }
 
@@ -193,13 +216,11 @@ extension Message: Reusable {
             
             bag += bubble.didLayoutSignal.onValue({ _ in
                 bubble.applyRadiusMaskFor(
-                    topLeft: message.topLeftRadius,
-                    bottomLeft: message.bottomLeftRadius,
-                    bottomRight: message.bottomRightRadius,
-                    topRight: message.topRightRadius
+                    topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
+                    bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
+                    bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
+                    topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
                 )
-                
-                // bubble.layer.cornerRadius = min(10, bubble.frame.height / 2)
             })
             
             bubble.backgroundColor = message.fromMyself ? .purple : .white
@@ -288,9 +309,7 @@ extension Chat: Presentable {
         let tableKit = TableKit<EmptySection, Message>(table: Table(), style: style, view: nil, bag: bag, headerForSection: nil, footerForSection: nil)
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
-        if #available(iOS 11.0, *) {
-            tableKit.view.contentInsetAdjustmentBehavior = .automatic
-        }
+        tableKit.view.contentInsetAdjustmentBehavior = .automatic
         
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
@@ -335,32 +354,27 @@ extension Chat: Presentable {
         
         let messagesSignal = ReadWriteSignal<[Message]>([])
         
-        bag += client.fetch(query: ChatMessagesQuery())
+        bag += client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background))
             .valueSignal
             .compactMap { $0.data?.messages.compactMap { message in message } }
             .atValue({ messages in
                 currentGlobalIdSignal.value = messages.first?.globalId
             })
             .map { messages -> [Message] in
-            return messages.enumerated().map { (index, message) in Message(from: message, index: index, listSignal: messagesSignal) }
-        }.bindTo(messagesSignal)
+                return messages.enumerated().map { (offset, message) in Message(from: message, index: offset) { messagesSignal.value } }
+            }.map { messages in messages.filter { $0.body != "" } }.bindTo(messagesSignal)
         
         bag += messagesSignal.compactMap { messages in messages.compactMap { $0.body.count > 0 ? $0 : nil } }.onValue { messages in
-            tableKit.set(Table(rows: messages), animation: .automatic, rowIdentifier: { $0.globalId })
-            let cell = tableKit.view.cellForRow(at: IndexPath(item: 0, section: 0))
-            cell?.alpha = 0
-            
-            bag += Signal(after: 0.25).animated(style: SpringAnimationStyle.heavyBounce(), animations: { _ in
-                cell?.alpha = 1
-            })
+            let tableAnimation = tableKit.table.isEmpty ? TableAnimation.none : TableAnimation.automatic
+            tableKit.set(Table(rows: messages), animation: tableAnimation, rowIdentifier: { $0.globalId })
         }
         
         bag += client.subscribe(subscription: ChatMessagesSubscription())
             .compactMap { $0.data?.message }
             .onValue({ message in
             var newMessages = messagesSignal.value.map { $0 }
-            newMessages.insert(Message(from: message, index: 0, listSignal: messagesSignal), at: 0)
-            messagesSignal.value =  newMessages.enumerated().map { index, message in Message(from: message, index: index) }
+            newMessages.insert(Message(from: message, index: 0) { messagesSignal.value }, at: 0)
+            messagesSignal.value = newMessages.enumerated().map { offset, message in Message(from: message, index: offset) }
             currentGlobalIdSignal.value = message.globalId
         })
         
