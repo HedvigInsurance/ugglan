@@ -116,6 +116,7 @@ extension TextView: Viewable {
                 make.height.equalTo(cappedContentHeight + 6)
             })
             
+            textView.layoutIfNeeded()
             textView.layoutSuperviewsIfNeeded()
             
             if textView.contentSize.height != contentHeightSignal.value {
