@@ -11,10 +11,10 @@ import Foundation
 import UIKit
 
 struct ChatInput {
-    let currentGlobalIdSignal: ReadSignal<GraphQLID?>
+    let currentMessageSignal: ReadSignal<Message?>
 
-    init(currentGlobalIdSignal: ReadSignal<GraphQLID?>) {
-        self.currentGlobalIdSignal = currentGlobalIdSignal
+    init(currentMessageSignal: ReadSignal<Message?>) {
+        self.currentMessageSignal = currentMessageSignal
     }
 }
 
@@ -85,7 +85,7 @@ extension ChatInput: Viewable {
             )
             
             bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
-               stackView.isHidden = isHidden
+                stackView.isHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
         }.onValue({ _ in
@@ -122,7 +122,7 @@ extension ChatInput: Viewable {
         bag += attachFilePaneIsOpenSignal.filter { $0 }.map { _ in false }.bindTo(attachGIFPaneIsOpenSignal)
         bag += attachGIFPaneIsOpenSignal.filter { $0 }.map { _ in false }.bindTo(attachFilePaneIsOpenSignal)
 
-        let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
+        let textView = ChatTextView(currentGlobalIdSignal: currentMessageSignal.map { message in message?.globalId })
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachGIFPaneIsOpenSignal)
 

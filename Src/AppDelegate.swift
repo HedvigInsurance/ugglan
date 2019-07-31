@@ -110,8 +110,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             style: .marketing,
             options: .defaults
         ).onValue { _ in
-            let loggedIn = LoggedIn()
-            self.bag += self.window.present(loggedIn, options: [], animated: true)
+            let onboardingChat = OnboardingChat(intent: .onboard)
+            self.bag += self.navigationController.present(onboardingChat)
         }
 
         bag += navigationController.present(marketingPresentation)
@@ -227,8 +227,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         DefaultStyling.installCustom()
 
-        let token = AuthorizationToken(token: "iRdjaazqSHqtGg==.h/6BEAGKcveJIg==.u2sxTGn+PWkHMg==")
-        try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
+        //let token = AuthorizationToken(token: "iRdjaazqSHqtGg==.h/6BEAGKcveJIg==.u2sxTGn+PWkHMg==")
+        //try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
+        
+        try? Disk.remove("authorization-token.json", from: .applicationSupport)
 
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),

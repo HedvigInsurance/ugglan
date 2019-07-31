@@ -13,6 +13,9 @@ extension Notification {
         let height: CGFloat
         let animationDuration: TimeInterval
         let animationCurve: UIView.AnimationOptions
+        
+        let beginFrame: CGRect
+        let endFrame: CGRect
     }
 
     // parses keyboard info from userInfo if available
@@ -23,10 +26,18 @@ extension Notification {
             let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
             let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
             let animationCurve = UIView.AnimationOptions(rawValue: animationCurveRaw)
+            let beginFrame = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect ?? CGRect.zero
+            let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? CGRect.zero
 
             let safeAreaBottom: CGFloat = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
 
-            return KeyboardInfo(height: keyboardHeight - safeAreaBottom, animationDuration: duration, animationCurve: animationCurve)
+            return KeyboardInfo(
+                height: keyboardHeight - safeAreaBottom,
+                animationDuration: duration,
+                animationCurve: animationCurve,
+                beginFrame: beginFrame,
+                endFrame: endFrame
+            )
         }
 
         return nil

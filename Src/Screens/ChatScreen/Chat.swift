@@ -39,8 +39,8 @@ struct Message: Equatable, Hashable {
     var next: Message? {
         let nextIndex = index + 1
         let list = getList()
-
-        if nextIndex > list.endIndex {
+        
+        if !list.indices.contains(nextIndex) {
             return nil
         }
 
@@ -51,7 +51,7 @@ struct Message: Equatable, Hashable {
         let previousIndex = index - 1
         let list = getList()
 
-        if previousIndex < list.startIndex {
+        if !list.indices.contains(previousIndex) {
             return nil
         }
 
@@ -274,9 +274,9 @@ extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
-        let currentGlobalIdSignal = ReadWriteSignal<GraphQLID?>(nil)
+        let currentMessageSignal = ReadWriteSignal<Message?>(nil)
 
-        let viewController = AccessoryViewController(accessoryView: ChatInput(currentGlobalIdSignal: currentGlobalIdSignal.readOnly()))
+        let viewController = AccessoryViewController(accessoryView: ChatInput(currentMessageSignal: currentMessageSignal.readOnly()))
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
 
         Chat.didOpen()
@@ -305,50 +305,38 @@ extension Chat: Presentable {
         }
 
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
+        
+        let headerView = UIView()
 
         let tableKit = TableKit<EmptySection, Message>(table: Table(), style: style, view: nil, bag: bag, headerForSection: nil, footerForSection: nil)
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
-        tableKit.view.contentInsetAdjustmentBehavior = .automatic
+        tableKit.view.contentInsetAdjustmentBehavior = .never
+        tableKit.view.tableHeaderView = headerView
 
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         }
-
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillShowNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .onValue({ keyboardInfo in
-                let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
-                tableKit.view.contentInset = insets
-                tableKit.view.scrollIndicatorInsets = insets
-                tableKit.view.layoutIfNeeded()
-                
-                var newContentOffset = tableKit.view.contentOffset
-                
-                if newContentOffset.y < 30 {
-                    newContentOffset.y = -(keyboardInfo.height + tableKit.view.safeAreaInsets.bottom)
-                }
-                
-                tableKit.view.contentOffset = newContentOffset
-            })
         
         bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillHideNotification)
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
             .compactMap { notification in notification.keyboardInfo }
-            .onValue({ keyboardInfo in
-                let insets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
-                tableKit.view.contentInset = insets
-                tableKit.view.scrollIndicatorInsets = insets
+            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+                return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo in
+                print(keyboardInfo.endFrame.height)
+                headerView.frame = CGRect(x: 0, y: 0, width: keyboardInfo.endFrame.width, height: keyboardInfo.endFrame.height + 20)
+                tableKit.view.tableHeaderView = headerView
             })
 
         let messagesSignal = ReadWriteSignal<[Message]>([])
-
+        
         bag += client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background))
             .valueSignal
-            .compactMap { $0.data?.messages.compactMap { message in message } }
-            .atValue({ messages in
-                currentGlobalIdSignal.value = messages.first?.globalId
+            .compactMap { messages -> [ChatMessagesQuery.Data.Message]? in messages.data?.messages.compactMap { message in message } }
+            .atValue({ messages -> Void in
+                guard let message = messages.first else { return }
+                currentMessageSignal.value = Message(from: message, index: 0) { messagesSignal.value }
             })
             .map { messages -> [Message] in
                 return messages.enumerated().map { offset, message in Message(from: message, index: offset) { messagesSignal.value } }
@@ -363,9 +351,16 @@ extension Chat: Presentable {
             .compactMap { $0.data?.message }
             .onValue({ message in
                 var newMessages = messagesSignal.value.map { $0 }
-                newMessages.insert(Message(from: message, index: 0) { messagesSignal.value }, at: 0)
+                let newMessage = Message(from: message, index: 0) { messagesSignal.value }
+                newMessages.insert(newMessage, at: 0)
                 messagesSignal.value = newMessages.enumerated().map { offset, message in Message(from: message, index: offset) }
-                currentGlobalIdSignal.value = message.globalId
+                currentMessageSignal.value = newMessage
+                
+                if message.body.asMessageBodyParagraph != nil {
+                    bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
+                        bag += self.client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background)).onValue { _ in }
+                    }
+                }
             })
 
         bag += viewController.install(tableKit)

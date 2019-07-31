@@ -26,24 +26,14 @@ struct OnboardingChat {
 extension OnboardingChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-
-        let viewController = UIViewController()
-
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
-
-        Chat.didOpen()
-
-        bag += Disposer {
-            Chat.didClose()
-        }
-
-        let view = UIView()
-        view.backgroundColor = .purple
-
-        viewController.view = view
-
-        return (viewController, Future { _ in
-            bag
+        let (viewController, future) = Chat().materialize()
+        
+        return (viewController, Future { completion in
+            bag += future.onResult { result in
+                completion(result)
+            }
+            
+            return bag
         })
     }
 }

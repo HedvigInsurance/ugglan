@@ -54,6 +54,10 @@ extension UITextView: SignalProvider {
     public var didBeginEditingSignal: Signal<Void> {
         return NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
     }
+    
+    public var contentSizeSignal: ReadSignal<CGSize> {
+        return signal(for: \.contentSize)
+    }
 }
 
 extension TextView: Viewable {
@@ -100,17 +104,14 @@ extension TextView: Viewable {
         })
         
         let contentHeightSignal = ReadWriteSignal<CGFloat>(0)
-
-        bag += merge(
-            textView.toVoid(),
-            value.toVoid()
-        ).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-            let cappedContentHeight = min(120, textView.contentSize.height)
-
+        
+        bag += textView.contentSizeSignal.animated(style: SpringAnimationStyle.lightBounce()) { size in
+            let cappedContentHeight = min(120, size.height)
+            
             textView.snp.remakeConstraints { make in
                 make.height.equalTo(cappedContentHeight)
             }
-
+            
             view.snp.remakeConstraints({ make in
                 make.height.equalTo(cappedContentHeight + 6)
             })
@@ -121,7 +122,7 @@ extension TextView: Viewable {
                 textView.scrollToBottom(animated: false)
             }
             
-            contentHeightSignal.value = textView.contentSize.height
+            contentHeightSignal.value = size.height
         }
 
         paddingView.addArrangedSubview(textView)
