@@ -118,9 +118,6 @@ extension ChatInput: Viewable {
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
         })
-        
-        bag += attachFilePaneIsOpenSignal.filter { $0 }.map { _ in false }.bindTo(attachGIFPaneIsOpenSignal)
-        bag += attachGIFPaneIsOpenSignal.filter { $0 }.map { _ in false }.bindTo(attachFilePaneIsOpenSignal)
 
         let textView = ChatTextView(currentGlobalIdSignal: currentMessageSignal.map { message in message?.globalId })
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)

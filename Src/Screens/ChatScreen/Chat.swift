@@ -319,13 +319,22 @@ extension Chat: Presentable {
         }
         
         bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+            .signal(forName: UIResponder.keyboardWillShowNotification)
             .compactMap { notification in notification.keyboardInfo }
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                print(keyboardInfo.endFrame.height)
                 headerView.frame = CGRect(x: 0, y: 0, width: keyboardInfo.endFrame.width, height: keyboardInfo.endFrame.height + 20)
+                tableKit.view.tableHeaderView = headerView
+            })
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillHideNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+                return AnimationStyle.init(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo in
+                headerView.frame = CGRect(x: 0, y: 0, width: keyboardInfo.endFrame.width, height: keyboardInfo.height)
                 tableKit.view.tableHeaderView = headerView
             })
 

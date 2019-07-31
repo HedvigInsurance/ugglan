@@ -19,7 +19,7 @@ extension AttachGIFPane: Viewable {
         let view = UIView()
         
         bag += isOpenSignal.atOnce().map { !$0 }.animated(style: SpringAnimationStyle.lightBounce(), animations: { isHidden in
-            view.isHidden = isHidden
+            view.animationSafeIsHidden = isHidden
             view.layoutSuperviewsIfNeeded()
         })
         
