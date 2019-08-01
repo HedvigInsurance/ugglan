@@ -225,6 +225,7 @@ extension Message: Reusable {
         containerView.alignment = .trailing
 
         let spacingContainer = UIStackView()
+        spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(spacingContainer)
 
@@ -240,6 +241,7 @@ extension Message: Reusable {
         let contentContainer = UIStackView()
         contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
         contentContainer.isLayoutMarginsRelativeArrangement = true
+        contentContainer.insetsLayoutMarginsFromSafeArea = false
 
         bubble.addSubview(contentContainer)
 
