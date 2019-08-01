@@ -33,27 +33,37 @@ extension SingleSelectList: Viewable {
         view.isLayoutMarginsRelativeArrangement = true
         view.axis = .vertical
         
-        bag += optionsSignal.animated(style: SpringAnimationStyle.lightBounce()) { options in
+        bag += optionsSignal.latestTwo().filter(predicate: { a, b -> Bool in
+            a != b
+        }).animated(style: SpringAnimationStyle.lightBounce()) { options, _ in
             view.subviews.forEach({ view in
-                view.removeFromSuperview()
+                view.isHidden = true
+                view.transform = CGAffineTransform(translationX: 0, y: 200)
             })
-            
-            bag += options.map({ option in
-                let innerBag = DisposeBag()
-                let button = Button(title: option.text, type: .pillTransparent(backgroundColor: .purple, textColor: .purple))
+            }.animated(style: SpringAnimationStyle.lightBounce(), animations: { options, _ in
+                let containerView = UIStackView()
+                containerView.axis = .vertical
+                containerView.spacing = 15
+                containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
+                containerView.isLayoutMarginsRelativeArrangement = true
+                view.addArrangedSubview(containerView)
                 
-                innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValueDisposePrevious({ globalId in
+                bag += options.map({ option in
+                    let innerBag = DisposeBag()
+                    let button = Button(title: option.text, type: .pillTransparent(backgroundColor: .purple, textColor: .white))
                     
-                    print("hello")
+                    innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValueDisposePrevious({ globalId in
+                        
+                        print("hello")
+                        
+                        return self.client.perform(mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)).disposable
+                    })
                     
-                    return self.client.perform(mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)).disposable
+                    innerBag += containerView.addArranged(button)
+                    
+                    return innerBag
                 })
-                
-                innerBag += view.addArranged(button)
-                
-                return innerBag
             })
-        }
         
         return (view, bag)
     }

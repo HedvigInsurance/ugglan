@@ -12,6 +12,11 @@ choices {
 text
 value
 }
+... on MessageBodyChoicesLink {
+view
+text
+value
+}
 }
 }
 

@@ -20,9 +20,29 @@ struct Chat {
     }
 }
 
-struct SingleSelectOption {
+struct SingleSelectOption: Equatable {
+    let type: OptionType
     let text: String
     let value: String
+    
+    enum ViewType: Equatable {
+        case dashboard, offer
+        
+        static func from(rawValue: String) -> ViewType {
+            switch rawValue {
+            case "DASHBOARD":
+                return .dashboard
+            case "OFFER":
+                return .offer
+            default:
+                return .dashboard
+            }
+        }
+    }
+    
+    enum OptionType: Equatable {
+        case selection, link(view: ViewType)
+    }
 }
 
 struct Message: Equatable, Hashable {
@@ -123,10 +143,22 @@ struct Message: Equatable, Hashable {
             body = singleSelect.text
             
             if let choices = singleSelect.choices?.compactMap({ $0 }) {
-                let options = choices.map { SingleSelectOption(
-                        text: $0.asMessageBodyChoicesSelection?.text ?? "",
-                        value: $0.asMessageBodyChoicesSelection?.value ?? ""
-                    )
+                let options = choices.compactMap { choice -> SingleSelectOption? in
+                    if let selection = choice.asMessageBodyChoicesSelection {
+                        return SingleSelectOption(
+                            type: .selection,
+                            text: selection.text,
+                            value: selection.value
+                        )
+                    } else if let link = choice.asMessageBodyChoicesLink, let view = link.view {
+                        return SingleSelectOption(
+                            type: .link(view: SingleSelectOption.ViewType.from(rawValue: view.rawValue)),
+                            text: link.text,
+                            value: link.value
+                        )
+                    }
+                    
+                    return nil
                 }
                 responseType = .singleSelect(options: options)
             } else {
@@ -174,10 +206,22 @@ struct Message: Equatable, Hashable {
             body = singleSelect.text
             
             if let choices = singleSelect.choices?.compactMap({ $0 }) {
-                let options = choices.map { SingleSelectOption(
-                    text: $0.asMessageBodyChoicesSelection?.text ?? "",
-                    value: $0.asMessageBodyChoicesSelection?.value ?? ""
-                    )
+                let options = choices.compactMap { choice -> SingleSelectOption? in
+                    if let selection = choice.asMessageBodyChoicesSelection {
+                        return SingleSelectOption(
+                            type: .selection,
+                            text: selection.text,
+                            value: selection.value
+                        )
+                    } else if let link = choice.asMessageBodyChoicesLink, let view = link.view {
+                        return SingleSelectOption(
+                            type: .link(view: SingleSelectOption.ViewType.from(rawValue: view.rawValue)),
+                            text: link.text,
+                            value: link.value
+                        )
+                    }
+                    
+                    return nil
                 }
                 responseType = .singleSelect(options: options)
             } else {
