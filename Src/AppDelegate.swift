@@ -109,10 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             marketing,
             style: .marketing,
             options: .defaults
-        ).onValue { _ in
-            let onboardingChat = OnboardingChat(intent: .onboard)
-            self.bag += self.navigationController.present(onboardingChat)
-        }
+        )
 
         bag += navigationController.present(marketingPresentation)
     }
@@ -236,10 +233,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()
         ).delay(by: 0.5).onValue { _, _ in
-            self.presentMarketing()
-
+            self.bag += ApplicationState.presentRootViewController(self.window)
             hasLoadedCallbacker.callAll()
-
             TranslationsRepo.fetch()
         }
 

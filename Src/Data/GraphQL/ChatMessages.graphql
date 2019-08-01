@@ -7,6 +7,12 @@ body {
 type
 id
 text
+choices {
+... on MessageBodyChoicesSelection {
+text
+value
+}
+}
 }
 
 ... on MessageBodyMultipleSelect {

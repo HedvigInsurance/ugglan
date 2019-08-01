@@ -20,7 +20,7 @@ struct ChatInput {
 
 class ViewWithFixedIntrinsicSize: UIView {
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: 300, height: 200)
+        return CGSize(width: 0, height: 0)
     }
 }
 
@@ -59,8 +59,12 @@ extension ChatInput: Viewable {
         }
 
         let contentView = UIStackView()
-        contentView.axis = .horizontal
+        contentView.axis = .vertical
         containerView.addArrangedSubview(contentView)
+        
+        let inputBar = UIStackView()
+        inputBar.axis = .horizontal
+        contentView.addArrangedSubview(inputBar)
 
         let padding: CGFloat = 10
 
@@ -71,7 +75,7 @@ extension ChatInput: Viewable {
             isOpenSignal: attachFilePaneIsOpenSignal.readOnly()
         )
 
-        bag += contentView.addArranged(attachFileButton.wrappedIn({
+        bag += inputBar.addArranged(attachFileButton.wrappedIn({
             let stackView = UIStackView()
             stackView.alignment = .bottom
             return stackView
@@ -97,7 +101,7 @@ extension ChatInput: Viewable {
             isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()
         )
 
-        bag += contentView.addArranged(attachGIFButton.wrappedIn({
+        bag += inputBar.addArranged(attachGIFButton.wrappedIn({
             let stackView = UIStackView()
             stackView.alignment = .bottom
             return stackView
@@ -118,12 +122,14 @@ extension ChatInput: Viewable {
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
         })
+        
+        let currentGlobalIdSignal = currentMessageSignal.map { message in message?.globalId }
 
-        let textView = ChatTextView(currentGlobalIdSignal: currentMessageSignal.map { message in message?.globalId })
+        let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachGIFPaneIsOpenSignal)
 
-        bag += contentView.addArranged(textView.wrappedIn(UIStackView())) { stackView in
+        bag += inputBar.addArranged(textView.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(
                 top: padding,
@@ -131,6 +137,26 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: padding
             )
+        }
+        
+        let optionsSignal = ReadWriteSignal<[SingleSelectOption]>([])
+        
+        let singleSelectList = SingleSelectList(
+            optionsSignal: optionsSignal.readOnly(),
+            currentGlobalIdSignal: currentGlobalIdSignal
+        )
+        bag += contentView.addArranged(singleSelectList)
+        
+        bag += currentMessageSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
+            switch message.responseType {
+            case .text:
+                optionsSignal.value = []
+                inputBar.animationSafeIsHidden = false
+            case let .singleSelect(options):
+                inputBar.animationSafeIsHidden = true
+                optionsSignal.value = options
+                containerView.firstResponder?.resignFirstResponder()
+            }
         }
 
         bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))

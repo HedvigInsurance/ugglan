@@ -20,6 +20,11 @@ struct Chat {
     }
 }
 
+struct SingleSelectOption {
+    let text: String
+    let value: String
+}
+
 struct Message: Equatable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {
         return lhs.globalId == rhs.globalId
@@ -33,8 +38,13 @@ struct Message: Equatable, Hashable {
     let id: GraphQLID
     let body: String
     let fromMyself: Bool
+    let responseType: ResponseType
     private let index: Int
     private let getList: () -> [Message]
+    
+    enum ResponseType {
+        case singleSelect(options: [SingleSelectOption]), text
+    }
 
     var next: Message? {
         let nextIndex = index + 1
@@ -102,6 +112,7 @@ struct Message: Equatable, Hashable {
         getList = message.getList
         globalId = message.globalId
         id = message.id
+        responseType = message.responseType
     }
 
     init(from message: ChatMessagesQuery.Data.Message, index: Int, getList: @escaping () -> [Message]) {
@@ -110,24 +121,44 @@ struct Message: Equatable, Hashable {
 
         if let singleSelect = message.body.asMessageBodySingleSelect {
             body = singleSelect.text
+            
+            if let choices = singleSelect.choices?.compactMap({ $0 }) {
+                let options = choices.map { SingleSelectOption(
+                        text: $0.asMessageBodyChoicesSelection?.text ?? "",
+                        value: $0.asMessageBodyChoicesSelection?.value ?? ""
+                    )
+                }
+                responseType = .singleSelect(options: options)
+            } else {
+                responseType = .text
+            }
         } else if let multipleSelect = message.body.asMessageBodyMultipleSelect {
             body = multipleSelect.text
+            responseType = .text
         } else if let text = message.body.asMessageBodyText {
             body = text.text
+            responseType = .text
         } else if let number = message.body.asMessageBodyNumber {
             body = number.text
+            responseType = .text
         } else if let audio = message.body.asMessageBodyAudio {
             body = audio.text
+            responseType = .text
         } else if let bankIdCollect = message.body.asMessageBodyBankIdCollect {
             body = bankIdCollect.text
+            responseType = .text
         } else if let paragraph = message.body.asMessageBodyParagraph {
             body = paragraph.text
+            responseType = .text
         } else if let file = message.body.asMessageBodyFile {
             body = file.text
+            responseType = .text
         } else if let undefined = message.body.asMessageBodyUndefined {
             body = undefined.text
+            responseType = .text
         } else {
             body = "Oj något gick fel"
+            responseType = .text
         }
 
         fromMyself = message.header.fromMyself
@@ -141,24 +172,44 @@ struct Message: Equatable, Hashable {
 
         if let singleSelect = message.body.asMessageBodySingleSelect {
             body = singleSelect.text
+            
+            if let choices = singleSelect.choices?.compactMap({ $0 }) {
+                let options = choices.map { SingleSelectOption(
+                    text: $0.asMessageBodyChoicesSelection?.text ?? "",
+                    value: $0.asMessageBodyChoicesSelection?.value ?? ""
+                    )
+                }
+                responseType = .singleSelect(options: options)
+            } else {
+                responseType = .text
+            }
         } else if let multipleSelect = message.body.asMessageBodyMultipleSelect {
             body = multipleSelect.text
+            responseType = .text
         } else if let text = message.body.asMessageBodyText {
             body = text.text
+            responseType = .text
         } else if let number = message.body.asMessageBodyNumber {
             body = number.text
+            responseType = .text
         } else if let audio = message.body.asMessageBodyAudio {
             body = audio.text
+            responseType = .text
         } else if let bankIdCollect = message.body.asMessageBodyBankIdCollect {
             body = bankIdCollect.text
+            responseType = .text
         } else if let paragraph = message.body.asMessageBodyParagraph {
             body = paragraph.text
+            responseType = .text
         } else if let file = message.body.asMessageBodyFile {
             body = file.text
+            responseType = .text
         } else if let undefined = message.body.asMessageBodyUndefined {
             body = undefined.text
+            responseType = .text
         } else {
             body = "Oj något gick fel"
+            responseType = .text
         }
 
         fromMyself = message.header.fromMyself
@@ -340,34 +391,48 @@ extension Chat: Presentable {
 
         let messagesSignal = ReadWriteSignal<[Message]>([])
         
-        bag += client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background))
-            .valueSignal
-            .compactMap { messages -> [ChatMessagesQuery.Data.Message]? in messages.data?.messages.compactMap { message in message } }
-            .atValue({ messages -> Void in
-                guard let message = messages.first else { return }
-                currentMessageSignal.value = Message(from: message, index: 0) { messagesSignal.value }
-            })
-            .map { messages -> [Message] in
-                return messages.enumerated().map { offset, message in Message(from: message, index: offset) { messagesSignal.value } }
-            }.map { messages in messages.filter { $0.body != "" } }.bindTo(messagesSignal)
+        func fetchMessages() {
+            bag += client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background))
+                .valueSignal
+                .compactMap { messages -> [ChatMessagesQuery.Data.Message]? in messages.data?.messages.compactMap { message in message } }
+                .atValue({ messages -> Void in
+                    guard let message = messages.first else { return }
+                    currentMessageSignal.value = Message(from: message, index: 0) { messagesSignal.value }
+                })
+                .map { messages -> [Message] in
+                    return messages.enumerated().map { offset, message in Message(from: message, index: offset) { messagesSignal.value } }
+                }.map { messages in messages.filter { $0.body != "" } }.onValue({ messages in
+                    if messages.count > messagesSignal.value.count {
+                        let amountOfNewRows = messages.count - messagesSignal.value.count
+                        
+                        for i in 0 ... amountOfNewRows {
+                            messagesSignal.value.insert(messages[i], at: i)
+                        }
+                    }
+                })
+        }
 
         bag += messagesSignal.compactMap { messages in messages.compactMap { $0.body.count > 0 ? $0 : nil } }.onValue { messages in
-            let tableAnimation = tableKit.table.isEmpty ? TableAnimation.none : TableAnimation.automatic
+            let tableAnimation = tableKit.table.isEmpty ? TableAnimation.none : TableAnimation.init(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
             tableKit.set(Table(rows: messages), animation: tableAnimation, rowIdentifier: { $0.globalId })
         }
+        
+        fetchMessages()
 
         bag += client.subscribe(subscription: ChatMessagesSubscription())
             .compactMap { $0.data?.message }
             .onValue({ message in
-                var newMessages = messagesSignal.value.map { $0 }
                 let newMessage = Message(from: message, index: 0) { messagesSignal.value }
-                newMessages.insert(newMessage, at: 0)
-                messagesSignal.value = newMessages.enumerated().map { offset, message in Message(from: message, index: offset) }
+                messagesSignal.value.insert(newMessage, at: 0)
                 currentMessageSignal.value = newMessage
                 
                 if message.body.asMessageBodyParagraph != nil {
-                    bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
-                        bag += self.client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background)).onValue { _ in }
+                    bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValueDisposePrevious { _ in
+                        return self.client.fetch(
+                            query: ChatMessagesQuery(),
+                            cachePolicy: .fetchIgnoringCacheData,
+                            queue: DispatchQueue.global(qos: .background)
+                        ).disposable
                     }
                 }
             })

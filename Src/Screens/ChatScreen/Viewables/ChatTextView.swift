@@ -13,6 +13,7 @@ import UIKit
 struct ChatTextView {
     let client: ApolloClient
     let currentGlobalIdSignal: ReadSignal<GraphQLID?>
+    let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
     private let didBeginEditingCallbacker = Callbacker<Void>()
 
@@ -20,7 +21,10 @@ struct ChatTextView {
         return didBeginEditingCallbacker.providedSignal
     }
 
-    init(currentGlobalIdSignal: ReadSignal<GraphQLID?>, client: ApolloClient = ApolloContainer.shared.client) {
+    init(
+        currentGlobalIdSignal: ReadSignal<GraphQLID?>,
+        client: ApolloClient = ApolloContainer.shared.client
+    ) {
         self.currentGlobalIdSignal = currentGlobalIdSignal
         self.client = client
     }
@@ -39,6 +43,10 @@ extension ChatTextView: Viewable {
 
         bag += textView.didBeginEditingSignal.onValue { _ in
             self.didBeginEditingCallbacker.callAll()
+        }
+        
+        bag += isHiddenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
+            view.animationSafeIsHidden = isHidden
         }
 
         bag += view.add(SendButton()) { buttonView in
