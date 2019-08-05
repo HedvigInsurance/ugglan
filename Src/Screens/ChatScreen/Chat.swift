@@ -471,7 +471,9 @@ extension Chat: Presentable {
                         let amountOfNewRows = messages.count - messagesSignal.value.count
                         
                         for i in 0 ... amountOfNewRows {
-                            messagesSignal.value.insert(messages[i], at: i)
+                            if messages.indices.contains(i) {
+                                messagesSignal.value.insert(messages[i], at: i)
+                            }
                         }
                     }
                 })

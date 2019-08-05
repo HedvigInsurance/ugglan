@@ -15,7 +15,9 @@ struct Offer {
 
 extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
-        let (viewController, future) = Chat().materialize()
-        return (viewController, future.disposable)
+        let viewController = UIViewController()
+        viewController.view.backgroundColor = .pink
+        
+        return (viewController, NilDisposer())
     }
 }
