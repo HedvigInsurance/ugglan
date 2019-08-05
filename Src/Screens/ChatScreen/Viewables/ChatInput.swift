@@ -12,9 +12,14 @@ import UIKit
 
 struct ChatInput {
     let currentMessageSignal: ReadSignal<Message?>
+    let navigateCallbacker: Callbacker<NavigationEvent>
 
-    init(currentMessageSignal: ReadSignal<Message?>) {
+    init(
+        currentMessageSignal: ReadSignal<Message?>,
+        navigateCallbacker: Callbacker<NavigationEvent>
+    ) {
         self.currentMessageSignal = currentMessageSignal
+        self.navigateCallbacker = navigateCallbacker
     }
 }
 
@@ -143,7 +148,8 @@ extension ChatInput: Viewable {
         
         let singleSelectList = SingleSelectList(
             optionsSignal: optionsSignal.readOnly(),
-            currentGlobalIdSignal: currentGlobalIdSignal
+            currentGlobalIdSignal: currentGlobalIdSignal,
+            navigateCallbacker: navigateCallbacker
         )
         bag += contentView.addArranged(singleSelectList)
         
@@ -151,12 +157,19 @@ extension ChatInput: Viewable {
             switch message.responseType {
             case .text:
                 optionsSignal.value = []
-                inputBar.animationSafeIsHidden = false
             case let .singleSelect(options):
-                inputBar.animationSafeIsHidden = true
                 optionsSignal.value = options
-                containerView.firstResponder?.resignFirstResponder()
             }
+            
+        }.animated(style: SpringAnimationStyle.lightBounce()) { message in
+            switch message.responseType {
+            case .text:
+                inputBar.animationSafeIsHidden = false
+            case .singleSelect:
+                inputBar.animationSafeIsHidden = true
+            }
+            
+            inputBar.layoutSuperviewsIfNeeded()
         }
 
         bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))

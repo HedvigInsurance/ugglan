@@ -62,7 +62,7 @@ struct Message: Equatable, Hashable {
     private let index: Int
     private let getList: () -> [Message]
     
-    enum ResponseType {
+    enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption]), text
     }
 
@@ -367,14 +367,33 @@ func + (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
     return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
+enum NavigationEvent {
+    case dashboard, offer
+}
+
 extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
         let currentMessageSignal = ReadWriteSignal<Message?>(nil)
-
-        let viewController = AccessoryViewController(accessoryView: ChatInput(currentMessageSignal: currentMessageSignal.readOnly()))
+        let navigateCallbacker = Callbacker<NavigationEvent>()
+        
+        let chatInput = ChatInput(
+            currentMessageSignal: currentMessageSignal.readOnly(),
+            navigateCallbacker: navigateCallbacker
+        )
+        
+        let viewController = AccessoryViewController(accessoryView: chatInput)
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
+        
+        bag += navigateCallbacker.onValue { navigationEvent in
+            switch navigationEvent {
+            case .offer:
+                viewController.present(Offer())
+            case .dashboard:
+                viewController.present(LoggedIn())
+            }
+        }
 
         Chat.didOpen()
 
@@ -458,8 +477,8 @@ extension Chat: Presentable {
                 })
         }
 
-        bag += messagesSignal.compactMap { messages in messages.compactMap { $0.body.count > 0 ? $0 : nil } }.onValue { messages in
-            let tableAnimation = tableKit.table.isEmpty ? TableAnimation.none : TableAnimation.init(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
+        bag += messagesSignal.onValue { messages in
+            let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
             tableKit.set(Table(rows: messages), animation: tableAnimation, rowIdentifier: { $0.globalId })
         }
         
@@ -470,7 +489,10 @@ extension Chat: Presentable {
             .onValue({ message in
                 let newMessage = Message(from: message, index: 0) { messagesSignal.value }
                 messagesSignal.value.insert(newMessage, at: 0)
-                currentMessageSignal.value = newMessage
+                
+                if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
+                    currentMessageSignal.value = newMessage
+                }
                 
                 if message.body.asMessageBodyParagraph != nil {
                     bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValueDisposePrevious { _ in

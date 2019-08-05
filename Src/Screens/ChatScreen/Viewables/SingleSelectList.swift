@@ -14,14 +14,17 @@ struct SingleSelectList {
     let optionsSignal: ReadSignal<[SingleSelectOption]>
     let currentGlobalIdSignal: ReadSignal<GraphQLID?>
     let client: ApolloClient
+    let navigateCallbacker: Callbacker<NavigationEvent>
     
     init(
         optionsSignal: ReadSignal<[SingleSelectOption]>,
         currentGlobalIdSignal: ReadSignal<GraphQLID?>,
+        navigateCallbacker: Callbacker<NavigationEvent>,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
         self.optionsSignal = optionsSignal
         self.currentGlobalIdSignal = currentGlobalIdSignal
+        self.navigateCallbacker = navigateCallbacker
         self.client = client
     }
 }
@@ -33,36 +36,62 @@ extension SingleSelectList: Viewable {
         view.isLayoutMarginsRelativeArrangement = true
         view.axis = .vertical
         
-        bag += optionsSignal.latestTwo().filter(predicate: { a, b -> Bool in
-            a != b
-        }).animated(style: SpringAnimationStyle.lightBounce()) { options, _ in
+        bag += optionsSignal.animated(style: SpringAnimationStyle.lightBounce()) { options in
             view.subviews.forEach({ view in
                 view.isHidden = true
                 view.transform = CGAffineTransform(translationX: 0, y: 200)
+                view.layoutIfNeeded()
+                view.tag = 1
             })
-            }.animated(style: SpringAnimationStyle.lightBounce(), animations: { options, _ in
-                let containerView = UIStackView()
-                containerView.axis = .vertical
-                containerView.spacing = 15
-                containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
-                containerView.isLayoutMarginsRelativeArrangement = true
-                view.addArrangedSubview(containerView)
+            
+            let containerView = UIStackView()
+            containerView.isHidden = true
+            containerView.axis = .vertical
+            containerView.spacing = 15
+            containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
+            containerView.isLayoutMarginsRelativeArrangement = true
+            view.addArrangedSubview(containerView)
+            containerView.layoutSuperviewsIfNeeded()
+            
+            bag += options.map({ option in
+                let innerBag = DisposeBag()
+                let button = Button(title: option.text, type: .outline(borderColor: .purple, textColor: .purple))
                 
-                bag += options.map({ option in
-                    let innerBag = DisposeBag()
-                    let button = Button(title: option.text, type: .pillTransparent(backgroundColor: .purple, textColor: .white))
+                innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
                     
-                    innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValueDisposePrevious({ globalId in
-                        
-                        print("hello")
-                        
-                        return self.client.perform(mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)).disposable
-                    })
-                    
-                    innerBag += containerView.addArranged(button)
-                    
-                    return innerBag
+                    switch option.type {
+                    case let .link(view):
+                        if view == .offer {
+                            self.navigateCallbacker.callAll(with: .offer)
+                        } else if view == .dashboard {
+                            self.navigateCallbacker.callAll(with: .dashboard)
+                        }
+                    case .selection:
+                        self.client.perform(
+                            mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
+                        )
+                    }
+                }
+                
+                innerBag += containerView.addArranged(button.wrappedIn({
+                    let stackView = UIStackView()
+                    stackView.alignment = .leading
+                    return stackView
+                    }()))
+                
+                return innerBag
+            })
+            
+            }.animated(style: SpringAnimationStyle.lightBounce(), animations: { options in
+                view.subviews.forEach({ view in
+                    if view.tag == 1 {
+                        view.removeFromSuperview()
+                    } else {
+                        view.isHidden = false
+                        view.layoutSuperviewsIfNeeded()
+                    }
                 })
+                
             })
         
         return (view, bag)
