@@ -13,20 +13,24 @@ import UIKit
 struct PerilCollection {
     let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
+    let collectionViewInset: UIEdgeInsets
+    
+    init(
+        presentingViewController: UIViewController,
+        collectionViewInset: UIEdgeInsets = UIEdgeInsets(
+        top: 20,
+        left: 16,
+        bottom: 20,
+        right: 16
+        )) {
+        self.presentingViewController = presentingViewController
+        self.collectionViewInset = collectionViewInset
+    }
 }
 
 extension PerilCollection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-
-        let collectionViewEdgeInset: CGFloat = 16
-
-        let contentViewInsets = UIEdgeInsets(
-            top: 20,
-            left: collectionViewEdgeInset,
-            bottom: 20,
-            right: collectionViewEdgeInset
-        )
 
         let contentStackView = UIStackView()
         contentStackView.axis = .vertical
@@ -49,7 +53,8 @@ extension PerilCollection: Viewable {
 
         bag += collectionKit.delegate.willDisplayCell.onValue { _ in
             collectionKit.view.snp.remakeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(collectionViewEdgeInset)
+                make.leading.equalToSuperview().inset(self.collectionViewInset.left)
+                make.trailing.equalToSuperview().inset(self.collectionViewInset.right)
                 make.height.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.height)
             }
         }
@@ -57,7 +62,7 @@ extension PerilCollection: Viewable {
         collectionKit.view.backgroundColor = .clear
 
         let collectionViewStack = UIStackView()
-        collectionViewStack.edgeInsets = contentViewInsets
+        collectionViewStack.edgeInsets = self.collectionViewInset
         collectionViewStack.addArrangedSubview(collectionKit.view)
 
         contentStackView.addArrangedSubview(collectionViewStack)
@@ -70,7 +75,7 @@ extension PerilCollection: Viewable {
             collectionKit.set(Table(rows: perilViewableArray), animation: .none, rowIdentifier: { $0.title })
 
             collectionKit.view.snp.remakeConstraints { make in
-                make.width.equalToSuperview().inset(collectionViewEdgeInset * 2)
+                make.width.equalToSuperview().inset(self.collectionViewInset.left + self.collectionViewInset.right)
                 // A given height is needed for the cells to render -- the actual height constraint is set in the willDisplayCell method.
                 make.height.equalTo(10)
             }
