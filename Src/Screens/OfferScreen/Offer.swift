@@ -135,7 +135,8 @@ extension Offer: Presentable {
             }
             
             bag += self.client.perform(mutation: SignOfferMutation()).valueSignal.compactMap { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
-                guard let url = URL(string: "bankid://?autostarttoken=\(autoStartToken)&redirect=null") else { return }
+                let urlScheme = Bundle.main.urlScheme ?? ""
+                guard let url = URL(string: "bankid://?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://") else { return }
                 
                 if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
