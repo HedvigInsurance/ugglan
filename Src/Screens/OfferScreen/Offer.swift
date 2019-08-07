@@ -150,7 +150,7 @@ extension Offer: Presentable {
                         ]
                     )
 
-                    presentingViewController.present(alert)
+                    viewController.present(alert)
                 }
                 
             }
