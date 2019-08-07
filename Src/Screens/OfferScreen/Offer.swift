@@ -103,7 +103,7 @@ extension Offer: Presentable {
         
         let scrollView = UIScrollView()
         
-        bag += stackView.addArranged(Spacing(height: 500))
+        bag += stackView.addArranged(PriceBubble())
         bag += stackView.addArranged(OfferCoverageHeader())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))

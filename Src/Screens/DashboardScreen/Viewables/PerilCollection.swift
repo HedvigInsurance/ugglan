@@ -10,6 +10,14 @@ import Form
 import Foundation
 import UIKit
 
+protocol PerilCategory {
+    var title: String? { get }
+    var description: String? { get }
+}
+
+extension DashboardQuery.Data.Insurance.PerilCategory: PerilCategory {
+}
+
 struct PerilCollection {
     let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
@@ -18,11 +26,12 @@ struct PerilCollection {
     init(
         presentingViewController: UIViewController,
         collectionViewInset: UIEdgeInsets = UIEdgeInsets(
-        top: 20,
-        left: 16,
-        bottom: 20,
-        right: 16
-        )) {
+            top: 20,
+            left: 16,
+            bottom: 20,
+            right: 16
+        )
+    ) {
         self.presentingViewController = presentingViewController
         self.collectionViewInset = collectionViewInset
     }
