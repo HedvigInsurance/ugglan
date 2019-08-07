@@ -1,0 +1,7 @@
+subscription SignStatus {
+    signStatus {
+        status {
+            signState
+        }
+    }
+}

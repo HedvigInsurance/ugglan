@@ -123,6 +123,22 @@ extension Offer: Presentable {
         view.addSubview(scrollView)
         
         let button = Button(title: "Skaffa Hedvig", type: .standard(backgroundColor: .white, textColor: .offBlack))
+        
+        bag += button.onTapSignal.onValue { _ in
+            bag += self.client.subscribe(
+                subscription: SignStatusSubscription()
+            ).compactMap { $0.data?.signStatus?.status?.signState }
+                .filter { state in state == .completed }
+                .take(first: 1)
+                .onValue { state in
+                viewController.present(LoggedIn(), options: [.prefersNavigationBarHidden(true)])
+            }
+            
+            bag += self.client.perform(mutation: SignOfferMutation()).onValue { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
+                print(autoStartToken)
+            }
+        }
+        
         bag += view.add(button) { buttonView in
             buttonView.layer.shadowOffset = CGSize(width: 5, height: 5)
             buttonView.layer.shadowRadius = 10
