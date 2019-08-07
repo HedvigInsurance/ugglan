@@ -135,7 +135,24 @@ extension Offer: Presentable {
             }
             
             bag += self.client.perform(mutation: SignOfferMutation()).onValue { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
-                print(autoStartToken)
+                guard let url = URL(string: "bankid://\(autoStartToken)") else { return }
+                
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                } else {
+                    let alert = Alert<Void>(
+                        title: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE),
+                        message: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE),
+                        actions: [
+                            Alert.Action(
+                                title: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION)
+                            ) { () },
+                        ]
+                    )
+
+                    presentingViewController.present(alert)
+                }
+                
             }
         }
         
