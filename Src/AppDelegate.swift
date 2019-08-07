@@ -72,12 +72,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
-        let token = AuthorizationToken(token: "")
-        try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
-
-        window.rootViewController = navigationController
-
-        presentMarketing()
+        bag += ApolloContainer.shared.createClientFromNewSession().onValue { _ in
+            self.window.rootViewController = self.navigationController
+            self.presentMarketing()
+        }
     }
 
     func createToast(
