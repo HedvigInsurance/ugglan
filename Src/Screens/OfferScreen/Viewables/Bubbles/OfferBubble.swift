@@ -34,15 +34,13 @@ extension OfferBubble: Viewable {
         bag += backgroundColorSignal.atOnce().bindTo(view, \.backgroundColor)
         
         bag += combineLatest(widthSignal.atOnce(), heightSignal.atOnce()).onValue { width, height in
+            view.layer.cornerRadius = width / 2
+            
             view.snp.remakeConstraints({ make in
                 make.width.equalTo(width)
                 make.height.equalTo(height)
             })
         }
-        
-        bag += view.didLayoutSignal.map { view.frame.width }.distinct().onValue({ width in
-            view.layer.cornerRadius = width / 2
-        })
         
         view.addSubview(content)
         

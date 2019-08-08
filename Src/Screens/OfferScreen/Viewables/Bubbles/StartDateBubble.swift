@@ -1,5 +1,5 @@
 //
-//  PersonsInHouseholdBubble.swift
+//  StartDateBubble.swift
 //  UITests
 //
 //  Created by Sam Pettersson on 2019-08-08.
@@ -9,11 +9,11 @@ import Foundation
 import Flow
 import UIKit
 
-struct PersonsInHouseholdBubble {
-    let personsInHousehold: Int
+struct StartDateBubble {
+    let insuredAtOtherCompany: Bool
 }
 
-extension PersonsInHouseholdBubble: Viewable {
+extension StartDateBubble: Viewable {
     func materialize(events: ViewableEvents) -> (OfferBubble, Disposable) {
         let bag = DisposeBag()
         
@@ -21,24 +21,25 @@ extension PersonsInHouseholdBubble: Viewable {
         content.axis = .vertical
         
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_INSURED_TITLE),
+            value: String(key: .OFFER_BUBBLES_START_DATE_TITLE),
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)
         
         let subtitleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_INSURED_SUBTITLE(
-                personsInHousehold: String(personsInHousehold)
-            )),
+            value: String(key: insuredAtOtherCompany ?
+                .OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER :
+                .OFFER_BUBBLES_START_DATE_SUBTITLE_NEW
+            ),
             style: .offerBubbleSubtitle
         )
         bag += content.addArranged(subtitleLabel)
         
         let offerBubble = OfferBubble(
             content: content,
-            width: 110,
-            height: 110,
-            backgroundColor: .purple
+            width: 130,
+            height: 130,
+            backgroundColor: .turquoise
         )
         
         return (offerBubble, bag)

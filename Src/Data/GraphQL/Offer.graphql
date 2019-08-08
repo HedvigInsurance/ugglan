@@ -1,6 +1,9 @@
 query Offer {
     insurance {
         address
+        type
+        insuredAtOtherCompany
+        personsInHousehold
         arrangedPerilCategories {
             stuff {
                 ...PerilCategoryFragment

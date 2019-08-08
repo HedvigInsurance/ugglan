@@ -104,7 +104,15 @@ extension Offer: Presentable {
         let scrollView = UIScrollView()
         
         bag += stackView.addArranged(PriceBubble(containerScrollView: scrollView))
-        bag += stackView.addArranged(OfferBubbles())
+        
+        let offerBubbles = OfferBubbles()
+        bag += stackView.addArranged(offerBubbles)
+        
+        bag += client.fetch(query: OfferQuery())
+            .valueSignal
+            .compactMap { $0.data?.insurance }
+            .bindTo(offerBubbles.insuranceSignal)
+        
         bag += stackView.addArranged(OfferCoverageHeader())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
