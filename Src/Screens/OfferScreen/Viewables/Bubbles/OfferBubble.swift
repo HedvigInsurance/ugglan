@@ -10,11 +10,13 @@ import Flow
 import UIKit
 
 struct OfferBubble {
+    let content: UIView
     let widthSignal: ReadWriteSignal<CGFloat>
     let heightSignal: ReadWriteSignal<CGFloat>
     let backgroundColorSignal: ReadWriteSignal<UIColor>
     
-    init(width: CGFloat, height: CGFloat, backgroundColor: UIColor) {
+    init(content: UIView, width: CGFloat, height: CGFloat, backgroundColor: UIColor) {
+        self.content = content
         self.widthSignal = ReadWriteSignal(width)
         self.heightSignal = ReadWriteSignal(height)
         self.backgroundColorSignal = ReadWriteSignal(backgroundColor)
@@ -41,6 +43,12 @@ extension OfferBubble: Viewable {
         bag += view.didLayoutSignal.map { view.frame.width }.distinct().onValue({ width in
             view.layer.cornerRadius = width / 2
         })
+        
+        view.addSubview(content)
+        
+        content.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
         
         return (view, bag)
     }

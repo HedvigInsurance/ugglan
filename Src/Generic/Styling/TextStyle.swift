@@ -63,6 +63,18 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(17)
         style.color = .black
     }
+    
+    static let offerBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(16)
+        style.color = .white
+        style.alignment = .center
+    }
+    
+    static let offerBubbleSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(16)
+        style.color = .white
+        style.alignment = .center
+    }
 
     static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)

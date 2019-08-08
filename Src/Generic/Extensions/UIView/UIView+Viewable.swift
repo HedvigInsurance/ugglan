@@ -117,6 +117,33 @@ extension UIView {
             disposable.dispose()
         }
     }
+    
+    func add<V: Viewable, Matter: Viewable, View: UIView>(
+        _ viewable: V,
+        onCreate: (_ view: Matter.Matter) -> Void = { _ in }
+    ) -> V.Result where
+        V.Matter == Matter,
+        V.Result == Disposable,
+        V.Events == ViewableEvents,
+        Matter.Matter == View,
+        Matter.Result == Disposable,
+        Matter.Events == ViewableEvents {
+        let wasAddedCallbacker = Callbacker<Void>()
+
+        let (matter, result) = viewable.materialize(events: ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker
+        ))
+
+        let (viewableMatter, viewableResult, disposable) = materializeViewable(viewable: matter)
+
+        onCreate(viewableMatter)
+
+        return Disposer {
+            result.dispose()
+            disposable.dispose()
+            viewableResult.dispose()
+        }
+    }
 
     func add<V: Viewable, VMatter: UIView, SignalType: Any>(
         _ viewable: V,

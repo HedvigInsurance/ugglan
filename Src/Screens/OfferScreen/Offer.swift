@@ -103,7 +103,8 @@ extension Offer: Presentable {
         
         let scrollView = UIScrollView()
         
-        bag += stackView.addArranged(PriceBubble())
+        bag += stackView.addArranged(PriceBubble(containerScrollView: scrollView))
+        bag += stackView.addArranged(OfferBubbles())
         bag += stackView.addArranged(OfferCoverageHeader())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
@@ -158,19 +159,28 @@ extension Offer: Presentable {
         }
         
         bag += view.add(button) { buttonView in
-            buttonView.layer.shadowOffset = CGSize(width: 5, height: 5)
-            buttonView.layer.shadowRadius = 10
+            buttonView.layer.shadowOffset = CGSize(width: 0, height: 2)
+            buttonView.layer.shadowRadius = 5
             buttonView.layer.shadowColor = UIColor.black.cgColor
+            buttonView.layer.shadowOpacity = 0.1
             
             buttonView.snp.makeConstraints({ make in
-                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(20)
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             })
+            
+            buttonView.transform = CGAffineTransform(
+                translationX: 0,
+                y: view.frame.height
+            )
             
             bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
                 if contentOffset.y > 100 {
                     buttonView.transform = CGAffineTransform.identity
                 } else {
-                    buttonView.transform = CGAffineTransform(translationX: 0, y: buttonView.frame.height + view.safeAreaInsets.bottom + 20)
+                    buttonView.transform = CGAffineTransform(
+                        translationX: 0,
+                        y: buttonView.frame.height + view.safeAreaInsets.bottom + 20
+                    )
                 }
             }
         }

@@ -9,7 +9,9 @@ import Foundation
 import Flow
 import UIKit
 
-struct PriceBubble {}
+struct PriceBubble {
+    let containerScrollView: UIScrollView
+}
 
 extension PriceBubble: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
@@ -17,6 +19,13 @@ extension PriceBubble: Viewable {
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
+        
+        bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
+            stackView.transform = CGAffineTransform(
+                translationX: 0,
+                y: (contentOffset.y / 5)
+            )
+        }
         
         let circle = CircleLabelWithSubLabel(
             labelText: DynamicString("79"),
