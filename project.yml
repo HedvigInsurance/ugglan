@@ -211,6 +211,7 @@ targets:
       - location: Carthage/Build/iOS/MarkdownKit.framework
       - location: Carthage/Build/iOS/Ease.framework
     configuration:
+      ASSETCATALOG_COMPILER_APPICON_NAME: "AppIcon.ugglan"
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       SWIFT_VERSION: "5.0"
