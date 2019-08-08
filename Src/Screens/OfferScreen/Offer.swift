@@ -48,7 +48,7 @@ extension Offer {
             type: .tinyIcon(
                 backgroundColor: .white,
                 textColor: .black,
-                icon: .right(image: Asset.bankIDLogo.image, width: 13)
+                icon: .right(image: Asset.bankIdLogo.image, width: 13)
             )
         )
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
@@ -139,7 +139,14 @@ extension Offer: Presentable {
         
         view.addSubview(scrollView)
         
-        let button = Button(title: "Skaffa Hedvig", type: .standardIcon(backgroundColor: .white, textColor: .offBlack, icon: .right(image: Asset.bankIDLogo.image, width: 20)))
+        let button = Button(
+            title: String(key: .OFFER_SIGN_BUTTON),
+            type: .standardIcon(
+                backgroundColor: .white,
+                textColor: .offBlack,
+                icon: .right(image: Asset.bankIdLogo.image, width: 20)
+            )
+        )
         
         bag += button.onTapSignal.onValue { _ in
             bag += self.client.subscribe(
