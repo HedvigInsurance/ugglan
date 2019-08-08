@@ -38,13 +38,21 @@ extension Offer {
         
         bag += chatButton.onValue { _ in
             let chatOverlay = DraggableOverlay(presentable: OfferChat(), adjustsToKeyboard: false)
-            bag += viewController.present(chatOverlay).onValue { _ in }
+            bag += viewController.present(chatOverlay).disposable
         }
         
         item.leftBarButtonItem = chatButton
         
-        let signButton = UIBarButtonItem(title: "Signera")
-        item.rightBarButtonItem = signButton
+        let signButton = Button(
+            title: String(key: .OFFER_BANKID_SIGN_BUTTON),
+            type: .tinyIcon(
+                backgroundColor: .white,
+                textColor: .black,
+                icon: .right(image: Asset.bankIDLogo.image, width: 13)
+            )
+        )
+        let signButtonBarItem = UIBarButtonItem(viewable: signButton)
+        item.rightBarButtonItem = signButtonBarItem
         
         let titleViewContainer = UIStackView()
         titleViewContainer.isLayoutMarginsRelativeArrangement = true
@@ -131,7 +139,7 @@ extension Offer: Presentable {
         
         view.addSubview(scrollView)
         
-        let button = Button(title: "Skaffa Hedvig", type: .standard(backgroundColor: .white, textColor: .offBlack))
+        let button = Button(title: "Skaffa Hedvig", type: .standardIcon(backgroundColor: .white, textColor: .offBlack, icon: .right(image: Asset.bankIDLogo.image, width: 20)))
         
         bag += button.onTapSignal.onValue { _ in
             bag += self.client.subscribe(
