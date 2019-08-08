@@ -10,16 +10,8 @@ import Form
 import Foundation
 import UIKit
 
-protocol PerilCategory {
-    var title: String? { get }
-    var description: String? { get }
-}
-
-extension DashboardQuery.Data.Insurance.PerilCategory: PerilCategory {
-}
-
 struct PerilCollection {
-    let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
+    let perilsDataSignal: ReadWriteSignal<PerilCategoryFragment?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
     let collectionViewInset: UIEdgeInsets
     

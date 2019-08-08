@@ -10,7 +10,7 @@ import Form
 import Foundation
 
 struct PerilExpandableRow {
-    let perilsDataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance.PerilCategory?> = ReadWriteSignal(nil)
+    let perilsDataSignal: ReadWriteSignal<PerilCategoryFragment?> = ReadWriteSignal(nil)
     let index: Int
     let presentingViewController: UIViewController
 

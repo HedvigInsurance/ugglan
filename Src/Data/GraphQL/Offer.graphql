@@ -1,5 +1,16 @@
 query Offer {
     insurance {
         address
+        arrangedPerilCategories {
+            stuff {
+                ...PerilCategoryFragment
+            }
+            home {
+                ...PerilCategoryFragment
+            }
+            me {
+                ...PerilCategoryFragment
+            }
+        }
     }
 }

@@ -66,7 +66,7 @@ extension OfferCoverageMe: Viewable {
             presentingViewController: presentingViewController,
             collectionViewInset: UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
         )
-        bag += client.fetch(query: DashboardQuery()).valueSignal.compactMap { $0.data?.insurance.perilCategories?.first }.bindTo(perilCollection.perilsDataSignal)
+        bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.arrangedPerilCategories.me?.fragments.perilCategoryFragment }.bindTo(perilCollection.perilsDataSignal)
         bag += stackView.addArranged(perilCollection)
         
         bag += outerView.addArranged(Blob(color: .darkPurple, position: .top)) { blobView in

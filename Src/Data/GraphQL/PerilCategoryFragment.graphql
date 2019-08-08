@@ -1,0 +1,9 @@
+fragment PerilCategoryFragment on PerilCategory {
+    title
+    description
+    perils {
+        id
+        title
+        description
+    }
+}
