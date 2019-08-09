@@ -117,7 +117,7 @@ extension UIView {
             disposable.dispose()
         }
     }
-    
+
     func add<V: Viewable, Matter: Viewable, View: UIView>(
         _ viewable: V,
         onCreate: (_ view: Matter.Matter) -> Void = { _ in }

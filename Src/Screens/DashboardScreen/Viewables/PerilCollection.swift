@@ -14,7 +14,7 @@ struct PerilCollection {
     let perilsDataSignal: ReadWriteSignal<PerilCategoryFragment?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
     let collectionViewInset: UIEdgeInsets
-    
+
     init(
         presentingViewController: UIViewController,
         collectionViewInset: UIEdgeInsets = UIEdgeInsets(
@@ -63,7 +63,7 @@ extension PerilCollection: Viewable {
         collectionKit.view.backgroundColor = .clear
 
         let collectionViewStack = UIStackView()
-        collectionViewStack.edgeInsets = self.collectionViewInset
+        collectionViewStack.edgeInsets = collectionViewInset
         collectionViewStack.addArrangedSubview(collectionKit.view)
 
         contentStackView.addArrangedSubview(collectionViewStack)

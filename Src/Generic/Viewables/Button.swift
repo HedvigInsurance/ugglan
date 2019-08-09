@@ -21,11 +21,11 @@ enum ButtonType {
     case outline(borderColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
     case iconTransparent(textColor: HedvigColor, icon: ButtonIcon)
-    
+
     enum ButtonIcon {
         case left(image: UIImage, width: CGFloat)
         case right(image: UIImage, width: CGFloat)
-        
+
         var width: CGFloat {
             switch self {
             case let .left(_, width):
@@ -34,7 +34,7 @@ enum ButtonType {
                 return width
             }
         }
-        
+
         var image: UIImage {
             switch self {
             case let .left(image, _):
@@ -306,25 +306,25 @@ extension Button: Viewable {
             )
 
         button.adjustsImageWhenHighlighted = false
-        
+
         let iconImageView = UIImageView()
         button.addSubview(iconImageView)
-        
+
         bag += type.atOnce().onValue({ type in
             if let icon = type.icon {
                 iconImageView.isHidden = false
                 iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
-                
+
                 if let iconColor = type.iconColor {
                     iconImageView.tintColor = UIColor.from(apollo: iconColor)
                 }
-                
+
                 iconImageView.contentMode = .scaleAspectFit
-                
+
                 let iconDistance = type.iconDistance
-                
+
                 button.addSubview(iconImageView)
-                
+
                 switch icon {
                 case .left:
                     button.titleEdgeInsets = UIEdgeInsets(
@@ -341,7 +341,7 @@ extension Button: Viewable {
                         right: icon.width + iconDistance
                     )
                 }
-                
+
                 iconImageView.snp.makeConstraints { make in
                     switch icon {
                     case .left:
@@ -349,7 +349,7 @@ extension Button: Viewable {
                     case .right:
                         make.right.equalTo(-type.extraWidthOffset / 2)
                     }
-                    
+
                     make.centerY.equalToSuperview()
                     make.height.equalTo(type.height)
                     make.width.equalTo(icon.width)
@@ -361,11 +361,11 @@ extension Button: Viewable {
 
         bag += title.atOnce().withLatestFrom(type).onValueDisposePrevious { title, type in
             let innerBag = DisposeBag()
-            
+
             button.setTitle(title)
-            
+
             let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
-            
+
             innerBag += button.didLayoutSignal.onValue { _ in
                 button.snp.updateConstraints { make in
                     make.width.equalTo(
@@ -373,7 +373,7 @@ extension Button: Viewable {
                     )
                 }
             }
-                        
+
             return innerBag
         }
 

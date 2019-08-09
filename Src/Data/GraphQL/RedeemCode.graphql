@@ -2,12 +2,15 @@ mutation RedeemCode($code: String!) {
     redeemCode(code: $code) {
         cost {
             monthlyDiscount {
+                currency
                 amount
             }
             monthlyGross {
+                currency
                 amount
             }
             monthlyNet {
+                currency
                 amount
             }
         }

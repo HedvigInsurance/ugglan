@@ -5,17 +5,17 @@
 //  Created by Sam Pettersson on 2019-08-01.
 //
 
-import Foundation
-import Flow
-import UIKit
 import Apollo
+import Flow
+import Foundation
+import UIKit
 
 struct SingleSelectList {
     let optionsSignal: ReadSignal<[SingleSelectOption]>
     let currentGlobalIdSignal: ReadSignal<GraphQLID?>
     let client: ApolloClient
     let navigateCallbacker: Callbacker<NavigationEvent>
-    
+
     init(
         optionsSignal: ReadSignal<[SingleSelectOption]>,
         currentGlobalIdSignal: ReadSignal<GraphQLID?>,
@@ -30,12 +30,12 @@ struct SingleSelectList {
 }
 
 extension SingleSelectList: Viewable {
-    func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         let view = UIStackView()
         view.isLayoutMarginsRelativeArrangement = true
         view.axis = .vertical
-        
+
         bag += optionsSignal.animated(style: SpringAnimationStyle.lightBounce()) { options in
             view.subviews.forEach({ view in
                 view.isHidden = true
@@ -43,7 +43,7 @@ extension SingleSelectList: Viewable {
                 view.layoutIfNeeded()
                 view.tag = 1
             })
-            
+
             let containerView = UIStackView()
             containerView.isHidden = true
             containerView.axis = .vertical
@@ -52,13 +52,13 @@ extension SingleSelectList: Viewable {
             containerView.isLayoutMarginsRelativeArrangement = true
             view.addArrangedSubview(containerView)
             containerView.layoutSuperviewsIfNeeded()
-            
+
             bag += options.map({ option in
                 let innerBag = DisposeBag()
                 let button = Button(title: option.text, type: .outline(borderColor: .purple, textColor: .purple))
-                
+
                 innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
-                    
+
                     switch option.type {
                     case let .link(view):
                         if view == .offer {
@@ -72,28 +72,28 @@ extension SingleSelectList: Viewable {
                         )
                     }
                 }
-                
+
                 innerBag += containerView.addArranged(button.wrappedIn({
                     let stackView = UIStackView()
                     stackView.alignment = .leading
                     return stackView
-                    }()))
-                
+                }()))
+
                 return innerBag
             })
-            
-            }.animated(style: SpringAnimationStyle.lightBounce(), animations: { options in
-                view.subviews.forEach({ view in
-                    if view.tag == 1 {
-                        view.removeFromSuperview()
-                    } else {
-                        view.isHidden = false
-                        view.layoutSuperviewsIfNeeded()
-                    }
-                })
-                
+
+        }.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+            view.subviews.forEach({ view in
+                if view.tag == 1 {
+                    view.removeFromSuperview()
+                } else {
+                    view.isHidden = false
+                    view.layoutSuperviewsIfNeeded()
+                }
             })
-        
+
+        })
+
         return (view, bag)
     }
 }

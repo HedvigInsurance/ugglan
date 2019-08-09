@@ -328,6 +328,10 @@ extension DraggableOverlay: Presentable {
             }
         } else {
             overlayHeightSignal.value = childScreen.preferredContentSize.height
+            bag += childScreen.preferredContentSizeSignal
+            .atOnce()
+            .map { size in size.height }
+            .bindTo(overlayHeightSignal)
         }
 
         return (viewController, Future { completion in

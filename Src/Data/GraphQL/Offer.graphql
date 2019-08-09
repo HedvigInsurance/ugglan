@@ -1,9 +1,38 @@
 query Offer {
+    referralInformation {
+        campaign {
+            incentive {
+                ... on FreeMonths {
+                    quantity
+                }
+                ... on MonthlyCostDeduction {
+                    amount {
+                        currency
+                        amount
+                    }
+                }
+            }
+        }
+    }
     insurance {
         address
         type
         insuredAtOtherCompany
         personsInHousehold
+        cost {
+            monthlyGross {
+                amount
+                currency
+            }
+            monthlyNet {
+                amount
+                currency
+            }
+            monthlyDiscount {
+                amount
+                currency
+            }
+        }
         arrangedPerilCategories {
             stuff {
                 ...PerilCategoryFragment

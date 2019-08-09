@@ -5,51 +5,51 @@
 //  Created by Sam Pettersson on 2019-08-06.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 struct Blob: Viewable {
     let color: UIColor
     let position: Position
     let respectsHeight: Bool
-    
+
     enum Position {
         case top, bottom
     }
-    
+
     init(color: UIColor, position: Position, respectsHeight: Bool = true) {
         self.color = color
         self.position = position
         self.respectsHeight = respectsHeight
     }
-    
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let containerView = UIView()
-        
+
         let view = UIView()
         view.clipsToBounds = true
-        
+
         containerView.addSubview(view)
-        
+
         let shapeLayer = CAShapeLayer()
-        shapeLayer.fillColor = self.color.cgColor
+        shapeLayer.fillColor = color.cgColor
         view.layer.addSublayer(shapeLayer)
-        
+
         bag += containerView.didLayoutSignal.map { view.layer.frame.width }.distinct().onValue { width in
             containerView.snp.remakeConstraints { make in
                 make.height.equalTo(self.respectsHeight ? 44 : 0)
                 make.width.equalToSuperview()
             }
-            
+
             view.snp.remakeConstraints({ make in
                 make.width.equalToSuperview()
                 make.height.equalTo(44)
             })
-            
+
             let shape: UIBezierPath
-            
+
             switch self.position {
             case .top:
                 shape = UIBezierPath()
@@ -102,11 +102,10 @@ struct Blob: Viewable {
                 shape.close()
                 break
             }
-            
-            
+
             shapeLayer.path = shape.cgPath
         }
-        
+
         return (containerView, bag)
     }
 }

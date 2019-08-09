@@ -13,7 +13,7 @@ extension Notification {
         let height: CGFloat
         let animationDuration: TimeInterval
         let animationCurve: UIView.AnimationOptions
-        
+
         let beginFrame: CGRect
         let endFrame: CGRect
     }

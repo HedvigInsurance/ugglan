@@ -66,7 +66,7 @@ extension ChatInput: Viewable {
         let contentView = UIStackView()
         contentView.axis = .vertical
         containerView.addArrangedSubview(contentView)
-        
+
         let inputBar = UIStackView()
         inputBar.axis = .horizontal
         contentView.addArrangedSubview(inputBar)
@@ -92,7 +92,7 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
-            
+
             bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
                 stackView.isHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
@@ -118,7 +118,7 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
-            
+
             bag += attachFilePaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
                 stackView.isHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
@@ -127,7 +127,7 @@ extension ChatInput: Viewable {
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
         })
-        
+
         let currentGlobalIdSignal = currentMessageSignal.map { message in message?.globalId }
 
         let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
@@ -143,19 +143,19 @@ extension ChatInput: Viewable {
                 right: padding
             )
         }
-        
+
         let optionsSignal = ReadWriteSignal<[SingleSelectOption]>([])
-        
+
         let singleSelectListContainer = UIStackView()
         containerView.addArrangedSubview(singleSelectListContainer)
-        
+
         let singleSelectList = SingleSelectList(
             optionsSignal: optionsSignal.readOnly(),
             currentGlobalIdSignal: currentGlobalIdSignal,
             navigateCallbacker: navigateCallbacker
         )
         bag += singleSelectListContainer.addArranged(singleSelectList)
-        
+
         bag += currentMessageSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
             switch message.responseType {
             case .text:

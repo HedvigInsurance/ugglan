@@ -5,15 +5,15 @@
 //  Created by Sam Pettersson on 2019-07-31.
 //
 
+import Apollo
 import Flow
 import Form
 import Presentation
 import UIKit
-import Apollo
 
 struct Offer {
     let client: ApolloClient
-    
+
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
@@ -23,26 +23,26 @@ extension Offer {
     func addNavigationBar(
         _ view: UIView,
         _ viewController: UIViewController
-        ) -> (Disposable, UINavigationBar) {
+    ) -> (Disposable, UINavigationBar) {
         let bag = DisposeBag()
-        
+
         let navigationBar = UINavigationBar()
         navigationBar.barTintColor = .darkPurple
         navigationBar.isTranslucent = false
-        
+
         let item = UINavigationItem()
-        
+
         let chatButton = UIBarButtonItem()
         chatButton.image = Asset.chat.image
         chatButton.tintColor = .white
-        
+
         bag += chatButton.onValue { _ in
             let chatOverlay = DraggableOverlay(presentable: OfferChat(), adjustsToKeyboard: false)
             bag += viewController.present(chatOverlay).disposable
         }
-        
+
         item.leftBarButtonItem = chatButton
-        
+
         let signButton = Button(
             title: String(key: .OFFER_BANKID_SIGN_BUTTON),
             type: .tinyIcon(
@@ -53,46 +53,46 @@ extension Offer {
         )
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
         item.rightBarButtonItem = signButtonBarItem
-        
+
         let titleViewContainer = UIStackView()
         titleViewContainer.isLayoutMarginsRelativeArrangement = true
         titleViewContainer.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 5)
-        
+
         let titleView = UIStackView()
         titleView.axis = .vertical
         titleView.spacing = 0
         titleView.alignment = .center
         titleView.distribution = .fillProportionally
-        
+
         titleView.addArrangedSubview(UILabel(value: String(key: .OFFER_TITLE), style: .bodyWhite))
-        
+
         let addressLabel = UILabel(value: "", style: .navigationSubtitleWhite)
         titleView.addArrangedSubview(addressLabel)
-        
+
         titleViewContainer.addArrangedSubview(titleView)
-        
+
         bag += titleViewContainer.didMoveToWindowSignal.take(first: 1).onValue { _ in
             titleViewContainer.snp.makeConstraints { make in
                 make.top.bottom.equalToSuperview()
             }
         }
-        
+
         bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance }.onValue { insurance in
             addressLabel.text = insurance.address
         }
-        
+
         item.titleView = titleViewContainer
-        
+
         navigationBar.items = [item]
-        
+
         view.addSubview(navigationBar)
-        
+
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.topMargin)
             make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailingMargin)
             make.leading.equalTo(view.safeAreaLayoutGuide.snp.leadingMargin)
         }
-        
+
         return (bag, navigationBar)
     }
 }
@@ -101,44 +101,55 @@ extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = LightContentViewController()
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 80)
-        
+
         ApplicationState.preserveState(.offer)
-        
+
         let bag = DisposeBag()
-        
+
         let stackView = UIStackView()
         stackView.axis = .vertical
-        
+
         let scrollView = UIScrollView()
+
+        let offerSignal = client.watch(query: OfferQuery())
         
-        bag += stackView.addArranged(PriceBubble(containerScrollView: scrollView))
-        
-        let offerBubbles = OfferBubbles()
-        bag += stackView.addArranged(offerBubbles)
-        
-        bag += client.fetch(query: OfferQuery())
-            .valueSignal
+        let insuranceSignal = offerSignal
             .compactMap { $0.data?.insurance }
+
+        let priceBubble = PriceBubble(containerScrollView: scrollView)
+        bag += stackView.addArranged(priceBubble)
+
+        bag += insuranceSignal
+            .bindTo(priceBubble.insuranceSignal)
+
+        let offerBubbles = OfferBubbles(containerScrollView: scrollView)
+        bag += stackView.addArranged(offerBubbles)
+
+        bag += insuranceSignal
             .bindTo(offerBubbles.insuranceSignal)
         
+        let offerDiscount = OfferDiscount(containerScrollView: scrollView, presentingViewController: viewController)
+        bag += offerSignal.map { $0.data?.referralInformation }.bindTo(offerDiscount.referralInformationSignal)
+        
+        bag += stackView.addArranged(offerDiscount)
         bag += stackView.addArranged(OfferCoverageHeader())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageMe(presentingViewController: viewController))
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
-        
+
         let view = UIView()
         view.backgroundColor = .darkPurple
         viewController.view = view
-        
+
         let (navigationBarBag, navigationBar) = addNavigationBar(view, viewController)
         bag += navigationBarBag
-        
+
         scrollView.backgroundColor = .darkPurple
         scrollView.embedView(stackView, scrollAxis: .vertical)
-        
+
         view.addSubview(scrollView)
-        
+
         let button = Button(
             title: String(key: .OFFER_SIGN_BUTTON),
             type: .standardIcon(
@@ -147,21 +158,21 @@ extension Offer: Presentable {
                 icon: .right(image: Asset.bankIdLogo.image, width: 20)
             )
         )
-        
+
         bag += button.onTapSignal.onValue { _ in
             bag += self.client.subscribe(
                 subscription: SignStatusSubscription()
             ).compactMap { $0.data?.signStatus?.status?.signState }
                 .filter { state in state == .completed }
                 .take(first: 1)
-                .onValue { state in
-                viewController.present(LoggedIn(), options: [.prefersNavigationBarHidden(true)])
-            }
-            
+                .onValue { _ in
+                    viewController.present(LoggedIn(), options: [.prefersNavigationBarHidden(true)])
+                }
+
             bag += self.client.perform(mutation: SignOfferMutation()).valueSignal.compactMap { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
                 let urlScheme = Bundle.main.urlScheme ?? ""
                 guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
-                
+
                 if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 } else {
@@ -177,25 +188,24 @@ extension Offer: Presentable {
 
                     viewController.present(alert)
                 }
-                
             }
         }
-        
+
         bag += view.add(button) { buttonView in
             buttonView.layer.shadowOffset = CGSize(width: 0, height: 2)
             buttonView.layer.shadowRadius = 5
             buttonView.layer.shadowColor = UIColor.black.cgColor
             buttonView.layer.shadowOpacity = 0.1
-            
+
             buttonView.snp.makeConstraints({ make in
                 make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             })
-            
+
             buttonView.transform = CGAffineTransform(
                 translationX: 0,
                 y: view.frame.height
             )
-            
+
             bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
                 if contentOffset.y > 100 {
                     buttonView.transform = CGAffineTransform.identity
@@ -207,12 +217,12 @@ extension Offer: Presentable {
                 }
             }
         }
-        
+
         scrollView.snp.makeConstraints({ make in
             make.top.equalTo(navigationBar.snp.bottom)
             make.trailing.leading.bottom.equalToSuperview()
         })
-        
+
         return (viewController, bag)
     }
 }
