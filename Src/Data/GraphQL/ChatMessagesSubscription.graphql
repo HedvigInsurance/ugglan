@@ -1,5 +1,10 @@
 subscription ChatMessages_ {
 message {
+...MessageData
+}
+}
+
+fragment MessageData on Message {
 globalId
 id
 body {
@@ -77,6 +82,5 @@ editAllowed
 shouldRequestPushNotifications
 pollingInterval
 loadingIndicator
-}
 }
 }
