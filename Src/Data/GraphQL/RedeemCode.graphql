@@ -1,32 +1,10 @@
 mutation RedeemCode($code: String!) {
     redeemCode(code: $code) {
         cost {
-            monthlyDiscount {
-                currency
-                amount
-            }
-            monthlyGross {
-                currency
-                amount
-            }
-            monthlyNet {
-                currency
-                amount
-            }
+            ...CostFragment
         }
         campaigns {
-            code
-            incentive {
-                ... on FreeMonths {
-                    quantity
-                }
-                ... on MonthlyCostDeduction {
-                    amount {
-                        amount
-                        currency
-                    }
-                }
-            }
+            ...CampaignFragment
         }
     }
 }

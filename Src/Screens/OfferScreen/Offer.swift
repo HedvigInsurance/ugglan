@@ -129,7 +129,7 @@ extension Offer: Presentable {
             .bindTo(offerBubbles.insuranceSignal)
         
         let offerDiscount = OfferDiscount(containerScrollView: scrollView, presentingViewController: viewController)
-        bag += offerSignal.map { $0.data?.referralInformation }.bindTo(offerDiscount.referralInformationSignal)
+        bag += offerSignal.compactMap { $0.data?.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
         
         bag += stackView.addArranged(offerDiscount)
         bag += stackView.addArranged(OfferCoverageHeader())

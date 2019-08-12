@@ -1,0 +1,6 @@
+fragment CampaignFragment on Campaign {
+    code
+    incentive {
+        ...IncentiveFragment
+    }
+}

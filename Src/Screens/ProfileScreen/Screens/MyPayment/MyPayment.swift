@@ -64,7 +64,7 @@ extension MyPayment: Presentable {
         let myPaymentQuerySignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         bag += myPaymentQuerySignal
-            .map { $0.data?.insurance.cost?.monthlyNet.amount }
+            .map { $0.data?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
             .bindTo(monthlyPaymentCircle.monthlyCostSignal)
 

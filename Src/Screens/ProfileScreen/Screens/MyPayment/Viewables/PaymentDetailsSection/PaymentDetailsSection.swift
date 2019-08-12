@@ -48,7 +48,7 @@ extension PaymentDetailsSection: Viewable {
         bag += section.append(freeMonthsRow)
 
         bag += dataValueSignal
-            .compactMap { $0.data?.insurance.cost?.freeUntil }
+            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.freeUntil }
             .onValue { freeUntilDate in
                 freeMonthsRow.valueSignal.value = freeUntilDate
                 freeMonthsRow.isHiddenSignal.value = false
@@ -74,7 +74,7 @@ extension PaymentDetailsSection: Viewable {
         grossPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_PRICE_LABEL)
         grossPriceRow.valueStyleSignal.value = .rowTitleDisabled
 
-        bag += dataValueSignal.map { $0.data?.insurance.cost?.monthlyGross.amount }
+        bag += dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -91,7 +91,7 @@ extension PaymentDetailsSection: Viewable {
         discountRow.keySignal.value = String(key: .PROFILE_PAYMENT_DISCOUNT_LABEL)
         discountRow.valueStyleSignal.value = .rowTitleDisabled
 
-        bag += dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }
+        bag += dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -108,7 +108,7 @@ extension PaymentDetailsSection: Viewable {
         netPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_FINAL_COST_LABEL)
         netPriceRow.valueStyleSignal.value = .rowTitleDisabled
 
-        bag += dataValueSignal.map { $0.data?.insurance.cost?.monthlyNet.amount }
+        bag += dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -159,8 +159,8 @@ extension PaymentDetailsSection: Viewable {
 
         bag += section.append(applyDiscountButtonRow)
 
-        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.monthlyDiscount.amount }.toInt().map { $0 == 0 }
-        let hasFreeMonths = dataValueSignal.map { $0.data?.insurance.cost?.freeUntil != nil }
+        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map { $0 == 0 }
+        let hasFreeMonths = dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.freeUntil != nil }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)

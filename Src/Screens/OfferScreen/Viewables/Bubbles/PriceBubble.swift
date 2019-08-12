@@ -31,7 +31,7 @@ extension PriceBubble: Viewable {
         let labelText = DynamicString("")
         let subLabelText = DynamicString("kr/mån")
 
-        bag += insuranceSignal.compactMap { $0?.cost?.monthlyNet.amount }.toInt().compactMap { $0 }.map { String($0) }.bindTo(labelText)
+        bag += insuranceSignal.compactMap { $0?.cost?.fragments.costFragment.monthlyNet.amount }.toInt().compactMap { $0 }.map { String($0) }.bindTo(labelText)
 
         let circle = CircleLabelWithSubLabel(
             labelText: labelText,

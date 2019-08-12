@@ -1,18 +1,6 @@
 query Offer {
-    referralInformation {
-        campaign {
-            incentive {
-                ... on FreeMonths {
-                    quantity
-                }
-                ... on MonthlyCostDeduction {
-                    amount {
-                        currency
-                        amount
-                    }
-                }
-            }
-        }
+    redeemedCampaigns {
+        ...CampaignFragment
     }
     insurance {
         address
@@ -20,18 +8,7 @@ query Offer {
         insuredAtOtherCompany
         personsInHousehold
         cost {
-            monthlyGross {
-                amount
-                currency
-            }
-            monthlyNet {
-                amount
-                currency
-            }
-            monthlyDiscount {
-                amount
-                currency
-            }
+            ...CostFragment
         }
         arrangedPerilCategories {
             stuff {

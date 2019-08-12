@@ -16,7 +16,7 @@ struct OfferDiscount {
     let presentingViewController: UIViewController
     let client: ApolloClient
     let store: ApolloStore
-    let referralInformationSignal = ReadWriteSignal<OfferQuery.Data.ReferralInformation?>(nil)
+    let redeemedCampaignsSignal = ReadWriteSignal<[OfferQuery.Data.RedeemedCampaign]>([])
     
     init(
         containerScrollView: UIScrollView,
@@ -51,8 +51,9 @@ extension OfferDiscount: Viewable {
         bag += view.addArranged(redeemButton) { buttonView in
             buttonView.animationSafeIsHidden = true
             
-            bag += referralInformationSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { referralInformation in
-                if referralInformation.campaign.incentive != nil {
+            bag += redeemedCampaignsSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+                print(redeemedCampaigns)
+                if !redeemedCampaigns.isEmpty {
                     buttonView.animationSafeIsHidden = true
                     buttonView.alpha = 0
                 } else {
@@ -81,8 +82,8 @@ extension OfferDiscount: Viewable {
         bag += view.addArranged(removeButton) { buttonView in
             buttonView.animationSafeIsHidden = true
             
-            bag += referralInformationSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { referralInformation in
-                if referralInformation.campaign.incentive != nil {
+            bag += redeemedCampaignsSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+                if !redeemedCampaigns.isEmpty {
                     buttonView.animationSafeIsHidden = false
                     buttonView.alpha = 1
                 } else {
@@ -110,24 +111,12 @@ extension OfferDiscount: Viewable {
             let applyDiscount = ApplyDiscount()
                 
                 bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                    print(result)
-                    
-//                    self.store.update(query: OfferQuery(), updater: { (data: inout OfferQuery.Data) in
-//                        data.insurance.cost = OfferQuery.Data.Insurance.Cost(
-//                            monthlyGross: OfferQuery.Data.Insurance.Cost.MonthlyGross(
-//                                amount: result.cost.monthlyGross.amount,
-//                                currency: result.cost.monthlyGross.currency
-//                            ),
-//                            monthlyNet: OfferQuery.Data.Insurance.Cost.MonthlyNet(
-//                                amount: result.cost.monthlyNet.amount,
-//                                currency: result.cost.monthlyNet.currency
-//                            ),
-//                            monthlyDiscount: OfferQuery.Data.Insurance.Cost.MonthlyDiscount(
-//                                amount: result.cost.monthlyDiscount.amount,
-//                                currency: result.cost.monthlyDiscount.currency
-//                            )
-//                        )
-//                    })
+                    self.store.update(query: OfferQuery(), updater: { (data: inout OfferQuery.Data) in
+                        data.redeemedCampaigns = result.campaigns.compactMap {
+                            try? OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
+                        }
+                        data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
+                    })
                     
                 }
             
@@ -146,9 +135,12 @@ extension OfferDiscount: Viewable {
                 actions: [
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_CANCEL)) {},
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_REMOVE)) {
-                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.onValue({ _ in
+                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue({ result in
                             self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
-                                data.referralInformation.campaign.incentive = nil
+                                data.redeemedCampaigns = result.campaigns.compactMap {
+                                    try? OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
+                                }
+                                data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
                             }
                         })
                     }
