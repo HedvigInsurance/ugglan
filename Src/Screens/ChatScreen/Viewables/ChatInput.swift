@@ -69,7 +69,6 @@ extension ChatInput: Viewable {
         
         let inputBar = UIStackView()
         inputBar.axis = .horizontal
-        contentView.addArrangedSubview(inputBar)
 
         let padding: CGFloat = 10
 
@@ -144,29 +143,17 @@ extension ChatInput: Viewable {
             )
         }
         
-        let optionsSignal = ReadWriteSignal<[SingleSelectOption]>([])
-        
-        let singleSelectListContainer = UIStackView()
-        containerView.addArrangedSubview(singleSelectListContainer)
-        
-        let singleSelectList = SingleSelectList(
-            optionsSignal: optionsSignal.readOnly(),
-            currentGlobalIdSignal: currentGlobalIdSignal,
-            navigateCallbacker: navigateCallbacker
-        )
-        bag += singleSelectListContainer.addArranged(singleSelectList)
+        contentView.addArrangedSubview(inputBar)
         
         bag += currentMessageSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
             switch message.responseType {
             case .text:
-                optionsSignal.value = []
-                singleSelectListContainer.animationSafeIsHidden = true
-                inputBar.transform = CGAffineTransform(translationX: 0, y: 0)
-            case let .singleSelect(options):
-                optionsSignal.value = options
-                singleSelectListContainer.animationSafeIsHidden = false
-                inputBar.transform = CGAffineTransform(translationX: 0, y: 200)
+                inputBar.animationSafeIsHidden = false
+            case .singleSelect:
+                inputBar.animationSafeIsHidden = true
             }
+            
+            inputBar.layoutSuperviewsIfNeeded()
         }
 
         bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))

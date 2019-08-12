@@ -35,30 +35,34 @@ extension SingleSelectList: Viewable {
         let view = UIStackView()
         view.isLayoutMarginsRelativeArrangement = true
         view.axis = .vertical
+        view.alignment = .trailing
         
-        bag += optionsSignal.animated(style: SpringAnimationStyle.lightBounce()) { options in
-            view.subviews.forEach({ view in
-                view.isHidden = true
-                view.transform = CGAffineTransform(translationX: 0, y: 200)
-                view.layoutIfNeeded()
-                view.tag = 1
-            })
-            
+        bag += optionsSignal.compactMap { $0 }.filter { $0.count != 0 }.onValue { options in
             let containerView = UIStackView()
-            containerView.isHidden = true
             containerView.axis = .vertical
+            containerView.isLayoutMarginsRelativeArrangement = true
+            containerView.alignment = .trailing
             containerView.spacing = 15
             containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
-            containerView.isLayoutMarginsRelativeArrangement = true
+            view.arrangedSubviews.forEach { view in
+                view.removeFromSuperview()
+            }
             view.addArrangedSubview(containerView)
-            containerView.layoutSuperviewsIfNeeded()
             
-            bag += options.map({ option in
+            bag += options.enumerated().map({ index, option in
                 let innerBag = DisposeBag()
                 let button = Button(title: option.text, type: .outline(borderColor: .purple, textColor: .purple))
                 
                 innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
-                    
+                    func removeViews() {
+                        view.arrangedSubviews.forEach { subView in
+                            innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                                subView.alpha = 0
+                            }).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                                subView.removeFromSuperview()
+                            })
+                        }
+                    }
                     switch option.type {
                     case let .link(view):
                         if view == .offer {
@@ -66,33 +70,37 @@ extension SingleSelectList: Viewable {
                         } else if view == .dashboard {
                             self.navigateCallbacker.callAll(with: .dashboard)
                         }
+                        removeViews()
                     case .selection:
                         self.client.perform(
                             mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
-                        )
+                            ).onResult { _ in
+                                removeViews()
+                        }
                     }
                 }
                 
-                innerBag += containerView.addArranged(button.wrappedIn({
-                    let stackView = UIStackView()
-                    stackView.alignment = .leading
-                    return stackView
-                    }()))
+                let buttonWrapper = UIStackView()
+                buttonWrapper.isLayoutMarginsRelativeArrangement = true
+                buttonWrapper.alignment = .center
+                buttonWrapper.alpha = 0
+                buttonWrapper.tag = index
+                
+                innerBag += containerView.addArranged(button.wrappedIn(buttonWrapper))
+                
+                view.layoutIfNeeded()
+                let originalTransform = CGAffineTransform(translationX: buttonWrapper.frame.size.width + 80, y: 0)
+                buttonWrapper.transform = originalTransform.scaledBy(x: 0.6, y: 0.6)
+                
+                innerBag += Signal(after: 0.2 + (Double(index)*0.1)).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                    buttonWrapper.alpha = 1
+                    buttonWrapper.transform = CGAffineTransform.identity
+                })
                 
                 return innerBag
             })
             
-            }.animated(style: SpringAnimationStyle.lightBounce(), animations: { options in
-                view.subviews.forEach({ view in
-                    if view.tag == 1 {
-                        view.removeFromSuperview()
-                    } else {
-                        view.isHidden = false
-                        view.layoutSuperviewsIfNeeded()
-                    }
-                })
-                
-            })
+            }
         
         return (view, bag)
     }
