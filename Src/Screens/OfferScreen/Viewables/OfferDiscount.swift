@@ -48,7 +48,12 @@ extension OfferDiscount: Viewable {
         }
 
         let redeemButton = Button(title: String(key: .OFFER_ADD_DISCOUNT_BUTTON), type: .outline(borderColor: .white, textColor: .white))
-        bag += view.addArranged(redeemButton) { buttonView in
+        
+        view.snp.makeConstraints { make in
+            make.height.equalTo(redeemButton.type.value.height + view.layoutMargins.top + view.layoutMargins.bottom)
+        }
+        
+        bag += view.add(redeemButton) { buttonView in
             buttonView.animationSafeIsHidden = true
             
             bag += redeemedCampaignsSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
@@ -79,7 +84,7 @@ extension OfferDiscount: Viewable {
             title: String(key: .OFFER_REMOVE_DISCOUNT_BUTTON),
             type: .outline(borderColor: .white, textColor: .white)
         )
-        bag += view.addArranged(removeButton) { buttonView in
+        bag += view.add(removeButton) { buttonView in
             buttonView.animationSafeIsHidden = true
             
             bag += redeemedCampaignsSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
