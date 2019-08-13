@@ -1,5 +1,8 @@
 query InsuranceCertificate {
     insurance {
+        renewal {
+            certificateUrl
+        }
         certificateUrl
     }
 }
