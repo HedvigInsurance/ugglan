@@ -8,15 +8,15 @@
 import Foundation
 import UIKit
 
- extension UIView {
+extension UIView {
     /// Workaround for the UIStackView bug where setting hidden to true with animation doesn't work
     var animationSafeIsHidden: Bool {
         get {
-            return self.isHidden
+            return isHidden
         }
         set {
-            if self.isHidden != newValue {
-                self.isHidden = newValue
+            if isHidden != newValue {
+                isHidden = newValue
             }
         }
     }

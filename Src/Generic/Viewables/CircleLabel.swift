@@ -68,11 +68,11 @@ extension CircleLabel: Viewable {
         }
 
         bag += view.didMoveToWindowSignal.onValue { _ in
-            view.snp.makeConstraints({ make in
+            view.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalToSuperview()
                 make.center.equalToSuperview()
-            })
+            }
         }
 
         return (view, bag)

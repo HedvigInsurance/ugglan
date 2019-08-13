@@ -47,7 +47,7 @@ extension Dashboard: Presentable {
 
         let renewalsSection = RenewalsSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(renewalsSection)
-        
+
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(paymentNeedsSetupSection)
 

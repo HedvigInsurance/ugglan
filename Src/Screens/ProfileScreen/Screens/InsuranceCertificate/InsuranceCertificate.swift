@@ -17,7 +17,7 @@ import UIKit
 struct InsuranceCertificate {
     let client: ApolloClient
     let type: CertificateType
-    
+
     enum CertificateType {
         case current, renewal
     }

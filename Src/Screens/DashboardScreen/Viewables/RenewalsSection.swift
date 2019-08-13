@@ -39,7 +39,7 @@ extension RenewalsSection: Viewable {
         containerStackView.snp.makeConstraints { make in
             make.height.width.centerX.centerY.equalToSuperview()
         }
-        
+
         let titleLabel = MultilineLabel(value: String(key: .DASHBOARD_RENEWAL_PROMPTER_TITLE), style: TextStyle.rowTitleBold.centered())
         bag += containerStackView.addArranged(titleLabel)
 
@@ -69,21 +69,21 @@ extension RenewalsSection: Viewable {
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
-        
+
         bag += dataSignal.compactMap { $0?.renewal?.date }.onValue { stringDate in
             let formatter = DateFormatter.iso8601
-            
+
             guard let date = formatter.date(from: stringDate) else {
                 return
             }
-            
+
             let calendar = Calendar.current
 
             let dateFrom = calendar.startOfDay(for: Date())
             let dateTo = calendar.startOfDay(for: date)
 
             let components = calendar.dateComponents([.day], from: dateFrom, to: dateTo)
-            
+
             infoLabel.styledTextSignal.value = StyledText(
                 text: String(key: .DASHBOARD_RENEWAL_PROMPTER_BODY(daysUntilRenewal: "\(components.day ?? 0)")),
                 style: TextStyle.bodyOffBlack.centered()
@@ -93,15 +93,15 @@ extension RenewalsSection: Viewable {
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { insurance in
             guard insurance?.renewal != nil else {
                 containerStackView.alpha = 0
-                
+
                 bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
                     wrapper.animationSafeIsHidden = true
                 }
                 return
             }
-            
+
             wrapper.animationSafeIsHidden = false
-                        
+
             bag += Signal(after: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
                 containerStackView.alpha = 1
             }
@@ -110,4 +110,3 @@ extension RenewalsSection: Viewable {
         return (wrapper, bag)
     }
 }
-
