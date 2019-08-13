@@ -51,6 +51,12 @@ extension Offer {
                 icon: .right(image: Asset.bankIdLogo.image, width: 13)
             )
         )
+        
+        bag += signButton.onTapSignal.onValue { _ in
+            let overlay = DraggableOverlay(presentable: BankIdSign(), presentationOptions: [.prefersNavigationBarHidden(true)])
+            viewController.present(overlay)
+        }
+        
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
         item.rightBarButtonItem = signButtonBarItem
 
@@ -160,35 +166,7 @@ extension Offer: Presentable {
         )
 
         bag += button.onTapSignal.onValue { _ in
-            bag += self.client.subscribe(
-                subscription: SignStatusSubscription()
-            ).compactMap { $0.data?.signStatus?.status?.signState }
-                .filter { state in state == .completed }
-                .take(first: 1)
-                .onValue { _ in
-                    viewController.present(LoggedIn(), options: [.prefersNavigationBarHidden(true)])
-                }
-
-            bag += self.client.perform(mutation: SignOfferMutation()).valueSignal.compactMap { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
-                let urlScheme = Bundle.main.urlScheme ?? ""
-                guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
-
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                } else {
-                    let alert = Alert<Void>(
-                        title: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE),
-                        message: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE),
-                        actions: [
-                            Alert.Action(
-                                title: String(key: .TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION)
-                            ) { () },
-                        ]
-                    )
-
-                    viewController.present(alert)
-                }
-            }
+            viewController.present(DraggableOverlay(presentable: BankIdSign()))
         }
 
         bag += view.add(button) { buttonView in
