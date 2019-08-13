@@ -1,5 +1,9 @@
 query Dashboard {
     insurance {
+        renewal {
+            certificateUrl
+            date
+        }
         status
         type
         activeFrom
