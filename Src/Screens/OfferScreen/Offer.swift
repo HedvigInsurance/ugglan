@@ -139,6 +139,13 @@ extension Offer: Presentable {
         bag += offerSignal.compactMap { $0.data?.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
         
         bag += stackView.addArranged(offerDiscount)
+        
+        bag += stackView.addArranged(Spacing(height: Float(UIScreen.main.bounds.height))) { spacingView in
+            bag += Signal(after: 1).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
+                spacingView.animationSafeIsHidden = true
+            }
+        }
+        
         bag += stackView.addArranged(OfferCoverageHeader())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
@@ -182,7 +189,7 @@ extension Offer: Presentable {
 
             buttonView.transform = CGAffineTransform(
                 translationX: 0,
-                y: view.frame.height
+                y: 200
             )
 
             bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in

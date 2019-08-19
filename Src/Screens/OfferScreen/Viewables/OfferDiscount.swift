@@ -70,7 +70,7 @@ extension OfferDiscount: Viewable {
 
             let signal = redeemedCampaignsSignal.compactMap { $0 }
             
-            bag += signal.delay(by: 1).take(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+            bag += signal.delay(by: 1.25).take(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
                 if shouldShowButton(redeemedCampaigns) {
                     inState(buttonView)
                 } else {
