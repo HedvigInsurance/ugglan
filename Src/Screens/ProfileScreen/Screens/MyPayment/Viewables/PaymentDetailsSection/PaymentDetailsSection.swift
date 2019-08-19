@@ -112,7 +112,7 @@ extension PaymentDetailsSection: Viewable {
             .toInt()
             .map { amount in
                 if let amount = amount {
-                    return String(key: .PROFILE_PAYMENT_FINAL_COST(finalCost: String(amount)))
+                    return String(key: .PROFILE_PAYMENT_FINAL_COST(finalCost: amount))
                 }
 
                 return String(key: .PRICE_MISSING)

@@ -30,12 +30,12 @@ struct TranslationsRepo {
         return TranslationsRepo.translations[stringifiedKey]
     }
 
-    static func findWithReplacements(_ key: Localization.Key, replacements: [String: String]) -> String? {
+    static func findWithReplacements(_ key: Localization.Key, replacements: [String: LocalizationStringConvertible]) -> String? {
         let stringifiedKey = key.description
 
         if var textValue = TranslationsRepo.translations[stringifiedKey] {
             replacements.forEach { key, value in
-                textValue = textValue.replacingOccurrences(of: "{\(key)}", with: value)
+                textValue = textValue.replacingOccurrences(of: "{\(key)}", with: value.localizationDescription)
             }
 
             return textValue

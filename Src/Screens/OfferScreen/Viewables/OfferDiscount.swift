@@ -53,31 +53,44 @@ extension OfferDiscount: Viewable {
             make.height.equalTo(redeemButton.type.value.height + view.layoutMargins.top + view.layoutMargins.bottom)
         }
         
-        bag += view.add(redeemButton) { buttonView in
-            buttonView.animationSafeIsHidden = true
+        func outState(_ view: UIView) {
+            view.isUserInteractionEnabled = false
+            view.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(CGAffineTransform(translationX: 0, y: -30))
+            view.alpha = 0
+        }
+        
+        func inState(_ view: UIView) {
+            view.isUserInteractionEnabled = true
+            view.transform = CGAffineTransform.identity
+            view.alpha = 1
+        }
+        
+        func handleButtonState(_ buttonView: UIView, shouldShowButton: @escaping (_ redeemedCampaigns: [OfferQuery.Data.RedeemedCampaign]) -> Bool) {
+            outState(buttonView)
+
+            let signal = redeemedCampaignsSignal.compactMap { $0 }
             
-            bag += redeemedCampaignsSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
-                print(redeemedCampaigns)
-                if !redeemedCampaigns.isEmpty {
-                    buttonView.animationSafeIsHidden = true
-                    buttonView.alpha = 0
+            bag += signal.delay(by: 1).take(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+                if shouldShowButton(redeemedCampaigns) {
+                    inState(buttonView)
                 } else {
-                    buttonView.animationSafeIsHidden = false
-                    buttonView.alpha = 1
+                    outState(buttonView)
                 }
             }
             
-            let innerBag = DisposeBag()
-
-            buttonView.transform = CGAffineTransform(scaleX: 0, y: 0).concatenating(CGAffineTransform(translationX: 0, y: -30))
-            buttonView.alpha = 0
-
-            innerBag += Signal(after: 1.2)
-                .animated(style: SpringAnimationStyle.mediumBounce()) { _ in
-                    buttonView.alpha = 1
-                    buttonView.transform = CGAffineTransform.identity
-                    innerBag.dispose()
+            bag += signal.skip(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+                if shouldShowButton(redeemedCampaigns) {
+                    inState(buttonView)
+                } else {
+                    outState(buttonView)
                 }
+            }
+        }
+        
+        bag += view.add(redeemButton) { buttonView in
+            handleButtonState(buttonView) { redeemedCampaigns -> Bool in
+                return redeemedCampaigns.isEmpty
+            }
         }
         
         let removeButton = Button(
@@ -85,29 +98,9 @@ extension OfferDiscount: Viewable {
             type: .outline(borderColor: .white, textColor: .white)
         )
         bag += view.add(removeButton) { buttonView in
-            buttonView.animationSafeIsHidden = true
-            
-            bag += redeemedCampaignsSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
-                if !redeemedCampaigns.isEmpty {
-                    buttonView.animationSafeIsHidden = false
-                    buttonView.alpha = 1
-                } else {
-                    buttonView.animationSafeIsHidden = true
-                    buttonView.alpha = 0
-                }
+            handleButtonState(buttonView) { redeemedCampaigns -> Bool in
+                return !redeemedCampaigns.isEmpty
             }
-            
-            let innerBag = DisposeBag()
-
-            buttonView.transform = CGAffineTransform(scaleX: 0, y: 0).concatenating(CGAffineTransform(translationX: 0, y: -30))
-            buttonView.alpha = 0
-
-            innerBag += Signal(after: 1.2)
-                .animated(style: SpringAnimationStyle.mediumBounce()) { _ in
-                    buttonView.alpha = 1
-                    buttonView.transform = CGAffineTransform.identity
-                    innerBag.dispose()
-                }
         }
         
         bag += redeemButton

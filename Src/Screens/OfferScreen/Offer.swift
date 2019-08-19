@@ -125,8 +125,9 @@ extension Offer: Presentable {
         let priceBubble = PriceBubble(containerScrollView: scrollView)
         bag += stackView.addArranged(priceBubble)
 
-        bag += insuranceSignal
-            .bindTo(priceBubble.insuranceSignal)
+        bag += offerSignal
+            .compactMap { $0.data }
+            .bindTo(priceBubble.dataSignal)
 
         let offerBubbles = OfferBubbles(containerScrollView: scrollView)
         bag += stackView.addArranged(offerBubbles)
