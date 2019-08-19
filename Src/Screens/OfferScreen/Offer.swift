@@ -193,7 +193,7 @@ extension Offer: Presentable {
             )
 
             bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
-                if contentOffset.y > 100 {
+                if contentOffset.y > 400 {
                     buttonView.transform = CGAffineTransform.identity
                 } else {
                     buttonView.transform = CGAffineTransform(

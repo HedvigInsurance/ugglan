@@ -132,7 +132,7 @@ extension OfferDiscount: Viewable {
                 message: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION),
                 actions: [
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_CANCEL)) {},
-                    Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_REMOVE)) {
+                    Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_REMOVE), style: .destructive) {
                         bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue({ result in
                             self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
                                 data.redeemedCampaigns = result.campaigns.compactMap {
