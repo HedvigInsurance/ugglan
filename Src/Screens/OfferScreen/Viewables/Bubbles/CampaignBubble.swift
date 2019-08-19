@@ -62,25 +62,25 @@ extension CampaignBubble: Viewable {
         containerView.alpha = 0
         
         bag += campaignTypeSignal.animated(style: SpringAnimationStyle.mediumBounce()) { value in
-            switch value {
-            case let .freeMonths(number):
-                titleLabel.text = String(key: .OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE)
-                titleLabel.animationSafeIsHidden = false
-                subtitlelabel.text = String(key: .OFFER_SCREEN_FREE_MONTHS_BUBBLE(freeMonth: number))
-            case .invited:
-                titleLabel.text = ""
-                titleLabel.animationSafeIsHidden = true
-                subtitlelabel.text = String(key: .OFFER_SCREEN_INVITED_BUBBLE)
-            default:
+            if let value = value {
+                containerView.alpha = 1
+                containerView.transform = CGAffineTransform.identity
+                
+                switch value {
+                case let .freeMonths(number):
+                    titleLabel.text = String(key: .OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE)
+                    titleLabel.animationSafeIsHidden = false
+                    subtitlelabel.text = String(key: .OFFER_SCREEN_FREE_MONTHS_BUBBLE(freeMonth: number))
+                case .invited:
+                    titleLabel.text = ""
+                    titleLabel.animationSafeIsHidden = true
+                    subtitlelabel.text = String(key: .OFFER_SCREEN_INVITED_BUBBLE)
+                }
+            } else {
                 titleLabel.animationSafeIsHidden = true
                 titleLabel.text = ""
                 subtitlelabel.text = ""
-            }
-            
-            if value != nil {
-                containerView.alpha = 1
-                containerView.transform = CGAffineTransform.identity
-            } else {
+                
                 containerView.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(CGAffineTransform(translationX: 0, y: -30))
                 containerView.alpha = 0
             }
