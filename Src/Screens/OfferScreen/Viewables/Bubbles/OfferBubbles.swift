@@ -64,7 +64,7 @@ extension OfferBubbles: Viewable {
 
         bag += insuranceSignal.compactMap { $0 }.take(first: 1).onValueDisposePrevious { insurance in
             let innerBag = DisposeBag()
-            
+
             innerBag += view.add(DeductibleBubble()) { bubbleView in
                 entryAnimation(delay: 0.1, bubbleView: bubbleView)
 

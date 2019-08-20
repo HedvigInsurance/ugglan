@@ -51,12 +51,12 @@ extension Offer {
                 icon: .right(image: Asset.bankIdLogo.image, width: 13)
             )
         )
-        
+
         bag += signButton.onTapSignal.onValue { _ in
             let overlay = DraggableOverlay(presentable: BankIdSign(), presentationOptions: [.prefersNavigationBarHidden(true)])
             viewController.present(overlay)
         }
-        
+
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
         item.rightBarButtonItem = signButtonBarItem
 
@@ -118,7 +118,7 @@ extension Offer: Presentable {
         let scrollView = UIScrollView()
 
         let offerSignal = client.watch(query: OfferQuery())
-        
+
         let insuranceSignal = offerSignal
             .compactMap { $0.data?.insurance }
 
@@ -134,22 +134,23 @@ extension Offer: Presentable {
 
         bag += insuranceSignal
             .bindTo(offerBubbles.insuranceSignal)
-        
+
         let offerDiscount = OfferDiscount(containerScrollView: scrollView, presentingViewController: viewController)
         bag += offerSignal.compactMap { $0.data?.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
-        
+
         bag += stackView.addArranged(offerDiscount)
-        
+
         bag += stackView.addArranged(Spacing(height: Float(UIScreen.main.bounds.height))) { spacingView in
             bag += Signal(after: 1).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
                 spacingView.animationSafeIsHidden = true
             }
         }
-        
+
         bag += stackView.addArranged(OfferCoverageHeader())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageMe(presentingViewController: viewController))
+        bag += stackView.addArranged(OfferCoverageTerms(presentingViewController: viewController))
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
 
         let view = UIView()

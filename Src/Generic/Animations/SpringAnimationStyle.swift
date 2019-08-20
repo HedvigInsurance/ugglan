@@ -55,7 +55,7 @@ extension SpringAnimationStyle {
             options: [.allowUserInteraction]
         )
     }
-    
+
     static func ludicrousBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
         return SpringAnimationStyle(
             duration: duration,

@@ -130,7 +130,7 @@ extension PaymentDetailsSection: Viewable {
                 presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
             )
 
-            bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
+            bag += applyDiscount.didRedeemValidCodeSignal.onValue { _ in
 //                self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
 //                    data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(
 //                        monthlyDiscount: MyPaymentQuery.Data.Insurance.Cost.MonthlyDiscount(amount: result.cost.monthlyDiscount.amount),

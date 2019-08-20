@@ -56,7 +56,7 @@ extension OfferCoverageTerms: Viewable {
 
         stackView.addArrangedSubview(image)
 
-        let titleLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_TITLE), style: .rowTitleBold)
+        let titleLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: .rowTitleBold)
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.darkGray))
@@ -70,7 +70,7 @@ extension OfferCoverageTerms: Viewable {
         bag += stackView.addArranged(perilCollection)
 
         bag += outerView.addArranged(Blob(color: .darkPurple, position: .top)) { blobView in
-            blobView.backgroundColor = .offWhite
+            blobView.backgroundColor = .white
         }
 
         return (outerView, bag)

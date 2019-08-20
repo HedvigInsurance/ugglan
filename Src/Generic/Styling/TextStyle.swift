@@ -34,7 +34,7 @@ extension TextStyle {
     static let bodyWhite = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .white
     }
-    
+
     static let bodyBold = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.color = .black
@@ -105,14 +105,14 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
     }
-    
+
     static let priceBubbleGrossTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .darkGray
         style.alignment = .center
         style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
     }
-    
+
     static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(60)
         style.color = .black
