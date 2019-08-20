@@ -89,7 +89,11 @@ extension PriceBubble: Viewable {
                 grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
             })
 
-        let monthlyNetPriceSignal = dataSignal.compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyNet.amount }.toInt().compactMap { $0 }.buffer()
+        let monthlyNetPriceSignal = dataSignal
+            .compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
+            .toInt()
+            .compactMap { $0 }
+            .buffer()
 
         bag += discountSignal.onValue { value in
             if value > 0 {
