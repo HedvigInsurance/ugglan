@@ -13,10 +13,13 @@ import UIKit
 
 struct OfferCoverageTerms {
     let client: ApolloClient
+    let insuredAtOtherCompanySignal: ReadSignal<Bool>
 
     init(
+        insuredAtOtherCompanySignal: ReadSignal<Bool>,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
+        self.insuredAtOtherCompanySignal = insuredAtOtherCompanySignal
         self.client = client
     }
 }
@@ -59,10 +62,6 @@ extension OfferCoverageTerms: Viewable {
 
         bag += stackView.addArranged(OfferTermsBulletPoints())
         bag += stackView.addArranged(OfferTermsLinks())
-
-        bag += outerView.addArranged(Blob(color: .darkPurple, position: .top)) { blobView in
-            blobView.backgroundColor = .white
-        }
 
         return (outerView, bag)
     }

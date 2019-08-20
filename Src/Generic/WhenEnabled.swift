@@ -11,9 +11,9 @@ import UIKit
 
 struct WhenEnabled<V: Viewable>: Viewable where V.Events == ViewableEvents, V.Matter: UIView, V.Result == Disposable {
     let getViewable: () -> V
-    let enabledSignal: ReadWriteSignal<Bool>
+    let enabledSignal: ReadSignal<Bool>
 
-    init(_ enabledSignal: ReadWriteSignal<Bool>, _ getViewable: @escaping () -> V) {
+    init(_ enabledSignal: ReadSignal<Bool>, _ getViewable: @escaping () -> V) {
         self.enabledSignal = enabledSignal
         self.getViewable = getViewable
     }

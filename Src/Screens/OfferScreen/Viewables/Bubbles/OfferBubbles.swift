@@ -104,7 +104,7 @@ extension OfferBubbles: Viewable {
             }
 
             innerBag += view.add(StartDateBubble(
-                insuredAtOtherCompany: insurance.insuredAtOtherCompany ?? false
+                insuredAtOtherCompany: insurance.previousInsurer != nil
             )) { bubbleView in
                 entryAnimation(delay: 0, bubbleView: bubbleView)
 
