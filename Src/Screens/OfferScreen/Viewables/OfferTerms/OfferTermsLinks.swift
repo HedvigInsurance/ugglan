@@ -45,7 +45,7 @@ extension OfferTermsLinks {
             }
             
             let stackView = UIStackView()
-            stackView.spacing = 10
+            stackView.spacing = 5
             stackView.axis = .vertical
             stackView.isUserInteractionEnabled = false
             
@@ -55,10 +55,10 @@ extension OfferTermsLinks {
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
             
-            let iconView = Icon(icon: icon, iconWidth: 40)
+            let iconView = Icon(icon: icon, iconWidth: 37)
             stackView.addArrangedSubview(iconView)
             
-            let label = MultilineLabel(value: text, style: TextStyle.rowSubtitle.centerAligned)
+            let label = MultilineLabel(value: text, style: TextStyle.perilTitle.centerAligned)
             bag += stackView.addArranged(label)
             
             return (control, bag)

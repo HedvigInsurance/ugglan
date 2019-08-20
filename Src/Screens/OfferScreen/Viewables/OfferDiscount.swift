@@ -64,13 +64,13 @@ extension OfferDiscount: Viewable {
             view.transform = CGAffineTransform.identity
             view.alpha = 1
         }
+        
+        let dataSignal = redeemedCampaignsSignal.compactMap { $0 }
 
         func handleButtonState(_ buttonView: UIView, shouldShowButton: @escaping (_ redeemedCampaigns: [OfferQuery.Data.RedeemedCampaign]) -> Bool) {
             outState(buttonView)
 
-            let signal = redeemedCampaignsSignal.compactMap { $0 }
-
-            bag += signal.delay(by: 1.25).take(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+            bag += dataSignal.take(first: 1).animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) { redeemedCampaigns in
                 if shouldShowButton(redeemedCampaigns) {
                     inState(buttonView)
                 } else {
@@ -78,7 +78,7 @@ extension OfferDiscount: Viewable {
                 }
             }
 
-            bag += signal.skip(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+            bag += dataSignal.skip(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
                 if shouldShowButton(redeemedCampaigns) {
                     inState(buttonView)
                 } else {

@@ -22,7 +22,8 @@ struct Offer {
 extension Offer {
     func addNavigationBar(
         _ view: UIView,
-        _ viewController: UIViewController
+        scrollView: UIScrollView,
+        viewController: UIViewController
     ) -> (Disposable, UINavigationBar) {
         let bag = DisposeBag()
 
@@ -59,6 +60,14 @@ extension Offer {
 
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
         item.rightBarButtonItem = signButtonBarItem
+        
+        bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
+            if contentOffset.y > 400 {
+                signButtonBarItem.view?.alpha = 0
+            } else {
+                signButtonBarItem.view?.alpha = 1
+            }
+        }
 
         let titleViewContainer = UIStackView()
         titleViewContainer.isLayoutMarginsRelativeArrangement = true
@@ -141,7 +150,7 @@ extension Offer: Presentable {
         bag += stackView.addArranged(offerDiscount)
 
         bag += stackView.addArranged(Spacing(height: Float(UIScreen.main.bounds.height))) { spacingView in
-            bag += Signal(after: 1).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
+            bag += Signal(after: 1.25).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
                 spacingView.animationSafeIsHidden = true
             }
         }
@@ -167,7 +176,11 @@ extension Offer: Presentable {
         view.backgroundColor = .darkPurple
         viewController.view = view
 
-        let (navigationBarBag, navigationBar) = addNavigationBar(view, viewController)
+        let (navigationBarBag, navigationBar) = addNavigationBar(
+            view,
+            scrollView: scrollView,
+            viewController: viewController
+        )
         bag += navigationBarBag
 
         scrollView.backgroundColor = .darkPurple

@@ -36,7 +36,7 @@ extension OfferCoverageTerms: Viewable {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
-        stackView.spacing = 15
+        stackView.spacing = 20
         stackView.layoutMargins = UIEdgeInsets(top: 40, left: 20, bottom: 40, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
 
