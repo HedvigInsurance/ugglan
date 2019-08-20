@@ -13,13 +13,10 @@ import UIKit
 
 struct OfferCoverageTerms {
     let client: ApolloClient
-    let presentingViewController: UIViewController
 
     init(
-        presentingViewController: UIViewController,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
-        self.presentingViewController = presentingViewController
         self.client = client
     }
 }

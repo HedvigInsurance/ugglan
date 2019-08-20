@@ -150,7 +150,7 @@ extension Offer: Presentable {
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageMe(presentingViewController: viewController))
-        bag += stackView.addArranged(OfferCoverageTerms(presentingViewController: viewController))
+        bag += stackView.addArranged(OfferCoverageTerms())
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
 
         let view = UIView()
