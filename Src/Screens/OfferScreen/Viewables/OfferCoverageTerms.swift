@@ -35,6 +35,7 @@ extension OfferCoverageTerms: Viewable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.alignment = .center
         stackView.spacing = 15
         stackView.layoutMargins = UIEdgeInsets(top: 40, left: 20, bottom: 20, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -47,7 +48,7 @@ extension OfferCoverageTerms: Viewable {
 
         let bag = DisposeBag()
 
-        let image = UIImageView(image: Asset.offerMe.image)
+        let image = UIImageView(image: Asset.offerTerms.image)
         image.contentMode = .scaleAspectFit
 
         image.snp.makeConstraints { make in
@@ -56,18 +57,10 @@ extension OfferCoverageTerms: Viewable {
 
         stackView.addArrangedSubview(image)
 
-        let titleLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: .rowTitleBold)
+        let titleLabel = MultilineLabel(value: String(key: .OFFER_TERMS_TITLE), style: TextStyle.rowTitleBold.centerAligned)
         bag += stackView.addArranged(titleLabel)
 
-        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.darkGray))
-        bag += stackView.addArranged(descriptionLabel)
-
-        let perilCollection = PerilCollection(
-            presentingViewController: presentingViewController,
-            collectionViewInset: UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
-        )
-        bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.arrangedPerilCategories.me?.fragments.perilCategoryFragment }.bindTo(perilCollection.perilsDataSignal)
-        bag += stackView.addArranged(perilCollection)
+        bag += stackView.addArranged(OfferTermsBulletPoints())
 
         bag += outerView.addArranged(Blob(color: .darkPurple, position: .top)) { blobView in
             blobView.backgroundColor = .white
