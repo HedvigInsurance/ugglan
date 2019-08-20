@@ -12,15 +12,15 @@ extension URL {
         guard let url = URL(string: String(key: key)) else {
             return nil
         }
-        
+
         self = url
     }
-    
+
     init?(string: String?) {
         guard let string = string, let url = URL(string: string) else {
             return nil
         }
-        
+
         self = url
     }
 }

@@ -60,7 +60,7 @@ extension Offer {
 
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
         item.rightBarButtonItem = signButtonBarItem
-        
+
         bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
             if contentOffset.y > 400 {
                 signButtonBarItem.view?.alpha = 0
@@ -159,17 +159,17 @@ extension Offer: Presentable {
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageMe(presentingViewController: viewController))
-        
+
         let insuredAtOtherCompanySignal = insuranceSignal
             .map { $0.previousInsurer != nil }
             .readable(initial: false)
-                
+
         bag += stackView.addArranged(OfferCoverageTerms(insuredAtOtherCompanySignal: insuredAtOtherCompanySignal))
-                
+
         bag += stackView.addArranged(WhenEnabled(insuredAtOtherCompanySignal, {
-            return OfferCoverageSwitcher()
+            OfferCoverageSwitcher()
         }))
-        
+
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
 
         let view = UIView()

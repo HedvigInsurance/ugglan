@@ -64,7 +64,7 @@ extension OfferDiscount: Viewable {
             view.transform = CGAffineTransform.identity
             view.alpha = 1
         }
-        
+
         let dataSignal = redeemedCampaignsSignal.compactMap { $0 }
 
         func handleButtonState(_ buttonView: UIView, shouldShowButton: @escaping (_ redeemedCampaigns: [OfferQuery.Data.RedeemedCampaign]) -> Bool) {

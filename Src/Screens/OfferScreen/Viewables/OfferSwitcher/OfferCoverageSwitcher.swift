@@ -5,15 +5,15 @@
 //  Created by Sam Pettersson on 2019-08-20.
 //
 
-import Flow
 import Apollo
+import Flow
 import Form
 import Foundation
 import UIKit
 
 struct OfferCoverageSwitcher {
     let client: ApolloClient
-    
+
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
@@ -25,7 +25,7 @@ extension OfferCoverageSwitcher: Viewable {
 
         let outerView = UIStackView()
         outerView.axis = .vertical
-        
+
         bag += outerView.addArranged(Blob(color: .offWhite, position: .top)) { blobView in
             blobView.backgroundColor = .white
         }
@@ -58,7 +58,7 @@ extension OfferCoverageSwitcher: Viewable {
 
         let titleLabel = MultilineLabel(value: "", style: TextStyle.rowTitleBold.centerAligned)
         bag += stackView.addArranged(titleLabel)
-        
+
         bag += client.fetch(query: OfferQuery())
             .valueSignal
             .compactMap { $0.data?.insurance.previousInsurer }
@@ -66,7 +66,7 @@ extension OfferCoverageSwitcher: Viewable {
                 if !previousInsurer.switchable {
                     return String(key: .OFFER_SWITCH_TITLE_NON_SWITCHABLE_APP)
                 }
-                
+
                 return String(key: .OFFER_SWITCH_TITLE_APP(insurer: previousInsurer.displayName ?? ""))
             }
             .map { StyledText(text: $0, style: TextStyle.rowTitleBold.centerAligned) }
