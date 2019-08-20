@@ -7,6 +7,8 @@ query Offer {
         type
         insuredAtOtherCompany
         personsInHousehold
+        presaleInformationUrl
+        policyUrl
         cost {
             ...CostFragment
         }
