@@ -57,7 +57,11 @@ extension OfferCoverageSwitcher: Viewable {
         stackView.addArrangedSubview(image)
 
         let titleLabel = MultilineLabel(value: "", style: TextStyle.rowTitleBold.centerAligned)
-        bag += stackView.addArranged(titleLabel)
+        bag += stackView.addArranged(titleLabel) { titleLabel in
+            titleLabel.snp.makeConstraints { make in
+                make.width.equalToSuperview().multipliedBy(0.6)
+            }
+        }
 
         bag += client.fetch(query: OfferQuery())
             .valueSignal
@@ -71,6 +75,8 @@ extension OfferCoverageSwitcher: Viewable {
             }
             .map { StyledText(text: $0, style: TextStyle.rowTitleBold.centerAligned) }
             .bindTo(titleLabel.styledTextSignal)
+
+        bag += stackView.addArranged(OfferSwitcherBulletList())
 
         bag += outerView.addArranged(Blob(color: .darkPurple, position: .top)) { blobView in
             blobView.backgroundColor = .offWhite
