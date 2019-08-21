@@ -31,6 +31,10 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
     }
 }
 
+enum DraggableOverlayError: Error {
+    case dismissed
+}
+
 extension PresentationStyle {
     /// makes PresentationOptions passed to style be [.unanimated] and only that
     static func unanimated(style: PresentationStyle) -> PresentationStyle {
@@ -41,7 +45,7 @@ extension PresentationStyle {
 }
 
 extension DraggableOverlay: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Future<FutureResult>) {
         let viewController = UIViewController()
         viewController.preferredPresentationStyle = PresentationStyle.unanimated(style: .modally(
             presentationStyle: .custom,
@@ -335,11 +339,11 @@ extension DraggableOverlay: Presentable {
         }
 
         return (viewController, Future { completion in
-            func hideOverlay() {
+            func hideOverlay(_ result: Flow.Result<FutureResult>) {
                 overlay.endEditing(true)
                 panGestureRecognizer.isEnabled = false
                 bag += Signal(after: 0.5).onValue {
-                    completion(.success)
+                    completion(result)
                     overlay.isHidden = true
                 }
                 animateDimmingViewVisibility(false)
@@ -351,16 +355,16 @@ extension DraggableOverlay: Presentable {
                 let translation = panGestureRecognizer.translation(in: view)
 
                 if translation.y > (overlayHeightSignal.value * 0.4) || velocity.y > 1300 {
-                    hideOverlay()
+                    hideOverlay(.failure(DraggableOverlayError.dismissed))
                 }
             }
 
-            bag += dimmingViewTap.signal(forState: .recognized).onValue {
-                hideOverlay()
+            bag += dimmingViewTap.signal(forState: .recognized).onValue { _ in
+                hideOverlay(.failure(DraggableOverlayError.dismissed))
             }
 
-            bag += childResult.onValue { _ in
-                hideOverlay()
+            bag += childResult.onResult { result in
+                hideOverlay(result)
             }
 
             return bag

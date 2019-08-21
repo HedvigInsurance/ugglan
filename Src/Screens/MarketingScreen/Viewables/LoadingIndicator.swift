@@ -15,10 +15,12 @@ import UIKit
 struct LoadingIndicator {
     let showAfter: TimeInterval
     let color: UIColor
+    let size: CGFloat
 
-    init(showAfter: TimeInterval, color: UIColor = .white) {
+    init(showAfter: TimeInterval, color: UIColor = .white, size: CGFloat = 100) {
         self.showAfter = showAfter
         self.color = color
+        self.size = size
     }
 }
 
@@ -29,8 +31,8 @@ extension LoadingIndicator: Viewable {
         loadingIndicator.color = color
 
         loadingIndicator.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalTo(100)
-            make.height.equalTo(100)
+            make.width.equalTo(self.size)
+            make.height.equalTo(self.size)
             make.center.equalToSuperview()
         }
 
