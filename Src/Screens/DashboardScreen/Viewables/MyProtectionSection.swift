@@ -57,6 +57,8 @@ extension MyProtectionSection: Viewable {
             perilCategoriesStack.subviews.forEach { view in
                 view.removeFromSuperview()
             }
+            
+            print(perilCategories)
 
             for (index, perilCategory) in perilCategories.enumerated() {
                 let protectionSection = PerilExpandableRow(index: index, presentingViewController: self.presentingViewController)

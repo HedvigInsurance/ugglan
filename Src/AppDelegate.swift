@@ -221,12 +221,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
-
-        // let token = AuthorizationToken(token: "iRdjaazqSHqtGg==.h/6BEAGKcveJIg==.u2sxTGn+PWkHMg==")
-        //try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
-
-        // try? Disk.remove("authorization-token.json", from: .applicationSupport)
-
+        
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()

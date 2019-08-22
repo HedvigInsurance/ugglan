@@ -31,15 +31,21 @@ extension MultilineLabelIcon: Viewable {
         view.alignment = .leading
 
         view.spacing = 10
-
+        
+        let iconContainer = UIView()
+        view.addArrangedSubview(iconContainer)
+        
+        iconContainer.snp.makeConstraints { make in
+            make.width.equalTo(iconWidth)
+        }
+        
         let icon = Icon(
             icon: iconAsset,
             iconWidth: iconWidth
         )
-        view.addArrangedSubview(icon)
-
+        iconContainer.addSubview(icon)
+        
         icon.snp.makeConstraints { make in
-            make.width.equalTo(iconWidth)
             make.height.equalTo(iconWidth + 4)
         }
 
