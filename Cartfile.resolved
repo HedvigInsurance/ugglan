@@ -11,7 +11,7 @@ github "hedviginsurance/UICollectionView-AnimatedScroll" "6ff7f2dcdf0c5bff691d9f
 github "hedviginsurance/ease" "b72af31a665f860a0f0e0d8133583d5701d6f2c0"
 github "hedviginsurance/flow" "86770ad259e711a182fee15500d0648e680559a9"
 github "hedviginsurance/flowfeedback" "13b4fe9af8d0e4e2f140cd8622504f9e73a9129a"
-github "hedviginsurance/form" "32164213885bf6c0020589ea0e1f2fe044ca0af9"
+github "hedviginsurance/form" "0f31b1ba107d9750813d9a0f0308974a0b6f1f23"
 github "hedviginsurance/presentation" "11d52a1e6b9d676a8a82764a4f0e0379ca5c0ad8"
 github "ivanbruel/MarkdownKit" "bdd03bb07179b23a741fb83f9b1bbe325604a690"
 github "pointfreeco/swift-snapshot-testing" "1.5.0"
