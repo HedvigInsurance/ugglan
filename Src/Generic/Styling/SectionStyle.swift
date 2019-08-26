@@ -26,9 +26,9 @@ extension BorderStyle {
 }
 
 extension BackgroundStyle {
-    static let primary = BackgroundStyle(color: .primaryBackground, border: .standard)
+    static let primary = BackgroundStyle(color: .secondaryBackground, border: .standard)
     static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
-    static let primaryRoundedBorder = BackgroundStyle(color: .primaryBackground, border: .standardRounded)
+    static let primaryRoundedBorder = BackgroundStyle(color: .secondaryBackground, border: .standardRounded)
 
     static let purple = BackgroundStyle(
         color: UIColor.purple,

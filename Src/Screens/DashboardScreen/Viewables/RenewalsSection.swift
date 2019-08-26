@@ -24,7 +24,7 @@ extension RenewalsSection: Viewable {
         wrapper.isLayoutMarginsRelativeArrangement = true
 
         let containerView = UIView()
-        containerView.backgroundColor = .offLightGray
+        containerView.backgroundColor = .secondaryBackground
         containerView.layer.cornerRadius = 8
 
         let containerStackView = UIStackView()

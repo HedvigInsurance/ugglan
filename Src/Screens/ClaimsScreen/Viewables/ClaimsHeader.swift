@@ -91,7 +91,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
         let bag = DisposeBag()
 
         let card = UIView()
-        card.backgroundColor = .offLightGray
+        card.backgroundColor = .secondaryBackground
         card.layer.cornerRadius = 10
 
         view.addArrangedSubview(card)

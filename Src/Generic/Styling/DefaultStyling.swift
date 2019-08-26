@@ -13,23 +13,37 @@ import UIKit
 
 extension DefaultStyling {
     static func installCustom() {
-        ListTableView.appearance().backgroundColor = .offWhite
+        ListTableView.appearance().backgroundColor = .primaryBackground
 
         for view in [FormScrollView.self, FormTableView.self] {
             view.appearance(
                 for: UITraitCollection(userInterfaceIdiom: .pad)
-            ).backgroundColor = .secondaryBackground
-            view.appearance().backgroundColor = .secondaryBackground
+            ).backgroundColor = .primaryBackground
+            view.appearance().backgroundColor = .primaryBackground
         }
 
         UIRefreshControl.appearance().tintColor = .primaryTintColor
 
-        UINavigationBar.appearance().backgroundColor = .secondaryBackground
+        UINavigationBar.appearance().backgroundColor = .primaryBackground
         UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
+            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
+        ]
+        
+        if #available(iOS 13.0, *) {
+            UINavigationBar.appearance().shadowImage = UIColor { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? UIColor.transparent : UIColor.primaryBorder
+            }.as1ptImage()
+        } else {
+            UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+        }
+        
+        UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
         UITabBar.appearance().unselectedItemTintColor = .offBlack
         UITabBar.appearance().tintColor = .primaryTintColor
@@ -65,11 +79,8 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().tintColor = .primaryTintColor
 
-        UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
-        UINavigationBar.appearance().barTintColor = UIColor.secondaryBackground
-
-        UITabBar.appearance().barTintColor = UIColor.secondaryBackground
-        UITabBar.appearance().backgroundImage = UIColor.secondaryBackground.as1ptImage()
+        UITabBar.appearance().barTintColor = UIColor.primaryBackground
+        UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
         UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
 
         UITabBarItem.appearance().setBadgeTextAttributes([
@@ -78,11 +89,6 @@ extension DefaultStyling {
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ], for: .selected)
-
-        UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
-        ]
 
         current = .custom
     }

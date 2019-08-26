@@ -459,7 +459,7 @@ extension ReferralsProgressBar: Viewable {
         let bag = DisposeBag()
 
         let scene = SCNScene()
-        scene.background.contents = UIColor.offWhite
+        scene.background.contents = UIColor.primaryBackground
 
         let containerNode = SCNNode()
         containerNode.physicsBody?.isAffectedByGravity = true

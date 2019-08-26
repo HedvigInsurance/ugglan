@@ -37,7 +37,6 @@ extension CommonClaimsCollection: Viewable {
             layout: layout,
             bag: bag
         )
-        collectionKit.view.backgroundColor = .offWhite
         collectionKit.view.clipsToBounds = false
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in

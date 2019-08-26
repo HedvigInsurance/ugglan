@@ -26,7 +26,7 @@ extension UIColor {
     static var secondaryBackground: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .black : .offWhite
+                trait.userInterfaceStyle == .dark ? UIColor.black.lighter(amount: 0.10) : .offWhite
             }
         }
         

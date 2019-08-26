@@ -42,7 +42,7 @@ extension ExpandableRow: Viewable {
         let containerView = UIView()
 
         if !transparent {
-            containerView.backgroundColor = .primaryBackground
+            containerView.backgroundColor = .secondaryBackground
             containerView.layer.cornerRadius = 15
             containerView.layer.shadowOpacity = 0.15
             containerView.layer.shadowOffset = CGSize(width: 0, height: 6)

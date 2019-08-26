@@ -61,7 +61,7 @@ extension Referrals: Presentable {
         viewController.navigationItem.rightBarButtonItem = moreInfoBarButton
 
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .secondaryBackground
+        scrollView.backgroundColor = .primaryBackground
 
         let formView = FormView()
         formView.spacing = 20

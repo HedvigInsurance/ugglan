@@ -124,7 +124,7 @@ extension CommonClaimCard: Viewable {
         let contentView = UIControl()
         bag += controlIsEnabledSignal.atOnce().bindTo(contentView, \.isEnabled)
         bag += backgroundStateSignal.atOnce().map {
-            $0 == .normal ? UIColor.white : backgroundColorFromData()
+            $0 == .normal ? UIColor.secondaryBackground : backgroundColorFromData()
         }.bindTo(contentView, \.backgroundColor)
         bag += cornerRadiusSignal.atOnce().bindTo(contentView, \.layer.cornerRadius)
 

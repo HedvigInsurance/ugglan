@@ -30,8 +30,8 @@ extension ReferralsCode: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = .white
-        view.layer.borderColor = UIColor.offLightGray.cgColor
+        view.backgroundColor = .secondaryBackground
+        view.layer.borderColor = UIColor.primaryBorder.cgColor
         view.layer.borderWidth = 1
 
         bag += view.didLayoutSignal.onValue { _ in
@@ -64,10 +64,8 @@ extension ReferralsCode: Viewable {
 
         let codeTextStyle = TextStyle(
             font: HedvigFonts.circularStdBold!,
-            color: UIColor.purple
-        ).centerAligned.lineHeight(2.4).resized(to: 16).restyled { (style: inout TextStyle) in
-            style.highlightedColor = .darkPurple
-        }
+            color: UIColor.primaryTintColor
+        ).centerAligned.lineHeight(2.4).resized(to: 16)
 
         let codeLabelWrapper = UIView()
         let codeLabel = UILabel(value: "", style: codeTextStyle)
