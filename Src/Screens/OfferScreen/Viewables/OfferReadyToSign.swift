@@ -21,7 +21,7 @@ extension OfferReadyToSign: Viewable {
         view.backgroundColor = .darkPurple
 
         let bottomPadding: CGFloat = 80
-        
+
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 15

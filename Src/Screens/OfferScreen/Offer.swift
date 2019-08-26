@@ -106,9 +106,9 @@ extension Offer {
                 addressLabel.text = insurance.address
             })
             .animated(style: AnimationStyle.easeOut(duration: 0.25, delay: 0.65)) { _ in
-            navigationBar.alpha = 1
-            navigationBar.transform = CGAffineTransform.identity
-        }
+                navigationBar.alpha = 1
+                navigationBar.transform = CGAffineTransform.identity
+            }
 
         item.titleView = titleViewContainer
 
