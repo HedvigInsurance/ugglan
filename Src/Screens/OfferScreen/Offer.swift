@@ -224,7 +224,8 @@ extension Offer: Presentable {
             buttonView.layer.shadowOpacity = 0.1
 
             buttonView.snp.makeConstraints({ make in
-                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).priority(.high)
+                make.bottom.lessThanOrEqualTo(-20).priority(.required)
             })
 
             buttonView.transform = CGAffineTransform(
