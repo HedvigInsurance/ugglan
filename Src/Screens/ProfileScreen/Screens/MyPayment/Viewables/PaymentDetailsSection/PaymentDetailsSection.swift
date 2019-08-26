@@ -130,21 +130,14 @@ extension PaymentDetailsSection: Viewable {
                 presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
             )
 
-            bag += applyDiscount.didRedeemValidCodeSignal.onValue { _ in
-//                self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-//                    data.insurance.cost = MyPaymentQuery.Data.Insurance.Cost(
-//                        monthlyDiscount: MyPaymentQuery.Data.Insurance.Cost.MonthlyDiscount(amount: result.cost.monthlyDiscount.amount),
-//                        monthlyGross: MyPaymentQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount),
-//                        monthlyNet: MyPaymentQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount)
-//                    )
-//                })
-//
-//                self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
-//                    data.insurance.cost = ReferralsScreenQuery.Data.Insurance.Cost(
-//                        monthlyNet: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyNet(amount: result.cost.monthlyNet.amount),
-//                        monthlyGross: ReferralsScreenQuery.Data.Insurance.Cost.MonthlyGross(amount: result.cost.monthlyGross.amount)
-//                    )
-//                })
+            bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
+                self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                    data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
+                })
+
+                self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
+                    data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
+                })
 
                 let alert = Alert(
                     title: String(key: .REFERRAL_REDEEM_SUCCESS_HEADLINE),
