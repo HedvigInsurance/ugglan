@@ -8,13 +8,7 @@ query Dashboard {
         type
         activeFrom
         perilCategories {
-            title
-            description
-            perils {
-                id
-                title
-                description
-            }
+            ...PerilCategoryFragment
         }
     }
     member {

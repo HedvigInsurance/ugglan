@@ -1,5 +1,30 @@
 query Offer {
+    redeemedCampaigns {
+        ...CampaignFragment
+    }
     insurance {
         address
+        type
+        previousInsurer {
+            displayName
+            switchable
+        }
+        personsInHousehold
+        presaleInformationUrl
+        policyUrl
+        cost {
+            ...CostFragment
+        }
+        arrangedPerilCategories {
+            stuff {
+                ...PerilCategoryFragment
+            }
+            home {
+                ...PerilCategoryFragment
+            }
+            me {
+                ...PerilCategoryFragment
+            }
+        }
     }
 }

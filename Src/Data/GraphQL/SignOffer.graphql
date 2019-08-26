@@ -1,0 +1,6 @@
+mutation SignOffer {
+    signOfferV2 {
+        autoStartToken
+    }
+}
+

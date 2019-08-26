@@ -11,11 +11,17 @@ import UIKit
 
 struct WhenEnabled<V: Viewable>: Viewable where V.Events == ViewableEvents, V.Matter: UIView, V.Result == Disposable {
     let getViewable: () -> V
-    let enabledSignal: ReadWriteSignal<Bool>
+    let onCreate: (_ view: V.Matter) -> Void
+    let enabledSignal: ReadSignal<Bool>
 
-    init(_ enabledSignal: ReadWriteSignal<Bool>, _ getViewable: @escaping () -> V) {
+    init(
+        _ enabledSignal: ReadSignal<Bool>,
+        _ getViewable: @escaping () -> V,
+        _ onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+    ) {
         self.enabledSignal = enabledSignal
         self.getViewable = getViewable
+        self.onCreate = onCreate
     }
 
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
@@ -30,7 +36,7 @@ struct WhenEnabled<V: Viewable>: Viewable where V.Events == ViewableEvents, V.Ma
 
         bag += enabledSignal.atOnce().wait(until: view.hasWindowSignal).onValueDisposePrevious { enabled -> Disposable? in
             if enabled {
-                return view.addArranged(self.getViewable())
+                return view.addArranged(self.getViewable(), onCreate: self.onCreate)
             } else {
                 return NilDisposer()
             }

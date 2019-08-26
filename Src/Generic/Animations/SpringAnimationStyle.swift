@@ -36,11 +36,31 @@ extension SpringAnimationStyle {
         )
     }
 
+    static func mediumBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
+        return SpringAnimationStyle(
+            duration: duration,
+            damping: 10,
+            velocity: 1.7,
+            delay: delay,
+            options: [.allowUserInteraction]
+        )
+    }
+
     static func heavyBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
         return SpringAnimationStyle(
             duration: duration,
             damping: 0.6,
             velocity: 2,
+            delay: delay,
+            options: [.allowUserInteraction]
+        )
+    }
+
+    static func ludicrousBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
+        return SpringAnimationStyle(
+            duration: duration,
+            damping: 0.2,
+            velocity: 3,
             delay: delay,
             options: [.allowUserInteraction]
         )

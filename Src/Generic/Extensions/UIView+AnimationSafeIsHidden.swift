@@ -1,6 +1,6 @@
 //
 //  UIView+AnimationSafeIsHidden.swift
-//  ugglan
+//  UITests
 //
 //  Created by Sam Pettersson on 2019-07-31.
 //

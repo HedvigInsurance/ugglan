@@ -58,9 +58,11 @@ extension MyProtectionSection: Viewable {
                 view.removeFromSuperview()
             }
 
+            print(perilCategories)
+
             for (index, perilCategory) in perilCategories.enumerated() {
                 let protectionSection = PerilExpandableRow(index: index, presentingViewController: self.presentingViewController)
-                protectionSection.perilsDataSignal.value = perilCategory
+                protectionSection.perilsDataSignal.value = perilCategory?.fragments.perilCategoryFragment
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)
             }

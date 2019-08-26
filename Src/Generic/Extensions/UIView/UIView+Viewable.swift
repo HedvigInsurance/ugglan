@@ -118,6 +118,33 @@ extension UIView {
         }
     }
 
+    func add<V: Viewable, Matter: Viewable, View: UIView>(
+        _ viewable: V,
+        onCreate: (_ view: Matter.Matter) -> Void = { _ in }
+    ) -> V.Result where
+        V.Matter == Matter,
+        V.Result == Disposable,
+        V.Events == ViewableEvents,
+        Matter.Matter == View,
+        Matter.Result == Disposable,
+        Matter.Events == ViewableEvents {
+        let wasAddedCallbacker = Callbacker<Void>()
+
+        let (matter, result) = viewable.materialize(events: ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker
+        ))
+
+        let (viewableMatter, viewableResult, disposable) = materializeViewable(viewable: matter)
+
+        onCreate(viewableMatter)
+
+        return Disposer {
+            result.dispose()
+            disposable.dispose()
+            viewableResult.dispose()
+        }
+    }
+
     func add<V: Viewable, VMatter: UIView, SignalType: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
@@ -175,6 +202,27 @@ extension UIStackView {
         return Disposer {
             result.dispose()
             disposable.dispose()
+        }
+    }
+
+    func addArranged<V: Viewable, MatterView: UIView, SignalValue>(
+        _ viewable: V,
+        onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
+    ) -> V.Result where
+        V.Matter == MatterView,
+        V.Result == Signal<SignalValue>,
+        V.Events == ViewableEvents {
+        let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
+
+        onCreate(matter)
+
+        return Signal { callback in
+            let bag = DisposeBag()
+            bag += result.onValue(callback)
+            return Disposer {
+                disposable.dispose()
+                bag.dispose()
+            }
         }
     }
 

@@ -1,18 +1,7 @@
 query InsurancePrice {
     insurance {
         cost {
-            monthlyDiscount {
-                amount
-                currency
-            }
-            monthlyGross {
-                amount
-                currency
-            }
-            monthlyNet {
-                amount
-                currency
-            }
+            ...CostFragment
         }
     }
 }

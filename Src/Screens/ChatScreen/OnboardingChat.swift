@@ -24,26 +24,36 @@ struct OnboardingChat {
 }
 
 extension OnboardingChat: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
-        let viewController = UIViewController()
+        ApplicationState.preserveState(.onboardingChat)
 
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
+        let (viewController, future) = Chat().materialize()
+        viewController.navigationItem.hidesBackButton = true
 
-        Chat.didOpen()
+        let restartButton = UIBarButtonItem()
+        restartButton.image = Asset.restart.image
+        restartButton.tintColor = .darkGray
 
-        bag += Disposer {
-            Chat.didClose()
+        bag += restartButton.onValue { _ in
+            // restart chat
         }
 
-        let view = UIView()
-        view.backgroundColor = .purple
+        viewController.navigationItem.rightBarButtonItem = restartButton
 
-        viewController.view = view
+        let titleHedvigLogo = UIImageView()
+        titleHedvigLogo.image = Asset.wordmark.image
+        titleHedvigLogo.contentMode = .scaleAspectFit
 
-        return (viewController, Future { _ in
-            bag
-        })
+        viewController.navigationItem.titleView = titleHedvigLogo
+
+        titleHedvigLogo.snp.makeConstraints { make in
+            make.width.equalTo(80)
+        }
+
+        bag += future.disposable
+
+        return (viewController, bag)
     }
 }

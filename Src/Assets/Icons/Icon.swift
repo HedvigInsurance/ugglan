@@ -17,7 +17,15 @@ class Icon: UIView {
         }
     }
 
-    let iconWidth: CGFloat
+    var iconWidth: CGFloat {
+        didSet {
+            image.snp.remakeConstraints { make in
+                make.width.equalTo(iconWidth)
+                make.height.equalToSuperview()
+                make.center.equalToSuperview()
+            }
+        }
+    }
 
     init(frame: CGRect = .zero, icon: ImageAsset, iconWidth: CGFloat) {
         self.icon = icon

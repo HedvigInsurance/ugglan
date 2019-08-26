@@ -5,34 +5,33 @@
 //  Created by Gustaf Gunér on 2019-05-22.
 //
 
+import Apollo
 import Flow
 import Form
 import Presentation
 import UIKit
 
-struct FreeTextChat {}
+struct FreeTextChat {
+    let client: ApolloClient
+
+    init(client: ApolloClient = ApolloContainer.shared.client) {
+        self.client = client
+    }
+}
 
 extension FreeTextChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
+        let (viewController, future) = Chat().materialize()
 
-        let viewController = UIViewController()
+        bag += client.perform(mutation: TriggerFreeTextChatMutation()).disposable
 
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 100)
+        return (viewController, Future { completion in
+            bag += future.onResult { result in
+                completion(result)
+            }
 
-        Chat.didOpen()
-
-        bag += Disposer {
-            Chat.didClose()
-        }
-
-        let view = UIView()
-        view.backgroundColor = .purple
-
-        viewController.view = view
-
-        return (viewController, Future { _ in
-            bag
+            return bag
         })
     }
 }

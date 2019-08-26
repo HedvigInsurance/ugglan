@@ -55,6 +55,31 @@ extension SignalProvider {
         return bag
     }
 
+    func bindTo<T>(
+        animate style: SpringAnimationStyle,
+        on scheduler: Scheduler = .current,
+        _ value: T,
+        _ keyPath: ReferenceWritableKeyPath<T, Value>
+    ) -> Disposable {
+        let bag = DisposeBag()
+
+        bag += bindTo(on: scheduler) { newValue in
+            UIView.animate(
+                withDuration: style.duration,
+                delay: style.delay,
+                usingSpringWithDamping: style.damping,
+                initialSpringVelocity: style.velocity,
+                options: style.options,
+                animations: {
+                    value[keyPath: keyPath] = newValue
+                },
+                completion: nil
+            )
+        }
+
+        return bag
+    }
+
     func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> AnimationStyle,

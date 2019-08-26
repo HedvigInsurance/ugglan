@@ -15,14 +15,39 @@ import UIKit
 
 enum ButtonType {
     case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case standardIcon(backgroundColor: HedvigColor, textColor: HedvigColor, icon: ButtonIcon)
     case standardSmall(backgroundColor: HedvigColor, textColor: HedvigColor)
+    case tinyIcon(backgroundColor: HedvigColor, textColor: HedvigColor, icon: ButtonIcon)
     case outline(borderColor: HedvigColor, textColor: HedvigColor)
     case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
-    case iconTransparent(textColor: HedvigColor, icon: ImageAsset)
+    case iconTransparent(textColor: HedvigColor, icon: ButtonIcon)
+
+    enum ButtonIcon {
+        case left(image: UIImage, width: CGFloat)
+        case right(image: UIImage, width: CGFloat)
+
+        var width: CGFloat {
+            switch self {
+            case let .left(_, width):
+                return width
+            case let .right(_, width):
+                return width
+            }
+        }
+
+        var image: UIImage {
+            switch self {
+            case let .left(image, _):
+                return image
+            case let .right(image, _):
+                return image
+            }
+        }
+    }
 
     var backgroundOpacity: CGFloat {
         switch self {
-        case .standard, .standardSmall:
+        case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
         case .outline:
             return 0
@@ -35,7 +60,7 @@ enum ButtonType {
 
     var highlightedBackgroundOpacity: CGFloat {
         switch self {
-        case .standard, .standardSmall:
+        case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
         case .outline:
             return 0.05
@@ -52,6 +77,10 @@ enum ButtonType {
             return backgroundColor
         case let .standardSmall((backgroundColor, _)):
             return backgroundColor
+        case let .standardIcon((backgroundColor, _, _)):
+            return backgroundColor
+        case let .tinyIcon((backgroundColor, _, _)):
+            return backgroundColor
         case .outline((_, _)):
             return .purple
         case let .pillTransparent((backgroundColor, _)):
@@ -67,6 +96,10 @@ enum ButtonType {
             return textColor
         case let .standardSmall((_, textColor)):
             return textColor
+        case let .standardIcon((_, textColor, _)):
+            return textColor
+        case let .tinyIcon((_, textColor, _)):
+            return textColor
         case let .outline((_, textColor)):
             return textColor
         case let .pillTransparent((_, textColor)):
@@ -78,7 +111,7 @@ enum ButtonType {
 
     var height: CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardIcon:
             return 50
         case .standardSmall:
             return 34
@@ -87,24 +120,28 @@ enum ButtonType {
         case .pillTransparent:
             return 30
         case .iconTransparent:
+            return 30
+        case .tinyIcon:
             return 30
         }
     }
 
     var fontSize: CGFloat {
         switch self {
-        case .standard, .standardSmall, .outline:
+        case .standard, .standardSmall, .outline, .standardIcon:
             return 15
         case .pillTransparent:
             return 13
         case .iconTransparent:
             return 14
+        case .tinyIcon:
+            return 10
         }
     }
 
     var extraWidthOffset: CGFloat {
         switch self {
-        case .standard:
+        case .standard, .standardIcon:
             return 50
         case .standardSmall:
             return 35
@@ -114,12 +151,18 @@ enum ButtonType {
             return 35
         case .iconTransparent:
             return 35
+        case .tinyIcon:
+            return 20
         }
     }
 
-    var icon: ImageAsset? {
+    var icon: ButtonIcon? {
         switch self {
         case let .iconTransparent((_, icon)):
+            return icon
+        case let .standardIcon((_, _, icon)):
+            return icon
+        case let .tinyIcon((_, _, icon)):
             return icon
         default:
             return nil
@@ -128,7 +171,11 @@ enum ButtonType {
 
     var iconColor: HedvigColor? {
         switch self {
-        case .iconTransparent((_, _)):
+        case .iconTransparent:
+            return textColor
+        case .standardIcon:
+            return textColor
+        case .tinyIcon:
             return textColor
         default:
             return nil
@@ -137,8 +184,12 @@ enum ButtonType {
 
     var iconDistance: CGFloat {
         switch self {
-        case .iconTransparent((_, _)):
+        case .iconTransparent:
             return 7
+        case .standardIcon:
+            return 4
+        case .tinyIcon:
+            return 3
         default:
             return 0
         }
@@ -146,7 +197,7 @@ enum ButtonType {
 
     var borderWidth: CGFloat {
         switch self {
-        case .outline((_, _)):
+        case .outline:
             return 1
         default:
             return 0
@@ -256,23 +307,74 @@ extension Button: Viewable {
 
         button.adjustsImageWhenHighlighted = false
 
-        if let icon = self.type.value.icon {
-            button.setImage(icon.image.withRenderingMode(.alwaysTemplate), for: [])
-            if let iconColor = type.value.iconColor {
-                button.tintColor = UIColor.from(apollo: iconColor)
+        let iconImageView = UIImageView()
+        button.addSubview(iconImageView)
+
+        bag += type.atOnce().onValue({ type in
+            if let icon = type.icon {
+                iconImageView.isHidden = false
+                iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
+
+                if let iconColor = type.iconColor {
+                    iconImageView.tintColor = UIColor.from(apollo: iconColor)
+                }
+
+                iconImageView.contentMode = .scaleAspectFit
+
+                let iconDistance = type.iconDistance
+
+                button.addSubview(iconImageView)
+
+                switch icon {
+                case .left:
+                    button.titleEdgeInsets = UIEdgeInsets(
+                        top: 0,
+                        left: icon.width + iconDistance,
+                        bottom: 0,
+                        right: 0
+                    )
+                case .right:
+                    button.titleEdgeInsets = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: icon.width + iconDistance
+                    )
+                }
+
+                iconImageView.snp.makeConstraints { make in
+                    switch icon {
+                    case .left:
+                        make.left.equalTo(type.extraWidthOffset / 2)
+                    case .right:
+                        make.right.equalTo(-type.extraWidthOffset / 2)
+                    }
+
+                    make.centerY.equalToSuperview()
+                    make.height.equalTo(type.height)
+                    make.width.equalTo(icon.width)
+                }
+            } else {
+                iconImageView.isHidden = true
             }
+        })
 
-            let iconDistance = type.value.iconDistance
-            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: iconDistance)
-            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: iconDistance, bottom: 0, right: 0)
-        }
+        bag += title.atOnce().withLatestFrom(type).onValueDisposePrevious { title, type in
+            let innerBag = DisposeBag()
 
-        bag += title.atOnce().withLatestFrom(type).onValue { title, type in
             button.setTitle(title)
 
-            button.snp.remakeConstraints { make in
-                make.width.equalTo(button.intrinsicContentSize.width + type.extraWidthOffset)
+            let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
+
+            innerBag += button.didLayoutSignal.onValue { _ in
+                button.snp.updateConstraints { make in
+                    make.width.equalTo(
+                        button.intrinsicContentSize.width + type.extraWidthOffset + iconWidth
+                    )
+                }
             }
+
+            return innerBag
         }
 
         bag += button.signal(for: .touchDown).filter { self.animate }

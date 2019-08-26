@@ -1,9 +1,10 @@
 mutation RemoveDiscountCode {
     removeDiscountCode {
+        campaigns {
+            ...CampaignFragment
+        }
         cost {
-            monthlyDiscount {
-                amount
-            }
+            ...CostFragment
         }
     }
 }

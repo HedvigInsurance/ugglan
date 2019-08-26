@@ -72,12 +72,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
-        let token = AuthorizationToken(token: "")
-        try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
-
-        window.rootViewController = navigationController
-
-        presentMarketing()
+        bag += ApolloContainer.shared.createClientFromNewSession().onValue { _ in
+            self.window.rootViewController = self.navigationController
+            self.presentMarketing()
+        }
     }
 
     func createToast(
@@ -109,10 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             marketing,
             style: .marketing,
             options: .defaults
-        ).onValue { _ in
-            let loggedIn = LoggedIn()
-            self.bag += self.window.present(loggedIn, options: [], animated: true)
-        }
+        )
 
         bag += navigationController.present(marketingPresentation)
     }
@@ -227,17 +222,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         DefaultStyling.installCustom()
 
-        let token = AuthorizationToken(token: "iRdjaazqSHqtGg==.h/6BEAGKcveJIg==.u2sxTGn+PWkHMg==")
-        try? Disk.save(token, to: .applicationSupport, as: "authorization-token.json")
-
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()
         ).delay(by: 0.5).onValue { _, _ in
-            self.presentMarketing()
-
+            self.bag += ApplicationState.presentRootViewController(self.window)
             hasLoadedCallbacker.callAll()
-
             TranslationsRepo.fetch()
         }
 

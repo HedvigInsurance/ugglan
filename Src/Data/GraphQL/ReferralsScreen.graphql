@@ -1,12 +1,7 @@
 query ReferralsScreen {
     insurance {
         cost {
-            monthlyNet {
-                amount
-            }
-            monthlyGross {
-                amount
-            }
+            ...CostFragment
         }
     }
     referralInformation {
