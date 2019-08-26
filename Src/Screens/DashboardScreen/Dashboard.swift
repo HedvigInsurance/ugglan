@@ -45,6 +45,9 @@ extension Dashboard: Presentable {
         let chatPreview = ChatPreview(presentingViewController: viewController)
         bag += containerStackView.addArranged(chatPreview)
 
+        let renewalsSection = RenewalsSection(presentingViewController: viewController)
+        bag += containerStackView.addArranged(renewalsSection)
+
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(paymentNeedsSetupSection)
 
@@ -63,6 +66,7 @@ extension Dashboard: Presentable {
 
         bag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
         bag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
+        bag += dashboardInsuranceQuery.bindTo(renewalsSection.dataSignal)
 
         bag += client.watch(query: MyPaymentQuery())
             .compactMap { $0.data }

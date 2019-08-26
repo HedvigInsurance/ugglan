@@ -70,10 +70,10 @@ extension PaymentNeedsSetupSection: Viewable {
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { data in
             switch data?.directDebitStatus {
             case .active?, .pending?:
-                wrapper.isHidden = true
+                wrapper.animationSafeIsHidden = true
                 containerStackView.alpha = 0
             default:
-                wrapper.isHidden = false
+                wrapper.animationSafeIsHidden = false
                 containerStackView.alpha = 1
             }
         }

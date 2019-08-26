@@ -16,8 +16,14 @@ import UIKit
 
 struct InsuranceCertificate {
     let client: ApolloClient
+    let type: CertificateType
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
+    enum CertificateType {
+        case current, renewal
+    }
+
+    init(type: CertificateType, client: ApolloClient = ApolloContainer.shared.client) {
+        self.type = type
         self.client = client
     }
 }
@@ -35,7 +41,14 @@ extension InsuranceCertificate: Presentable {
         bag += client.fetch(
             query: InsuranceCertificateQuery(),
             cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.compactMap { $0.data?.insurance.certificateUrl }.map { certificateUrl -> URL? in
+        ).valueSignal.compactMap { result -> String? in
+            switch self.type {
+            case .current:
+                return result.data?.insurance.certificateUrl
+            case .renewal:
+                return result.data?.insurance.renewal?.certificateUrl
+            }
+        }.map { certificateUrl -> URL? in
             guard let url = URL(string: certificateUrl) else { return nil }
             return url
         }.bindTo(pdfViewer.url)

@@ -52,7 +52,7 @@ extension InsuranceCertificateRow: Viewable {
 
             innerBag += events.onSelect.onValue { _ in
                 self.presentingViewController.present(
-                    InsuranceCertificate(),
+                    InsuranceCertificate(type: .current),
                     options: [.largeTitleDisplayMode(.never)]
                 )
             }
@@ -66,6 +66,6 @@ extension InsuranceCertificateRow: Viewable {
 
 extension InsuranceCertificateRow: Previewable {
     func preview() -> (InsuranceCertificate, PresentationOptions) {
-        return (InsuranceCertificate(), [.largeTitleDisplayMode(.never)])
+        return (InsuranceCertificate(type: .current), [.largeTitleDisplayMode(.never)])
     }
 }
