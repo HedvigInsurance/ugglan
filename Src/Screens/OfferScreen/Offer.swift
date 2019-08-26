@@ -30,6 +30,8 @@ extension Offer {
         let navigationBar = UINavigationBar()
         navigationBar.barTintColor = .darkPurple
         navigationBar.isTranslucent = false
+        navigationBar.alpha = 0
+        navigationBar.transform = CGAffineTransform(translationX: 0, y: 5)
 
         let item = UINavigationItem()
 
@@ -66,8 +68,10 @@ extension Offer {
         bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
             if contentOffset.y > 400 {
                 signButtonBarItem.view?.alpha = 0
+                signButtonBarItem.view?.transform = CGAffineTransform(translationX: 0, y: 5)
             } else {
                 signButtonBarItem.view?.alpha = 1
+                signButtonBarItem.view?.transform = CGAffineTransform.identity
             }
         }
 
@@ -83,7 +87,7 @@ extension Offer {
 
         titleView.addArrangedSubview(UILabel(value: String(key: .OFFER_TITLE), style: .bodyWhite))
 
-        let addressLabel = UILabel(value: "", style: .navigationSubtitleWhite)
+        let addressLabel = UILabel(value: " ", style: .navigationSubtitleWhite)
         titleView.addArrangedSubview(addressLabel)
 
         titleViewContainer.addArrangedSubview(titleView)
@@ -94,8 +98,16 @@ extension Offer {
             }
         }
 
-        bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance }.onValue { insurance in
-            addressLabel.text = insurance.address
+        bag += client
+            .fetch(query: OfferQuery())
+            .valueSignal
+            .compactMap { $0.data?.insurance }
+            .atValue({ insurance in
+                addressLabel.text = insurance.address
+            })
+            .animated(style: AnimationStyle.easeOut(duration: 0.25, delay: 0.65)) { _ in
+            navigationBar.alpha = 1
+            navigationBar.transform = CGAffineTransform.identity
         }
 
         item.titleView = titleViewContainer
