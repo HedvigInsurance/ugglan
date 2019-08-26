@@ -210,6 +210,10 @@ class ApolloContainer {
 
         client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
     }
+    
+    func createClientFromNewSession() -> Future<Void> {
+        return Future(result: .success)
+    }
 
     func initClient() -> Future<ApolloClient> {
         return Future(client)
