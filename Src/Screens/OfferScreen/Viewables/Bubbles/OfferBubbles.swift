@@ -22,7 +22,7 @@ extension OfferBubbles: Viewable {
         containerView.alignment = .center
         containerView.edgeInsets = UIEdgeInsets(
             top: 0,
-            left: 35,
+            left: 10,
             bottom: 0,
             right: 0
         )
@@ -43,8 +43,7 @@ extension OfferBubbles: Viewable {
         bag += view.didMoveToWindowSignal.onValue { _ in
             view.snp.remakeConstraints { make in
                 make.height.equalTo(width)
-                make.width.equalTo(350)
-                make.centerX.equalToSuperview()
+                make.width.equalTo(width)
             }
         }
 
