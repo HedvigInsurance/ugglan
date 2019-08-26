@@ -37,22 +37,6 @@ extension PriceBubble: Viewable {
         containerView.addArrangedSubview(bubbleView)
         bubbleView.backgroundColor = .white
 
-        bag += bubbleView.windowSignal.compactMap { $0 }.onValue({ window in
-            if window.frame.height < 700 {
-                bubbleView.snp.makeConstraints({ make in
-                    make.width.height.equalTo(125)
-                })
-
-                bubbleView.layer.cornerRadius = 125 / 2
-            } else {
-                bubbleView.snp.makeConstraints({ make in
-                    make.width.height.equalTo(180)
-                })
-
-                bubbleView.layer.cornerRadius = 180 / 2
-            }
-        })
-
         let stackView = CenterAllStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -69,6 +53,22 @@ extension PriceBubble: Viewable {
         stackView.addArrangedSubview(grossPriceLabel)
 
         let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
+        
+        bag += bubbleView.windowSignal.compactMap { $0 }.onValue({ window in
+            if window.frame.height < 700 {
+                bubbleView.snp.makeConstraints({ make in
+                    make.width.height.equalTo(125)
+                })
+                priceLabel.style = TextStyle.largePriceBubbleTitle.resized(to: 40)
+                bubbleView.layer.cornerRadius = 125 / 2
+            } else {
+                bubbleView.snp.makeConstraints({ make in
+                    make.width.height.equalTo(180)
+                })
+                priceLabel.style = TextStyle.largePriceBubbleTitle
+                bubbleView.layer.cornerRadius = 180 / 2
+            }
+        })
 
         let ease: Ease<CGFloat> = Ease(0, minimumStep: 1)
 
