@@ -62,6 +62,14 @@ extension OfferCoverageTerms: Viewable {
 
         bag += stackView.addArranged(OfferTermsBulletPoints())
         bag += stackView.addArranged(OfferTermsLinks())
+        
+        let notInsuredAtOtherCompanyBlob = WhenEnabled(insuredAtOtherCompanySignal.map { !$0 }, {
+            Blob(color: .darkPurple, position: .top)
+        }) { view in
+            view.backgroundColor = .white
+        }
+        
+        bag += outerView.addArranged(notInsuredAtOtherCompanyBlob)
 
         return (outerView, bag)
     }
