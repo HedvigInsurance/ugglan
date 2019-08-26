@@ -84,11 +84,11 @@ extension IconRow: Viewable {
             if newOptions.contains(.whiteContent) {
                 titleLabel.styledText = StyledText(
                     text: titleLabel.text ?? "",
-                    style: .rowTitleWhite
+                    style: .rowTitleSecondary
                 )
                 subtitleLabel.styledText = StyledText(
                     text: subtitleLabel.text ?? "",
-                    style: .rowSubtitleWhite
+                    style: .rowSubtitlePrimary
                 )
                 arrow.icon = Asset.chevronRightWhite
             } else {

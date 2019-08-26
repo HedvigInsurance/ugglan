@@ -221,6 +221,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
+        
+        ApplicationState.preserveState(.loggedIn)
 
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),

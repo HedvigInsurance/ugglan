@@ -18,20 +18,21 @@ extension DefaultStyling {
         for view in [FormScrollView.self, FormTableView.self] {
             view.appearance(
                 for: UITraitCollection(userInterfaceIdiom: .pad)
-            ).backgroundColor = .offWhite
-            view.appearance().backgroundColor = .offWhite
+            ).backgroundColor = .secondaryBackground
+            view.appearance().backgroundColor = .secondaryBackground
         }
 
-        UIRefreshControl.appearance().tintColor = .purple
+        UIRefreshControl.appearance().tintColor = .primaryTintColor
 
-        UINavigationBar.appearance().tintColor = .purple
+        UINavigationBar.appearance().backgroundColor = .secondaryBackground
+        UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.black,
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
 
         UITabBar.appearance().unselectedItemTintColor = .offBlack
-        UITabBar.appearance().tintColor = .purple
+        UITabBar.appearance().tintColor = .primaryTintColor
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
@@ -46,7 +47,7 @@ extension DefaultStyling {
             for: .selected
         )
 
-        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .purple
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .primaryTintColor
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
@@ -62,14 +63,14 @@ extension DefaultStyling {
             for: .highlighted
         )
 
-        UIBarButtonItem.appearance().tintColor = .purple
+        UIBarButtonItem.appearance().tintColor = .primaryTintColor
 
-        UINavigationBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
-        UINavigationBar.appearance().barTintColor = UIColor.offWhite
+        UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+        UINavigationBar.appearance().barTintColor = UIColor.secondaryBackground
 
-        UITabBar.appearance().barTintColor = UIColor.offWhite
-        UITabBar.appearance().backgroundImage = UIColor.offWhite.as1ptImage()
-        UITabBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
+        UITabBar.appearance().barTintColor = UIColor.secondaryBackground
+        UITabBar.appearance().backgroundImage = UIColor.secondaryBackground.as1ptImage()
+        UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
 
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
@@ -79,7 +80,7 @@ extension DefaultStyling {
         ], for: .selected)
 
         UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.black,
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
         ]
 

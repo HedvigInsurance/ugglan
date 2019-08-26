@@ -42,7 +42,7 @@ extension ExpandableRow: Viewable {
         let containerView = UIView()
 
         if !transparent {
-            containerView.backgroundColor = .white
+            containerView.backgroundColor = .primaryBackground
             containerView.layer.cornerRadius = 15
             containerView.layer.shadowOpacity = 0.15
             containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
@@ -56,7 +56,6 @@ extension ExpandableRow: Viewable {
         clippingView.clipsToBounds = true
 
         let expandableStackView = UIStackView()
-        expandableStackView.backgroundColor = .white
         expandableStackView.axis = .vertical
 
         let contentWrapperView = UIControl()

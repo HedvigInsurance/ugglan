@@ -12,7 +12,7 @@ import Foundation
 extension BorderStyle {
     static let standard = BorderStyle(
         width: 1 / UIScreen.main.scale,
-        color: .grayBorder,
+        color: .primaryBorder,
         cornerRadius: 0,
         borderEdges: [UIRectEdge.bottom, UIRectEdge.top]
     )
@@ -26,9 +26,9 @@ extension BorderStyle {
 }
 
 extension BackgroundStyle {
-    static let white = BackgroundStyle(color: .white, border: .standard)
+    static let primary = BackgroundStyle(color: .primaryBackground, border: .standard)
     static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
-    static let whiteRoundedBorder = BackgroundStyle(color: .white, border: .standardRounded)
+    static let primaryRoundedBorder = BackgroundStyle(color: .primaryBackground, border: .standardRounded)
 
     static let purple = BackgroundStyle(
         color: UIColor.purple,
@@ -62,7 +62,7 @@ extension BackgroundStyle {
 }
 
 extension SeparatorStyle {
-    static let darkGray = SeparatorStyle(width: 0.25, color: .grayBorder)
+    static let darkGray = SeparatorStyle(width: 0.25, color: .primaryBorder)
 }
 
 extension InsettedStyle where Style == SeparatorStyle {
@@ -98,32 +98,32 @@ extension InsettedStyle where Style == SeparatorStyle {
 }
 
 extension SectionBackgroundStyle {
-    static let white = SectionBackgroundStyle(
-        background: .white,
+    static let primary = SectionBackgroundStyle(
+        background: .primary,
         topSeparator: .inset,
         bottomSeparator: .inset
     )
 
-    static let whiteLargeIcons = SectionBackgroundStyle(
-        background: .white,
+    static let primaryLargeIcons = SectionBackgroundStyle(
+        background: .primary,
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
 
-    static let whiteLargeIconsRoundedBorder = SectionBackgroundStyle(
-        background: .whiteRoundedBorder,
+    static let primaryLargeIconsRoundedBorder = SectionBackgroundStyle(
+        background: .primaryRoundedBorder,
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
 
-    static let whiteMediumIcons = SectionBackgroundStyle(
-        background: .white,
+    static let primaryMediumIcons = SectionBackgroundStyle(
+        background: .primary,
         topSeparator: .insetMediumIcons,
         bottomSeparator: .insetMediumIcons
     )
 
-    static let whiteRoundedBorder = SectionBackgroundStyle(
-        background: .whiteRoundedBorder,
+    static let primaryRoundedBorder = SectionBackgroundStyle(
+        background: .primaryRoundedBorder,
         topSeparator: .inset,
         bottomSeparator: .inset
     )
@@ -172,12 +172,12 @@ extension SectionBackgroundStyle {
 }
 
 extension SectionStyle.Background {
-    static let standard = SectionStyle.Background(style: .white)
+    static let standard = SectionStyle.Background(style: .primary)
     static let highlighted = SectionStyle.Background(style: .purple)
-    static let standardLargeIcons = SectionStyle.Background(style: .whiteLargeIcons)
-    static let standardLargeIconsRoundedBorder = SectionStyle.Background(style: .whiteLargeIconsRoundedBorder)
-    static let standardMediumIcons = SectionStyle.Background(style: .whiteMediumIcons)
-    static let standardRoundedBorder = SectionStyle.Background(style: .whiteRoundedBorder)
+    static let standardLargeIcons = SectionStyle.Background(style: .primaryLargeIcons)
+    static let standardLargeIconsRoundedBorder = SectionStyle.Background(style: .primaryLargeIconsRoundedBorder)
+    static let standardMediumIcons = SectionStyle.Background(style: .primaryMediumIcons)
+    static let standardRoundedBorder = SectionStyle.Background(style: .primaryRoundedBorder)
     static let selected = SectionStyle.Background(style: .purpleOpaque)
     static let selectedLargeIcons = SectionStyle.Background(style: .purpleOpaqueLargeIcons)
     static let selectedRoundedBorder = SectionStyle.Background(style: .purpleOpaqueRoundedBorder)
