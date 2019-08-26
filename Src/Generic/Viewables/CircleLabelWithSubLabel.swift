@@ -17,7 +17,7 @@ struct CircleLabelWithSubLabel {
     let appearance: Appearance
 
     enum Appearance {
-        case purple, turquoise
+        case purple, turquoise, white
     }
 
     init(labelText: DynamicString, subLabelText: DynamicString, appearance: Appearance) {
@@ -58,13 +58,17 @@ extension CircleLabelWithSubLabel: Viewable {
 
         switch appearance {
         case .turquoise:
-            circleView.backgroundColor = UIColor.turquoise
-            titleLabel.textColor = UIColor.blackPurple
-            subLabel.textColor = UIColor.blackPurple
+            circleView.backgroundColor = .turquoise
+            titleLabel.textColor = .blackPurple
+            subLabel.textColor = .blackPurple
         case .purple:
-            circleView.backgroundColor = UIColor.purple
-            titleLabel.textColor = UIColor.white
-            subLabel.textColor = UIColor.white
+            circleView.backgroundColor = .purple
+            titleLabel.textColor = .white
+            subLabel.textColor = .white
+        case .white:
+            circleView.backgroundColor = .white
+            titleLabel.textColor = .offBlack
+            subLabel.textColor = .offBlack
         }
 
         labelsContainer.addArrangedSubview(titleLabel)

@@ -8,9 +8,7 @@ query Profile {
         certificateUrl
         personsInHousehold
         cost {
-            monthlyNet {
-                amount
-            }
+            ...CostFragment
         }
     }
     cashback {

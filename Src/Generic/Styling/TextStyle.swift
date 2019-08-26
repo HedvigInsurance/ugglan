@@ -17,7 +17,7 @@ extension TextStyle {
     }
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .black
         style.lineSpacing = 4
     }
@@ -33,6 +33,12 @@ extension TextStyle {
 
     static let bodyWhite = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .white
+    }
+
+    static let bodyBold = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(14)
+        style.color = .black
+        style.lineSpacing = 4
     }
 
     static let navigationSubtitleWhite = TextStyle.body.restyled { (style: inout TextStyle) in
@@ -64,6 +70,18 @@ extension TextStyle {
         style.color = .black
     }
 
+    static let offerBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(16)
+        style.color = .white
+        style.alignment = .center
+    }
+
+    static let offerBubbleSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(16)
+        style.color = .white
+        style.alignment = .center
+    }
+
     static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .offBlack
@@ -86,6 +104,19 @@ extension TextStyle {
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.color = .black
+    }
+
+    static let priceBubbleGrossTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
+        style.color = .darkGray
+        style.alignment = .center
+        style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
+    }
+
+    static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(60)
+        style.color = .black
+        style.alignment = .center
     }
 
     static let reallySmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in

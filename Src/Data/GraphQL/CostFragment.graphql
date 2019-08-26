@@ -1,0 +1,15 @@
+fragment CostFragment on InsuranceCost {
+    freeUntil
+    monthlyDiscount {
+        amount
+        currency
+    }
+    monthlyGross {
+        amount
+        currency
+    }
+    monthlyNet {
+        amount
+        currency
+    }
+}

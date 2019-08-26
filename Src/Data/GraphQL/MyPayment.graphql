@@ -1,16 +1,7 @@
 query MyPayment {
     insurance {
         cost {
-            monthlyDiscount {
-                amount
-            }
-            monthlyGross {
-                amount
-            }
-            monthlyNet {
-                amount
-            }
-            freeUntil
+            ...CostFragment
         }
     }
     bankAccount {

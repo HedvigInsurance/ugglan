@@ -66,7 +66,7 @@ extension ChatInput: Viewable {
         let contentView = UIStackView()
         contentView.axis = .vertical
         containerView.addArrangedSubview(contentView)
-        
+
         let inputBar = UIStackView()
         inputBar.axis = .horizontal
 
@@ -91,7 +91,7 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
-            
+
             bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
                 stackView.isHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
@@ -117,7 +117,7 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
-            
+
             bag += attachFilePaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
                 stackView.isHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
@@ -126,7 +126,7 @@ extension ChatInput: Viewable {
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
         })
-        
+
         let currentGlobalIdSignal = currentMessageSignal.map { message in message?.globalId }
 
         let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
@@ -142,9 +142,9 @@ extension ChatInput: Viewable {
                 right: padding
             )
         }
-        
+
         contentView.addArrangedSubview(inputBar)
-        
+
         bag += currentMessageSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
             switch message.responseType {
             case .text:
@@ -152,7 +152,7 @@ extension ChatInput: Viewable {
             case .singleSelect:
                 inputBar.animationSafeIsHidden = true
             }
-            
+
             inputBar.layoutSuperviewsIfNeeded()
         }
 

@@ -44,7 +44,7 @@ extension ChatTextView: Viewable {
         bag += textView.didBeginEditingSignal.onValue { _ in
             self.didBeginEditingCallbacker.callAll()
         }
-        
+
         bag += isHiddenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
             view.animationSafeIsHidden = isHidden
         }

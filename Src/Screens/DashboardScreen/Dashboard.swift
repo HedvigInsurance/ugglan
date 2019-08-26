@@ -38,7 +38,7 @@ extension Dashboard: Presentable {
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
-        containerStackView.spacing = 25
+        containerStackView.spacing = 10
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 25)
 

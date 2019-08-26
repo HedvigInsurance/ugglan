@@ -1,0 +1,11 @@
+fragment IncentiveFragment on Incentive {
+    ... on FreeMonths {
+        quantity
+    }
+    ... on MonthlyCostDeduction {
+        amount {
+            currency
+            amount
+        }
+    }
+}
