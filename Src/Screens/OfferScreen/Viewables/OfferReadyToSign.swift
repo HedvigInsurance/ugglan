@@ -20,10 +20,12 @@ extension OfferReadyToSign: Viewable {
         let view = UIView()
         view.backgroundColor = .darkPurple
 
+        let bottomPadding: CGFloat = 80
+        
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 15
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 100, right: 20)
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: bottomPadding, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
 
@@ -39,7 +41,7 @@ extension OfferReadyToSign: Viewable {
 
         bag += containerScrollView.contentOffsetSignal.onValue({ point in
             let viewPoint = self.containerScrollView.convert(CGPoint.zero, from: view)
-            let correctViewPointY = viewPoint.y - self.containerScrollView.frame.height + 150
+            let correctViewPointY = viewPoint.y - self.containerScrollView.frame.height + bottomPadding + 50
 
             if point.y > correctViewPointY {
                 view.alpha = min((point.y - correctViewPointY) / 50, 1)
