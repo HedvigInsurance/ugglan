@@ -53,6 +53,27 @@ extension UIColor {
         return UIColor.offBlack
     }
     
+    static var disabledTintColor: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? .darkGray : .offBlack
+            }
+        }
+        
+        return UIColor.offBlack
+    }
+    
+    static var attentionTintColor: UIColor {
+       if #available(iOS 13, *) {
+           return UIColor { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .coral700 : .pink
+           }
+       }
+       
+       return UIColor.pink
+   }
+    
+    static let coral700 = UIColor(red: 0.80, green: 0.43, blue: 0.40, alpha: 1.0)
     static let transparent = UIColor.white.withAlphaComponent(0)
     static let white = UIColor.white
     static let black = UIColor.black

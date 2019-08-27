@@ -22,7 +22,7 @@ extension MyCoinsuredRow: Viewable {
         let row = IconRow(
             title: String(key: .PROFILE_MY_COINSURED_ROW_TITLE),
             subtitle: "",
-            iconAsset: Asset.coinsured,
+            iconAsset: Asset.coinsuredRowIcon,
             options: [.withArrow]
         )
 

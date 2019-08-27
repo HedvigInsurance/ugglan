@@ -22,7 +22,9 @@ extension DeductibleCircle: Viewable {
 
         let deductibleCircle = CircleLabelSmall(
             labelText: deductibleCircleText,
-            color: .green
+            backgroundColor: UIColor(dynamic: { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? .secondaryBackground : .green
+            })
         )
 
         bag += containerView.add(deductibleCircle)

@@ -22,7 +22,9 @@ extension DefaultStyling {
             view.appearance().backgroundColor = .primaryBackground
         }
 
-        UIRefreshControl.appearance().tintColor = .primaryTintColor
+        UIRefreshControl.appearance().tintColor = UIColor(dynamic: { trait in
+            trait.userInterfaceStyle == .dark ? .white : .primaryTintColor
+        })
 
         UINavigationBar.appearance().backgroundColor = .primaryBackground
         UINavigationBar.appearance().tintColor = .primaryTintColor
@@ -45,7 +47,7 @@ extension DefaultStyling {
         
         UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
-        UITabBar.appearance().unselectedItemTintColor = .offBlack
+        UITabBar.appearance().unselectedItemTintColor = .disabledTintColor
         UITabBar.appearance().tintColor = .primaryTintColor
 
         UITabBarItem.appearance().setTitleTextAttributes(

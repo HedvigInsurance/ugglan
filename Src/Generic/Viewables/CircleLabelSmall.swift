@@ -13,15 +13,11 @@ import UIKit
 
 struct CircleLabelSmall {
     let labelText: DynamicString
-    let color: Color
+    let backgroundColor: UIColor
 
-    enum Color {
-        case green
-    }
-
-    init(labelText: DynamicString, color: Color) {
+    init(labelText: DynamicString, backgroundColor: UIColor) {
         self.labelText = labelText
-        self.color = color
+        self.backgroundColor = backgroundColor
     }
 }
 
@@ -45,12 +41,8 @@ extension CircleLabelSmall: Viewable {
         circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
         circleView.layer.shadowRadius = 16
         circleView.layer.shadowColor = UIColor.darkGray.cgColor
-
-        switch color {
-        case .green:
-            circleView.backgroundColor = UIColor.darkGreen
-            titleLabel.textColor = UIColor.white
-        }
+        circleView.backgroundColor = backgroundColor
+        titleLabel.textColor = .primaryText
 
         labelsContainer.addArrangedSubview(titleLabel)
 
