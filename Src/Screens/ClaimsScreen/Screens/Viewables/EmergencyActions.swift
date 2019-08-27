@@ -66,7 +66,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             let descriptionLabel = MultilineLabel(value: action.description, style: .blockRowDescription)
             bag += contentView.addArranged(descriptionLabel)
 
-            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .purple, textColor: .white))
+            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical

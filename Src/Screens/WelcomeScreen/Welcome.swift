@@ -38,7 +38,7 @@ extension Welcome: Presentable {
         viewController.navigationItem.rightBarButtonItem = item
 
         let view = UIView()
-        view.backgroundColor = .offWhite
+        view.backgroundColor = .primaryBackground
 
         let containerView = UIStackView()
         containerView.axis = .vertical

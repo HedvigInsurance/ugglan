@@ -130,7 +130,7 @@ extension CommonClaimCard: Viewable {
                 return getColor(color: color)
             }
 
-            return UIColor.purple
+            return UIColor.primaryTintColor
         }
 
         let contentView = UIControl()
@@ -326,7 +326,7 @@ extension CommonClaimCard: Viewable {
         if includeButton {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-                type: .standard(backgroundColor: .purple, textColor: .white)
+                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
             )
 
             bag += claimButton.onTapSignal.onValue {

@@ -15,7 +15,7 @@ extension SendButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .purple
+        control.backgroundColor = .primaryTintColor
         control.layer.cornerRadius = 15
 
         control.snp.makeConstraints { make in

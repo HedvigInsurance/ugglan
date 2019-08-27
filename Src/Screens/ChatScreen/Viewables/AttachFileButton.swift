@@ -17,7 +17,7 @@ extension AttachFileButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .purple
+        control.backgroundColor = .primaryTintColor
         control.layer.cornerRadius = 20
 
         control.snp.makeConstraints { make in

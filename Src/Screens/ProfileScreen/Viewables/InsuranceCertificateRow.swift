@@ -29,7 +29,7 @@ extension InsuranceCertificateRow: Viewable {
         let row = IconRow(
             title: String(key: .PROFILE_MY_INSURANCE_CERTIFICATE_ROW_TITLE),
             subtitle: "",
-            iconAsset: Asset.insuranceCertificate,
+            iconAsset: Asset.insuranceCertificateRowIcon,
             options: []
         )
 
