@@ -16,7 +16,7 @@ extension UIColor {
     static var primaryBackground: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .black : .offWhite
+                trait.userInterfaceStyle == .dark ? .almostBlack : .offWhite
             }
         }
         
@@ -26,7 +26,7 @@ extension UIColor {
     static var secondaryBackground: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? UIColor.black.lighter(amount: 0.10) : .white
+                trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.10) : .white
             }
         }
         
@@ -77,6 +77,7 @@ extension UIColor {
     static let transparent = UIColor.white.withAlphaComponent(0)
     static let white = UIColor.white
     static let black = UIColor.black
+    static let almostBlack = UIColor(red: 0.04, green: 0.04, blue: 0.04, alpha: 1.0)
     static let turquoise = UIColor(red: 0.11, green: 0.91, blue: 0.71, alpha: 1.0)
     static let purple = UIColor(red: 0.40, green: 0.12, blue: 1.00, alpha: 1.0)
     static let blackPurple = UIColor(red: 0.03, green: 0.02, blue: 0.27, alpha: 1.0)
