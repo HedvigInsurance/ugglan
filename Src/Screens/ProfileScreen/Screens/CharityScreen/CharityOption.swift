@@ -65,7 +65,7 @@ extension CharityOption: Reusable {
             )
             contentView.isLayoutMarginsRelativeArrangement = true
 
-            containerView.backgroundColor = .white
+            containerView.backgroundColor = .secondaryBackground
 
             let titleLabel = UILabel(
                 value: charityOption.name,

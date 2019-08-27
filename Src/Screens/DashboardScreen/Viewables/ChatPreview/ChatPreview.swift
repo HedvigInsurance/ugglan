@@ -71,7 +71,7 @@ extension ChatPreview: Viewable {
 
         bag += containerView.addArranged(Spacing(height: 10))
 
-        bag += containerView.addArranged(Divider(backgroundColor: .lightGray))
+        bag += containerView.addArranged(Divider(backgroundColor: .primaryBorder))
 
         let messagesBubbleBag = DisposeBag()
         var handledMessageGlobalIds: [GraphQLID] = []

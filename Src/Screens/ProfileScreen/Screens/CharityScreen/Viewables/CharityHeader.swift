@@ -29,7 +29,7 @@ extension CharityHeader: Viewable {
         )
         stackView.isLayoutMarginsRelativeArrangement = true
 
-        let icon = Icon(frame: .zero, icon: Asset.charity, iconWidth: 40)
+        let icon = Icon(frame: .zero, icon: Asset.charityPlain, iconWidth: 40)
         stackView.addArrangedSubview(icon)
 
         let multilineLabel = MultilineLabel(

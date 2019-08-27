@@ -2,11 +2,21 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "symbol.pdf"
+      "filename" : "charity.pdf"
     },
     {
       "idiom" : "universal",
-      "filename" : "Symbol-1.pdf",
+      "filename" : "charity-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "charity-light.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",

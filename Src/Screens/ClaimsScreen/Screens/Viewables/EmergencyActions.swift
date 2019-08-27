@@ -30,7 +30,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .white
+        cardContainer.backgroundColor = .secondaryBackground
         cardContainer.layer.cornerRadius = 8
         cardContainer.layer.shadowOffset = CGSize(width: 0, height: 16)
         cardContainer.layer.shadowRadius = 30
@@ -171,7 +171,7 @@ extension EmergencyActions: Viewable {
         ]
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .offWhite
+        tableKit.view.backgroundColor = .primaryBackground
 
         return (tableKit.view, bag)
     }
