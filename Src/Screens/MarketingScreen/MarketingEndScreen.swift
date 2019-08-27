@@ -24,9 +24,12 @@ extension MarketingEnd: Presentable {
 
         let bag = DisposeBag()
 
-        let blurEffect = UIBlurEffect(style: .extraLight)
-        let effectView = UIVisualEffectView(effect: blurEffect)
+        let effectView = UIVisualEffectView()
         effectView.alpha = 0
+        
+        bag += effectView.contentView.traitCollectionSignal.atOnce().onValue { trait in
+            effectView.effect = UIBlurEffect(style: trait.userInterfaceStyle == .dark ? .dark : .extraLight)
+        }
 
         bag += effectView.contentView.didMoveToWindowSignal.delay(by: 0.15).animated(
             style: AnimationStyle.easeOut(duration: 0.25)
