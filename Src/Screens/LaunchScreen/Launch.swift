@@ -32,6 +32,8 @@ extension Launch: Presentable {
         
         let animationView = LOTAnimationView(name: animationName)
         animationView.contentMode = .scaleAspectFit
+        animationView.animationProgress = 1
+        animationView.pause()
 
         containerView.addSubview(animationView)
 
