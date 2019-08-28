@@ -36,7 +36,10 @@ struct Blob: Viewable {
         let shapeLayer = CAShapeLayer()
         view.layer.addSublayer(shapeLayer)
 
-        bag += containerView.didLayoutSignal.map { view.layer.frame.width }.distinct().onValue { width in
+        bag += merge(
+            containerView.didLayoutSignal,
+            containerView.traitCollectionSignal.toVoid().plain()
+        ).map { view.layer.frame.width }.distinct().onValue { width in
             shapeLayer.fillColor = self.color.cgColor
             
             containerView.snp.remakeConstraints { make in
