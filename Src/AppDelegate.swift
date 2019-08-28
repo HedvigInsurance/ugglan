@@ -202,23 +202,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let launch = Launch(
             hasLoadedSignal: hasLoadedCallbacker.signal()
         )
-
-        let launchPresentation = Presentation(
-            launch,
-            style: .modally(
-                presentationStyle: .overCurrentContext,
-                transitionStyle: .none,
-                capturesStatusBarAppearance: true
-            ),
-            options: [.unanimated, .prefersNavigationBarHidden(true)]
-        )
-
-        window.makeKeyAndVisible()
-        
-        let launchViewController = UIViewController()
+                
+        let (launchViewController, launchFuture) = launch.materialize()
         launchWindow.rootViewController = launchViewController
-        
-        bag += launchViewController.present(launchPresentation)
+        window.makeKeyAndVisible()
         launchWindow.makeKeyAndVisible()
 
         let apolloEnvironment = ApolloEnvironmentConfig(
@@ -235,12 +222,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()
         ).atValue({ _ in
-            hasLoadedCallbacker.callAll()
             TranslationsRepo.fetch()
             self.bag += ApplicationState.presentRootViewController(self.window)
-        }).delay(by: 2).onValue { _, _ in
-            self.window.makeKeyAndVisible()
+        }).delay(by: 0.1).onValue { _ in
+            hasLoadedCallbacker.callAll()
         }
+        
+        bag += launchFuture.onValue({ _ in
+            self.window.makeKeyAndVisible()
+        })
 
         return true
     }
