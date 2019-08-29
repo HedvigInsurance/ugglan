@@ -39,8 +39,10 @@ struct Blob: Viewable {
         bag += merge(
             containerView.didLayoutSignal,
             containerView.traitCollectionSignal.toVoid().plain()
-        ).map { view.layer.frame.width }.distinct().onValue { width in
-            shapeLayer.fillColor = self.color.cgColor
+        ).map { (view.layer.frame.width, self.color.cgColor) }.distinct({ (a, b) -> Bool in
+            a.0 != b.0 && a.1 != b.1
+        }).onValue { width, color in
+            shapeLayer.fillColor = color
             
             containerView.snp.remakeConstraints { make in
                 make.height.equalTo(self.respectsHeight ? 44 : 0)

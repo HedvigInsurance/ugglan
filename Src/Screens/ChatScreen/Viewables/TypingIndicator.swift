@@ -17,7 +17,7 @@ extension TypingIndicator: Viewable {
         let bag = DisposeBag()
 
         let bubble = UIView()
-        bubble.backgroundColor = .white
+        bubble.backgroundColor = .secondaryBackground
 
         let typingView = UIStackView()
         typingView.spacing = 5
@@ -48,12 +48,7 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(thirdDot)
 
         bag += bubble.didLayoutSignal.onValue({ _ in
-            bubble.applyRadiusMaskFor(
-                topLeft: 5,
-                bottomLeft: 5,
-                bottomRight: 5,
-                topRight: 5
-            )
+            bubble.layer.cornerRadius = 20
         })
 
         bag += Signal(every: 2, delay: 0).animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { _ in
