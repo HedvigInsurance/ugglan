@@ -55,7 +55,7 @@ extension BulletPointTable: Viewable {
         }
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .offWhite
+        tableKit.view.backgroundColor = .primaryBackground
 
         return (tableKit.view, bag)
     }

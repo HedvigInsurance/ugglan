@@ -64,11 +64,18 @@ extension TextView: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = UIColor.darkGray.lighter(amount: 0.3)
         view.isUserInteractionEnabled = true
+        
+        bag += view.traitCollectionSignal.atOnce().onValue({ trait in
+            if trait.userInterfaceStyle == .dark {
+                view.backgroundColor = UIColor.secondaryBackground
+            } else {
+                view.backgroundColor = UIColor.darkGray.lighter(amount: 0.3)
+            }
+        })
 
         view.layer.borderWidth = 1 / UIScreen.main.scale
-        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.borderColor = UIColor.primaryBorder.cgColor
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = min(view.frame.height / 2, 20)
         }
@@ -85,6 +92,7 @@ extension TextView: Viewable {
         }
 
         let textView = UITextView()
+        textView.tintColor = .primaryTintColor
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
         textView.font = HedvigFonts.circularStdBook?.withSize(14)

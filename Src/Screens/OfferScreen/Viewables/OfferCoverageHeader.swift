@@ -19,7 +19,7 @@ extension OfferCoverageHeader: Viewable {
 
         let bag = DisposeBag()
 
-        bag += stackView.addArranged(Blob(color: .offWhite, position: .top)) { view in
+        bag += stackView.addArranged(Blob(color: .secondaryBackground, position: .top)) { view in
             view.layer.shadowColor = UIColor.black.cgColor
             view.layer.shadowOpacity = 0.1
             view.layer.shadowOffset = CGSize(width: 0, height: 0)
@@ -28,7 +28,7 @@ extension OfferCoverageHeader: Viewable {
 
         let labelContainer = UIView()
         stackView.addArrangedSubview(labelContainer)
-        labelContainer.backgroundColor = .offWhite
+        labelContainer.backgroundColor = .secondaryBackground
 
         let labelStackView = UIStackView()
         labelStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 10)
@@ -41,7 +41,7 @@ extension OfferCoverageHeader: Viewable {
 
         bag += labelStackView.addArranged(MultilineLabel(
             value: String(key: .OFFER_SCROLL_HEADER),
-            style: TextStyle.standaloneLargeTitle.colored(.offBlack).centerAligned
+            style: TextStyle.standaloneLargeTitle.centerAligned
         ))
 
         return (stackView, bag)

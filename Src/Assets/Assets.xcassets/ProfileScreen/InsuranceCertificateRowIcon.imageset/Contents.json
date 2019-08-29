@@ -3,6 +3,16 @@
     {
       "idiom" : "universal",
       "filename" : "certificate.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "insurance-certificate-light.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

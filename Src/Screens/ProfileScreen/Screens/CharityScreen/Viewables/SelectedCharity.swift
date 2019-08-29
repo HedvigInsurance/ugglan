@@ -60,7 +60,7 @@ extension SelectedCharity: Viewable {
             }
 
             let infoContainer = UIView()
-            infoContainer.backgroundColor = .white
+            infoContainer.backgroundColor = .secondaryBackground
             infoContainer.layer.cornerRadius = 8
             infoContainer.layer.shadowOpacity = 0.2
             infoContainer.layer.shadowOffset = CGSize(width: 0, height: 10)

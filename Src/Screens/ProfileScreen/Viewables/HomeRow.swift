@@ -23,7 +23,7 @@ extension HomeRow: Viewable {
         let row = IconRow(
             title: String(key: .PROFILE_MY_HOME_ROW_TITLE),
             subtitle: "",
-            iconAsset: Asset.home,
+            iconAsset: Asset.homeRowIcon,
             options: [.withArrow]
         )
 

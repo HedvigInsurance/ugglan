@@ -21,7 +21,7 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
     init(
         presentable: P,
         presentationOptions: PresentationOptions = .defaults,
-        backgroundColor: UIColor = .white,
+        backgroundColor: UIColor = .secondaryBackground,
         adjustsToKeyboard: Bool = true
     ) {
         self.presentable = presentable
@@ -93,7 +93,7 @@ extension DraggableOverlay: Presentable {
         }
 
         let overshoot = UIView()
-        overshoot.backgroundColor = .white
+        overshoot.backgroundColor = backgroundColor
 
         overlay.addSubview(overshoot)
 
@@ -268,7 +268,7 @@ extension DraggableOverlay: Presentable {
 
         bag += view.install(panGestureRecognizer)
 
-        overlayContainer.backgroundColor = .white
+        overlayContainer.backgroundColor = backgroundColor
         overlayContainer.clipsToBounds = true
 
         overlay.addSubview(overlayContainer)
@@ -293,7 +293,13 @@ extension DraggableOverlay: Presentable {
         }
 
         let handle = UIView()
-        handle.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            handle.backgroundColor = UIColor { trait in
+                trait.userInterfaceStyle == .dark ? self.backgroundColor.lighter(amount: 0.15) : self.backgroundColor
+            }
+        } else {
+            handle.backgroundColor = backgroundColor
+        }
         handle.alpha = 0.8
         handle.layer.cornerRadius = 3
 

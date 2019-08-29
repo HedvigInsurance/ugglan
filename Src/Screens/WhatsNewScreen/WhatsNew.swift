@@ -40,7 +40,7 @@ extension WhatsNew: Presentable {
         viewController.displayableTitle = String(key: .FEATURE_PROMO_TITLE)
 
         let view = UIView()
-        view.backgroundColor = .offWhite
+        view.backgroundColor = .primaryBackground
 
         let containerView = UIStackView()
         containerView.axis = .vertical

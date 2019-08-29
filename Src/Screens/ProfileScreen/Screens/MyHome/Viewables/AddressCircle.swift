@@ -36,7 +36,9 @@ extension AddressCircle: Viewable {
 
         let circleLabel = CircleLabel(
             labelText: circleText,
-            backgroundColor: .darkPink
+            backgroundColor: UIColor(dynamic: { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? .secondaryBackground : .darkPink
+            })
         )
 
         bag += containerView.add(circleLabel)

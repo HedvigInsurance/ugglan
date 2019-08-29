@@ -23,7 +23,7 @@ extension MyCharityRow: Viewable {
         let row = IconRow(
             title: String(key: .PROFILE_MY_CHARITY_ROW_TITLE),
             subtitle: "",
-            iconAsset: Asset.charity,
+            iconAsset: Asset.charityRowIcon,
             options: [.withArrow]
         )
 

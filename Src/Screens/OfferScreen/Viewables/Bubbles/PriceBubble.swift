@@ -35,7 +35,7 @@ extension PriceBubble: Viewable {
 
         let bubbleView = UIView()
         containerView.addArrangedSubview(bubbleView)
-        bubbleView.backgroundColor = .white
+        bubbleView.backgroundColor = .secondaryBackground
 
         let stackView = CenterAllStackView()
         stackView.axis = .vertical
@@ -99,7 +99,7 @@ extension PriceBubble: Viewable {
             if value > 0 {
                 priceLabel.textColor = .pink
             } else {
-                priceLabel.textColor = .black
+                priceLabel.textColor = TextStyle.largePriceBubbleTitle.color
             }
         }
 

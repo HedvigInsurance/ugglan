@@ -14,13 +14,13 @@ import Foundation
 import UIKit
 
 enum ButtonType {
-    case standard(backgroundColor: HedvigColor, textColor: HedvigColor)
-    case standardIcon(backgroundColor: HedvigColor, textColor: HedvigColor, icon: ButtonIcon)
-    case standardSmall(backgroundColor: HedvigColor, textColor: HedvigColor)
-    case tinyIcon(backgroundColor: HedvigColor, textColor: HedvigColor, icon: ButtonIcon)
-    case outline(borderColor: HedvigColor, textColor: HedvigColor)
-    case pillTransparent(backgroundColor: HedvigColor, textColor: HedvigColor)
-    case iconTransparent(textColor: HedvigColor, icon: ButtonIcon)
+    case standard(backgroundColor: UIColor, textColor: UIColor)
+    case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
+    case standardSmall(backgroundColor: UIColor, textColor: UIColor)
+    case tinyIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
+    case outline(borderColor: UIColor, textColor: UIColor)
+    case pillTransparent(backgroundColor: UIColor, textColor: UIColor)
+    case iconTransparent(textColor: UIColor, icon: ButtonIcon)
 
     enum ButtonIcon {
         case left(image: UIImage, width: CGFloat)
@@ -71,7 +71,7 @@ enum ButtonType {
         }
     }
 
-    var backgroundColor: HedvigColor {
+    var backgroundColor: UIColor {
         switch self {
         case let .standard((backgroundColor, _)):
             return backgroundColor
@@ -90,7 +90,7 @@ enum ButtonType {
         }
     }
 
-    var textColor: HedvigColor {
+    var textColor: UIColor {
         switch self {
         case let .standard((_, textColor)):
             return textColor
@@ -169,7 +169,7 @@ enum ButtonType {
         }
     }
 
-    var iconColor: HedvigColor? {
+    var iconColor: UIColor? {
         switch self {
         case .iconTransparent:
             return textColor
@@ -207,7 +207,7 @@ enum ButtonType {
     var borderColor: UIColor {
         switch self {
         case let .outline((borderColor, _)):
-            return UIColor.from(apollo: borderColor)
+            return borderColor
         default:
             return UIColor.clear
         }
@@ -241,10 +241,7 @@ extension Button: Viewable {
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
-                let backgroundColor = UIColor.from(
-                    apollo: buttonType.backgroundColor
-                ).withAlphaComponent(buttonType.backgroundOpacity)
-                let textColor = UIColor.from(apollo: buttonType.textColor)
+                let backgroundColor = buttonType.backgroundColor.withAlphaComponent(buttonType.backgroundOpacity)
 
                 style.states = [
                     .normal: ButtonStateStyle(
@@ -258,7 +255,7 @@ extension Button: Viewable {
                         ),
                         text: TextStyle(
                             font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
-                            color: textColor
+                            color: buttonType.textColor
                         )
                     ),
                 ]
@@ -269,10 +266,8 @@ extension Button: Viewable {
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
-                let backgroundColor = UIColor.from(
-                    apollo: buttonType.backgroundColor
-                ).darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
-                let textColor = UIColor.from(apollo: buttonType.textColor)
+                let backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                let textColor = buttonType.textColor
 
                 style.states = [
                     .normal: ButtonStateStyle(
@@ -316,7 +311,7 @@ extension Button: Viewable {
                 iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
 
                 if let iconColor = type.iconColor {
-                    iconImageView.tintColor = UIColor.from(apollo: iconColor)
+                    iconImageView.tintColor = iconColor
                 }
 
                 iconImageView.contentMode = .scaleAspectFit

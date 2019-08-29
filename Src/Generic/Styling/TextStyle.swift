@@ -18,16 +18,16 @@ extension TextStyle {
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
-        style.color = .black
+        style.color = .primaryText
         style.lineSpacing = 4
     }
 
     static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.color = .offBlack
+        style.color = .secondaryText
     }
 
     static let toastBody = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.color = .offBlack
+        style.color = .secondaryText
         style.font = HedvigFonts.circularStdBook!.withSize(17)
     }
 
@@ -37,7 +37,7 @@ extension TextStyle {
 
     static let bodyBold = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
-        style.color = .black
+        style.color = .primaryText
         style.lineSpacing = 4
     }
 
@@ -62,29 +62,29 @@ extension TextStyle {
 
     static let standaloneLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
-        style.color = .black
+        style.color = .primaryText
     }
 
     static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(17)
-        style.color = .black
+        style.color = .primaryText
     }
 
     static let offerBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
-        style.color = .white
+        style.color = .primaryText
         style.alignment = .center
     }
 
     static let offerBubbleSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
-        style.color = .white
+        style.color = .primaryText
         style.alignment = .center
     }
 
     static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
-        style.color = .offBlack
+        style.color = .secondaryText
     }
 
     static let headingOne = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -98,12 +98,12 @@ extension TextStyle {
 
     static let smallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
-        style.color = .offBlack
+        style.color = .secondaryText
     }
 
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
-        style.color = .black
+        style.color = .primaryText
     }
 
     static let priceBubbleGrossTitle = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -115,7 +115,7 @@ extension TextStyle {
 
     static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(60)
-        style.color = .black
+        style.color = .primaryText
         style.alignment = .center
     }
 
@@ -131,15 +131,15 @@ extension TextStyle {
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
-        style.color = .black
+        style.color = .primaryText
     }
 
     static let rowTitleBold = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(17)
     }
 
-    static let rowTitleWhite = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
-        style.color = .white
+    static let rowTitleSecondary = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
+        style.color = .secondaryText
     }
 
     static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -154,16 +154,16 @@ extension TextStyle {
 
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
-        style.color = .offBlack
+        style.color = .secondaryText
     }
 
-    static let rowSubtitleWhite = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
-        style.color = .white
+    static let rowSubtitlePrimary = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
+        style.color = .primaryText
     }
 
     static let rowValueEditable = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
-        style.color = .purple
+        style.color = .primaryTintColor
     }
 
     static let rowValueEditableRight = TextStyle.rowValueEditable.restyled { (style: inout TextStyle) in
@@ -177,22 +177,22 @@ extension TextStyle {
 
     static let normalButton = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
-        style.color = .purple
+        style.color = .primaryTintColor
     }
 
     static let navigationBarButton = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
-        style.color = .purple
+        style.color = .primaryTintColor
     }
 
     static let navigationBarButtonPrimary = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(17)
-        style.color = .purple
+        style.color = .primaryTintColor
     }
 
     static let draggableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
-        style.color = .black
+        style.color = .primaryText
     }
 
     static let countdownNumber = TextStyle.default.restyled { (style: inout TextStyle) in
@@ -202,6 +202,6 @@ extension TextStyle {
 
     static let countdownLetter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(12)
-        style.color = .black
+        style.color = .primaryText
     }
 }
