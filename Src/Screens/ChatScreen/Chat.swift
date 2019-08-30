@@ -213,7 +213,7 @@ extension Message: Reusable {
         containerView.addArrangedSubview(spacingContainer)
 
         let bubble = UIView()
-        bubble.backgroundColor = .purple
+        bubble.backgroundColor = .primaryTintColor
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
@@ -243,7 +243,7 @@ extension Message: Reusable {
 
             containerView.alignment = message.fromMyself ? .trailing : .leading
 
-            let label = MultilineLabel(value: message.body, style: TextStyle.body.colored(message.fromMyself ? .white : .offBlack))
+            let label = MultilineLabel(value: message.body, style: TextStyle.body.colored(message.fromMyself ? .white : .primaryText))
             bag += contentContainer.addArranged(label)
 
             bag += bubble.copySignal.onValue { _ in
@@ -259,7 +259,7 @@ extension Message: Reusable {
                 )
             })
 
-            bubble.backgroundColor = message.fromMyself ? .purple : .white
+            bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
 
             return bag
         })

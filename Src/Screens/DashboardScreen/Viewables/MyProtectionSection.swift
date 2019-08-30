@@ -58,8 +58,6 @@ extension MyProtectionSection: Viewable {
                 view.removeFromSuperview()
             }
 
-            print(perilCategories)
-
             for (index, perilCategory) in perilCategories.enumerated() {
                 let protectionSection = PerilExpandableRow(index: index, presentingViewController: self.presentingViewController)
                 protectionSection.perilsDataSignal.value = perilCategory?.fragments.perilCategoryFragment

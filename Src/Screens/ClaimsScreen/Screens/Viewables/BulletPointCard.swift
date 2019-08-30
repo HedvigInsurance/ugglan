@@ -22,7 +22,7 @@ extension BulletPointCard: Reusable {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .white
+        cardContainer.backgroundColor = .secondaryBackground
         cardContainer.layer.cornerRadius = 8
         cardContainer.layer.shadowOffset = CGSize(width: 0, height: 16)
         cardContainer.layer.shadowRadius = 30

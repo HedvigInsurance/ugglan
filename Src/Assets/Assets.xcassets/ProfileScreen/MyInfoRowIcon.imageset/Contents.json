@@ -3,6 +3,16 @@
     {
       "idiom" : "universal",
       "filename" : "myinfo.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "myinfo-light.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

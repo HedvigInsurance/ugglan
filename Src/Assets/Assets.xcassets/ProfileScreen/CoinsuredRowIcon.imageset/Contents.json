@@ -3,6 +3,16 @@
     {
       "idiom" : "universal",
       "filename" : "personal_info.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "coinsured-light.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

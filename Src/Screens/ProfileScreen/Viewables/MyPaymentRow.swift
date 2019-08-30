@@ -23,7 +23,7 @@ extension MyPaymentRow: Viewable {
         let row = IconRow(
             title: String(key: .PROFILE_PAYMENT_ROW_HEADER),
             subtitle: "",
-            iconAsset: Asset.payment,
+            iconAsset: Asset.paymentRowIcon,
             options: [.withArrow]
         )
 

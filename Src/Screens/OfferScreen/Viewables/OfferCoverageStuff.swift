@@ -30,12 +30,12 @@ extension OfferCoverageStuff: Viewable {
 
         let outerView = UIStackView()
         outerView.axis = .vertical
-        bag += outerView.addArranged(Blob(color: .offWhite, position: .bottom)) { blobView in
-            blobView.backgroundColor = .white
+        bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .bottom)) { blobView in
+            blobView.backgroundColor = .primaryBackground
         }
 
         let containerView = UIView()
-        containerView.backgroundColor = .white
+        containerView.backgroundColor = .primaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -73,8 +73,8 @@ extension OfferCoverageStuff: Viewable {
         bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.arrangedPerilCategories.stuff?.fragments.perilCategoryFragment }.bindTo(perilCollection.perilsDataSignal)
         bag += stackView.addArranged(perilCollection)
 
-        bag += outerView.addArranged(Blob(color: .white, position: .bottom)) { blobView in
-            blobView.backgroundColor = .offWhite
+        bag += outerView.addArranged(Blob(color: .primaryBackground, position: .bottom)) { blobView in
+            blobView.backgroundColor = .secondaryBackground
         }
 
         return (outerView, bag)

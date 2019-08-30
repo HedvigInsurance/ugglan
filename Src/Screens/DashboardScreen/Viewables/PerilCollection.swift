@@ -82,7 +82,7 @@ extension PerilCollection: Viewable {
             }
         }
 
-        let divider = Divider(backgroundColor: .offWhite)
+        let divider = Divider(backgroundColor: .primaryBorder)
         bag += contentStackView.addArranged(divider)
 
         let footerLabel = MultilineLabel(styledText: StyledText(text: String(key: .DASHBOARD_PERIL_FOOTER), style: .perilTitle))

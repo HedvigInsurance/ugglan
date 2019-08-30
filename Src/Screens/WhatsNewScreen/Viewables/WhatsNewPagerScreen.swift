@@ -31,7 +31,7 @@ extension WhatsNewPagerScreen: Presentable {
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .purple)
+        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .primaryTintColor)
         let loadingIndicatorBag = DisposeBag()
         loadingIndicatorBag += containerView.addArranged(loadingIndicator)
         bag += loadingIndicatorBag

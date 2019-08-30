@@ -18,7 +18,7 @@ extension OfferReadyToSign: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIView()
-        view.backgroundColor = .darkPurple
+        view.backgroundColor = Offer.primaryAccentColor
 
         var bottomPadding: CGFloat {
             return self.containerScrollView.safeAreaInsets.bottom == 0 ? 100 : 80

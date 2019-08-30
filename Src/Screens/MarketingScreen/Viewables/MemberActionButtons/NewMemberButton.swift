@@ -39,7 +39,7 @@ extension NewMemberButton: Viewable {
         let button = Button(
             title: String(key: .MARKETING_GET_HEDVIG),
             type: .standard(
-                backgroundColor: style == .endScreen ? .purple : .white,
+                backgroundColor: style == .endScreen ? .primaryTintColor : .white,
                 textColor: style == .endScreen ? .white : .black
             )
         )

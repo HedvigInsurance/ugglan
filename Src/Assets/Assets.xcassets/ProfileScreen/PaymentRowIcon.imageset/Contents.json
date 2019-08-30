@@ -3,6 +3,16 @@
     {
       "idiom" : "universal",
       "filename" : "payment.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "payment-light.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

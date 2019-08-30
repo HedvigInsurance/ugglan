@@ -42,7 +42,7 @@ extension ExpandableRow: Viewable {
         let containerView = UIView()
 
         if !transparent {
-            containerView.backgroundColor = .white
+            containerView.backgroundColor = .secondaryBackground
             containerView.layer.cornerRadius = 15
             containerView.layer.shadowOpacity = 0.15
             containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
@@ -56,7 +56,6 @@ extension ExpandableRow: Viewable {
         clippingView.clipsToBounds = true
 
         let expandableStackView = UIStackView()
-        expandableStackView.backgroundColor = .white
         expandableStackView.axis = .vertical
 
         let contentWrapperView = UIControl()
@@ -69,7 +68,7 @@ extension ExpandableRow: Viewable {
 
         expandableStackView.addArrangedSubview(contentWrapperView)
 
-        let divider = Divider(backgroundColor: .offWhite)
+        let divider = Divider(backgroundColor: .primaryBorder)
         bag += expandableStackView.addArranged(divider) { dividerView in
             dividerView.alpha = isOpenSignal.value ? 1 : 0
 

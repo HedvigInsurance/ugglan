@@ -30,7 +30,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .white
+        cardContainer.backgroundColor = .secondaryBackground
         cardContainer.layer.cornerRadius = 8
         cardContainer.layer.shadowOffset = CGSize(width: 0, height: 16)
         cardContainer.layer.shadowRadius = 30
@@ -66,7 +66,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             let descriptionLabel = MultilineLabel(value: action.description, style: .blockRowDescription)
             bag += contentView.addArranged(descriptionLabel)
 
-            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .purple, textColor: .white))
+            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical
@@ -171,7 +171,7 @@ extension EmergencyActions: Viewable {
         ]
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .offWhite
+        tableKit.view.backgroundColor = .primaryBackground
 
         return (tableKit.view, bag)
     }

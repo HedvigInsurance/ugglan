@@ -26,6 +26,12 @@ class Icon: UIView {
             }
         }
     }
+    
+    override var tintColor: UIColor! {
+        didSet(newValue) {
+            image.tintColor = newValue
+        }
+    }
 
     init(frame: CGRect = .zero, icon: ImageAsset, iconWidth: CGFloat) {
         self.icon = icon
@@ -45,7 +51,7 @@ class Icon: UIView {
     func setup() {
         image.isUserInteractionEnabled = false
         isUserInteractionEnabled = false
-
+        
         image.image = icon.image
         addSubview(image)
 

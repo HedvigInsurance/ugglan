@@ -37,7 +37,9 @@ extension NameCircle: Viewable {
 
         let nameCircle = CircleLabel(
             labelText: nameCircleText,
-            backgroundColor: .purple
+            backgroundColor: UIColor(dynamic: { trait -> UIColor in
+                 trait.userInterfaceStyle == .dark ? .secondaryBackground : .purple
+            })
         )
 
         bag += containerView.add(nameCircle)

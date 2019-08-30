@@ -30,7 +30,7 @@ extension OfferCoverageHome: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .offWhite
+        containerView.backgroundColor = .secondaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -56,8 +56,14 @@ extension OfferCoverageHome: Viewable {
 
         stackView.addArrangedSubview(image)
 
-        let titleLabel = MultilineLabel(value: "LM Ericssons Väg 10", style: .rowTitleBold)
+        let titleLabel = MultilineLabel(value: "", style: .rowTitleBold)
         bag += stackView.addArranged(titleLabel)
+                
+        bag += client.fetch(query: OfferQuery())
+            .valueSignal
+            .compactMap { $0.data?.insurance.address }
+            .map { StyledText(text: $0, style: .rowTitleBold) }
+            .bindTo(titleLabel, \.styledTextSignal.value)
 
         let descriptionLabel = MultilineLabel(value: String(key: .OFFER_APARTMENT_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.darkGray))
         bag += stackView.addArranged(descriptionLabel)

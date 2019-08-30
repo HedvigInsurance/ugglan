@@ -109,22 +109,34 @@ extension CommonClaimCard: Viewable {
 
         func backgroundColorFromData() -> UIColor {
             let lightenedAmount: CGFloat = 0.3
+            
+            func getColor(color: HedvigColor) -> UIColor {
+                if #available(iOS 13, *) {
+                    return UIColor { trait in
+                        trait.userInterfaceStyle == .dark ?
+                            UIColor.from(apollo: color).darkened(amount: lightenedAmount) :
+                            UIColor.from(apollo: color).lighter(amount: lightenedAmount)
+                    }
+                }
+                
+                return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
+            }
 
             if let color = data.layout.asTitleAndBulletPoints?.color {
-                return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
+                return getColor(color: color)
             }
 
             if let color = data.layout.asEmergency?.color {
-                return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
+                return getColor(color: color)
             }
 
-            return UIColor.purple
+            return UIColor.primaryTintColor
         }
 
         let contentView = UIControl()
         bag += controlIsEnabledSignal.atOnce().bindTo(contentView, \.isEnabled)
         bag += backgroundStateSignal.atOnce().map {
-            $0 == .normal ? UIColor.white : backgroundColorFromData()
+            $0 == .normal ? UIColor.secondaryBackground : backgroundColorFromData()
         }.bindTo(contentView, \.backgroundColor)
         bag += cornerRadiusSignal.atOnce().bindTo(contentView, \.layer.cornerRadius)
 
@@ -314,7 +326,7 @@ extension CommonClaimCard: Viewable {
         if includeButton {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-                type: .standard(backgroundColor: .purple, textColor: .white)
+                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
             )
 
             bag += claimButton.onTapSignal.onValue {

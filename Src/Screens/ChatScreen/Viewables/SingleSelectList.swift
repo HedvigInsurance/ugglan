@@ -51,7 +51,7 @@ extension SingleSelectList: Viewable {
 
             bag += options.enumerated().map({ index, option in
                 let innerBag = DisposeBag()
-                let button = Button(title: option.text, type: .outline(borderColor: .purple, textColor: .purple))
+                let button = Button(title: option.text, type: .outline(borderColor: .primaryTintColor, textColor: .primaryTintColor))
 
                 innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
                     func removeViews() {

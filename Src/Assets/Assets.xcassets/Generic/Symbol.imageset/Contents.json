@@ -3,6 +3,16 @@
     {
       "idiom" : "universal",
       "filename" : "symbol.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "Symbol-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

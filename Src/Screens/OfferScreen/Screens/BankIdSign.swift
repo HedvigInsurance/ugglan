@@ -64,17 +64,20 @@ extension BankIdSign: Presentable {
         iconContainerView.snp.makeConstraints { make in
             make.height.width.equalTo(120)
         }
+        
+        let imageView = UIImageView()
+        imageView.image = Asset.bankIdLogo.image
+        imageView.tintColor = .primaryText
+        
+        iconContainerView.addSubview(imageView)
 
-        let iconView = Icon(icon: Asset.bankIdLogo, iconWidth: 120)
-        iconContainerView.addSubview(iconView)
-
-        iconView.snp.makeConstraints { make in
+        imageView.snp.makeConstraints { make in
             make.height.width.equalToSuperview()
         }
 
         headerContainer.addArrangedSubview(iconContainerView)
-
-        bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, color: .purple, size: 50).wrappedIn(UIStackView()))
+        
+        bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
         let statusLabel = MultilineLabel(value: String(key: .SIGN_START_BANKID), style: .rowTitle)
         bag += containerView.addArranged(statusLabel)

@@ -13,25 +13,42 @@ import UIKit
 
 extension DefaultStyling {
     static func installCustom() {
-        ListTableView.appearance().backgroundColor = .offWhite
+        ListTableView.appearance().backgroundColor = .primaryBackground
 
         for view in [FormScrollView.self, FormTableView.self] {
             view.appearance(
                 for: UITraitCollection(userInterfaceIdiom: .pad)
-            ).backgroundColor = .offWhite
-            view.appearance().backgroundColor = .offWhite
+            ).backgroundColor = .primaryBackground
+            view.appearance().backgroundColor = .primaryBackground
         }
 
-        UIRefreshControl.appearance().tintColor = .purple
+        UIRefreshControl.appearance().tintColor = UIColor(dynamic: { trait in
+            trait.userInterfaceStyle == .dark ? .white : .primaryTintColor
+        })
 
-        UINavigationBar.appearance().tintColor = .purple
+        UINavigationBar.appearance().backgroundColor = .primaryBackground
+        UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.black,
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
+            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
+        ]
+        
+        if #available(iOS 13.0, *) {
+            UINavigationBar.appearance().shadowImage = UIColor { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? UIColor.transparent : UIColor.primaryBorder
+            }.as1ptImage()
+        } else {
+            UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+        }
+        
+        UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
-        UITabBar.appearance().unselectedItemTintColor = .offBlack
-        UITabBar.appearance().tintColor = .purple
+        UITabBar.appearance().unselectedItemTintColor = .disabledTintColor
+        UITabBar.appearance().tintColor = .primaryTintColor
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
@@ -46,7 +63,7 @@ extension DefaultStyling {
             for: .selected
         )
 
-        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .purple
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .primaryTintColor
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
@@ -62,14 +79,11 @@ extension DefaultStyling {
             for: .highlighted
         )
 
-        UIBarButtonItem.appearance().tintColor = .purple
+        UIBarButtonItem.appearance().tintColor = .primaryTintColor
 
-        UINavigationBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
-        UINavigationBar.appearance().barTintColor = UIColor.offWhite
-
-        UITabBar.appearance().barTintColor = UIColor.offWhite
-        UITabBar.appearance().backgroundImage = UIColor.offWhite.as1ptImage()
-        UITabBar.appearance().shadowImage = UIColor.grayBorder.as1ptImage()
+        UITabBar.appearance().barTintColor = UIColor.primaryBackground
+        UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
+        UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
 
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
@@ -77,11 +91,6 @@ extension DefaultStyling {
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ], for: .selected)
-
-        UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.black,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
-        ]
 
         current = .custom
     }

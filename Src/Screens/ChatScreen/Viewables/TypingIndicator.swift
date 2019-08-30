@@ -43,7 +43,7 @@ extension TypingIndicator: Viewable {
 
         let bubble = UIView()
         bubble.backgroundColor = .secondaryBackground
-        
+
         let typingView = UIStackView()
         typingView.spacing = 5
         typingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)

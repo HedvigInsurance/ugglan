@@ -65,7 +65,7 @@ extension CharityOption: Reusable {
             )
             contentView.isLayoutMarginsRelativeArrangement = true
 
-            containerView.backgroundColor = .white
+            containerView.backgroundColor = .secondaryBackground
 
             let titleLabel = UILabel(
                 value: charityOption.name,
@@ -88,7 +88,7 @@ extension CharityOption: Reusable {
             let button = Button(
                 title: "Välj",
                 type: .standard(
-                    backgroundColor: .purple,
+                    backgroundColor: .primaryTintColor,
                     textColor: .white
                 )
             )

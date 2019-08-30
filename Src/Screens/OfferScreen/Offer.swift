@@ -20,6 +20,14 @@ struct Offer {
 }
 
 extension Offer {
+    static var primaryAccentColor: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .primaryBackground : .darkPurple
+        })
+    }
+}
+
+extension Offer {
     func addNavigationBar(
         _ view: UIView,
         scrollView: UIScrollView,
@@ -28,7 +36,7 @@ extension Offer {
         let bag = DisposeBag()
 
         let navigationBar = UINavigationBar()
-        navigationBar.barTintColor = .darkPurple
+        navigationBar.barTintColor = Offer.primaryAccentColor
         navigationBar.isTranslucent = false
         navigationBar.alpha = 0
         navigationBar.transform = CGAffineTransform(translationX: 0, y: 5)
@@ -187,7 +195,7 @@ extension Offer: Presentable {
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
 
         let view = UIView()
-        view.backgroundColor = .darkPurple
+        view.backgroundColor = Offer.primaryAccentColor
         viewController.view = view
 
         let (navigationBarBag, navigationBar) = addNavigationBar(
@@ -197,7 +205,7 @@ extension Offer: Presentable {
         )
         bag += navigationBarBag
 
-        scrollView.backgroundColor = .darkPurple
+        scrollView.backgroundColor = Offer.primaryAccentColor
         scrollView.embedView(stackView, scrollAxis: .vertical)
 
         view.addSubview(scrollView)

@@ -34,10 +34,16 @@ struct Blob: Viewable {
         containerView.addSubview(view)
 
         let shapeLayer = CAShapeLayer()
-        shapeLayer.fillColor = color.cgColor
         view.layer.addSublayer(shapeLayer)
 
-        bag += containerView.didLayoutSignal.map { view.layer.frame.width }.distinct().onValue { width in
+        bag += merge(
+            containerView.didLayoutSignal,
+            containerView.traitCollectionSignal.toVoid().plain()
+        ).map { (view.layer.frame.width, self.color.cgColor) }.distinct({ (a, b) -> Bool in
+            a.0 != b.0 && a.1 != b.1
+        }).onValue { width, color in
+            shapeLayer.fillColor = color
+            
             containerView.snp.remakeConstraints { make in
                 make.height.equalTo(self.respectsHeight ? 44 : 0)
                 make.width.equalToSuperview()

@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "charityPlain.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "charityPlain-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "charity-light.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

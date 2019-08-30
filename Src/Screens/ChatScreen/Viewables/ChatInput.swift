@@ -35,18 +35,21 @@ extension ChatInput: Viewable {
 
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
-        backgroundView.backgroundColor = UIColor.offWhite.withAlphaComponent(0.8)
+        backgroundView.backgroundColor = UIColor.primaryBackground.withAlphaComponent(0.8)
 
-        let effect = UIBlurEffect(style: .light)
-        let effectView = UIVisualEffectView(effect: effect)
+        let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)
+        
+        bag += backgroundView.traitCollectionSignal.atOnce().onValue { trait in
+            effectView.effect = UIBlurEffect(style: trait.userInterfaceStyle == .dark ? .dark : .light)
+        }
 
         effectView.snp.makeConstraints { make in
             make.width.height.leading.trailing.equalToSuperview()
         }
 
         let topBorderView = UIView()
-        topBorderView.backgroundColor = .lightGray
+        topBorderView.backgroundColor = .primaryBorder
         backgroundView.addSubview(topBorderView)
 
         topBorderView.snp.makeConstraints { make in
