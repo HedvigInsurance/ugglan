@@ -45,6 +45,8 @@ struct SingleSelectOption: Equatable {
     }
 }
 
+typealias ChatListContent = Either<Message, TypingIndicator>
+
 struct Message: Equatable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {
         return lhs.globalId == rhs.globalId
@@ -60,32 +62,32 @@ struct Message: Equatable, Hashable {
     let fromMyself: Bool
     let responseType: ResponseType
     private let index: Int
-    private let getList: () -> [Message]
+    private let getList: () -> [ChatListContent]
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption]), text
     }
 
     var next: Message? {
-        let nextIndex = index + 1
+        let nextIndex = index - 1
         let list = getList()
 
         if !list.indices.contains(nextIndex) {
             return nil
         }
 
-        return list[nextIndex]
+        return list[nextIndex].left
     }
 
     var previous: Message? {
-        let previousIndex = index - 1
+        let previousIndex = index + 1
         let list = getList()
 
         if !list.indices.contains(previousIndex) {
             return nil
         }
 
-        return list[previousIndex]
+        return list[previousIndex].left
     }
 
     enum Radius {
@@ -135,7 +137,7 @@ struct Message: Equatable, Hashable {
         responseType = message.responseType
     }
 
-    init(from message: MessageData, index: Int, getList: @escaping () -> [Message]) {
+    init(from message: MessageData, index: Int, getList: @escaping () -> [ChatListContent]) {
         globalId = message.globalId
         id = message.id
 
@@ -365,12 +367,9 @@ extension Chat: Presentable {
 
         let headerPushView = UIView()
         headerPushView.snp.makeConstraints { make in
-            make.height.width.equalTo(200)
+            make.height.width.equalTo(0)
         }
         headerStackView.addArrangedSubview(headerPushView)
-
-        let headerTypingView = UIView()
-        headerStackView.addArrangedSubview(headerTypingView)
 
         let headerSingleInputView = UIView()
         headerStackView.addArrangedSubview(headerSingleInputView)
@@ -390,7 +389,7 @@ extension Chat: Presentable {
             }
         }
 
-        let tableKit = TableKit<EmptySection, Message>(table: Table(), style: style, view: nil, bag: bag, headerForSection: nil, footerForSection: nil)
+        let tableKit = TableKit<EmptySection, ChatListContent>(table: Table(), style: style, view: nil, bag: bag, headerForSection: nil, footerForSection: nil)
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
         tableKit.view.contentInsetAdjustmentBehavior = .never
@@ -443,7 +442,7 @@ extension Chat: Presentable {
                 tableKit.view.tableHeaderView = headerStackView
             })
 
-        let messagesSignal = ReadWriteSignal<[Message]>([])
+        let messagesSignal = ReadWriteSignal<[ChatListContent]>([])
 
         func fetchMessages() {
             bag += client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background))
@@ -461,40 +460,26 @@ extension Chat: Presentable {
 
                         for i in 0 ... amountOfNewRows {
                             if messages.indices.contains(i) {
-                                messagesSignal.value.insert(messages[i], at: i)
+                                messagesSignal.value.insert(.left(messages[i]), at: i)
                             }
                         }
                     }
                 })
         }
 
-        bag += messagesSignal.onValue { messages in
-            let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
-            tableKit.set(Table(rows: messages), animation: tableAnimation, rowIdentifier: { $0.globalId })
-        }
-
-        func typingIndicatorViewing(for timeInterval: TimeInterval) -> Future<Void> {
-            headerTypingView.subviews.forEach { view in
-                view.removeFromSuperview()
-            }
-            let innerBag = DisposeBag()
-            let typingIndicator = TypingIndicator()
-            innerBag += headerTypingView.add(typingIndicator) { typingIndicatorView in
-                typingIndicatorView.snp.makeConstraints { make in
-                    make.top.bottom.leading.equalToSuperview().inset(20)
-                }
-            }
-            headerStackView.layoutIfNeeded()
-            tableKit.view.tableHeaderView = headerStackView
-            return Future { completion in
-                innerBag += Signal(after: timeInterval).onValue { _ in
-                    headerTypingView.subviews.forEach { view in
-                        view.removeFromSuperview()
+        bag += messagesSignal.compactMap { list -> [ChatListContent] in
+            return list.enumerated().compactMap { offset, item -> ChatListContent? in
+                if item.right != nil {
+                    if offset != 0 {
+                        return nil
                     }
-                    completion(.success)
                 }
-                return innerBag
+                
+                return item
             }
+        }.onValue { messages in
+            let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
+            tableKit.set(Table(rows: messages), animation: tableAnimation)
         }
 
         fetchMessages()
@@ -508,25 +493,25 @@ extension Chat: Presentable {
                 let newMessage = Message(from: message, index: 0) { messagesSignal.value }
 
                 if let paragraph = message.body.asMessageBodyParagraph {
-                    paragraph.text != "" ? messagesSignal.value.insert(newMessage, at: 0) : ()
+                    paragraph.text != "" ? messagesSignal.value.insert(.left(newMessage), at: 0) : messagesSignal.value.insert(.right(TypingIndicator()), at: 0)
                 } else {
-                    messagesSignal.value.insert(newMessage, at: 0)
+                    messagesSignal.value.insert(.left(newMessage), at: 0)
                 }
 
                 if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
                     currentMessageSignal.value = newMessage
                 }
-
+                
                 if message.body.asMessageBodyParagraph != nil {
                     typingIndicatorVisibleSignal.value = true
 
-                    bag += typingIndicatorViewing(for: TimeInterval(Double(message.header.pollingInterval) / 1000)).onResult { _ in
+                    bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
                         _ = self.client.fetch(
                             query: ChatMessagesQuery(),
                             cachePolicy: .fetchIgnoringCacheData,
                             queue: DispatchQueue.global(qos: .background)
                         )
-                    }.disposable
+                    }
                 }
             })
 

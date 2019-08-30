@@ -8,17 +8,42 @@
 import Flow
 import Foundation
 import Presentation
+import Form
 import UIKit
 
-struct TypingIndicator {}
+struct TypingIndicator: Hashable {
+    let id = UUID()
+}
+
+extension TypingIndicator: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (TypingIndicator) -> Disposable) {
+        let containerView = UIStackView()
+        containerView.axis = .vertical
+        containerView.alignment = .leading
+        containerView.distribution = .equalCentering
+
+        let spacingContainer = UIStackView()
+        containerView.axis = .vertical
+        containerView.alignment = .leading
+        spacingContainer.insetsLayoutMarginsFromSafeArea = false
+        spacingContainer.isLayoutMarginsRelativeArrangement = true
+        spacingContainer.edgeInsets = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
+        
+        containerView.addArrangedSubview(spacingContainer)
+        
+        return (containerView, { typingIndicator in
+            return spacingContainer.addArranged(typingIndicator)
+        })
+    }
+}
 
 extension TypingIndicator: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let bubble = UIView()
-        bubble.backgroundColor = .white
-
+        bubble.backgroundColor = .secondaryBackground
+        
         let typingView = UIStackView()
         typingView.spacing = 5
         typingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
@@ -48,12 +73,7 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(thirdDot)
 
         bag += bubble.didLayoutSignal.onValue({ _ in
-            bubble.applyRadiusMaskFor(
-                topLeft: 5,
-                bottomLeft: 5,
-                bottomRight: 5,
-                topRight: 5
-            )
+            bubble.layer.cornerRadius = 20
         })
 
         bag += Signal(every: 2, delay: 0).animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { _ in
