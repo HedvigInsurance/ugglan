@@ -6,9 +6,9 @@
 //
 
 import Flow
+import Form
 import Foundation
 import Presentation
-import Form
 import UIKit
 
 struct TypingIndicator: Hashable {
@@ -28,11 +28,11 @@ extension TypingIndicator: Reusable {
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
         spacingContainer.edgeInsets = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
-        
+
         containerView.addArrangedSubview(spacingContainer)
-        
+
         return (containerView, { typingIndicator in
-            return spacingContainer.addArranged(typingIndicator)
+            spacingContainer.addArranged(typingIndicator)
         })
     }
 }

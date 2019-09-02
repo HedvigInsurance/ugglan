@@ -21,7 +21,7 @@ extension OfferReadyToSign: Viewable {
         view.backgroundColor = Offer.primaryAccentColor
 
         var bottomPadding: CGFloat {
-            return self.containerScrollView.safeAreaInsets.bottom == 0 ? 100 : 80
+            return containerScrollView.safeAreaInsets.bottom == 0 ? 100 : 80
         }
 
         let stackView = UIStackView()
@@ -29,7 +29,7 @@ extension OfferReadyToSign: Viewable {
         stackView.spacing = 15
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        
+
         bag += stackView.didMoveToWindowSignal.onValue { _ in
             stackView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: bottomPadding, right: 20)
         }
@@ -46,7 +46,7 @@ extension OfferReadyToSign: Viewable {
 
         bag += containerScrollView.contentOffsetSignal.onValue({ point in
             let viewPoint = self.containerScrollView.convert(CGPoint.zero, from: view)
-                        
+
             let correctViewPointY = viewPoint.y - self.containerScrollView.frame.height + bottomPadding + 50
 
             if point.y > correctViewPointY {

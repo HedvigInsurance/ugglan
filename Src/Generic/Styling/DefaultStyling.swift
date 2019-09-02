@@ -36,7 +36,7 @@ extension DefaultStyling {
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
         ]
-        
+
         if #available(iOS 13.0, *) {
             UINavigationBar.appearance().shadowImage = UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? UIColor.transparent : UIColor.primaryBorder
@@ -44,7 +44,7 @@ extension DefaultStyling {
         } else {
             UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
         }
-        
+
         UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
         UITabBar.appearance().unselectedItemTintColor = .disabledTintColor

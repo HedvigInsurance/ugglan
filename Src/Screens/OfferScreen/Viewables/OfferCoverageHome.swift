@@ -58,7 +58,7 @@ extension OfferCoverageHome: Viewable {
 
         let titleLabel = MultilineLabel(value: "", style: .rowTitleBold)
         bag += stackView.addArranged(titleLabel)
-                
+
         bag += client.fetch(query: OfferQuery())
             .valueSignal
             .compactMap { $0.data?.insurance.address }

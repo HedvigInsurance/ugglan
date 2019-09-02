@@ -35,12 +35,14 @@ text
 type
 id
 text
+placeholder
 }
 
 ... on MessageBodyNumber {
 type
 id
 text
+placeholder
 }
 
 ... on MessageBodyAudio {

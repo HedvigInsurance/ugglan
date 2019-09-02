@@ -27,9 +27,9 @@ extension Launch: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = .primaryBackground
         viewController.view = containerView
-        
+
         let animationName = viewController.traitCollection.userInterfaceStyle == .dark ? "WordmarkAnimationLight" : "WordmarkAnimation"
-        
+
         let animationView = LOTAnimationView(name: animationName)
         animationView.contentMode = .scaleAspectFit
         animationView.animationProgress = 1

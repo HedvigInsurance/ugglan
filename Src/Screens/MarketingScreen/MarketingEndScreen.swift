@@ -26,7 +26,7 @@ extension MarketingEnd: Presentable {
 
         let effectView = UIVisualEffectView()
         effectView.alpha = 0
-        
+
         bag += effectView.contentView.traitCollectionSignal.atOnce().onValue { trait in
             effectView.effect = UIBlurEffect(style: trait.userInterfaceStyle == .dark ? .dark : .extraLight)
         }

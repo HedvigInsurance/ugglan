@@ -64,11 +64,11 @@ extension BankIdSign: Presentable {
         iconContainerView.snp.makeConstraints { make in
             make.height.width.equalTo(120)
         }
-        
+
         let imageView = UIImageView()
         imageView.image = Asset.bankIdLogo.image
         imageView.tintColor = .primaryText
-        
+
         iconContainerView.addSubview(imageView)
 
         imageView.snp.makeConstraints { make in
@@ -76,7 +76,7 @@ extension BankIdSign: Presentable {
         }
 
         headerContainer.addArrangedSubview(iconContainerView)
-        
+
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
         let statusLabel = MultilineLabel(value: String(key: .SIGN_START_BANKID), style: .rowTitle)

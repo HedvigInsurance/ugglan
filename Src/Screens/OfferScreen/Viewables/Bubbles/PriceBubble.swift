@@ -53,7 +53,7 @@ extension PriceBubble: Viewable {
         stackView.addArrangedSubview(grossPriceLabel)
 
         let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
-        
+
         bag += bubbleView.windowSignal.compactMap { $0 }.onValue({ window in
             if window.frame.height < 700 {
                 bubbleView.snp.makeConstraints({ make in

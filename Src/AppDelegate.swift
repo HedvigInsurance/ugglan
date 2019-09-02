@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
-    let launchWindow = UIWindow(frame: UIScreen.main.bounds)
+    var launchWindow: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
     var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
@@ -176,9 +176,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         FirebaseApp.configure()
 
-        launchWindow.isOpaque = false
-        launchWindow.backgroundColor = UIColor.transparent
-        
+        launchWindow?.isOpaque = false
+        launchWindow?.backgroundColor = UIColor.transparent
+
         window.backgroundColor = .primaryBackground
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
@@ -196,17 +196,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 )
             }
         }
-        
+
         let hasLoadedCallbacker = Callbacker<Void>()
 
         let launch = Launch(
             hasLoadedSignal: hasLoadedCallbacker.signal()
         )
-                
+
         let (launchViewController, launchFuture) = launch.materialize()
-        launchWindow.rootViewController = launchViewController
+        launchWindow?.rootViewController = launchViewController
         window.makeKeyAndVisible()
-        launchWindow.makeKeyAndVisible()
+        launchWindow?.makeKeyAndVisible()
 
         let apolloEnvironment = ApolloEnvironmentConfig(
             endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
@@ -217,7 +217,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
-        
+
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()
@@ -227,9 +227,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }).delay(by: 0.1).onValue { _ in
             hasLoadedCallbacker.callAll()
         }
-        
+
         bag += launchFuture.onValue({ _ in
             self.window.makeKeyAndVisible()
+            self.launchWindow = nil
         })
 
         return true

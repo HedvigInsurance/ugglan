@@ -12,7 +12,7 @@ import UIKit
 
 struct ChatTextView {
     let client: ApolloClient
-    let currentGlobalIdSignal: ReadSignal<GraphQLID?>
+    let currentMessageSignal: ReadSignal<Message?>
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
     private let didBeginEditingCallbacker = Callbacker<Void>()
@@ -22,24 +22,42 @@ struct ChatTextView {
     }
 
     init(
-        currentGlobalIdSignal: ReadSignal<GraphQLID?>,
+        currentMessageSignal: ReadSignal<Message?>,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
-        self.currentGlobalIdSignal = currentGlobalIdSignal
+        self.currentMessageSignal = currentMessageSignal
         self.client = client
     }
 }
 
 extension ChatTextView: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+        let defaultPlaceholder = "Aa"
+        
         let textView = TextView(
             value: "",
-            placeholder: "Aa",
+            placeholder: defaultPlaceholder,
             insets: UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 40)
         )
         let (view, result) = textView.materialize(events: events)
-
+        
         let bag = DisposeBag()
+        
+        bag += currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
+            print(message)
+            textView.placeholder.value = message.placeholder ?? defaultPlaceholder
+        }
+        
+        bag += textView.value.onValue { _ in
+            if let message = self.currentMessageSignal.value {
+                switch message.responseType {
+                case .none, .text:
+                    break
+                case .singleSelect:
+                    bag += Signal(after: 0).feedback(type: .error)
+                }
+            }
+        }
 
         bag += textView.didBeginEditingSignal.onValue { _ in
             self.didBeginEditingCallbacker.callAll()
@@ -56,7 +74,7 @@ extension ChatTextView: Viewable {
             })
         }.withLatestFrom(textView.value.plain()).onValue({ _, textFieldValue in
             textView.value.value = ""
-            if let currentGlobalId = self.currentGlobalIdSignal.value, textFieldValue != "" {
+            if let currentGlobalId = self.currentMessageSignal.value?.globalId, textFieldValue != "" {
                 bag += self.client.perform(mutation: SendChatTextResponseMutation(globalId: currentGlobalId, text: textFieldValue))
             }
         })

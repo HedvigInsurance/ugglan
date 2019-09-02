@@ -39,7 +39,7 @@ extension ChatInput: Viewable {
 
         let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)
-        
+
         bag += backgroundView.traitCollectionSignal.atOnce().onValue { trait in
             effectView.effect = UIBlurEffect(style: trait.userInterfaceStyle == .dark ? .dark : .light)
         }
@@ -87,6 +87,7 @@ extension ChatInput: Viewable {
             stackView.alignment = .bottom
             return stackView
         }()).wrappedIn(UIStackView())) { stackView in
+            stackView.isHidden = true
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(
                 top: padding,
@@ -95,10 +96,10 @@ extension ChatInput: Viewable {
                 right: 0
             )
 
-            bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
-                stackView.isHidden = isHidden
-                stackView.alpha = isHidden ? 0 : 1
-            }
+//            bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
+//                stackView.isHidden = isHidden
+//                stackView.alpha = isHidden ? 0 : 1
+//            }
         }.onValue({ _ in
             attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
@@ -113,6 +114,7 @@ extension ChatInput: Viewable {
             stackView.alignment = .bottom
             return stackView
         }()).wrappedIn(UIStackView())) { stackView in
+            stackView.isHidden = true
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(
                 top: padding,
@@ -121,10 +123,10 @@ extension ChatInput: Viewable {
                 right: 0
             )
 
-            bag += attachFilePaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
-                stackView.isHidden = isHidden
-                stackView.alpha = isHidden ? 0 : 1
-            }
+//            bag += attachFilePaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
+//                stackView.isHidden = isHidden
+//                stackView.alpha = isHidden ? 0 : 1
+//            }
         }.onValue({ _ in
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
@@ -132,7 +134,7 @@ extension ChatInput: Viewable {
 
         let currentGlobalIdSignal = currentMessageSignal.map { message in message?.globalId }
 
-        let textView = ChatTextView(currentGlobalIdSignal: currentGlobalIdSignal)
+        let textView = ChatTextView(currentMessageSignal: currentMessageSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachGIFPaneIsOpenSignal)
 
@@ -147,16 +149,54 @@ extension ChatInput: Viewable {
         }
 
         contentView.addArrangedSubview(inputBar)
+        
+        let singleSelectContainer = UIView()
+        contentView.addSubview(singleSelectContainer)
+        
+        singleSelectContainer.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+        
+        contentView.bringSubviewToFront(inputBar)
 
-        bag += currentMessageSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
-            switch message.responseType {
-            case .text:
-                inputBar.animationSafeIsHidden = false
-            case .singleSelect:
-                inputBar.animationSafeIsHidden = true
+        bag += currentMessageSignal.latestTwo().filter { $0.1 != $0.0 }.map { $0.1 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
+            guard let message = message else {
+                inputBar.alpha = 0
+                singleSelectContainer.alpha = 0
+                return
             }
-
-            inputBar.layoutSuperviewsIfNeeded()
+            
+            switch message.responseType {
+            case .none:
+                inputBar.alpha = 0
+                singleSelectContainer.alpha = 0
+            case .text:
+                inputBar.alpha = 1
+                singleSelectContainer.alpha = 0
+                contentView.bringSubviewToFront(inputBar)
+                
+                singleSelectContainer.subviews.forEach { view in
+                    view.removeFromSuperview()
+                }
+                
+            case let .singleSelect(options):
+                inputBar.alpha = 0
+                singleSelectContainer.alpha = 1
+                
+                let list = SingleSelectList.init(options: options, currentGlobalIdSignal: currentGlobalIdSignal, navigateCallbacker: self.navigateCallbacker)
+                
+                singleSelectContainer.subviews.forEach { view in
+                    view.removeFromSuperview()
+                }
+                
+                bag += singleSelectContainer.add(list) { view in
+                    view.snp.makeConstraints { make in
+                        make.top.bottom.trailing.leading.equalToSuperview()
+                    }
+                }
+                
+                contentView.bringSubviewToFront(singleSelectContainer)
+            }
         }
 
         bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))

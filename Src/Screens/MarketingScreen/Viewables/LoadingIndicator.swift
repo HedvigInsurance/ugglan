@@ -16,7 +16,7 @@ struct LoadingIndicator {
     let showAfter: TimeInterval
     let color: UIColor
     let size: CGFloat
-    
+
     private static let defaultLoaderColor = UIColor(dynamic: { trait -> UIColor in
         trait.userInterfaceStyle == .dark ? .white : .primaryTintColor
     })

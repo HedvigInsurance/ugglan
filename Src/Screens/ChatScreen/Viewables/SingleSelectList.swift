@@ -7,100 +7,125 @@
 
 import Apollo
 import Flow
+import Form
 import Foundation
 import UIKit
 
-struct SingleSelectList {
-    let optionsSignal: ReadSignal<[SingleSelectOption]>
+struct SingleSelectList: Hashable, Equatable {
+    let id = UUID()
+    let options: [SingleSelectOption]
     let currentGlobalIdSignal: ReadSignal<GraphQLID?>
     let client: ApolloClient
     let navigateCallbacker: Callbacker<NavigationEvent>
 
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     init(
-        optionsSignal: ReadSignal<[SingleSelectOption]>,
+        options: [SingleSelectOption],
         currentGlobalIdSignal: ReadSignal<GraphQLID?>,
         navigateCallbacker: Callbacker<NavigationEvent>,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
-        self.optionsSignal = optionsSignal
+        self.options = options
         self.currentGlobalIdSignal = currentGlobalIdSignal
         self.navigateCallbacker = navigateCallbacker
         self.client = client
     }
 }
 
+extension SingleSelectList: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (SingleSelectList) -> Disposable) {
+        let containerView = UIStackView()
+        containerView.axis = .vertical
+        containerView.alignment = .trailing
+        containerView.distribution = .equalCentering
+
+        let spacingContainer = UIStackView()
+        containerView.axis = .vertical
+        containerView.alignment = .trailing
+        spacingContainer.insetsLayoutMarginsFromSafeArea = false
+        spacingContainer.isLayoutMarginsRelativeArrangement = true
+
+        containerView.addArrangedSubview(spacingContainer)
+
+        return (containerView, { singleSelectList in
+            spacingContainer.addArranged(singleSelectList)
+        })
+    }
+}
+
 extension SingleSelectList: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIScrollView, Disposable) {
         let bag = DisposeBag()
+        
+        let scrollView = UIScrollView()
+        scrollView.alwaysBounceHorizontal = true
+        
         let view = UIStackView()
-        view.isLayoutMarginsRelativeArrangement = true
         view.axis = .vertical
         view.alignment = .trailing
+        view.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)
+        view.isLayoutMarginsRelativeArrangement = true
+                
+        scrollView.embedView(view, scrollAxis: .horizontal)
+        
+        view.snp.makeConstraints { make in
+            make.width.greaterThanOrEqualTo(scrollView.snp.width)
+        }
+                
+        let contentContainerView = UIStackView()
+        contentContainerView.axis = .horizontal
+        contentContainerView.alignment = .center
+        contentContainerView.spacing = 15
+        
+        view.addArrangedSubview(contentContainerView)
 
-        bag += optionsSignal.compactMap { $0 }.filter { $0.count != 0 }.onValue { options in
-            let containerView = UIStackView()
-            containerView.axis = .vertical
-            containerView.isLayoutMarginsRelativeArrangement = true
-            containerView.alignment = .trailing
-            containerView.spacing = 15
-            containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
-            view.arrangedSubviews.forEach { view in
-                view.removeFromSuperview()
-            }
-            view.addArrangedSubview(containerView)
-
-            bag += options.enumerated().map({ index, option in
-                let innerBag = DisposeBag()
-                let button = Button(title: option.text, type: .outline(borderColor: .primaryTintColor, textColor: .primaryTintColor))
-
-                innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
-                    func removeViews() {
-                        view.arrangedSubviews.forEach { subView in
-                            innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                                subView.alpha = 0
-                            }).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                                subView.removeFromSuperview()
-                            })
-                        }
-                    }
-                    switch option.type {
-                    case let .link(view):
-                        if view == .offer {
-                            self.navigateCallbacker.callAll(with: .offer)
-                        } else if view == .dashboard {
-                            self.navigateCallbacker.callAll(with: .dashboard)
-                        }
-                        removeViews()
-                    case .selection:
-                        self.client.perform(
-                            mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
-                        ).onResult { _ in
-                            removeViews()
-                        }
+        bag += options.enumerated().map({ arg in
+            let (index, option) = arg
+            let innerBag = DisposeBag()
+            let button = Button(title: option.text, type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
+            
+            innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
+                func removeViews() {
+                    view.arrangedSubviews.forEach { subView in
+                        innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                            subView.alpha = 0
+                        }).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                            subView.removeFromSuperview()
+                        })
                     }
                 }
+                switch option.type {
+                case let .link(view):
+                    if view == .offer {
+                        self.navigateCallbacker.callAll(with: .offer)
+                    } else if view == .dashboard {
+                        self.navigateCallbacker.callAll(with: .dashboard)
+                    }
+                    removeViews()
+                case .selection:
+                    self.client.perform(
+                        mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
+                    ).onResult { _ in
+                        // removeViews()
+                    }
+                }
+            }
 
-                let buttonWrapper = UIStackView()
-                buttonWrapper.isLayoutMarginsRelativeArrangement = true
-                buttonWrapper.alignment = .center
-                buttonWrapper.alpha = 0
-                buttonWrapper.tag = index
+            let buttonWrapper = UIStackView()
+            buttonWrapper.axis = .vertical
+            buttonWrapper.alignment = .center
 
-                innerBag += containerView.addArranged(button.wrappedIn(buttonWrapper))
-
-                view.layoutIfNeeded()
-                let originalTransform = CGAffineTransform(translationX: buttonWrapper.frame.size.width + 80, y: 0)
-                buttonWrapper.transform = originalTransform.scaledBy(x: 0.6, y: 0.6)
-
-                innerBag += Signal(after: 0.2 + (Double(index) * 0.1)).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                    buttonWrapper.alpha = 1
-                    buttonWrapper.transform = CGAffineTransform.identity
-                })
-
-                return innerBag
-            })
-        }
-
-        return (view, bag)
+            innerBag += contentContainerView.addArranged(button.wrappedIn(buttonWrapper))
+            return innerBag
+        })
+                
+        return (scrollView, bag)
     }
 }

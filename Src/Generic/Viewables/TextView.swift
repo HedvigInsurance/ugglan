@@ -65,7 +65,7 @@ extension TextView: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
-        
+
         bag += view.traitCollectionSignal.atOnce().onValue({ trait in
             if trait.userInterfaceStyle == .dark {
                 view.backgroundColor = UIColor.secondaryBackground
@@ -138,6 +138,13 @@ extension TextView: Viewable {
 
         let placeholderLabel = UILabel(value: "Aa", style: TextStyle.body.colored(.darkGray).resized(to: 14))
         paddingView.addSubview(placeholderLabel)
+                        
+        bag += placeholder.map { Optional($0) }.bindTo(
+            transition: placeholderLabel,
+            style: .crossDissolve(duration: 0.25),
+            placeholderLabel,
+            \.text
+        )
 
         placeholderLabel.snp.makeConstraints { make in
             make.left.equalTo(paddingView.layoutMargins.left + 5)
@@ -145,7 +152,7 @@ extension TextView: Viewable {
             make.width.equalToSuperview()
         }
 
-        bag += textView.onValue { value in
+        bag += value.onValue { value in
             placeholderLabel.alpha = value.isEmpty ? 1 : 0
         }
 

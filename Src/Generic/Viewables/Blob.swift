@@ -43,7 +43,7 @@ struct Blob: Viewable {
             a.0 != b.0 && a.1 != b.1
         }).onValue { width, color in
             shapeLayer.fillColor = color
-            
+
             containerView.snp.remakeConstraints { make in
                 make.height.equalTo(self.respectsHeight ? 44 : 0)
                 make.width.equalToSuperview()

@@ -10,6 +10,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import Apollo
 
 struct OnboardingChat {
     enum Intent: String {
@@ -17,9 +18,11 @@ struct OnboardingChat {
     }
 
     let intent: Intent
+    let client: ApolloClient
 
-    init(intent: Intent) {
+    init(intent: Intent, client: ApolloClient = ApolloContainer.shared.client) {
         self.intent = intent
+        self.client = client
     }
 }
 
@@ -29,7 +32,8 @@ extension OnboardingChat: Presentable {
 
         ApplicationState.preserveState(.onboardingChat)
 
-        let (viewController, future) = Chat().materialize()
+        let chat = Chat()
+        let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 
         let restartButton = UIBarButtonItem()
@@ -37,7 +41,17 @@ extension OnboardingChat: Presentable {
         restartButton.tintColor = .darkGray
 
         bag += restartButton.onValue { _ in
-            // restart chat
+            
+            let alert = Alert.init(title: "Vill du starta om?", message: "All information du fyllt i kommer att försvinna.", actions: [
+                Alert.Action.init(title: "OK", action: {
+                    chat.reloadChatCallbacker.callAll()
+                }),
+                Alert.Action.init(title: "Avbryt", action: {
+                    
+                })
+            ])
+            
+            viewController.present(alert)
         }
 
         viewController.navigationItem.rightBarButtonItem = restartButton
