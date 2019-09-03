@@ -44,7 +44,8 @@ extension ChatTextView: Viewable {
         let bag = DisposeBag()
         
         bag += currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
-            print(message)
+            textView.keyboardTypeSignal.value = message.keyboardType
+            textView.textContentTypeSignal.value = message.textContentType
             textView.placeholder.value = message.placeholder ?? defaultPlaceholder
         }
         

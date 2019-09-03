@@ -94,10 +94,9 @@ extension SingleSelectList: Viewable {
             innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
                 func removeViews() {
                     view.arrangedSubviews.forEach { subView in
-                        innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                        innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.mediumBounce(), animations: { _ in
+                            subView.transform = CGAffineTransform(translationX: subView.frame.width, y: 0)
                             subView.alpha = 0
-                        }).animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                            subView.removeFromSuperview()
                         })
                     }
                 }
@@ -110,11 +109,10 @@ extension SingleSelectList: Viewable {
                     }
                     removeViews()
                 case .selection:
-                    self.client.perform(
+                    let _ = self.client.perform(
                         mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
-                    ).onResult { _ in
-                        // removeViews()
-                    }
+                    )
+                    removeViews()
                 }
             }
 
@@ -123,6 +121,17 @@ extension SingleSelectList: Viewable {
             buttonWrapper.alignment = .center
 
             innerBag += contentContainerView.addArranged(button.wrappedIn(buttonWrapper))
+            
+            if let buttonView = buttonWrapper.subviews.first {
+                innerBag += buttonView.hasWindowSignal.atOnce().atValue({ _ in
+                    buttonView.alpha = 0
+                    buttonView.transform = CGAffineTransform(translationX: buttonView.frame.width + 70, y: 0)
+                }).delay(by: 0.2 + (Double(index) * 0.1)).animated(style: SpringAnimationStyle.mediumBounce(), animations: { _ in
+                    buttonView.transform = .identity
+                    buttonView.alpha = 1
+                })
+            }
+            
             return innerBag
         })
                 

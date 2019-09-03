@@ -72,6 +72,7 @@ extension ChatInput: Viewable {
 
         let inputBar = UIStackView()
         inputBar.axis = .horizontal
+        inputBar.alpha = 0
 
         let padding: CGFloat = 10
 
@@ -183,15 +184,17 @@ extension ChatInput: Viewable {
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 1
                 
-                let list = SingleSelectList.init(options: options, currentGlobalIdSignal: currentGlobalIdSignal, navigateCallbacker: self.navigateCallbacker)
-                
-                singleSelectContainer.subviews.forEach { view in
-                    view.removeFromSuperview()
-                }
-                
-                bag += singleSelectContainer.add(list) { view in
-                    view.snp.makeConstraints { make in
-                        make.top.bottom.trailing.leading.equalToSuperview()
+                UIView.performWithoutAnimation {
+                    let list = SingleSelectList(options: options, currentGlobalIdSignal: currentGlobalIdSignal, navigateCallbacker: self.navigateCallbacker)
+                    
+                    singleSelectContainer.subviews.forEach { view in
+                        view.removeFromSuperview()
+                    }
+                    
+                    bag += singleSelectContainer.add(list) { view in
+                        view.snp.makeConstraints { make in
+                            make.top.bottom.trailing.leading.equalToSuperview()
+                        }
                     }
                 }
                 

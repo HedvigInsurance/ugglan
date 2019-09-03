@@ -13,6 +13,8 @@ import UIKit
 struct TextView {
     let value: ReadWriteSignal<String>
     let placeholder: ReadWriteSignal<String>
+    let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
+    let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<(String, UITextField), Bool>()
     let insets: UIEdgeInsets
@@ -26,12 +28,16 @@ struct TextView {
     init(
         value: String,
         placeholder: String,
+        keyboardTypeSignal: UIKeyboardType? = nil,
+        textContentType: UITextContentType? = nil,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true
     ) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
+        self.keyboardTypeSignal = ReadWriteSignal(keyboardTypeSignal)
+        self.textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
     }
 }
@@ -93,11 +99,25 @@ extension TextView: Viewable {
 
         let textView = UITextView()
         textView.tintColor = .primaryTintColor
-        textView.autocorrectionType = .no
-        textView.autocapitalizationType = .none
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
         textView.backgroundColor = .clear
         bag += value.atOnce().bidirectionallyBindTo(textView)
+                        
+        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
+            textView.textContentType = textContentType ?? .none
+            textView.keyboardType = keyboardType ?? .default
+            
+            textView.reloadInputViews()
+                        
+            switch keyboardType {
+            case .default:
+                textView.autocorrectionType = .yes
+                textView.autocapitalizationType = .sentences
+            default:
+                textView.autocorrectionType = .no
+                textView.autocapitalizationType = .none
+            }
+        })
 
         textView.snp.remakeConstraints { make in
             make.height.equalTo(34)

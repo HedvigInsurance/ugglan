@@ -104,6 +104,19 @@ extension Chat: Presentable {
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         }
+        
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+        .compactMap { notification in notification.keyboardInfo }
+        .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+            AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+        }, animations: { keyboardInfo in
+            headerPushView.snp.remakeConstraints { make in
+                make.height.equalTo(keyboardInfo.height + 20)
+            }
+            headerPushView.layoutIfNeeded()
+            tableKit.view.tableHeaderView = headerPushView
+        })
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
@@ -112,7 +125,7 @@ extension Chat: Presentable {
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
                 headerPushView.snp.remakeConstraints { make in
-                    make.height.equalTo(keyboardInfo.endFrame.height + 20)
+                    make.height.equalTo(keyboardInfo.height + 20)
                 }
                 headerPushView.layoutIfNeeded()
                 tableKit.view.tableHeaderView = headerPushView
@@ -125,7 +138,7 @@ extension Chat: Presentable {
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
                 headerPushView.snp.remakeConstraints { make in
-                    make.height.equalTo(keyboardInfo.endFrame.height + 20)
+                    make.height.equalTo(keyboardInfo.height + 20)
                 }
                 headerPushView.layoutIfNeeded()
                 tableKit.view.tableHeaderView = headerPushView
