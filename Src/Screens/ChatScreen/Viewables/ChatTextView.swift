@@ -52,9 +52,9 @@ extension ChatTextView: Viewable {
         bag += textView.value.onValue { _ in
             if let message = self.currentMessageSignal.value {
                 switch message.responseType {
-                case .none, .text:
+                case .text:
                     break
-                case .singleSelect:
+                case .none, .singleSelect:
                     bag += Signal(after: 0).feedback(type: .error)
                 }
             }

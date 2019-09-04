@@ -160,7 +160,7 @@ extension ChatInput: Viewable {
         
         contentView.bringSubviewToFront(inputBar)
 
-        bag += currentMessageSignal.latestTwo().filter { $0.1 != $0.0 }.map { $0.1 }.animated(style: SpringAnimationStyle.lightBounce()) { message in
+        bag += currentMessageSignal.animated(style: SpringAnimationStyle.lightBounce()) { message in
             guard let message = message else {
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 0

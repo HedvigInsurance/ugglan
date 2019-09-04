@@ -145,6 +145,35 @@ extension Chat: Presentable {
             })
 
         let messagesSignal = ReadWriteSignal<[ChatListContent]>([])
+        
+        bag += messagesSignal.onValueDisposePrevious { messages -> Disposable? in
+            let innerBag = DisposeBag()
+            
+            innerBag += messages.map { message -> Disposable in
+                return message.left?.onEditCallbacker.addCallback({ _ in
+                    guard let firstIndex = messagesSignal.value.firstIndex(where: { message -> Bool in
+                        message.left?.fromMyself == true
+                    }) else {
+                        return
+                    }
+                    
+                    messagesSignal.value = messagesSignal.value.enumerated().filter { offset, _ -> Bool in
+                        offset > firstIndex
+                    }.map { $0.1 }
+                    
+                    let _ = self.client.perform(mutation: EditLastResponseMutation()).onValue { _ in
+                        
+                    }
+                    
+                    if let firstMessage = messagesSignal.value.first?.left {
+                        currentMessageSignal.value = Message(from: firstMessage, listSignal: nil)
+                    }
+                }) ?? DisposeBag()
+            }
+            
+            return innerBag
+        }
+        
         let filteredMessagesSignal = messagesSignal.map { messages in
             messages.filter { $0.left != nil }
         }
@@ -158,7 +187,7 @@ extension Chat: Presentable {
                 return oldMessage.globalId == newMessage.globalId
             }
             .onValue({ message in
-                let newMessage = Message(from: message, index: 0) { filteredMessagesSignal.value }
+                let newMessage = Message(from: message, index: 0, listSignal: filteredMessagesSignal)
 
                 if let paragraph = message.body.asMessageBodyParagraph {
                     paragraph.text != "" ?
@@ -169,7 +198,7 @@ extension Chat: Presentable {
                 }
 
                 if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
-                    currentMessageSignal.value = newMessage
+                    currentMessageSignal.value = Message(from: message, index: 0, listSignal: nil)
                 }
 
                 if message.body.asMessageBodyParagraph != nil {
@@ -190,10 +219,10 @@ extension Chat: Presentable {
                 .compactMap { messages -> [MessageData]? in messages.data?.messages.compactMap { message in message?.fragments.messageData } }
                 .atValue({ messages -> Void in
                     guard let message = messages.first else { return }
-                    currentMessageSignal.value = Message(from: message, index: 0) { filteredMessagesSignal.value }
+                    currentMessageSignal.value = Message(from: message, index: 0, listSignal: nil)
                 })
                 .map { messages -> [Message] in
-                    messages.enumerated().map { offset, message in Message(from: message, index: offset) { filteredMessagesSignal.value } }
+                    messages.enumerated().map { offset, message in Message(from: message, index: offset, listSignal: filteredMessagesSignal) }
                 }.map { messages in messages.filter { $0.body != "" } }.onValue({ messages in
                     guard messages.count != 0 else {
                         fetchMessages()
@@ -220,10 +249,6 @@ extension Chat: Presentable {
                     if offset != 0 {
                         return nil
                     }
-                }
-
-                if let message = item.left {
-                    return .left(Message(from: message, index: offset))
                 }
 
                 return item

@@ -104,19 +104,9 @@ extension TextView: Viewable {
         bag += value.atOnce().bidirectionallyBindTo(textView)
                         
         bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
-            textView.textContentType = textContentType ?? .none
+            textView.textContentType = textContentType
             textView.keyboardType = keyboardType ?? .default
-            
             textView.reloadInputViews()
-                        
-            switch keyboardType {
-            case .default:
-                textView.autocorrectionType = .yes
-                textView.autocapitalizationType = .sentences
-            default:
-                textView.autocorrectionType = .no
-                textView.autocapitalizationType = .none
-            }
         })
 
         textView.snp.remakeConstraints { make in

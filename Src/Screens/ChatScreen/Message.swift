@@ -118,15 +118,43 @@ struct Message: Equatable, Hashable {
     let textContentType: UITextContentType?
     let keyboardType: UIKeyboardType?
     private let index: Int
-    private let getList: () -> [ChatListContent]
+    private let listSignal: ReadSignal<[ChatListContent]>?
+    let onEditCallbacker = Callbacker<Void>()
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption]), text, none
     }
+    
+    var editable: Bool {
+        if !fromMyself {
+            return false
+        }
+        
+        guard let list = listSignal?.value else {
+            return false
+        }
+        
+        let myIndex = list.firstIndex(of: .left(self))
+        let indexOfFirstMyself = list.firstIndex { message -> Bool in
+            guard let left = message.left else {
+                return false
+            }
+            
+            return left.fromMyself == true
+        }
+        
+        return myIndex == indexOfFirstMyself
+    }
 
     var next: Message? {
-        let nextIndex = index - 1
-        let list = getList()
+        guard let list = listSignal?.value else {
+            return nil
+        }
+        
+        guard let myIndex = list.firstIndex(of: .left(self)) else {
+            return nil
+        }
+        let nextIndex = myIndex - 1
 
         if !list.indices.contains(nextIndex) {
             return nil
@@ -136,9 +164,15 @@ struct Message: Equatable, Hashable {
     }
 
     var previous: Message? {
-        let previousIndex = index + 1
-        let list = getList()
-
+        guard let list = listSignal?.value else {
+            return nil
+        }
+        
+        guard let myIndex = list.firstIndex(of: .left(self)) else {
+            return nil
+        }
+        let previousIndex = myIndex + 1
+        
         if !list.indices.contains(previousIndex) {
             return nil
         }
@@ -187,7 +221,20 @@ struct Message: Equatable, Hashable {
         body = message.body
         fromMyself = message.fromMyself
         self.index = index
-        getList = message.getList
+        listSignal = message.listSignal
+        globalId = message.globalId
+        id = message.id
+        responseType = message.responseType
+        placeholder = message.placeholder
+        textContentType = message.textContentType
+        keyboardType = message.keyboardType
+    }
+    
+    init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
+        body = message.body
+        fromMyself = message.fromMyself
+        self.index = message.index
+        self.listSignal = listSignal
         globalId = message.globalId
         id = message.id
         responseType = message.responseType
@@ -196,10 +243,10 @@ struct Message: Equatable, Hashable {
         keyboardType = message.keyboardType
     }
 
-    init(from message: MessageData, index: Int, getList: @escaping () -> [ChatListContent]) {
+    init(from message: MessageData, index: Int, listSignal: ReadSignal<[ChatListContent]>?) {
         globalId = message.globalId
         id = message.id
-
+        
         if let singleSelect = message.body.asMessageBodySingleSelect {
             body = singleSelect.text
 
@@ -286,7 +333,7 @@ struct Message: Equatable, Hashable {
         
         fromMyself = message.header.fromMyself
         self.index = index
-        self.getList = getList
+        self.listSignal = listSignal
     }
 }
 
@@ -295,8 +342,10 @@ extension Message: Reusable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.alignment = .trailing
-
+        
         let spacingContainer = UIStackView()
+        spacingContainer.alignment = .center
+        spacingContainer.spacing = 5
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(spacingContainer)
@@ -309,6 +358,20 @@ extension Message: Reusable {
         }
 
         spacingContainer.addArrangedSubview(bubble)
+        
+        let editbuttonContainer = UIStackView()
+        editbuttonContainer.axis = .vertical
+        editbuttonContainer.alignment = .top
+        
+        let editButton = UIControl()
+        editButton.backgroundColor = .primaryTintColor
+        editButton.snp.makeConstraints { make in
+            make.width.height.equalTo(15)
+        }
+        editButton.layer.cornerRadius = 7.5
+        editbuttonContainer.addArrangedSubview(editButton)
+        
+        spacingContainer.addArrangedSubview(editbuttonContainer)
 
         let contentContainer = UIStackView()
         contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
@@ -323,6 +386,25 @@ extension Message: Reusable {
 
         return (containerView, { message in
             let bag = DisposeBag()
+            
+            editButton.isHidden = !message.editable
+            
+            bag += editButton.signal(for: .touchUpInside).onValue({ _ in
+                message.onEditCallbacker.callAll()
+            })
+            
+            bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                editbuttonContainer.animationSafeIsHidden = !message.editable
+                editbuttonContainer.alpha = message.editable ? 1 : 0
+                
+                if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
+                    spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
+                } else {
+                    spacingContainer.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
+                }
+                
+                spacingContainer.layoutSuperviewsIfNeeded()
+            })
 
             if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
                 spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
