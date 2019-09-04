@@ -13,6 +13,7 @@ import UIKit
 
 struct TypingIndicator: Hashable {
     let id = UUID()
+    let hasPreviousMessage: Bool
 }
 
 extension TypingIndicator: Reusable {
@@ -73,7 +74,13 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(thirdDot)
 
         bag += bubble.didLayoutSignal.onValue({ _ in
-            bubble.layer.cornerRadius = 20
+            let halfWidthCornerRadius = bubble.frame.height / 2
+            
+            if self.hasPreviousMessage {
+                bubble.applyRadiusMaskFor(topLeft: 5, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
+            } else {
+                bubble.layer.cornerRadius = halfWidthCornerRadius
+            }
         })
 
         bag += Signal(every: 2, delay: 0).animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { _ in

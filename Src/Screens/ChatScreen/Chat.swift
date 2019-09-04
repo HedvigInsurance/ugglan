@@ -203,7 +203,7 @@ extension Chat: Presentable {
                 if let paragraph = message.body.asMessageBodyParagraph {
                     paragraph.text != "" ?
                         messagesSignal.value.insert(.left(newMessage), at: 0) :
-                        messagesSignal.value.insert(.make(.make(TypingIndicator())), at: 0)
+                        messagesSignal.value.insert(.make(.make(TypingIndicator(hasPreviousMessage: true))), at: 0)
                 } else {
                     messagesSignal.value.insert(.left(newMessage), at: 0)
                 }

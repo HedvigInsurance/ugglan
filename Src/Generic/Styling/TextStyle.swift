@@ -15,6 +15,11 @@ extension TextStyle {
             style.alignment = .center
         }
     }
+    
+    static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(15)
+        style.color = .primaryText
+    }
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)

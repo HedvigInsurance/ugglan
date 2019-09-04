@@ -117,6 +117,7 @@ struct Message: Equatable, Hashable {
     let responseType: ResponseType
     let textContentType: UITextContentType?
     let keyboardType: UIKeyboardType?
+    let richTextCompatible: Bool
     
     private let index: Int
     private let listSignal: ReadSignal<[ChatListContent]>?
@@ -128,6 +129,10 @@ struct Message: Equatable, Hashable {
     }
     
     var shouldShowEditButton: Bool {
+        if richTextCompatible {
+            return false
+        }
+        
         if editingDisabledSignal.value {
             return false
         }
@@ -195,26 +200,50 @@ struct Message: Equatable, Hashable {
     }
 
     var bottomRightRadius: Radius {
-        if let nextFromMyself = next?.fromMyself, nextFromMyself == fromMyself {
-            return .fixed(value: 5)
+        if fromMyself {
+            if let nextFromMyself = next?.fromMyself, nextFromMyself {
+                return .fixed(value: 5)
+            } else {
+                return .halfHeight
+            }
         }
 
         return .halfHeight
     }
 
     var bottomLeftRadius: Radius {
+        if !fromMyself {
+            if let nextFromMyself = next?.fromMyself, !nextFromMyself {
+                return .fixed(value: 5)
+            } else {
+                return .halfHeight
+            }
+        }
+        
         return .halfHeight
     }
 
     var topRightRadius: Radius {
-        if let prevFromMyself = previous?.fromMyself, prevFromMyself == fromMyself {
-            return .fixed(value: 5)
+        if fromMyself {
+            if let prevFromMyself = previous?.fromMyself, prevFromMyself {
+                return .fixed(value: 5)
+            } else {
+                return .halfHeight
+            }
         }
 
         return .halfHeight
     }
 
     var topLeftRadius: Radius {
+        if !fromMyself {
+            if let prevFromMyself = previous?.fromMyself, !prevFromMyself {
+                return .fixed(value: 5)
+            } else {
+                return .halfHeight
+            }
+        }
+        
         return .halfHeight
     }
 
@@ -238,6 +267,7 @@ struct Message: Equatable, Hashable {
         placeholder = message.placeholder
         textContentType = message.textContentType
         keyboardType = message.keyboardType
+        richTextCompatible = message.richTextCompatible
     }
     
     init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -251,11 +281,13 @@ struct Message: Equatable, Hashable {
         placeholder = message.placeholder
         textContentType = message.textContentType
         keyboardType = message.keyboardType
+        richTextCompatible = message.richTextCompatible
     }
 
     init(from message: MessageData, index: Int, listSignal: ReadSignal<[ChatListContent]>?) {
         globalId = message.globalId
         id = message.id
+        richTextCompatible = message.header.richTextChatCompatible
         
         if let singleSelect = message.body.asMessageBodySingleSelect {
             body = singleSelect.text
@@ -354,7 +386,7 @@ extension Message: Reusable {
         containerView.alignment = .trailing
         
         let spacingContainer = UIStackView()
-        spacingContainer.alignment = .leading
+        spacingContainer.alignment = .fill
         spacingContainer.spacing = 5
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
@@ -369,11 +401,21 @@ extension Message: Reusable {
 
         spacingContainer.addArrangedSubview(bubble)
         
-        let editbuttonContainer = UIStackView()
-        editbuttonContainer.axis = .vertical
-        editbuttonContainer.alignment = .top
+        let editbuttonStackContainer = UIStackView()
+        editbuttonStackContainer.axis = .vertical
+        editbuttonStackContainer.alignment = .top
+        
+        spacingContainer.addArrangedSubview(editbuttonStackContainer)
+        
+        let editButtonViewContainer = UIView()
+        editButtonViewContainer.snp.makeConstraints { make in
+            make.width.equalTo(20)
+        }
+        
+        editbuttonStackContainer.addArrangedSubview(editButtonViewContainer)
         
         let editButton = UIControl()
+        editButtonViewContainer.addSubview(editButton)
         editButton.backgroundColor = .primaryTintColor
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
@@ -389,10 +431,6 @@ extension Message: Reusable {
             make.center.equalToSuperview()
         }
         
-        editbuttonContainer.addArrangedSubview(editButton)
-        
-        spacingContainer.addArrangedSubview(editbuttonContainer)
-
         let contentContainer = UIStackView()
         contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
         contentContainer.isLayoutMarginsRelativeArrangement = true
@@ -407,34 +445,42 @@ extension Message: Reusable {
         return (containerView, { message in
             let bag = DisposeBag()
             
-            editButton.isHidden = !message.shouldShowEditButton
+            editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
             
             bag += editButton.signal(for: .touchUpInside).onValue({ _ in
                 message.onEditCallbacker.callAll()
             })
             
-            bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                editbuttonContainer.animationSafeIsHidden = !message.shouldShowEditButton
-                editbuttonContainer.alpha = message.shouldShowEditButton ? 1 : 0
-                
+            func applyRounding() {
+                bubble.applyRadiusMaskFor(
+                    topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
+                    bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
+                    bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
+                    topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
+                )
+            }
+            
+            func applySpacing() {
                 if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
                     spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
                 } else {
                     spacingContainer.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
                 }
+            }
+            
+            bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+                editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
+                editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
+                
+                applySpacing()
+                applyRounding()
                 
                 spacingContainer.layoutSuperviewsIfNeeded()
             })
 
-            if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
-                spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
-            } else {
-                spacingContainer.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
-            }
-
             containerView.alignment = message.fromMyself ? .trailing : .leading
 
-            let label = MultilineLabel(value: message.body, style: TextStyle.body.colored(message.fromMyself ? .white : .primaryText))
+            let label = MultilineLabel(value: message.body, style: TextStyle.chatBody.colored(message.fromMyself ? .white : .primaryText))
             bag += contentContainer.addArranged(label)
 
             bag += bubble.copySignal.onValue { _ in
@@ -442,13 +488,10 @@ extension Message: Reusable {
             }
 
             bag += bubble.didLayoutSignal.onValue({ _ in
-                bubble.applyRadiusMaskFor(
-                    topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
-                    bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
-                    bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
-                    topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
-                )
+                applyRounding()
             })
+            
+            applySpacing()
 
             bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
 
