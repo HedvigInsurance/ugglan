@@ -117,15 +117,21 @@ struct Message: Equatable, Hashable {
     let responseType: ResponseType
     let textContentType: UITextContentType?
     let keyboardType: UIKeyboardType?
+    
     private let index: Int
     private let listSignal: ReadSignal<[ChatListContent]>?
+    let editingDisabledSignal = ReadWriteSignal<Bool>(false)
     let onEditCallbacker = Callbacker<Void>()
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption]), text, none
     }
     
-    var editable: Bool {
+    var shouldShowEditButton: Bool {
+        if editingDisabledSignal.value {
+            return false
+        }
+        
         if !fromMyself {
             return false
         }
@@ -134,16 +140,20 @@ struct Message: Equatable, Hashable {
             return false
         }
         
-        let myIndex = list.firstIndex(of: .left(self))
-        let indexOfFirstMyself = list.firstIndex { message -> Bool in
+        guard let myIndex = list.firstIndex(of: .left(self)) else {
+            return false
+        }
+        guard let indexOfFirstMyself = list.firstIndex(where: { message -> Bool in
             guard let left = message.left else {
                 return false
             }
             
             return left.fromMyself == true
+        }) else {
+            return false
         }
-        
-        return myIndex == indexOfFirstMyself
+                
+        return myIndex <= indexOfFirstMyself
     }
 
     var next: Message? {
@@ -344,7 +354,7 @@ extension Message: Reusable {
         containerView.alignment = .trailing
         
         let spacingContainer = UIStackView()
-        spacingContainer.alignment = .center
+        spacingContainer.alignment = .leading
         spacingContainer.spacing = 5
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
@@ -366,9 +376,19 @@ extension Message: Reusable {
         let editButton = UIControl()
         editButton.backgroundColor = .primaryTintColor
         editButton.snp.makeConstraints { make in
-            make.width.height.equalTo(15)
+            make.width.height.equalTo(20)
         }
-        editButton.layer.cornerRadius = 7.5
+        editButton.layer.cornerRadius = 10
+        
+        let editButtonIcon = UIImageView(image: Asset.editIcon.image)
+        editButtonIcon.contentMode = .scaleAspectFit
+        editButton.addSubview(editButtonIcon)
+        
+        editButtonIcon.snp.makeConstraints { make in
+            make.height.width.equalToSuperview().multipliedBy(0.5)
+            make.center.equalToSuperview()
+        }
+        
         editbuttonContainer.addArrangedSubview(editButton)
         
         spacingContainer.addArrangedSubview(editbuttonContainer)
@@ -387,15 +407,15 @@ extension Message: Reusable {
         return (containerView, { message in
             let bag = DisposeBag()
             
-            editButton.isHidden = !message.editable
+            editButton.isHidden = !message.shouldShowEditButton
             
             bag += editButton.signal(for: .touchUpInside).onValue({ _ in
                 message.onEditCallbacker.callAll()
             })
             
             bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-                editbuttonContainer.animationSafeIsHidden = !message.editable
-                editbuttonContainer.alpha = message.editable ? 1 : 0
+                editbuttonContainer.animationSafeIsHidden = !message.shouldShowEditButton
+                editbuttonContainer.alpha = message.shouldShowEditButton ? 1 : 0
                 
                 if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
                     spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)

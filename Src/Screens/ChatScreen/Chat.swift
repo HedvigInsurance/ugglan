@@ -144,7 +144,14 @@ extension Chat: Presentable {
                 tableKit.view.tableHeaderView = headerPushView
             })
 
+        let isEditingSignal = ReadWriteSignal<Bool>(false)
         let messagesSignal = ReadWriteSignal<[ChatListContent]>([])
+        
+        bag += isEditingSignal.onValue { isEditing in
+            messagesSignal.value.compactMap { $0.left }.forEach { message in
+                message.editingDisabledSignal.value = isEditing
+            }
+        }
         
         bag += messagesSignal.onValueDisposePrevious { messages -> Disposable? in
             let innerBag = DisposeBag()
@@ -156,6 +163,8 @@ extension Chat: Presentable {
                     }) else {
                         return
                     }
+                    
+                    isEditingSignal.value = true
                     
                     messagesSignal.value = messagesSignal.value.enumerated().filter { offset, _ -> Bool in
                         offset > firstIndex
@@ -187,6 +196,8 @@ extension Chat: Presentable {
                 return oldMessage.globalId == newMessage.globalId
             }
             .onValue({ message in
+                isEditingSignal.value = false
+                
                 let newMessage = Message(from: message, index: 0, listSignal: filteredMessagesSignal)
 
                 if let paragraph = message.body.asMessageBodyParagraph {

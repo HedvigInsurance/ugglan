@@ -45,7 +45,6 @@ extension ChatTextView: Viewable {
         
         bag += currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
             textView.keyboardTypeSignal.value = message.keyboardType
-            textView.textContentTypeSignal.value = message.textContentType
             textView.placeholder.value = message.placeholder ?? defaultPlaceholder
         }
         
