@@ -36,12 +36,22 @@ extension Marketing: Presentable {
 
         return (viewController, Future { completion in
             let resultCallbacker = Callbacker<MarketingResult>()
+            let pausedCallbacker = Callbacker<Bool>()
+
             bag += resultCallbacker.signal().onValue { marketingResult in
-                bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
+                pausedCallbacker.callAll(with: true)
+                
+                switch marketingResult {
+                case .onboard:
+                    bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
+                case .login:
+                    bag += viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.prefersNavigationBarHidden(true)])).onError({ _ in
+                        pausedCallbacker.callAll(with: false)
+                    })
+                }
             }
 
             let endScreenCallbacker = Callbacker<Void>()
-            let pausedCallbacker = Callbacker<Bool>()
             let scrollToCallbacker = Callbacker<ScrollTo>()
 
             bag += endScreenCallbacker.signal().onValue { _ in
