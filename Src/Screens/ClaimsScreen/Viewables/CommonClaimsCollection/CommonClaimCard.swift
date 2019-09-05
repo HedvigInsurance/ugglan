@@ -109,7 +109,7 @@ extension CommonClaimCard: Viewable {
 
         func backgroundColorFromData() -> UIColor {
             let lightenedAmount: CGFloat = 0.3
-            
+
             func getColor(color: HedvigColor) -> UIColor {
                 if #available(iOS 13, *) {
                     return UIColor { trait in
@@ -118,7 +118,7 @@ extension CommonClaimCard: Viewable {
                             UIColor.from(apollo: color).lighter(amount: lightenedAmount)
                     }
                 }
-                
+
                 return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
             }
 

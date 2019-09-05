@@ -19,60 +19,60 @@ extension UIColor {
                 trait.userInterfaceStyle == .dark ? .almostBlack : .offWhite
             }
         }
-        
+
         return UIColor.white
     }
-    
+
     static var secondaryBackground: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.10) : .white
             }
         }
-        
+
         return UIColor.offWhite
     }
-    
+
     static var primaryText: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .white : .black
             }
         }
-        
+
         return UIColor.black
     }
-    
+
     static var secondaryText: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .white : .offBlack
             }
         }
-        
+
         return UIColor.offBlack
     }
-    
+
     static var disabledTintColor: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .darkGray : .offBlack
             }
         }
-        
+
         return UIColor.offBlack
     }
-    
+
     static var attentionTintColor: UIColor {
-       if #available(iOS 13, *) {
-           return UIColor { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .coral700 : .pink
-           }
-       }
-       
-       return UIColor.pink
-   }
-    
+        if #available(iOS 13, *) {
+            return UIColor { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? .coral700 : .pink
+            }
+        }
+
+        return UIColor.pink
+    }
+
     static let coral700 = UIColor(red: 0.80, green: 0.43, blue: 0.40, alpha: 1.0)
     static let transparent = UIColor.white.withAlphaComponent(0)
     static let white = UIColor.white
@@ -91,29 +91,29 @@ extension UIColor {
     static let pink = UIColor(red: 1.00, green: 0.54, blue: 0.50, alpha: 1.0)
     static let darkPink = UIColor(red: 0.67, green: 0.0, blue: 0.27, alpha: 1.0)
     static let yellow = UIColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1.0)
-    
-    static let violet300 = UIColor(red:0.58, green:0.38, blue:1.00, alpha:1.0)
-    
+
+    static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
+
     static var primaryTintColor: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .violet300 : .purple
             }
         }
-        
+
         return UIColor.purple
     }
-    
+
     static var primaryBorder: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .darkGrayBorder : .grayBorder
             }
         }
-        
+
         return UIColor.grayBorder
     }
-    
+
     static let darkGrayBorder = UIColor.darkGray.withAlphaComponent(0.3)
     static let grayBorder = UIColor.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
 

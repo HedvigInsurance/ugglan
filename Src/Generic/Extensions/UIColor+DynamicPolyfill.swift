@@ -14,7 +14,7 @@ extension UIColor {
             self.init(dynamicProvider: dynamic)
             return
         }
-        
+
         self.init(cgColor: dynamic(UITraitCollection()).cgColor)
     }
 }

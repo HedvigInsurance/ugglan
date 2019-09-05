@@ -26,7 +26,7 @@ extension MarketingEnd: Presentable {
 
         let effectView = UIVisualEffectView()
         effectView.alpha = 0
-        
+
         bag += effectView.contentView.traitCollectionSignal.atOnce().onValue { trait in
             effectView.effect = UIBlurEffect(style: trait.userInterfaceStyle == .dark ? .dark : .extraLight)
         }
@@ -142,8 +142,7 @@ extension MarketingEnd: Presentable {
             )
 
             bag += containerView.add(end).onValue { marketingResult in
-                let intent: OnboardingChat.Intent = marketingResult == .onboard ? .onboard : .login
-                bag += viewController.present(FreeTextChat(), options: [.prefersNavigationBarHidden(false)])
+                bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
             }
 
             bag += dismissSignal.onValue { _ in

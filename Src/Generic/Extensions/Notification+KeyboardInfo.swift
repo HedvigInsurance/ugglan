@@ -32,7 +32,7 @@ extension Notification {
             let safeAreaBottom: CGFloat = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
 
             return KeyboardInfo(
-                height: keyboardHeight - safeAreaBottom,
+                height: keyboardHeight,
                 animationDuration: duration,
                 animationCurve: animationCurve,
                 beginFrame: beginFrame,

@@ -6,11 +6,37 @@
 //
 
 import Flow
+import Form
 import Foundation
 import Presentation
 import UIKit
 
-struct TypingIndicator {}
+struct TypingIndicator: Hashable {
+    let id = UUID()
+    let hasPreviousMessage: Bool
+}
+
+extension TypingIndicator: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (TypingIndicator) -> Disposable) {
+        let containerView = UIStackView()
+        containerView.axis = .vertical
+        containerView.alignment = .leading
+        containerView.distribution = .equalCentering
+
+        let spacingContainer = UIStackView()
+        containerView.axis = .vertical
+        containerView.alignment = .leading
+        spacingContainer.insetsLayoutMarginsFromSafeArea = false
+        spacingContainer.isLayoutMarginsRelativeArrangement = true
+        spacingContainer.edgeInsets = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
+
+        containerView.addArrangedSubview(spacingContainer)
+
+        return (containerView, { typingIndicator in
+            spacingContainer.addArranged(typingIndicator)
+        })
+    }
+}
 
 extension TypingIndicator: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -48,7 +74,13 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(thirdDot)
 
         bag += bubble.didLayoutSignal.onValue({ _ in
-            bubble.layer.cornerRadius = 20
+            let halfWidthCornerRadius = bubble.frame.height / 2
+            
+            if self.hasPreviousMessage {
+                bubble.applyRadiusMaskFor(topLeft: 5, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
+            } else {
+                bubble.layer.cornerRadius = halfWidthCornerRadius
+            }
         })
 
         bag += Signal(every: 2, delay: 0).animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { _ in

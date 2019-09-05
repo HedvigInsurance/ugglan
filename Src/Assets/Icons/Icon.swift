@@ -26,7 +26,7 @@ class Icon: UIView {
             }
         }
     }
-    
+
     override var tintColor: UIColor! {
         didSet(newValue) {
             image.tintColor = newValue
@@ -51,7 +51,7 @@ class Icon: UIView {
     func setup() {
         image.isUserInteractionEnabled = false
         isUserInteractionEnabled = false
-        
+
         image.image = icon.image
         addSubview(image)
 

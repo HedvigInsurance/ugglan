@@ -35,12 +35,18 @@ text
 type
 id
 text
+placeholder
+keyboard
+textContentType
 }
 
 ... on MessageBodyNumber {
 type
 id
 text
+placeholder
+keyboard
+textContentType
 }
 
 ... on MessageBodyAudio {

@@ -13,6 +13,8 @@ import UIKit
 struct TextView {
     let value: ReadWriteSignal<String>
     let placeholder: ReadWriteSignal<String>
+    let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
+    let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<(String, UITextField), Bool>()
     let insets: UIEdgeInsets
@@ -26,12 +28,16 @@ struct TextView {
     init(
         value: String,
         placeholder: String,
+        keyboardTypeSignal: UIKeyboardType? = nil,
+        textContentType: UITextContentType? = nil,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true
     ) {
         self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
+        self.keyboardTypeSignal = ReadWriteSignal(keyboardTypeSignal)
+        self.textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
     }
 }
@@ -65,7 +71,7 @@ extension TextView: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
-        
+
         bag += view.traitCollectionSignal.atOnce().onValue({ trait in
             if trait.userInterfaceStyle == .dark {
                 view.backgroundColor = UIColor.secondaryBackground
@@ -93,11 +99,15 @@ extension TextView: Viewable {
 
         let textView = UITextView()
         textView.tintColor = .primaryTintColor
-        textView.autocorrectionType = .no
-        textView.autocapitalizationType = .none
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
         textView.backgroundColor = .clear
         bag += value.atOnce().bidirectionallyBindTo(textView)
+                        
+        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
+            textView.textContentType = textContentType
+            textView.keyboardType = keyboardType ?? .default
+            textView.reloadInputViews()
+        })
 
         textView.snp.remakeConstraints { make in
             make.height.equalTo(34)
@@ -138,6 +148,13 @@ extension TextView: Viewable {
 
         let placeholderLabel = UILabel(value: "Aa", style: TextStyle.body.colored(.darkGray).resized(to: 14))
         paddingView.addSubview(placeholderLabel)
+                        
+        bag += placeholder.map { Optional($0) }.bindTo(
+            transition: placeholderLabel,
+            style: .crossDissolve(duration: 0.25),
+            placeholderLabel,
+            \.text
+        )
 
         placeholderLabel.snp.makeConstraints { make in
             make.left.equalTo(paddingView.layoutMargins.left + 5)
@@ -145,7 +162,7 @@ extension TextView: Viewable {
             make.width.equalToSuperview()
         }
 
-        bag += textView.onValue { value in
+        bag += value.onValue { value in
             placeholderLabel.alpha = value.isEmpty ? 1 : 0
         }
 
