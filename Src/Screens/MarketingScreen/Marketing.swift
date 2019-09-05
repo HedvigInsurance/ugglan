@@ -45,7 +45,7 @@ extension Marketing: Presentable {
                 case .onboard:
                     bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
                 case .login:
-                    bag += viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.prefersNavigationBarHidden(true)])).onError({ _ in
+                    bag += viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.defaults])).onError({ _ in
                         pausedCallbacker.callAll(with: false)
                     })
                 }

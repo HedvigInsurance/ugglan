@@ -27,6 +27,7 @@ extension BankIDLogin: Presentable {
 
         let view = UIView()
         viewController.view = view
+        viewController.title = "Logga in"
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -74,7 +75,7 @@ extension BankIDLogin: Presentable {
         headerContainer.addArrangedSubview(iconContainerView)
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
-
+        
         let statusLabel = MultilineLabel(value: String(key: .SIGN_START_BANKID), style: .rowTitle)
         bag += containerView.addArranged(statusLabel)
 
@@ -88,22 +89,13 @@ extension BankIDLogin: Presentable {
         let statusSignal = client.subscribe(
             subscription: BankIdAuthSubscription()
         ).compactMap { $0.data?.authStatus?.status }
-        
-        let hasBankIDInstalledSignal = ReadWriteSignal<Bool?>(nil)
-        
-        bag += statusSignal.skip(first: 1).withLatestFrom(hasBankIDInstalledSignal.plain()).onValue { authStatus, hasBankIDInstalled in
-            guard let hasBankIDInstalled = hasBankIDInstalled else {
-                return
-            }
+                
+        bag += statusSignal.skip(first: 1).onValue { authStatus in
             let statusText: String
 
             switch authStatus {
             case .initiated:
-                if hasBankIDInstalled {
-                    statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
-                } else {
-                    statusText = "Skanna koden ovan med BankID appen på den telefonen där du har det installerat"
-                }
+                statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
             case .inProgress:
                 statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
             case .failed:
@@ -115,54 +107,16 @@ extension BankIDLogin: Presentable {
             }
 
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
-            
-            
-            containerStackView.systemLayoutSizeFitting(CGSize.zero)
-            
-            containerStackView.layoutIfNeeded()
         }
         
-        func showFallbackQRCode(_ url: URL) {
-            let data = url.absoluteString.data(using: String.Encoding.ascii)
-            guard let qrFilter = CIFilter(name: "CIQRCodeGenerator") else { return }
-            qrFilter.setValue(data, forKey: "inputMessage")
-            guard let qrImage = qrFilter.outputImage else { return }
-            
-            let transform = CGAffineTransform(scaleX: 10, y: 10)
-            let scaledQrImage = qrImage.transformed(by: transform)
-            
-            guard let colorInvertFilter = CIFilter(name: "CIColorInvert") else { return }
-            colorInvertFilter.setValue(scaledQrImage, forKey: "inputImage")
-            guard let outputInvertedImage = colorInvertFilter.outputImage else { return }
-            
-            let circle = CIFilter(name: "CIRadialGradient", parameters: [
-            "inputRadius0":100,
-            "inputRadius1":100,
-            "inputColor0":CIColor(red: 1, green: 1, blue: 1, alpha:1),
-            "inputColor1":CIColor(red: 0, green: 0, blue: 0, alpha:0)
-            ])?.outputImage
-            
-            guard let maskToAlphaFilter = CIFilter(name: "CIMaskToAlpha", parameters: [kCIInputImageKey: circle!]) else { return }
-            maskToAlphaFilter.setValue(outputInvertedImage, forKey: "inputImage")
-            guard let outputCIImage = maskToAlphaFilter.outputImage else { return }
-            
-            let context = CIContext()
-            guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else { return }
-            let processedImage = UIImage(cgImage: cgImage)
-            
-            imageView.image = processedImage
-        }
-
-        bag += client.perform(mutation: BankIdAuthMutation()).valueSignal.compactMap { result in result.data?.bankIdAuth.autoStartToken }.onValue { autoStartToken in
+        bag += client.perform(mutation: BankIdAuthMutation()).delay(by: 0.5).valueSignal.compactMap { result in result.data?.bankIdAuth.autoStartToken }.onValue { autoStartToken in
             let urlScheme = Bundle.main.urlScheme ?? ""
             guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
 
             if UIApplication.shared.canOpenURL(url) {
-                hasBankIDInstalledSignal.value = true
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
-                hasBankIDInstalledSignal.value = false
-                showFallbackQRCode(url)
+                viewController.present(BankIDLoginQR(autoStartURL: url), options: [.prefersNavigationBarHidden(false)])
             }
         }
 
@@ -172,8 +126,6 @@ extension BankIDLogin: Presentable {
             }
             
             bag += statusSignal.withLatestFrom(view.windowSignal.atOnce().plain()).onValue({ authState, window in
-                print(authState)
-                
                 if authState == .success {
                     bag += window?.present(LoggedIn(), animated: true)
                 }
