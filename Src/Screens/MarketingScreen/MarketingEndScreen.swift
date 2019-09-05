@@ -142,8 +142,7 @@ extension MarketingEnd: Presentable {
             )
 
             bag += containerView.add(end).onValue { marketingResult in
-                let intent: OnboardingChat.Intent = marketingResult == .onboard ? .onboard : .login
-                bag += viewController.present(FreeTextChat(), options: [.prefersNavigationBarHidden(false)])
+                bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
             }
 
             bag += dismissSignal.onValue { _ in

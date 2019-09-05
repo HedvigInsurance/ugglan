@@ -22,6 +22,7 @@ extension License: Presentable {
 
         let viewController = UIViewController()
         viewController.title = acknowledgement.title
+        viewController.preferredContentSize = CGSize(width: 0, height: 500)
 
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .offWhite

@@ -13,11 +13,15 @@ import Presentation
 import UIKit
 
 struct About {
-    let presentingViewController: UIViewController
     let client: ApolloClient
+    let state: State
+    
+    enum State {
+        case onboarding, loggedIn
+    }
 
-    init(presentingViewController: UIViewController, client: ApolloClient = ApolloContainer.shared.client) {
-        self.presentingViewController = presentingViewController
+    init(state: State, client: ApolloClient = ApolloContainer.shared.client) {
+        self.state = state
         self.client = client
     }
 }
@@ -30,26 +34,27 @@ extension About: Presentable {
         let bag = DisposeBag()
 
         let form = FormView()
-
-        let licensesSection = form.appendSection(
-            headerView: nil,
-            footerView: nil,
-            style: .sectionPlain
-        )
-
-        let licensesRow = LicensesRow(
-            presentingViewController: presentingViewController
-        )
-
-        bag += licensesSection.append(licensesRow) { row in
-            bag += self.presentingViewController.registerForPreviewing(
-                sourceView: row.viewRepresentation,
-                previewable: licensesRow
+        
+        if state == .onboarding {
+            let loginSection = form.appendSection(
+                headerView: nil,
+                footerView: nil,
+                style: .sectionPlain
             )
+            
+            let loginRow = ButtonRow(
+                text: "Logga in",
+                style: .normalButton
+            )
+            bag += loginSection.append(loginRow)
+            
+            bag += loginRow.onSelect.onValue { _ in
+                viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.prefersNavigationBarHidden(true)]))
+            }
+            
+            bag += form.append(Spacing(height: 20))
         }
-
-        bag += form.append(Spacing(height: 20))
-
+        
         let versionSection = form.appendSection(
             headerView: nil,
             footerView: nil,
@@ -61,37 +66,58 @@ extension About: Presentable {
 
         let memberIdRow = MemberIdRow()
         bag += versionSection.append(memberIdRow)
-
-        let activatePushNotificationsRow = ButtonRow(
-            text: "Aktivera pushnotiser",
-            style: .normalButton
-        )
-        bag += versionSection.append(activatePushNotificationsRow)
-
-        bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
-            let register = PushNotificationsRegister(
-                title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
-                message: "",
-                forceAsk: true
+        
+        if state == .loggedIn {
+            let activatePushNotificationsRow = ButtonRow(
+                text: "Aktivera pushnotiser",
+                style: .normalButton
             )
-            return self.presentingViewController.present(register).disposable
+            bag += versionSection.append(activatePushNotificationsRow)
+
+            bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
+                let register = PushNotificationsRegister(
+                    title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                    message: "",
+                    forceAsk: true
+                )
+                return viewController.present(register).disposable
+            }
+
+            let showWhatsNew = ButtonRow(
+                text: "Visa intro",
+                style: .normalButton
+            )
+            bag += versionSection.append(showWhatsNew)
+            
+            bag += showWhatsNew.onSelect.onValue { _ in
+                bag += self.client
+                    .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.0.0"))
+                    .compactMap { $0.data }
+                    .filter { $0.news.count > 0 }
+                    .onValue { data in
+                        let whatsNew = WhatsNew(data: data)
+                        viewController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                    }
+            }
         }
-
-        let showWhatsNew = ButtonRow(
-            text: "Visa intro",
-            style: .normalButton
+        
+        bag += form.append(Spacing(height: 20))
+        
+        let licensesSection = form.appendSection(
+            headerView: nil,
+            footerView: nil,
+            style: .sectionPlain
         )
-        bag += versionSection.append(showWhatsNew)
 
-        bag += showWhatsNew.onSelect.onValue { _ in
-            bag += self.client
-                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.0.0"))
-                .compactMap { $0.data }
-                .filter { $0.news.count > 0 }
-                .onValue { data in
-                    let whatsNew = WhatsNew(data: data)
-                    self.presentingViewController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
-                }
+        let licensesRow = LicensesRow(
+            presentingViewController: viewController
+        )
+
+        bag += licensesSection.append(licensesRow) { row in
+            bag += viewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: licensesRow
+            )
         }
 
         bag += form.append(Spacing(height: 15))

@@ -37,9 +37,7 @@ extension Marketing: Presentable {
         return (viewController, Future { completion in
             let resultCallbacker = Callbacker<MarketingResult>()
             bag += resultCallbacker.signal().onValue { marketingResult in
-                let intent: OnboardingChat.Intent = marketingResult == .onboard ? .onboard : .login
-                bag += viewController.present(OnboardingChat(intent: intent), options: [.prefersNavigationBarHidden(false)])
-                completion(.success(marketingResult))
+                bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
             }
 
             let endScreenCallbacker = Callbacker<Void>()

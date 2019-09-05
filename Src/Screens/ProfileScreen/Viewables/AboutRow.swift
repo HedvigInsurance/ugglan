@@ -31,7 +31,7 @@ extension AboutRow: Viewable {
         }
 
         bag += events.onSelect.onValue {
-            let about = About(presentingViewController: self.presentingViewController)
+            let about = About(state: .loggedIn)
             self.presentingViewController.present(
                 about,
                 style: .default,
@@ -45,7 +45,7 @@ extension AboutRow: Viewable {
 
 extension AboutRow: Previewable {
     func preview() -> (About, PresentationOptions) {
-        let about = About(presentingViewController: presentingViewController)
+        let about = About(state: .loggedIn)
         return (about, [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

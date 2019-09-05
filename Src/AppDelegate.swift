@@ -74,8 +74,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func logout() {
         bag += ApolloContainer.shared.createClientFromNewSession().onValue { _ in
-            self.window.rootViewController = self.navigationController
-            self.presentMarketing()
+            self.bag.dispose()
+            self.bag += ApplicationState.presentRootViewController(self.window)
         }
     }
 
@@ -99,23 +99,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self.toastSignal.value = toast
             }
         }
-    }
-
-    func presentMarketing() {
-        let marketing = Marketing()
-
-        let marketingPresentation = Presentation(
-            marketing,
-            style: .marketing,
-            options: .defaults
-        )
-
-        bag += navigationController.present(marketingPresentation)
-    }
-
-    func presentOnboarding() {
-        guard let rootViewController = window.rootViewController else { return }
-        bag += rootViewController.present(OnboardingChat(intent: .onboard), options: [.prefersNavigationBarHidden(false)])
     }
 
     func applicationWillTerminate(_: UIApplication) {
@@ -151,7 +134,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 .prefersNavigationBarHidden(true),
             ]).onValue { result in
                 if result == .accept {
-                    self.presentOnboarding()
+                    // TODO
                 }
                 innerBag.dispose()
             }

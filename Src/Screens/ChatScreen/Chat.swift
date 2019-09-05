@@ -99,6 +99,9 @@ extension Chat: Presentable {
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
         tableKit.view.contentInsetAdjustmentBehavior = .never
+        if #available(iOS 13.0, *) {
+            tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
+        }
         tableKit.view.tableHeaderView = headerPushView
         
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
@@ -111,6 +114,7 @@ extension Chat: Presentable {
         .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
             AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
         }, animations: { keyboardInfo in
+            tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
             headerPushView.snp.remakeConstraints { make in
                 make.height.equalTo(keyboardInfo.height + 20)
             }
@@ -124,6 +128,7 @@ extension Chat: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
+                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
                 headerPushView.snp.remakeConstraints { make in
                     make.height.equalTo(keyboardInfo.height + 20)
                 }
@@ -137,6 +142,7 @@ extension Chat: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
+               tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
                 headerPushView.snp.remakeConstraints { make in
                     make.height.equalTo(keyboardInfo.height + 20)
                 }
