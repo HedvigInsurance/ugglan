@@ -96,14 +96,25 @@ extension Chat: Presentable {
             headerForSection: nil,
             footerForSection: nil
         )
-        
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
+                
         tableKit.view.contentInsetAdjustmentBehavior = .never
         if #available(iOS 13.0, *) {
             tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
         }
         tableKit.view.tableHeaderView = headerPushView
+        
+        // hack to fix modal dismissing when dragging up in scrollView
+        if #available(iOS 13.0, *) {
+            bag += tableKit.delegate.willBeginDragging.onValue { _ in
+                viewController.isModalInPresentation = true
+            }
+        
+            bag += tableKit.delegate.willEndDragging.onValue{ _ in
+                viewController.isModalInPresentation = false
+            }
+        }
         
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
@@ -279,7 +290,6 @@ extension Chat: Presentable {
         bag += Signal(after: 0.25).onValue { _ in
             fetchMessages()
         }
-
         bag += viewController.install(tableKit)
 
         return (viewController, Future { _ in
