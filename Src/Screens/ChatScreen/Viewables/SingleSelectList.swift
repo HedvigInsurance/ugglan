@@ -126,7 +126,7 @@ extension SingleSelectList: Viewable {
                 innerBag += buttonView.hasWindowSignal.atOnce().atValue({ _ in
                     buttonView.alpha = 0
                     buttonView.transform = CGAffineTransform(translationX: buttonView.frame.width + 70, y: 0)
-                }).delay(by: 0.2 + (Double(index) * 0.1)).animated(style: SpringAnimationStyle.mediumBounce(), animations: { _ in
+                }).delay(by: 0.2).animated(style: SpringAnimationStyle.mediumBounce(delay: (Double(index) * 0.1)), animations: { _ in
                     buttonView.transform = .identity
                     buttonView.alpha = 1
                 })
