@@ -96,6 +96,7 @@ extension Chat: Presentable {
             headerForSection: nil,
             footerForSection: nil
         )
+        
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
         tableKit.view.contentInsetAdjustmentBehavior = .never

@@ -38,6 +38,11 @@ class AccessoryViewController<Accessory: Viewable>: UIViewController where Acces
     override var inputAccessoryView: UIView? {
         return accessoryView
     }
+        
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        becomeFirstResponder()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

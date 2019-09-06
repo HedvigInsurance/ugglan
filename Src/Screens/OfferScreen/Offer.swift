@@ -48,8 +48,14 @@ extension Offer {
         chatButton.tintColor = .white
 
         bag += chatButton.onValue { _ in
-            let chatOverlay = DraggableOverlay(presentable: OfferChat(), adjustsToKeyboard: false)
-            bag += viewController.present(chatOverlay).disposable
+            bag += viewController.present(
+                OfferChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: nil
+                )
+            ).disposable
         }
 
         item.leftBarButtonItem = chatButton

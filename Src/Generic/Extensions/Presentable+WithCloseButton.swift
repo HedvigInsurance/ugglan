@@ -18,14 +18,43 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
             return (viewController, Future { completion in
                 let bag = DisposeBag()
                 
-                let closeButtonItem = UIBarButtonItem(title: "Stäng", style: .navigationBarButton)
+                let closeButton = CloseButton()
+                let closeButtonItem = UIBarButtonItem(viewable: closeButton)
+                
                 viewController.navigationItem.leftBarButtonItem = closeButtonItem
                 
-                bag += closeButtonItem.onValue { _ in
+                bag += closeButton.onTapSignal.onValue { _ in
                     completion(.success)
                 }
                 
                 bag += disposable
+                
+                return DelayedDisposer(bag, delay: 2)
+            })
+        }
+    }
+}
+
+extension Presentable where Matter: UIViewController, Result == Future<Void> {
+    var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
+        AnyPresentable { () -> (Self.Matter, Self.Result) in
+            let (viewController, future) = self.materialize()
+            
+            return (viewController, Future { completion in
+                let bag = DisposeBag()
+                                
+                let closeButton = CloseButton()
+                let closeButtonItem = UIBarButtonItem(viewable: closeButton)
+                
+                viewController.navigationItem.leftBarButtonItem = closeButtonItem
+                
+                bag += closeButton.onTapSignal.onValue { _ in
+                    completion(.success)
+                }
+                
+                bag += future.onResult(completion)
+                
+                bag += future.disposable
                 
                 return DelayedDisposer(bag, delay: 2)
             })

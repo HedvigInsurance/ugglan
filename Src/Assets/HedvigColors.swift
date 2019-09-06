@@ -72,6 +72,12 @@ extension UIColor {
 
         return UIColor.pink
     }
+    
+    static var navigationItemMutedTintColor: UIColor {
+        return UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .white : .darkGray
+        })
+    }
 
     static let coral700 = UIColor(red: 0.80, green: 0.43, blue: 0.40, alpha: 1.0)
     static let transparent = UIColor.white.withAlphaComponent(0)

@@ -12,7 +12,8 @@
           "appearance" : "luminosity",
           "value" : "dark"
         }
-      ]
+      ],
+      "unassigned" : true
     }
   ],
   "info" : {
@@ -20,7 +21,7 @@
     "author" : "xcode"
   },
   "properties" : {
-    "template-rendering-intent" : "original",
+    "template-rendering-intent" : "template",
     "preserves-vector-representation" : true
   }
 }

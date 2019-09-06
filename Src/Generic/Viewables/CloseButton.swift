@@ -45,7 +45,8 @@ extension CloseButton: Viewable {
             \.alpha
         )
 
-        let icon = Icon(icon: Asset.close, iconWidth: 17)
+        let icon = Icon(icon: Asset.close, iconWidth: 15)
+        icon.image.tintColor = .navigationItemMutedTintColor
         button.addSubview(icon)
 
         icon.snp.makeConstraints { make in
