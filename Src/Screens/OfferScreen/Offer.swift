@@ -53,7 +53,7 @@ extension Offer {
                 style: .modally(
                     presentationStyle: .pageSheet,
                     transitionStyle: nil,
-                    capturesStatusBarAppearance: nil
+                    capturesStatusBarAppearance: true
                 )
             ).disposable
         }
