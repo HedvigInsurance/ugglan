@@ -88,7 +88,7 @@ extension Chat: Presentable {
         }
 
         let currentGlobalIdSignal = currentMessageSignal.map { message in message?.globalId }
-
+        
         let tableKit = TableKit<EmptySection, ChatListContent>(
             table: Table(),
             style: style,
@@ -283,8 +283,23 @@ extension Chat: Presentable {
                 return item
             }
         }.onValue { messages in
-            let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
-            tableKit.set(Table(rows: messages), animation: tableAnimation)
+            if tableKit.table.isEmpty {
+                tableKit.set(Table(rows: messages), animation: .none)
+                
+                tableKit.view.visibleCells.forEach { cell in
+                    cell.alpha = 0
+                }
+                
+                bag += Signal(after: 0.25).animated(style: .easeOut(duration: 0.25)) { _ in
+                    tableKit.view.visibleCells.forEach { cell in
+                        cell.alpha = 1
+                    }
+                }
+            } else {
+                let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
+                tableKit.set(Table(rows: messages), animation: tableAnimation)
+            }
+            
         }
 
         bag += Signal(after: 0.25).onValue { _ in
