@@ -119,20 +119,6 @@ extension Chat: Presentable {
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         }
-        
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-        .compactMap { notification in notification.keyboardInfo }
-        .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-            AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-        }, animations: { keyboardInfo in
-            tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
-            headerPushView.snp.remakeConstraints { make in
-                make.height.equalTo(keyboardInfo.height + 20)
-            }
-            headerPushView.layoutIfNeeded()
-            tableKit.view.tableHeaderView = headerPushView
-        })
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
@@ -140,12 +126,9 @@ extension Chat: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
-                headerPushView.snp.remakeConstraints { make in
-                    make.height.equalTo(keyboardInfo.height + 20)
-                }
-                headerPushView.layoutIfNeeded()
-                tableKit.view.tableHeaderView = headerPushView
+                let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.endFrame.height, right: 0)
+                tableKit.view.contentInset = insets
+                tableKit.view.scrollIndicatorInsets = insets
             })
 
         bag += NotificationCenter.default
@@ -154,12 +137,9 @@ extension Chat: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-               tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
-                headerPushView.snp.remakeConstraints { make in
-                    make.height.equalTo(keyboardInfo.height + 20)
-                }
-                headerPushView.layoutIfNeeded()
-                tableKit.view.tableHeaderView = headerPushView
+                let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.endFrame.height, right: 0)
+                tableKit.view.contentInset = insets
+                tableKit.view.scrollIndicatorInsets = insets
             })
 
         let isEditingSignal = ReadWriteSignal<Bool>(false)
@@ -202,7 +182,7 @@ extension Chat: Presentable {
         }
         
         let filteredMessagesSignal = messagesSignal.map { messages in
-            messages.filter { $0.left != nil }
+            messages.filter { $0.left?.body != "" && $0.left != nil }
         }
         
         let subscriptionBag = bag.innerBag()
@@ -210,6 +190,7 @@ extension Chat: Presentable {
         func subscribeToMessages() {
             subscriptionBag += client.subscribe(subscription: ChatMessagesSubscription())
             .compactMap { $0.data?.message.fragments.messageData }
+            .debug()
             .distinct { oldMessage, newMessage in
                 return oldMessage.globalId == newMessage.globalId
             }
@@ -252,7 +233,7 @@ extension Chat: Presentable {
                 })
                 .map { messages -> [Message] in
                     messages.enumerated().map { offset, message in Message(from: message, index: offset, listSignal: filteredMessagesSignal) }
-                }.map { messages in messages.filter { $0.body != "" } }.onValue({ messages in
+                }.onValue({ messages in
                     guard messages.count != 0 else {
                         fetchMessages()
                         return
@@ -278,6 +259,10 @@ extension Chat: Presentable {
                     if offset != 0 {
                         return nil
                     }
+                }
+                
+                if item.left?.body == "" {
+                    return nil
                 }
 
                 return item
