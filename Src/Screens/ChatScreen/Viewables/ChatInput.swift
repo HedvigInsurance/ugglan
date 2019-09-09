@@ -96,11 +96,25 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
-
-//            bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
-//                stackView.isHidden = isHidden
-//                stackView.alpha = isHidden ? 0 : 1
-//            }
+            
+            bag += combineLatest(
+                currentMessageSignal,
+                attachGIFPaneIsOpenSignal
+            ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachGIFPaneIsOpen in
+                
+                var isHidden: Bool
+                
+                if attachGIFPaneIsOpen {
+                    isHidden = true
+                } else if currentMessage?.richTextCompatible == true {
+                    isHidden = false
+                } else {
+                    isHidden = true
+                }
+                
+                stackView.animationSafeIsHidden = isHidden
+                stackView.alpha = isHidden ? 0 : 1
+            }
         }.onValue({ _ in
             attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
@@ -124,10 +138,24 @@ extension ChatInput: Viewable {
                 right: 0
             )
 
-//            bag += attachFilePaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
-//                stackView.isHidden = isHidden
-//                stackView.alpha = isHidden ? 0 : 1
-//            }
+            bag += combineLatest(
+                currentMessageSignal,
+                attachFilePaneIsOpenSignal
+            ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachFilePaneIsOpen in
+                
+                var isHidden: Bool
+                
+                if attachFilePaneIsOpen {
+                    isHidden = true
+                } else if currentMessage?.richTextCompatible == true {
+                    isHidden = false
+                } else {
+                    isHidden = true
+                }
+                
+                stackView.animationSafeIsHidden = isHidden
+                stackView.alpha = isHidden ? 0 : 1
+            }
         }.onValue({ _ in
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
