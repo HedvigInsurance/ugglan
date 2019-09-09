@@ -3,17 +3,6 @@
     {
       "idiom" : "universal",
       "filename" : "Close.pdf"
-    },
-    {
-      "idiom" : "universal",
-      "filename" : "close-light.pdf",
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "unassigned" : true
     }
   ],
   "info" : {
