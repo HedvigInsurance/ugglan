@@ -445,6 +445,8 @@ extension Message: Reusable {
         return (containerView, { message in
             let bag = DisposeBag()
             
+            UIView.setAnimationsEnabled(false)
+            
             editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
             
             bag += editButton.signal(for: .touchUpInside).onValue({ _ in
@@ -494,6 +496,8 @@ extension Message: Reusable {
             applySpacing()
 
             bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
+            
+            UIView.setAnimationsEnabled(true)
 
             return bag
         })

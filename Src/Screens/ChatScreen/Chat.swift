@@ -98,12 +98,12 @@ extension Chat: Presentable {
         )
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
+        tableKit.view.insetsContentViewsToSafeArea = false
                 
         tableKit.view.contentInsetAdjustmentBehavior = .never
         if #available(iOS 13.0, *) {
             tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
         }
-        tableKit.view.tableHeaderView = headerPushView
         
         // hack to fix modal dismissing when dragging up in scrollView
         if #available(iOS 13.0, *) {
@@ -122,25 +122,29 @@ extension Chat: Presentable {
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
-                let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.endFrame.height, right: 0)
-                tableKit.view.contentInset = insets
-                tableKit.view.scrollIndicatorInsets = insets
-            })
+        .compactMap { notification in notification.keyboardInfo }
+        .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+            AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+        }, animations: { keyboardInfo in
+            tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+           let headerView = UIView()
+            headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
+            tableKit.view.tableHeaderView = headerView
+        })
+
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillHideNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
-                let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.endFrame.height, right: 0)
-                tableKit.view.contentInset = insets
-                tableKit.view.scrollIndicatorInsets = insets
-            })
+        .compactMap { notification in notification.keyboardInfo }
+        .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+            AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+        }, animations: { keyboardInfo in
+            tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+            let headerView = UIView()
+            headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
+            tableKit.view.tableHeaderView = headerView
+        })
+
 
         let isEditingSignal = ReadWriteSignal<Bool>(false)
         let messagesSignal = ReadWriteSignal<[ChatListContent]>([])
