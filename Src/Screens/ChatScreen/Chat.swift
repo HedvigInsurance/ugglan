@@ -110,7 +110,7 @@ extension Chat: Presentable {
             bag += tableKit.delegate.willBeginDragging.onValue { _ in
                 viewController.isModalInPresentation = true
             }
-        
+            
             bag += tableKit.delegate.willEndDragging.onValue{ _ in
                 viewController.isModalInPresentation = false
             }
@@ -121,21 +121,9 @@ extension Chat: Presentable {
         }
 
         bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillShowNotification)
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
         .compactMap { notification in notification.keyboardInfo }
-        .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-            AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-        }, animations: { keyboardInfo in
-            tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
-           let headerView = UIView()
-            headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
-            tableKit.view.tableHeaderView = headerView
-        })
-
-
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillHideNotification)
-        .compactMap { notification in notification.keyboardInfo }
+        .debug()
         .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
             AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
         }, animations: { keyboardInfo in
@@ -144,7 +132,6 @@ extension Chat: Presentable {
             headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
             tableKit.view.tableHeaderView = headerView
         })
-
 
         let isEditingSignal = ReadWriteSignal<Bool>(false)
         let messagesSignal = ReadWriteSignal<[ChatListContent]>([])

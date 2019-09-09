@@ -162,7 +162,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         launchWindow?.isOpaque = false
         launchWindow?.backgroundColor = UIColor.transparent
 
-        window.backgroundColor = .primaryBackground
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
             let mirror = Mirror(reflecting: viewController)
