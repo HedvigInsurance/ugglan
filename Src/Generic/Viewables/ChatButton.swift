@@ -45,7 +45,14 @@ extension ChatButton: Viewable {
         }
 
         bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in
-            dashboardOpenFreeTextChat(self.presentingViewController)
+            self.presentingViewController.present(
+                FreeTextChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: true
+                )
+            )
         }
 
         let chatIcon = UIImageView()
