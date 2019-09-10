@@ -230,7 +230,7 @@ extension ChatInput: Viewable {
             }
         }
 
-        bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal.readOnly()))
+        bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal, currentMessageSignal: currentMessageSignal))
         bag += containerView.addArranged(AttachGIFPane(isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()))
 
         return (backgroundView, bag)

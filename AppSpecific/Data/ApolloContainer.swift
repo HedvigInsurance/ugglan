@@ -54,12 +54,14 @@ class ApolloContainer {
 
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = authPayloads
+        
+        let session = URLSession(configuration: configuration)
 
         let authMap: GraphQLMap = authPayloads
-
+        
         let httpNetworkTransport = HTTPNetworkTransport(
             url: environment.endpointURL,
-            configuration: configuration
+            session: session
         )
 
         let websocketNetworkTransport = WebSocketTransport(

@@ -26,6 +26,7 @@ targets:
       - Ugglan
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
+      - sdkroot:Photos.framework
       - location: Carthage/Build/iOS/SnapshotTesting.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework

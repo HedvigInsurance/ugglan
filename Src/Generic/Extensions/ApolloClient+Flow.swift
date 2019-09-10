@@ -34,39 +34,35 @@ extension ApolloClient {
         numberOfRetries: Int = 0
     ) -> Future<GraphQLResult<Query.Data>> {
         return Future<GraphQLResult<Query.Data>> { completion in
-            let cancellable = self.fetch(
-                query: query,
-                cachePolicy: cachePolicy,
-                queue: queue,
-                resultHandler: { [unowned self] (result: GraphQLResult<Query.Data>?, error: Error?) in
-                    if let result = result {
-                        completion(.success(result))
-                    } else {
-                        if error?.isIgnorable ?? false {
-                            return
-                        }
+            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) {  [unowned self] result in
+                switch result {
+                case let .success(result):
+                     completion(.success(result))
+                case let .failure(error):
+                    if error.isIgnorable {
+                        return
+                    }
 
-                        log.error(error?.localizedDescription)
+                    log.error(error.localizedDescription)
 
-                        let retryHandler = { [unowned self] () -> Void in
-                            self.fetch(
-                                query: query,
-                                cachePolicy: cachePolicy,
-                                queue: queue,
-                                numberOfRetries: numberOfRetries + 1
-                            ).onResult { result in
-                                completion(result)
-                            }
-                        }
-
-                        if numberOfRetries == 0 {
-                            retryHandler()
-                        } else {
-                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                    let retryHandler = { [unowned self] () -> Void in
+                        self.fetch(
+                            query: query,
+                            cachePolicy: cachePolicy,
+                            queue: queue,
+                            numberOfRetries: numberOfRetries + 1
+                        ).onResult { result in
+                            completion(result)
                         }
                     }
+
+                    if numberOfRetries == 0 {
+                        retryHandler()
+                    } else {
+                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                    }
                 }
-            )
+            }
 
             return Disposer {
                 cancellable.cancel()
@@ -102,27 +98,28 @@ extension ApolloClient {
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
-                resultHandler: { [unowned self] (result: GraphQLResult<Mutation.Data>?, error: Error?) in
-                    if let result = result {
-                        completion(.success(result))
-                    } else {
-                        if error?.isIgnorable ?? false {
-                            return
-                        }
+                resultHandler: { [unowned self] result in
+                    switch result {
+                    case let .success(result):
+                         completion(.success(result))
+                    case let .failure(error):
+                        if error.isIgnorable {
+                           return
+                       }
 
-                        log.error(error?.localizedDescription)
+                       log.error(error.localizedDescription)
 
-                        let retryHandler = { [unowned self] () -> Void in
-                            self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
-                                completion(result)
-                            }
-                        }
+                       let retryHandler = { [unowned self] () -> Void in
+                           self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
+                               completion(result)
+                           }
+                       }
 
-                        if numberOfRetries == 0 {
-                            retryHandler()
-                        } else {
-                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
-                        }
+                       if numberOfRetries == 0 {
+                           retryHandler()
+                       } else {
+                           self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                       }
                     }
                 }
             )
@@ -150,15 +147,16 @@ extension ApolloClient {
         return Signal { callbacker in
             let bag = DisposeBag()
 
-            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { result, error in
-                if let result = result {
+            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { [unowned self] result in
+                switch result {
+                case let .success(result):
                     callbacker(result)
-                } else {
-                    if error?.isIgnorable ?? false {
+                case let .failure(error):
+                    if error.isIgnorable {
                         return
                     }
 
-                    log.error(error?.localizedDescription)
+                    log.error(error.localizedDescription)
 
                     let retryHandler = { [unowned self] in
                         bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: numberOfRetries + 1).onValue { result in
@@ -180,18 +178,69 @@ extension ApolloClient {
             }
         }
     }
+    
+    func upload<Mutation: GraphQLMutation>(
+        operation: Mutation,
+        files: [GraphQLFile],
+        queue: DispatchQueue = DispatchQueue.main
+    ) -> Future<GraphQLResult<Mutation.Data>> {
+        upload(operation: operation, files: files, queue: queue, numberOfRetries: 0)
+    }
+    
+    private func upload<Mutation: GraphQLMutation>(
+        operation: Mutation,
+        files: [GraphQLFile],
+        queue: DispatchQueue = DispatchQueue.main,
+        numberOfRetries: Int = 0
+    ) -> Future<GraphQLResult<Mutation.Data>> {
+        Future { completion in
+            let bag = DisposeBag()
+            let cancellable = self.upload(operation: operation, context: nil, files: files, queue: queue) { [unowned self] result in
+                print(result)
+                switch result {
+                case let .success(result):
+                    completion(.success(result))
+                case let .failure(error):
+                    if error.isIgnorable {
+                        return
+                    }
+
+                    log.error(error.localizedDescription)
+
+                    let retryHandler = { [unowned self] () -> Void in
+                        bag += self.upload(operation: operation, files: files, queue: queue).onValue { result in
+                            completion(.success(result))
+                        }
+                    }
+
+                    if numberOfRetries == 0 {
+                        retryHandler()
+                    } else {
+                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                    }
+                }
+            }
+            
+            return Disposer {
+                bag.dispose()
+                cancellable.cancel()
+            }
+        }
+    }
 
     func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
+        
         return Signal { callbacker in
             let bag = DisposeBag()
 
-            let subscriber = self.subscribe(subscription: subscription, queue: queue, resultHandler: { result, error in
-                if !(error?.isIgnorable ?? false) {
-                    log.error(error?.localizedDescription)
-                }
-
-                if let result = result {
+            let subscriber = self.subscribe(subscription: subscription, queue: queue, resultHandler: { result in
+                switch result {
+                case let .success(result):
                     callbacker(result)
+                case let .failure(error):
+                    if !error.isIgnorable {
+                        log.error(error.localizedDescription)
+                    }
                 }
             })
 
