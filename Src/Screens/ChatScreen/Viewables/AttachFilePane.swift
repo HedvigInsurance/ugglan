@@ -157,8 +157,6 @@ struct AttachFileAsset: Reusable {
     }
 }
 
-typealias AttachFilePaneData = Either<AttachFileAsset, ImageLibraryButton>
-
 extension AttachFilePane: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
@@ -179,28 +177,21 @@ extension AttachFilePane: Viewable {
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 0
         layout.sectionInset = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
+        layout.headerReferenceSize = CGSize(width: 150, height: 150)
         
-        let collectionKit = CollectionKit<EmptySection, AttachFilePaneData>(table: Table.init(rows: []), layout: layout)
+        let collectionKit = CollectionKit<EmptySection, AttachFileAsset>(
+            table: Table(rows: []),
+            layout: layout
+        )
         bag.hold(collectionKit)
         
-        bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
-            let item = collectionKit.table[index]
-            
-            if item.left != nil {
-                let height = collectionKit.view.frame.height
-                return CGSize(width: height, height: height)
-            }
-            
+        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             let height = collectionKit.view.frame.height
-            return CGSize(width: height / 2 - 10, height: height / 2 - 10)
+            return CGSize(width: height, height: height)
         }
         
-        bag += collectionKit.dataSource.supplementaryElement(for: UICollectionView.elementKindSectionHeader).set { index -> UICollectionReusableView in
-            guard let indexPath = IndexPath(index, in: collectionKit.table) else {
-                return UICollectionReusableView()
-            }
-            let view = collectionKit.view.dequeueSupplementaryView(forItem: ImageLibraryButton(), kind: UICollectionView.elementKindSectionHeader, at: indexPath)
-            return view
+        bag += collectionKit.registerViewForSupplementaryElement(kind: UICollectionView.elementKindSectionHeader) { index in
+            ImageLibraryButton()
         }
                 
         collectionKit.view.backgroundColor = .transparent
@@ -219,7 +210,7 @@ extension AttachFilePane: Viewable {
         }
         
         bag += collectionKit.onValueDisposePrevious { table in
-            return DisposeBag(table.compactMap { $0.left }.map { asset -> Disposable in
+            return DisposeBag(table.map { asset -> Disposable in
                 asset.uploadFileDelegate.set { data -> Signal<Bool> in
                     let file = GraphQLFile(
                         fieldName: "file",
@@ -255,18 +246,28 @@ extension AttachFilePane: Viewable {
         
         bag += isOpenSignal.atOnce().filter { $0 }.onValue { _ in
             PHPhotoLibrary.requestAuthorization { authorization in
-                var finalArray: [AttachFilePaneData] = [
-                    
+                var list: [AttachFileAsset] = []
+                
+                let fetchOptions = PHFetchOptions()
+                fetchOptions.sortDescriptors = [
+                    NSSortDescriptor(key:"creationDate", ascending: false)
                 ]
+                fetchOptions.fetchLimit = 50
                 
-                let assets = PHAsset.fetchAssets(with: .image, options: nil)
+                let imageAssets = PHAsset.fetchAssets(with: .image, options: fetchOptions)
                 
-                assets.enumerateObjects { (asset, count, _) in
-                    finalArray.append(.make(AttachFileAsset(asset: asset, type: .image)))
+                imageAssets.enumerateObjects { (asset, count, _) in
+                    list.append(AttachFileAsset(asset: asset, type: .image))
+                }
+                
+                let videoAssets = PHAsset.fetchAssets(with: .video, options: fetchOptions)
+                
+                videoAssets.enumerateObjects { (asset, count, _) in
+                    list.append(AttachFileAsset(asset: asset, type: .video))
                 }
                 
                 DispatchQueue.main.async {
-                    collectionKit.table = Table(rows: finalArray)
+                    collectionKit.table = Table(rows: list)
                 }
             }
         }
