@@ -191,8 +191,47 @@ extension AttachFilePane: Viewable {
             return CGSize(width: height, height: height)
         }
         
-        bag += collectionKit.registerViewForSupplementaryElement(kind: UICollectionView.elementKindSectionHeader) { index in
-            ImageLibraryButton()
+        func uploadFile(_ data: Data) -> Signal<Bool> {
+            let file = GraphQLFile(
+                fieldName: "file",
+                originalName: "image.jpg",
+                mimeType: "image/jpeg",
+                data: data
+            )
+            
+            return Signal<Bool> { callbacker in
+                self.client.upload(
+                    operation: UploadFileMutation(file: "image"),
+                    files: [file],
+                    queue: DispatchQueue.global(qos: .background)
+                ).onValue { result in
+                    guard let key = result.data?.uploadFile.key else {
+                        return
+                    }
+                    guard let globalID = self.currentMessageSignal.value?.globalId else {
+                        return
+                    }
+                    
+                    bag += self.client.perform(
+                        mutation: SendChatFileResponseMutation(globalID: globalID, key: key, mimeType: "image/jpeg")
+                    ).disposable
+                    
+                    callbacker(true)
+                    self.isOpenSignal.value = false
+                }.disposable
+            }
+        }
+        
+        let header = ImageLibraryButton()
+        
+        bag += header.uploadFileDelegate.set { data -> Signal<Bool> in
+            uploadFile(data)
+        }
+        
+        bag += collectionKit.registerViewForSupplementaryElement(
+            kind: UICollectionView.elementKindSectionHeader
+        ) { _ in
+            header
         }
                 
         collectionKit.view.backgroundColor = .transparent
@@ -213,34 +252,7 @@ extension AttachFilePane: Viewable {
         bag += collectionKit.onValueDisposePrevious { table in
             return DisposeBag(table.map { asset -> Disposable in
                 asset.uploadFileDelegate.set { data -> Signal<Bool> in
-                    let file = GraphQLFile(
-                        fieldName: "file",
-                        originalName: "image.jpg",
-                        mimeType: "image/jpeg",
-                        data: data
-                    )
-                    
-                    return Signal<Bool> { callbacker in
-                        self.client.upload(
-                            operation: UploadFileMutation(file: "image"),
-                            files: [file],
-                            queue: DispatchQueue.global(qos: .background)
-                        ).onValue { result in
-                            guard let key = result.data?.uploadFile.key else {
-                                return
-                            }
-                            guard let globalID = self.currentMessageSignal.value?.globalId else {
-                                return
-                            }
-                            
-                            bag += self.client.perform(
-                                mutation: SendChatFileResponseMutation(globalID: globalID, key: key, mimeType: "image/jpeg")
-                            ).disposable
-                            
-                            callbacker(true)
-                            self.isOpenSignal.value = false
-                        }.disposable
-                    }
+                    uploadFile(data)
                 }
             })
         }

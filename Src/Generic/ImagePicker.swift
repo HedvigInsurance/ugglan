@@ -11,23 +11,29 @@ import Foundation
 import Photos
 import Presentation
 import UIKit
+import MobileCoreServices
 
 struct ImagePicker {
     let sourceType: UIImagePickerController.SourceType
+    let mediaTypes: Set<MediaType>
+    
+    enum MediaType {
+        case video, photo
+    }
 }
 
 private var didPickImageCallbackerKey = 0
 private var didCancelImagePickerCallbackerKey = 1
 
 extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    private var didPickImageCallbacker: Callbacker<URL> {
-        if let callbacker = objc_getAssociatedObject(self, &didPickImageCallbackerKey) as? Callbacker<URL> {
+    private var didPickImageCallbacker: Callbacker<PHAsset> {
+        if let callbacker = objc_getAssociatedObject(self, &didPickImageCallbackerKey) as? Callbacker<PHAsset> {
             return callbacker
         }
 
         delegate = self
 
-        let callbacker = Callbacker<URL>()
+        let callbacker = Callbacker<PHAsset>()
 
         objc_setAssociatedObject(self, &didPickImageCallbackerKey, callbacker, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 
@@ -48,12 +54,12 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
         return callbacker
     }
 
-    var didPickImageSignal: Signal<URL> {
-        return didPickImageCallbacker.providedSignal
+    var didPickImageSignal: Signal<PHAsset> {
+        didPickImageCallbacker.providedSignal
     }
 
     var didCancelSignal: Signal<Void> {
-        return didCancelImagePickerCallbacker.providedSignal
+        didCancelImagePickerCallbacker.providedSignal
     }
 
     public func imagePickerControllerDidCancel(_: UIImagePickerController) {
@@ -63,11 +69,11 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
     public func imagePickerController(
         _: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
-        guard let assetUrl = info[UIImagePickerController.InfoKey.referenceURL] as? URL else {
+        guard let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset else {
             return
         }
 
-        didPickImageCallbacker.callAll(with: assetUrl)
+        didPickImageCallbacker.callAll(with: asset)
     }
 }
 
@@ -76,7 +82,7 @@ enum ImagePickerError: Error {
 }
 
 extension ImagePicker: Presentable {
-    func materialize() -> (UIImagePickerController, Future<URL>) {
+    func materialize() -> (UIImagePickerController, Future<PHAsset>) {
         let viewController = UIImagePickerController()
         viewController.sourceType = sourceType
         viewController.preferredPresentationStyle = .modally(
@@ -84,12 +90,21 @@ extension ImagePicker: Presentable {
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )
+        
+        viewController.mediaTypes = mediaTypes.map { type -> String in
+            switch type {
+            case .photo:
+                return kUTTypeImage as String
+            case .video:
+                return kUTTypeMovie as String
+            }
+        }
 
         return (viewController, Future { completion in
             let bag = DisposeBag()
 
-            bag += viewController.didPickImageSignal.onValue { url in
-                completion(.success(url))
+            bag += viewController.didPickImageSignal.onValue { asset in
+                completion(.success(asset))
             }
 
             bag += viewController.didCancelSignal.onValue { _ in

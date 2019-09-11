@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import Flow
 import Form
+import Photos
 
 struct ImageLibraryButton {
     let uploadFileDelegate = Delegate<Data, Signal<Bool>>()
@@ -43,18 +44,43 @@ extension ImageLibraryButton: Viewable {
         containerView.distribution = .fillEqually
         containerView.spacing = 5
         
+        func processAsset(_ asset: PHAsset) -> Disposable {
+            let innerBag = DisposeBag()
+            
+            PHImageManager.default().requestImageData(for: asset, options: nil) { (data, _, _, _) in
+                guard let data = data else {
+                    return
+                }
+                innerBag += self.uploadFileDelegate.call(data)?.onValue({ _ in
+                    print("loading")
+                })
+            }
+            
+            return innerBag
+        }
+        
         let cameraButton = UIControl()
         cameraButton.backgroundColor = .green
-        bag += cameraButton.signal(for: .touchUpInside).onValue { _ in
-            containerView.viewController?.present(ImagePicker(sourceType: .camera))
+        bag += cameraButton.signal(for: .touchUpInside).onValueDisposePrevious { _ in
+            containerView.viewController?.present(
+                ImagePicker(
+                    sourceType: .camera,
+                    mediaTypes: [.video, .photo]
+                )
+            ).valueSignal.onValueDisposePrevious(processAsset)
         }
         
         containerView.addArrangedSubview(cameraButton)
         
         let imagePickerButton = UIControl()
         imagePickerButton.backgroundColor = .red
-        bag += imagePickerButton.signal(for: .touchUpInside).onValue { _ in
-            containerView.viewController?.present(ImagePicker(sourceType: .photoLibrary))
+        bag += imagePickerButton.signal(for: .touchUpInside).onValueDisposePrevious { _ in
+            containerView.viewController?.present(
+                ImagePicker(
+                    sourceType: .photoLibrary,
+                    mediaTypes: [.video, .photo]
+                )
+            ).valueSignal.onValueDisposePrevious(processAsset)
         }
         
         containerView.addArrangedSubview(imagePickerButton)
