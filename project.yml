@@ -53,7 +53,6 @@ targets:
       - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
-      - location: Carthage/Build/iOS/SQLite.framework
       - location: Carthage/Build/iOS/SnapKit.framework
       - location: Carthage/Build/iOS/Starscream.framework
       - location: Carthage/Build/iOS/nanopb.framework
@@ -80,7 +79,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
           - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
           - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
-          - $(SRCROOT)/Carthage/Build/iOS/SQLite.framework
           - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
           - $(SRCROOT)/Carthage/Build/iOS/FlowFeedback.framework
@@ -100,7 +98,6 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SQLite.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FlowFeedback.framework
@@ -143,7 +140,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
           - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
           - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
-          - $(SRCROOT)/Carthage/Build/iOS/SQLite.framework
           - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
           - $(SRCROOT)/Carthage/Build/iOS/FlowFeedback.framework
@@ -162,7 +158,6 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SQLite.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FlowFeedback.framework
@@ -200,7 +195,6 @@ targets:
       - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
-      - location: Carthage/Build/iOS/SQLite.framework
       - location: Carthage/Build/iOS/SnapKit.framework
       - location: Carthage/Build/iOS/Starscream.framework
       - location: Carthage/Build/iOS/nanopb.framework
