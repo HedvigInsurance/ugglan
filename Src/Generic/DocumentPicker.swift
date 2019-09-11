@@ -68,9 +68,12 @@ enum DocumentPickerError: Error {
 
 extension DocumentPicker: Presentable {
     func materialize() -> (UIDocumentPickerViewController, Future<[URL]>) {
-        let viewController = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .import)
+        let viewController = UIDocumentPickerViewController(
+            documentTypes: ["public.item"],
+            in: .import
+        )
         viewController.preferredPresentationStyle = .modally(
-            presentationStyle: .overFullScreen,
+            presentationStyle: .pageSheet,
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )

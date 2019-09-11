@@ -111,11 +111,27 @@ extension ImageLibraryButton: Viewable {
         let filesButton = PickerButton(icon: Asset.files.image)
         bag += containerView.addArranged(filesButton).onValueDisposePrevious { _ in
             containerView.viewController?.present(
-                ImagePicker(
-                    sourceType: .photoLibrary,
-                    mediaTypes: [.video, .photo]
-                )
-            ).valueSignal.onValueDisposePrevious(processAsset)
+                DocumentPicker()
+            ).valueSignal.onValueDisposePrevious(on: .background) { urls -> Disposable in
+                let datas = urls.compactMap { url -> Future<Data> in
+                    let fileCoordinator = NSFileCoordinator()
+                    return fileCoordinator.coordinate(
+                        readingItemAt: url,
+                        options: .withoutChanges
+                    )
+                }
+                
+                return join(datas).valueSignal
+                    .map { datas -> [Disposable] in
+                        datas.compactMap {
+                            self.uploadFileDelegate.call($0)?.onValue({ didUpload in
+                                print(didUpload)
+                            })
+                        }
+                    }.onValueDisposePrevious { list -> Disposable? in
+                    return DisposeBag(list)
+                }
+            }
         }
         
         return (containerView, Signal<Void> { callback -> Disposable in
