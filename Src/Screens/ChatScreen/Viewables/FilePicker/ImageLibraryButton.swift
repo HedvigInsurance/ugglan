@@ -10,7 +10,9 @@ import UIKit
 import Flow
 import Form
 
-struct ImageLibraryButton {}
+struct ImageLibraryButton {
+    let uploadFileDelegate = Delegate<Data, Signal<Bool>>()
+}
 
 extension ImageLibraryButton: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (ImageLibraryButton) -> Disposable) {
@@ -36,11 +38,28 @@ extension ImageLibraryButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<Void>) {
         let bag = DisposeBag()
         
-        let button = UIControl()
-        button.backgroundColor = .green
+        let containerView = UIStackView()
+        containerView.axis = .vertical
+        containerView.distribution = .fillEqually
+        containerView.spacing = 5
         
-        return (button, Signal<Void> { callback -> Disposable in
-            
+        let cameraButton = UIControl()
+        cameraButton.backgroundColor = .green
+        bag += cameraButton.signal(for: .touchUpInside).onValue { _ in
+            containerView.viewController?.present(ImagePicker(sourceType: .camera))
+        }
+        
+        containerView.addArrangedSubview(cameraButton)
+        
+        let imagePickerButton = UIControl()
+        imagePickerButton.backgroundColor = .red
+        bag += imagePickerButton.signal(for: .touchUpInside).onValue { _ in
+            containerView.viewController?.present(ImagePicker(sourceType: .photoLibrary))
+        }
+        
+        containerView.addArrangedSubview(imagePickerButton)
+        
+        return (containerView, Signal<Void> { callback -> Disposable in
             return bag
         })
     }

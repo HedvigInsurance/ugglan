@@ -12,7 +12,9 @@ import Photos
 import Presentation
 import UIKit
 
-struct ImagePicker {}
+struct ImagePicker {
+    let sourceType: UIImagePickerController.SourceType
+}
 
 private var didPickImageCallbackerKey = 0
 private var didCancelImagePickerCallbackerKey = 1
@@ -76,8 +78,9 @@ enum ImagePickerError: Error {
 extension ImagePicker: Presentable {
     func materialize() -> (UIImagePickerController, Future<URL>) {
         let viewController = UIImagePickerController()
+        viewController.sourceType = sourceType
         viewController.preferredPresentationStyle = .modally(
-            presentationStyle: .overFullScreen,
+            presentationStyle: .pageSheet,
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )

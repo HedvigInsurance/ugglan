@@ -183,6 +183,7 @@ extension AttachFilePane: Viewable {
             table: Table(rows: []),
             layout: layout
         )
+        collectionKit.view.contentInset = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0)
         bag.hold(collectionKit)
         
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
