@@ -46,6 +46,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Hedvig använder kameran för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>UIAppFonts</key>

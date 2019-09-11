@@ -177,7 +177,7 @@ extension AttachFilePane: Viewable {
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 0
         layout.sectionInset = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
-        layout.headerReferenceSize = CGSize(width: 150, height: 150)
+        layout.headerReferenceSize = CGSize(width: 100, height: 1)
         
         let collectionKit = CollectionKit<EmptySection, AttachFileAsset>(
             table: Table(rows: []),

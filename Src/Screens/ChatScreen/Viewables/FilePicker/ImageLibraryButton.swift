@@ -35,6 +35,35 @@ extension ImageLibraryButton: Reusable {
     }
 }
 
+struct PickerButton: Viewable {
+    let icon: UIImage
+    
+    func materialize(events: ViewableEvents) -> (UIView, Signal<Void>) {
+        let bag = DisposeBag()
+        let button = UIControl()
+        button.backgroundColor = .secondaryBackground
+        button.layer.borderColor = UIColor.primaryBorder.cgColor
+        button.layer.borderWidth = UIScreen.main.hairlineWidth
+        button.layer.cornerRadius = 5
+        
+        let imageView = UIImageView()
+        imageView.image = icon
+        imageView.tintColor = .primaryText
+        
+        button.addSubview(imageView)
+        
+        imageView.snp.makeConstraints { make in
+            make.height.width.equalTo(45)
+            make.center.equalToSuperview()
+        }
+        
+        return (button, Signal<Void> { callback in
+            bag += button.signal(for: .touchUpInside).onValue(callback)
+            return bag
+        })
+    }
+}
+
 extension ImageLibraryButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<Void>) {
         let bag = DisposeBag()
@@ -59,9 +88,8 @@ extension ImageLibraryButton: Viewable {
             return innerBag
         }
         
-        let cameraButton = UIControl()
-        cameraButton.backgroundColor = .green
-        bag += cameraButton.signal(for: .touchUpInside).onValueDisposePrevious { _ in
+        let cameraButton = PickerButton(icon: Asset.camera.image)
+        bag += containerView.addArranged(cameraButton).onValueDisposePrevious { _ in
             containerView.viewController?.present(
                 ImagePicker(
                     sourceType: .camera,
@@ -69,12 +97,9 @@ extension ImageLibraryButton: Viewable {
                 )
             ).valueSignal.onValueDisposePrevious(processAsset)
         }
-        
-        containerView.addArrangedSubview(cameraButton)
-        
-        let imagePickerButton = UIControl()
-        imagePickerButton.backgroundColor = .red
-        bag += imagePickerButton.signal(for: .touchUpInside).onValueDisposePrevious { _ in
+                
+        let photoLibraryButton = PickerButton(icon: Asset.photoLibrary.image)
+        bag += containerView.addArranged(photoLibraryButton).onValueDisposePrevious { _ in
             containerView.viewController?.present(
                 ImagePicker(
                     sourceType: .photoLibrary,
@@ -83,7 +108,15 @@ extension ImageLibraryButton: Viewable {
             ).valueSignal.onValueDisposePrevious(processAsset)
         }
         
-        containerView.addArrangedSubview(imagePickerButton)
+        let filesButton = PickerButton(icon: Asset.files.image)
+        bag += containerView.addArranged(filesButton).onValueDisposePrevious { _ in
+            containerView.viewController?.present(
+                ImagePicker(
+                    sourceType: .photoLibrary,
+                    mediaTypes: [.video, .photo]
+                )
+            ).valueSignal.onValueDisposePrevious(processAsset)
+        }
         
         return (containerView, Signal<Void> { callback -> Disposable in
             return bag

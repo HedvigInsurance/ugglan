@@ -30,7 +30,6 @@ targets:
       - location: Carthage/Build/iOS/SnapshotTesting.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
-      - location: Carthage/Build/iOS/ApolloSQLite.framework
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
@@ -73,7 +72,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/SnapshotTesting.framework
           - $(SRCROOT)/Carthage/Build/iOS/DeviceKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Apollo.framework
-          - $(SRCROOT)/Carthage/Build/iOS/ApolloSQLite.framework
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
           - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
@@ -92,7 +90,6 @@ targets:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapshotTesting.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloSQLite.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
@@ -134,7 +131,6 @@ targets:
         inputs:
           - $(SRCROOT)/Carthage/Build/iOS/DeviceKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Apollo.framework
-          - $(SRCROOT)/Carthage/Build/iOS/ApolloSQLite.framework
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
           - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
@@ -152,7 +148,6 @@ targets:
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloSQLite.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
@@ -172,7 +167,6 @@ targets:
       - sdkroot:SceneKit.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
-      - location: Carthage/Build/iOS/ApolloSQLite.framework
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
