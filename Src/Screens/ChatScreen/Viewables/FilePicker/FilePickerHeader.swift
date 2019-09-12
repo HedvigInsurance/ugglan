@@ -1,5 +1,5 @@
 //
-//  ImageLibraryButton.swift
+//  FilePickerHeader.swift
 //  project
 //
 //  Created by Sam Pettersson on 2019-09-09.
@@ -11,12 +11,12 @@ import Flow
 import Form
 import Photos
 
-struct ImageLibraryButton {
-    let uploadFileDelegate = Delegate<Data, Signal<Bool>>()
+struct FilePickerHeader {
+    let uploadFileDelegate = Delegate<FileUpload, Signal<Bool>>()
 }
 
-extension ImageLibraryButton: Reusable {
-    static func makeAndConfigure() -> (make: UIView, configure: (ImageLibraryButton) -> Disposable) {
+extension FilePickerHeader: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (FilePickerHeader) -> Disposable) {
         let view = UIView()
         
         return (view, { `self` in
@@ -26,45 +26,14 @@ extension ImageLibraryButton: Reusable {
                 buttonView.snp.makeConstraints { make in
                     make.width.height.equalToSuperview()
                 }
-            }.onValue({ _ in
-                
-            })
+            }.onValue { _ in }
             
             return bag
         })
     }
 }
 
-struct PickerButton: Viewable {
-    let icon: UIImage
-    
-    func materialize(events: ViewableEvents) -> (UIView, Signal<Void>) {
-        let bag = DisposeBag()
-        let button = UIControl()
-        button.backgroundColor = .secondaryBackground
-        button.layer.borderColor = UIColor.primaryBorder.cgColor
-        button.layer.borderWidth = UIScreen.main.hairlineWidth
-        button.layer.cornerRadius = 5
-        
-        let imageView = UIImageView()
-        imageView.image = icon
-        imageView.tintColor = .primaryText
-        
-        button.addSubview(imageView)
-        
-        imageView.snp.makeConstraints { make in
-            make.height.width.equalTo(45)
-            make.center.equalToSuperview()
-        }
-        
-        return (button, Signal<Void> { callback in
-            bag += button.signal(for: .touchUpInside).onValue(callback)
-            return bag
-        })
-    }
-}
-
-extension ImageLibraryButton: Viewable {
+extension FilePickerHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<Void>) {
         let bag = DisposeBag()
         
@@ -76,13 +45,10 @@ extension ImageLibraryButton: Viewable {
         func processAsset(_ asset: PHAsset) -> Disposable {
             let innerBag = DisposeBag()
             
-            PHImageManager.default().requestImageData(for: asset, options: nil) { (data, _, _, _) in
-                guard let data = data else {
-                    return
-                }
-                innerBag += self.uploadFileDelegate.call(data)?.onValue({ _ in
-                    print("loading")
-                })
+            asset.fileUpload.onValue { fileUpload in
+                innerBag += self.uploadFileDelegate.call(
+                    fileUpload
+                )?.onValue { _ in }
             }
             
             return innerBag
@@ -113,20 +79,21 @@ extension ImageLibraryButton: Viewable {
             containerView.viewController?.present(
                 DocumentPicker()
             ).valueSignal.onValueDisposePrevious(on: .background) { urls -> Disposable in
-                let datas = urls.compactMap { url -> Future<Data> in
+                let fileUploads = urls.compactMap { url -> Future<FileUpload> in
                     let fileCoordinator = NSFileCoordinator()
+                    
                     return fileCoordinator.coordinate(
                         readingItemAt: url,
                         options: .withoutChanges
-                    )
+                    ).map { data in
+                        FileUpload(data: data, mimeType: url.mimeType, fileName: url.path)
+                    }
                 }
                 
-                return join(datas).valueSignal
-                    .map { datas -> [Disposable] in
-                        datas.compactMap {
-                            self.uploadFileDelegate.call($0)?.onValue({ didUpload in
-                                print(didUpload)
-                            })
+                return join(fileUploads).valueSignal
+                    .map { fileUploads -> [Disposable] in
+                        fileUploads.compactMap {
+                            self.uploadFileDelegate.call($0)?.onValue { _ in }
                         }
                     }.onValueDisposePrevious { list -> Disposable? in
                     return DisposeBag(list)

@@ -157,6 +157,12 @@ struct AttachFileAsset: Reusable {
     }
 }
 
+struct FileUpload {
+    let data: Data
+    let mimeType: String
+    let fileName: String
+}
+
 extension AttachFilePane: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
@@ -191,12 +197,12 @@ extension AttachFilePane: Viewable {
             return CGSize(width: height, height: height)
         }
         
-        func uploadFile(_ data: Data) -> Signal<Bool> {
+        func uploadFile(_ fileUpload: FileUpload) -> Signal<Bool> {
             let file = GraphQLFile(
                 fieldName: "file",
-                originalName: "image.jpg",
-                mimeType: "image/jpeg",
-                data: data
+                originalName: fileUpload.fileName,
+                mimeType: fileUpload.mimeType,
+                data: fileUpload.data
             )
             
             return Signal<Bool> { callbacker in
@@ -213,7 +219,11 @@ extension AttachFilePane: Viewable {
                     }
                     
                     bag += self.client.perform(
-                        mutation: SendChatFileResponseMutation(globalID: globalID, key: key, mimeType: "image/jpeg")
+                        mutation: SendChatFileResponseMutation(
+                            globalID: globalID,
+                            key: key,
+                            mimeType: fileUpload.mimeType
+                        )
                     ).disposable
                     
                     callbacker(true)
@@ -222,10 +232,10 @@ extension AttachFilePane: Viewable {
             }
         }
         
-        let header = ImageLibraryButton()
+        let header = FilePickerHeader()
         
-        bag += header.uploadFileDelegate.set { data -> Signal<Bool> in
-            uploadFile(data)
+        bag += header.uploadFileDelegate.set { fileUpload -> Signal<Bool> in
+            uploadFile(fileUpload)
         }
         
         bag += collectionKit.registerViewForSupplementaryElement(
@@ -249,13 +259,13 @@ extension AttachFilePane: Viewable {
             })
         }
         
-        bag += collectionKit.onValueDisposePrevious { table in
-            return DisposeBag(table.map { asset -> Disposable in
-                asset.uploadFileDelegate.set { data -> Signal<Bool> in
-                    uploadFile(data)
-                }
-            })
-        }
+//        bag += collectionKit.onValueDisposePrevious { table in
+//            return DisposeBag(table.map { asset -> Disposable in
+//                asset.uploadFileDelegate.set { data -> Signal<Bool> in
+//                    uploadFile(data)
+//                }
+//            })
+//        }
         
         bag += isOpenSignal.atOnce().filter { $0 }.onValue { _ in
             PHPhotoLibrary.requestAuthorization { authorization in
