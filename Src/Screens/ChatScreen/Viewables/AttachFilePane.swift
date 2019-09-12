@@ -31,7 +31,7 @@ struct AttachFilePane {
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
     let type: AssetType
-    let uploadFileDelegate = Delegate<Data, Signal<Bool>>()
+    let uploadFileDelegate = Delegate<FileUpload, Signal<Bool>>()
     
     enum AssetType {
         case image, video
@@ -82,11 +82,10 @@ struct AttachFileAsset: Reusable {
                 sendOverlayBag += loadableButton.onTapSignal.onValue { _ in
                     loadableButton.isLoadingSignal.value = true
                     
-                    PHImageManager.default().requestImageData(for: self.asset, options: nil) { (data, _, _, _) in
-                        guard let data = data else { return }
-                        bag += self.uploadFileDelegate.call(data)?.onValue({ result in
-                            loadableButton.isLoadingSignal.value = false
-                            sendOverlayBag.dispose()
+                    self.asset.fileUpload.onValue { fileUpload in
+                        bag += self.uploadFileDelegate.call(fileUpload)?.onValue({ result in
+                           loadableButton.isLoadingSignal.value = false
+                           sendOverlayBag.dispose()
                         })
                     }
                 }
@@ -259,13 +258,13 @@ extension AttachFilePane: Viewable {
             })
         }
         
-//        bag += collectionKit.onValueDisposePrevious { table in
-//            return DisposeBag(table.map { asset -> Disposable in
-//                asset.uploadFileDelegate.set { data -> Signal<Bool> in
-//                    uploadFile(data)
-//                }
-//            })
-//        }
+        bag += collectionKit.onValueDisposePrevious { table in
+            return DisposeBag(table.map { asset -> Disposable in
+                asset.uploadFileDelegate.set { data -> Signal<Bool> in
+                    uploadFile(data)
+                }
+            })
+        }
         
         bag += isOpenSignal.atOnce().filter { $0 }.onValue { _ in
             PHPhotoLibrary.requestAuthorization { authorization in
