@@ -217,7 +217,7 @@ extension Chat: Presentable {
             .onValue({ message in
                 isEditingSignal.value = false
                 
-                let newMessage = Message(from: message, index: 0, listSignal: filteredMessagesSignal)
+                let newMessage = Message(from: message, listSignal: filteredMessagesSignal)
 
                 if let paragraph = message.body.asMessageBodyParagraph {
                     paragraph.text != "" ?
@@ -228,7 +228,7 @@ extension Chat: Presentable {
                 }
 
                 if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
-                    currentMessageSignal.value = Message(from: message, index: 0, listSignal: nil)
+                    currentMessageSignal.value = Message(from: message, listSignal: nil)
                 }
 
                 if message.body.asMessageBodyParagraph != nil {
@@ -244,15 +244,19 @@ extension Chat: Presentable {
         }
 
         func fetchMessages() {
-            bag += client.fetch(query: ChatMessagesQuery(), cachePolicy: .fetchIgnoringCacheData, queue: DispatchQueue.global(qos: .background))
+            bag += client.fetch(
+                query: ChatMessagesQuery(),
+                cachePolicy: .fetchIgnoringCacheData,
+                queue: DispatchQueue.global(qos: .background)
+            )
                 .valueSignal
                 .compactMap { messages -> [MessageData]? in messages.data?.messages.compactMap { message in message?.fragments.messageData } }
                 .atValue({ messages -> Void in
                     guard let message = messages.first else { return }
-                    currentMessageSignal.value = Message(from: message, index: 0, listSignal: nil)
+                    currentMessageSignal.value = Message(from: message, listSignal: nil)
                 })
                 .map { messages -> [Message] in
-                    messages.enumerated().map { offset, message in Message(from: message, index: offset, listSignal: filteredMessagesSignal) }
+                    messages.map { message in Message(from: message, listSignal: filteredMessagesSignal) }
                 }.onValue({ messages in
                     guard messages.count != 0 else {
                         fetchMessages()
