@@ -94,6 +94,10 @@ struct Message: Equatable, Hashable {
             }
         }
         
+        var isVideoOrImageType: Bool {
+            return isImageType || isVideoType
+        }
+        
         case text, image(url: URL?), video(url: URL?), file(url: URL?)
     }
     
@@ -215,7 +219,7 @@ struct Message: Equatable, Hashable {
         
         return .halfHeight
     }
-
+    
     func absoluteRadiusValue(radius: Radius, view: UIView) -> CGFloat {
         switch radius {
         case let .fixed(value):

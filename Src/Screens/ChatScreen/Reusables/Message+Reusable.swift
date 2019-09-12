@@ -11,6 +11,49 @@ import Form
 import UIKit
 
 extension Message: Reusable {
+    var largerMarginTop: CGFloat {
+        20
+    }
+    
+    var smallerMarginTop: CGFloat {
+        2
+    }
+    
+    /// identifies if message belongs logically to the previous message
+    var isRelatedToPreviousMessage: Bool {
+        return previous?.fromMyself == fromMyself
+    }
+    
+    /// calculates the total height that is required to render this message, including margins
+    var totalHeight: CGFloat {
+        if type.isVideoOrImageType {
+            let constantHeight: CGFloat = 200
+            
+            if isRelatedToPreviousMessage {
+                return constantHeight + smallerMarginTop
+            }
+            
+            return constantHeight + largerMarginTop
+        }
+        
+        let attributedString = NSAttributedString(styledText: StyledText(
+            text: body,
+            style: .chatBody
+        ))
+
+        let size = attributedString.boundingRect(
+            with: CGSize(width: 300, height: CGFloat(Int.max)),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
+        
+        if isRelatedToPreviousMessage {
+            return size.height + smallerMarginTop + 20
+        }
+        
+        return size.height + largerMarginTop + 20
+    }
+    
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
         let containerView = UIStackView()
         containerView.axis = .vertical
@@ -94,16 +137,26 @@ extension Message: Reusable {
             }
             
             func applySpacing() {
-                if message.type.isVideoType || message.type.isImageType {
+                if message.type.isVideoOrImageType {
                     contentContainer.layoutMargins = UIEdgeInsets.zero
                 } else {
                     contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
                 }
                 
-                if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
-                    spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
+                if message.isRelatedToPreviousMessage {
+                    spacingContainer.layoutMargins = UIEdgeInsets(
+                        top: message.smallerMarginTop,
+                        left: 20,
+                        bottom: 0,
+                        right: 20
+                    )
                 } else {
-                    spacingContainer.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
+                    spacingContainer.layoutMargins = UIEdgeInsets(
+                        top: 20,
+                        left: message.largerMarginTop,
+                        bottom: 0,
+                        right: 20
+                    )
                 }
             }
             
@@ -120,10 +173,29 @@ extension Message: Reusable {
             containerView.alignment = message.fromMyself ? .trailing : .leading
             
             let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
+            
+            switch message.type {
+            case .image(_), .video(_):
+                bubble.backgroundColor = .transparent
+            default:
+                bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
+            }
                         
             switch message.type {
-            case let .image(url):
+            case let .image(url):                
+                let imageViewContainer = UIView()
+                imageViewContainer.alpha = 0
+                
                 let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFill
+                
+                imageViewContainer.addSubview(imageView)
+                
+                imageViewContainer.snp.makeConstraints { make in
+                    make.height.equalTo(200)
+                }
+                
+                contentContainer.addArrangedSubview(imageViewContainer)
                 
                 DispatchQueue.global(qos: .background).async {
                     if let url = url, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
@@ -135,21 +207,36 @@ extension Message: Reusable {
                         let decodedImage = UIGraphicsGetImageFromCurrentImageContext()
                         
                         UIGraphicsEndImageContext()
-                        
+                                                
                         DispatchQueue.main.async {
+                            imageView.snp.makeConstraints { make in
+                                make.height.equalToSuperview()
+                                make.width.equalToSuperview()
+                            }
+                            
+                            if let width = decodedImage?.size.width, let height = decodedImage?.size.height {
+                                if width > height {
+                                    imageViewContainer.snp.makeConstraints { make in
+                                        make.width.equalTo(300)
+                                    }
+                                } else {
+                                    imageViewContainer.snp.makeConstraints { make in
+                                        make.width.equalTo(150)
+                                    }
+                                }
+                            }
+                            
                             imageView.image = decodedImage
+                            
+                            bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+                                imageViewContainer.alpha = 1
+                            }
                         }
                     }
                 }
                 
-                imageView.snp.makeConstraints { make in
-                    make.height.equalTo(200)
-                }
-                
-                contentContainer.addArrangedSubview(imageView)
-                
                 bag += {
-                    imageView.removeFromSuperview()
+                    imageViewContainer.removeFromSuperview()
                 }
             case let .file(url):
                 let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
@@ -189,8 +276,6 @@ extension Message: Reusable {
             })
             
             applySpacing()
-
-            bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
             
             UIView.setAnimationsEnabled(true)
 

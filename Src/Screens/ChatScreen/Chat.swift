@@ -99,6 +99,15 @@ extension Chat: Presentable {
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
         tableKit.view.insetsContentViewsToSafeArea = false
+        bag += tableKit.delegate.heightForCell.set { tableIndex -> CGFloat in
+            let item = tableKit.table[tableIndex]
+            
+            if let message = item.left {
+                return message.totalHeight
+            }
+            
+            return 0
+        }
                 
         tableKit.view.contentInsetAdjustmentBehavior = .never
         if #available(iOS 13.0, *) {
