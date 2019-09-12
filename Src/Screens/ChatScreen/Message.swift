@@ -627,8 +627,10 @@ extension Message: Reusable {
                 break
             }
 
-            bag += bubble.copySignal.onValue { _ in
-                UIPasteboard.general.value = message.body
+            if !message.type.isRichType {
+                bag += bubble.copySignal.onValue { _ in
+                    UIPasteboard.general.value = message.body
+                }
             }
 
             bag += bubble.didLayoutSignal.onValue({ _ in
