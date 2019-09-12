@@ -578,7 +578,7 @@ extension Message: Reusable {
             case let .file(url):
                 let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
                 
-                let text = "Fil uppladdad"
+                let text = String(key: .CHAT_FILE_DOWNLOAD)
                 
                 let styledText = StyledText(text: text, style: textStyle)
                 
