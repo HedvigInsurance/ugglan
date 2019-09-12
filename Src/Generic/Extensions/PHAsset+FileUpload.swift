@@ -8,6 +8,7 @@
 import Foundation
 import Flow
 import Photos
+import MobileCoreServices
 
 extension PHAsset {
     enum GenerateFileUploadError: Error {
@@ -25,7 +26,16 @@ extension PHAsset {
                     completion(.failure(GenerateFileUploadError.failedToGenerateFileName))
                     return
                 }
-                guard let mimeType = contentInput?.uniformTypeIdentifier else {
+                
+                guard let uti = contentInput?.uniformTypeIdentifier else {
+                    completion(.failure(GenerateFileUploadError.failedToGenerateMimeType))
+                    return
+                }
+                
+                guard let mimeType = UTTypeCopyPreferredTagWithClass(
+                    uti as CFString,
+                    kUTTagClassMIMEType as CFString
+                )?.takeRetainedValue() as String? else {
                     completion(.failure(GenerateFileUploadError.failedToGenerateMimeType))
                     return
                 }

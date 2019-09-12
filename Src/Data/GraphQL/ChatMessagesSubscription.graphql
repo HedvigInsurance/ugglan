@@ -65,6 +65,7 @@ text
 type
 id
 text
+mimeType
 file {
     signedUrl
 }

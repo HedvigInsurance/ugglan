@@ -145,9 +145,9 @@ struct Message: Equatable, Hashable {
                 return true
             case (.text, .text):
                 return true
-            case (.image, .image):
+            case (.image(_), .image(_)):
                 return true
-            case (.video, .video):
+            case (.video(_), .video(_)):
                 return true
             default:
                 return false
@@ -158,16 +158,34 @@ struct Message: Equatable, Hashable {
             switch self {
             case .text:
                 return false
-            case .image:
+            case .image(_):
                 return true
-            case .video:
+            case .video(_):
                 return true
             case .file(_):
                 return true
             }
         }
         
-        case text, image, video, file(url: URL?)
+        var isImageType: Bool {
+            switch self {
+            case .image(_):
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isVideoType: Bool {
+            switch self {
+            case .video(_):
+                return true
+            default:
+                return false
+            }
+        }
+        
+        case text, image(url: URL?), video(url: URL?), file(url: URL?)
     }
     
     var shouldShowEditButton: Bool {
@@ -410,7 +428,15 @@ struct Message: Equatable, Hashable {
             placeholder = nil
             keyboardType = nil
             textContentType = nil
-            type = .file(url: URL(string: file.file.signedUrl))
+            
+            switch file.mimeType {
+            case "image/jpeg", "image/png", "image/gif":
+                type = .image(url: URL(string: file.file.signedUrl))
+            case "video/webm", "video/ogg", "video/mp4":
+                type = .video(url: URL(string: file.file.signedUrl))
+            default:
+                type = .file(url: URL(string: file.file.signedUrl))
+            }
         } else if let undefined = message.body.asMessageBodyUndefined {
             body = undefined.text
             responseType = .text
@@ -517,6 +543,12 @@ extension Message: Reusable {
             }
             
             func applySpacing() {
+                if message.type.isVideoType || message.type.isImageType {
+                    contentContainer.layoutMargins = UIEdgeInsets.zero
+                } else {
+                    contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
+                }
+                
                 if let prevFromMyself = message.previous?.fromMyself, prevFromMyself == message.fromMyself {
                     spacingContainer.layoutMargins = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
                 } else {
@@ -539,6 +571,35 @@ extension Message: Reusable {
             let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
                         
             switch message.type {
+            case let .image(url):
+                let imageView = UIImageView()
+                
+                DispatchQueue.global(qos: .background).async {
+                    if let url = url, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                        
+                        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+
+                        image.draw(at: CGPoint.zero)
+
+                        let decodedImage = UIGraphicsGetImageFromCurrentImageContext()
+                        
+                        UIGraphicsEndImageContext()
+                        
+                        DispatchQueue.main.async {
+                            imageView.image = decodedImage
+                        }
+                    }
+                }
+                
+                imageView.snp.makeConstraints { make in
+                    make.height.equalTo(200)
+                }
+                
+                contentContainer.addArrangedSubview(imageView)
+                
+                bag += {
+                    imageView.removeFromSuperview()
+                }
             case let .file(url):
                 let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
                 
