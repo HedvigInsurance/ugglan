@@ -142,6 +142,35 @@ extension Chat: Presentable {
             }
         }
         
+        bag += messagesSignal.onValueDisposePrevious({ messages -> Disposable? in
+            let innerBag = DisposeBag()
+            
+            innerBag += messages.compactMap { message -> Disposable? in
+                guard let message = message.left else {
+                    return nil
+                }
+                
+                return message.onTapSignal.onValue { value in
+                    let windowBag = DisposeBag()
+                    
+                    let window = UIWindow()
+                    window.backgroundColor = .transparent
+                    window.isOpaque = false
+                    windowBag.hold(window)
+                    let rootViewController = UIViewController()
+                    window.rootViewController = rootViewController
+                    
+                    rootViewController.present(SafariView(url: value), options: []).onValue { _ in
+                        windowBag.dispose()
+                    }
+                    
+                    window.makeKeyAndVisible()
+                }
+            }
+            
+            return innerBag
+        })
+        
         bag += messagesSignal.onValueDisposePrevious { messages -> Disposable? in
             let innerBag = DisposeBag()
             
@@ -173,7 +202,7 @@ extension Chat: Presentable {
         }
         
         let filteredMessagesSignal = messagesSignal.map { messages in
-            messages.filter { $0.left?.body != "" && $0.left != nil }
+            messages.filter { $0.left?.type.isRichType ?? false || ($0.left?.body != "" && $0.left != nil) }
         }
         
         let subscriptionBag = bag.innerBag()
@@ -252,7 +281,7 @@ extension Chat: Presentable {
                     }
                 }
                 
-                if item.left?.body == "" {
+                if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
                     return nil
                 }
 

@@ -20,6 +20,13 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .primaryText
     }
+    
+    static let chatBodyUnderlined = TextStyle.chatBody.restyled { (style: inout TextStyle) in
+        style.setAttribute(
+            NSUnderlineStyle.single.rawValue,
+            for: NSAttributedString.Key.underlineStyle
+        )
+    }
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)

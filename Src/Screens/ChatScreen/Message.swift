@@ -114,6 +114,7 @@ struct Message: Equatable, Hashable {
     let placeholder: String?
     let body: String
     let fromMyself: Bool
+    let type: MessageType
     let responseType: ResponseType
     let textContentType: UITextContentType?
     let keyboardType: UIKeyboardType?
@@ -123,9 +124,50 @@ struct Message: Equatable, Hashable {
     private let listSignal: ReadSignal<[ChatListContent]>?
     let editingDisabledSignal = ReadWriteSignal<Bool>(false)
     let onEditCallbacker = Callbacker<Void>()
+    
+    var onTapSignal: Signal<URL> {
+        onTapCallbacker.providedSignal
+    }
+    
+    private let onTapCallbacker = Callbacker<URL>()
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption]), text, none
+    }
+    
+    enum MessageType: Equatable {
+        static func == (
+            lhs: Message.MessageType,
+            rhs: Message.MessageType
+        ) -> Bool {
+            switch (lhs, rhs) {
+            case (.file(_), .file(_)):
+                return true
+            case (.text, .text):
+                return true
+            case (.image, .image):
+                return true
+            case (.video, .video):
+                return true
+            default:
+                return false
+            }
+        }
+        
+        var isRichType: Bool {
+            switch self {
+            case .text:
+                return false
+            case .image:
+                return true
+            case .video:
+                return true
+            case .file(_):
+                return true
+            }
+        }
+        
+        case text, image, video, file(url: URL?)
     }
     
     var shouldShowEditButton: Bool {
@@ -268,6 +310,7 @@ struct Message: Equatable, Hashable {
         textContentType = message.textContentType
         keyboardType = message.keyboardType
         richTextCompatible = message.richTextCompatible
+        type = message.type
     }
     
     init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -282,6 +325,7 @@ struct Message: Equatable, Hashable {
         textContentType = message.textContentType
         keyboardType = message.keyboardType
         richTextCompatible = message.richTextCompatible
+        type = message.type
     }
 
     init(from message: MessageData, index: Int, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -317,66 +361,112 @@ struct Message: Equatable, Hashable {
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         } else if let multipleSelect = message.body.asMessageBodyMultipleSelect {
             body = multipleSelect.text
             responseType = .none
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         } else if let text = message.body.asMessageBodyText {
             body = text.text
             responseType = .text
             placeholder = text.placeholder
             keyboardType = UIKeyboardType.from(text.keyboard)
             textContentType = UITextContentType.from(text.textContentType)
+            type = .text
         } else if let number = message.body.asMessageBodyNumber {
             body = number.text
             responseType = .text
             placeholder = number.placeholder
             keyboardType = UIKeyboardType.from(number.keyboard)
             textContentType = UITextContentType.from(number.textContentType)
+            type = .text
         } else if let audio = message.body.asMessageBodyAudio {
             body = audio.text
             responseType = .none
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         } else if let bankIdCollect = message.body.asMessageBodyBankIdCollect {
             body = bankIdCollect.text
             responseType = .none
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         } else if let paragraph = message.body.asMessageBodyParagraph {
             body = paragraph.text
             responseType = .none
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         } else if let file = message.body.asMessageBodyFile {
             body = file.text
             responseType = .text
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .file(url: URL(string: file.file.signedUrl))
         } else if let undefined = message.body.asMessageBodyUndefined {
             body = undefined.text
             responseType = .text
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         } else {
             body = "Oj något gick fel"
             responseType = .text
             placeholder = nil
             keyboardType = nil
             textContentType = nil
+            type = .text
         }
         
         fromMyself = message.header.fromMyself
         self.index = index
         self.listSignal = listSignal
     }
+}
+
+extension UITapGestureRecognizer {
+    func didTapAttributedTextInLabel(label: UILabel, inRange targetRange: Range<String.Index>) -> Bool {
+        // Create instances of NSLayoutManager, NSTextContainer and NSTextStorage
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: CGSize.zero)
+        let textStorage = NSTextStorage(attributedString: label.attributedText!)
+
+        // Configure layoutManager and textStorage
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
+        // Configure textContainer
+        textContainer.lineFragmentPadding = 0.0
+        textContainer.lineBreakMode = label.lineBreakMode
+        textContainer.maximumNumberOfLines = label.numberOfLines
+        let labelSize = label.bounds.size
+        textContainer.size = labelSize
+
+        // Find the tapped character location and compare it to the specified range
+        let locationOfTouchInLabel = self.location(in: label)
+        let textBoundingBox = layoutManager.usedRect(for: textContainer)
+        let textContainerOffset = CGPoint(
+            x: (labelSize.width - textBoundingBox.size.width) * 0.5 - textBoundingBox.origin.x,
+            y: (labelSize.height - textBoundingBox.size.height) * 0.5 - textBoundingBox.origin.y
+        )
+        let locationOfTouchInTextContainer = CGPoint(
+            x: locationOfTouchInLabel.x - textContainerOffset.x,
+            y: locationOfTouchInLabel.y - textContainerOffset.y
+        )
+        let indexOfCharacter = layoutManager.characterIndex(for: locationOfTouchInTextContainer, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+
+        return NSLocationInRange(indexOfCharacter, NSRange(targetRange, in: label.text ?? ""))
+    }
+
 }
 
 extension Message: Reusable {
@@ -481,9 +571,36 @@ extension Message: Reusable {
             })
 
             containerView.alignment = message.fromMyself ? .trailing : .leading
-
-            let label = MultilineLabel(value: message.body, style: TextStyle.chatBody.colored(message.fromMyself ? .white : .primaryText))
-            bag += contentContainer.addArranged(label)
+            
+            let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
+                        
+            switch message.type {
+            case let .file(url):
+                let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
+                
+                let text = "Fil uppladdad"
+                
+                let styledText = StyledText(text: text, style: textStyle)
+                
+                let label = MultilineLabel(styledText: styledText)
+                bag += contentContainer.addArranged(label) { view in
+                    let linkTapGestureRecognizer = UITapGestureRecognizer()
+                    bag += contentContainer.install(linkTapGestureRecognizer)
+                    
+                    bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+                        guard let url = url else { return }
+                        message.onTapCallbacker.callAll(with: url)
+                    }
+                }
+            case .text:
+                let label = MultilineLabel(
+                    value: message.body,
+                    style: TextStyle.chatBody.colored(messageTextColor)
+                )
+                bag += contentContainer.addArranged(label)
+            default:
+                break
+            }
 
             bag += bubble.copySignal.onValue { _ in
                 UIPasteboard.general.value = message.body

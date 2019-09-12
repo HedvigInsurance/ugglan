@@ -72,8 +72,9 @@ extension DocumentPicker: Presentable {
             documentTypes: ["public.item"],
             in: .import
         )
+        viewController.allowsMultipleSelection = true
         viewController.preferredPresentationStyle = .modally(
-            presentationStyle: .pageSheet,
+            presentationStyle: .formSheet,
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )
