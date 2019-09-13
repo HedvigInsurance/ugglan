@@ -45,7 +45,7 @@ extension Chat: Presentable {
         )
 
         let viewController = AccessoryViewController(accessoryView: chatInput)
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 200)
+        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
 
         bag += navigateCallbacker.onValue { navigationEvent in
             switch navigationEvent {

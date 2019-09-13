@@ -12,12 +12,6 @@ import UIKit
 
 struct HonestyPledge {}
 
-// Hack to integrate with React Native
-var honestyPledgeOpenClaimsFlow: (_ presentingViewController: UIViewController) -> Future<Void> = { viewController in
-    viewController.present(FreeTextChat(), style: .default, options: [.prefersNavigationBarHidden(false)])
-    return Future { _ in NilDisposer() }
-}
-
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
@@ -62,7 +56,11 @@ extension HonestyPledge: Presentable {
 
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
-                honestyPledgeOpenClaimsFlow(viewController).onResult(completion)
+                viewController.present(
+                    ClaimsChat(),
+                    style: .default,
+                    options: [.prefersNavigationBarHidden(false)]
+                )                
             }
 
             return DelayedDisposer(bag, delay: 1)

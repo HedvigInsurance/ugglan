@@ -175,7 +175,13 @@ extension ClaimsHeader: Viewable {
             self.presentingViewController.present(
                 DraggableOverlay(
                     presentable: HonestyPledge(),
-                    presentationOptions: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .prefersNavigationBarHidden(true)]
+                    presentationOptions: [
+                        .defaults,
+                        .prefersLargeTitles(false),
+                        .largeTitleDisplayMode(.never),
+                        .prefersNavigationBarHidden(true)
+                    ],
+                    adjustsToKeyboard: false
                 )
             )
         }
