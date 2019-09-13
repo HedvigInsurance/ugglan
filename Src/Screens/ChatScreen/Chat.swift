@@ -7,6 +7,7 @@
 //
 
 import Apollo
+import AVKit
 import Flow
 import Form
 import Presentation
@@ -169,8 +170,22 @@ extension Chat: Presentable {
                     let rootViewController = UIViewController()
                     window.rootViewController = rootViewController
 
-                    rootViewController.present(SafariView(url: value), options: []).onValue { _ in
-                        windowBag.dispose()
+                    switch message.type {
+                    case .file(url: _):
+                        rootViewController.present(SafariView(url: value), options: []).onValue { _ in
+                            windowBag.dispose()
+                        }
+                    case .video(url: _):
+                        let player = AVPlayer(url: value)
+                        let videoPlayer = VideoPlayer(player: player)
+
+                        player.play()
+
+                        rootViewController.present(videoPlayer, style: .modally(presentationStyle: .overFullScreen, transitionStyle: nil, capturesStatusBarAppearance: true), options: []).onValue {
+                            windowBag.dispose()
+                        }
+                    default:
+                        break
                     }
 
                     window.makeKeyAndVisible()

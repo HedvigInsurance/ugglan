@@ -5,30 +5,30 @@
 //  Created by Sam Pettersson on 2019-09-02.
 //
 
+import AVFoundation
 import Flow
 import Form
 import Foundation
 import Kingfisher
 import UIKit
-import AVFoundation
 
 extension AVURLAsset {
     enum ThumbnailImageError: Error {
         case failed
     }
-    
+
     var thumbnailImage: Future<UIImage> {
         Future(on: .background) { completion in
             let imgGenerator = AVAssetImageGenerator(asset: self)
             imgGenerator.appliesPreferredTrackTransform = true
-                                           
+
             guard let cgImage = try? imgGenerator.copyCGImage(at: self.duration, actualTime: nil) else {
                 completion(.failure(ThumbnailImageError.failed))
                 return NilDisposer()
             }
-            
+
             completion(.success(UIImage(cgImage: cgImage)))
-            
+
             return NilDisposer()
         }
     }
@@ -218,7 +218,7 @@ extension Message: Reusable {
                         height: 200
                     )
                 )
-                
+
                 imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                 imageView.kf.setImage(
                     with: url,
@@ -286,14 +286,14 @@ extension Message: Reusable {
 
                 let imageView = UIImageView()
                 imageView.contentMode = .scaleAspectFill
-                
+
                 let processor = DownsamplingImageProcessor(
                     size: CGSize(
                         width: 300,
                         height: 200
                     )
                 )
-                
+
                 if let url = url {
                     let asset = AVURLAsset(url: url, options: nil)
                     imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
@@ -303,11 +303,11 @@ extension Message: Reusable {
                             .preloadAllAnimationData,
                             .processor(processor),
                             .backgroundDecode,
-                            .transition(.fade(1))
+                            .transition(.fade(1)),
                         ]
                     )
                 }
-                
+
                 imageViewContainer.addSubview(imageView)
 
                 imageView.snp.makeConstraints { make in
@@ -321,6 +321,14 @@ extension Message: Reusable {
                 }
 
                 contentContainer.addArrangedSubview(imageViewContainer)
+
+                let videoTapGestureRecognizer = UITapGestureRecognizer()
+                bag += contentContainer.install(videoTapGestureRecognizer)
+
+                bag += videoTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+                    guard let url = url else { return }
+                    message.onTapCallbacker.callAll(with: url)
+                }
 
                 bag += {
                     imageViewContainer.removeFromSuperview()
