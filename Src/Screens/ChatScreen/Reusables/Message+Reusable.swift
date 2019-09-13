@@ -218,7 +218,8 @@ extension Message: Reusable {
                         height: 200
                     )
                 )
-
+                
+                imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                 imageView.kf.setImage(
                     with: url,
                     options: [
@@ -295,6 +296,7 @@ extension Message: Reusable {
                 
                 if let url = url {
                     let asset = AVURLAsset(url: url, options: nil)
+                    imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                     imageView.kf.setImage(
                         with: asset,
                         options: [
