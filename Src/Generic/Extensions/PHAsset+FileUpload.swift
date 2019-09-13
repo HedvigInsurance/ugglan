@@ -16,7 +16,7 @@ extension PHAsset {
         case failedToGenerateFileName, failedToGenerateMimeType, failedToGetVideoURL, failedToGetVideoData
     }
 
-    // generates a fileUpload for current PHAsset
+    /// generates a fileUpload for current PHAsset
     var fileUpload: Future<FileUpload> {
         Future { completion in
             let options = PHContentEditingInputRequestOptions()
