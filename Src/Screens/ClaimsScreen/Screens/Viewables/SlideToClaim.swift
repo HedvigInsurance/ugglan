@@ -32,7 +32,7 @@ extension SlideToClaim: Viewable {
         }
 
         let track = UIView()
-        track.backgroundColor = .lightGray
+        track.backgroundColor = .primaryBackground
 
         view.addSubview(track)
 
@@ -42,7 +42,10 @@ extension SlideToClaim: Viewable {
             make.center.equalToSuperview()
         }
 
-        let trackLabel = UILabel(value: "Dra för att starta anmälan", style: TextStyle.bodyOffBlack.centered())
+        let trackLabel = UILabel(
+            value: String(key: .CLAIMS_PLEDGE_SLIDE_LABEL),
+            style: TextStyle.body.centerAligned
+        )
         view.addSubview(trackLabel)
 
         trackLabel.snp.makeConstraints { make in
@@ -52,7 +55,7 @@ extension SlideToClaim: Viewable {
         }
 
         let handle = UIView()
-        handle.backgroundColor = .purple
+        handle.backgroundColor = .primaryTintColor
 
         let continueIcon = Icon(icon: Asset.continue, iconWidth: 20)
         handle.addSubview(continueIcon)
