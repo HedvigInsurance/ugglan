@@ -206,7 +206,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ).atValue({ _ in
             TranslationsRepo.fetch()
             self.bag += ApplicationState.presentRootViewController(self.window)
-            ApplicationState.preserveState(.loggedIn)
         }).delay(by: 0.1).onValue { _ in
             hasLoadedCallbacker.callAll()
         }
