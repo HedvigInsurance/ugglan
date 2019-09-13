@@ -343,7 +343,7 @@ struct Message: Equatable, Hashable {
             switch file.mimeType {
             case "image/jpeg", "image/png", "image/gif":
                 type = .image(url: URL(string: file.file.signedUrl))
-            case "video/webm", "video/ogg", "video/mp4":
+            case "video/webm", "video/ogg", "video/mp4", "video/quicktime":
                 type = .video(url: URL(string: file.file.signedUrl))
             default:
                 type = .file(url: URL(string: file.file.signedUrl))
