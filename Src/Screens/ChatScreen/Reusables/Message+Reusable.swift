@@ -9,6 +9,7 @@ import Foundation
 import Flow
 import Form
 import UIKit
+import Kingfisher
 
 extension Message: Reusable {
     var largerMarginTop: CGFloat {
@@ -189,51 +190,45 @@ extension Message: Reusable {
                 let imageView = UIImageView()
                 imageView.contentMode = .scaleAspectFill
                 
+                imageView.kf.setImage(with: url) { result in
+                    switch result {
+                    case let .success(imageResult):
+                        let width = imageResult.image.size.width
+                        let height = imageResult.image.size.height
+                        
+                        if width > height {
+                            imageViewContainer.snp.makeConstraints { make in
+                                make.width.equalTo(300)
+                            }
+                        } else {
+                            imageViewContainer.snp.makeConstraints { make in
+                                make.width.equalTo(150)
+                            }
+                        }
+                        
+                        bag += Signal(after: 0).animated(
+                            style: AnimationStyle.easeOut(duration: 0.25)
+                        ) { _ in
+                            imageViewContainer.alpha = 1
+                        }
+                        case .failure(_):
+                        break
+                    }
+                    
+                }
+                
                 imageViewContainer.addSubview(imageView)
+                
+                imageView.snp.makeConstraints { make in
+                    make.height.equalToSuperview()
+                    make.width.equalToSuperview()
+                }
                 
                 imageViewContainer.snp.makeConstraints { make in
                     make.height.equalTo(200)
                 }
                 
                 contentContainer.addArrangedSubview(imageViewContainer)
-                
-                DispatchQueue.global(qos: .background).async {
-                    if let url = url, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                        
-                        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
-
-                        image.draw(at: CGPoint.zero)
-
-                        let decodedImage = UIGraphicsGetImageFromCurrentImageContext()
-                        
-                        UIGraphicsEndImageContext()
-                                                
-                        DispatchQueue.main.async {
-                            imageView.snp.makeConstraints { make in
-                                make.height.equalToSuperview()
-                                make.width.equalToSuperview()
-                            }
-                            
-                            if let width = decodedImage?.size.width, let height = decodedImage?.size.height {
-                                if width > height {
-                                    imageViewContainer.snp.makeConstraints { make in
-                                        make.width.equalTo(300)
-                                    }
-                                } else {
-                                    imageViewContainer.snp.makeConstraints { make in
-                                        make.width.equalTo(150)
-                                    }
-                                }
-                            }
-                            
-                            imageView.image = decodedImage
-                            
-                            bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-                                imageViewContainer.alpha = 1
-                            }
-                        }
-                    }
-                }
                 
                 bag += {
                     imageViewContainer.removeFromSuperview()
