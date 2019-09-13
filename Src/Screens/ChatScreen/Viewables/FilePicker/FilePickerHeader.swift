@@ -49,6 +49,8 @@ extension FilePickerHeader: Viewable {
                 innerBag += self.uploadFileDelegate.call(
                     fileUpload
                 )?.onValue { _ in }
+            }.onError { error in
+                log.error(error.localizedDescription)
             }
             
             return innerBag

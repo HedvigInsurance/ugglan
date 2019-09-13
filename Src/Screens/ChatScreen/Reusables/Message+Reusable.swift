@@ -185,12 +185,26 @@ extension Message: Reusable {
             switch message.type {
             case let .image(url):                
                 let imageViewContainer = UIView()
-                imageViewContainer.alpha = 0
                 
                 let imageView = UIImageView()
                 imageView.contentMode = .scaleAspectFill
                 
-                imageView.kf.setImage(with: url) { result in
+                let processor = DownsamplingImageProcessor(
+                    size: CGSize(
+                        width: 300,
+                        height: 200
+                    )
+                )
+                
+                imageView.kf.setImage(
+                    with: url,
+                    options: [
+                        .preloadAllAnimationData,
+                        .processor(processor),
+                        .backgroundDecode,
+                        .transition(.fade(1))
+                    ]
+                ) { result in
                     switch result {
                     case let .success(imageResult):
                         let width = imageResult.image.size.width
@@ -204,12 +218,6 @@ extension Message: Reusable {
                             imageViewContainer.snp.makeConstraints { make in
                                 make.width.equalTo(150)
                             }
-                        }
-                        
-                        bag += Signal(after: 0).animated(
-                            style: AnimationStyle.easeOut(duration: 0.25)
-                        ) { _ in
-                            imageViewContainer.alpha = 1
                         }
                         case .failure(_):
                         break
@@ -249,6 +257,64 @@ extension Message: Reusable {
                         guard let url = url else { return }
                         message.onTapCallbacker.callAll(with: url)
                     }
+                }
+            case let .video(url):
+                let imageViewContainer = UIView()
+                
+                let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFill
+                
+                let processor = DownsamplingImageProcessor(
+                    size: CGSize(
+                        width: 300,
+                        height: 200
+                    )
+                )
+                
+                imageView.kf.setImage(
+                    with: url,
+                    options: [
+                        .preloadAllAnimationData,
+                        .processor(processor),
+                        .backgroundDecode,
+                        .transition(.fade(1))
+                    ]
+                ) { result in
+                    switch result {
+                    case let .success(imageResult):
+                        let width = imageResult.image.size.width
+                        let height = imageResult.image.size.height
+                        
+                        if width > height {
+                            imageViewContainer.snp.makeConstraints { make in
+                                make.width.equalTo(300)
+                            }
+                        } else {
+                            imageViewContainer.snp.makeConstraints { make in
+                                make.width.equalTo(150)
+                            }
+                        }
+                        case .failure(_):
+                        break
+                    }
+                    
+                }
+                
+                imageViewContainer.addSubview(imageView)
+                
+                imageView.snp.makeConstraints { make in
+                    make.height.equalToSuperview()
+                    make.width.equalToSuperview()
+                }
+                
+                imageViewContainer.snp.makeConstraints { make in
+                    make.height.equalTo(200)
+                }
+                
+                contentContainer.addArrangedSubview(imageViewContainer)
+                
+                bag += {
+                    imageViewContainer.removeFromSuperview()
                 }
             case .text:
                 let label = MultilineLabel(

@@ -9,6 +9,7 @@ import Foundation
 import Form
 import Photos
 import Flow
+import Kingfisher
 
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
