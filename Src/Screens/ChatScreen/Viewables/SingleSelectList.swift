@@ -63,34 +63,34 @@ extension SingleSelectList: Reusable {
 extension SingleSelectList: Viewable {
     func materialize(events _: ViewableEvents) -> (UIScrollView, Disposable) {
         let bag = DisposeBag()
-        
+
         let scrollView = UIScrollView()
         scrollView.alwaysBounceHorizontal = true
-        
+
         let view = UIStackView()
         view.axis = .vertical
         view.alignment = .trailing
         view.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)
         view.isLayoutMarginsRelativeArrangement = true
-                
+
         scrollView.embedView(view, scrollAxis: .horizontal)
-        
+
         view.snp.makeConstraints { make in
             make.width.greaterThanOrEqualTo(scrollView.snp.width)
         }
-                
+
         let contentContainerView = UIStackView()
         contentContainerView.axis = .horizontal
         contentContainerView.alignment = .center
         contentContainerView.spacing = 15
-        
+
         view.addArrangedSubview(contentContainerView)
 
         bag += options.enumerated().map({ arg in
             let (index, option) = arg
             let innerBag = DisposeBag()
             let button = Button(title: option.text, type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
-            
+
             innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
                 func removeViews() {
                     view.arrangedSubviews.forEach { subView in
@@ -109,7 +109,7 @@ extension SingleSelectList: Viewable {
                     }
                     removeViews()
                 case .selection:
-                    let _ = self.client.perform(
+                    _ = self.client.perform(
                         mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
                     )
                     removeViews()
@@ -121,7 +121,7 @@ extension SingleSelectList: Viewable {
             buttonWrapper.alignment = .center
 
             innerBag += contentContainerView.addArranged(button.wrappedIn(buttonWrapper))
-            
+
             if let buttonView = buttonWrapper.subviews.first {
                 innerBag += buttonView.hasWindowSignal.atOnce().atValue({ _ in
                     buttonView.alpha = 0
@@ -131,10 +131,10 @@ extension SingleSelectList: Viewable {
                     buttonView.alpha = 1
                 })
             }
-            
+
             return innerBag
         })
-                
+
         return (scrollView, bag)
     }
 }

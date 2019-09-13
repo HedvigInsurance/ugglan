@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-09-02.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 class AccessoryViewController<Accessory: Viewable>: UIViewController where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Result == Disposable {
@@ -38,7 +38,7 @@ class AccessoryViewController<Accessory: Viewable>: UIViewController where Acces
     override var inputAccessoryView: UIView? {
         return accessoryView
     }
-        
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         becomeFirstResponder()

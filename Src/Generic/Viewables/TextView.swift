@@ -37,7 +37,7 @@ struct TextView {
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
         self.keyboardTypeSignal = ReadWriteSignal(keyboardTypeSignal)
-        self.textContentTypeSignal = ReadWriteSignal(textContentType)
+        textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
     }
 }
@@ -102,7 +102,7 @@ extension TextView: Viewable {
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
         textView.backgroundColor = .clear
         bag += value.atOnce().bidirectionallyBindTo(textView)
-                        
+
         bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
             textView.textContentType = textContentType
             textView.keyboardType = keyboardType ?? .default
@@ -148,7 +148,7 @@ extension TextView: Viewable {
 
         let placeholderLabel = UILabel(value: "Aa", style: TextStyle.body.colored(.darkGray).resized(to: 14))
         paddingView.addSubview(placeholderLabel)
-                        
+
         bag += placeholder.map { Optional($0) }.bindTo(
             transition: placeholderLabel,
             style: .crossDissolve(duration: 0.25),

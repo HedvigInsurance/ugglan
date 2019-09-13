@@ -72,7 +72,7 @@ extension UIColor {
 
         return UIColor.pink
     }
-    
+
     static var navigationItemMutedTintColor: UIColor {
         return UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .white : .darkGray

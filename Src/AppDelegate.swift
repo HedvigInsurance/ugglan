@@ -134,7 +134,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 .prefersNavigationBarHidden(true),
             ]).onValue { result in
                 if result == .accept {
-                    // TODO
+                    // TODO:
                 }
                 innerBag.dispose()
             }

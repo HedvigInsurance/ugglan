@@ -96,14 +96,14 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: 0
             )
-            
+
             bag += combineLatest(
                 currentMessageSignal,
                 attachGIFPaneIsOpenSignal
             ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachGIFPaneIsOpen in
-                
+
                 var isHidden: Bool
-                
+
                 if attachGIFPaneIsOpen {
                     isHidden = true
                 } else if currentMessage?.richTextCompatible == true {
@@ -111,7 +111,7 @@ extension ChatInput: Viewable {
                 } else {
                     isHidden = true
                 }
-                
+
                 stackView.animationSafeIsHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
@@ -142,9 +142,9 @@ extension ChatInput: Viewable {
                 currentMessageSignal,
                 attachFilePaneIsOpenSignal
             ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachFilePaneIsOpen in
-                
+
                 var isHidden: Bool
-                
+
                 if attachFilePaneIsOpen {
                     isHidden = true
                 } else if currentMessage?.richTextCompatible == true {
@@ -152,7 +152,7 @@ extension ChatInput: Viewable {
                 } else {
                     isHidden = true
                 }
-                
+
                 stackView.animationSafeIsHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
@@ -178,14 +178,14 @@ extension ChatInput: Viewable {
         }
 
         contentView.addArrangedSubview(inputBar)
-        
+
         let singleSelectContainer = UIView()
         contentView.addSubview(singleSelectContainer)
-        
+
         singleSelectContainer.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
-        
+
         contentView.bringSubviewToFront(inputBar)
 
         bag += currentMessageSignal.animated(style: SpringAnimationStyle.lightBounce()) { message in
@@ -194,7 +194,7 @@ extension ChatInput: Viewable {
                 singleSelectContainer.alpha = 0
                 return
             }
-            
+
             switch message.responseType {
             case .none:
                 inputBar.alpha = 0
@@ -203,29 +203,29 @@ extension ChatInput: Viewable {
                 inputBar.alpha = 1
                 singleSelectContainer.alpha = 0
                 contentView.bringSubviewToFront(inputBar)
-                
+
                 singleSelectContainer.subviews.forEach { view in
                     view.removeFromSuperview()
                 }
-                
+
             case let .singleSelect(options):
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 1
-                
+
                 UIView.performWithoutAnimation {
                     let list = SingleSelectList(options: options, currentGlobalIdSignal: currentGlobalIdSignal, navigateCallbacker: self.navigateCallbacker)
-                    
+
                     singleSelectContainer.subviews.forEach { view in
                         view.removeFromSuperview()
                     }
-                    
+
                     bag += singleSelectContainer.add(list) { view in
                         view.snp.makeConstraints { make in
                             make.top.bottom.trailing.leading.equalToSuperview()
                         }
                     }
                 }
-                
+
                 contentView.bringSubviewToFront(singleSelectContainer)
             }
         }

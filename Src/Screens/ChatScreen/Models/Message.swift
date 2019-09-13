@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-09-12.
 //
 
-import Foundation
-import Flow
 import Apollo
+import Flow
+import Foundation
 import UIKit
 
 struct Message: Equatable, Hashable {
@@ -29,21 +29,21 @@ struct Message: Equatable, Hashable {
     let textContentType: UITextContentType?
     let keyboardType: UIKeyboardType?
     let richTextCompatible: Bool
-    
+
     let listSignal: ReadSignal<[ChatListContent]>?
     let editingDisabledSignal = ReadWriteSignal<Bool>(false)
     let onEditCallbacker = Callbacker<Void>()
-    
+
     var onTapSignal: Signal<URL> {
         onTapCallbacker.providedSignal
     }
-    
+
     let onTapCallbacker = Callbacker<URL>()
 
     enum ResponseType: Equatable {
         case singleSelect(options: [SingleSelectOption]), text, none
     }
-    
+
     enum MessageType: Equatable {
         static func == (
             lhs: Message.MessageType,
@@ -62,62 +62,62 @@ struct Message: Equatable, Hashable {
                 return false
             }
         }
-        
+
         var isRichType: Bool {
             switch self {
             case .text:
                 return false
-            case .image(_):
+            case .image:
                 return true
-            case .video(_):
+            case .video:
                 return true
-            case .file(_):
+            case .file:
                 return true
             }
         }
-        
+
         var isImageType: Bool {
             switch self {
-            case .image(_):
+            case .image:
                 return true
             default:
                 return false
             }
         }
-        
+
         var isVideoType: Bool {
             switch self {
-            case .video(_):
+            case .video:
                 return true
             default:
                 return false
             }
         }
-        
+
         var isVideoOrImageType: Bool {
             return isImageType || isVideoType
         }
-        
+
         case text, image(url: URL?), video(url: URL?), file(url: URL?)
     }
-    
+
     var shouldShowEditButton: Bool {
         if richTextCompatible {
             return false
         }
-        
+
         if editingDisabledSignal.value {
             return false
         }
-        
+
         if !fromMyself {
             return false
         }
-        
+
         guard let list = listSignal?.value else {
             return false
         }
-        
+
         guard let myIndex = list.firstIndex(of: .left(self)) else {
             return false
         }
@@ -125,12 +125,12 @@ struct Message: Equatable, Hashable {
             guard let left = message.left else {
                 return false
             }
-            
+
             return left.fromMyself == true
         }) else {
             return false
         }
-                
+
         return myIndex <= indexOfFirstMyself
     }
 
@@ -138,7 +138,7 @@ struct Message: Equatable, Hashable {
         guard let list = listSignal?.value else {
             return nil
         }
-        
+
         guard let myIndex = list.firstIndex(of: .left(self)) else {
             return nil
         }
@@ -155,12 +155,12 @@ struct Message: Equatable, Hashable {
         guard let list = listSignal?.value else {
             return nil
         }
-        
+
         guard let myIndex = list.firstIndex(of: .left(self)) else {
             return nil
         }
         let previousIndex = myIndex + 1
-        
+
         if !list.indices.contains(previousIndex) {
             return nil
         }
@@ -192,7 +192,7 @@ struct Message: Equatable, Hashable {
                 return .halfHeight
             }
         }
-        
+
         return .halfHeight
     }
 
@@ -216,10 +216,10 @@ struct Message: Equatable, Hashable {
                 return .halfHeight
             }
         }
-        
+
         return .halfHeight
     }
-    
+
     func absoluteRadiusValue(radius: Radius, view: UIView) -> CGFloat {
         switch radius {
         case let .fixed(value):
@@ -242,7 +242,7 @@ struct Message: Equatable, Hashable {
         richTextCompatible = message.richTextCompatible
         type = message.type
     }
-    
+
     init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
         body = message.body
         fromMyself = message.fromMyself
@@ -261,7 +261,7 @@ struct Message: Equatable, Hashable {
         globalId = message.globalId
         id = message.id
         richTextCompatible = message.header.richTextChatCompatible
-        
+
         if let singleSelect = message.body.asMessageBodySingleSelect {
             body = singleSelect.text
 
@@ -339,7 +339,7 @@ struct Message: Equatable, Hashable {
             placeholder = nil
             keyboardType = nil
             textContentType = nil
-            
+
             switch file.mimeType {
             case "image/jpeg", "image/png", "image/gif":
                 type = .image(url: URL(string: file.file.signedUrl))
@@ -363,7 +363,7 @@ struct Message: Equatable, Hashable {
             textContentType = nil
             type = .text
         }
-        
+
         fromMyself = message.header.fromMyself
         self.listSignal = listSignal
     }

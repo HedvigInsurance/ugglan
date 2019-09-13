@@ -6,11 +6,11 @@
 //  Hedvig
 //
 
+import Apollo
 import Flow
 import Form
 import Presentation
 import UIKit
-import Apollo
 
 struct OnboardingChat {
     let client: ApolloClient
@@ -29,17 +29,17 @@ extension OnboardingChat: Presentable {
         let chat = Chat()
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
-        
+
         let navigationItemTintColor = UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .white : .darkGray
         })
-        
+
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
         settingsButton.tintColor = navigationItemTintColor
-        
+
         viewController.navigationItem.leftBarButtonItem = settingsButton
-        
+
         bag += settingsButton.onValue({ _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
@@ -47,21 +47,19 @@ extension OnboardingChat: Presentable {
                 options: [.allowSwipeDismissAlways, .defaults]
             )
         })
-        
+
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
         restartButton.tintColor = navigationItemTintColor
 
         bag += restartButton.onValue { _ in
-            let alert = Alert.init(title: "Vill du starta om?", message: "All information du fyllt i kommer att försvinna.", actions: [
-                Alert.Action.init(title: "OK", action: {
+            let alert = Alert(title: "Vill du starta om?", message: "All information du fyllt i kommer att försvinna.", actions: [
+                Alert.Action(title: "OK", action: {
                     chat.reloadChatCallbacker.callAll()
                 }),
-                Alert.Action.init(title: "Avbryt", action: {
-                    
-                })
+                Alert.Action(title: "Avbryt", action: {}),
             ])
-            
+
             viewController.present(alert)
         }
 

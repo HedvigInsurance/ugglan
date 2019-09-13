@@ -15,7 +15,7 @@ import UIKit
 struct About {
     let client: ApolloClient
     let state: State
-    
+
     enum State {
         case onboarding, loggedIn
     }
@@ -34,27 +34,27 @@ extension About: Presentable {
         let bag = DisposeBag()
 
         let form = FormView()
-        
+
         if state == .onboarding {
             let loginSection = form.appendSection(
                 headerView: nil,
                 footerView: nil,
                 style: .sectionPlain
             )
-            
+
             let loginRow = ButtonRow(
                 text: "Logga in",
                 style: .normalButton
             )
             bag += loginSection.append(loginRow)
-            
+
             bag += loginRow.onSelect.onValue { _ in
                 viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.defaults]))
             }
-            
+
             bag += form.append(Spacing(height: 20))
         }
-        
+
         let versionSection = form.appendSection(
             headerView: nil,
             footerView: nil,
@@ -66,7 +66,7 @@ extension About: Presentable {
 
         let memberIdRow = MemberIdRow()
         bag += versionSection.append(memberIdRow)
-        
+
         if state == .loggedIn {
             let activatePushNotificationsRow = ButtonRow(
                 text: "Aktivera pushnotiser",
@@ -88,7 +88,7 @@ extension About: Presentable {
                 style: .normalButton
             )
             bag += versionSection.append(showWhatsNew)
-            
+
             bag += showWhatsNew.onSelect.onValue { _ in
                 bag += self.client
                     .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "0.0.0"))
@@ -100,9 +100,9 @@ extension About: Presentable {
                     }
             }
         }
-        
+
         bag += form.append(Spacing(height: 20))
-        
+
         let licensesSection = form.appendSection(
             headerView: nil,
             footerView: nil,

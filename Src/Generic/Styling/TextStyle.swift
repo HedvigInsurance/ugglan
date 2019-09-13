@@ -15,12 +15,12 @@ extension TextStyle {
             style.alignment = .center
         }
     }
-    
+
     static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .primaryText
     }
-    
+
     static let chatBodyUnderlined = TextStyle.chatBody.restyled { (style: inout TextStyle) in
         style.setAttribute(
             NSUnderlineStyle.single.rawValue,

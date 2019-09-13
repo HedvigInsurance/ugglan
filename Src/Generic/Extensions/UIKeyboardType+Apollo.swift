@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-09-12.
 //
 
-import Foundation
 import Apollo
+import Foundation
 import UIKit
 
 extension UIKeyboardType {
@@ -14,7 +14,7 @@ extension UIKeyboardType {
         guard let keyboardType = keyboardType else {
             return nil
         }
-        
+
         switch keyboardType {
         case .default:
             return .default
@@ -28,7 +28,7 @@ extension UIKeyboardType {
             return .numeric
         case .phone:
             return .phonePad
-        case .__unknown(_):
+        case .__unknown:
             return .default
         }
     }

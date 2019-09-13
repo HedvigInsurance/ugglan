@@ -33,21 +33,21 @@ struct ChatTextView {
 extension ChatTextView: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let defaultPlaceholder = "Aa"
-        
+
         let textView = TextView(
             value: "",
             placeholder: defaultPlaceholder,
             insets: UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 40)
         )
         let (view, result) = textView.materialize(events: events)
-        
+
         let bag = DisposeBag()
-        
+
         bag += currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
             textView.keyboardTypeSignal.value = message.keyboardType
             textView.placeholder.value = message.placeholder ?? defaultPlaceholder
         }
-        
+
         bag += textView.value.onValue { _ in
             if let message = self.currentMessageSignal.value {
                 switch message.responseType {

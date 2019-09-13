@@ -8,15 +8,15 @@
 
 import Flow
 import Foundation
+import MobileCoreServices
 import Photos
 import Presentation
 import UIKit
-import MobileCoreServices
 
 struct ImagePicker {
     let sourceType: UIImagePickerController.SourceType
     let mediaTypes: Set<MediaType>
-    
+
     enum MediaType {
         case video, photo
     }
@@ -90,7 +90,7 @@ extension ImagePicker: Presentable {
             transitionStyle: nil,
             capturesStatusBarAppearance: nil
         )
-        
+
         viewController.mediaTypes = mediaTypes.map { type -> String in
             switch type {
             case .photo:

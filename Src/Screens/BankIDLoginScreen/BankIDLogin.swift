@@ -5,16 +5,16 @@
 //  Created by Sam Pettersson on 2019-09-05.
 //
 
+import Apollo
+import Flow
+import Form
 import Foundation
 import Presentation
 import UIKit
-import Flow
-import Apollo
-import Form
 
 struct BankIDLogin {
     let client: ApolloClient
-    
+
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
     }
@@ -75,7 +75,7 @@ extension BankIDLogin: Presentable {
         headerContainer.addArrangedSubview(iconContainerView)
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
-        
+
         let statusLabel = MultilineLabel(value: String(key: .SIGN_START_BANKID), style: .rowTitle)
         bag += containerView.addArranged(statusLabel)
 
@@ -89,7 +89,7 @@ extension BankIDLogin: Presentable {
         let statusSignal = client.subscribe(
             subscription: BankIdAuthSubscription()
         ).compactMap { $0.data?.authStatus?.status }
-                
+
         bag += statusSignal.skip(first: 1).onValue { authStatus in
             let statusText: String
 
@@ -102,13 +102,13 @@ extension BankIDLogin: Presentable {
                 statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
             case .success:
                 statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
-            case .__unknown(_):
+            case .__unknown:
                 statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
             }
 
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
         }
-        
+
         bag += client.perform(mutation: BankIdAuthMutation()).delay(by: 0.5).valueSignal.compactMap { result in result.data?.bankIdAuth.autoStartToken }.onValue { autoStartToken in
             let urlScheme = Bundle.main.urlScheme ?? ""
             guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
@@ -124,7 +124,7 @@ extension BankIDLogin: Presentable {
             bag += closeButton.onTapSignal.onValue {
                 completion(.failure(BankIdSignError.failed))
             }
-            
+
             bag += statusSignal.withLatestFrom(view.windowSignal.atOnce().plain()).onValue({ authState, window in
                 if authState == .success {
                     bag += window?.present(LoggedIn(), animated: true)

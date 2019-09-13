@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-09-12.
 //
 
-import Foundation
 import Apollo
+import Foundation
 import UIKit
 
 extension UITextContentType {
@@ -14,7 +14,7 @@ extension UITextContentType {
         guard let textContentType = textContentType else {
             return nil
         }
-        
+
         switch textContentType {
         case .none:
             return .none
@@ -68,7 +68,7 @@ extension UITextContentType {
             return .username
         case .password:
             return .password
-        case .__unknown(_):
+        case .__unknown:
             return .none
         }
     }

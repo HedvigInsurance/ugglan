@@ -75,7 +75,7 @@ extension TypingIndicator: Viewable {
 
         bag += bubble.didLayoutSignal.onValue({ _ in
             let halfWidthCornerRadius = bubble.frame.height / 2
-            
+
             if self.hasPreviousMessage {
                 bubble.applyRadiusMaskFor(topLeft: 5, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
             } else {

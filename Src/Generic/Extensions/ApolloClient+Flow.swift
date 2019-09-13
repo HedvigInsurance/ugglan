@@ -34,10 +34,10 @@ extension ApolloClient {
         numberOfRetries: Int = 0
     ) -> Future<GraphQLResult<Query.Data>> {
         return Future<GraphQLResult<Query.Data>> { completion in
-            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) {  [unowned self] result in
+            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) { [unowned self] result in
                 switch result {
                 case let .success(result):
-                     completion(.success(result))
+                    completion(.success(result))
                 case let .failure(error):
                     if error.isIgnorable {
                         return
@@ -101,25 +101,25 @@ extension ApolloClient {
                 resultHandler: { [unowned self] result in
                     switch result {
                     case let .success(result):
-                         completion(.success(result))
+                        completion(.success(result))
                     case let .failure(error):
                         if error.isIgnorable {
-                           return
-                       }
+                            return
+                        }
 
-                       log.error(error.localizedDescription)
+                        log.error(error.localizedDescription)
 
-                       let retryHandler = { [unowned self] () -> Void in
-                           self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
-                               completion(result)
-                           }
-                       }
+                        let retryHandler = { [unowned self] () -> Void in
+                            self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
+                                completion(result)
+                            }
+                        }
 
-                       if numberOfRetries == 0 {
-                           retryHandler()
-                       } else {
-                           self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
-                       }
+                        if numberOfRetries == 0 {
+                            retryHandler()
+                        } else {
+                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        }
                     }
                 }
             )
@@ -178,7 +178,7 @@ extension ApolloClient {
             }
         }
     }
-    
+
     func upload<Mutation: GraphQLMutation>(
         operation: Mutation,
         files: [GraphQLFile],
@@ -186,7 +186,7 @@ extension ApolloClient {
     ) -> Future<GraphQLResult<Mutation.Data>> {
         upload(operation: operation, files: files, queue: queue, numberOfRetries: 0)
     }
-    
+
     private func upload<Mutation: GraphQLMutation>(
         operation: Mutation,
         files: [GraphQLFile],
@@ -220,7 +220,7 @@ extension ApolloClient {
                     }
                 }
             }
-            
+
             return Disposer {
                 bag.dispose()
                 cancellable.cancel()
@@ -229,7 +229,6 @@ extension ApolloClient {
     }
 
     func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
-        
         return Signal { callbacker in
             let bag = DisposeBag()
 

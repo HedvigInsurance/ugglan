@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2019-09-05.
 //
 
-import Foundation
-import UIKit
 import Flow
+import Foundation
 import Presentation
+import UIKit
 
 struct BankIDLoginQR {
     let autoStartURL: URL
@@ -25,7 +25,7 @@ extension BankIDLoginQR: Presentable {
         viewController.view = view
         viewController.title = "BankID saknas på din enhet"
         viewController.navigationItem.hidesBackButton = true
-        
+
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.alignment = .center
@@ -71,29 +71,29 @@ extension BankIDLoginQR: Presentable {
 
         let messageLabel = MultilineLabel(value: "Skanna QR-koden ovan i den enhet där du har BankID installerat.", style: .rowTitle)
         bag += containerView.addArranged(messageLabel)
-        
+
         func generateQRCode(_ url: URL) {
             let data = url.absoluteString.data(using: String.Encoding.ascii)
             guard let qrFilter = CIFilter(name: "CIQRCodeGenerator") else { return }
             qrFilter.setValue(data, forKey: "inputMessage")
             guard let qrImage = qrFilter.outputImage else { return }
-            
+
             let transform = CGAffineTransform(scaleX: 10, y: 10)
             let scaledQrImage = qrImage.transformed(by: transform)
-            
+
             guard let maskToAlphaFilter = CIFilter(name: "CIMaskToAlpha") else { return }
             maskToAlphaFilter.setValue(scaledQrImage, forKey: "inputImage")
             guard let outputCIImage = maskToAlphaFilter.outputImage else { return }
-            
+
             let context = CIContext()
             guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else { return }
             let processedImage = UIImage(cgImage: cgImage)
-            
+
             imageView.tintColor = UIColor.white
             imageView.backgroundColor = UIColor.secondaryBackground
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
-        
+
         generateQRCode(autoStartURL)
 
         return (viewController, bag)

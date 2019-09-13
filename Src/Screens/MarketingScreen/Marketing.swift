@@ -40,7 +40,7 @@ extension Marketing: Presentable {
 
             bag += resultCallbacker.signal().onValue { marketingResult in
                 pausedCallbacker.callAll(with: true)
-                
+
                 switch marketingResult {
                 case .onboard:
                     bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
