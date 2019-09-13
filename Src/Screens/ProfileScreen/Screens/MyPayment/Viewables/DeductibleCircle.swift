@@ -22,8 +22,9 @@ extension DeductibleCircle: Viewable {
 
         let deductibleCircle = CircleLabelSmall(
             labelText: deductibleCircleText,
+            textColor: .offWhite,
             backgroundColor: UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .secondaryBackground : .green
+                trait.userInterfaceStyle == .dark ? .secondaryBackground : .darkGreen
             })
         )
 

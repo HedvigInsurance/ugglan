@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "presale.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "presale-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "presale-dark-mode.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

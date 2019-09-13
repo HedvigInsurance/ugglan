@@ -13,10 +13,12 @@ import UIKit
 
 struct CircleLabelSmall {
     let labelText: DynamicString
+    let textColor: UIColor
     let backgroundColor: UIColor
 
-    init(labelText: DynamicString, backgroundColor: UIColor) {
+    init(labelText: DynamicString, textColor: UIColor, backgroundColor: UIColor) {
         self.labelText = labelText
+        self.textColor = textColor
         self.backgroundColor = backgroundColor
     }
 }
@@ -35,6 +37,7 @@ extension CircleLabelSmall: Viewable {
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.adjustsFontSizeToFitWidth = true
+        titleLabel.textColor = textColor
         bag += titleLabel.setDynamicText(labelText)
 
         circleView.layer.shadowOpacity = 0.2
