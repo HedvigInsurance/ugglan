@@ -41,7 +41,7 @@ extension WhatsNewPagerDots: Viewable {
 
             for i in 0 ... pageAmount - 2 {
                 let indicator = UIView()
-                indicator.backgroundColor = i == 0 ? .purple : .gray
+                indicator.backgroundColor = i == 0 ? .primaryTintColor : .gray
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
                 indicator.layer.cornerRadius = 2
 
@@ -68,9 +68,9 @@ extension WhatsNewPagerDots: Viewable {
                 let indicatorIsActive = index == pageIndex
 
                 if indicator is UIImageView {
-                    indicator.tintColor = indicatorIsActive ? .purple : .gray
+                    indicator.tintColor = indicatorIsActive ? .primaryTintColor : .gray
                 } else {
-                    indicator.backgroundColor = indicatorIsActive ? .purple : .gray
+                    indicator.backgroundColor = indicatorIsActive ? .primaryTintColor : .gray
                 }
 
                 indicator.transform = indicatorIsActive ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity

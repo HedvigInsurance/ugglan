@@ -52,6 +52,16 @@ extension UIColor {
 
         return UIColor.offBlack
     }
+    
+    static var tertiaryText: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+            }
+        }
+        
+        return UIColor.darkGray
+    }
 
     static var disabledTintColor: UIColor {
         if #available(iOS 13, *) {

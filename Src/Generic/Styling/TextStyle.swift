@@ -161,7 +161,7 @@ extension TextStyle {
 
     static let rowValueLink = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
-        style.color = .purple
+        style.color = .primaryTintColor
     }
 
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
