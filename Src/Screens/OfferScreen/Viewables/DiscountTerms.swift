@@ -44,8 +44,8 @@ extension DiscountTerms: Viewable {
         let termsLabelText = String(
             key: .REFERRAL_ADDCOUPON_TC(termsAndConditionsLink: termsAndConditionsString)
         ).attributedStringWithVariableStyles(
-            [termsAndConditionsString: textStyle.colored(.purple)],
-            fallbackStyle: textStyle.colored(.offBlack)
+            [termsAndConditionsString: textStyle.colored(.primaryTintColor)],
+            fallbackStyle: textStyle.colored(.decorText)
         )
 
         let label = UILabel()

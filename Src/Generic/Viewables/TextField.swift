@@ -33,7 +33,8 @@ extension TextField: Viewable {
         }
 
         view.layer.borderWidth = 1 / UIScreen.main.scale
-        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.borderColor = view.traitCollection.userInterfaceStyle == .dark ? UIColor.offBlack.cgColor : UIColor.lightGray.cgColor
+
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = view.frame.height / 2
         }

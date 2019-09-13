@@ -62,6 +62,16 @@ extension UIColor {
         
         return UIColor.darkGray
     }
+    
+    static var decorText: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? .offLightGray : .gray
+            }
+        }
+        
+        return UIColor.gray
+    }
 
     static var disabledTintColor: UIColor {
         if #available(iOS 13, *) {

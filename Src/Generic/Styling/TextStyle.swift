@@ -138,7 +138,7 @@ extension TextStyle {
 
     static let perilTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
-        style.color = .gray
+        style.color = .decorText
     }
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
