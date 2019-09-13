@@ -10,6 +10,29 @@ import Form
 import Foundation
 import Kingfisher
 import UIKit
+import AVFoundation
+
+extension AVURLAsset {
+    enum ThumbnailImageError: Error {
+        case failed
+    }
+    
+    var thumbnailImage: Future<UIImage> {
+        Future(on: .background) { completion in
+            let imgGenerator = AVAssetImageGenerator(asset: self)
+            imgGenerator.appliesPreferredTrackTransform = true
+                                           
+            guard let cgImage = try? imgGenerator.copyCGImage(at: self.duration, actualTime: nil) else {
+                completion(.failure(ThumbnailImageError.failed))
+                return NilDisposer()
+            }
+            
+            completion(.success(UIImage(cgImage: cgImage)))
+            
+            return NilDisposer()
+        }
+    }
+}
 
 extension Message: Reusable {
     var largerMarginTop: CGFloat {
@@ -262,47 +285,33 @@ extension Message: Reusable {
 
                 let imageView = UIImageView()
                 imageView.contentMode = .scaleAspectFill
-
+                
                 let processor = DownsamplingImageProcessor(
                     size: CGSize(
                         width: 300,
                         height: 200
                     )
                 )
-
-                imageView.kf.setImage(
-                    with: url,
-                    options: [
-                        .preloadAllAnimationData,
-                        .processor(processor),
-                        .backgroundDecode,
-                        .transition(.fade(1)),
-                    ]
-                ) { result in
-                    switch result {
-                    case let .success(imageResult):
-                        let width = imageResult.image.size.width
-                        let height = imageResult.image.size.height
-
-                        if width > height {
-                            imageViewContainer.snp.makeConstraints { make in
-                                make.width.equalTo(300)
-                            }
-                        } else {
-                            imageViewContainer.snp.makeConstraints { make in
-                                make.width.equalTo(150)
-                            }
-                        }
-                    case .failure:
-                        break
-                    }
+                
+                if let url = url {
+                    let asset = AVURLAsset(url: url, options: nil)
+                    imageView.kf.setImage(
+                        with: asset,
+                        options: [
+                            .preloadAllAnimationData,
+                            .processor(processor),
+                            .backgroundDecode,
+                            .transition(.fade(1))
+                        ]
+                    )
                 }
-
+                
                 imageViewContainer.addSubview(imageView)
 
                 imageView.snp.makeConstraints { make in
                     make.height.equalToSuperview()
                     make.width.equalToSuperview()
+                    make.width.equalTo(300)
                 }
 
                 imageViewContainer.snp.makeConstraints { make in
