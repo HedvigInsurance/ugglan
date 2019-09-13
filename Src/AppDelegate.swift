@@ -16,6 +16,7 @@ import Form
 import Presentation
 import UIKit
 import UserNotifications
+import Foundation
 
 let log = Logger.self
 
@@ -172,6 +173,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        switch Foundation.Locale.current.identifier {
+        case "sv-SE":
+            Localization.Locale.currentLocale = .sv_SE
+        default:
+            Localization.Locale.currentLocale = .en_SE
+        }
+        
         FirebaseApp.configure()
 
         launchWindow?.isOpaque = false

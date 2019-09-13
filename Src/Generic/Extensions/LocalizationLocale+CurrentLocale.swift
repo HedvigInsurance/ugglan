@@ -9,6 +9,15 @@
 import Foundation
 
 extension Localization.Locale {
+    var acceptLanguageHeader: String {
+        switch self {
+        case .sv_SE:
+            return "sv-SE"
+        case .en_SE:
+            return "en-SE"
+        }
+    }
+
     func asGraphQLLocale() -> Locale {
         switch self {
         case .sv_SE:
