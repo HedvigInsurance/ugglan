@@ -152,6 +152,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         UIApplication.shared.registerForRemoteNotifications()
     }
+    
+    func application(
+        _ application: UIApplication,
+        supportedInterfaceOrientationsFor window: UIWindow?
+    ) -> UIInterfaceOrientationMask {
+        guard let vc = (window?.rootViewController?.presentedViewController) else {
+            return .portrait
+        }
+        
+        if String(describing: vc).contains("VideoPlayerViewController") {
+            return .allButUpsideDown
+        }
+
+        return .portrait
+    }
 
     func application(
         _: UIApplication,
