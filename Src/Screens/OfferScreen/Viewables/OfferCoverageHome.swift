@@ -65,7 +65,7 @@ extension OfferCoverageHome: Viewable {
             .map { StyledText(text: $0, style: .rowTitleBold) }
             .bindTo(titleLabel, \.styledTextSignal.value)
 
-        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_APARTMENT_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.darkGray))
+        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_APARTMENT_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.tertiaryText))
         bag += stackView.addArranged(descriptionLabel)
 
         let perilCollection = PerilCollection(

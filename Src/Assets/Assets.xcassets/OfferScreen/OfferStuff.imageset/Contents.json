@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "stuff.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "stuff-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "stuff-dark-mode.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {
