@@ -229,7 +229,19 @@ extension Chat: Presentable {
         }
 
         let filteredMessagesSignal = messagesSignal.map { messages in
-            messages.filter { $0.left?.type.isRichType ?? false || ($0.left?.body != "" && $0.left != nil) }
+            messages.enumerated().compactMap { offset, item -> ChatListContent? in
+                if item.right != nil {
+                    if offset != 0 {
+                        return nil
+                    }
+                }
+
+                if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
+                    return nil
+                }
+
+                return item
+            }
         }
 
         let subscriptionBag = bag.innerBag()
@@ -247,9 +259,11 @@ extension Chat: Presentable {
                     let newMessage = Message(from: message, listSignal: filteredMessagesSignal)
 
                     if let paragraph = message.body.asMessageBodyParagraph {
+                        let hasPreviousMessage = filteredMessagesSignal.value.first?.left?.fromMyself == false
+                        
                         paragraph.text != "" ?
                             messagesSignal.value.insert(.left(newMessage), at: 0) :
-                            messagesSignal.value.insert(.make(.make(TypingIndicator(hasPreviousMessage: true))), at: 0)
+                            messagesSignal.value.insert(.make(.make(TypingIndicator(hasPreviousMessage: hasPreviousMessage))), at: 0)
                     } else {
                         messagesSignal.value.insert(.left(newMessage), at: 0)
                     }
@@ -318,21 +332,7 @@ extension Chat: Presentable {
 
         subscribeToMessages()
 
-        bag += messagesSignal.compactMap { list -> [ChatListContent] in
-            return list.enumerated().compactMap { offset, item -> ChatListContent? in
-                if item.right != nil {
-                    if offset != 0 {
-                        return nil
-                    }
-                }
-
-                if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
-                    return nil
-                }
-
-                return item
-            }
-        }.onValue { messages in
+        bag += filteredMessagesSignal.onValue { messages in
             if tableKit.table.isEmpty {
                 tableKit.set(Table(rows: messages), animation: .none)
 

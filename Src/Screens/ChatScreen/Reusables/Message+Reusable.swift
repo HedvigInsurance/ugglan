@@ -47,6 +47,10 @@ extension Message: Reusable {
     /// identifies if message belongs logically to the next message
     var isRelatedToNextMessage: Bool {
         guard let next = next else {
+            if !fromMyself {
+                return hasTypingIndicatorNext
+            }
+            
             return false
         }
                 
@@ -77,8 +81,6 @@ extension Message: Reusable {
             
             return timeStampSize.height + 5
         }()
-        
-        
         
         if type.isVideoOrImageType {
             let constantHeight: CGFloat = 200

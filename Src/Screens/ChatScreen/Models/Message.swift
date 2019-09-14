@@ -134,6 +134,23 @@ struct Message: Equatable, Hashable {
 
         return myIndex <= indexOfFirstMyself
     }
+    
+    var hasTypingIndicatorNext: Bool {
+        guard let list = listSignal?.value else {
+            return false
+        }
+        
+        guard let myIndex = list.firstIndex(of: .left(self)) else {
+            return false
+        }
+        let nextIndex = myIndex - 1
+
+        if !list.indices.contains(nextIndex) {
+            return false
+        }
+
+        return list[nextIndex].right != nil
+    }
 
     var next: Message? {
         guard let list = listSignal?.value else {
