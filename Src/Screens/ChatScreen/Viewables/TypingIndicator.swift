@@ -14,6 +14,12 @@ import UIKit
 struct TypingIndicator: Hashable {
     let id = UUID()
     let hasPreviousMessage: Bool
+    
+    /// returns the totalHeight calculated height for displaying a TypingIndicator in a cell
+    var totalHeight: CGFloat {
+        let baseHeight: CGFloat = 40
+        return hasPreviousMessage ? baseHeight : baseHeight + 20
+    }
 }
 
 extension TypingIndicator: Reusable {
@@ -28,12 +34,18 @@ extension TypingIndicator: Reusable {
         containerView.alignment = .leading
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
-        spacingContainer.edgeInsets = UIEdgeInsets(top: 2, left: 20, bottom: 0, right: 20)
 
         containerView.addArrangedSubview(spacingContainer)
 
         return (containerView, { typingIndicator in
-            spacingContainer.addArranged(typingIndicator)
+            spacingContainer.edgeInsets = UIEdgeInsets(
+                top: typingIndicator.hasPreviousMessage ? 2 : 20,
+                left: 20,
+                bottom: 0,
+                right: 20
+            )
+            
+            return spacingContainer.addArranged(typingIndicator)
         })
     }
 }

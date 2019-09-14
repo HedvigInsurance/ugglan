@@ -109,8 +109,8 @@ extension Chat: Presentable {
                 return message.totalHeight
             }
             
-            if item.right?.left != nil {
-                return 40
+            if let typingIndicator = item.right?.left {
+                return typingIndicator.totalHeight
             }
 
             return 0
@@ -139,7 +139,6 @@ extension Chat: Presentable {
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
             .compactMap { notification in notification.keyboardInfo }
-            .debug()
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
@@ -147,6 +146,7 @@ extension Chat: Presentable {
                 let headerView = UIView()
                 headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
                 tableKit.view.tableHeaderView = headerView
+                headerView.layoutIfNeeded()
             })
 
         let isEditingSignal = ReadWriteSignal<Bool>(false)
@@ -200,6 +200,48 @@ extension Chat: Presentable {
 
             return innerBag
         })
+        
+        let filteredMessagesSignal = messagesSignal.map { messages in
+            messages.enumerated().compactMap { offset, item -> ChatListContent? in
+                if item.right != nil {
+                    if offset != 0 {
+                        return nil
+                    }
+                }
+
+                if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
+                    return nil
+                }
+
+                return item
+            }
+        }
+        
+        func fetchMessages() {
+            bag += client.fetch(
+                query: ChatMessagesQuery(),
+                cachePolicy: .fetchIgnoringCacheData,
+                queue: DispatchQueue.global(qos: .background)
+            )
+            .valueSignal
+            .compactMap { messages -> [MessageData]? in messages.data?.messages.compactMap { message in message?.fragments.messageData } }
+            .atValue({ messages -> Void in
+                guard let message = messages.first else { return }
+                currentMessageSignal.value = Message(from: message, listSignal: nil)
+            })
+            .onValue({ messages in
+                if messages.count > 1 {
+                    messagesSignal.value = messages.map { message in .left(Message(from: message, listSignal: filteredMessagesSignal)) }
+                    return
+                }
+                
+                guard let message = messages.first else {
+                    return
+                }
+                
+                handleNewMessage(message: message)
+            })
+        }
 
         bag += messagesSignal.onValueDisposePrevious { messages -> Disposable? in
             let innerBag = DisposeBag()
@@ -218,8 +260,9 @@ extension Chat: Presentable {
                         offset > firstIndex
                     }.map { $0.1 }
 
-                    _ = self.client.perform(mutation: EditLastResponseMutation()).onValue { _ in
-                    }
+                    innerBag += self.client.perform(mutation: EditLastResponseMutation()).onValue { _ in
+                        fetchMessages()
+                    }.disposable
 
                     if let firstMessage = messagesSignal.value.first?.left {
                         currentMessageSignal.value = Message(from: firstMessage, listSignal: nil)
@@ -228,22 +271,6 @@ extension Chat: Presentable {
             }
 
             return innerBag
-        }
-
-        let filteredMessagesSignal = messagesSignal.map { messages in
-            messages.enumerated().compactMap { offset, item -> ChatListContent? in
-                if item.right != nil {
-                    if offset != 0 {
-                        return nil
-                    }
-                }
-
-                if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
-                    return nil
-                }
-
-                return item
-            }
         }
         
         func handleNewMessage(message: MessageData) {
@@ -284,37 +311,10 @@ extension Chat: Presentable {
         func subscribeToMessages() {
             subscriptionBag += client.subscribe(subscription: ChatMessagesSubscription())
                 .compactMap { $0.data?.message.fragments.messageData }
-                .debug()
                 .distinct { oldMessage, newMessage in
                     oldMessage.globalId == newMessage.globalId
                 }
                 .onValue(handleNewMessage)
-        }
-
-        func fetchMessages() {
-            bag += client.fetch(
-                query: ChatMessagesQuery(),
-                cachePolicy: .fetchIgnoringCacheData,
-                queue: DispatchQueue.global(qos: .background)
-            )
-            .valueSignal
-            .compactMap { messages -> [MessageData]? in messages.data?.messages.compactMap { message in message?.fragments.messageData } }
-            .atValue({ messages -> Void in
-                guard let message = messages.first else { return }
-                currentMessageSignal.value = Message(from: message, listSignal: nil)
-            })
-            .onValue({ messages in
-                if messages.count > 1 {
-                    messagesSignal.value = messages.map { message in .left(Message(from: message, listSignal: filteredMessagesSignal)) }
-                    return
-                }
-                
-                guard let message = messages.first else {
-                    return
-                }
-                
-                handleNewMessage(message: message)
-            })
         }
         
         bag += NotificationCenter.default.signal(
