@@ -12,27 +12,7 @@ import Foundation
 import Kingfisher
 import UIKit
 
-extension AVURLAsset {
-    enum ThumbnailImageError: Error {
-        case failed
-    }
-
-    var thumbnailImage: Future<UIImage> {
-        Future(on: .background) { completion in
-            let imgGenerator = AVAssetImageGenerator(asset: self)
-            imgGenerator.appliesPreferredTrackTransform = true
-
-            guard let cgImage = try? imgGenerator.copyCGImage(at: self.duration, actualTime: nil) else {
-                completion(.failure(ThumbnailImageError.failed))
-                return NilDisposer()
-            }
-
-            completion(.success(UIImage(cgImage: cgImage)))
-
-            return NilDisposer()
-        }
-    }
-}
+fileprivate let fiveMinutes: TimeInterval = 60 * 5
 
 extension Message: Reusable {
     var largerMarginTop: CGFloat {
@@ -42,22 +22,49 @@ extension Message: Reusable {
     var smallerMarginTop: CGFloat {
         2
     }
+    
+    var shouldShowTimeStamp: Bool {
+        return !isRelatedToPreviousMessage
+    }
 
     /// identifies if message belongs logically to the previous message
     var isRelatedToPreviousMessage: Bool {
-        return previous?.fromMyself == fromMyself
+        guard let previous = previous else {
+            return false
+        }
+        
+        if previous.timeStamp < timeStamp - fiveMinutes {
+            return false
+        }
+        
+        return previous.fromMyself == fromMyself
+    }
+    
+    /// identifies if message belongs logically to the next message
+    var isRelatedToNextMessage: Bool {
+        guard let next = next else {
+            return false
+        }
+                
+        if next.timeStamp - fiveMinutes > timeStamp {
+            return false
+        }
+        
+        return next.fromMyself == fromMyself
     }
 
     /// calculates the total height that is required to render this message, including margins
     var totalHeight: CGFloat {
+        let extraHeightForTimeStampLabel: CGFloat = shouldShowTimeStamp ? 40 : 0
+        
         if type.isVideoOrImageType {
             let constantHeight: CGFloat = 200
 
             if isRelatedToPreviousMessage {
-                return constantHeight + smallerMarginTop
+                return constantHeight + smallerMarginTop + extraHeightForTimeStampLabel
             }
 
-            return constantHeight + largerMarginTop
+            return constantHeight + largerMarginTop + extraHeightForTimeStampLabel
         }
 
         let attributedString = NSAttributedString(styledText: StyledText(
@@ -72,23 +79,42 @@ extension Message: Reusable {
         )
 
         if isRelatedToPreviousMessage {
-            return size.height + smallerMarginTop + 20
+            return size.height + smallerMarginTop + 20 + extraHeightForTimeStampLabel
         }
 
-        return size.height + largerMarginTop + 20
+        return size.height + largerMarginTop + 20 + extraHeightForTimeStampLabel
     }
 
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
         let containerView = UIStackView()
-        containerView.axis = .vertical
-        containerView.alignment = .trailing
-
+        containerView.axis = .horizontal
+        containerView.alignment = .fill
+        containerView.spacing = 15
+        
         let spacingContainer = UIStackView()
-        spacingContainer.alignment = .fill
+        spacingContainer.axis = .vertical
         spacingContainer.spacing = 5
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(spacingContainer)
+        
+        let timeStampLabelContainer = UIStackView()
+        timeStampLabelContainer.alignment = .center
+        
+        let timeStampLabel = UILabel(value: "tue 21 sep - 02:00", style: TextStyle.chatTimeStamp.centerAligned)
+        timeStampLabelContainer.addArrangedSubview(timeStampLabel)
+        
+        spacingContainer.addArrangedSubview(timeStampLabelContainer)
+        
+        timeStampLabelContainer.snp.makeConstraints { make in
+            make.width.equalToSuperview().inset(20)
+        }
+        
+        let bubbleContainer = UIStackView()
+        bubbleContainer.axis = .vertical
+        bubbleContainer.alignment = .fill
+        bubbleContainer.spacing = 5
+        spacingContainer.addArrangedSubview(bubbleContainer)
 
         let bubble = UIView()
         bubble.backgroundColor = .primaryTintColor
@@ -97,13 +123,13 @@ extension Message: Reusable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        spacingContainer.addArrangedSubview(bubble)
+        bubbleContainer.addArrangedSubview(bubble)
 
         let editbuttonStackContainer = UIStackView()
         editbuttonStackContainer.axis = .vertical
         editbuttonStackContainer.alignment = .top
 
-        spacingContainer.addArrangedSubview(editbuttonStackContainer)
+        bubbleContainer.addArrangedSubview(editbuttonStackContainer)
 
         let editButtonViewContainer = UIView()
         editButtonViewContainer.snp.makeConstraints { make in
@@ -144,6 +170,27 @@ extension Message: Reusable {
             let bag = DisposeBag()
 
             UIView.setAnimationsEnabled(false)
+            
+            func handleTimeStamp() {
+                let shouldShowTimeStamp = message.shouldShowTimeStamp
+                
+                timeStampLabelContainer.isHidden = !shouldShowTimeStamp
+                
+                if !shouldShowTimeStamp { return }
+                                    
+                let date = Date(timeIntervalSince1970: message.timeStamp)
+                let dateFormatter = DateFormatter()
+                
+                if Calendar.current.isDateInToday(date) {
+                    dateFormatter.dateFormat = "HH:mm"
+                    timeStampLabel.text = dateFormatter.string(from: date)
+                } else {
+                    dateFormatter.dateFormat = "EEEE HH:mm"
+                    timeStampLabel.text = dateFormatter.string(from: date)
+                }
+            }
+            
+            handleTimeStamp()
 
             editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
 
@@ -194,7 +241,7 @@ extension Message: Reusable {
                 spacingContainer.layoutSuperviewsIfNeeded()
             })
 
-            containerView.alignment = message.fromMyself ? .trailing : .leading
+            spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
             let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
 

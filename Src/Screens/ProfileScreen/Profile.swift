@@ -27,7 +27,7 @@ extension Profile: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.displayableTitle = "Profil"
+        viewController.displayableTitle = String(key: .PROFILE_TITLE)
         viewController.installChatButton()
 
         let form = FormView()

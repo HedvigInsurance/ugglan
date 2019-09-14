@@ -29,6 +29,7 @@ struct Message: Equatable, Hashable {
     let textContentType: UITextContentType?
     let keyboardType: UIKeyboardType?
     let richTextCompatible: Bool
+    let timeStamp: TimeInterval
 
     let listSignal: ReadSignal<[ChatListContent]>?
     let editingDisabledSignal = ReadWriteSignal<Bool>(false)
@@ -174,7 +175,7 @@ struct Message: Equatable, Hashable {
 
     var bottomRightRadius: Radius {
         if fromMyself {
-            if let nextFromMyself = next?.fromMyself, nextFromMyself {
+            if isRelatedToNextMessage {
                 return .fixed(value: 5)
             } else {
                 return .halfHeight
@@ -186,7 +187,7 @@ struct Message: Equatable, Hashable {
 
     var bottomLeftRadius: Radius {
         if !fromMyself {
-            if let nextFromMyself = next?.fromMyself, !nextFromMyself {
+            if isRelatedToNextMessage {
                 return .fixed(value: 5)
             } else {
                 return .halfHeight
@@ -198,7 +199,7 @@ struct Message: Equatable, Hashable {
 
     var topRightRadius: Radius {
         if fromMyself {
-            if let prevFromMyself = previous?.fromMyself, prevFromMyself {
+            if isRelatedToPreviousMessage {
                 return .fixed(value: 5)
             } else {
                 return .halfHeight
@@ -210,7 +211,7 @@ struct Message: Equatable, Hashable {
 
     var topLeftRadius: Radius {
         if !fromMyself {
-            if let prevFromMyself = previous?.fromMyself, !prevFromMyself {
+            if isRelatedToPreviousMessage {
                 return .fixed(value: 5)
             } else {
                 return .halfHeight
@@ -241,6 +242,7 @@ struct Message: Equatable, Hashable {
         keyboardType = message.keyboardType
         richTextCompatible = message.richTextCompatible
         type = message.type
+        timeStamp = message.timeStamp
     }
 
     init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -255,6 +257,7 @@ struct Message: Equatable, Hashable {
         keyboardType = message.keyboardType
         richTextCompatible = message.richTextCompatible
         type = message.type
+        timeStamp = message.timeStamp
     }
 
     init(from message: MessageData, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -365,6 +368,9 @@ struct Message: Equatable, Hashable {
         }
 
         fromMyself = message.header.fromMyself
+        
+        let timeStampInt = Int(message.header.timeStamp) ?? 0
+        timeStamp = TimeInterval(timeStampInt / 1000)
         self.listSignal = listSignal
     }
 }
