@@ -24,7 +24,11 @@ extension Message: Reusable {
     }
     
     var shouldShowTimeStamp: Bool {
-        return !isRelatedToPreviousMessage
+        guard let previous = previous else {
+            return timeStamp - fiveMinutes < Date().timeIntervalSince1970
+        }
+        
+        return previous.timeStamp < timeStamp - fiveMinutes
     }
 
     /// identifies if message belongs logically to the previous message
@@ -120,7 +124,7 @@ extension Message: Reusable {
         let timeStampLabelContainer = UIStackView()
         timeStampLabelContainer.alignment = .center
         
-        let timeStampLabel = UILabel(value: "tue 21 sep - 02:00", style: TextStyle.chatTimeStamp.centerAligned)
+        let timeStampLabel = UILabel(value: "", style: TextStyle.chatTimeStamp.centerAligned)
         timeStampLabelContainer.addArrangedSubview(timeStampLabel)
         
         spacingContainer.addArrangedSubview(timeStampLabelContainer)
@@ -130,7 +134,7 @@ extension Message: Reusable {
         }
         
         let bubbleContainer = UIStackView()
-        bubbleContainer.axis = .vertical
+        bubbleContainer.axis = .horizontal
         bubbleContainer.alignment = .fill
         bubbleContainer.spacing = 5
         spacingContainer.addArrangedSubview(bubbleContainer)
