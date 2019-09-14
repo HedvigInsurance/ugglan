@@ -289,6 +289,20 @@ extension Chat: Presentable {
                 messagesSignal.value = messages.map { .left($0) }
             })
         }
+        
+        bag += NotificationCenter.default.signal(
+            forName: UIApplication.willResignActiveNotification
+        ).onValue { _ in
+            subscriptionBag.dispose()
+        }
+
+        bag +=  NotificationCenter.default.signal(
+            forName: UIApplication.willEnterForegroundNotification
+        ).onValue { _ in
+            subscriptionBag.dispose()
+            subscribeToMessages()
+            fetchMessages()
+        }
 
         bag += reloadChatSignal.onValue { _ in
             messagesSignal.value = []
