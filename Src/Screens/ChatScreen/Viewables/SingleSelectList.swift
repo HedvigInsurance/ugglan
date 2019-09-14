@@ -113,6 +113,8 @@ extension SingleSelectList: Viewable {
                         mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
                     )
                     removeViews()
+                case .login:
+                    self.navigateCallbacker.callAll(with: .login)
                 }
             }
 

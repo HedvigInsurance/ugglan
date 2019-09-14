@@ -29,7 +29,7 @@ struct Chat {
 typealias ChatListContent = Either<Message, Either<TypingIndicator, SingleSelectList>>
 
 enum NavigationEvent {
-    case dashboard, offer
+    case dashboard, offer, login
 }
 
 extension Chat: Presentable {
@@ -53,6 +53,8 @@ extension Chat: Presentable {
                 viewController.present(Offer(), options: [.prefersNavigationBarHidden(true)])
             case .dashboard:
                 viewController.present(LoggedIn())
+            case .login:
+                viewController.present(DraggableOverlay(presentable: BankIDLogin()))
             }
         }
 

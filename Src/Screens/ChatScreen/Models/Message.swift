@@ -299,6 +299,12 @@ struct Message: Equatable, Hashable {
                             text: link.text,
                             value: link.value
                         )
+                    } else if let link = choice.asMessageBodyChoicesLink {
+                        return SingleSelectOption(
+                            type: .login,
+                            text: link.text,
+                            value: link.value
+                        )
                     }
 
                     return nil

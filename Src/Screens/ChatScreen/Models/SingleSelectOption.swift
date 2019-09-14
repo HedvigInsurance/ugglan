@@ -28,6 +28,6 @@ struct SingleSelectOption: Equatable {
     }
 
     enum OptionType: Equatable {
-        case selection, link(view: ViewType)
+        case selection, link(view: ViewType), login
     }
 }
