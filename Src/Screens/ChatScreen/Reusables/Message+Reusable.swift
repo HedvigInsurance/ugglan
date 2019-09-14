@@ -55,7 +55,26 @@ extension Message: Reusable {
 
     /// calculates the total height that is required to render this message, including margins
     var totalHeight: CGFloat {
-        let extraHeightForTimeStampLabel: CGFloat = shouldShowTimeStamp ? 40 : 0
+        let extraHeightForTimeStampLabel: CGFloat = {
+            if !shouldShowTimeStamp {
+                return 0
+            }
+            
+            let timeStampText = NSAttributedString(styledText: StyledText(
+                text: "11:33",
+                style: TextStyle.chatTimeStamp.centerAligned
+            ))
+            
+            let timeStampSize = timeStampText.boundingRect(
+                with: CGSize(width: CGFloat(Int.max), height: CGFloat(Int.max)),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+            
+            return timeStampSize.height + 5
+        }()
+        
+        
         
         if type.isVideoOrImageType {
             let constantHeight: CGFloat = 200
