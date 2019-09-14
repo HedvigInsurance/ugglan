@@ -243,6 +243,39 @@ extension Chat: Presentable {
                 return item
             }
         }
+        
+        func handleNewMessage(message: MessageData) {
+            isEditingSignal.value = false
+
+            let newMessage = Message(from: message, listSignal: filteredMessagesSignal)
+
+            if let paragraph = message.body.asMessageBodyParagraph {
+                let firstMessage = filteredMessagesSignal.value.first
+                let hasPreviousMessage = firstMessage?.left?.fromMyself == false
+                
+                if paragraph.text != "" {
+                    messagesSignal.value.insert(.left(newMessage), at: 0)
+                } else if firstMessage?.right?.left == nil {
+                    messagesSignal.value.insert(.make(.make(TypingIndicator(hasPreviousMessage: hasPreviousMessage))), at: 0)
+                }
+            } else {
+                messagesSignal.value.insert(.left(newMessage), at: 0)
+            }
+
+            if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
+                currentMessageSignal.value = Message(from: message, listSignal: nil)
+            }
+
+            if message.body.asMessageBodyParagraph != nil {
+                bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
+                    _ = self.client.fetch(
+                        query: ChatMessagesQuery(),
+                        cachePolicy: .fetchIgnoringCacheData,
+                        queue: DispatchQueue.global(qos: .background)
+                    )
+                }
+            }
+        }
 
         let subscriptionBag = bag.innerBag()
 
@@ -253,35 +286,7 @@ extension Chat: Presentable {
                 .distinct { oldMessage, newMessage in
                     oldMessage.globalId == newMessage.globalId
                 }
-                .onValue({ message in
-                    isEditingSignal.value = false
-
-                    let newMessage = Message(from: message, listSignal: filteredMessagesSignal)
-
-                    if let paragraph = message.body.asMessageBodyParagraph {
-                        let hasPreviousMessage = filteredMessagesSignal.value.first?.left?.fromMyself == false
-                        
-                        paragraph.text != "" ?
-                            messagesSignal.value.insert(.left(newMessage), at: 0) :
-                            messagesSignal.value.insert(.make(.make(TypingIndicator(hasPreviousMessage: hasPreviousMessage))), at: 0)
-                    } else {
-                        messagesSignal.value.insert(.left(newMessage), at: 0)
-                    }
-
-                    if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
-                        currentMessageSignal.value = Message(from: message, listSignal: nil)
-                    }
-
-                    if message.body.asMessageBodyParagraph != nil {
-                        bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
-                            _ = self.client.fetch(
-                                query: ChatMessagesQuery(),
-                                cachePolicy: .fetchIgnoringCacheData,
-                                queue: DispatchQueue.global(qos: .background)
-                            )
-                        }
-                    }
-                })
+                .onValue(handleNewMessage)
         }
 
         func fetchMessages() {
@@ -296,15 +301,17 @@ extension Chat: Presentable {
                 guard let message = messages.first else { return }
                 currentMessageSignal.value = Message(from: message, listSignal: nil)
             })
-            .map { messages -> [Message] in
-                messages.map { message in Message(from: message, listSignal: filteredMessagesSignal) }
-            }.onValue({ messages in
-                guard messages.count != 0 else {
-                    fetchMessages()
+            .onValue({ messages in
+                if messages.count > 1 {
+                    messagesSignal.value = messages.map { message in .left(Message(from: message, listSignal: filteredMessagesSignal)) }
                     return
                 }
-
-                messagesSignal.value = messages.map { .left($0) }
+                
+                guard let message = messages.first else {
+                    return
+                }
+                
+                handleNewMessage(message: message)
             })
         }
         
