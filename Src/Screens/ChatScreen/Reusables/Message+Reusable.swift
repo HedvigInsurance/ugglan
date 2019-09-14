@@ -25,7 +25,7 @@ extension Message: Reusable {
     
     var shouldShowTimeStamp: Bool {
         guard let previous = previous else {
-            return timeStamp - fiveMinutes < Date().timeIntervalSince1970
+            return timeStamp - fiveMinutes > Date().timeIntervalSince1970
         }
         
         return previous.timeStamp < timeStamp - fiveMinutes
@@ -204,7 +204,10 @@ extension Message: Reusable {
                 let date = Date(timeIntervalSince1970: message.timeStamp)
                 let dateFormatter = DateFormatter()
                 
-                if Calendar.current.isDateInToday(date) {
+                if !Calendar.current.isDateInWeek(from: date) {
+                    dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
+                    timeStampLabel.text = dateFormatter.string(from: date)
+                } else if Calendar.current.isDateInToday(date) {
                     dateFormatter.dateFormat = "HH:mm"
                     timeStampLabel.text = dateFormatter.string(from: date)
                 } else {

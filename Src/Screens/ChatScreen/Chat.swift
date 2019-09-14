@@ -106,6 +106,10 @@ extension Chat: Presentable {
             if let message = item.left {
                 return message.totalHeight
             }
+            
+            if item.right?.left != nil {
+                return 40
+            }
 
             return 0
         }

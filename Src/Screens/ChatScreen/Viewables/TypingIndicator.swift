@@ -47,6 +47,7 @@ extension TypingIndicator: Viewable {
 
         let typingView = UIStackView()
         typingView.spacing = 5
+        typingView.alignment = .center
         typingView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
         typingView.isLayoutMarginsRelativeArrangement = true
 
