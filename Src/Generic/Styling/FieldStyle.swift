@@ -12,8 +12,9 @@ import UIKit
 
 extension FieldStyle {
     static let `default` = FieldStyle.default.restyled { (style: inout FieldStyle) in
-        style.cursorColor = .purple
+        style.cursorColor = .primaryTintColor
         style.text = .bodyOffBlack
+
         style.placeholder = TextStyle.body.restyled { (textStyle: inout TextStyle) in
             textStyle.color = .darkGray
             textStyle.lineHeight = 2.4

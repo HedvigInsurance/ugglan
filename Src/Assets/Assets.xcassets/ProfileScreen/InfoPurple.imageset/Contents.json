@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "info_blue.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "info_blue-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "info-white.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

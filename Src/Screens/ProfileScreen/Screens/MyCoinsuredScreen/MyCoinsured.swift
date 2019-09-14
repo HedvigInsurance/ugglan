@@ -36,7 +36,7 @@ extension MyCoinsured: Presentable {
         let circleLabel = CircleLabelWithSubLabel(
             labelText: DynamicString(""),
             subLabelText: DynamicString(String(key: .MY_COINSURED_SCREEN_CIRCLE_SUBLABEL)),
-            appearance: .purple
+            appearance: viewController.traitCollection.userInterfaceStyle == .dark ? .secondaryBackground : .purple
         )
         bag += circleContainerView.add(circleLabel)
 

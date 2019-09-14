@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "mer_info.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "mer_info-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "mer-info-white.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {
