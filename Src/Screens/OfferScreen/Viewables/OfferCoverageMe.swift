@@ -59,7 +59,7 @@ extension OfferCoverageMe: Viewable {
         let titleLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_TITLE), style: .rowTitleBold)
         bag += stackView.addArranged(titleLabel)
 
-        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.darkGray))
+        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.tertiaryText))
         bag += stackView.addArranged(descriptionLabel)
 
         let perilCollection = PerilCollection(

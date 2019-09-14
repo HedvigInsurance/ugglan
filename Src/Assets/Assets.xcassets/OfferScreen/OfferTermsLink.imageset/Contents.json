@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "terms.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "terms-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "terms-dark-mode.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

@@ -3,6 +3,26 @@
     {
       "idiom" : "universal",
       "filename" : "policy.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "policy-1.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ]
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "policy-dark-mode.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {
