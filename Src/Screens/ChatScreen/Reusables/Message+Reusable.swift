@@ -25,7 +25,7 @@ extension Message: Reusable {
 
     var shouldShowTimeStamp: Bool {
         guard let previous = previous else {
-            return timeStamp - fiveMinutes > Date().timeIntervalSince1970
+            return timeStamp < Date().timeIntervalSince1970 - fiveMinutes
         }
 
         return previous.timeStamp < timeStamp - fiveMinutes
