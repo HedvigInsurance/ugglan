@@ -24,10 +24,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.hedvig.ugglan</string>
+			<string>com.hedvig.test</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>ugglan</string>
+				<string>hedvigtest</string>
 			</array>
 		</dict>
 	</array>

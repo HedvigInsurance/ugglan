@@ -128,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
 
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { _, _ in
-            guard ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat]) == true else { return }
+            guard ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
 
@@ -136,8 +136,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 .prefersNavigationBarHidden(true),
             ]).onValue { result in
                 if result == .accept {
-                    ApplicationState.preserveState(.onboardingChat)
-                    self.bag += ApplicationState.presentRootViewController(self.window)
+                    if ApplicationState.currentState?.isOneOf([.marketing]) == true {
+                        self.bag += rootViewController.present(OnboardingChat())
+                    }
                 }
                 innerBag.dispose()
             }
