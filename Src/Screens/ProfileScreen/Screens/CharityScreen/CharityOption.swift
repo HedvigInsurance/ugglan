@@ -86,7 +86,7 @@ extension CharityOption: Reusable {
             let buttonContainer = UIView()
 
             let button = Button(
-                title: "Välj",
+                title: String(key: .CHARTITY_PICK_OPTION),
                 type: .standard(
                     backgroundColor: .primaryTintColor,
                     textColor: .white
