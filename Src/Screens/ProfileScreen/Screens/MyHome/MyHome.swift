@@ -108,7 +108,14 @@ extension MyHome: Presentable {
 
                 viewController.present(alert).onValue { shouldContinue in
                     if shouldContinue {
-                        MyHomeRouting.openChat(viewController: viewController)
+                        viewController.present(
+                            FreeTextChat().withCloseButton,
+                            style: .modally(
+                                presentationStyle: .pageSheet,
+                                transitionStyle: nil,
+                                capturesStatusBarAppearance: true
+                            )
+                        )
                     }
                 }
             }
