@@ -27,7 +27,7 @@ extension BankIDLogin: Presentable {
 
         let view = UIView()
         viewController.view = view
-        viewController.title = "Logga in"
+        viewController.title = String(key: .BANKID_LOGIN_TITLE)
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical

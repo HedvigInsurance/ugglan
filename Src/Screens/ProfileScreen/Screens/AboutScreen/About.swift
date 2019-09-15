@@ -43,7 +43,7 @@ extension About: Presentable {
             )
 
             let loginRow = ButtonRow(
-                text: "Logga in",
+                text: String(key: .SETTINGS_LOGIN_ROW),
                 style: .normalButton
             )
             bag += loginSection.append(loginRow)

@@ -20,7 +20,7 @@ extension LicensesRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: "Licensrättigheter", style: .rowTitle))
+        row.append(UILabel(value: String(key: .ABOUT_LICENSES_ROW), style: .rowTitle))
 
         let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 
