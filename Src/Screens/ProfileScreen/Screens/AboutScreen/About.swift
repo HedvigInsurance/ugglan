@@ -69,7 +69,7 @@ extension About: Presentable {
 
         if state == .loggedIn {
             let activatePushNotificationsRow = ButtonRow(
-                text: "Aktivera pushnotiser",
+                text: String(key: .ABOUT_PUSH_ROW),
                 style: .normalButton
             )
             bag += versionSection.append(activatePushNotificationsRow)
@@ -84,7 +84,7 @@ extension About: Presentable {
             }
 
             let showWhatsNew = ButtonRow(
-                text: "Visa intro",
+                text: String(key: .ABOUT_SHOW_INTRO_ROW),
                 style: .normalButton
             )
             bag += versionSection.append(showWhatsNew)
