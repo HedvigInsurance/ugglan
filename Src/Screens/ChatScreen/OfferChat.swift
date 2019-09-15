@@ -29,6 +29,7 @@ extension OfferChat: Presentable {
         restartButton.tintColor = .darkGray
 
         bag += restartButton.onValue { _ in
+            ApplicationState.preserveState(.onboardingChat)
             UIApplication.shared.appDelegate.logout()
         }
 
