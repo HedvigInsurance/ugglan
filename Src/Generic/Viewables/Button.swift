@@ -361,7 +361,7 @@ extension Button: Viewable {
 
             let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
 
-            innerBag += button.didLayoutSignal.onValue { _ in
+            innerBag += button.didLayoutSignal.take(first: 1).onValue { _ in
                 button.snp.updateConstraints { make in
                     make.width.equalTo(
                         button.intrinsicContentSize.width + type.extraWidthOffset + iconWidth
