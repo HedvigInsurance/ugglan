@@ -52,24 +52,24 @@ extension UIColor {
 
         return UIColor.offBlack
     }
-    
+
     static var tertiaryText: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
             }
         }
-        
+
         return UIColor.darkGray
     }
-    
+
     static var decorText: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? .offLightGray : .gray
             }
         }
-        
+
         return UIColor.gray
     }
 
@@ -119,7 +119,7 @@ extension UIColor {
     static let yellow = UIColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1.0)
 
     static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
-
+    
     static var primaryTintColor: UIColor {
         if #available(iOS 13, *) {
             return UIColor { trait -> UIColor in

@@ -134,12 +134,12 @@ struct Message: Equatable, Hashable {
 
         return myIndex <= indexOfFirstMyself
     }
-    
+
     var hasTypingIndicatorNext: Bool {
         guard let list = listSignal?.value else {
             return false
         }
-        
+
         guard let myIndex = list.firstIndex(of: .left(self)) else {
             return false
         }
@@ -295,7 +295,9 @@ struct Message: Equatable, Hashable {
                         )
                     } else if let link = choice.asMessageBodyChoicesLink, let view = link.view {
                         return SingleSelectOption(
-                            type: .link(view: SingleSelectOption.ViewType.from(rawValue: view.rawValue)),
+                            type: .link(
+                                view: SingleSelectOption.ViewType.from(rawValue: view.rawValue)
+                            ),
                             text: link.text,
                             value: link.value
                         )
@@ -391,7 +393,7 @@ struct Message: Equatable, Hashable {
         }
 
         fromMyself = message.header.fromMyself
-        
+
         let timeStampInt = Int(message.header.timeStamp) ?? 0
         timeStamp = TimeInterval(timeStampInt / 1000)
         self.listSignal = listSignal

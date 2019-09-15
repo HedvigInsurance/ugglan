@@ -179,7 +179,7 @@ extension ClaimsHeader: Viewable {
                         .defaults,
                         .prefersLargeTitles(false),
                         .largeTitleDisplayMode(.never),
-                        .prefersNavigationBarHidden(true)
+                        .prefersNavigationBarHidden(true),
                     ],
                     adjustsToKeyboard: false
                 )

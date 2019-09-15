@@ -54,13 +54,13 @@ extension HonestyPledge: Presentable {
 
         viewController.view = containerStackView
 
-        return (viewController, Future { completion in
+        return (viewController, Future { _ in
             bag += slideToClaim.onValue {
                 viewController.present(
                     ClaimsChat(),
                     style: .default,
                     options: [.prefersNavigationBarHidden(false)]
-                )                
+                )
             }
 
             return DelayedDisposer(bag, delay: 1)

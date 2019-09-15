@@ -108,7 +108,7 @@ extension Chat: Presentable {
             if let message = item.left {
                 return message.totalHeight
             }
-            
+
             if let typingIndicator = item.right?.left {
                 return typingIndicator.totalHeight
             }
@@ -200,7 +200,7 @@ extension Chat: Presentable {
 
             return innerBag
         })
-        
+
         let filteredMessagesSignal = messagesSignal.map { messages in
             messages.enumerated().compactMap { offset, item -> ChatListContent? in
                 if item.right != nil {
@@ -216,7 +216,7 @@ extension Chat: Presentable {
                 return item
             }
         }
-        
+
         func fetchMessages() {
             bag += client.fetch(
                 query: ChatMessagesQuery(),
@@ -234,11 +234,11 @@ extension Chat: Presentable {
                     messagesSignal.value = messages.map { message in .left(Message(from: message, listSignal: filteredMessagesSignal)) }
                     return
                 }
-                
+
                 guard let message = messages.first else {
                     return
                 }
-                
+
                 handleNewMessage(message: message)
             })
         }
@@ -272,7 +272,7 @@ extension Chat: Presentable {
 
             return innerBag
         }
-        
+
         func handleNewMessage(message: MessageData) {
             isEditingSignal.value = false
 
@@ -281,7 +281,7 @@ extension Chat: Presentable {
             if let paragraph = message.body.asMessageBodyParagraph {
                 let firstMessage = filteredMessagesSignal.value.first
                 let hasPreviousMessage = firstMessage?.left?.fromMyself == false
-                
+
                 if paragraph.text != "" {
                     messagesSignal.value.insert(.left(newMessage), at: 0)
                 } else if firstMessage?.right?.left == nil {
@@ -316,14 +316,14 @@ extension Chat: Presentable {
                 }
                 .onValue(handleNewMessage)
         }
-        
+
         bag += NotificationCenter.default.signal(
             forName: UIApplication.willResignActiveNotification
         ).onValue { _ in
             subscriptionBag.dispose()
         }
 
-        bag +=  NotificationCenter.default.signal(
+        bag += NotificationCenter.default.signal(
             forName: UIApplication.willEnterForegroundNotification
         ).onValue { _ in
             subscriptionBag.dispose()

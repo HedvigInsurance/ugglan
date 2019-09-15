@@ -30,13 +30,9 @@ extension OnboardingChat: Presentable {
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 
-        let navigationItemTintColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .white : .darkGray
-        })
-
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
-        settingsButton.tintColor = navigationItemTintColor
+        settingsButton.tintColor = .navigationItemMutedTintColor
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
@@ -50,14 +46,23 @@ extension OnboardingChat: Presentable {
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
-        restartButton.tintColor = navigationItemTintColor
+        restartButton.tintColor = .navigationItemMutedTintColor
 
         bag += restartButton.onValue { _ in
-            let alert = Alert(title: "Vill du starta om?", message: "All information du fyllt i kommer att försvinna.", actions: [
-                Alert.Action(title: "OK", action: {
-                    chat.reloadChatCallbacker.callAll()
-                }),
-                Alert.Action(title: "Avbryt", action: {}),
+            let alert = Alert(
+                title: String(key: .CHAT_RESTART_ALERT_TITLE),
+                message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
+                actions: [
+                Alert.Action(
+                    title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
+                    action: {
+                        chat.reloadChatCallbacker.callAll()
+                    }
+                ),
+                Alert.Action(
+                    title: String(key: .CHAT_RESTART_ALERT_CANCEL),
+                    action: {}
+                ),
             ])
 
             viewController.present(alert)

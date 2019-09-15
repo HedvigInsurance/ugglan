@@ -13,10 +13,10 @@ import FirebaseAnalytics
 import FirebaseRemoteConfig
 import Flow
 import Form
+import Foundation
 import Presentation
 import UIKit
 import UserNotifications
-import Foundation
 
 let log = Logger.self
 
@@ -153,15 +153,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         UIApplication.shared.registerForRemoteNotifications()
     }
-    
+
     func application(
-        _ application: UIApplication,
+        _: UIApplication,
         supportedInterfaceOrientationsFor window: UIWindow?
     ) -> UIInterfaceOrientationMask {
         guard let vc = (window?.rootViewController?.presentedViewController) else {
             return .portrait
         }
-        
+
         if String(describing: vc).contains("VideoPlayerViewController") {
             return .allButUpsideDown
         }
@@ -179,7 +179,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         default:
             Localization.Locale.currentLocale = .en_SE
         }
-        
+
         FirebaseApp.configure()
 
         launchWindow?.isOpaque = false
@@ -222,7 +222,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
-        
+
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
             RemoteConfigContainer.shared.fetched.plain()

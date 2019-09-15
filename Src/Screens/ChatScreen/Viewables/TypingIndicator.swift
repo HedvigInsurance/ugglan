@@ -14,7 +14,7 @@ import UIKit
 struct TypingIndicator: Hashable {
     let id = UUID()
     let hasPreviousMessage: Bool
-    
+
     /// returns the totalHeight calculated height for displaying a TypingIndicator in a cell
     var totalHeight: CGFloat {
         let baseHeight: CGFloat = 40
@@ -44,7 +44,7 @@ extension TypingIndicator: Reusable {
                 bottom: 0,
                 right: 20
             )
-            
+
             return spacingContainer.addArranged(typingIndicator)
         })
     }

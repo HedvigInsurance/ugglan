@@ -27,7 +27,7 @@ extension TextStyle {
             for: NSAttributedString.Key.underlineStyle
         )
     }
-    
+
     static let chatTimeStamp = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.color = .tertiaryText

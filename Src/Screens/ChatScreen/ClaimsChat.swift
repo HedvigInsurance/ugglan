@@ -26,7 +26,7 @@ extension ClaimsChat: Presentable {
         let chat = Chat()
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
-        
+
         bag += client.perform(mutation: TriggerClaimChatMutation()).disposable
 
         let titleHedvigLogo = UIImageView()

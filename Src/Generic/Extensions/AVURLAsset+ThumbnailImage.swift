@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-09-13.
 //
 
-import Foundation
 import AVFoundation
 import Flow
+import Foundation
 import UIKit
 
 extension AVURLAsset {

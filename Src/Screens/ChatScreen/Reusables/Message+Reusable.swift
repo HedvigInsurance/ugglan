@@ -22,12 +22,12 @@ extension Message: Reusable {
     var smallerMarginTop: CGFloat {
         2
     }
-    
+
     var shouldShowTimeStamp: Bool {
         guard let previous = previous else {
             return timeStamp - fiveMinutes > Date().timeIntervalSince1970
         }
-        
+
         return previous.timeStamp < timeStamp - fiveMinutes
     }
 
@@ -36,28 +36,28 @@ extension Message: Reusable {
         guard let previous = previous else {
             return false
         }
-        
+
         if previous.timeStamp < timeStamp - fiveMinutes {
             return false
         }
-        
+
         return previous.fromMyself == fromMyself
     }
-    
+
     /// identifies if message belongs logically to the next message
     var isRelatedToNextMessage: Bool {
         guard let next = next else {
             if !fromMyself {
                 return hasTypingIndicatorNext
             }
-            
+
             return false
         }
-                
+
         if next.timeStamp - fiveMinutes > timeStamp {
             return false
         }
-        
+
         return next.fromMyself == fromMyself
     }
 
@@ -67,21 +67,21 @@ extension Message: Reusable {
             if !shouldShowTimeStamp {
                 return 0
             }
-            
+
             let timeStampText = NSAttributedString(styledText: StyledText(
                 text: "11:33",
                 style: TextStyle.chatTimeStamp.centerAligned
             ))
-            
+
             let timeStampSize = timeStampText.boundingRect(
                 with: CGSize(width: CGFloat(Int.max), height: CGFloat(Int.max)),
                 options: [.usesLineFragmentOrigin, .usesFontLeading],
                 context: nil
             )
-            
+
             return timeStampSize.height + 5
         }()
-        
+
         if type.isVideoOrImageType {
             let constantHeight: CGFloat = 200
 
@@ -115,26 +115,26 @@ extension Message: Reusable {
         containerView.axis = .horizontal
         containerView.alignment = .fill
         containerView.spacing = 15
-        
+
         let spacingContainer = UIStackView()
         spacingContainer.axis = .vertical
         spacingContainer.spacing = 5
         spacingContainer.insetsLayoutMarginsFromSafeArea = false
         spacingContainer.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(spacingContainer)
-        
+
         let timeStampLabelContainer = UIStackView()
         timeStampLabelContainer.alignment = .center
-        
+
         let timeStampLabel = UILabel(value: "", style: TextStyle.chatTimeStamp.centerAligned)
         timeStampLabelContainer.addArrangedSubview(timeStampLabel)
-        
+
         spacingContainer.addArrangedSubview(timeStampLabelContainer)
-        
+
         timeStampLabelContainer.snp.makeConstraints { make in
             make.width.equalToSuperview().inset(20)
         }
-        
+
         let bubbleContainer = UIStackView()
         bubbleContainer.axis = .horizontal
         bubbleContainer.alignment = .fill
@@ -195,17 +195,17 @@ extension Message: Reusable {
             let bag = DisposeBag()
 
             UIView.setAnimationsEnabled(false)
-            
+
             func handleTimeStamp() {
                 let shouldShowTimeStamp = message.shouldShowTimeStamp
-                
+
                 timeStampLabelContainer.isHidden = !shouldShowTimeStamp
-                
+
                 if !shouldShowTimeStamp { return }
-                                    
+
                 let date = Date(timeIntervalSince1970: message.timeStamp)
                 let dateFormatter = DateFormatter()
-                
+
                 if !Calendar.current.isDateInWeek(from: date) {
                     dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
                     timeStampLabel.text = dateFormatter.string(from: date)
@@ -217,7 +217,7 @@ extension Message: Reusable {
                     timeStampLabel.text = dateFormatter.string(from: date)
                 }
             }
-            
+
             handleTimeStamp()
 
             editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton

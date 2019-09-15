@@ -17,14 +17,57 @@ struct BankIDLoginQR {
 extension BankIDLoginQR: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
+        viewController.preferredContentSize = CGSize(width: 0, height: 350)
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .red
+        view.backgroundColor = .secondaryBackground
 
         viewController.view = view
-        viewController.title = "BankID saknas på din enhet"
+        viewController.title = String(key: .BANKID_MISSING_TITLE)
         viewController.navigationItem.hidesBackButton = true
+
+        let moreBarButtonItem = UIBarButtonItem(
+            image: Asset.menuIcon.image,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        moreBarButtonItem.tintColor = .navigationItemMutedTintColor
+
+        bag += moreBarButtonItem.onValue { _ in
+            let alert = Alert<Void>(actions: [
+                .init(
+                    title: String(key: .DEMO_MODE_START),
+                    action: {
+                        viewController.present(
+                            LoggedIn(),
+                            style: .modally(
+                                presentationStyle: .overFullScreen,
+                                transitionStyle: nil,
+                                capturesStatusBarAppearance: true
+                            ),
+                            options: []
+                        )
+                    }
+                ),
+                .init(
+                    title: String(key: .DEMO_MODE_CANCEL),
+                    style: .cancel,
+                    action: {}
+                ),
+            ])
+
+            viewController.present(
+                alert,
+                style: .sheet(
+                    from: moreBarButtonItem.view,
+                    rect: moreBarButtonItem.view?.frame
+                )
+            )
+        }
+
+        viewController.navigationItem.rightBarButtonItem = moreBarButtonItem
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -69,7 +112,10 @@ extension BankIDLoginQR: Presentable {
 
         headerContainer.addArrangedSubview(iconContainerView)
 
-        let messageLabel = MultilineLabel(value: "Skanna QR-koden ovan i den enhet där du har BankID installerat.", style: .rowTitle)
+        let messageLabel = MultilineLabel(
+            value: String(key: .BANKID_MISSING_MESSAGE),
+            style: .rowTitle
+        )
         bag += containerView.addArranged(messageLabel)
 
         func generateQRCode(_ url: URL) {
