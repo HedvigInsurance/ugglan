@@ -14,87 +14,55 @@ extension HedvigColor: Decodable {}
 
 extension UIColor {
     static var primaryBackground: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .almostBlack : .offWhite
-            }
-        }
-
-        return UIColor.white
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .almostBlack : .offWhite
+        })
     }
 
     static var secondaryBackground: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.10) : .white
-            }
-        }
-
-        return UIColor.offWhite
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.10) : .white
+        })
     }
 
     static var primaryText: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .white : .black
-            }
-        }
-
-        return UIColor.black
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .white : .black
+        })
     }
 
     static var secondaryText: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .white : .offBlack
-            }
-        }
-
-        return UIColor.offBlack
+        UIColor(dynamic: { trait -> UIColor in
+           trait.userInterfaceStyle == .dark ? .white : .offBlack
+       })
     }
 
     static var tertiaryText: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
-            }
-        }
-
-        return UIColor.darkGray
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+        })
     }
 
     static var decorText: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .offLightGray : .gray
-            }
-        }
-
-        return UIColor.gray
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .offLightGray : .gray
+        })
     }
 
     static var disabledTintColor: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .darkGray : .offBlack
-            }
-        }
-
-        return UIColor.offBlack
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .darkGray : .offBlack
+        })
     }
 
     static var attentionTintColor: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .coral700 : .pink
-            }
-        }
-
-        return UIColor.pink
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .coral700 : .pink
+        })
     }
 
     static var navigationItemMutedTintColor: UIColor {
-        return UIColor(dynamic: { trait -> UIColor in
+        UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .white : .darkGray
         })
     }
@@ -121,23 +89,15 @@ extension UIColor {
     static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
     
     static var primaryTintColor: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .violet300 : .purple
-            }
-        }
-
-        return UIColor.purple
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .violet300 : .purple
+        })
     }
 
     static var primaryBorder: UIColor {
-        if #available(iOS 13, *) {
-            return UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .darkGrayBorder : .grayBorder
-            }
-        }
-
-        return UIColor.grayBorder
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .darkGrayBorder : .grayBorder
+        })
     }
 
     static let darkGrayBorder = UIColor.darkGray.withAlphaComponent(0.3)
