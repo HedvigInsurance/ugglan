@@ -128,7 +128,14 @@ extension EmergencyActions: Viewable {
         )
 
         bag += callMeAction.onValue {
-            commonClaimEmergencyOpenCallMeChat(self.presentingViewController)
+            self.presentingViewController.present(
+                CallMeChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: true
+                )
+            )
         }
 
         let emergencyAbroadAction = EmergencyAction(
@@ -161,7 +168,14 @@ extension EmergencyActions: Viewable {
         )
 
         bag += unsureAction.onValue {
-            commonClaimEmergencyOpenFreeTextChat(self.presentingViewController)
+            self.presentingViewController.present(
+                FreeTextChat(),
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: true
+                )
+            )
         }
 
         let rows = [

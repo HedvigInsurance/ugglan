@@ -125,9 +125,9 @@ extension BankIDLogin: Presentable {
                 completion(.failure(BankIdSignError.failed))
             }
 
-            bag += statusSignal.withLatestFrom(view.windowSignal.atOnce().plain()).onValue({ authState, window in
+            bag += statusSignal.onValue({ authState in
                 if authState == .success {
-                    bag += window?.present(LoggedIn(), animated: true)
+                    bag += view.window?.present(LoggedIn(), animated: true)
                 }
             })
 
