@@ -20,7 +20,7 @@ extension AboutRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: "Om appen", style: .rowTitle))
+        row.append(UILabel(value: String(key: .PROFILE_ABOUT_ROW), style: .rowTitle))
 
         let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 
