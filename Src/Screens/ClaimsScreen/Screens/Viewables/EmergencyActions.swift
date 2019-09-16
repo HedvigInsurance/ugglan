@@ -81,14 +81,6 @@ struct EmergencyAction: Reusable, SignalProvider {
     }
 }
 
-var commonClaimEmergencyOpenFreeTextChat: (_ viewController: UIViewController) -> Void = { viewController in
-    viewController.present(DraggableOverlay(presentable: FreeTextChat()))
-}
-
-var commonClaimEmergencyOpenCallMeChat: (_ viewController: UIViewController) -> Void = { viewController in
-    viewController.present(DraggableOverlay(presentable: FreeTextChat()))
-}
-
 extension EmergencyActions: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
@@ -169,7 +161,7 @@ extension EmergencyActions: Viewable {
 
         bag += unsureAction.onValue {
             self.presentingViewController.present(
-                FreeTextChat(),
+                FreeTextChat().withCloseButton,
                 style: .modally(
                     presentationStyle: .pageSheet,
                     transitionStyle: nil,

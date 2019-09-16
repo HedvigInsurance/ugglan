@@ -18,7 +18,6 @@ extension CommonClaimEmergency: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         viewController.title = ""
-        viewController.automaticallyAdjustsScrollViewInsets = false
 
         let bag = DisposeBag()
 
