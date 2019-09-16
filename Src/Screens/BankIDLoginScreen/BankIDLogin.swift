@@ -125,9 +125,10 @@ extension BankIDLogin: Presentable {
                 completion(.failure(BankIdSignError.failed))
             }
 
-            bag += statusSignal.onValue({ authState in
+            bag += statusSignal.distinct().onValue({ authState in
                 if authState == .success {
-                    bag += view.window?.present(LoggedIn(), animated: true)
+                    let window = UIApplication.shared.appDelegate.window
+                    bag += window.present(LoggedIn(), animated: true)
                 }
             })
 
