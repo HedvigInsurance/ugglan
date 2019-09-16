@@ -4,12 +4,14 @@ configurations:
   debug:
     overrides:
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
+      CODE_SIGN_IDENTITY: "iPhone Developer"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
   release:
     overrides:
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
+      CODE_SIGN_IDENTITY: "iPhone Developer"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
