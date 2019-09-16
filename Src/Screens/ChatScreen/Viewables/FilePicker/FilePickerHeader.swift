@@ -79,7 +79,8 @@ extension FilePickerHeader: Viewable {
         let filesButton = PickerButton(icon: Asset.files.image)
         bag += containerView.addArranged(filesButton).onValueDisposePrevious { _ in
             containerView.viewController?.present(
-                DocumentPicker()
+                DocumentPicker(),
+                options: []
             ).valueSignal.onValueDisposePrevious(on: .background) { urls -> Disposable in
                 let fileUploads = urls.compactMap { url -> Future<FileUpload> in
                     let fileCoordinator = NSFileCoordinator()
