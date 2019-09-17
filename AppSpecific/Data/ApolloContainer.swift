@@ -59,8 +59,6 @@ class ApolloContainer {
 
         let session = URLSession(configuration: configuration)
 
-        let authMap: GraphQLMap = authPayloads
-
         let httpNetworkTransport = HTTPNetworkTransport(
             url: environment.endpointURL,
             session: session
@@ -68,7 +66,7 @@ class ApolloContainer {
 
         let websocketNetworkTransport = WebSocketTransport(
             request: URLRequest(url: environment.wsEndpointURL),
-            connectingPayload: authMap
+            connectingPayload: httpAdditionalHeaders as GraphQLMap
         )
 
         let splitNetworkTransport = SplitNetworkTransport(
