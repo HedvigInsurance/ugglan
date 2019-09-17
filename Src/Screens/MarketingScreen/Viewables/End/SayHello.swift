@@ -12,7 +12,7 @@ import UIKit
 
 struct SayHello: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let label = UILabel(value: "Säg hej till Hedvig", style: .body)
+        let label = UILabel(value: String(key: .MARKETING_SCREEN_SAY_HELLO), style: .body)
         label.alpha = 0
 
         let bag = DisposeBag()
