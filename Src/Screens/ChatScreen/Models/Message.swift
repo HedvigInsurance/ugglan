@@ -42,7 +42,7 @@ struct Message: Equatable, Hashable {
     let onTapCallbacker = Callbacker<URL>()
 
     enum ResponseType: Equatable {
-        case singleSelect(options: [SingleSelectOption]), text, none
+        case singleSelect(options: [SingleSelectOption]), text, audio, none
     }
 
     enum MessageType: Equatable {
@@ -342,7 +342,7 @@ struct Message: Equatable, Hashable {
             type = .text
         } else if let audio = message.body.asMessageBodyAudio {
             body = audio.text
-            responseType = .none
+            responseType = .audio
             placeholder = nil
             keyboardType = nil
             textContentType = nil

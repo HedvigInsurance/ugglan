@@ -148,7 +148,7 @@ extension ChatInput: Viewable {
                 if attachFilePaneIsOpen {
                     isHidden = true
                 } else if currentMessage?.richTextCompatible == true {
-                    isHidden = false
+                    isHidden = true
                 } else {
                     isHidden = true
                 }
@@ -185,6 +185,13 @@ extension ChatInput: Viewable {
         singleSelectContainer.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
+        
+        let audioContainer = UIView()
+        contentView.addSubview(audioContainer)
+
+        audioContainer.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
 
         contentView.bringSubviewToFront(inputBar)
 
@@ -192,6 +199,7 @@ extension ChatInput: Viewable {
             guard let message = message else {
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 0
+                audioContainer.alpha = 0
                 return
             }
 
@@ -199,18 +207,20 @@ extension ChatInput: Viewable {
             case .none:
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 0
+                audioContainer.alpha = 0
             case .text:
                 inputBar.alpha = 1
                 singleSelectContainer.alpha = 0
+                audioContainer.alpha = 0
                 contentView.bringSubviewToFront(inputBar)
 
                 singleSelectContainer.subviews.forEach { view in
                     view.removeFromSuperview()
                 }
-
             case let .singleSelect(options):
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 1
+                audioContainer.alpha = 0
 
                 UIView.performWithoutAnimation {
                     let list = SingleSelectList(options: options, currentGlobalIdSignal: currentGlobalIdSignal, navigateCallbacker: self.navigateCallbacker)
@@ -227,6 +237,24 @@ extension ChatInput: Viewable {
                 }
 
                 contentView.bringSubviewToFront(singleSelectContainer)
+            case .audio:
+               inputBar.alpha = 0
+               singleSelectContainer.alpha = 0
+               audioContainer.alpha = 1
+                
+               UIView.performWithoutAnimation {
+                 let audioRecorder = AudioRecorder()
+                
+                    audioContainer.subviews.forEach { view in
+                        view.removeFromSuperview()
+                    }
+                
+                bag += audioContainer.add(audioRecorder) { view in
+                    view.snp.makeConstraints { make in
+                        make.top.bottom.trailing.leading.equalToSuperview()
+                    }
+                }
+                }
             }
         }
 

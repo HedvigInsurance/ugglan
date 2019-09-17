@@ -213,6 +213,10 @@ extension Chat: Presentable {
                         return nil
                     }
                 }
+                
+                if item.left?.responseType == .audio {
+                    return nil
+                }
 
                 if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
                     return nil
@@ -236,8 +240,9 @@ extension Chat: Presentable {
             })
             .onValue({ messages in
                 if messages.count > 1 {
-                    messagesSignal.value = messages.map { message in .left(Message(from: message, listSignal: filteredMessagesSignal)) }
-                    return
+                    var messageList: [ChatListContent] = messages.map { message in .left(Message(from: message, listSignal: filteredMessagesSignal)) }
+                    messageList.removeFirst()
+                    messagesSignal.value = messageList
                 }
 
                 guard let message = messages.first else {

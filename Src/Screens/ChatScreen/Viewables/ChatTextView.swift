@@ -53,7 +53,7 @@ extension ChatTextView: Viewable {
                 switch message.responseType {
                 case .text:
                     break
-                case .none, .singleSelect:
+                case .none, .singleSelect, .audio:
                     bag += Signal(after: 0).feedback(type: .error)
                 }
             }
