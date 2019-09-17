@@ -22,6 +22,10 @@ extension CloseButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Disposable) {
         let bag = DisposeBag()
         let button = UIControl()
+        
+        button.snp.makeConstraints { make in
+            make.width.height.equalTo(30)
+        }
 
         bag += button.signal(for: .touchDown).map { 0.5 }.bindTo(
             animate: AnimationStyle.easeOut(duration: 0.25),

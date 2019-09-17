@@ -306,8 +306,6 @@ extension CommonClaimCard: Viewable {
             closeButtonView.snp.makeConstraints { make in
                 make.left.equalTo(10)
                 make.top.equalTo(15 + self.safeAreaTop)
-                make.width.equalTo(30)
-                make.height.equalTo(30)
             }
 
             bag += closeButtonView.signal(for: .touchUpInside).onValue {
