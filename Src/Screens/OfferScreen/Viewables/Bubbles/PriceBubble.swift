@@ -59,13 +59,13 @@ extension PriceBubble: Viewable {
                 bubbleView.snp.makeConstraints({ make in
                     make.width.height.equalTo(125)
                 })
-                priceLabel.style = TextStyle.largePriceBubbleTitle.resized(to: 40)
+                priceLabel.style = priceLabel.style.resized(to: 40)
                 bubbleView.layer.cornerRadius = 125 / 2
             } else {
                 bubbleView.snp.makeConstraints({ make in
                     make.width.height.equalTo(180)
                 })
-                priceLabel.style = TextStyle.largePriceBubbleTitle
+                priceLabel.style = priceLabel.style.resized(to: TextStyle.largePriceBubbleTitle.font.pointSize)
                 bubbleView.layer.cornerRadius = 180 / 2
             }
         })
@@ -81,8 +81,9 @@ extension PriceBubble: Viewable {
             .compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount }
             .toInt()
             .compactMap { $0 }
+            .readable(initial: 0)
 
-        bag += combineLatest(discountSignal, grossPriceSignal)
+        bag += combineLatest(discountSignal.plain(), grossPriceSignal)
             .animated(style: SpringAnimationStyle.mediumBounce(), animations: { monthlyDiscount, monthlyGross in
                 grossPriceLabel.styledText = StyledText(text: "\(monthlyGross) kr/mån", style: TextStyle.priceBubbleGrossTitle)
                 grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
@@ -94,14 +95,6 @@ extension PriceBubble: Viewable {
             .toInt()
             .compactMap { $0 }
             .buffer()
-
-        bag += discountSignal.onValue { value in
-            if value > 0 {
-                priceLabel.textColor = .pink
-            } else {
-                priceLabel.textColor = TextStyle.largePriceBubbleTitle.color
-            }
-        }
 
         bag += monthlyNetPriceSignal.onValue({ values in
             guard let value = values.last else { return }
@@ -115,13 +108,22 @@ extension PriceBubble: Viewable {
 
         bag += ease.addSpring(tension: 300, damping: 100, mass: 2) { number in
             if number != 0 {
-                priceLabel.text = String(Int(number))
+                let textStyle = discountSignal.value > 0 ?
+                    TextStyle.largePriceBubbleTitle.colored(.pink) :
+                    TextStyle.largePriceBubbleTitle
+                priceLabel.styledText = StyledText(
+                    text: String(Int(number)),
+                    style: textStyle
+                )
             }
         }
 
         stackView.addArrangedSubview(priceLabel)
 
-        bag += stackView.addArranged(MultilineLabel(value: "kr/mån", style: TextStyle.rowSubtitle.centerAligned))
+        bag += stackView.addArranged(MultilineLabel(
+            value: String(key: .OFFER_PRICE_BUBBLE_MONTH),
+            style: TextStyle.rowSubtitle.centerAligned
+        ))
 
         let campaignTypeSignal = dataSignal.map { $0?.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
             let incentiveFragment = campaign?.fragments.campaignFragment.incentive?.fragments.incentiveFragment
