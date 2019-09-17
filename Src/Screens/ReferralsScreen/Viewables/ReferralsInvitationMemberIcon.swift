@@ -19,7 +19,7 @@ extension ReferralsInvitationMemberIcon: Viewable {
         view.alignment = .center
 
         let boxView = UIView()
-        boxView.backgroundColor = UIColor.lightGray
+        boxView.backgroundColor = UIColor.primaryBackground
         boxView.layer.cornerRadius = 8
 
         view.addArrangedSubview(boxView)
