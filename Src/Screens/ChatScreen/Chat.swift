@@ -116,7 +116,7 @@ extension Chat: Presentable {
             return 0
         }
 
-        tableKit.view.contentInsetAdjustmentBehavior = .always
+        tableKit.view.contentInsetAdjustmentBehavior = .never
         if #available(iOS 13.0, *) {
             tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
         }
