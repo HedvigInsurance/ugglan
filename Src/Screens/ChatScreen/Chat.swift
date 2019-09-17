@@ -32,39 +32,6 @@ enum NavigationEvent {
     case dashboard, offer, login
 }
 
-class RemoveInsetsTableView: UITableView {
-    override func adjustedContentInsetDidChange() {
-        super.adjustedContentInsetDidChange()
-        
-        if adjustedContentInset.top == 0 && adjustedContentInset.bottom == 0 {
-            return
-        }
-        
-        var topContentInset: CGFloat {
-            if self.adjustedContentInset.top > 0 {
-                return -self.adjustedContentInset.top
-            }
-            
-            return contentInset.top
-        }
-        
-        var bottomContentInset: CGFloat {
-            if self.adjustedContentInset.bottom > 0 {
-                return -self.adjustedContentInset.bottom
-            }
-            
-            return contentInset.bottom
-        }
-        
-        contentInset = UIEdgeInsets(
-            top: topContentInset,
-            left: 0,
-            bottom: bottomContentInset,
-            right: 0
-        )
-    }
-}
-
 extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
@@ -128,7 +95,7 @@ extension Chat: Presentable {
         let tableKit = TableKit<EmptySection, ChatListContent>(
             table: Table(),
             style: style,
-            view: RemoveInsetsTableView(),
+            view: nil,
             headerForSection: nil,
             footerForSection: nil
         )
