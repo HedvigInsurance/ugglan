@@ -32,6 +32,39 @@ enum NavigationEvent {
     case dashboard, offer, login
 }
 
+class RemoveInsetsTableView: UITableView {
+    override func adjustedContentInsetDidChange() {
+        super.adjustedContentInsetDidChange()
+        
+        if adjustedContentInset.top == 0 && adjustedContentInset.bottom == 0 {
+            return
+        }
+        
+        var topContentInset: CGFloat {
+            if self.adjustedContentInset.top > 0 {
+                return -self.adjustedContentInset.top
+            }
+            
+            return contentInset.top
+        }
+        
+        var bottomContentInset: CGFloat {
+            if self.adjustedContentInset.bottom > 0 {
+                return -self.adjustedContentInset.bottom
+            }
+            
+            return contentInset.bottom
+        }
+        
+        contentInset = UIEdgeInsets(
+            top: topContentInset,
+            left: 0,
+            bottom: bottomContentInset,
+            right: 0
+        )
+    }
+}
+
 extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
@@ -95,7 +128,7 @@ extension Chat: Presentable {
         let tableKit = TableKit<EmptySection, ChatListContent>(
             table: Table(),
             style: style,
-            view: nil,
+            view: RemoveInsetsTableView(),
             headerForSection: nil,
             footerForSection: nil
         )
@@ -116,7 +149,7 @@ extension Chat: Presentable {
             return 0
         }
 
-        tableKit.view.contentInsetAdjustmentBehavior = .never
+        tableKit.view.contentInsetAdjustmentBehavior = .always
         if #available(iOS 13.0, *) {
             tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
         }
@@ -142,7 +175,12 @@ extension Chat: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: keyboardInfo.height, left: 0, bottom: 0, right: 0)
+                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
+                    top: keyboardInfo.height,
+                    left: 0,
+                    bottom: 0,
+                    right: 0
+                )
                 let headerView = UIView()
                 headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
                 tableKit.view.tableHeaderView = headerView

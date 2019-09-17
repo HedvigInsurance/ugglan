@@ -12,6 +12,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>sv</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
@@ -48,6 +53,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Hedvig använder kameran för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Hedvig använder mikrofonen för att kunna spela in ljud.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>UIAppFonts</key>

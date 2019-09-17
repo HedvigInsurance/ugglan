@@ -176,10 +176,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        switch Foundation.Locale.current.identifier {
-        case "sv-SE":
-            Localization.Locale.currentLocale = .sv_SE
-        default:
+        let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
+                
+        let bestMatchedLanguage = Bundle.preferredLocalizations(
+            from: availableLanguages
+        ).first
+        
+        if let bestMatchedLanguage = bestMatchedLanguage {
+            Localization.Locale.currentLocale = Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
+        } else {
             Localization.Locale.currentLocale = .en_SE
         }
 

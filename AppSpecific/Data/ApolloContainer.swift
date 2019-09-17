@@ -48,14 +48,14 @@ class ApolloContainer {
     private init() {}
 
     func createClient(token: String?) {
-        let authPayloads = [
+        let httpAdditionalHeaders = [
             "Authorization": token ?? "",
             "Accept-Language": Localization.Locale.currentLocale.acceptLanguageHeader,
         ]
 
         let configuration = URLSessionConfiguration.default
 
-        configuration.httpAdditionalHeaders = authPayloads
+        configuration.httpAdditionalHeaders = httpAdditionalHeaders
 
         let session = URLSession(configuration: configuration)
 
