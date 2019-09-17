@@ -83,8 +83,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func createToast(
         symbol: ToastSymbol,
         body: String,
-        textColor: UIColor = UIColor.offBlack,
-        backgroundColor: UIColor = UIColor.white,
+        textColor: UIColor = UIColor.primaryText,
+        backgroundColor: UIColor = UIColor.secondaryBackground,
         duration: TimeInterval = 5.0
     ) {
         bag += Signal(after: 0).withLatestFrom(toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
