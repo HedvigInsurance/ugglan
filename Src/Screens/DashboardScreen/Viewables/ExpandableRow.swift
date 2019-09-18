@@ -21,17 +21,20 @@ struct ExpandableRow<Content: Viewable, ExpandableContent: Viewable> where
     let expandedContent: ExpandableContent
     let isOpenSignal: ReadWriteSignal<Bool>
     let transparent: Bool
+    let showDivider: Bool
 
     init(
         content: Content,
         expandedContent: ExpandableContent,
         isOpen: Bool = false,
-        transparent: Bool = false
+        transparent: Bool = false,
+        showDivider: Bool = true
     ) {
         self.content = content
         self.expandedContent = expandedContent
         isOpenSignal = ReadWriteSignal<Bool>(isOpen)
         self.transparent = transparent
+        self.showDivider = showDivider
     }
 }
 
@@ -67,20 +70,22 @@ extension ExpandableRow: Viewable {
         }
 
         expandableStackView.addArrangedSubview(contentWrapperView)
+        
+        if (showDivider) {
+            let divider = Divider(backgroundColor: .primaryBorder)
+            bag += expandableStackView.addArranged(divider) { dividerView in
+                dividerView.alpha = isOpenSignal.value ? 1 : 0
 
-        let divider = Divider(backgroundColor: .primaryBorder)
-        bag += expandableStackView.addArranged(divider) { dividerView in
-            dividerView.alpha = isOpenSignal.value ? 1 : 0
-
-            bag += isOpenSignal
-                .atOnce()
-                .map { $0 ? 0 : 0.15 }
-                .flatMapLatest { Signal(after: $0) }
-                .flatMapLatest { self.isOpenSignal.atOnce().plain() }
-                .map { $0 ? 1 : 0 }
-                .animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { opacity in
-                    dividerView.alpha = opacity
-                })
+                bag += isOpenSignal
+                    .atOnce()
+                    .map { $0 ? 0 : 0.15 }
+                    .flatMapLatest { Signal(after: $0) }
+                    .flatMapLatest { self.isOpenSignal.atOnce().plain() }
+                    .map { $0 ? 1 : 0 }
+                    .animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { opacity in
+                        dividerView.alpha = opacity
+                    })
+            }
         }
 
         bag += expandableStackView.addArranged(expandedContent) { expandedView in
