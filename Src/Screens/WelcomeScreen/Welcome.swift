@@ -116,7 +116,6 @@ extension Welcome: Presentable {
                 closeButton.onTapSignal,
                 scrolledToEndCallbacker.providedSignal
             ).onValue {
-                ApplicationState.setLastNewsSeen()
                 completion(.success)
             }
 
