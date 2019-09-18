@@ -17,7 +17,7 @@ extension PendingInsurance: Viewable {
     func noDateContent() -> ExpandableRow<CountdownShapes, PendingInsuranceMoreInfo> {
         let content = CountdownShapes()
         let moreInfo = PendingInsuranceMoreInfo()
-        let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true)
+        let expandableView = ExpandableRow(content: content, expandedContent: moreInfo, transparent: true, showDivider: false)
         return expandableView
     }
 
