@@ -72,7 +72,7 @@ extension Offer {
         bag += signButton.onTapSignal.onValue { _ in
             let overlay = DraggableOverlay(presentable: BankIdSign(), presentationOptions: [.prefersNavigationBarHidden(true)])
             viewController.present(overlay).onValue { _ in
-                viewController.present(LoggedIn(), options: [.prefersNavigationBarHidden(true)])
+                viewController.present(LoggedIn(didSign: true), options: [.prefersNavigationBarHidden(true)])
             }
         }
 
@@ -227,7 +227,7 @@ extension Offer: Presentable {
 
         bag += button.onTapSignal.onValue { _ in
             viewController.present(DraggableOverlay(presentable: BankIdSign(), presentationOptions: [.prefersNavigationBarHidden(true)])).onValue { _ in
-                viewController.present(LoggedIn(), options: [.prefersNavigationBarHidden(true)])
+                viewController.present(LoggedIn(didSign: true), options: [.prefersNavigationBarHidden(true)])
             }
         }
 

@@ -55,13 +55,13 @@ extension MultilineLabelIcon: Viewable {
             styledText.restyled { (textStyle: inout TextStyle) in
                 textStyle.numberOfLines = 0
                 textStyle.lineBreakMode = .byWordWrapping
+                textStyle.lineHeight = 14
             }
         }.bindTo(label, \.styledText)
 
         view.addArrangedSubview(label)
 
         bag += label.didLayoutSignal.onValue {
-            label.sizeToFit()
             label.preferredMaxLayoutWidth = label.frame.size.width
             label.snp.makeConstraints { make in
                 make.height.equalTo(label.intrinsicContentSize.height)

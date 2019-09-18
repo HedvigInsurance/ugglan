@@ -14,11 +14,11 @@ import UIKit
 
 struct LoggedIn {
     let client: ApolloClient
-    let displayNews: Bool
+    let didSign: Bool
 
-    init(client: ApolloClient = ApolloContainer.shared.client, displayNews: Bool = true) {
+    init(client: ApolloClient = ApolloContainer.shared.client, didSign: Bool = false) {
         self.client = client
-        self.displayNews = displayNews
+        self.didSign = didSign
     }
 }
 
@@ -88,8 +88,17 @@ extension LoggedIn: Presentable {
 
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
-
-        if displayNews, appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
+        
+        if (didSign) {
+            bag += client
+                .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+                .compactMap { $0.data }
+                .filter { $0.welcome.count > 0 }
+                .onValue { data in
+                    let whatsNew = Welcome(data: data)
+                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                }
+        } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
                 .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .compactMap { $0.data }
