@@ -60,6 +60,12 @@ extension MyPayment: Presentable {
             style: .normal
         )
         bag += form.append(buttonSection)
+        
+        let buttonSectionWeb = ButtonSection(
+            text: String(key: .PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_WITH_LINK_BUTTON),
+            style: .normal
+        )
+        bag += form.append(buttonSectionWeb)
 
         let myPaymentQuerySignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
@@ -80,16 +86,28 @@ extension MyPayment: Presentable {
                 )
                 viewController.present(directDebitSetup, options: [.autoPop])
             }
-
+            
+            innerBag += buttonSectionWeb.onSelect.onValue {
+                bag += self.client.perform(mutation: StartDirectDebitRegistrationMutation())
+                .valueSignal
+                .compactMap { $0.data?.startDirectDebitRegistration }
+                .onValue { startDirectDebitRegistration in
+                    guard let url = URL(string: startDirectDebitRegistration) else { return }
+                    UIApplication.shared.open(url)
+                }
+            }
+            
             if result.data?.directDebitStatus == .pending {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true
+                buttonSectionWeb.isHiddenSignal.value = true
                 bankDetailsSection.isHiddenSignal.value = true
             } else {
                 updatingMessageSectionSpacing.isHiddenSignal.value = true
                 updatingMessageSection.isHidden = true
                 buttonSection.isHiddenSignal.value = false
+                buttonSectionWeb.isHiddenSignal.value = hasAlreadyConnected
                 bankDetailsSection.isHiddenSignal.value = false
             }
 
