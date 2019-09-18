@@ -22,7 +22,7 @@ extension CloseButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Disposable) {
         let bag = DisposeBag()
         let button = UIControl()
-        
+
         button.snp.makeConstraints { make in
             make.width.height.equalTo(30)
         }

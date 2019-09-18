@@ -53,17 +53,18 @@ extension OnboardingChat: Presentable {
                 title: String(key: .CHAT_RESTART_ALERT_TITLE),
                 message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
                 actions: [
-                Alert.Action(
-                    title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
-                    action: {
-                        chat.reloadChatCallbacker.callAll()
-                    }
-                ),
-                Alert.Action(
-                    title: String(key: .CHAT_RESTART_ALERT_CANCEL),
-                    action: {}
-                ),
-            ])
+                    Alert.Action(
+                        title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
+                        action: {
+                            chat.reloadChatCallbacker.callAll()
+                        }
+                    ),
+                    Alert.Action(
+                        title: String(key: .CHAT_RESTART_ALERT_CANCEL),
+                        action: {}
+                    ),
+                ]
+            )
 
             viewController.present(alert)
         }

@@ -31,7 +31,7 @@ extension TextStyle {
     static let chatTimeStamp = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.color = .tertiaryText
-        style.lineSpacing = 4
+        style.lineSpacing = 2
     }
 
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in

@@ -177,11 +177,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
-                
+
         let bestMatchedLanguage = Bundle.preferredLocalizations(
             from: availableLanguages
         ).first
-        
+
         if let bestMatchedLanguage = bestMatchedLanguage {
             Localization.Locale.currentLocale = Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
         } else {
