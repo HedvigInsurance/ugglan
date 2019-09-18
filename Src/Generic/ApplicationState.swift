@@ -15,7 +15,7 @@ struct ApplicationState {
 
     enum Screen: String {
         case marketing, onboardingChat, offer, loggedIn
-        
+
         func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
         }
@@ -26,12 +26,12 @@ struct ApplicationState {
     static func preserveState(_ screen: Screen) {
         UserDefaults.standard.set(screen.rawValue, forKey: key)
     }
-    
+
     static var currentState: Screen? {
         guard
             let applicationStateRawValue = UserDefaults.standard.value(forKey: key) as? String,
             let applicationState = Screen(rawValue: applicationStateRawValue) else {
-                return nil
+            return nil
         }
         return applicationState
     }

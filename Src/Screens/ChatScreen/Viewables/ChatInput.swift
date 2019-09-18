@@ -185,7 +185,7 @@ extension ChatInput: Viewable {
         singleSelectContainer.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
-        
+
         let audioContainer = UIView()
         contentView.addSubview(audioContainer)
 
@@ -238,22 +238,22 @@ extension ChatInput: Viewable {
 
                 contentView.bringSubviewToFront(singleSelectContainer)
             case .audio:
-               inputBar.alpha = 0
-               singleSelectContainer.alpha = 0
-               audioContainer.alpha = 1
-                
-               UIView.performWithoutAnimation {
-                 let audioRecorder = AudioRecorder()
-                
+                inputBar.alpha = 0
+                singleSelectContainer.alpha = 0
+                audioContainer.alpha = 1
+
+                UIView.performWithoutAnimation {
+                    let audioRecorder = AudioRecorder(currentGlobalIdSignal: currentGlobalIdSignal)
+
                     audioContainer.subviews.forEach { view in
                         view.removeFromSuperview()
                     }
-                
-                bag += audioContainer.add(audioRecorder) { view in
-                    view.snp.makeConstraints { make in
-                        make.top.bottom.trailing.leading.equalToSuperview()
+
+                    bag += audioContainer.add(audioRecorder) { view in
+                        view.snp.makeConstraints { make in
+                            make.top.bottom.trailing.leading.equalToSuperview()
+                        }
                     }
-                }
                 }
             }
         }

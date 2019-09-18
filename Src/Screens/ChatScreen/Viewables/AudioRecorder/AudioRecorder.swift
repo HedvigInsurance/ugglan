@@ -5,27 +5,52 @@
 //  Created by Sam Pettersson on 2019-09-17.
 //
 
-import Foundation
-import UIKit
-import Flow
 import AVKit
 import Disk
+import Flow
+import Foundation
+import UIKit
+import Apollo
 
-struct AudioRecorder {}
+struct AudioRecorder {
+    let client: ApolloClient
+    let currentGlobalIdSignal: ReadSignal<GraphQLID?>
+    
+    init(
+        currentGlobalIdSignal: ReadSignal<GraphQLID?>,
+        client: ApolloClient = ApolloContainer.shared.client
+    ) {
+        self.currentGlobalIdSignal = currentGlobalIdSignal
+        self.client = client
+    }
+}
 
 extension AudioRecorder: Viewable {
-    func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         let view = UIStackView()
         view.alignment = .center
         view.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)
         view.isLayoutMarginsRelativeArrangement = true
         view.insetsLayoutMarginsFromSafeArea = true
+
+        let contentContainerView = UIStackView()
+        contentContainerView.alignment = .trailing
+        view.addArrangedSubview(contentContainerView)
+
+        let recordButtonContainer = UIStackView()
+        let playContainer = UIStackView()
+        playContainer.alignment = .center
+        playContainer.spacing = 10
+        playContainer.animationSafeIsHidden = true
         
-        let recordingSession = AVAudioSession.sharedInstance()
+        contentContainerView.addArrangedSubview(playContainer)
         
+        let currentAudioFileUrl = ReadWriteSignal<URL?>(nil)
+
         let recordButton = RecordButton()
-        
+        let audioPlayer = AudioPlayer()
+
         bag += recordButton.isRecordingSignal.atOnce().onValueDisposePrevious { isRecording in
             guard isRecording == true else {
                 return NilDisposer()
@@ -34,58 +59,134 @@ extension AudioRecorder: Viewable {
                 return NilDisposer()
             }
             
+            currentAudioFileUrl.value = fileUrl
+
             let settings = [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
                 AVSampleRateKey: 12000,
                 AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
             ]
-            
-            class AudioRecorderCoordinator: NSObject, AVAudioRecorderDelegate {
-            }
-            
+
+            class AudioRecorderCoordinator: NSObject, AVAudioRecorderDelegate {}
+
+            try? AVAudioSession.sharedInstance().setCategory(.record)
             let audioRecorder = try? AVAudioRecorder(url: fileUrl, settings: settings)
             let delegate = AudioRecorderCoordinator()
             bag.hold(delegate)
             audioRecorder?.delegate = delegate
-            
+
             audioRecorder?.record()
             audioRecorder?.isMeteringEnabled = true
-            
+
             let recordBag = DisposeBag()
-            
-            if let audioRecorder = audioRecorder {
-                recordBag += view.add(WaveForm(audioRecorder: audioRecorder))
+
+            let waveFormContainer = UIView()
+            recordButtonContainer.addSubview(waveFormContainer)
+
+            waveFormContainer.snp.makeConstraints { make in
+                make.width.equalTo(100)
+                make.height.equalTo(50)
+                make.centerX.equalToSuperview()
+                make.centerY.equalToSuperview()
             }
-            
+
+            waveFormContainer.transform = CGAffineTransform(translationX: -20, y: 0)
+
+            if let audioRecorder = audioRecorder {
+                recordBag += waveFormContainer.add(WaveForm(audioRecorder: audioRecorder))
+            }
+
+            waveFormContainer.alpha = 0
+
+            recordBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                waveFormContainer.alpha = 1
+                waveFormContainer.transform = CGAffineTransform(translationX: -20, y: -70)
+            }
+
             return Disposer {
                 audioRecorder?.stop()
-                recordBag.dispose()
+
+                if let url = audioRecorder?.url {
+                    audioPlayer.audioPlayerSignal.value = try? AVAudioPlayer(contentsOf: url)
+                }
+
+                recordBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    waveFormContainer.alpha = 0
+                    recordButtonContainer.animationSafeIsHidden = true
+                    recordButtonContainer.alpha = 0
+                    playContainer.alpha = 1
+                    playContainer.animationSafeIsHidden = false
+                    waveFormContainer.transform = CGAffineTransform(translationX: -20, y: 0)
+                }.onValue { _ in
+                    recordBag.dispose()
+                }
             }
         }
-        
+
         func presentRecordButton() {
-            bag += view.addArranged(recordButton.wrappedIn(UIStackView())) { recordButton in
+            bag += view.addArranged(recordButton.wrappedIn(recordButtonContainer)) { recordButton in
                 recordButton.axis = .vertical
                 recordButton.alignment = .center
             }
         }
-        
-        do {
-            try recordingSession.setCategory(.playAndRecord, mode: .default)
-            try recordingSession.setActive(true)
+
+        func presentPlay() {
+            bag += playContainer.addArranged(audioPlayer.wrappedIn(UIStackView()))
+
+            let redoButton = Button(
+                title: "Gör om",
+                type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white)
+            )
             
-            recordingSession.requestRecordPermission { allowed in
-                if allowed {
-                    DispatchQueue.main.async {
-                        presentRecordButton()
-                    }
+            bag += redoButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                recordButtonContainer.animationSafeIsHidden = false
+                recordButtonContainer.alpha = 1
+                playContainer.animationSafeIsHidden = true
+                playContainer.alpha = 0
+            }
+            
+            bag += playContainer.addArranged(redoButton.wrappedIn(UIStackView())) { stackView in
+                stackView.axis = .vertical
+                stackView.alignment = .trailing
+            }
+            
+            let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
+            
+            bag += sendButton.onTapSignal.onValue({ _ in
+                guard let fileUrl = currentAudioFileUrl.value else {
+                    return
+                }
+                guard let currentGlobalId = self.currentGlobalIdSignal.value else {
+                    return
+                }
+                                
+                guard let file = GraphQLFile.init(fieldName: "file", originalName: "recording.mp3", fileURL: fileUrl) else {
+                    return
+                }
+                
+                bag += self.client.upload(
+                    operation: SendChatAudioResponseMutation(globalID: currentGlobalId, file: "file"),
+                    files: [
+                    file
+                    ])
+            })
+            
+            bag += playContainer.addArranged(sendButton.wrappedIn(UIStackView())) { stackView in
+                stackView.axis = .vertical
+                stackView.alignment = .trailing
+            }
+        }
+
+        AVAudioSession.sharedInstance().requestRecordPermission { allowed in
+            if allowed {
+                DispatchQueue.main.async {
+                    presentPlay()
+                    presentRecordButton()
                 }
             }
-        } catch {
-            
         }
-        
+
         return (view, bag)
     }
 }

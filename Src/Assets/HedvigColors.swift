@@ -33,8 +33,8 @@ extension UIColor {
 
     static var secondaryText: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-           trait.userInterfaceStyle == .dark ? .white : .offBlack
-       })
+            trait.userInterfaceStyle == .dark ? .white : .offBlack
+        })
     }
 
     static var tertiaryText: UIColor {
@@ -93,7 +93,7 @@ extension UIColor {
     static let yellow = UIColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1.0)
 
     static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
-    
+
     static var primaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .violet300 : .purple

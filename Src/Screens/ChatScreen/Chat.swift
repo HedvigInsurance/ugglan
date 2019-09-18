@@ -213,7 +213,7 @@ extension Chat: Presentable {
                         return nil
                     }
                 }
-                
+
                 if item.left?.responseType == .audio {
                     return nil
                 }

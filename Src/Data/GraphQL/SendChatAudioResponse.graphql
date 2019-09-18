@@ -1,0 +1,6 @@
+mutation SendChatAudioResponse($globalID: ID!, $file: Upload!) {
+    sendChatAudioResponse(input: {
+        globalId: $globalID
+        file: $file
+    })
+}
