@@ -152,8 +152,9 @@ extension AudioRecorder: Viewable {
             }
             
             let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
+            let loadableSendButton = LoadableButton(button: sendButton)
             
-            bag += sendButton.onTapSignal.onValue({ _ in
+            bag += loadableSendButton.onTapSignal.onValue({ _ in
                 guard let fileUrl = currentAudioFileUrl.value else {
                     return
                 }
@@ -165,14 +166,19 @@ extension AudioRecorder: Viewable {
                     return
                 }
                 
+                bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    loadableSendButton.isLoadingSignal.value = true
+                    playContainer.layoutIfNeeded()
+                }
+                
                 bag += self.client.upload(
                     operation: SendChatAudioResponseMutation(globalID: currentGlobalId, file: "file"),
                     files: [
                     file
-                    ])
+                ])
             })
             
-            bag += playContainer.addArranged(sendButton.wrappedIn(UIStackView())) { stackView in
+            bag += playContainer.addArranged(loadableSendButton.wrappedIn(UIStackView())) { stackView in
                 stackView.axis = .vertical
                 stackView.alignment = .trailing
             }

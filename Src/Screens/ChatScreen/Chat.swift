@@ -35,6 +35,7 @@ enum NavigationEvent {
 extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
+        let idleTypingIndicatorBag = bag.innerBag()
 
         let currentMessageSignal = ReadWriteSignal<Message?>(nil)
         let navigateCallbacker = Callbacker<NavigationEvent>()
@@ -282,19 +283,26 @@ extension Chat: Presentable {
 
             return innerBag
         }
-
+                
         func handleNewMessage(message: MessageData) {
+            idleTypingIndicatorBag.dispose()
             isEditingSignal.value = false
 
             let newMessage = Message(from: message, listSignal: filteredMessagesSignal)
 
             if let paragraph = message.body.asMessageBodyParagraph {
-                let firstMessage = filteredMessagesSignal.value.first
-                let hasPreviousMessage = firstMessage?.left?.fromMyself == false
-
                 if paragraph.text != "" {
                     messagesSignal.value.insert(.left(newMessage), at: 0)
-                } else if firstMessage?.right?.left == nil {
+                }
+                
+                let firstMessage = filteredMessagesSignal.value.first
+                let hasPreviousMessage = firstMessage?.left?.fromMyself == false
+                
+                if firstMessage?.right?.left == nil {
+                    idleTypingIndicatorBag += Signal(every: 10).onValue { _ in
+                        fetchMessages()
+                    }
+                    
                     messagesSignal.value.insert(.make(.make(TypingIndicator(hasPreviousMessage: hasPreviousMessage))), at: 0)
                 }
             } else {
@@ -304,7 +312,7 @@ extension Chat: Presentable {
             if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
                 currentMessageSignal.value = Message(from: message, listSignal: nil)
             }
-
+            
             if message.body.asMessageBodyParagraph != nil {
                 bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
                     _ = self.client.fetch(
