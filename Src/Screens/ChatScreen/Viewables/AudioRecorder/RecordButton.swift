@@ -29,7 +29,7 @@ extension RecordButton: Viewable {
         
         let recordIcon = UIView()
         recordIcon.isUserInteractionEnabled = false
-        recordIcon.backgroundColor = .red
+        recordIcon.backgroundColor = .pink
         control.addSubview(recordIcon)
 
         bag += control.signal(for: .touchUpInside)
@@ -38,7 +38,7 @@ extension RecordButton: Viewable {
             .bindTo(isRecordingSignal)
         
         bag += combineLatest(
-            recordIcon.didLayoutSignal,
+            recordIcon.didLayoutSignal.atOnce(),
             isRecordingSignal.atOnce().plain()
         ).animated(style: SpringAnimationStyle.lightBounce()) { _, isRecording in
             recordIcon.layer.cornerRadius = isRecording ? 2.5 : recordIcon.frame.width / 2

@@ -22,8 +22,13 @@ extension AudioRecorder: Viewable {
         view.isLayoutMarginsRelativeArrangement = true
         view.insetsLayoutMarginsFromSafeArea = true
         
+        let contentContainerView = UIStackView()
+        contentContainerView.alignment = .trailing
+        view.addArrangedSubview(contentContainerView)
+        
         let recordingSession = AVAudioSession.sharedInstance()
         
+        let recordButtonContainer = UIStackView()
         let recordButton = RecordButton()
         
         bag += recordButton.isRecordingSignal.atOnce().onValueDisposePrevious { isRecording in
@@ -54,18 +59,43 @@ extension AudioRecorder: Viewable {
             
             let recordBag = DisposeBag()
             
+            let waveFormContainer = UIView()
+            recordButtonContainer.addSubview(waveFormContainer)
+            
+            waveFormContainer.snp.makeConstraints { make in
+                make.width.equalTo(100)
+                make.height.equalTo(50)
+                make.centerX.equalToSuperview()
+                make.centerY.equalToSuperview()
+            }
+            
+            waveFormContainer.transform = CGAffineTransform(translationX: -20, y: 0)
+            
             if let audioRecorder = audioRecorder {
-                recordBag += view.add(WaveForm(audioRecorder: audioRecorder))
+                recordBag += waveFormContainer.add(WaveForm(audioRecorder: audioRecorder))
+            }
+            
+            waveFormContainer.alpha = 0
+            
+            recordBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                waveFormContainer.alpha = 1
+                waveFormContainer.transform = CGAffineTransform(translationX: -20, y: -70)
             }
             
             return Disposer {
                 audioRecorder?.stop()
-                recordBag.dispose()
+                
+                recordBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    waveFormContainer.alpha = 0
+                    waveFormContainer.transform = CGAffineTransform(translationX: -20, y: 0)
+                }.onValue { _ in
+                    recordBag.dispose()
+                }
             }
         }
         
         func presentRecordButton() {
-            bag += view.addArranged(recordButton.wrappedIn(UIStackView())) { recordButton in
+            bag += view.addArranged(recordButton.wrappedIn(recordButtonContainer)) { recordButton in
                 recordButton.axis = .vertical
                 recordButton.alignment = .center
             }
