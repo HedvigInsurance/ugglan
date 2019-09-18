@@ -66,6 +66,12 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .white : .darkGray
         })
     }
+    
+    static var primaryShadowColor: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .transparent : .darkGray
+        })
+    }
 
     static let coral700 = UIColor(red: 0.80, green: 0.43, blue: 0.40, alpha: 1.0)
     static let transparent = UIColor.white.withAlphaComponent(0)

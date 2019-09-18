@@ -43,7 +43,7 @@ extension CircleLabelSmall: Viewable {
         circleView.layer.shadowOpacity = 0.2
         circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
         circleView.layer.shadowRadius = 16
-        circleView.layer.shadowColor = UIColor.darkGray.cgColor
+        circleView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
         circleView.backgroundColor = backgroundColor
         titleLabel.textColor = .primaryText
 

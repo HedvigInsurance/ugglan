@@ -47,7 +47,7 @@ extension ExpandableRow: Viewable {
             containerView.layer.shadowOpacity = 0.15
             containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
             containerView.layer.shadowRadius = 8
-            containerView.layer.shadowColor = UIColor.darkGray.cgColor
+            containerView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
         } else {
             containerView.backgroundColor = .transparent
         }
