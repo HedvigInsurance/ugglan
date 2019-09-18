@@ -158,7 +158,7 @@ extension TextView: Viewable {
 
         placeholderLabel.snp.makeConstraints { make in
             make.left.equalTo(paddingView.layoutMargins.left + 5)
-            make.centerY.equalToSuperview().offset(2)
+            make.centerY.equalToSuperview()
             make.width.equalToSuperview()
         }
 
