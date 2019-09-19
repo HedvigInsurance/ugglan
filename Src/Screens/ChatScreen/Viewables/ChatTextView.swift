@@ -66,21 +66,7 @@ extension ChatTextView: Viewable {
         bag += isHiddenSignal.animated(style: SpringAnimationStyle.lightBounce()) { isHidden in
             view.animationSafeIsHidden = isHidden
         }
-        
-        bag += textView.value
-            .filter { $0.contains("\n") }
-            .withLatestFrom(currentMessageSignal.plain())
-            .filter { $1?.richTextCompatible == false}
-            .map { textViewContent, message in
-                (textViewContent.replacingOccurrences(of: "\n", with: ""), message)
-            }
-            .onValue ({ textViewContent, message in
-                if let currentGlobalId = message?.globalId {
-                    bag += self.client.perform(mutation: SendChatTextResponseMutation(globalId: currentGlobalId, text: textViewContent))
-                    textView.value.value = ""
-                }
-            })
-        
+
         bag += view.add(SendButton()) { buttonView in
             buttonView.snp.makeConstraints({ make in
                 make.bottom.equalToSuperview().inset(5)
