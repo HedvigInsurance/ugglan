@@ -34,6 +34,8 @@ extension Marketing: Presentable {
         containerView.backgroundColor = UIColor.white
         viewController.view = containerView
 
+        ApplicationState.preserveState(.marketing)
+        
         return (viewController, Future { completion in
             let resultCallbacker = Callbacker<MarketingResult>()
             let pausedCallbacker = Callbacker<Bool>()

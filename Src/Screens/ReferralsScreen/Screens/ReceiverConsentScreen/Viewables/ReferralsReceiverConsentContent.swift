@@ -74,13 +74,13 @@ extension ReferralsReceiverConsentContent: Viewable {
 
         let title = MultilineLabel(
             value: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
-            style: TextStyle.standaloneLargeTitle.colored(.black).aligned(to: .center)
+            style: TextStyle.standaloneLargeTitle.aligned(to: .center)
         )
         bag += view.addArranged(title)
 
         let description = MultilineLabel(
             value: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
-            style: TextStyle.bodyOffBlack.aligned(to: .center)
+            style: TextStyle.body.aligned(to: .center)
         )
         bag += view.addArranged(description)
 
@@ -94,8 +94,8 @@ extension ReferralsReceiverConsentContent: Viewable {
 
         let gradient = CAGradientLayer()
         gradient.colors = [
-            UIColor.offWhite.withAlphaComponent(0.2).cgColor,
-            UIColor.offWhite.cgColor,
+            UIColor.secondaryBackground.withAlphaComponent(0.2).cgColor,
+            UIColor.secondaryBackground.cgColor,
         ]
         gradient.locations = [0, 0.1, 0.9, 1]
         shadowView.layer.addSublayer(gradient)
@@ -112,7 +112,7 @@ extension ReferralsReceiverConsentContent: Viewable {
 
         let acceptDiscountButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
-            type: .standard(backgroundColor: .purple, textColor: .white)
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
         )
         bag += buttonsContainer.addArranged(acceptDiscountButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical

@@ -11,6 +11,7 @@ import Disk
 import Firebase
 import FirebaseAnalytics
 import FirebaseRemoteConfig
+import FirebaseMessaging
 import Flow
 import Form
 import Foundation
@@ -29,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
+    let hasFinishedLoading = ReadWriteSignal<Bool>(false)
 
     let toastSignal = ReadWriteSignal<Toast?>(nil)
 
@@ -109,35 +111,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
 
-        if
-            let invitedByMemberId = queryItems.filter({ item in item.name == "invitedBy" }).first?.value,
-            let incentive = queryItems.filter({ item in item.name == "incentive" }).first?.value {
-            Analytics.logEvent("referrals_open", parameters: [
-                "invitedByMemberId": invitedByMemberId,
-                "incentive": incentive,
-            ])
-
-            UserDefaults.standard.set(invitedByMemberId, forKey: "referral_invitedByMemberId")
-            UserDefaults.standard.set(incentive, forKey: "referral_incentive")
-
-            return true
-        }
-
-        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
-
-        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { _, _ in
-            guard ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
+            guard let dynamicLinkUrl = link?.url else { return }
+            guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
+            guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
+            
+            guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
-
-            innerBag += rootViewController.present(ReferralsReceiverConsent(referralCode: referralCode), style: .modal, options: [
-                .prefersNavigationBarHidden(true),
-            ]).onValue { result in
+            
+            innerBag += rootViewController.present(
+                ReferralsReceiverConsent(referralCode: referralCode),
+                style: .modal,
+                options: [
+                    .prefersNavigationBarHidden(true),
+                ]
+            ).onValue { result in
                 if result == .accept {
                     if ApplicationState.currentState?.isOneOf([.marketing]) == true {
-                        self.bag += rootViewController.present(OnboardingChat())
+                        self.bag += rootViewController.present(
+                            OnboardingChat(),
+                            options: [.prefersNavigationBarHidden(false)]
+                        )
                     }
                 }
                 innerBag.dispose()
@@ -210,10 +206,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        let hasLoadedCallbacker = Callbacker<Void>()
-
         let launch = Launch(
-            hasLoadedSignal: hasLoadedCallbacker.signal()
+            hasLoadedSignal: hasFinishedLoading.toVoid().plain()
         )
 
         let (launchViewController, launchFuture) = launch.materialize()
@@ -230,6 +224,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
+        
+        Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
 
         bag += combineLatest(
             ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
@@ -238,7 +235,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             TranslationsRepo.fetch()
             self.bag += ApplicationState.presentRootViewController(self.window)
         }).delay(by: 0.1).onValue { _ in
-            hasLoadedCallbacker.callAll()
+            self.hasFinishedLoading.value = true
         }
 
         bag += launchFuture.onValue({ _ in
@@ -247,5 +244,81 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
 
         return true
+    }
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        ApolloContainer.shared.client.perform(mutation: RegisterPushTokenMutation(pushToken: fcmToken)).onValue { result in
+            if result.data?.registerPushToken != nil {
+                log.info("Did register push token for user")
+            } else {
+                log.info("Failed to register push token for user")
+            }
+        }
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        guard let notificationType = userInfo["TYPE"] as? String else { return }
+
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+            if notificationType == "NEW_MESSAGE" {
+                if ApplicationState.currentState == .onboardingChat {
+                    return
+                } else if ApplicationState.currentState == .offer {
+                    
+                    bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                        self.window.rootViewController?.present(
+                            OfferChat(),
+                            style: .modally(
+                                presentationStyle: .pageSheet,
+                                transitionStyle: nil,
+                                capturesStatusBarAppearance: true
+                            )
+                        )
+                    }
+                    return
+                } else if ApplicationState.currentState == .loggedIn {
+                     bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                        self.window.rootViewController?.present(
+                            FreeTextChat(),
+                            style: .modally(
+                                presentationStyle: .pageSheet,
+                                transitionStyle: nil,
+                                capturesStatusBarAppearance: true
+                            )
+                        )
+                    }
+                    return
+                }
+            } else if notificationType == "REFERRAL_SUCCESS" {
+                guard let incentiveString = userInfo["DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT"] as? String else { return }
+                guard let name = userInfo["DATA_MESSAGE_REFERRED_SUCCESS_NAME"] as? String else { return }
+
+                let incentive = Int(Double(incentiveString) ?? 0)
+
+                let referralsNotification = ReferralsNotification(
+                    incentive: incentive,
+                    name: name
+                )
+
+                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    self.window.rootViewController?.present(
+                        referralsNotification,
+                        style: .modally(
+                            presentationStyle: .formSheetOrOverFullscreen,
+                            transitionStyle: nil,
+                            capturesStatusBarAppearance: nil
+                        ),
+                        options: [.prefersNavigationBarHidden(false)]
+                    )
+                }
+            }
+        }
+
+        completionHandler()
     }
 }

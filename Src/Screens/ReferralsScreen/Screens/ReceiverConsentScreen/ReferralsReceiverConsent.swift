@@ -31,7 +31,7 @@ extension ReferralsReceiverConsent: Presentable {
         let viewController = UIViewController()
 
         let view = UIView()
-        view.backgroundColor = UIColor.offWhite
+        view.backgroundColor = .secondaryBackground
 
         let content = ReferralsReceiverConsentContent()
 
