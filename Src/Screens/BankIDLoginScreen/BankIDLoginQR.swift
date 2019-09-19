@@ -135,7 +135,7 @@ extension BankIDLoginQR: Presentable {
             guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else { return }
             let processedImage = UIImage(cgImage: cgImage)
 
-            imageView.tintColor = UIColor.white
+            imageView.tintColor = .primaryText
             imageView.backgroundColor = UIColor.secondaryBackground
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
