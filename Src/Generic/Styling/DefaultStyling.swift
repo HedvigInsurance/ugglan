@@ -38,9 +38,13 @@ extension DefaultStyling {
         ]
 
         if #available(iOS 13.0, *) {
-            UINavigationBar.appearance().shadowImage = UIColor { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? UIColor.transparent : UIColor.primaryBorder
-            }.as1ptImage()
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).shadowImage = UIColor.transparent.as1ptImage()
+            
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).shadowImage = UIColor.grayBorder.as1ptImage()
         } else {
             UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
         }
@@ -82,8 +86,27 @@ extension DefaultStyling {
         UIBarButtonItem.appearance().tintColor = .primaryTintColor
 
         UITabBar.appearance().barTintColor = UIColor.primaryBackground
-        UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
-        UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+        
+        if #available(iOS 13.0, *) {
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).backgroundImage = UIColor.almostBlack.as1ptImage()
+            
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).backgroundImage = UIColor.offWhite.as1ptImage()
+            
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).shadowImage = UIColor.darkGrayBorder.as1ptImage()
+            
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).shadowImage = UIColor.grayBorder.as1ptImage()
+        } else {
+            UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
+            UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+        }
 
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
