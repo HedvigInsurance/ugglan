@@ -208,7 +208,7 @@ targets:
       INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       SWIFT_VERSION: "5.0"
-      PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.test"
+      PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.test.app"
       DEVELOPMENT_TEAM: "AW656G5PFM"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       TARGETED_DEVICE_FAMILY: "1,2"
