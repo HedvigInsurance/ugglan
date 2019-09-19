@@ -11,6 +11,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import Crashlytics
 
 struct OnboardingChat {
     let client: ApolloClient
@@ -39,7 +40,11 @@ extension OnboardingChat: Presentable {
         bag += settingsButton.onValue({ _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
-                style: .modally(presentationStyle: .formSheet, transitionStyle: nil, capturesStatusBarAppearance: nil),
+                style: .modally(
+                    presentationStyle: .formSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: true
+                ),
                 options: [.allowSwipeDismissAlways, .defaults]
             )
         })
@@ -49,7 +54,7 @@ extension OnboardingChat: Presentable {
         restartButton.tintColor = .navigationItemMutedTintColor
 
         bag += restartButton.onValue { _ in
-            fatalError()
+            Crashlytics.sharedInstance().crash()
             
             let alert = Alert(
                 title: String(key: .CHAT_RESTART_ALERT_TITLE),

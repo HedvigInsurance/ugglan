@@ -1,5 +1,4 @@
-binary "Crashlytics.json" "3.8.4"
-binary "Fabric.json" "1.6.11"
+binary "Crashlytics.json" "1.0.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" "6.5.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json" "6.8.1"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.json" "6.8.1"
