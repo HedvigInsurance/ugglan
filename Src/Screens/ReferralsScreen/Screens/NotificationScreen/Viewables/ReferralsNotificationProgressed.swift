@@ -13,6 +13,7 @@ import UIKit
 struct ReferralsNotificationProgressed {
     let incentive: Int
     let name: String
+    let backgroundColor: UIColor
 
     var didTapCancel: Signal<Void> {
         return didTapCancelCallbacker.providedSignal
@@ -97,8 +98,8 @@ extension ReferralsNotificationProgressed: Viewable {
 
         let gradient = CAGradientLayer()
         gradient.colors = [
-            UIColor.darkPurple.withAlphaComponent(0.2).cgColor,
-            UIColor.darkPurple.cgColor,
+            backgroundColor.withAlphaComponent(0.2).cgColor,
+            backgroundColor.cgColor,
         ]
         gradient.locations = [0, 0.1, 0.9, 1]
         shadowView.layer.addSublayer(gradient)

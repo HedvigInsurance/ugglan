@@ -27,11 +27,19 @@ extension ReferralsNotification: Presentable {
     func materialize() -> (UIViewController, Future<ReferralsNotificationResult>) {
         let bag = DisposeBag()
         let viewController = LightContentViewController()
+        
+        let backgroundColor = UIColor(dynamic: { trait in
+            trait.userInterfaceStyle == .dark ? .secondaryBackground : .darkPurple
+        })
 
         let view = UIView()
-        view.backgroundColor = UIColor.darkPurple
+        view.backgroundColor = backgroundColor
 
-        let progressed = ReferralsNotificationProgressed(incentive: incentive, name: name)
+        let progressed = ReferralsNotificationProgressed(
+            incentive: incentive,
+            name: name,
+            backgroundColor: backgroundColor
+        )
 
         bag += view.add(progressed) { view in
             view.snp.makeConstraints { make in

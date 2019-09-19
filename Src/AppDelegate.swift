@@ -308,11 +308,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
                         referralsNotification,
-                        style: .modally(
-                            presentationStyle: .formSheetOrOverFullscreen,
-                            transitionStyle: nil,
-                            capturesStatusBarAppearance: nil
-                        ),
+                        style: .modal,
                         options: [.prefersNavigationBarHidden(false)]
                     )
                 }
