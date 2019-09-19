@@ -11,7 +11,6 @@ import Flow
 import Form
 import Presentation
 import UIKit
-import Crashlytics
 
 struct OnboardingChat {
     let client: ApolloClient
@@ -53,9 +52,7 @@ extension OnboardingChat: Presentable {
         restartButton.image = Asset.restart.image
         restartButton.tintColor = .navigationItemMutedTintColor
 
-        bag += restartButton.onValue { _ in
-            Crashlytics.sharedInstance().crash()
-            
+        bag += restartButton.onValue { _ in            
             let alert = Alert(
                 title: String(key: .CHAT_RESTART_ALERT_TITLE),
                 message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
