@@ -23,11 +23,6 @@ struct Dashboard {
     }
 }
 
-var dashboardOpenFreeTextChat: (_ presentingViewController: UIViewController) -> Void = { presentingViewController in
-    let chatOverlay = DraggableOverlay(presentable: FreeTextChat(), adjustsToKeyboard: false)
-    presentingViewController.present(chatOverlay, style: .default, options: [.prefersNavigationBarHidden(false)])
-}
-
 extension Dashboard: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()

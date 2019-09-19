@@ -99,7 +99,10 @@ extension ChatPreview: Viewable {
         }
 
         bag += openChatButton.onTapSignal.onValue { _ in
-            dashboardOpenFreeTextChat(self.presentingViewController)
+            self.presentingViewController.present(
+                FreeTextChat().withCloseButton,
+                style: .modal
+            )
         }
 
         let freeChatFromBoId: GraphQLID = "free.chat.from.bo"
