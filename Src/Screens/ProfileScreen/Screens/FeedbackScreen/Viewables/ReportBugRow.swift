@@ -39,7 +39,10 @@ extension ReportBugRow: Viewable {
 
         let appVersion = Bundle.main.appVersion
 
-        let memberIdSignal = client.fetch(query: MemberIdQuery())
+        let memberIdSignal = client.fetch(
+            query: MemberIdQuery(),
+            cachePolicy: .returnCacheDataAndFetch
+        )
             .valueSignal
             .compactMap { $0.data?.member.id }.plain()
 

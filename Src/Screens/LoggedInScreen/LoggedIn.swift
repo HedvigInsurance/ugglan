@@ -90,6 +90,8 @@ extension LoggedIn: Presentable {
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
         
         if (didSign) {
+            ApplicationState.setLastNewsSeen()
+            
             bag += client
                 .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                 .compactMap { $0.data }
