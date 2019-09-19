@@ -31,7 +31,7 @@ extension ChatButton: Viewable {
         chatButtonView.layer.cornerRadius = 20
 
         bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-            chatButtonView.backgroundColor = UIColor.primaryBackground.darkened(amount: 0.05)
+            chatButtonView.backgroundColor = UIColor.secondaryBackground.darkened(amount: 0.05)
         }
 
         bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
@@ -41,7 +41,7 @@ extension ChatButton: Viewable {
             chatButtonView.signal(for: .touchUpOutside),
             chatButtonView.signal(for: .touchCancel)
         ).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-            chatButtonView.backgroundColor = UIColor.primaryBackground
+            chatButtonView.backgroundColor = .secondaryBackground
         }
 
         bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in
@@ -50,7 +50,7 @@ extension ChatButton: Viewable {
                 style: .modally(
                     presentationStyle: .pageSheet,
                     transitionStyle: nil,
-                    capturesStatusBarAppearance: true
+                    capturesStatusBarAppearance: false
                 )
             )
         }
