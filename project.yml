@@ -61,6 +61,8 @@ targets:
       - location: Carthage/Build/iOS/MarkdownKit.framework
       - location: Carthage/Build/iOS/Ease.framework
       - location: Carthage/Build/iOS/Kingfisher.framework
+      - location: Carthage/Build/iOS/Fabric.framework
+      - location: Carthage/Build/iOS/Crashlytics.framework
     platform: ios
     type: ":bundle.ui-testing"
     scripts:
@@ -86,6 +88,8 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Fabric.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Crashlytics.framework
         outputs:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapshotTesting.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
@@ -105,6 +109,8 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Fabric.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Crashlytics.framework
     configuration:
       INFOPLIST_FILE: UITests/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
@@ -147,6 +153,8 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Fabric.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Crashlytics.framework
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
@@ -165,6 +173,8 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Fabric.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Crashlytics.framework
     references:
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
@@ -203,6 +213,8 @@ targets:
       - location: Carthage/Build/iOS/MarkdownKit.framework
       - location: Carthage/Build/iOS/Ease.framework
       - location: Carthage/Build/iOS/Kingfisher.framework
+      - location: Carthage/Build/iOS/Fabric.framework
+      - location: Carthage/Build/iOS/Crashlytics.framework
     configuration:
       ASSETCATALOG_COMPILER_APPICON_NAME: "AppIcon.ugglan"
       INFOPLIST_FILE: Src/Info.plist

@@ -49,6 +49,8 @@ extension OnboardingChat: Presentable {
         restartButton.tintColor = .navigationItemMutedTintColor
 
         bag += restartButton.onValue { _ in
+            fatalError()
+            
             let alert = Alert(
                 title: String(key: .CHAT_RESTART_ALERT_TITLE),
                 message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
