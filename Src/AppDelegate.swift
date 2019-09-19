@@ -214,12 +214,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         launchWindow?.rootViewController = launchViewController
         window.makeKeyAndVisible()
         launchWindow?.makeKeyAndVisible()
+        
+        #if APP_VARIANT_PRODUCTION
 
+        let apolloEnvironment = ApolloEnvironmentConfig(
+            endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+            wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+            assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+        )
+        
+        #elseif APP_VARIANT_DEV
+        
         let apolloEnvironment = ApolloEnvironmentConfig(
             endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
             wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
             assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
         )
+        
+        #endif
 
         ApolloContainer.shared.environment = apolloEnvironment
 

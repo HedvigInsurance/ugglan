@@ -206,19 +206,34 @@ targets:
       - location: Carthage/Build/iOS/Fabric.framework
       - location: Carthage/Build/iOS/Crashlytics.framework
     configuration:
-      ASSETCATALOG_COMPILER_APPICON_NAME: "AppIcon.ugglan"
-      INFOPLIST_FILE: Src/Info.plist
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       SWIFT_VERSION: "5.0"
-      PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.test.app"
       DEVELOPMENT_TEAM: "AW656G5PFM"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       TARGETED_DEVICE_FAMILY: "1,2"
-      CODE_SIGN_ENTITLEMENTS: ugglan.entitlements
       ENABLE_BITCODE: "no"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
+variants:
+  $base:
+    abstract: true
+  test:
+    Ugglan:
+      sources: Config/Test
+      configuration:
+        INFOPLIST_FILE: Config/Test/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Config/Test/Entitlements.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.test.app"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_VARIANT_DEV
+  production:
+    Ugglan:
+      sources: Config/Production
+      configuration:
+        INFOPLIST_FILE: Config/Production/Info.plist
+        CODE_SIGN_ENTITLEMENTS:  Config/Production/Entitlements.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.app"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_VARIANT_PRODUCTION
 schemes:
   Debug:
     archive:
@@ -246,7 +261,6 @@ schemes:
     launch:
       build_configuration: debug
       target: Ugglan
-      arguments: -AppleLanguages (en-GB)
       environment:
         OS_ACTIVITY_MODE: disable
   Release:
@@ -267,6 +281,5 @@ schemes:
     launch:
       build_configuration: release
       target: Ugglan
-      arguments: -AppleLanguages (en-GB)
       environment:
         OS_ACTIVITY_MODE: disable

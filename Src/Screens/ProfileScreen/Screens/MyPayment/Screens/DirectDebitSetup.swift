@@ -123,7 +123,7 @@ extension DirectDebitSetup: Presentable {
                 viewController.navigationItem.setLeftBarButtonItems(nil, animated: true)
 
                 let containerView = UIView()
-                containerView.backgroundColor = .offWhite
+                containerView.backgroundColor = .primaryBackground
 
                 let directDebitResult = DirectDebitResult(
                     type: type
