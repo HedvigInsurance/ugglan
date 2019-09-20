@@ -177,7 +177,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let bestMatchedLanguage = Bundle.preferredLocalizations(
             from: availableLanguages
         ).first
-
+        
         if let bestMatchedLanguage = bestMatchedLanguage {
             Localization.Locale.currentLocale = Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
         } else {

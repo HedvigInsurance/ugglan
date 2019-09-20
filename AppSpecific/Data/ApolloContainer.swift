@@ -104,7 +104,15 @@ class ApolloContainer {
     }
 
     func createClientFromNewSession() -> Future<Void> {
-        let campaign = CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
+        ApplicationState.setLastNewsSeen()
+        
+        let campaign = CampaignInput(
+            source: nil,
+            medium: nil,
+            term: nil,
+            content: nil,
+            name: nil
+        )
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
