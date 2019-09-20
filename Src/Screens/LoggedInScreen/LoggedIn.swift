@@ -88,7 +88,7 @@ extension LoggedIn: Presentable {
 
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
-        
+                
         if (didSign) {
             ApplicationState.setLastNewsSeen()
             
