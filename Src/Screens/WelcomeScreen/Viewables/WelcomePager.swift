@@ -55,7 +55,7 @@ extension WelcomePager: Viewable {
                     let welcomePagerScreen = WelcomePagerScreen(
                         title: welcomePost.title,
                         paragraph: welcomePost.paragraph,
-                        iconUrl: welcomePost.illustration.pdfUrl
+                        icon: welcomePost.illustration.fragments.iconFragment
                     )
 
                     return PagerScreen(

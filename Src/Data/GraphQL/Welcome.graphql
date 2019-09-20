@@ -1,7 +1,7 @@
 query Welcome($locale: Locale!) {
     welcome(platform: iOS, locale: $locale) {
         illustration {
-            pdfUrl
+            ...IconFragment
         }
         title
         paragraph

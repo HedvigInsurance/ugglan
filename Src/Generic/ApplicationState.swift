@@ -45,7 +45,7 @@ struct ApplicationState {
     }
 
     static func getLastNewsSeen() -> String {
-        return UserDefaults.standard.string(forKey: ApplicationState.lastNewsSeenKey) ?? "0.0.0"
+        return UserDefaults.standard.string(forKey: ApplicationState.lastNewsSeenKey) ?? "2.8.3"
     }
 
     static func setLastNewsSeen() {

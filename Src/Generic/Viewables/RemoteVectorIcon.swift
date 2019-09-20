@@ -9,20 +9,21 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import Apollo
 
 struct RemoteVectorIcon {
-    let pdfUrlStringSignal = ReadWriteSignal<String?>(nil)
+    let iconSignal = ReadWriteSignal<IconFragment?>(nil)
     let finishedLoadingSignal: Signal<Void>
     let finishedLoadingCallback = Callbacker<Void>()
     let environment: ApolloEnvironmentConfig
     let threaded: Bool
 
     init(
-        _ pdfUrlString: String? = nil,
+        _ icon: IconFragment? = nil,
         environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment,
         threaded: Bool? = false
     ) {
-        pdfUrlStringSignal.value = pdfUrlString
+        iconSignal.value = icon
         finishedLoadingSignal = finishedLoadingCallback.signal()
         self.environment = environment
         self.threaded = threaded ?? false
@@ -105,7 +106,16 @@ extension RemoteVectorIcon: Viewable {
             renderPdfDocument(pdfDocument: pdfDocument)
         }
 
-        bag += pdfUrlStringSignal.atOnce().compactMap { $0 }.map(on: .background) { pdfUrlString -> CFData? in
+        bag += combineLatest(
+            iconSignal.atOnce(),
+            imageView.traitCollectionSignal.atOnce()
+        ).compactMap { iconFragment, traitCollection -> String? in
+            if traitCollection.userInterfaceStyle == .dark {
+                return iconFragment?.variants.dark.pdfUrl
+            }
+            
+            return iconFragment?.variants.light.pdfUrl
+        }.map(on: .background) { pdfUrlString -> CFData? in
             guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
                 return nil
             }

@@ -55,7 +55,7 @@ extension WhatsNewPager: Viewable {
                     let whatsNewPagerScreen = WhatsNewPagerScreen(
                         title: newsPost.title,
                         paragraph: newsPost.paragraph,
-                        iconUrl: newsPost.illustration.pdfUrl
+                        icon: newsPost.illustration.fragments.iconFragment
                     )
 
                     return PagerScreen(

@@ -262,7 +262,7 @@ extension CommonClaimCard: Viewable {
         }
 
         let remoteVectorIcon = RemoteVectorIcon()
-        remoteVectorIcon.pdfUrlStringSignal.value = data.icon.pdfUrl
+        remoteVectorIcon.iconSignal.value = data.icon.fragments.iconFragment
 
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints { make in

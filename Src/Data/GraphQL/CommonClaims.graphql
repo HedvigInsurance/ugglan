@@ -2,7 +2,7 @@ query CommonClaims($locale: Locale!) {
     commonClaims(locale: $locale) {
         title
         icon {
-            pdfUrl
+            ...IconFragment
         }
         layout {
             __typename
@@ -12,7 +12,7 @@ query CommonClaims($locale: Locale!) {
                     description
                     title
                     icon {
-                        pdfUrl
+                        ...IconFragment
                     }
                 }
                 buttonTitle

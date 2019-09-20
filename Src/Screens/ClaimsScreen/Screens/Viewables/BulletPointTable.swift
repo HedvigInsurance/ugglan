@@ -45,7 +45,7 @@ extension BulletPointTable: Viewable {
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,
-                icon: RemoteVectorIcon($0.icon.pdfUrl),
+                icon: RemoteVectorIcon($0.icon.fragments.iconFragment),
                 description: $0.description
             )
         }

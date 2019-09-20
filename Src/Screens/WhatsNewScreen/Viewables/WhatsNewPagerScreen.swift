@@ -14,7 +14,7 @@ import UIKit
 struct WhatsNewPagerScreen {
     let title: String
     let paragraph: String
-    let iconUrl: String
+    let icon: IconFragment
 }
 
 extension WhatsNewPagerScreen: Presentable {
@@ -43,7 +43,7 @@ extension WhatsNewPagerScreen: Presentable {
         innerContainerView.spacing = 8
         innerContainerView.isLayoutMarginsRelativeArrangement = true
 
-        let icon = RemoteVectorIcon(iconUrl, threaded: true)
+        let remoteVectorIcon = RemoteVectorIcon(icon, threaded: true)
 
         containerView.addArrangedSubview(innerContainerView)
 
@@ -51,14 +51,14 @@ extension WhatsNewPagerScreen: Presentable {
             make.width.centerX.equalToSuperview()
         }
 
-        bag += icon.finishedLoadingSignal.onValue { _ in
+        bag += remoteVectorIcon.finishedLoadingSignal.onValue { _ in
             bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: {
                 innerContainerView.alpha = 1
                 loadingIndicatorBag.dispose()
             })
         }
 
-        bag += innerContainerView.addArranged(icon) { iconView in
+        bag += innerContainerView.addArranged(remoteVectorIcon) { iconView in
             iconView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
             }
