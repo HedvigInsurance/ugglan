@@ -52,10 +52,10 @@ class ButtonTests: SnapShotTestCase {
         }
     }
 
-    func testPillTransparent() {
+    func testpillSemiTransparent() {
         let button = Button(
             title: "Lorem ipsum",
-            type: .pillTransparent(backgroundColor: .black, textColor: .white)
+            type: .pillSemiTransparent(backgroundColor: .black, textColor: .white)
         )
 
         materializeViewable(button) { view in

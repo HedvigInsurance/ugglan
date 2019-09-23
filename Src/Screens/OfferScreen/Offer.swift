@@ -70,9 +70,12 @@ extension Offer {
         )
 
         bag += signButton.onTapSignal.onValue { _ in
-            let overlay = DraggableOverlay(presentable: BankIdSign(), presentationOptions: [.prefersNavigationBarHidden(true)])
+            let overlay = DraggableOverlay(
+                presentable: BankIdSign(),
+                presentationOptions: [.prefersNavigationBarHidden(true)]
+            )
             viewController.present(overlay).onValue { _ in
-                viewController.present(LoggedIn(didSign: true), options: [.prefersNavigationBarHidden(true)])
+                viewController.present(PostOnboarding())
             }
         }
 

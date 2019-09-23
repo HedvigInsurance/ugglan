@@ -177,7 +177,7 @@ extension ButtonStyle {
         ]
     }
 
-    static let pillTransparentGray = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+    static let pillSemiTransparentGray = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
         style.buttonType = .custom
         style.states = [
             .normal: ButtonStateStyle(
@@ -198,7 +198,7 @@ extension ButtonStyle {
         ]
     }
 
-    static let pillTransparentGrayHighlighted = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+    static let pillSemiTransparentGrayHighlighted = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
         style.buttonType = .custom
         style.states = [
             .normal: ButtonStateStyle(

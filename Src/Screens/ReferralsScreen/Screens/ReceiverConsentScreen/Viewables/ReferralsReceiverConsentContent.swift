@@ -125,7 +125,7 @@ extension ReferralsReceiverConsentContent: Viewable {
 
         let declineButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
-            type: .pillTransparent(backgroundColor: .lightGray, textColor: .offBlack)
+            type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack)
         )
         bag += buttonsContainer.addArranged(declineButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical

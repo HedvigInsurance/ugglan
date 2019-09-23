@@ -1,0 +1,8 @@
+query Switching {
+    insurance {
+        status
+        previousInsurer {
+            id
+        }
+    }
+}

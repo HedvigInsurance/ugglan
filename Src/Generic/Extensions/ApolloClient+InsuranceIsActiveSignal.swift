@@ -9,6 +9,19 @@ import Apollo
 import Flow
 import Foundation
 
+extension InsuranceStatus {
+    var isInactive: Bool {
+        switch self {
+        case .inactive:
+            return true
+        case .inactiveWithStartDate:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 extension ApolloClient {
     func insuranceIsActiveSignal() -> Signal<Bool> {
         return watch(

@@ -129,7 +129,7 @@ extension ReferralsNotificationProgressed: Viewable {
 
         let closeButton = Button(
             title: String(key: .REFERRAL_SUCCESS_BTN_CLOSE),
-            type: .pillTransparent(backgroundColor: .blackPurple, textColor: .white)
+            type: .pillSemiTransparent(backgroundColor: .blackPurple, textColor: .white)
         )
         bag += buttonsContainer.addArranged(closeButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical

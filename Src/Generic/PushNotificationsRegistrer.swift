@@ -42,7 +42,7 @@ struct PushNotificationsRegister: Presentable {
                             }
                         }
                     }
-                    UIApplication.shared.appDelegate.registerForPushNotifications()
+                    UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
                 }),
                 Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW), action: {
                     ()

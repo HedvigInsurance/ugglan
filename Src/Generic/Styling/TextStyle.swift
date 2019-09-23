@@ -107,7 +107,7 @@ extension TextStyle {
 
     static let headingOne = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(40)
-        style.color = .blackPurple
+        style.color = .primaryText
     }
 
     static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
@@ -201,6 +201,11 @@ extension TextStyle {
     static let navigationBarButton = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryTintColor
+    }
+    
+    static let navigationBarButtonSkip = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .pink
     }
 
     static let navigationBarButtonPrimary = TextStyle.default.restyled { (style: inout TextStyle) in

@@ -143,14 +143,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return handled
     }
 
-    func registerForPushNotifications() {
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: authOptions,
-            completionHandler: { _, _ in }
-        )
-
-        UIApplication.shared.registerForRemoteNotifications()
+    func registerForPushNotifications() -> Future<Void> {
+        return Future { completion in
+            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current().requestAuthorization(
+                options: authOptions,
+                completionHandler: { _, _ in
+                    completion(.success)
+                    
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
+            )
+            
+            return NilDisposer()
+        }
     }
 
     func application(

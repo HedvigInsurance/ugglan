@@ -19,7 +19,8 @@ enum ButtonType {
     case standardSmall(backgroundColor: UIColor, textColor: UIColor)
     case tinyIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
     case outline(borderColor: UIColor, textColor: UIColor)
-    case pillTransparent(backgroundColor: UIColor, textColor: UIColor)
+    case pillSemiTransparent(backgroundColor: UIColor, textColor: UIColor)
+    case transparent(textColor: UIColor)
     case iconTransparent(textColor: UIColor, icon: ButtonIcon)
 
     enum ButtonIcon {
@@ -49,9 +50,9 @@ enum ButtonType {
         switch self {
         case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
-        case .outline:
+        case .outline, .transparent:
             return 0
-        case .pillTransparent:
+        case .pillSemiTransparent:
             return 0.6
         case .iconTransparent:
             return 0.0
@@ -64,10 +65,12 @@ enum ButtonType {
             return 1
         case .outline:
             return 0.05
-        case .pillTransparent:
+        case .pillSemiTransparent:
             return 0.6
         case .iconTransparent:
             return 0.05
+        case .transparent:
+            return 0
         }
     }
 
@@ -83,10 +86,12 @@ enum ButtonType {
             return backgroundColor
         case .outline((_, _)):
             return .purple
-        case let .pillTransparent((backgroundColor, _)):
+        case let .pillSemiTransparent((backgroundColor, _)):
             return backgroundColor
         case .iconTransparent((_, _)):
             return .purple
+        case .transparent:
+            return .transparent
         }
     }
 
@@ -102,9 +107,11 @@ enum ButtonType {
             return textColor
         case let .outline((_, textColor)):
             return textColor
-        case let .pillTransparent((_, textColor)):
+        case let .pillSemiTransparent((_, textColor)):
             return textColor
         case let .iconTransparent((textColor, _)):
+            return textColor
+        case let .transparent(textColor):
             return textColor
         }
     }
@@ -117,11 +124,13 @@ enum ButtonType {
             return 34
         case .outline:
             return 34
-        case .pillTransparent:
+        case .pillSemiTransparent:
             return 30
         case .iconTransparent:
             return 30
         case .tinyIcon:
+            return 30
+        case .transparent:
             return 30
         }
     }
@@ -130,12 +139,14 @@ enum ButtonType {
         switch self {
         case .standard, .standardSmall, .outline, .standardIcon:
             return 15
-        case .pillTransparent:
+        case .pillSemiTransparent:
             return 13
         case .iconTransparent:
             return 14
         case .tinyIcon:
             return 10
+        case .transparent:
+            return 13
         }
     }
 
@@ -147,12 +158,14 @@ enum ButtonType {
             return 35
         case .outline:
             return 35
-        case .pillTransparent:
+        case .pillSemiTransparent:
             return 35
         case .iconTransparent:
             return 35
         case .tinyIcon:
             return 20
+        case .transparent:
+            return 35
         }
     }
 

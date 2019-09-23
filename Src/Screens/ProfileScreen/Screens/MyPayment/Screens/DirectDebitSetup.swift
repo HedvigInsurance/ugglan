@@ -19,7 +19,22 @@ struct DirectDebitSetup {
     let applicationWillTerminateSignal: Signal<Void>
 
     enum SetupType {
-        case initial, replacement
+        case initial, replacement, postOnboarding
+    }
+    
+    private func makeDismissButton() -> UIBarButtonItem {
+        switch setupType {
+        case .postOnboarding:
+            return UIBarButtonItem(
+                title: String(key: .TRUSTLY_SKIP_BUTTON),
+                style: .navigationBarButtonSkip
+            )
+        default:
+            return UIBarButtonItem(
+                title: String(key: .DIRECT_DEBIT_DISMISS_BUTTON),
+                style: .navigationBarButton
+            )
+        }
     }
 
     init(
@@ -40,15 +55,22 @@ extension DirectDebitSetup: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
-        viewController.title = setupType == .initial ? String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE) :
-            String(key: .DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
-
-        let dismissButton = UIBarButtonItem(
-            title: String(key: .DIRECT_DEBIT_DISMISS_BUTTON),
-            style: .navigationBarButton
-        )
-        bag += viewController.installDismissBarItem(dismissButton)
-
+        
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
+        
+        switch setupType {
+        case .initial:
+            viewController.title = String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE)
+        case .replacement:
+            viewController.title = String(key: .DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
+        case .postOnboarding:
+            viewController.title = String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE)
+        }
+        
+        let dismissButton = makeDismissButton()
+        
         let webViewConfiguration = WKWebViewConfiguration()
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
 
@@ -88,13 +110,20 @@ extension DirectDebitSetup: Presentable {
                 activityIndicator.alpha = 0
             }
         }
-
-        bag += client.perform(mutation: StartDirectDebitRegistrationMutation())
-            .valueSignal
-            .compactMap { $0.data?.startDirectDebitRegistration }
-            .onValue { startDirectDebitRegistration in
-                webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
-            }
+        
+        func startRegistration() {
+            viewController.view = webView
+            viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
+            
+            bag += client.perform(mutation: StartDirectDebitRegistrationMutation())
+                .valueSignal
+                .compactMap { $0.data?.startDirectDebitRegistration }
+                .onValue { startDirectDebitRegistration in
+                    webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
+                }
+        }
+        
+        startRegistration()
 
         return (viewController, Future { completion in
             bag += dismissButton.onValue {
@@ -129,12 +158,15 @@ extension DirectDebitSetup: Presentable {
                     type: type
                 )
 
-                if type == .success {
+                switch type {
+                case .success:
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                         data.directDebitStatus = .pending
                     })
 
                     ClearDirectDebitStatus.clear()
+                case .failure:
+                    break
                 }
 
                 bag += containerView.add(directDebitResult) { view in
@@ -144,6 +176,10 @@ extension DirectDebitSetup: Presentable {
                     }
                 }.onValue {
                     completion(.success)
+                }.onError { _ in
+                    bag += Signal(after: 0.5).onValue { _ in
+                        startRegistration()
+                    }
                 }
 
                 viewController.view = containerView
@@ -154,7 +190,11 @@ extension DirectDebitSetup: Presentable {
                 let urlString = String(describing: url)
 
                 if urlString.contains("fail") || urlString.contains("success") {
-                    showResultScreen(type: urlString.contains("success") ? .success : .failure)
+                    showResultScreen(
+                        type: urlString.contains("success") ?
+                            .success(setupType: self.setupType) :
+                            .failure(setupType: self.setupType)
+                    )
                     return .cancel
                 }
 

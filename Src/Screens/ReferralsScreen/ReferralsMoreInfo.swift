@@ -36,7 +36,7 @@ extension ReferralsMoreInfo: Presentable {
         let body = MarkdownText(text: String(key: .REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH(referralValue: "10")), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
-        let button = Button(title: String(key: .REFERRAL_PROGRESS_MORE_INFO_CTA), type: .pillTransparent(backgroundColor: .lightGray, textColor: .offBlack))
+        let button = Button(title: String(key: .REFERRAL_PROGRESS_MORE_INFO_CTA), type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack))
         bag += containerView.addArranged(button.wrappedIn(UIStackView())) { stackView in
             stackView.alignment = .center
             stackView.axis = .vertical
