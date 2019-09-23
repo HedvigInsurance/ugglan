@@ -8,6 +8,7 @@
 
 import Form
 import Foundation
+import UIKit
 
 extension BorderStyle {
     static let standard = BorderStyle(
@@ -26,7 +27,20 @@ extension BorderStyle {
 }
 
 extension BackgroundStyle {
-    static let primary = BackgroundStyle(color: .secondaryBackground, border: .standard)
+    static let primaryDark = BackgroundStyle(
+        color: UIColor.secondaryBackground.resolvedColorOrFallback(
+            with: UITraitCollection(userInterfaceStyle: .dark)
+        ),
+        border: .standard
+    )
+    
+    static let primaryLight = BackgroundStyle(
+        color: UIColor.secondaryBackground.resolvedColorOrFallback(
+            with: UITraitCollection(userInterfaceStyle: .light)
+        ),
+        border: .standard
+    )
+    
     static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
     static let primaryRoundedBorder = BackgroundStyle(color: .secondaryBackground, border: .standardRounded)
 
@@ -98,14 +112,26 @@ extension InsettedStyle where Style == SeparatorStyle {
 }
 
 extension SectionBackgroundStyle {
-    static let primary = SectionBackgroundStyle(
-        background: .primary,
+    static let primaryLight = SectionBackgroundStyle(
+        background: .primaryLight,
+        topSeparator: .inset,
+        bottomSeparator: .inset
+    )
+    
+    static let primaryDark = SectionBackgroundStyle(
+        background: .primaryDark,
         topSeparator: .inset,
         bottomSeparator: .inset
     )
 
-    static let primaryLargeIcons = SectionBackgroundStyle(
-        background: .primary,
+    static var primaryLightLargeIcons = SectionBackgroundStyle(
+        background: .primaryLight,
+        topSeparator: .insetLargeIcons,
+        bottomSeparator: .insetLargeIcons
+    )
+    
+    static var primaryDarkLargeIcons = SectionBackgroundStyle(
+        background: .primaryDark,
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
@@ -116,8 +142,14 @@ extension SectionBackgroundStyle {
         bottomSeparator: .insetLargeIcons
     )
 
-    static let primaryMediumIcons = SectionBackgroundStyle(
-        background: .primary,
+    static let primaryLightMediumIcons = SectionBackgroundStyle(
+        background: .primaryLight,
+        topSeparator: .insetMediumIcons,
+        bottomSeparator: .insetMediumIcons
+    )
+    
+    static let primaryDarkMediumIcons = SectionBackgroundStyle(
+        background: .primaryDark,
         topSeparator: .insetMediumIcons,
         bottomSeparator: .insetMediumIcons
     )
@@ -172,11 +204,16 @@ extension SectionBackgroundStyle {
 }
 
 extension SectionStyle.Background {
-    static let standard = SectionStyle.Background(style: .primary)
+    static let standardLight = SectionStyle.Background(style: .primaryLight)
+    static let standardDark = SectionStyle.Background(style: .primaryDark)
     static let highlighted = SectionStyle.Background(style: .purple)
-    static let standardLargeIcons = SectionStyle.Background(style: .primaryLargeIcons)
+    static let standardDarkLargeIcons = SectionStyle.Background(style: .primaryDarkLargeIcons)
+    static let standardLightLargeIcons = SectionStyle.Background(style: .primaryLightLargeIcons)
+
     static let standardLargeIconsRoundedBorder = SectionStyle.Background(style: .primaryLargeIconsRoundedBorder)
-    static let standardMediumIcons = SectionStyle.Background(style: .primaryMediumIcons)
+    static let standardLightMediumIcons = SectionStyle.Background(style: .primaryLightMediumIcons)
+    static let standardDarkMediumIcons = SectionStyle.Background(style: .primaryDarkMediumIcons)
+
     static let standardRoundedBorder = SectionStyle.Background(style: .primaryRoundedBorder)
     static let selected = SectionStyle.Background(style: .purpleOpaque)
     static let selectedLargeIcons = SectionStyle.Background(style: .purpleOpaqueLargeIcons)
@@ -211,11 +248,21 @@ extension SectionStyle {
     static let sectionPlainItemSpacing: CGFloat = 10
     static let sectionPlainMinRowHeight: CGFloat = 0
 
-    static let sectionPlain = SectionStyle(
+    static let sectionPlainDark = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
         minRowHeight: SectionStyle.sectionPlainMinRowHeight,
-        background: .standard,
+        background: .standardDark,
+        selectedBackground: .selected,
+        header: .standard,
+        footer: .standard
+    )
+    
+    static let sectionPlainLight = SectionStyle(
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
+        background: .standardLight,
         selectedBackground: .selected,
         header: .standard,
         footer: .standard
@@ -231,11 +278,21 @@ extension SectionStyle {
         footer: .standard
     )
 
-    static let sectionPlainLargeIcons = SectionStyle(
+    static let sectionPlainLargeIconsLight = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
         minRowHeight: SectionStyle.sectionPlainMinRowHeight,
-        background: .standardLargeIcons,
+        background: .standardLightLargeIcons,
+        selectedBackground: .selectedLargeIcons,
+        header: .standard,
+        footer: .standard
+    )
+    
+    static let sectionPlainLargeIconsDark = SectionStyle(
+        rowInsets: SectionStyle.sectionPlainRowInsets,
+        itemSpacing: SectionStyle.sectionPlainItemSpacing,
+        minRowHeight: SectionStyle.sectionPlainMinRowHeight,
+        background: .standardDarkLargeIcons,
         selectedBackground: .selectedLargeIcons,
         header: .standard,
         footer: .standard
@@ -254,10 +311,10 @@ extension SectionStyle {
 
 extension DynamicSectionStyle {
     static let sectionPlain = DynamicSectionStyle { trait -> SectionStyle in
-        trait.isPad ? .sectionPlainRoundedBorder : .sectionPlain
+        trait.userInterfaceStyle == .dark ? .sectionPlainDark : .sectionPlainLight
     }
 
     static let sectionPlainLargeIcons = DynamicSectionStyle { trait -> SectionStyle in
-        trait.isPad ? .sectionPlainLargeIconsRoundedBorder : .sectionPlainLargeIcons
+        trait.userInterfaceStyle == .dark ? .sectionPlainLargeIconsDark : .sectionPlainLargeIconsLight
     }
 }
