@@ -113,15 +113,6 @@ extension LoggedIn: Presentable {
 
         bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)
-        
-        bag += Signal(after: 1).onValue({ _ in
-            tabBarController.present(PostOnboarding(), style: .modally(
-                    presentationStyle: .formSheetOrOverFullscreen,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: true
-                ), options: [.defaults, .prefersNavigationBarHidden(true)]
-            )
-        })
 
         return (tabBarController, bag)
     }
