@@ -42,7 +42,7 @@ extension PerilCollection: Viewable {
         let collectionKit = CollectionKit<EmptySection, Peril>(
             table: Table(),
             layout: flowLayout,
-            bag: bag
+            holdIn: bag
         )
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in

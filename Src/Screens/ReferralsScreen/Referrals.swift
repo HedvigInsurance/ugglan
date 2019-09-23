@@ -193,7 +193,7 @@ extension Referrals: Presentable {
         bag += scrollView.add(button) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
-                    viewController.bottomLayoutGuide.snp.bottom
+                    scrollView.safeAreaLayoutGuide.snp.bottom
                 ).inset(20)
                 make.centerX.equalToSuperview()
             }

@@ -36,7 +36,7 @@ extension ReferralsInvitationsTable: Viewable {
         let tableKit = TableKit<String, InvitationsListRow>(
             table: Table<String, InvitationsListRow>.init(),
             style: tableStyle,
-            bag: bag,
+            holdIn: bag,
             headerForSection: { _, title in
                 let headerStackView = UIStackView()
                 headerStackView.edgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 0)

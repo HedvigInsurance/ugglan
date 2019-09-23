@@ -414,8 +414,6 @@ extension Message: Reusable {
                     style: TextStyle.chatBody.colored(messageTextColor)
                 )
                 bag += contentContainer.addArranged(label)
-            default:
-                break
             }
 
             if !message.type.isRichType {

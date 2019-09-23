@@ -47,7 +47,7 @@ extension CollectionKit {
         bag: DisposeBag,
         cellForRow: T
     ) where T.Row == Row {
-        self.init(table: table, layout: layout, bag: bag) { (collectionView, row: Row, index) -> UICollectionViewCell in
+        self.init(table: table, layout: layout, holdIn: bag) { (collectionView, row: Row, index) -> UICollectionViewCell in
             cellForRow.cellForRow(
                 collectionView: collectionView,
                 row: row,

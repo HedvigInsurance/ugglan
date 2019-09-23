@@ -7,8 +7,16 @@ query Dashboard {
         status
         type
         activeFrom
-        perilCategories {
-            ...PerilCategoryFragment
+        arrangedPerilCategories {
+            stuff {
+                ...PerilCategoryFragment
+            }
+            home {
+                ...PerilCategoryFragment
+            }
+            me {
+                ...PerilCategoryFragment
+            }
         }
     }
     member {

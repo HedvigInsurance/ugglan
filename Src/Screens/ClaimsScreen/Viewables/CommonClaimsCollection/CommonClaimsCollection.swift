@@ -35,7 +35,7 @@ extension CommonClaimsCollection: Viewable {
 
         let collectionKit = CollectionKit<EmptySection, CommonClaimCard>(
             layout: layout,
-            bag: bag
+            holdIn: bag
         )
         collectionKit.view.clipsToBounds = false
         collectionKit.view.backgroundColor = .primaryBackground

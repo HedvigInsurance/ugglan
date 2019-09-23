@@ -53,14 +53,37 @@ extension MyProtectionSection: Viewable {
         perilCategoriesStack.axis = .vertical
         stackView.addArrangedSubview(perilCategoriesStack)
 
-        bag += dataSignal.atOnce().compactMap { $0?.perilCategories }.onValue { perilCategories in
+        bag += dataSignal.atOnce().compactMap { $0?.arrangedPerilCategories }.onValue { perilCategories in
             perilCategoriesStack.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-
-            for (index, perilCategory) in perilCategories.enumerated() {
-                let protectionSection = PerilExpandableRow(index: index, presentingViewController: self.presentingViewController)
-                protectionSection.perilsDataSignal.value = perilCategory?.fragments.perilCategoryFragment
+            
+            if let home = perilCategories.home {
+                let protectionSection = PerilExpandableRow(
+                    perilsCategory: .home,
+                    presentingViewController: self.presentingViewController
+                )
+                protectionSection.perilsDataSignal.value = home.fragments.perilCategoryFragment
+                bag += perilCategoriesStack.addArranged(protectionSection)
+                bag += perilCategoriesStack.addArranged(rowSpacing)
+            }
+            
+            if let me = perilCategories.me {
+                let protectionSection = PerilExpandableRow(
+                    perilsCategory: .me,
+                    presentingViewController: self.presentingViewController
+                )
+                protectionSection.perilsDataSignal.value = me.fragments.perilCategoryFragment
+                bag += perilCategoriesStack.addArranged(protectionSection)
+                bag += perilCategoriesStack.addArranged(rowSpacing)
+            }
+            
+            if let stuff = perilCategories.stuff {
+                let protectionSection = PerilExpandableRow(
+                    perilsCategory: .stuff,
+                    presentingViewController: self.presentingViewController
+                )
+                protectionSection.perilsDataSignal.value = stuff.fragments.perilCategoryFragment
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)
             }

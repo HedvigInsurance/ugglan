@@ -106,7 +106,7 @@ extension EmergencyActions: Viewable {
 
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 
-        let tableKit = TableKit<EmptySection, EmergencyAction>(style: style, bag: bag)
+        let tableKit = TableKit<EmptySection, EmergencyAction>(style: style, holdIn: bag)
         tableKit.view.isScrollEnabled = false
 
         bag += tableKit.delegate.willDisplayCell.onValue { cell, indexPath in

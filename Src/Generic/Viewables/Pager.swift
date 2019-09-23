@@ -61,7 +61,7 @@ extension Pager: Viewable {
         let collectionKit = CollectionKit<EmptySection, PagerScreen>(
             table: Table(),
             layout: flowLayout,
-            bag: bag
+            holdIn: bag
         )
 
         collectionKit.view.backgroundColor = .transparent

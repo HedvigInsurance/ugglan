@@ -29,8 +29,6 @@ extension Notification {
             let beginFrame = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect ?? CGRect.zero
             let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? CGRect.zero
 
-            let safeAreaBottom: CGFloat = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
-
             return KeyboardInfo(
                 height: keyboardHeight,
                 animationDuration: duration,

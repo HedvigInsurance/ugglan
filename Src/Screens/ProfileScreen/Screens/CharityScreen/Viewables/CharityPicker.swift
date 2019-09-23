@@ -54,7 +54,7 @@ extension CharityPicker: Viewable {
         let tableKit = TableKit<EmptySection, CharityOption>(
             table: table,
             style: style,
-            bag: bag,
+            holdIn: bag,
             headerForSection: { _, _ in
                 let headerStackView = UIStackView()
                 headerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)

@@ -11,28 +11,24 @@ import Foundation
 
 struct PerilExpandableRow {
     let perilsDataSignal: ReadWriteSignal<PerilCategoryFragment?> = ReadWriteSignal(nil)
-    let index: Int
+    let perilsCategory: PerilsCategory
     let presentingViewController: UIViewController
-
-    init(index: Int, presentingViewController: UIViewController) {
-        self.index = index
-        self.presentingViewController = presentingViewController
-    }
-}
-
-enum PerilCategoryIcon: Int {
-    case coinsured = 0
-    case home = 1
-    case items = 2
-}
-
-extension PerilCategoryIcon {
-    var image: ImageAsset {
-        switch self {
-        case .coinsured: return Asset.coinsuredPlain
-        case .home: return Asset.homePlain
-        case .items: return Asset.itemsPlain
+    
+    enum PerilsCategory {
+        case home, me, stuff
+        
+        var image: ImageAsset {
+            switch self {
+            case .me: return Asset.coinsuredPlain
+            case .home: return Asset.homePlain
+            case .stuff: return Asset.itemsPlain
+            }
         }
+    }
+
+    init(perilsCategory: PerilsCategory, presentingViewController: UIViewController) {
+        self.perilsCategory = perilsCategory
+        self.presentingViewController = presentingViewController
     }
 }
 
@@ -52,11 +48,7 @@ extension PerilExpandableRow: Viewable {
             .map { $0!.description! }
             .bindTo(contentView.subtitleSignal)
 
-        if let imageAsset = PerilCategoryIcon(rawValue: index)?.image {
-            contentView.imageSignal.value = imageAsset
-        } else {
-            contentView.imageSignal.value = Asset.moreInfoPlain
-        }
+        contentView.imageSignal.value = perilsCategory.image
 
         let expandedContentView = PerilCollection(presentingViewController: presentingViewController)
         bag += perilsDataSignal.atOnce()

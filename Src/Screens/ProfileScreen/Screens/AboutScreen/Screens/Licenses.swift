@@ -56,7 +56,7 @@ extension Licenses: Presentable {
         let tableKit = TableKit<EmptySection, Acknow>(
             table: Table(),
             style: .grouped,
-            bag: bag
+            holdIn: bag
         )
 
         tableKit.set(
