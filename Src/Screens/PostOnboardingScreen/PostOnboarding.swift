@@ -109,7 +109,12 @@ extension PostOnboarding: Presentable {
         bag += viewController.install(collectionKit)
         
         func presentLoggedIn() {
-            viewController.present(LoggedIn(didSign: true), options: [])
+            if let modalViewController = viewController.presentingViewController {
+                viewController.dismiss(animated: true, completion: nil)
+                modalViewController.present(LoggedIn(didSign: true), options: [])
+            } else {
+                viewController.present(LoggedIn(didSign: true), options: [])
+            }
         }
         
         bag += self.client.isSwitchingInsurance.onValue { isSwitching in
@@ -118,7 +123,11 @@ extension PostOnboarding: Presentable {
                 case .payment:
                     viewController.present(
                         DirectDebitSetup(setupType: .postOnboarding),
-                        style: .modal
+                        style: .modally(
+                            presentationStyle: .formSheet,
+                            transitionStyle: nil,
+                            capturesStatusBarAppearance: true
+                        )
                     ).onValue { _ in
                         collectionKit.scrollToNextItem()
                     }

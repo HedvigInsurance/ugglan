@@ -75,7 +75,7 @@ extension Offer {
                 presentationOptions: [.prefersNavigationBarHidden(true)]
             )
             viewController.present(overlay).onValue { _ in
-                viewController.present(PostOnboarding())
+                viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
             }
         }
 

@@ -113,7 +113,7 @@ extension LoggedIn: Presentable {
 
         bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)
-
+    
         return (tabBarController, bag)
     }
 }
