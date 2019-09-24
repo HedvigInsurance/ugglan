@@ -230,6 +230,7 @@ enum ButtonType {
 struct Button {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
+    private let id = UUID()
     let title: ReadWriteSignal<String>
     let onTapSignal: Signal<Void>
     let type: ReadWriteSignal<ButtonType>
@@ -240,6 +241,12 @@ struct Button {
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = ReadWriteSignal<ButtonType>(type)
         self.animate = animate
+    }
+}
+
+extension Button: Equatable {
+    static func ==(lhs: Button, rhs: Button) -> Bool {
+        lhs.id == rhs.id
     }
 }
 

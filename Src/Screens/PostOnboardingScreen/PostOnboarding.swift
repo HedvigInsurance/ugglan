@@ -14,7 +14,7 @@ import Apollo
 
 struct PostOnboarding {
     let client: ApolloClient
-    typealias Content = ReusableViewable<ImageTextAction, Button>
+    typealias Content = ReusableViewable<ImageTextAction<TableAction>, TableAction>
     
     init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
@@ -39,13 +39,13 @@ struct PostOnboarding {
             onAction(.payment)
         }
         
-        let payment = ImageTextAction(
+        let payment = ImageTextAction<TableAction>(
             image: Asset.paymentSetupIllustration.image,
             title: String(key: .ONBOARDING_CONNECT_DD_HEADLINE),
             body: isSwitching ?
                 String(key: .ONBOARDING_CONNECT_DD_BODY_SWITCHERS) :
                 String(key: .ONBOARDING_CONNECT_DD_BODY),
-            actions: [paymentButton],
+            actions: [(.payment, paymentButton)],
             showLogo: false
         )
         
@@ -67,13 +67,13 @@ struct PostOnboarding {
             onAction(.pushSkip)
         }
         
-        let pushNotifications = ImageTextAction(
+        let pushNotifications = ImageTextAction<TableAction>(
             image: Asset.activatePushNotificationsIllustration.image,
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_HEADLINE),
             body: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_BODY),
             actions: [
-                pushNotificationsDoButton,
-                pushNotificationsSkipButton
+                (.push, pushNotificationsDoButton),
+                (.pushSkip, pushNotificationsSkipButton)
             ],
             showLogo: false
         )

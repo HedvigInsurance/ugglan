@@ -10,16 +10,16 @@ import UIKit
 import Flow
 import Form
 
-struct ImageTextAction {
+struct ImageTextAction<ActionResult> {
     let image: UIImage
     let title: String
     let body: String
-    let actions: [Button]
+    let actions: [(ActionResult, Button)]
     let showLogo: Bool
 }
 
 extension ImageTextAction: Viewable {
-    func materialize(events: ViewableEvents) -> (UIScrollView, Signal<Button>) {
+    func materialize(events: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .primaryBackground
@@ -119,16 +119,16 @@ extension ImageTextAction: Viewable {
         containerView.addArrangedSubview(view)
         
         return (scrollView, Signal { callback in
-            bag += self.actions.map { button in
+            bag += self.actions.map { _, button in
                 buttonsContainer.addArranged(button.wrappedIn(UIStackView())) { stackView in
                     stackView.axis = .vertical
                     stackView.alignment = .center
                 }
             }
             
-            bag += self.actions.map { button in
+            bag += self.actions.map { result, button in
                 button.onTapSignal.onValue { _ in
-                    callback(button)
+                    callback(result)
                 }
             }
             

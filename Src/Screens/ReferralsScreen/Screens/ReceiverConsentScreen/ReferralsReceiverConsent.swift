@@ -32,14 +32,27 @@ extension ReferralsReceiverConsent: Presentable {
 
         let view = UIView()
         view.backgroundColor = .secondaryBackground
+        
+        let acceptDiscountButton = Button(
+            title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+        )
 
-        let content = ReferralsReceiverConsentContent()
-
-        bag += view.add(content) { view in
-            view.snp.makeConstraints { make in
-                make.top.bottom.trailing.leading.equalToSuperview()
-            }
-        }
+        let declineButton = Button(
+            title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
+            type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack)
+        )
+        
+        let content = ImageTextAction<ReferralsReceiverConsentResult>(
+            image: Asset.inviteSuccess.image,
+            title: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
+            body: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
+            actions: [
+                (.accept, acceptDiscountButton),
+                (.decline, declineButton)
+            ],
+            showLogo: true
+        )
 
         bag += view.didMoveToWindowSignal.onValue { _ in
             UIApplication.shared.keyWindow?.endEditing(true)
@@ -48,26 +61,31 @@ extension ReferralsReceiverConsent: Presentable {
         viewController.view = view
 
         return (viewController, Future { completion in
-            bag += content.didTapDecline.onValue { _ in
-                completion(.success(.decline))
-            }
-
-            bag += content
-                .didTapAccept
-                .mapLatestToFuture { self.client.perform(mutation: RedeemCodeMutation(code: self.referralCode)) }
-                .onValue { result in
-                    if result.errors != nil {
-                        let alert = Alert(
-                            title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
-                            message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
-                            actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
-                        )
-
-                        viewController.present(alert)
-                    } else {
-                        completion(.success(.accept))
-                    }
+            bag += view.add(content) { view in
+                view.snp.makeConstraints { make in
+                    make.top.bottom.trailing.leading.equalToSuperview()
                 }
+            }.onValue({ result in
+                switch result {
+                case .accept:
+                    self.client.perform(mutation: RedeemCodeMutation(code: self.referralCode))
+                        .onValue { result in
+                            if result.errors != nil {
+                                let alert = Alert(
+                                    title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
+                                    message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
+                                    actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
+                                )
+
+                                viewController.present(alert)
+                            } else {
+                                completion(.success(.accept))
+                            }
+                    }
+                case .decline:
+                    completion(.success(.decline))
+                }
+            })
 
             return DelayedDisposer(bag, delay: 2)
         })
