@@ -28,38 +28,43 @@ extension ReferralsNotification: Presentable {
         let bag = DisposeBag()
         let viewController = LightContentViewController()
         
-        let backgroundColor = UIColor(dynamic: { trait in
-            trait.userInterfaceStyle == .dark ? .secondaryBackground : .darkPurple
-        })
-
         let view = UIView()
-        view.backgroundColor = backgroundColor
-
-        let progressed = ReferralsNotificationProgressed(
-            incentive: incentive,
-            name: name,
-            backgroundColor: backgroundColor
+        view.backgroundColor = .primaryBackground
+        
+        viewController.view = view
+        
+        let openReferralsButton = Button(
+            title: String(key: .REFERRAL_SUCCESS_BTN_CTA),
+            type: .standard(backgroundColor: .purple, textColor: .white)
         )
-
-        bag += view.add(progressed) { view in
-            view.snp.makeConstraints { make in
-                make.top.bottom.trailing.leading.equalToSuperview()
-            }
-        }
+        
+        let closeButton = Button(
+            title: String(key: .REFERRAL_SUCCESS_BTN_CLOSE),
+            type: .pillSemiTransparent(backgroundColor: .blackPurple, textColor: .white)
+        )
+        
+        let content = ImageTextAction<ReferralsNotificationResult>(
+            image: Asset.inviteSuccess.image,
+            title: String(key: .REFERRAL_SUCCESS_HEADLINE(user: name)),
+            body: String(key: .REFERRAL_SUCCESS_BODY(referralValue: String(incentive))),
+            actions: [
+                (.openReferrals, openReferralsButton),
+                (.cancel, closeButton)
+            ],
+            showLogo: true
+        )
 
         bag += view.didMoveToWindowSignal.onValue { _ in
             UIApplication.shared.keyWindow?.endEditing(true)
         }
 
-        viewController.view = view
-
         return (viewController, Future { completion in
-            bag += progressed.didTapCancel.onValue { _ in
-                completion(.success(.cancel))
-            }
-
-            bag += progressed.didTapOpenReferrals.onValue { _ in
-                completion(.success(.openReferrals))
+            bag += view.add(content) { view in
+                view.snp.makeConstraints { make in
+                    make.top.bottom.trailing.leading.equalToSuperview()
+                }
+            }.onValue { result in
+                completion(.success(result))
             }
 
             return DelayedDisposer(bag, delay: 2)
