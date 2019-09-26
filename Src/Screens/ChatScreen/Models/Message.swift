@@ -30,6 +30,8 @@ struct Message: Equatable, Hashable {
     let keyboardType: UIKeyboardType?
     let richTextCompatible: Bool
     let timeStamp: TimeInterval
+    
+    private let cachedComputedProperties: CachedComputedProperties?
 
     let listSignal: ReadSignal<[ChatListContent]>?
     let editingDisabledSignal = ReadWriteSignal<Bool>(false)
@@ -103,87 +105,95 @@ struct Message: Equatable, Hashable {
     }
 
     var shouldShowEditButton: Bool {
-        if richTextCompatible {
-            return false
-        }
-
-        if editingDisabledSignal.value {
-            return false
-        }
-
-        if !fromMyself {
-            return false
-        }
-
-        guard let list = listSignal?.value else {
-            return false
-        }
-
-        guard let myIndex = list.firstIndex(of: .left(self)) else {
-            return false
-        }
-        guard let indexOfFirstMyself = list.firstIndex(where: { message -> Bool in
-            guard let left = message.left else {
+        return cachedComputedProperties?.compute("shouldShowEditButton", { () -> Bool in
+            if self.richTextCompatible {
                 return false
             }
 
-            return left.fromMyself == true
-        }) else {
-            return false
-        }
+            if self.editingDisabledSignal.value {
+                return false
+            }
 
-        return myIndex <= indexOfFirstMyself
+            if !self.fromMyself {
+                return false
+            }
+
+            guard let list = self.listSignal?.value else {
+                return false
+            }
+
+            guard let myIndex = list.firstIndex(of: .left(self)) else {
+                return false
+            }
+            guard let indexOfFirstMyself = list.firstIndex(where: { message -> Bool in
+                guard let left = message.left else {
+                    return false
+                }
+
+                return left.fromMyself == true
+            }) else {
+                return false
+            }
+
+            return myIndex <= indexOfFirstMyself
+        }) ?? false
     }
 
     var hasTypingIndicatorNext: Bool {
-        guard let list = listSignal?.value else {
-            return false
-        }
+        return cachedComputedProperties?.compute("hasTypingIndicatorNext", { () -> Bool in
+            guard let list = self.listSignal?.value else {
+                return false
+            }
 
-        guard let myIndex = list.firstIndex(of: .left(self)) else {
-            return false
-        }
-        let nextIndex = myIndex - 1
+            guard let myIndex = list.firstIndex(of: .left(self)) else {
+                return false
+            }
+            let nextIndex = myIndex - 1
 
-        if !list.indices.contains(nextIndex) {
-            return false
-        }
+            if !list.indices.contains(nextIndex) {
+                return false
+            }
 
-        return list[nextIndex].right != nil
+            return list[nextIndex].right != nil
+        }) ?? false
     }
 
     var next: Message? {
-        guard let list = listSignal?.value else {
-            return nil
-        }
+        return cachedComputedProperties?.compute("next", { () -> Message? in
+            guard let list = self.listSignal?.value else {
+                return nil
+            }
 
-        guard let myIndex = list.firstIndex(of: .left(self)) else {
-            return nil
-        }
-        let nextIndex = myIndex - 1
+            guard let myIndex = list.firstIndex(of: .left(self)) else {
+                return nil
+            }
+            let nextIndex = myIndex - 1
 
-        if !list.indices.contains(nextIndex) {
-            return nil
-        }
+            if !list.indices.contains(nextIndex) {
+                return nil
+            }
 
-        return list[nextIndex].left
+            return list[nextIndex].left
+        }) ?? nil
     }
 
     var previous: Message? {
-        guard let list = listSignal?.value else {
-            return nil
-        }
+        return cachedComputedProperties?.compute("previous", { () -> Message? in
+            guard let list = self.listSignal?.value else {
+                return nil
+            }
 
-        guard let myIndex = list.firstIndex(of: .left(self)) else {
-            return nil
-        }
-        let previousIndex = myIndex + 1
+            guard let myIndex = list.firstIndex(of: .left(self)) else {
+                return nil
+            }
+            let previousIndex = myIndex + 1
 
-        if !list.indices.contains(previousIndex) {
-            return nil
-        }
+            if !list.indices.contains(previousIndex) {
+                return nil
+            }
 
-        return list[previousIndex].left
+            return list[previousIndex].left
+        }) ?? nil
     }
 
     enum Radius {
@@ -260,6 +270,7 @@ struct Message: Equatable, Hashable {
         richTextCompatible = message.richTextCompatible
         type = message.type
         timeStamp = message.timeStamp
+        cachedComputedProperties = message.cachedComputedProperties
     }
 
     init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -275,12 +286,24 @@ struct Message: Equatable, Hashable {
         richTextCompatible = message.richTextCompatible
         type = message.type
         timeStamp = message.timeStamp
+        
+        if let listSignal = listSignal {
+            self.cachedComputedProperties = message.cachedComputedProperties
+        } else {
+            self.cachedComputedProperties = nil
+        }
     }
 
     init(from message: MessageData, listSignal: ReadSignal<[ChatListContent]>?) {
         globalId = message.globalId
         id = message.id
         richTextCompatible = message.header.richTextChatCompatible
+        
+        if let listSignal = listSignal {
+            self.cachedComputedProperties = CachedComputedProperties(listSignal.toVoid().plain())
+        } else {
+            self.cachedComputedProperties = nil
+        }
 
         if let singleSelect = message.body.asMessageBodySingleSelect {
             body = singleSelect.text
