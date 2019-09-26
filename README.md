@@ -1,8 +1,6 @@
 # ugglan [![Build Status](https://app.bitrise.io/app/99ca525f2bb31deb/status.svg?token=Jdifn0M6-BB_sCWW3lzYdQ&branch=master)](https://app.bitrise.io/app/99ca525f2bb31deb)
 
-🦉The next iOS for Hedvig
-
-This is the main repository for the up and coming iOS app for Hedvig, this repository will eventually replace [app](https://github.com/HedvigInsurance/app).
+🦉Hedvig's nice insurance app for iOS
 
 ## Run the app
 
