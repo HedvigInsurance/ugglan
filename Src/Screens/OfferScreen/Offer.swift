@@ -75,6 +75,7 @@ extension Offer {
                 presentationOptions: [.prefersNavigationBarHidden(true)]
             )
             viewController.present(overlay).onValue { _ in
+                AnalyticsCoordinator.logEcommercePurchase()
                 viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
             }
         }
