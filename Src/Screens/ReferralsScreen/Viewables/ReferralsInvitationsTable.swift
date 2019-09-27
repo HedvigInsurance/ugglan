@@ -28,9 +28,18 @@ extension ReferralsInvitationsTable: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
 
-        let tableStyle = DynamicTableViewFormStyle.grouped.restyled { (style: inout TableViewFormStyle) in
-            style.section.minRowHeight = 72
-            style.section.background = UIScreen.main.traitCollection.isPad ? SectionStyle.Background.standardLargeIconsRoundedBorder : SectionStyle.Background.standardDarkLargeIcons
+        let tableStyle = DynamicTableViewFormStyle.grouped.restyledWithStyleAndInput { (style: inout TableViewFormStyle, trait) in
+             style.section.minRowHeight = 72
+            
+            if trait.isPad {
+                style.section.background = trait.userInterfaceStyle == .dark ?
+                    SectionStyle.Background.standardDarkLargeIconsRoundedBorder :
+                    SectionStyle.Background.standardLightLargeIconsRoundedBorder
+            } else {
+                style.section.background = trait.userInterfaceStyle == .dark ?
+                SectionStyle.Background.standardDarkLargeIcons :
+                SectionStyle.Background.standardLightLargeIcons
+            }
         }
 
         let tableKit = TableKit<String, InvitationsListRow>(

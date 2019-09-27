@@ -41,12 +41,30 @@ extension ButtonSection: Viewable {
         bag += isHiddenSignal.bindTo(section, \.isHidden)
 
         section.dynamicStyle = DynamicSectionStyle { trait -> SectionStyle in
-            
-            
-            
-            (trait.userInterfaceStyle == .dark ? SectionStyle.sectionPlainDark : SectionStyle.sectionPlainLight).restyled { (style: inout SectionStyle) in
+            let lightStyle = SectionStyle.sectionPlainLight.restyled { (style: inout SectionStyle) in
                 if trait.isPad {
-                    style.background = .standardRoundedBorder
+                    style.background = .standardLightRoundedBorder
+
+                    if self.style == .normal {
+                        style.selectedBackground = .selectedRoundedBorder
+                    } else {
+                        style.selectedBackground = .selectedDangerRoundedBorder
+                    }
+                } else {
+                    style.background = .standardLight
+                    style.selectedBackground = .selectedDanger
+
+                    if self.style == .normal {
+                        style.selectedBackground = .selectedRoundedBorder
+                    } else {
+                        style.selectedBackground = .selectedDangerRoundedBorder
+                    }
+                }
+            }
+            
+            let darkStyle = SectionStyle.sectionPlainDark.restyled { (style: inout SectionStyle) in
+                if trait.isPad {
+                    style.background = .standardDarkRoundedBorder
 
                     if self.style == .normal {
                         style.selectedBackground = .selectedRoundedBorder
@@ -64,6 +82,9 @@ extension ButtonSection: Viewable {
                     }
                 }
             }
+            
+            
+            return trait.userInterfaceStyle == .dark ? darkStyle : lightStyle
         }
 
         let buttonRow = ButtonRow(
