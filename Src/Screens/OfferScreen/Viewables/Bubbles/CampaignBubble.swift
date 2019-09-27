@@ -23,9 +23,11 @@ extension CampaignBubble: Viewable {
         let bag = DisposeBag()
         let containerView = UIView()
         containerView.backgroundColor = .pink
-        containerView.layer.shadowOpacity = 0.2
-        containerView.layer.shadowColor = UIColor.black.cgColor
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        
+        bag += containerView.applyShadow({ trait in
+            OfferBubble.shadow
+        })
+        
         containerView.snp.makeConstraints { make in
             make.width.height.equalTo(100)
         }

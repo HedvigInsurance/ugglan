@@ -120,11 +120,16 @@ extension CharityOption: Reusable {
 
                 containerView.layer.masksToBounds = false
                 containerView.layer.cornerRadius = 8
-                containerView.layer.shadowOpacity = 1
-                containerView.layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
-                containerView.layer.shadowOffset = CGSize(width: 0, height: 10)
-                containerView.layer.shadowRadius = 8
-                containerView.layer.shadowPath = shadowPath.cgPath
+                
+                bag += containerView.applyShadow { _ in
+                    UIView.ShadowProperties(
+                        opacity: 0.08,
+                        offset: CGSize(width: 0, height: 10),
+                        radius: 8,
+                        color: UIColor.primaryShadowColor,
+                        path: shadowPath.cgPath
+                    )
+                }
             }
 
             return bag

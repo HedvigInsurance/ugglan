@@ -30,10 +30,15 @@ extension MessageBubble: Viewable {
         containerStackView.isHidden = true
 
         let stylingView = UIView()
-        stylingView.layer.shadowOpacity = 0.05
-        stylingView.layer.shadowOffset = CGSize(width: 0, height: 6)
-        stylingView.layer.shadowRadius = 8
-        stylingView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
+        bag += stylingView.applyShadow { _ in
+            UIView.ShadowProperties(
+                opacity: 0.05,
+                offset: CGSize(width: 0, height: 6),
+                radius: 8,
+                color: UIColor.primaryShadowColor,
+                path: nil
+            )
+        }
         stylingView.alpha = 0
 
         let containerView = UIStackView()

@@ -24,10 +24,6 @@ extension BulletPointCard: Reusable {
         let cardContainer = UIView()
         cardContainer.backgroundColor = .secondaryBackground
         cardContainer.layer.cornerRadius = 8
-        cardContainer.layer.shadowOffset = CGSize(width: 0, height: 16)
-        cardContainer.layer.shadowRadius = 30
-        cardContainer.layer.shadowColor = UIColor.black.cgColor
-        cardContainer.layer.shadowOpacity = 0.05
 
         view.addArrangedSubview(cardContainer)
 
@@ -54,6 +50,16 @@ extension BulletPointCard: Reusable {
 
         return (view, { bulletPointCard in
             let bag = DisposeBag()
+            
+            bag += cardContainer.applyShadow({ _ -> UIView.ShadowProperties in
+                UIView.ShadowProperties.init(
+                    opacity: 0.05,
+                    offset: CGSize(width: 0, height: 16),
+                    radius: 30,
+                    color: .primaryShadowColor,
+                    path: nil
+                )
+            })
 
             bag += contentView.addArranged(descriptionLabel)
 

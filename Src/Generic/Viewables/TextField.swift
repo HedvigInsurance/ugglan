@@ -32,8 +32,10 @@ extension TextField: Viewable {
             make.height.equalTo(40)
         }
 
-        view.layer.borderWidth = 1 / UIScreen.main.scale
-        view.layer.borderColor = view.traitCollection.userInterfaceStyle == .dark ? UIColor.offBlack.cgColor : UIColor.lightGray.cgColor
+        view.layer.borderWidth = UIScreen.main.hairlineWidth
+        bag += view.applyBorderColor { trait in
+            trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
+        }
 
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = view.frame.height / 2

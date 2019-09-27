@@ -16,7 +16,9 @@ struct PickerButton: Viewable {
         let bag = DisposeBag()
         let button = UIControl()
         button.backgroundColor = .secondaryBackground
-        button.layer.borderColor = UIColor.primaryBorder.cgColor
+        bag += button.applyBorderColor { _ in
+            .primaryBorder
+        }
         button.layer.borderWidth = UIScreen.main.hairlineWidth
         button.layer.cornerRadius = 5
 

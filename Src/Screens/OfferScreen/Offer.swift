@@ -235,10 +235,15 @@ extension Offer: Presentable {
         }
 
         bag += view.add(button) { buttonView in
-            buttonView.layer.shadowOffset = CGSize(width: 0, height: 2)
-            buttonView.layer.shadowRadius = 5
-            buttonView.layer.shadowColor = UIColor.black.cgColor
-            buttonView.layer.shadowOpacity = 0.1
+            bag += buttonView.applyShadow({ _ in
+                UIView.ShadowProperties(
+                    opacity: 0.1,
+                    offset: CGSize(width: 0, height: 2),
+                    radius: 5,
+                    color: UIColor.primaryShadowColor,
+                    path: nil
+                )
+            })
 
             buttonView.snp.makeConstraints({ make in
                 make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).priority(.high)

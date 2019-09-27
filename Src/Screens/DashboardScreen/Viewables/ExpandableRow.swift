@@ -47,10 +47,15 @@ extension ExpandableRow: Viewable {
         if !transparent {
             containerView.backgroundColor = .secondaryBackground
             containerView.layer.cornerRadius = 15
-            containerView.layer.shadowOpacity = 0.15
-            containerView.layer.shadowOffset = CGSize(width: 0, height: 6)
-            containerView.layer.shadowRadius = 8
-            containerView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
+            bag += containerView.applyShadow({ _ -> UIView.ShadowProperties in
+                UIView.ShadowProperties(
+                    opacity: 0.15,
+                    offset: CGSize(width: 0, height: 6),
+                    radius: 8,
+                    color: UIColor.primaryShadowColor,
+                    path: nil
+                )
+            })
         } else {
             containerView.backgroundColor = .transparent
         }

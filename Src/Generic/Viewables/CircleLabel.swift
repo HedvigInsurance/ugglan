@@ -41,10 +41,16 @@ extension CircleLabel: Viewable {
 
         let labelContainer = UIView()
         labelContainer.backgroundColor = backgroundColor
-        labelContainer.layer.shadowOpacity = 0.2
-        labelContainer.layer.shadowOffset = CGSize(width: 10, height: 10)
-        labelContainer.layer.shadowRadius = 16
-        labelContainer.layer.shadowColor = UIColor.primaryShadowColor.cgColor
+        
+        bag += labelContainer.applyShadow { _ in
+            UIView.ShadowProperties(
+                opacity: 0.2,
+                offset: CGSize(width: 10, height: 10),
+                radius: 16,
+                color: UIColor.primaryShadowColor,
+                path: nil
+            )
+        }
 
         labelContainer.addSubview(label)
 

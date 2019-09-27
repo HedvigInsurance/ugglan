@@ -66,10 +66,15 @@ extension Toast: Viewable {
         let containerView = UIView()
 
         containerView.backgroundColor = backgroundColor
-        containerView.layer.shadowOpacity = 0.15
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        containerView.layer.shadowRadius = 10
-        containerView.layer.shadowColor = UIColor.darkGray.cgColor
+        bag += containerView.applyShadow { trait in
+            UIView.ShadowProperties(
+                opacity: trait.userInterfaceStyle == .dark ? 0 : 0.15,
+                offset: CGSize(width: 0, height: 0),
+                radius: 10,
+                color: UIColor.darkGray,
+                path: nil
+            )
+        }
 
         bag += containerView.didLayoutSignal.onValue {
             containerView.layer.cornerRadius = containerView.frame.height

@@ -20,10 +20,15 @@ extension OfferCoverageHeader: Viewable {
         let bag = DisposeBag()
 
         bag += stackView.addArranged(Blob(color: .secondaryBackground, position: .top)) { view in
-            view.layer.shadowColor = UIColor.black.cgColor
-            view.layer.shadowOpacity = 0.1
-            view.layer.shadowOffset = CGSize(width: 0, height: 0)
-            view.layer.shadowRadius = 20
+            bag += view.applyShadow({ _ in
+                UIView.ShadowProperties(
+                    opacity: 0.1,
+                    offset: CGSize(width: 0, height: 0),
+                    radius: 20,
+                    color: .primaryShadowColor,
+                    path: nil
+                )
+            })
         }
 
         let labelContainer = UIView()

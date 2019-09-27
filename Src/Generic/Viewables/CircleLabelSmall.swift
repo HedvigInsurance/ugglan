@@ -39,11 +39,17 @@ extension CircleLabelSmall: Viewable {
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = textColor
         bag += titleLabel.setDynamicText(labelText)
+        
+        bag += circleView.applyShadow { _ in
+            UIView.ShadowProperties(
+                opacity: 0.2,
+                offset: CGSize(width: 10, height: 10),
+                radius: 16,
+                color: UIColor.primaryShadowColor,
+                path: nil
+            )
+        }
 
-        circleView.layer.shadowOpacity = 0.2
-        circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
-        circleView.layer.shadowRadius = 16
-        circleView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
         circleView.backgroundColor = backgroundColor
         titleLabel.textColor = .primaryText
 

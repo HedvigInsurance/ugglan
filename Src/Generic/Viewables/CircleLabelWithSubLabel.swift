@@ -50,11 +50,16 @@ extension CircleLabelWithSubLabel: Viewable {
         subLabel.textAlignment = .center
         subLabel.adjustsFontSizeToFitWidth = true
         bag += subLabel.setDynamicText(subLabelText)
-
-        circleView.layer.shadowOpacity = 0.2
-        circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
-        circleView.layer.shadowRadius = 16
-        circleView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
+        
+        bag += circleView.applyShadow { _ in
+            UIView.ShadowProperties(
+                opacity: 0.2,
+                offset: CGSize(width: 10, height: 10),
+                radius: 16,
+                color: .primaryShadowColor,
+                path: nil
+            )
+        }
 
         switch appearance {
         case .turquoise:

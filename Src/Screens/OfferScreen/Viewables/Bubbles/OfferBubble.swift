@@ -14,6 +14,14 @@ struct OfferBubble {
     let widthSignal: ReadWriteSignal<CGFloat>
     let heightSignal: ReadWriteSignal<CGFloat>
     let backgroundColorSignal: ReadWriteSignal<UIColor>
+    
+    static let shadow = UIView.ShadowProperties(
+        opacity: 0.2,
+        offset: CGSize(width: 0, height: 2),
+        radius: nil,
+        color: UIColor.primaryShadowColor,
+        path: nil
+    )
 
     init(content: UIView, width: CGFloat, height: CGFloat, backgroundColor: UIColor) {
         self.content = content
@@ -27,9 +35,10 @@ extension OfferBubble: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIView()
-        view.layer.shadowOpacity = 0.2
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        
+        bag += view.applyShadow({ trait in
+            OfferBubble.shadow
+        })
 
         bag += backgroundColorSignal.atOnce().bindTo(view, \.backgroundColor)
 

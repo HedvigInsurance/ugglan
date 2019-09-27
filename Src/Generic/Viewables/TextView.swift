@@ -80,8 +80,11 @@ extension TextView: Viewable {
             }
         })
 
-        view.layer.borderWidth = 1 / UIScreen.main.scale
-        view.layer.borderColor = UIColor.primaryBorder.cgColor
+        view.layer.borderWidth = UIScreen.main.hairlineWidth
+        bag += view.applyBorderColor { trait in
+            trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
+        }
+        
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = min(view.frame.height / 2, 20)
         }

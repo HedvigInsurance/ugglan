@@ -31,7 +31,9 @@ extension ReferralsCode: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.backgroundColor = .secondaryBackground
-        view.layer.borderColor = UIColor.primaryBorder.cgColor
+        bag += view.applyBorderColor { _ in
+            .primaryBorder
+        }
         view.layer.borderWidth = 1
 
         bag += view.didLayoutSignal.onValue { _ in
