@@ -114,6 +114,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
             guard let dynamicLinkUrl = link?.url else { return }
+                        
+            if dynamicLinkUrl.pathComponents.contains("direct-debit") {
+                guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
+                guard let rootViewController = self.window.rootViewController else { return }
+                
+                self.bag += rootViewController.present(
+                    DirectDebitSetup(setupType: .initial),
+                    style: .modal,
+                    options: [.defaults]
+                )
+                
+                return
+            }
+            
             guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
             guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
             
