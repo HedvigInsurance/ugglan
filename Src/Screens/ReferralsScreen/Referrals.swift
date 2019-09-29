@@ -201,7 +201,7 @@ extension Referrals: Presentable {
             
             bag += buttonView.applyShadow { _ in
                 UIView.ShadowProperties(
-                    opacity: 0.05,
+                    opacity: 0.5,
                     offset: CGSize(width: 0, height: 6),
                     radius: 8,
                     color: UIColor.primaryShadowColor,
