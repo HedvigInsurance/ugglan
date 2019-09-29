@@ -26,7 +26,6 @@ extension DefaultStyling {
             trait.userInterfaceStyle == .dark ? .white : .primaryTintColor
         })
 
-        UINavigationBar.appearance().backgroundColor = .primaryBackground
         UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
@@ -48,7 +47,7 @@ extension DefaultStyling {
         } else {
             UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
         }
-
+        
         UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
         UITabBar.appearance().unselectedItemTintColor = .disabledTintColor
