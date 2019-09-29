@@ -211,7 +211,6 @@ targets:
       DEVELOPMENT_TEAM: "AW656G5PFM"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
       TARGETED_DEVICE_FAMILY: "1,2"
-      ENABLE_BITCODE: "yes"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
