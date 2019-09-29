@@ -68,7 +68,7 @@ extension End: Viewable {
             }
         }
 
-        _ = stackView.didMoveToWindowSignal.delay(by: 0.1).animated(
+        bag += stackView.didMoveToWindowSignal.delay(by: 0.1).animated(
             style: AnimationStyle.easeOut(duration: 0.5)
         ) {
             stackView.alpha = 1
