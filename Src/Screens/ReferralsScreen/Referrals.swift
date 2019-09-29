@@ -190,14 +190,25 @@ extension Referrals: Presentable {
             initialLoadingState: true
         )
 
-        bag += scrollView.add(button) { buttonView in
+        bag += scrollView.add(button.wrappedIn(UIView())) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
                     scrollView.safeAreaLayoutGuide.snp.bottom
                 ).inset(20)
                 make.centerX.equalToSuperview()
+                make.height.equalTo(button.button.type.value.height)
             }
-
+            
+            bag += buttonView.applyShadow { _ in
+                UIView.ShadowProperties(
+                    opacity: 0.05,
+                    offset: CGSize(width: 0, height: 6),
+                    radius: 8,
+                    color: UIColor.primaryShadowColor,
+                    path: nil
+                )
+            }
+            
             bag += codeSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
 
             bag += button.onTapSignal.withLatestFrom(
