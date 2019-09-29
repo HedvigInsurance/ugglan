@@ -4,37 +4,37 @@
 
 ## Run the app
 
-1. Install XCode
+1. Install Xcode
 
-`get it from the Mac App Store`
+   `get it from the Mac App Store`
 
 2. Install Carthage
 
-`brew install carthage`
+   `brew install carthage`
 
 3. Install Struct
 
-`sudo gem install struct`
+   `sudo gem install struct`
 
 4. Install Swiftformat
 
-`brew install swiftformat`
+   `brew install swiftformat`
 
 5. Install Swiftgen
 
-`brew install swiftgen`
+   `brew install swiftgen`
 
 6. Install Swiftlint
 
-`brew install swiftlint`
+   `brew install swiftlint`
 
 7. Install dependencies
 
-`carthage update --platform iOS`
+   `carthage update --platform iOS`
 
 8. Install translations CLI
 
-`curl -o /usr/local/bin/swiftTranslationsCodegen "https://raw.githubusercontent.com/HedvigInsurance/swift-translations-codegen/master/main.swift?$(date +%s)" && chmod +x /usr/local/bin/swiftTranslationsCodegen`
+   `curl -o /usr/local/bin/swiftTranslationsCodegen "https://raw.githubusercontent.com/HedvigInsurance/swift-translations-codegen/master/main.swift?$(date +%s)" && chmod +x /usr/local/bin/swiftTranslationsCodegen`
 
 9. Add aliases to your bash/zsh config
 
@@ -46,30 +46,33 @@
 
 10. Install Apollo CLI
 
-`npm install -g apollo`
+   `npm install -g apollo`
 
 11. Run file generation scripts
 
-`graphqlSchema graphql translations assets`
+   `graphqlSchema graphql translations assets`
 
-12. Add Google Services plist
+12. Generate Xcode project
 
-`Obtain a Google Services plist from firebase and add it to the "Src" folder.`
+   `struct generate`
 
-13. Generate Xcode project
+13. Open the projext
 
-`struct generate`
+   `open test.xcodeproj`
 
-14. Open the projext
+14. run it!! 🏃🏻‍♂️
 
-`open project.xcodeproj`
+   `press cmd + r`
 
-15. run it!! 🏃🏻‍♂️
+## How to release
 
-`press cmd + r`
+1. Create a tag in Git with the name `RELEASE-\(versionNumber)`
+   if you want the release to have version `3.0.1` you for create a tag named `RELEASE-3.0.1`
 
-## Concepts
+2. Bitrise will create and upload the build to App Store connect
 
-### Viewables
+3. Create a GitHub release and add a description containing all commits included in the release, use the following command to retrieve the list:
 
-A viewable makes it possible to write isolated code that generates a structure of views following the component-principle.
+   `git log --pretty=oneline RELEASE-\(previousVersionNumber)...RELEASE-\(versionNumber)`
+   
+4. Submit the release to review in App Store connect as usual
