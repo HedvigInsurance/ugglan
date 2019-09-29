@@ -89,7 +89,7 @@ extension SignalProvider {
         let bag = DisposeBag()
 
         bag += onValueDisposePrevious(on: scheduler) { value in
-            let innerBag = bag.innerBag()
+            let innerBag = DisposeBag()
             let style = mapStyle(value)
             UIView.animate(
                 withDuration: style.duration,
@@ -118,7 +118,7 @@ extension SignalProvider {
         let bag = DisposeBag()
 
         bag += onValueDisposePrevious(on: scheduler) { value in
-            let innerBag = bag.innerBag()
+            let innerBag = DisposeBag()
             let style = mapStyle(value)
             UIView.animate(
                 withDuration: style.duration,
@@ -182,7 +182,7 @@ extension SignalProvider {
         let bag = DisposeBag()
 
         bag += onValueDisposePrevious(on: scheduler) { value in
-            let innerBag = bag.innerBag()
+            let innerBag = DisposeBag()
 
             UIView.animate(
                 withDuration: style.duration,
