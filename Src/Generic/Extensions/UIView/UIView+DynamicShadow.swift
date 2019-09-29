@@ -19,9 +19,9 @@ extension UIView {
     }
     
     func applyShadow(_ dynamic: @escaping (_ trait: UITraitCollection) -> ShadowProperties) -> Disposable {
-        return traitCollectionSignal.with(weak: self).onValue({ trait, `self` in
+        return traitCollectionSignal.atOnce().with(weak: self).onValue({ trait, `self` in
             let properties = dynamic(trait)
-            
+                        
             if let opacity = properties.opacity {
                self.layer.shadowOpacity = opacity
             }
