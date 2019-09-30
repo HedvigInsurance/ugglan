@@ -283,7 +283,7 @@ extension Chat: Presentable {
 
             return innerBag
         }
-                
+                        
         func handleNewMessage(message: MessageData) {
             idleTypingIndicatorBag.dispose()
             isEditingSignal.value = false
@@ -311,6 +311,10 @@ extension Chat: Presentable {
 
             if !(newMessage.fromMyself == true && newMessage.responseType != Message.ResponseType.text) {
                 currentMessageSignal.value = Message(from: message, listSignal: nil)
+            }
+            
+            if let statusMessage = newMessage.statusMessage {
+                UIApplication.shared.appDelegate.createToast(symbol: .character("✉️"), body: statusMessage)
             }
             
             if message.body.asMessageBodyParagraph != nil {

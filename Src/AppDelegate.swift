@@ -27,7 +27,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
     var launchWindow: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
-    var toastWindow: UIWindow?
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
     let hasFinishedLoading = ReadWriteSignal<Bool>(false)
@@ -37,42 +36,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
-        toastWindow = createToastWindow()
     }
 
-    func createToastWindow() -> UIWindow {
-        let window = PassTroughWindow(frame: UIScreen.main.bounds)
-        window.isOpaque = false
-        window.backgroundColor = UIColor.transparent
-
+    func presentToasts() {
+        guard let keyWindow = UIApplication.shared.keyWindow else {
+            return
+        }
+        
+        let toastBag = DisposeBag()
         let toasts = Toasts(toastSignal: toastSignal)
-
-        bag += window.add(toasts) { toastsView in
-            bag += toastSignal.onValue { _ in
-                window.makeKeyAndVisible()
-
+                        
+       
+        
+        toastBag += keyWindow.add(toasts) { toastsView in
+            toastBag += toastSignal.atOnce().onValue { _ in
+                toastsView.layer.zPosition = .greatestFiniteMagnitude
                 toastsView.snp.remakeConstraints { make in
-                    let position: CGFloat = 69
-                    if #available(iOS 11.0, *) {
-                        let hasModal = self.window.rootViewController?.presentedViewController != nil
-                        let safeAreaBottom = self.window.rootViewController?.view.safeAreaInsets.bottom ?? 0
-                        let extraPadding: CGFloat = hasModal ? 0 : position
-                        make.bottom.equalTo(-(safeAreaBottom + extraPadding))
+                    if #available(iOS 13, *), !keyWindow.traitCollection.isPad {
+                        if keyWindow.rootViewController?.presentedViewController != nil {
+                            let safeAreaTop = keyWindow.safeAreaInsets.top
+                            make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)
+                        } else {
+                            let safeAreaTop = keyWindow.safeAreaInsets.top
+                            make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
+                        }
                     } else {
-                        make.bottom.equalTo(-position)
+                        let safeAreaTop = keyWindow.safeAreaInsets.top
+                        make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
                     }
-
+                    
                     make.centerX.equalToSuperview()
                 }
             }
         }
 
-        bag += toasts.idleSignal.onValue { _ in
+        toastBag += toasts.idleSignal.onValue { _ in
             self.toastSignal.value = nil
-            self.window.makeKeyAndVisible()
+            toastBag.dispose()
         }
-
-        return window
     }
 
     func logout() {
@@ -97,7 +98,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 backgroundColor: backgroundColor,
                 duration: duration
             )
-
+                        
+            if self.toastSignal.value == nil {
+                self.presentToasts()
+            }
+            
             if toast != previousToast {
                 self.toastSignal.value = toast
             }

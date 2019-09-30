@@ -53,7 +53,7 @@ extension Toast: Viewable {
             view.contentMode = .scaleAspectFit
 
             view.snp.makeConstraints { make in
-                make.width.equalTo(20)
+                make.width.equalTo(25)
             }
 
             return view
@@ -64,11 +64,12 @@ extension Toast: Viewable {
         let bag = DisposeBag()
 
         let containerView = UIView()
+        containerView.layer.cornerRadius = 25
 
         containerView.backgroundColor = backgroundColor
         bag += containerView.applyShadow { trait in
             UIView.ShadowProperties(
-                opacity: trait.userInterfaceStyle == .dark ? 0 : 0.15,
+                opacity: trait.userInterfaceStyle == .dark ? 0 : 0.25,
                 offset: CGSize(width: 0, height: 0),
                 radius: 10,
                 color: UIColor.darkGray,
@@ -76,14 +77,12 @@ extension Toast: Viewable {
             )
         }
 
-        bag += containerView.didLayoutSignal.onValue {
-            containerView.layer.cornerRadius = containerView.frame.height
-        }
-
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 26, verticalInset: 15)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
+        stackView.spacing = 10
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.insetsLayoutMarginsFromSafeArea = false
 
         containerView.addSubview(stackView)
 
@@ -93,17 +92,19 @@ extension Toast: Viewable {
 
         let symbolContainer = UIStackView()
         symbolContainer.axis = .horizontal
+        symbolContainer.insetsLayoutMarginsFromSafeArea = false
 
         stackView.addArrangedSubview(symbolContainer)
 
         symbolContainer.snp.makeConstraints { make in
-            make.width.equalTo(30)
+            make.width.equalTo(25)
         }
 
         symbolContainer.addArrangedSubview(symbolView)
 
         let textContainer = UIStackView()
         textContainer.axis = .vertical
+        textContainer.insetsLayoutMarginsFromSafeArea = false
 
         let bodyLabel = MultilineLabel(value: body, style: TextStyle.toastBody.colored(textColor))
         bag += textContainer.addArranged(bodyLabel)
@@ -129,17 +130,16 @@ extension Toasts: Viewable {
         let containerView = UIStackView()
 
         let stackView = UIStackView()
-        stackView.edgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         stackView.axis = .vertical
         stackView.spacing = 14
         stackView.alignment = .center
 
         containerView.addArrangedSubview(stackView)
 
-        bag += toastSignal.compactMap { $0 }.onValue { toast in
+        bag += toastSignal.atOnce().compactMap { $0 }.onValue { toast in
             bag += stackView.addArranged(toast) { toastView in
                 toastView.layer.opacity = 0
-                toastView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                toastView.transform = CGAffineTransform(translationX: 0, y: -50)
                 toastView.isHidden = true
 
                 let innerBag = bag.innerBag()
@@ -163,7 +163,7 @@ extension Toasts: Viewable {
 
                 innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
                     toastView.isHidden = false
-                }.animated(style: SpringAnimationStyle.heavyBounce(delay: 0, duration: 0.3)) { _ in
+                }.animated(style: SpringAnimationStyle.lightBounce(delay: 0, duration: 0.3)) { _ in
                     toastView.layer.opacity = 1
                     toastView.transform = CGAffineTransform.identity
                 }
@@ -223,8 +223,10 @@ extension Toasts: Viewable {
             }
         }
 
-        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.height.equalToSuperview()
+        bag += stackView.didMoveToWindowSignal.onValue {
+            stackView.snp.makeConstraints { make in
+                make.width.height.equalToSuperview()
+            }
         }
 
         return (containerView, bag)

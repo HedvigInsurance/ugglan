@@ -1,96 +1,97 @@
 subscription ChatMessages_ {
-message {
-...MessageData
-}
+  message {
+    ...MessageData
+  }
 }
 
 fragment MessageData on Message {
-globalId
-id
-body {
-... on MessageBodySingleSelect {
-type
-id
-text
-choices {
-... on MessageBodyChoicesSelection {
-text
-value
-}
-... on MessageBodyChoicesLink {
-view
-text
-value
-}
-}
-}
+  globalId
+  id
+  body {
+    ... on MessageBodySingleSelect {
+      type
+      id
+      text
+      choices {
+        ... on MessageBodyChoicesSelection {
+          text
+          value
+        }
+        ... on MessageBodyChoicesLink {
+          view
+          text
+          value
+        }
+      }
+    }
 
-... on MessageBodyMultipleSelect {
-type
-id
-text
-}
+    ... on MessageBodyMultipleSelect {
+      type
+      id
+      text
+    }
 
-... on MessageBodyText {
-type
-id
-text
-placeholder
-keyboard
-textContentType
-}
+    ... on MessageBodyText {
+      type
+      id
+      text
+      placeholder
+      keyboard
+      textContentType
+    }
 
-... on MessageBodyNumber {
-type
-id
-text
-placeholder
-keyboard
-textContentType
-}
+    ... on MessageBodyNumber {
+      type
+      id
+      text
+      placeholder
+      keyboard
+      textContentType
+    }
 
-... on MessageBodyAudio {
-type
-id
-text
-}
+    ... on MessageBodyAudio {
+      type
+      id
+      text
+    }
 
-... on MessageBodyBankIdCollect {
-type
-id
-text
-}
+    ... on MessageBodyBankIdCollect {
+      type
+      id
+      text
+    }
 
-... on MessageBodyFile {
-type
-id
-text
-mimeType
-file {
-    signedUrl
-}
-}
+    ... on MessageBodyFile {
+      type
+      id
+      text
+      mimeType
+      file {
+        signedUrl
+      }
+    }
 
-... on MessageBodyParagraph {
-type
-id
-text
-}
+    ... on MessageBodyParagraph {
+      type
+      id
+      text
+    }
 
-... on MessageBodyUndefined {
-type
-id
-text
-}
-}
-header {
-messageId
-fromMyself
-timeStamp
-richTextChatCompatible
-editAllowed
-shouldRequestPushNotifications
-pollingInterval
-loadingIndicator
-}
+    ... on MessageBodyUndefined {
+      type
+      id
+      text
+    }
+  }
+  header {
+    messageId
+    fromMyself
+    timeStamp
+    richTextChatCompatible
+    editAllowed
+    shouldRequestPushNotifications
+    pollingInterval
+    loadingIndicator
+    statusMessage
+  }
 }

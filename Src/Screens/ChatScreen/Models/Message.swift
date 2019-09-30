@@ -30,6 +30,7 @@ struct Message: Equatable, Hashable {
     let keyboardType: UIKeyboardType?
     let richTextCompatible: Bool
     let timeStamp: TimeInterval
+    let statusMessage: String?
     
     private let cachedComputedProperties: CachedComputedProperties?
 
@@ -271,6 +272,7 @@ struct Message: Equatable, Hashable {
         type = message.type
         timeStamp = message.timeStamp
         cachedComputedProperties = message.cachedComputedProperties
+        statusMessage = message.statusMessage
     }
 
     init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
@@ -286,8 +288,9 @@ struct Message: Equatable, Hashable {
         richTextCompatible = message.richTextCompatible
         type = message.type
         timeStamp = message.timeStamp
+        statusMessage = message.statusMessage
         
-        if let listSignal = listSignal {
+        if listSignal != nil {
             self.cachedComputedProperties = message.cachedComputedProperties
         } else {
             self.cachedComputedProperties = nil
@@ -416,7 +419,8 @@ struct Message: Equatable, Hashable {
         }
 
         fromMyself = message.header.fromMyself
-
+        statusMessage = message.header.statusMessage
+        
         let timeStampInt = Int(message.header.timeStamp) ?? 0
         timeStamp = TimeInterval(timeStampInt / 1000)
         self.listSignal = listSignal
