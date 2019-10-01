@@ -195,6 +195,7 @@ extension Referrals: Presentable {
                 make.bottom.equalTo(
                     scrollView.safeAreaLayoutGuide.snp.bottom
                 ).inset(20)
+                make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
                 make.height.equalTo(button.button.type.value.height)
             }
