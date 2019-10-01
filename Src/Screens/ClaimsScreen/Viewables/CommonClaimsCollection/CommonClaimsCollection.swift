@@ -51,8 +51,11 @@ extension CommonClaimsCollection: Viewable {
             cell.layer.zPosition = CGFloat(indexPath.row)
         }
 
-        bag += client.fetch(query: CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())).onValue { result in
-            let rows = result.data!.commonClaims.enumerated().map {
+        bag += client.fetch(query: CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+        .valueSignal
+            .compactMap { $0.data?.commonClaims }
+            .onValue { commonClaims in
+            let rows = commonClaims.enumerated().map {
                 CommonClaimCard(
                     data: $0.element,
                     index: TableIndex(section: 0, row: $0.offset),
@@ -64,7 +67,7 @@ extension CommonClaimsCollection: Viewable {
                 Table(rows: rows),
                 rowIdentifier: { $0.data.title }
             )
-        }.disposable
+        }
 
         let stackView = UIStackView()
         stackView.axis = .vertical
