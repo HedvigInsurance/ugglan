@@ -237,6 +237,10 @@ schemes:
       name: ugglan.xcarchive
       reveal: true
       build_configuration: debug
+    profile:
+        target: Ugglan
+        inherit_environment: true
+        build_configuration: debug
     build:
       parallel: true
       build_implicit: true
@@ -254,12 +258,9 @@ schemes:
       inherit_launch_arguments: true
       code_coverage_enabled: true
       environment:
-        OS_ACTIVITY_MODE: disable
     launch:
       build_configuration: debug
       target: Ugglan
-      environment:
-        OS_ACTIVITY_MODE: disable
   Release:
     archive:
       name: ugglan.xcarchive
@@ -278,5 +279,3 @@ schemes:
     launch:
       build_configuration: release
       target: Ugglan
-      environment:
-        OS_ACTIVITY_MODE: disable

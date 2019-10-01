@@ -100,6 +100,7 @@ extension Chat: Presentable {
             headerForSection: nil,
             footerForSection: nil
         )
+        tableKit.view.estimatedRowHeight = 60
         tableKit.view.keyboardDismissMode = .interactive
         tableKit.view.transform = CGAffineTransform(scaleX: 1, y: -1)
         tableKit.view.insetsContentViewsToSafeArea = false
@@ -207,7 +208,7 @@ extension Chat: Presentable {
             return innerBag
         })
 
-        let filteredMessagesSignal = messagesSignal.map { messages in
+        let filteredMessagesSignal = messagesSignal.map(on: .background) { messages in
             messages.enumerated().compactMap { offset, item -> ChatListContent? in
                 if item.right != nil {
                     if offset != 0 {
@@ -226,6 +227,8 @@ extension Chat: Presentable {
                 return item
             }
         }
+        
+        var handledGlobalIds: [GraphQLID] = []
 
         func fetchMessages() {
             bag += client.fetch(
@@ -234,10 +237,21 @@ extension Chat: Presentable {
                 queue: DispatchQueue.global(qos: .background)
             )
             .valueSignal
-            .compactMap { messages -> [MessageData]? in messages.data?.messages.compactMap { message in message?.fragments.messageData } }
+            .compactMap(on: .background) { messages -> [MessageData]? in messages.data?.messages.compactMap { message in message?.fragments.messageData } }
             .atValue({ messages -> Void in
                 guard let message = messages.first else { return }
                 currentMessageSignal.value = Message(from: message, listSignal: nil)
+            })
+            .map({ messages in
+                messages.filter { message -> Bool in
+                    if handledGlobalIds.contains(message.globalId) {
+                        return false
+                    }
+                    
+                    handledGlobalIds.append(message.globalId)
+                    
+                    return true
+                }
             })
             .onValue({ messages in
                 if messages.count > 1 {
@@ -331,7 +345,7 @@ extension Chat: Presentable {
         let subscriptionBag = bag.innerBag()
 
         func subscribeToMessages() {
-            subscriptionBag += client.subscribe(subscription: ChatMessagesSubscription())
+            subscriptionBag += client.subscribe(subscription: ChatMessagesSubscription(), queue: DispatchQueue.global(qos: .background))
                 .compactMap { $0.data?.message.fragments.messageData }
                 .distinct { oldMessage, newMessage in
                     oldMessage.globalId == newMessage.globalId

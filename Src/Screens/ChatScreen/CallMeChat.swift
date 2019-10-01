@@ -41,7 +41,10 @@ extension CallMeChat: Presentable {
                 completion(result)
             }
 
-            return bag
+            return Disposer {
+                future.cancel()
+                bag.dispose()
+            }
         })
     }
 }
