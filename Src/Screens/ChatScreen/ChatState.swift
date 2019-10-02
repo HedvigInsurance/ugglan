@@ -25,7 +25,7 @@ class ChatState {
     
     private func parseMessage(message: MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
-         let newMessage = Message(from: message, listSignal: filteredListSignal)
+        let newMessage = Message(from: message, listSignal: filteredListSignal)
         
         if let paragraph = message.body.asMessageBodyParagraph {
             if !filteredListSignal.value.contains(where: { content -> Bool in
@@ -179,7 +179,7 @@ class ChatState {
                 }
 
                 if item.left?.responseType == .audio {
-                    return nil
+                    return item
                 }
 
                 if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
