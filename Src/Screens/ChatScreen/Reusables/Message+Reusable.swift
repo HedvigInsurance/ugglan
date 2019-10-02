@@ -194,241 +194,239 @@ extension Message: Reusable {
         return (containerView, { message in
             let bag = DisposeBag()
 
-            UIView.setAnimationsEnabled(false)
+            UIView.performWithoutAnimation {
+                func handleTimeStamp() {
+                    let shouldShowTimeStamp = message.shouldShowTimeStamp
 
-            func handleTimeStamp() {
-                let shouldShowTimeStamp = message.shouldShowTimeStamp
+                    timeStampLabelContainer.isHidden = !shouldShowTimeStamp
 
-                timeStampLabelContainer.isHidden = !shouldShowTimeStamp
+                    if !shouldShowTimeStamp { return }
 
-                if !shouldShowTimeStamp { return }
+                    let date = Date(timeIntervalSince1970: message.timeStamp)
+                    let dateFormatter = DateFormatter()
 
-                let date = Date(timeIntervalSince1970: message.timeStamp)
-                let dateFormatter = DateFormatter()
-
-                if !Calendar.current.isDateInWeek(from: date) {
-                    dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
-                    timeStampLabel.text = dateFormatter.string(from: date)
-                } else if Calendar.current.isDateInToday(date) {
-                    dateFormatter.dateFormat = "HH:mm"
-                    timeStampLabel.text = dateFormatter.string(from: date)
-                } else {
-                    dateFormatter.dateFormat = "EEEE HH:mm"
-                    timeStampLabel.text = dateFormatter.string(from: date)
-                }
-            }
-
-            handleTimeStamp()
-
-            editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
-
-            bag += editButton.signal(for: .touchUpInside).onValue({ _ in
-                message.onEditCallbacker.callAll()
-            })
-
-            func applyRounding() {
-                bubble.applyRadiusMaskFor(
-                    topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
-                    bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
-                    bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
-                    topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
-                )
-            }
-
-            func applySpacing() {
-                if message.type.isVideoOrImageType {
-                    contentContainer.layoutMargins = UIEdgeInsets.zero
-                } else {
-                    contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
+                    if !Calendar.current.isDateInWeek(from: date) {
+                        dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
+                        timeStampLabel.text = dateFormatter.string(from: date)
+                    } else if Calendar.current.isDateInToday(date) {
+                        dateFormatter.dateFormat = "HH:mm"
+                        timeStampLabel.text = dateFormatter.string(from: date)
+                    } else {
+                        dateFormatter.dateFormat = "EEEE HH:mm"
+                        timeStampLabel.text = dateFormatter.string(from: date)
+                    }
                 }
 
-                if message.isRelatedToPreviousMessage {
-                    spacingContainer.layoutMargins = UIEdgeInsets(
-                        top: message.smallerMarginTop,
-                        left: 20,
-                        bottom: 0,
-                        right: 20
-                    )
-                } else {
-                    spacingContainer.layoutMargins = UIEdgeInsets(
-                        top: 20,
-                        left: message.largerMarginTop,
-                        bottom: 0,
-                        right: 20
-                    )
-                }
-            }
+                handleTimeStamp()
 
-            bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
                 editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
-                editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
 
-                applySpacing()
-                applyRounding()
+                bag += editButton.signal(for: .touchUpInside).onValue({ _ in
+                    message.onEditCallbacker.callAll()
+                })
 
-                spacingContainer.layoutSuperviewsIfNeeded()
-            })
-
-            spacingContainer.alignment = message.fromMyself ? .trailing : .leading
-
-            let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
-
-            switch message.type {
-            case .image(_), .video:
-                bubble.backgroundColor = .transparent
-            default:
-                bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
-            }
-
-            switch message.type {
-            case let .image(url):
-                let imageViewContainer = UIView()
-
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFill
-
-                let processor = DownsamplingImageProcessor(
-                    size: CGSize(
-                        width: 300,
-                        height: 200
+                func applyRounding() {
+                    bubble.applyRadiusMaskFor(
+                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
+                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
+                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
+                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
                     )
-                )
+                }
 
-                imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
-                imageView.kf.setImage(
-                    with: url,
-                    options: [
-                        .preloadAllAnimationData,
-                        .processor(processor),
-                        .backgroundDecode,
-                        .transition(.fade(1)),
-                    ]
-                ) { result in
-                    switch result {
-                    case let .success(imageResult):
-                        let width = imageResult.image.size.width
-                        let height = imageResult.image.size.height
+                func applySpacing() {
+                    if message.type.isVideoOrImageType {
+                        contentContainer.layoutMargins = UIEdgeInsets.zero
+                    } else {
+                        contentContainer.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
+                    }
 
-                        if width > height {
-                            imageViewContainer.snp.makeConstraints { make in
-                                make.width.equalTo(300)
-                            }
-                        } else {
-                            imageViewContainer.snp.makeConstraints { make in
-                                make.width.equalTo(150)
-                            }
-                        }
-                    case .failure:
-                        break
+                    if message.isRelatedToPreviousMessage {
+                        spacingContainer.layoutMargins = UIEdgeInsets(
+                            top: message.smallerMarginTop,
+                            left: 20,
+                            bottom: 0,
+                            right: 20
+                        )
+                    } else {
+                        spacingContainer.layoutMargins = UIEdgeInsets(
+                            top: 20,
+                            left: message.largerMarginTop,
+                            bottom: 0,
+                            right: 20
+                        )
                     }
                 }
 
-                imageViewContainer.addSubview(imageView)
+                bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
+                    editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
 
-                imageView.snp.makeConstraints { make in
-                    make.height.equalToSuperview()
-                    make.width.equalToSuperview()
+                    applySpacing()
+                    applyRounding()
+
+                    spacingContainer.layoutSuperviewsIfNeeded()
                 }
 
-                imageViewContainer.snp.makeConstraints { make in
-                    make.height.equalTo(200)
+                spacingContainer.alignment = message.fromMyself ? .trailing : .leading
+
+                let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
+
+                switch message.type {
+                case .image(_), .video:
+                    bubble.backgroundColor = .transparent
+                default:
+                    bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
                 }
 
-                contentContainer.addArrangedSubview(imageViewContainer)
+                switch message.type {
+                case let .image(url):
+                    let imageViewContainer = UIView()
 
-                bag += {
-                    imageViewContainer.removeFromSuperview()
-                }
-            case let .file(url):
-                let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
+                    let imageView = UIImageView()
+                    imageView.contentMode = .scaleAspectFill
 
-                let text = String(key: .CHAT_FILE_DOWNLOAD)
-
-                let styledText = StyledText(text: text, style: textStyle)
-
-                let label = MultilineLabel(styledText: styledText)
-                bag += contentContainer.addArranged(label) { _ in
-                    let linkTapGestureRecognizer = UITapGestureRecognizer()
-                    bag += contentContainer.install(linkTapGestureRecognizer)
-
-                    bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
-                        guard let url = url else { return }
-                        message.onTapCallbacker.callAll(with: url)
-                    }
-                }
-            case let .video(url):
-                let imageViewContainer = UIView()
-
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFill
-
-                let processor = DownsamplingImageProcessor(
-                    size: CGSize(
-                        width: 300,
-                        height: 200
+                    let processor = DownsamplingImageProcessor(
+                        size: CGSize(
+                            width: 300,
+                            height: 200
+                        )
                     )
-                )
 
-                if let url = url {
-                    let asset = AVURLAsset(url: url, options: nil)
                     imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                     imageView.kf.setImage(
-                        with: asset,
+                        with: url,
                         options: [
                             .preloadAllAnimationData,
                             .processor(processor),
                             .backgroundDecode,
                             .transition(.fade(1)),
                         ]
+                    ) { result in
+                        switch result {
+                        case let .success(imageResult):
+                            let width = imageResult.image.size.width
+                            let height = imageResult.image.size.height
+
+                            if width > height {
+                                imageViewContainer.snp.makeConstraints { make in
+                                    make.width.equalTo(300)
+                                }
+                            } else {
+                                imageViewContainer.snp.makeConstraints { make in
+                                    make.width.equalTo(150)
+                                }
+                            }
+                        case .failure:
+                            break
+                        }
+                    }
+
+                    imageViewContainer.addSubview(imageView)
+
+                    imageView.snp.makeConstraints { make in
+                        make.height.equalToSuperview()
+                        make.width.equalToSuperview()
+                    }
+
+                    imageViewContainer.snp.makeConstraints { make in
+                        make.height.equalTo(200)
+                    }
+
+                    contentContainer.addArrangedSubview(imageViewContainer)
+
+                    bag += {
+                        imageViewContainer.removeFromSuperview()
+                    }
+                case let .file(url):
+                    let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
+
+                    let text = String(key: .CHAT_FILE_DOWNLOAD)
+
+                    let styledText = StyledText(text: text, style: textStyle)
+
+                    let label = MultilineLabel(styledText: styledText)
+                    bag += contentContainer.addArranged(label) { _ in
+                        let linkTapGestureRecognizer = UITapGestureRecognizer()
+                        bag += contentContainer.install(linkTapGestureRecognizer)
+
+                        bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+                            guard let url = url else { return }
+                            message.onTapCallbacker.callAll(with: url)
+                        }
+                    }
+                case let .video(url):
+                    let imageViewContainer = UIView()
+
+                    let imageView = UIImageView()
+                    imageView.contentMode = .scaleAspectFill
+
+                    let processor = DownsamplingImageProcessor(
+                        size: CGSize(
+                            width: 300,
+                            height: 200
+                        )
                     )
+
+                    if let url = url {
+                        let asset = AVURLAsset(url: url, options: nil)
+                        imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
+                        imageView.kf.setImage(
+                            with: asset,
+                            options: [
+                                .preloadAllAnimationData,
+                                .processor(processor),
+                                .backgroundDecode,
+                                .transition(.fade(1)),
+                            ]
+                        )
+                    }
+
+                    imageViewContainer.addSubview(imageView)
+
+                    imageView.snp.makeConstraints { make in
+                        make.height.equalToSuperview()
+                        make.width.equalToSuperview()
+                        make.width.equalTo(300)
+                    }
+
+                    imageViewContainer.snp.makeConstraints { make in
+                        make.height.equalTo(200)
+                    }
+
+                    contentContainer.addArrangedSubview(imageViewContainer)
+
+                    let videoTapGestureRecognizer = UITapGestureRecognizer()
+                    bag += contentContainer.install(videoTapGestureRecognizer)
+
+                    bag += videoTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+                        guard let url = url else { return }
+                        message.onTapCallbacker.callAll(with: url)
+                    }
+
+                    bag += {
+                        imageViewContainer.removeFromSuperview()
+                    }
+                case .text:
+                    let label = MultilineLabel(
+                        value: message.body,
+                        style: TextStyle.chatBody.colored(messageTextColor)
+                    )
+                    bag += contentContainer.addArranged(label)
                 }
 
-                imageViewContainer.addSubview(imageView)
-
-                imageView.snp.makeConstraints { make in
-                    make.height.equalToSuperview()
-                    make.width.equalToSuperview()
-                    make.width.equalTo(300)
+                if !message.type.isRichType {
+                    bag += bubble.copySignal.onValue { _ in
+                        UIPasteboard.general.value = message.body
+                    }
                 }
 
-                imageViewContainer.snp.makeConstraints { make in
-                    make.height.equalTo(200)
-                }
+                bag += bubble.didLayoutSignal.onValue({ _ in
+                    applyRounding()
+                })
 
-                contentContainer.addArrangedSubview(imageViewContainer)
-
-                let videoTapGestureRecognizer = UITapGestureRecognizer()
-                bag += contentContainer.install(videoTapGestureRecognizer)
-
-                bag += videoTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
-                    guard let url = url else { return }
-                    message.onTapCallbacker.callAll(with: url)
-                }
-
-                bag += {
-                    imageViewContainer.removeFromSuperview()
-                }
-            case .text:
-                let label = MultilineLabel(
-                    value: message.body,
-                    style: TextStyle.chatBody.colored(messageTextColor)
-                )
-                bag += contentContainer.addArranged(label)
+                applySpacing()
             }
-
-            if !message.type.isRichType {
-                bag += bubble.copySignal.onValue { _ in
-                    UIPasteboard.general.value = message.body
-                }
-            }
-
-            bag += bubble.didLayoutSignal.onValue({ _ in
-                applyRounding()
-            })
-
-            applySpacing()
-
-            UIView.setAnimationsEnabled(true)
 
             return bag
         })

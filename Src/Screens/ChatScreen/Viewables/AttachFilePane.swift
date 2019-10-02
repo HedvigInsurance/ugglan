@@ -14,16 +14,16 @@ import UIKit
 
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>
-    let currentMessageSignal: ReadSignal<Message?>
+    let chatState: ChatState
     let client: ApolloClient
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,
-        currentMessageSignal: ReadSignal<Message?>,
+        chatState: ChatState,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
         self.isOpenSignal = isOpenSignal
-        self.currentMessageSignal = currentMessageSignal
+        self.chatState = chatState
         self.client = client
     }
 }
@@ -85,17 +85,11 @@ extension AttachFilePane: Viewable {
                     guard let key = result.data?.uploadFile.key else {
                         return
                     }
-                    guard let globalID = self.currentMessageSignal.value?.globalId else {
-                        return
-                    }
-
-                    bag += self.client.perform(
-                        mutation: SendChatFileResponseMutation(
-                            globalID: globalID,
-                            key: key,
-                            mimeType: fileUpload.mimeType
-                        )
-                    ).disposable
+                   
+                    self.chatState.sendChatFileResponseMutation(
+                        key: key,
+                        mimeType: fileUpload.mimeType
+                    )
 
                     callbacker(true)
                     self.isOpenSignal.value = false

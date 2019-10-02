@@ -11,14 +11,14 @@ import Foundation
 import UIKit
 
 struct ChatInput {
-    let currentMessageSignal: ReadSignal<Message?>
+    let chatState: ChatState
     let navigateCallbacker: Callbacker<NavigationEvent>
 
     init(
-        currentMessageSignal: ReadSignal<Message?>,
+        chatState: ChatState,
         navigateCallbacker: Callbacker<NavigationEvent>
     ) {
-        self.currentMessageSignal = currentMessageSignal
+        self.chatState = chatState
         self.navigateCallbacker = navigateCallbacker
     }
 }
@@ -98,7 +98,7 @@ extension ChatInput: Viewable {
             )
 
             bag += combineLatest(
-                currentMessageSignal,
+                chatState.currentMessageSignal,
                 attachGIFPaneIsOpenSignal
             ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachGIFPaneIsOpen in
 
@@ -139,7 +139,7 @@ extension ChatInput: Viewable {
             )
 
             bag += combineLatest(
-                currentMessageSignal,
+                chatState.currentMessageSignal,
                 attachFilePaneIsOpenSignal
             ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachFilePaneIsOpen in
 
@@ -161,9 +161,7 @@ extension ChatInput: Viewable {
             contentView.firstResponder?.resignFirstResponder()
         })
 
-        let currentGlobalIdSignal = currentMessageSignal.map { message in message?.globalId }
-
-        let textView = ChatTextView(currentMessageSignal: currentMessageSignal)
+        let textView = ChatTextView(chatState: chatState)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachGIFPaneIsOpenSignal)
 
@@ -195,7 +193,7 @@ extension ChatInput: Viewable {
 
         contentView.bringSubviewToFront(inputBar)
 
-        bag += currentMessageSignal.animated(style: SpringAnimationStyle.lightBounce()) { message in
+        bag += chatState.currentMessageSignal.animated(style: SpringAnimationStyle.lightBounce()) { message in
             guard let message = message else {
                 inputBar.alpha = 0
                 singleSelectContainer.alpha = 0
@@ -223,7 +221,11 @@ extension ChatInput: Viewable {
                 audioContainer.alpha = 0
 
                 UIView.performWithoutAnimation {
-                    let list = SingleSelectList(options: options, currentGlobalIdSignal: currentGlobalIdSignal, navigateCallbacker: self.navigateCallbacker)
+                    let list = SingleSelectList(
+                        options: options,
+                        chatState: self.chatState,
+                        navigateCallbacker: self.navigateCallbacker
+                    )
 
                     singleSelectContainer.subviews.forEach { view in
                         view.removeFromSuperview()
@@ -243,7 +245,7 @@ extension ChatInput: Viewable {
                 audioContainer.alpha = 1
 
                 UIView.performWithoutAnimation {
-                    let audioRecorder = AudioRecorder(currentGlobalIdSignal: currentGlobalIdSignal)
+                    let audioRecorder = AudioRecorder(chatState: self.chatState)
 
                     audioContainer.subviews.forEach { view in
                         view.removeFromSuperview()
@@ -258,8 +260,17 @@ extension ChatInput: Viewable {
             }
         }
 
-        bag += containerView.addArranged(AttachFilePane(isOpenSignal: attachFilePaneIsOpenSignal, currentMessageSignal: currentMessageSignal))
-        bag += containerView.addArranged(AttachGIFPane(isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()))
+        bag += containerView.addArranged(
+            AttachFilePane(
+                isOpenSignal: attachFilePaneIsOpenSignal,
+                chatState: chatState
+            )
+        )
+        bag += containerView.addArranged(
+            AttachGIFPane(
+                isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()
+            )
+        )
 
         return (backgroundView, bag)
     }

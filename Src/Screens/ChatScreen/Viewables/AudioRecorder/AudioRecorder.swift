@@ -14,13 +14,13 @@ import Apollo
 
 struct AudioRecorder {
     let client: ApolloClient
-    let currentGlobalIdSignal: ReadSignal<GraphQLID?>
+    let chatState: ChatState
     
     init(
-        currentGlobalIdSignal: ReadSignal<GraphQLID?>,
+        chatState: ChatState,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
-        self.currentGlobalIdSignal = currentGlobalIdSignal
+        self.chatState = chatState
         self.client = client
     }
 }
@@ -158,24 +158,13 @@ extension AudioRecorder: Viewable {
                 guard let fileUrl = currentAudioFileUrl.value else {
                     return
                 }
-                guard let currentGlobalId = self.currentGlobalIdSignal.value else {
-                    return
-                }
-                                
-                guard let file = GraphQLFile.init(fieldName: "file", originalName: "recording.mp3", fileURL: fileUrl) else {
-                    return
-                }
                 
                 bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                     loadableSendButton.isLoadingSignal.value = true
                     playContainer.layoutIfNeeded()
                 }
                 
-                bag += self.client.upload(
-                    operation: SendChatAudioResponseMutation(globalID: currentGlobalId, file: "file"),
-                    files: [
-                    file
-                ])
+                self.chatState.sendChatAudioResponse(fileUrl: fileUrl)
             })
             
             bag += playContainer.addArranged(loadableSendButton.wrappedIn(UIStackView())) { stackView in

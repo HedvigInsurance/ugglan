@@ -22,7 +22,7 @@ struct OfferChat {
 extension OfferChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        let (viewController, future) = Chat().materialize()
+        let (viewController, future) = Chat(shouldSubscribe: true).materialize()
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image

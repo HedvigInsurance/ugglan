@@ -14,7 +14,7 @@ import UIKit
 struct SingleSelectList: Hashable, Equatable {
     let id = UUID()
     let options: [SingleSelectOption]
-    let currentGlobalIdSignal: ReadSignal<GraphQLID?>
+    let chatState: ChatState
     let client: ApolloClient
     let navigateCallbacker: Callbacker<NavigationEvent>
 
@@ -28,12 +28,12 @@ struct SingleSelectList: Hashable, Equatable {
 
     init(
         options: [SingleSelectOption],
-        currentGlobalIdSignal: ReadSignal<GraphQLID?>,
+        chatState: ChatState,
         navigateCallbacker: Callbacker<NavigationEvent>,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
         self.options = options
-        self.currentGlobalIdSignal = currentGlobalIdSignal
+        self.chatState = chatState
         self.navigateCallbacker = navigateCallbacker
         self.client = client
     }
@@ -91,7 +91,7 @@ extension SingleSelectList: Viewable {
             let innerBag = DisposeBag()
             let button = Button(title: option.text, type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
 
-            innerBag += button.onTapSignal.withLatestFrom(self.currentGlobalIdSignal.atOnce().plain()).compactMap { $1 }.onValue { globalId in
+            innerBag += button.onTapSignal.onValue { _ in
                 func removeViews() {
                     view.arrangedSubviews.forEach { subView in
                         innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.mediumBounce(), animations: { _ in
@@ -109,9 +109,7 @@ extension SingleSelectList: Viewable {
                     }
                     removeViews()
                 case .selection:
-                    _ = self.client.perform(
-                        mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: option.value)
-                    )
+                    self.chatState.sendSingleSelectResponse(selectedValue: option.value)
                     removeViews()
                 case .login:
                     self.navigateCallbacker.callAll(with: .login)

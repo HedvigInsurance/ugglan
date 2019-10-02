@@ -11,9 +11,36 @@ import Foundation
 import Presentation
 import UIKit
 
-struct TypingIndicator: Hashable {
+struct TypingIndicator: Hashable, Equatable {
+    static func == (lhs: TypingIndicator, rhs: TypingIndicator) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
     let id = UUID()
-    let hasPreviousMessage: Bool
+    let listSignal: ReadSignal<[ChatListContent]>
+    
+    var previous: Message? {
+        let list = self.listSignal.value
+
+        guard let myIndex = list.firstIndex(of: .right(.left(self))) else {
+            return nil
+        }
+        let previousIndex = myIndex + 1
+
+        if !list.indices.contains(previousIndex) {
+            return nil
+        }
+
+        return list[previousIndex].left
+    }
+    
+    var hasPreviousMessage: Bool {
+        return previous?.fromMyself == false
+    }
 
     /// returns the totalHeight calculated height for displaying a TypingIndicator in a cell
     var totalHeight: CGFloat {

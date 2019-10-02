@@ -26,9 +26,11 @@ extension OnboardingChat: Presentable {
 
         ApplicationState.preserveState(.onboardingChat)
 
-        let chat = Chat()
+        let chat = Chat(shouldSubscribe: false)
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
+        
+        chat.chatState.fetch()
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
@@ -85,7 +87,7 @@ extension OnboardingChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += future.disposable
+        bag += future.onValue { _ in }
 
         return (viewController, bag)
     }

@@ -22,7 +22,8 @@ struct CallMeChat {
 extension CallMeChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        let (viewController, future) = Chat().materialize()
+        let chat = Chat(shouldSubscribe: false)
+        let (viewController, future) = chat.materialize()
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image
@@ -34,7 +35,9 @@ extension CallMeChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += client.perform(mutation: TriggerCallMeChatMutation()).disposable
+        bag += client.perform(mutation: TriggerCallMeChatMutation()).onValue({ _ in
+            chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
+        })
 
         return (viewController, Future { completion in
             bag += future.onResult { result in

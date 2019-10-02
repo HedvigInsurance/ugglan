@@ -12,7 +12,7 @@ import UIKit
 
 struct ChatTextView {
     let client: ApolloClient
-    let currentMessageSignal: ReadSignal<Message?>
+    let chatState: ChatState
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
     private let didBeginEditingCallbacker = Callbacker<Void>()
@@ -22,10 +22,10 @@ struct ChatTextView {
     }
 
     init(
-        currentMessageSignal: ReadSignal<Message?>,
+        chatState: ChatState,
         client: ApolloClient = ApolloContainer.shared.client
     ) {
-        self.currentMessageSignal = currentMessageSignal
+        self.chatState = chatState
         self.client = client
     }
 }
@@ -43,13 +43,13 @@ extension ChatTextView: Viewable {
 
         let bag = DisposeBag()
 
-        bag += currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
+        bag += chatState.currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
             textView.keyboardTypeSignal.value = message.keyboardType
             textView.placeholder.value = message.placeholder ?? defaultPlaceholder
         }
 
         bag += textView.value.onValue { _ in
-            if let message = self.currentMessageSignal.value {
+            if let message = self.chatState.currentMessageSignal.value {
                 switch message.responseType {
                 case .text:
                     break
@@ -74,9 +74,7 @@ extension ChatTextView: Viewable {
             })
         }.withLatestFrom(textView.value.plain()).onValue({ _, textFieldValue in
             textView.value.value = ""
-            if let currentGlobalId = self.currentMessageSignal.value?.globalId, textFieldValue != "" {
-                bag += self.client.perform(mutation: SendChatTextResponseMutation(globalId: currentGlobalId, text: textFieldValue))
-            }
+            self.chatState.sendChatFreeTextResponse(text: textFieldValue)
         })
 
         return (view, Disposer {
