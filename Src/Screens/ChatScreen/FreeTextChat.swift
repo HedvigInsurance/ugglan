@@ -22,7 +22,7 @@ struct FreeTextChat {
 extension FreeTextChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        let chat = Chat(shouldSubscribe: true)
+        let chat = Chat()
         let (viewController, future) = chat.materialize()
 
         let titleHedvigLogo = UIImageView()
@@ -36,7 +36,9 @@ extension FreeTextChat: Presentable {
         }
 
         bag += client.perform(mutation: TriggerFreeTextChatMutation()).onValue({ _ in
-            chat.chatState.fetch()
+            chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
+                chat.chatState.subscribe()
+            }
         })
 
         return (viewController, Future { completion in

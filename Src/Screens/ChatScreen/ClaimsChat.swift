@@ -23,7 +23,7 @@ extension ClaimsChat: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
-        let chat = Chat(shouldSubscribe: false)
+        let chat = Chat()
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 

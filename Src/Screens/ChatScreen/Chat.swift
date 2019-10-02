@@ -16,16 +16,14 @@ import UIKit
 struct Chat {
     let client: ApolloClient
     let reloadChatCallbacker = Callbacker<Void>()
-    let shouldSubscribe: Bool
     let chatState = ChatState()
 
     private var reloadChatSignal: Signal<Void> {
         reloadChatCallbacker.providedSignal
     }
 
-    init(shouldSubscribe: Bool, client: ApolloClient = ApolloContainer.shared.client) {
+    init(client: ApolloClient = ApolloContainer.shared.client) {
         self.client = client
-        self.shouldSubscribe = shouldSubscribe
     }
 }
 
@@ -162,10 +160,6 @@ extension Chat: Presentable {
                 let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
                 tableKit.set(table, animation: tableAnimation)
             }
-        }
-                                
-        if shouldSubscribe {
-            chatState.subscribe()
         }
         
         bag += reloadChatSignal.onValue { _ in

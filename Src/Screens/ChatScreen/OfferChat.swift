@@ -22,7 +22,7 @@ struct OfferChat {
 extension OfferChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        let chat = Chat(shouldSubscribe: true)
+        let chat = Chat()
         let (viewController, future) = chat.materialize()
 
         let restartButton = UIBarButtonItem()
@@ -47,7 +47,9 @@ extension OfferChat: Presentable {
         }
 
         bag += client.perform(mutation: OfferClosedMutation()).onValue({ _ in
-            chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
+            chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
+                chat.chatState.subscribe()
+            }
         })
 
         return (viewController, Future { completion in

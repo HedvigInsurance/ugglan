@@ -26,7 +26,7 @@ extension OnboardingChat: Presentable {
 
         ApplicationState.preserveState(.onboardingChat)
 
-        let chat = Chat(shouldSubscribe: false)
+        let chat = Chat()
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
         

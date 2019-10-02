@@ -22,7 +22,7 @@ struct CallMeChat {
 extension CallMeChat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
-        let chat = Chat(shouldSubscribe: false)
+        let chat = Chat()
         let (viewController, future) = chat.materialize()
 
         let titleHedvigLogo = UIImageView()

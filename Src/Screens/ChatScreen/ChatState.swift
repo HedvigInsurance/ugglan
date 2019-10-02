@@ -12,7 +12,6 @@ import Form
 
 class ChatState {
     private let bag = DisposeBag()
-    private let fetchBag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
     private let client: ApolloClient
@@ -57,7 +56,10 @@ class ChatState {
         }
     }
     
-    func fetch(cachePolicy: CachePolicy = .returnCacheDataAndFetch) {
+    func fetch(
+        cachePolicy: CachePolicy = .returnCacheDataAndFetch,
+        hasFetched: @escaping () -> Void = {}
+    ) {
         bag += client.fetch(
             query: ChatMessagesQuery(),
             cachePolicy: cachePolicy,
@@ -78,6 +80,9 @@ class ChatState {
                 return true
             }
         })
+        .atValue({ _ in
+            hasFetched()
+        })
         .filter(predicate: { messages -> Bool in
             messages.count > 0
         })
@@ -90,9 +95,7 @@ class ChatState {
             self.listSignal.value.insert(contentsOf: messages.flatMap { self.parseMessage(message: $0) }, at: 0)
             
             if cachePolicy == .returnCacheDataAndFetch {
-                DispatchQueue.main.async {
-                    self.fetch(cachePolicy: .fetchIgnoringCacheData)
-                }
+                self.fetch(cachePolicy: .fetchIgnoringCacheData)
             }
         })
     }
@@ -103,7 +106,7 @@ class ChatState {
             subscription: ChatMessagesSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
-        .compactMap { $0.data?.message.fragments.messageData }
+        .compactMap(on: .background) { $0.data?.message.fragments.messageData }
         .filter(predicate: { message -> Bool in
             if self.handledGlobalIds.contains(message.globalId) {
                 return false
