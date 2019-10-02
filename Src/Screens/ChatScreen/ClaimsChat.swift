@@ -23,12 +23,12 @@ extension ClaimsChat: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
-        let chat = Chat(shouldSubscribe: true)
+        let chat = Chat(shouldSubscribe: false)
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 
         bag += client.perform(mutation: TriggerClaimChatMutation()).onValue({ _ in
-            chat.chatState.fetch()
+            chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
         })
 
         let titleHedvigLogo = UIImageView()
@@ -41,7 +41,7 @@ extension ClaimsChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += future.disposable
+        bag += future.onValue({ _ in })
 
         return (viewController, bag)
     }
