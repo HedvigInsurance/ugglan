@@ -156,8 +156,12 @@ extension Chat: Presentable {
             })
                 
         bag += chatState.tableSignal.atOnce().onValue(on: .main) { table in
-            let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
-            tableKit.set(table, animation: tableAnimation)
+            if tableKit.table.isEmpty {
+                tableKit.set(table, animation: .fade)
+            } else {
+                let tableAnimation = TableAnimation(sectionInsert: .top, sectionDelete: .top, rowInsert: .top, rowDelete: .fade)
+                tableKit.set(table, animation: tableAnimation)
+            }
         }
                                 
         if shouldSubscribe {
