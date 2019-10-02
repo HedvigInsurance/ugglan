@@ -63,10 +63,6 @@ extension Message: Reusable {
 
     /// calculates the total height that is required to render this message, including margins
     var totalHeight: CGFloat {
-        if responseType == .audio && fromMyself == false {
-            return 0
-        }
-        
         let extraHeightForTimeStampLabel: CGFloat = {
             if !shouldShowTimeStamp {
                 return 0

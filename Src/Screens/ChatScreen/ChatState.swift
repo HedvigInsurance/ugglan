@@ -12,6 +12,7 @@ import Form
 
 class ChatState {
     private let bag = DisposeBag()
+    private let fetchBag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
     private let client: ApolloClient
@@ -87,6 +88,12 @@ class ChatState {
         })
         .onValue({ messages in
             self.listSignal.value.insert(contentsOf: messages.flatMap { self.parseMessage(message: $0) }, at: 0)
+            
+            if cachePolicy == .returnCacheDataAndFetch {
+                DispatchQueue.main.async {
+                    self.fetch(cachePolicy: .fetchIgnoringCacheData)
+                }
+            }
         })
     }
     

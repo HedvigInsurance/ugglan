@@ -54,7 +54,9 @@ extension Presentable where Matter: UIViewController, Result == Future<Void> {
 
                 bag += future.onResult(completion)
 
-                bag += future.disposable
+                bag += {
+                    future.cancel()
+                }
 
                 return DelayedDisposer(bag, delay: 2)
             })
