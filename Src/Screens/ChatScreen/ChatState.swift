@@ -16,6 +16,7 @@ class ChatState {
     private let editBag = DisposeBag()
     private let client: ApolloClient
     private var handledGlobalIds: [GraphQLID] = []
+    private var hasShownStatusMessage = false
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
@@ -51,7 +52,8 @@ class ChatState {
             }
         }
                 
-        if let statusMessage = message.header.statusMessage {
+        if let statusMessage = message.header.statusMessage, !hasShownStatusMessage {
+            hasShownStatusMessage = true
             UIApplication.shared.appDelegate.createToast(symbol: .character("✉️"), body: statusMessage)
         }
     }
@@ -66,7 +68,7 @@ class ChatState {
             queue: DispatchQueue.global(qos: .background)
         )
         .valueSignal
-        .compactMap(on: .background) { messages -> [MessageData]? in
+        .compactMap(on: .concurrentBackground) { messages -> [MessageData]? in
             messages.data?.messages.compactMap { message in message?.fragments.messageData }
         }
         .map({ messages in
@@ -106,7 +108,7 @@ class ChatState {
             subscription: ChatMessagesSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
-        .compactMap(on: .background) { $0.data?.message.fragments.messageData }
+        .compactMap(on: .concurrentBackground) { $0.data?.message.fragments.messageData }
         .filter(predicate: { message -> Bool in
             if self.handledGlobalIds.contains(message.globalId) {
                 return false
