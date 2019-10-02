@@ -159,7 +159,7 @@ extension Toasts: Viewable {
                     toastView.transform = CGAffineTransform(translationX: location.x, y: 0)
                 }
 
-                innerBag += Signal(after: 0).feedback(type: .impactMedium)
+                innerBag += Signal(after: 0).feedback(type: .impactLight)
 
                 innerBag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.15)) { _ in
                     toastView.isHidden = false
