@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import StoreKit
 
 struct Welcome {
     let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>
@@ -116,6 +117,7 @@ extension Welcome: Presentable {
                 closeButton.onTapSignal,
                 scrolledToEndCallbacker.providedSignal
             ).onValue {
+                SKStoreReviewController.requestReview()
                 completion(.success)
             }
 
