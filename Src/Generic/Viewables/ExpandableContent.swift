@@ -75,7 +75,7 @@ extension ExpandableContent: Viewable {
         bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
             bag += isExpanded.atOnce().map { !$0 ? "Se mer" : "Stäng" }.bindTo(
                 transition: buttonView,
-                style: .crossDissolve(duration: 0.5),
+                style: .crossDissolve(duration: 0.25),
                 expandButton,
                 \.title.value
             )

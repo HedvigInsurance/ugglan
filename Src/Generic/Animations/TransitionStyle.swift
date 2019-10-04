@@ -21,6 +21,6 @@ struct TransitionStyle {
 
 extension TransitionStyle {
     static func crossDissolve(duration: TimeInterval) -> TransitionStyle {
-        return TransitionStyle(duration: duration, options: .transitionCrossDissolve)
+        return TransitionStyle(duration: duration, options: [.transitionCrossDissolve, .allowUserInteraction])
     }
 }
