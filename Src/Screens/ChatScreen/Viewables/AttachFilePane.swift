@@ -85,7 +85,7 @@ extension AttachFilePane: Viewable {
                     guard let key = result.data?.uploadFile.key else {
                         return
                     }
-                   
+
                     self.chatState.sendChatFileResponseMutation(
                         key: key,
                         mimeType: fileUpload.mimeType

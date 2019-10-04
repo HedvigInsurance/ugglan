@@ -33,23 +33,23 @@ extension BackgroundStyle {
         ),
         border: .standard
     )
-    
+
     static let primaryLight = BackgroundStyle(
         color: UIColor.secondaryBackground.resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .light)
         ),
         border: .standard
     )
-    
+
     static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
-    
+
     static let primaryDarkRoundedBorder = BackgroundStyle(
         color: UIColor.secondaryBackground.resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .dark)
         ),
         border: .standardRounded
     )
-    
+
     static let primaryLightRoundedBorder = BackgroundStyle(
         color: UIColor.secondaryBackground.resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .light)
@@ -130,7 +130,7 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
-    
+
     static let primaryDark = SectionBackgroundStyle(
         background: .primaryDark,
         topSeparator: .inset,
@@ -142,7 +142,7 @@ extension SectionBackgroundStyle {
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
-    
+
     static var primaryDarkLargeIcons = SectionBackgroundStyle(
         background: .primaryDark,
         topSeparator: .insetLargeIcons,
@@ -154,7 +154,7 @@ extension SectionBackgroundStyle {
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
-    
+
     static let primaryLightLargeIconsRoundedBorder = SectionBackgroundStyle(
         background: .primaryLightRoundedBorder,
         topSeparator: .insetLargeIcons,
@@ -166,7 +166,7 @@ extension SectionBackgroundStyle {
         topSeparator: .insetMediumIcons,
         bottomSeparator: .insetMediumIcons
     )
-    
+
     static let primaryDarkMediumIcons = SectionBackgroundStyle(
         background: .primaryDark,
         topSeparator: .insetMediumIcons,
@@ -178,7 +178,7 @@ extension SectionBackgroundStyle {
         topSeparator: .inset,
         bottomSeparator: .inset
     )
-    
+
     static let primaryDarkRoundedBorder = SectionBackgroundStyle(
         background: .primaryDarkRoundedBorder,
         topSeparator: .inset,
@@ -285,7 +285,7 @@ extension SectionStyle {
         header: .standard,
         footer: .standard
     )
-    
+
     static let sectionPlainLight = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
@@ -305,7 +305,7 @@ extension SectionStyle {
         header: .standard,
         footer: .standard
     )
-    
+
     static let sectionPlainDarkRoundedBorder = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
@@ -325,7 +325,7 @@ extension SectionStyle {
         header: .standard,
         footer: .standard
     )
-    
+
     static let sectionPlainLargeIconsDark = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
@@ -345,7 +345,7 @@ extension SectionStyle {
         header: .standard,
         footer: .standard
     )
-    
+
     static let sectionPlainLightLargeIconsRoundedBorder = SectionStyle(
         rowInsets: SectionStyle.sectionPlainRowInsets,
         itemSpacing: SectionStyle.sectionPlainItemSpacing,

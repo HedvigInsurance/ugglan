@@ -50,7 +50,7 @@ extension CircleLabelWithSubLabel: Viewable {
         subLabel.textAlignment = .center
         subLabel.adjustsFontSizeToFitWidth = true
         bag += subLabel.setDynamicText(subLabelText)
-        
+
         bag += circleView.applyShadow { _ in
             UIView.ShadowProperties(
                 opacity: 0.2,

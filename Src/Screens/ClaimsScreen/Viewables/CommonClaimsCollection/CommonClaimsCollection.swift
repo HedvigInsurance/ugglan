@@ -52,22 +52,22 @@ extension CommonClaimsCollection: Viewable {
         }
 
         bag += client.fetch(query: CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-        .valueSignal
+            .valueSignal
             .compactMap { $0.data?.commonClaims }
             .onValue { commonClaims in
-            let rows = commonClaims.enumerated().map {
-                CommonClaimCard(
-                    data: $0.element,
-                    index: TableIndex(section: 0, row: $0.offset),
-                    presentingViewController: self.presentingViewController
+                let rows = commonClaims.enumerated().map {
+                    CommonClaimCard(
+                        data: $0.element,
+                        index: TableIndex(section: 0, row: $0.offset),
+                        presentingViewController: self.presentingViewController
+                    )
+                }
+
+                collectionKit.set(
+                    Table(rows: rows),
+                    rowIdentifier: { $0.data.title }
                 )
             }
-
-            collectionKit.set(
-                Table(rows: rows),
-                rowIdentifier: { $0.data.title }
-            )
-        }
 
         let stackView = UIStackView()
         stackView.axis = .vertical

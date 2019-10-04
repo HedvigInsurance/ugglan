@@ -32,7 +32,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         let cardContainer = UIView()
         cardContainer.backgroundColor = .secondaryBackground
         cardContainer.layer.cornerRadius = 8
-        
+
         view.addArrangedSubview(cardContainer)
 
         let contentView = UIStackView()
@@ -56,7 +56,7 @@ struct EmergencyAction: Reusable, SignalProvider {
 
         return (view, { action in
             let bag = DisposeBag()
-            
+
             bag += cardContainer.applyShadow({ _ in
                 UIView.ShadowProperties(
                     opacity: 0.05,

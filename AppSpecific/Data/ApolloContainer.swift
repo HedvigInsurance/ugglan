@@ -51,9 +51,9 @@ class ApolloContainer {
         let httpAdditionalHeaders = [
             "Authorization": token ?? "",
             "Accept-Language": Localization.Locale.currentLocale.acceptLanguageHeader,
-            "User-Agent": "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
+            "User-Agent": "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))",
         ]
-        
+
         let configuration = URLSessionConfiguration.default
 
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
@@ -106,7 +106,7 @@ class ApolloContainer {
 
     func createClientFromNewSession() -> Future<Void> {
         ApplicationState.setLastNewsSeen()
-        
+
         let campaign = CampaignInput(
             source: nil,
             medium: nil,

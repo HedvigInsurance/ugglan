@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-09-23.
 //
 
-import Foundation
 import Apollo
 import Flow
+import Foundation
 
 extension ApolloClient {
     var isSwitchingInsurance: Future<Bool> {

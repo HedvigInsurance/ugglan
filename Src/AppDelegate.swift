@@ -10,8 +10,8 @@ import Apollo
 import Disk
 import Firebase
 import FirebaseAnalytics
-import FirebaseRemoteConfig
 import FirebaseMessaging
+import FirebaseRemoteConfig
 import Flow
 import Form
 import Foundation
@@ -42,12 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let keyWindow = UIApplication.shared.keyWindow else {
             return
         }
-        
+
         let toastBag = DisposeBag()
         let toasts = Toasts(toastSignal: toastSignal)
-                        
-       
-        
+
         toastBag += keyWindow.add(toasts) { toastsView in
             toastBag += toastSignal.atOnce().onValue { _ in
                 toastsView.layer.zPosition = .greatestFiniteMagnitude
@@ -64,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         let safeAreaTop = keyWindow.safeAreaInsets.top
                         make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
                     }
-                    
+
                     make.centerX.equalToSuperview()
                 }
             }
@@ -98,11 +96,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 backgroundColor: backgroundColor,
                 duration: duration
             )
-                        
+
             if self.toastSignal.value == nil {
                 self.presentToasts()
             }
-            
+
             if toast != previousToast {
                 self.toastSignal.value = toast
             }
@@ -119,27 +117,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
             guard let dynamicLinkUrl = link?.url else { return }
-                        
+
             if dynamicLinkUrl.pathComponents.contains("direct-debit") {
                 guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
                 guard let rootViewController = self.window.rootViewController else { return }
-                
+
                 self.bag += rootViewController.present(
                     DirectDebitSetup(setupType: .initial),
                     style: .modal,
                     options: [.defaults]
                 )
-                
+
                 return
             }
-            
+
             guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
             guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
-            
+
             guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
             guard let rootViewController = self.window.rootViewController else { return }
             let innerBag = self.bag.innerBag()
-            
+
             innerBag += rootViewController.present(
                 ReferralsReceiverConsent(referralCode: referralCode),
                 style: .modal,
@@ -169,13 +167,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 options: authOptions,
                 completionHandler: { _, _ in
                     completion(.success)
-                    
+
                     DispatchQueue.main.async {
                         UIApplication.shared.registerForRemoteNotifications()
                     }
                 }
             )
-            
+
             return NilDisposer()
         }
     }
@@ -204,7 +202,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let bestMatchedLanguage = Bundle.preferredLocalizations(
             from: availableLanguages
         ).first
-        
+
         if let bestMatchedLanguage = bestMatchedLanguage {
             Localization.Locale.currentLocale = Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
         } else {
@@ -241,29 +239,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         launchWindow?.rootViewController = launchViewController
         window.makeKeyAndVisible()
         launchWindow?.makeKeyAndVisible()
-        
+
         #if APP_VARIANT_PRODUCTION
 
-        let apolloEnvironment = ApolloEnvironmentConfig(
-            endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
-            wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
-            assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
-        )
-        
+            let apolloEnvironment = ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+            )
+
         #elseif APP_VARIANT_DEV
-        
-        let apolloEnvironment = ApolloEnvironmentConfig(
-            endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
-            assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
-        )
-        
+
+            let apolloEnvironment = ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+            )
+
         #endif
 
         ApolloContainer.shared.environment = apolloEnvironment
 
         DefaultStyling.installCustom()
-        
+
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
@@ -308,7 +306,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 if ApplicationState.currentState == .onboardingChat {
                     return
                 } else if ApplicationState.currentState == .offer {
-                    
                     bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             OfferChat(),
@@ -321,7 +318,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     }
                     return
                 } else if ApplicationState.currentState == .loggedIn {
-                     bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             FreeTextChat(),
                             style: .modally(

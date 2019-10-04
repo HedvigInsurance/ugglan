@@ -141,7 +141,7 @@ extension CommonClaimCard: Viewable {
         bag += cornerRadiusSignal.atOnce().bindTo(contentView, \.layer.cornerRadius)
 
         bag += shadowOpacitySignal.atOnce().bindTo(contentView, \.layer.shadowOpacity)
-        
+
         bag += contentView.applyShadow({ _ in
             UIView.ShadowProperties(
                 opacity: self.shadowOpacitySignal.value,

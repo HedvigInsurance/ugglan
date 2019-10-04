@@ -13,7 +13,7 @@ extension UIColor {
         if #available(iOS 13, *) {
             return resolvedColor(with: with)
         }
-        
+
         return self
     }
 }

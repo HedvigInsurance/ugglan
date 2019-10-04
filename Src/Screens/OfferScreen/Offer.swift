@@ -22,7 +22,7 @@ struct Offer {
 extension Offer {
     static var primaryAccentColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .primaryBackground : .darkPurple
+            trait.userInterfaceStyle == .dark ? .primaryBackground : .midnight500
         })
     }
 }
@@ -187,7 +187,7 @@ extension Offer: Presentable {
             }
         }
 
-        bag += stackView.addArranged(OfferCoverageHeader())
+        bag += stackView.addArranged(OfferSummary())
         bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
         bag += stackView.addArranged(OfferCoverageMe(presentingViewController: viewController))

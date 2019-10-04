@@ -120,7 +120,7 @@ extension CharityOption: Reusable {
 
                 containerView.layer.masksToBounds = false
                 containerView.layer.cornerRadius = 8
-                
+
                 bag += containerView.applyShadow { _ in
                     UIView.ShadowProperties(
                         opacity: 0.08,

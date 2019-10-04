@@ -199,7 +199,7 @@ extension Referrals: Presentable {
                 make.centerX.equalToSuperview()
                 make.height.equalTo(button.button.type.value.height)
             }
-            
+
             bag += buttonView.applyShadow { _ in
                 UIView.ShadowProperties(
                     opacity: 0.5,
@@ -209,7 +209,7 @@ extension Referrals: Presentable {
                     path: nil
                 )
             }
-            
+
             bag += codeSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)
 
             bag += button.onTapSignal.withLatestFrom(

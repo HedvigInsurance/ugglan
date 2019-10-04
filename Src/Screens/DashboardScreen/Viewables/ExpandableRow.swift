@@ -75,8 +75,8 @@ extension ExpandableRow: Viewable {
         }
 
         expandableStackView.addArrangedSubview(contentWrapperView)
-        
-        if (showDivider) {
+
+        if showDivider {
             let divider = Divider(backgroundColor: .primaryBorder)
             bag += expandableStackView.addArranged(divider) { dividerView in
                 dividerView.alpha = isOpenSignal.value ? 1 : 0

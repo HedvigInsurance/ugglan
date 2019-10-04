@@ -27,29 +27,29 @@ extension ReferralsNotification: Presentable {
     func materialize() -> (UIViewController, Future<ReferralsNotificationResult>) {
         let bag = DisposeBag()
         let viewController = LightContentViewController()
-        
+
         let view = UIView()
         view.backgroundColor = .primaryBackground
-        
+
         viewController.view = view
-        
+
         let openReferralsButton = Button(
             title: String(key: .REFERRAL_SUCCESS_BTN_CTA),
             type: .standard(backgroundColor: .purple, textColor: .white)
         )
-        
+
         let closeButton = Button(
             title: String(key: .REFERRAL_SUCCESS_BTN_CLOSE),
             type: .pillSemiTransparent(backgroundColor: .blackPurple, textColor: .white)
         )
-        
+
         let content = ImageTextAction<ReferralsNotificationResult>(
             image: Asset.inviteSuccess.image,
             title: String(key: .REFERRAL_SUCCESS_HEADLINE(user: name)),
             body: String(key: .REFERRAL_SUCCESS_BODY(referralValue: String(incentive))),
             actions: [
                 (.openReferrals, openReferralsButton),
-                (.cancel, closeButton)
+                (.cancel, closeButton),
             ],
             showLogo: true
         )

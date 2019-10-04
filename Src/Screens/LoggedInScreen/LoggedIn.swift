@@ -88,10 +88,10 @@ extension LoggedIn: Presentable {
 
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
-                
-        if (didSign) {
+
+        if didSign {
             ApplicationState.setLastNewsSeen()
-            
+
             bag += client
                 .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                 .compactMap { $0.data }
@@ -113,7 +113,7 @@ extension LoggedIn: Presentable {
 
         bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)
-    
+
         return (tabBarController, bag)
     }
 }

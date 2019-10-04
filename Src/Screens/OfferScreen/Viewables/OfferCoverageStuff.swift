@@ -63,12 +63,12 @@ extension OfferCoverageStuff: Viewable {
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(value: "", style: TextStyle.body.colored(.tertiaryText))
-        
+
         bag += client
-        .fetch(query: OfferQuery())
-        .valueSignal
-        .compactMap { $0.data?.insurance.type }
-        .onValue { insuranceType in
+            .fetch(query: OfferQuery())
+            .valueSignal
+            .compactMap { $0.data?.insurance.type }
+            .onValue { insuranceType in
                 if insuranceType.isStudent {
                     descriptionLabel.styledTextSignal.value = StyledText(
                         text: String(key: .OFFER_STUFF_PROTECTION_DESCRIPTION(protectionAmount: Localization.Key.STUFF_PROTECTION_AMOUNT)),
@@ -80,8 +80,8 @@ extension OfferCoverageStuff: Viewable {
                         style: descriptionLabel.styledTextSignal.value.style
                     )
                 }
-        }
-        
+            }
+
         bag += stackView.addArranged(descriptionLabel)
 
         let perilCollection = PerilCollection(

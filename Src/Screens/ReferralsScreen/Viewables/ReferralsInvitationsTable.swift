@@ -29,16 +29,16 @@ extension ReferralsInvitationsTable: Viewable {
         let bag = DisposeBag()
 
         let tableStyle = DynamicTableViewFormStyle.grouped.restyledWithStyleAndInput { (style: inout TableViewFormStyle, trait) in
-             style.section.minRowHeight = 72
-            
+            style.section.minRowHeight = 72
+
             if trait.isPad {
                 style.section.background = trait.userInterfaceStyle == .dark ?
                     SectionStyle.Background.standardDarkLargeIconsRoundedBorder :
                     SectionStyle.Background.standardLightLargeIconsRoundedBorder
             } else {
                 style.section.background = trait.userInterfaceStyle == .dark ?
-                SectionStyle.Background.standardDarkLargeIcons :
-                SectionStyle.Background.standardLightLargeIcons
+                    SectionStyle.Background.standardDarkLargeIcons :
+                    SectionStyle.Background.standardLightLargeIcons
             }
         }
 

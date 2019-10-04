@@ -9,7 +9,7 @@ import Foundation
 import Presentation
 
 extension PresentationStyle {
-    static let defaultOrModal = PresentationStyle.init(name: "DefaultOrModal") { (viewController, from, options) -> PresentationStyle.Result in
+    static let defaultOrModal = PresentationStyle(name: "DefaultOrModal") { (viewController, from, options) -> PresentationStyle.Result in
         if from.traitCollection.isPad {
             return PresentationStyle.modally(
                 presentationStyle: .formSheet,
@@ -17,7 +17,7 @@ extension PresentationStyle {
                 capturesStatusBarAppearance: true
             ).present(viewController, from: from, options: options)
         }
-        
+
         return PresentationStyle.default.present(viewController, from: from, options: options)
     }
 }

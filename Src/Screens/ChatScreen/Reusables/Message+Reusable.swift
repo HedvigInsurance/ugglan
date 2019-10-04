@@ -96,7 +96,7 @@ extension Message: Reusable {
             text: body,
             style: .chatBody
         ))
-        
+
         let size = attributedString.boundingRect(
             with: CGSize(width: 280, height: CGFloat(Int.max)),
             options: [.usesLineFragmentOrigin, .usesFontLeading],

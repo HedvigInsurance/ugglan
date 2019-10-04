@@ -57,7 +57,7 @@ extension MyProtectionSection: Viewable {
             perilCategoriesStack.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-            
+
             if let home = perilCategories.home {
                 let protectionSection = PerilExpandableRow(
                     perilsCategory: .home,
@@ -67,7 +67,7 @@ extension MyProtectionSection: Viewable {
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)
             }
-            
+
             if let me = perilCategories.me {
                 let protectionSection = PerilExpandableRow(
                     perilsCategory: .me,
@@ -77,7 +77,7 @@ extension MyProtectionSection: Viewable {
                 bag += perilCategoriesStack.addArranged(protectionSection)
                 bag += perilCategoriesStack.addArranged(rowSpacing)
             }
-            
+
             if let stuff = perilCategories.stuff {
                 let protectionSection = PerilExpandableRow(
                     perilsCategory: .stuff,

@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2019-09-23.
 //
 
-import Foundation
-import UIKit
 import Flow
 import Form
+import Foundation
+import UIKit
 
 struct ImageTextAction<ActionResult> {
     let image: UIImage
@@ -19,7 +19,7 @@ struct ImageTextAction<ActionResult> {
 }
 
 extension ImageTextAction: Viewable {
-    func materialize(events: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
+    func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .primaryBackground
@@ -92,14 +92,14 @@ extension ImageTextAction: Viewable {
         let gradient = CAGradientLayer()
         gradient.locations = [0, 0.1, 0.9, 1]
         shadowView.layer.addSublayer(gradient)
-        
+
         func setGradientColors() {
             gradient.colors = [
                 UIColor.primaryBackground.withAlphaComponent(0.2).cgColor,
                 UIColor.primaryBackground.cgColor,
             ]
         }
-        
+
         bag += shadowView.traitCollectionSignal.onValue { _ in
             setGradientColors()
         }
@@ -113,11 +113,11 @@ extension ImageTextAction: Viewable {
         shadowView.snp.makeConstraints { make in
             make.width.height.centerY.centerX.equalToSuperview()
         }
-        
+
         bag += scrollView.embedPinned(buttonsContainer, edge: .bottom, minHeight: 70)
 
         containerView.addArrangedSubview(view)
-        
+
         return (scrollView, Signal { callback in
             bag += self.actions.map { _, button in
                 buttonsContainer.addArranged(button.wrappedIn(UIStackView())) { stackView in
@@ -125,13 +125,13 @@ extension ImageTextAction: Viewable {
                     stackView.alignment = .center
                 }
             }
-            
+
             bag += self.actions.map { result, button in
                 button.onTapSignal.onValue { _ in
                     callback(result)
                 }
             }
-            
+
             return bag
         })
     }

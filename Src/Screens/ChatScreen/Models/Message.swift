@@ -31,7 +31,7 @@ struct Message: Equatable, Hashable {
     let richTextCompatible: Bool
     let timeStamp: TimeInterval
     let statusMessage: String?
-    
+
     private let cachedComputedProperties: CachedComputedProperties?
 
     let listSignal: ReadSignal<[ChatListContent]>?
@@ -289,11 +289,11 @@ struct Message: Equatable, Hashable {
         type = message.type
         timeStamp = message.timeStamp
         statusMessage = message.statusMessage
-        
+
         if listSignal != nil {
-            self.cachedComputedProperties = message.cachedComputedProperties
+            cachedComputedProperties = message.cachedComputedProperties
         } else {
-            self.cachedComputedProperties = nil
+            cachedComputedProperties = nil
         }
     }
 
@@ -301,11 +301,11 @@ struct Message: Equatable, Hashable {
         globalId = message.globalId
         id = message.id
         richTextCompatible = message.header.richTextChatCompatible
-        
+
         if let listSignal = listSignal {
-            self.cachedComputedProperties = CachedComputedProperties(listSignal.toVoid().plain())
+            cachedComputedProperties = CachedComputedProperties(listSignal.toVoid().plain())
         } else {
-            self.cachedComputedProperties = nil
+            cachedComputedProperties = nil
         }
 
         if let singleSelect = message.body.asMessageBodySingleSelect {
@@ -420,7 +420,7 @@ struct Message: Equatable, Hashable {
 
         fromMyself = message.header.fromMyself
         statusMessage = message.header.statusMessage
-        
+
         let timeStampInt = Int(message.header.timeStamp) ?? 0
         timeStamp = TimeInterval(timeStampInt / 1000)
         self.listSignal = listSignal

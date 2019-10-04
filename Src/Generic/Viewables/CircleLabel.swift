@@ -41,7 +41,7 @@ extension CircleLabel: Viewable {
 
         let labelContainer = UIView()
         labelContainer.backgroundColor = backgroundColor
-        
+
         bag += labelContainer.applyShadow { _ in
             UIView.ShadowProperties(
                 opacity: 0.2,

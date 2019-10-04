@@ -71,7 +71,7 @@ extension SelectedCharity: Viewable {
                     path: nil
                 )
             })
-            
+
             let infoContainerStackView = UIStackView()
             infoContainerStackView.axis = .vertical
             infoContainerStackView.spacing = 5

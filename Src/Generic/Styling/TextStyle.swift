@@ -202,7 +202,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryTintColor
     }
-    
+
     static let navigationBarButtonSkip = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .pink
@@ -226,5 +226,11 @@ extension TextStyle {
     static let countdownLetter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(12)
         style.color = .primaryText
+    }
+    
+    static let offerSummaryTitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(23)
+        style.color = .violet200
+        style.lineHeight = 24
     }
 }

@@ -13,9 +13,9 @@ import UIKit
 extension SignalProvider {
     /// explicitly ignore any value emitted by a signal
     func `nil`() -> Disposable {
-        self.onValue { _ in }
+        onValue { _ in }
     }
-    
+
     func bindTo<T>(
         transition view: UIView,
         style: TransitionStyle,
@@ -98,11 +98,11 @@ extension SignalProvider {
                     }
                 )
             }
-            
+
             return bag
         }
     }
-    
+
     func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> AnimationStyle,
@@ -137,11 +137,11 @@ extension SignalProvider {
                     }
                 )
             }
-            
+
             return bag
         }
     }
-    
+
     func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
@@ -157,7 +157,7 @@ extension SignalProvider {
     ) -> Signal<Value> {
         Signal<Value> { callback in
             let bag = DisposeBag()
-            
+
             bag += self.onValue(on: scheduler) { value in
                 UIView.animate(
                     withDuration: style.duration,
@@ -174,7 +174,7 @@ extension SignalProvider {
             return bag
         }
     }
-    
+
     func animated(
         on scheduler: Scheduler = .current,
         style: AnimationStyle,
@@ -206,11 +206,11 @@ extension SignalProvider {
                     }
                 )
             }
-            
+
             return bag
         }
     }
-    
+
     func animated(
         on scheduler: Scheduler = .current,
         style: SpringAnimationStyle,

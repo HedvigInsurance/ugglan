@@ -61,7 +61,7 @@ extension ButtonSection: Viewable {
                     }
                 }
             }
-            
+
             let darkStyle = SectionStyle.sectionPlainDark.restyled { (style: inout SectionStyle) in
                 if trait.isPad {
                     style.background = .standardDarkRoundedBorder
@@ -82,8 +82,7 @@ extension ButtonSection: Viewable {
                     }
                 }
             }
-            
-            
+
             return trait.userInterfaceStyle == .dark ? darkStyle : lightStyle
         }
 

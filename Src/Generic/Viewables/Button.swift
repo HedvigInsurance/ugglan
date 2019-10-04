@@ -245,7 +245,7 @@ struct Button {
 }
 
 extension Button: Equatable {
-    static func ==(lhs: Button, rhs: Button) -> Bool {
+    static func == (lhs: Button, rhs: Button) -> Bool {
         lhs.id == rhs.id
     }
 }

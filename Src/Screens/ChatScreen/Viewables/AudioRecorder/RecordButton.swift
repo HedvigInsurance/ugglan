@@ -25,11 +25,11 @@ extension RecordButton: Viewable {
         }
         control.layer.cornerRadius = size / 2
         control.layer.borderWidth = 3
-        
-        bag += control.applyBorderColor { trait -> UIColor in
+
+        bag += control.applyBorderColor { _ -> UIColor in
             UIColor.primaryBorder
         }
-        
+
         let recordIcon = UIView()
         recordIcon.isUserInteractionEnabled = false
         recordIcon.backgroundColor = .pink

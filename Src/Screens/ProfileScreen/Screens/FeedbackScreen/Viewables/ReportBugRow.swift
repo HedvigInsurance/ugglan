@@ -43,8 +43,8 @@ extension ReportBugRow: Viewable {
             query: MemberIdQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
-            .valueSignal
-            .compactMap { $0.data?.member.id }.plain()
+        .valueSignal
+        .compactMap { $0.data?.member.id }.plain()
 
         bag += events.onSelect.withLatestFrom(memberIdSignal).onValue { _, memberId in
             let deviceInfo = String(key: .FEEDBACK_SCREEN_REPORT_BUG_EMAIL_ATTACHMENT(

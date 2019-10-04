@@ -32,7 +32,7 @@ extension ReferralsReceiverConsent: Presentable {
 
         let view = UIView()
         view.backgroundColor = .secondaryBackground
-        
+
         let acceptDiscountButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
             type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
@@ -42,14 +42,14 @@ extension ReferralsReceiverConsent: Presentable {
             title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
             type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack)
         )
-        
+
         let content = ImageTextAction<ReferralsReceiverConsentResult>(
             image: Asset.inviteSuccess.image,
             title: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
             body: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
             actions: [
                 (.accept, acceptDiscountButton),
-                (.decline, declineButton)
+                (.decline, declineButton),
             ],
             showLogo: true
         )
@@ -81,7 +81,7 @@ extension ReferralsReceiverConsent: Presentable {
                             } else {
                                 completion(.success(.accept))
                             }
-                    }
+                        }
                 case .decline:
                     completion(.success(.decline))
                 }

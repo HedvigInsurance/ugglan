@@ -29,7 +29,7 @@ extension OnboardingChat: Presentable {
         let chat = Chat()
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
-        
+
         chat.chatState.fetch()
 
         let settingsButton = UIBarButtonItem()
@@ -54,7 +54,7 @@ extension OnboardingChat: Presentable {
         restartButton.image = Asset.restart.image
         restartButton.tintColor = .navigationItemMutedTintColor
 
-        bag += restartButton.onValue { _ in            
+        bag += restartButton.onValue { _ in
             let alert = Alert(
                 title: String(key: .CHAT_RESTART_ALERT_TITLE),
                 message: String(key: .CHAT_RESTART_ALERT_MESSAGE),

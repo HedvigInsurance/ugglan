@@ -13,10 +13,10 @@ struct PerilExpandableRow {
     let perilsDataSignal: ReadWriteSignal<PerilCategoryFragment?> = ReadWriteSignal(nil)
     let perilsCategory: PerilsCategory
     let presentingViewController: UIViewController
-    
+
     enum PerilsCategory {
         case home, me, stuff
-        
+
         var image: ImageAsset {
             switch self {
             case .me: return Asset.coinsuredPlain

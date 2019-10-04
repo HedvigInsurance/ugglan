@@ -60,10 +60,6 @@ extension UITextView: SignalProvider {
     public var didBeginEditingSignal: Signal<Void> {
         return NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
     }
-
-    public var contentSizeSignal: ReadSignal<CGSize> {
-        return signal(for: \.contentSize)
-    }
 }
 
 extension TextView: Viewable {
@@ -84,7 +80,7 @@ extension TextView: Viewable {
         bag += view.applyBorderColor { trait in
             trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
         }
-        
+
         bag += view.didLayoutSignal.onValue { _ in
             view.layer.cornerRadius = min(view.frame.height / 2, 20)
         }

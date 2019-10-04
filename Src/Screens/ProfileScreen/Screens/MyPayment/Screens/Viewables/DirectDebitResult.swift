@@ -21,7 +21,7 @@ enum DirectDebitResultType {
             return Asset.pinkCircularExclamationPoint
         }
     }
-    
+
     var isSuccess: Bool {
         switch self {
         case .success:
@@ -88,7 +88,7 @@ struct DirectDebitResult {
     enum ResultError: Error {
         case retry
     }
-    
+
     let type: DirectDebitResultType
 }
 
@@ -146,9 +146,9 @@ extension DirectDebitResult: Viewable {
         buttonsContainer.spacing = 10
         buttonsContainer.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
         buttonsContainer.isLayoutMarginsRelativeArrangement = true
-        
+
         stackView.addArrangedSubview(buttonsContainer)
-        
+
         bag += events.wasAdded.delay(by: 0.5).animated(style: SpringAnimationStyle.heavyBounce()) {
             containerView.alpha = 1
             containerView.transform = CGAffineTransform.identity
@@ -164,11 +164,11 @@ extension DirectDebitResult: Viewable {
                     title: self.type.mainButtonText,
                     type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
                 )
-                
+
                 bag += continueButton.onTapSignal.onValue { _ in
                     completion(.success)
                 }
-                
+
                 bag += buttonsContainer.addArranged(continueButton.wrappedIn(UIStackView())) { stackView in
                     stackView.axis = .vertical
                     stackView.alignment = .center
@@ -178,31 +178,31 @@ extension DirectDebitResult: Viewable {
                     title: self.type.mainButtonText,
                     type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
                 )
-                
+
                 bag += retryButton.onTapSignal.onValue { _ in
                     bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                         containerView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
                         containerView.alpha = 0
                         buttonsContainer.alpha = 0
                     }
-                    
+
                     completion(.failure(DirectDebitResult.ResultError.retry))
                 }
-                
+
                 bag += buttonsContainer.addArranged(retryButton.wrappedIn(UIStackView())) { stackView in
                     stackView.axis = .vertical
                     stackView.alignment = .center
                 }
-                
+
                 let skipButton = Button(
                     title: String(key: .ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER),
                     type: .transparent(textColor: .pink)
                 )
-                
+
                 bag += skipButton.onTapSignal.onValue { _ in
                     completion(.success)
                 }
-                
+
                 bag += buttonsContainer.addArranged(skipButton.wrappedIn(UIStackView())) { stackView in
                     stackView.axis = .vertical
                     stackView.alignment = .center

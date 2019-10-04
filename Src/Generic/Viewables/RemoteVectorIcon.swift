@@ -5,11 +5,11 @@
 //  Created by Sam Pettersson on 2019-04-12.
 //
 
+import Apollo
 import Disk
 import Flow
 import Foundation
 import UIKit
-import Apollo
 
 struct RemoteVectorIcon {
     let iconSignal = ReadWriteSignal<IconFragment?>(nil)
@@ -113,7 +113,7 @@ extension RemoteVectorIcon: Viewable {
             if traitCollection.userInterfaceStyle == .dark {
                 return iconFragment?.variants.dark.pdfUrl
             }
-            
+
             return iconFragment?.variants.light.pdfUrl
         }.map(on: .background) { pdfUrlString -> CFData? in
             guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {

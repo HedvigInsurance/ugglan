@@ -84,7 +84,7 @@ extension AudioPlayer: Viewable {
         }
 
         let timerBag = bag.innerBag()
-        
+
         func pause(audioPlayer: AVAudioPlayer) {
             timerBag.dispose()
             audioPlayer.pause()
@@ -92,7 +92,7 @@ extension AudioPlayer: Viewable {
             updateTimeStamp(audioPlayer: audioPlayer)
             updateShader(audioPlayer: audioPlayer)
         }
-        
+
         func play(audioPlayer: AVAudioPlayer) {
             try? AVAudioSession.sharedInstance().setCategory(.playback)
             timerBag.dispose()
@@ -116,10 +116,10 @@ extension AudioPlayer: Viewable {
                 }
 
                 play(audioPlayer: audioPlayer)
-            
+
                 timerBag += Signal(every: 1 / 60).onValue { _ in
                     updateShader(audioPlayer: audioPlayer)
-                    
+
                     if !audioPlayer.isPlaying {
                         pause(audioPlayer: audioPlayer)
                     }

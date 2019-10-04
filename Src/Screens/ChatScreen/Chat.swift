@@ -38,7 +38,7 @@ extension Chat: Presentable {
         let bag = DisposeBag()
 
         let navigateCallbacker = Callbacker<NavigationEvent>()
-        
+
         let chatInput = ChatInput(
             chatState: chatState,
             navigateCallbacker: navigateCallbacker
@@ -103,11 +103,11 @@ extension Chat: Presentable {
         tableKit.view.insetsContentViewsToSafeArea = false
         bag += tableKit.delegate.heightForCell.set { tableIndex -> CGFloat in
             let item = tableKit.table[tableIndex]
-            
+
             if let message = item.left {
                 return message.totalHeight
             }
-            
+
             if let typingIndicator = item.right?.left {
                 return typingIndicator.totalHeight
             }
@@ -152,7 +152,7 @@ extension Chat: Presentable {
                 tableKit.view.tableHeaderView = headerView
                 headerView.layoutIfNeeded()
             })
-                
+
         bag += chatState.tableSignal.atOnce().onValue(on: .main) { table in
             if tableKit.table.isEmpty {
                 tableKit.set(table, animation: .fade)
@@ -161,11 +161,11 @@ extension Chat: Presentable {
                 tableKit.set(table, animation: tableAnimation)
             }
         }
-        
+
         bag += reloadChatSignal.onValue { _ in
             self.chatState.reset()
         }
-                
+
         bag += viewController.install(tableKit)
 
         return (viewController, Future { _ in

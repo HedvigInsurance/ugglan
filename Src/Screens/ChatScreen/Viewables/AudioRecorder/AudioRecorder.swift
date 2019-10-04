@@ -5,17 +5,17 @@
 //  Created by Sam Pettersson on 2019-09-17.
 //
 
+import Apollo
 import AVKit
 import Disk
 import Flow
 import Foundation
 import UIKit
-import Apollo
 
 struct AudioRecorder {
     let client: ApolloClient
     let chatState: ChatState
-    
+
     init(
         chatState: ChatState,
         client: ApolloClient = ApolloContainer.shared.client
@@ -43,9 +43,9 @@ extension AudioRecorder: Viewable {
         playContainer.alignment = .center
         playContainer.spacing = 10
         playContainer.animationSafeIsHidden = true
-        
+
         contentContainerView.addArrangedSubview(playContainer)
-        
+
         let currentAudioFileUrl = ReadWriteSignal<URL?>(nil)
 
         let recordButton = RecordButton()
@@ -58,7 +58,7 @@ extension AudioRecorder: Viewable {
             guard let fileUrl = try? Disk.url(for: "\(UUID().uuidString).mp4", in: .temporary) else {
                 return NilDisposer()
             }
-            
+
             currentAudioFileUrl.value = fileUrl
 
             let settings = [
@@ -138,35 +138,35 @@ extension AudioRecorder: Viewable {
                 title: "Gör om",
                 type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white)
             )
-            
+
             bag += redoButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 recordButtonContainer.animationSafeIsHidden = false
                 recordButtonContainer.alpha = 1
                 playContainer.animationSafeIsHidden = true
                 playContainer.alpha = 0
             }
-            
+
             bag += playContainer.addArranged(redoButton.wrappedIn(UIStackView())) { stackView in
                 stackView.axis = .vertical
                 stackView.alignment = .trailing
             }
-            
+
             let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
             let loadableSendButton = LoadableButton(button: sendButton)
-            
+
             bag += loadableSendButton.onTapSignal.onValue({ _ in
                 guard let fileUrl = currentAudioFileUrl.value else {
                     return
                 }
-                
+
                 bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                     loadableSendButton.isLoadingSignal.value = true
                     playContainer.layoutIfNeeded()
                 }
-                
+
                 self.chatState.sendChatAudioResponse(fileUrl: fileUrl)
             })
-            
+
             bag += playContainer.addArranged(loadableSendButton.wrappedIn(UIStackView())) { stackView in
                 stackView.axis = .vertical
                 stackView.alignment = .trailing

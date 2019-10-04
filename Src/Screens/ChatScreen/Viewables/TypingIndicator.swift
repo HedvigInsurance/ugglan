@@ -15,16 +15,16 @@ struct TypingIndicator: Hashable, Equatable {
     static func == (lhs: TypingIndicator, rhs: TypingIndicator) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
+
     let id = UUID()
     let listSignal: ReadSignal<[ChatListContent]>
-    
+
     var previous: Message? {
-        let list = self.listSignal.value
+        let list = listSignal.value
 
         guard let myIndex = list.firstIndex(of: .right(.left(self))) else {
             return nil
@@ -37,7 +37,7 @@ struct TypingIndicator: Hashable, Equatable {
 
         return list[previousIndex].left
     }
-    
+
     var hasPreviousMessage: Bool {
         return previous?.fromMyself == false
     }

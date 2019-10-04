@@ -124,7 +124,7 @@ struct Toasts {
 }
 
 extension Toasts: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let containerView = UIStackView()

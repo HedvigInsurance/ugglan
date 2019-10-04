@@ -40,14 +40,14 @@ extension DefaultStyling {
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
             ).shadowImage = UIColor.transparent.as1ptImage()
-            
+
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).shadowImage = UIColor.grayBorder.as1ptImage()
         } else {
             UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
         }
-        
+
         UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
         UITabBar.appearance().unselectedItemTintColor = .disabledTintColor
@@ -85,20 +85,20 @@ extension DefaultStyling {
         UIBarButtonItem.appearance().tintColor = .primaryTintColor
 
         UITabBar.appearance().barTintColor = UIColor.primaryBackground
-        
+
         if #available(iOS 13.0, *) {
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
             ).backgroundImage = UIColor.almostBlack.as1ptImage()
-            
+
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).backgroundImage = UIColor.offWhite.as1ptImage()
-            
+
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
             ).shadowImage = UIColor.darkGrayBorder.as1ptImage()
-            
+
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).shadowImage = UIColor.grayBorder.as1ptImage()

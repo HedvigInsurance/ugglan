@@ -21,7 +21,7 @@ struct DirectDebitSetup {
     enum SetupType {
         case initial, replacement, postOnboarding
     }
-    
+
     private func makeDismissButton() -> UIBarButtonItem {
         switch setupType {
         case .postOnboarding:
@@ -55,11 +55,11 @@ extension DirectDebitSetup: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
-        
+
         if #available(iOS 13.0, *) {
             viewController.isModalInPresentation = true
         }
-        
+
         switch setupType {
         case .initial:
             viewController.title = String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE)
@@ -68,9 +68,9 @@ extension DirectDebitSetup: Presentable {
         case .postOnboarding:
             viewController.title = String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE)
         }
-        
+
         let dismissButton = makeDismissButton()
-        
+
         let webViewConfiguration = WKWebViewConfiguration()
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
 
@@ -110,11 +110,11 @@ extension DirectDebitSetup: Presentable {
                 activityIndicator.alpha = 0
             }
         }
-        
+
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
-            
+
             bag += client.perform(mutation: StartDirectDebitRegistrationMutation())
                 .valueSignal
                 .compactMap { $0.data?.startDirectDebitRegistration }
@@ -122,7 +122,7 @@ extension DirectDebitSetup: Presentable {
                     webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
                 }
         }
-        
+
         startRegistration()
 
         return (viewController, Future { completion in
