@@ -27,6 +27,11 @@ extension ExpandableContent: Viewable {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .primaryBackground
 
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        scrollView.addGestureRecognizer(tapGestureRecognizer)
+        
+        bag += tapGestureRecognizer.signal(forState: .recognized).map { true }.bindTo(isExpanded)
+        
         outerContainer.addSubview(scrollView)
         
         let expandButton = Button(title: "Expandera", type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
