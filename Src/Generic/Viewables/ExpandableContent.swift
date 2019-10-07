@@ -73,7 +73,7 @@ extension ExpandableContent: Viewable {
         bag += expandButton.onTapSignal.withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }.bindTo(isExpanded)
 
         bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
-            bag += isExpanded.atOnce().map { !$0 ? "Se mer" : "Stäng" }.bindTo(
+            bag += isExpanded.atOnce().map { !$0 ? String(key: .EXPANDABLE_CONTENT_EXPAND) : String(key: .EXPANDABLE_CONTENT_COLLAPSE) }.bindTo(
                 transition: buttonView,
                 style: .crossDissolve(duration: 0.25),
                 expandButton,

@@ -36,6 +36,7 @@ extension InsuranceSummarySection: Viewable {
         sectionView.dynamicStyle = .sectionPlain
 
         bag += client.watch(query: MyHomeQuery()).onValueDisposePrevious { result in
+            print("error", result)
             let innerBag = DisposeBag()
             if let insurance = result.data?.insurance {
                 let adressRow = KeyValueRow()
@@ -60,6 +61,46 @@ extension InsuranceSummarySection: Viewable {
                     livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
                     innerBag += sectionView.append(livingSpaceRow)
                 }
+                                
+                if let ancillaryArea = insurance.ancillaryArea {
+                    let ancillaryAreaRow = KeyValueRow()
+                    ancillaryAreaRow.keySignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_KEY)
+                    ancillaryAreaRow.valueSignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_VALUE(
+                        area: String(ancillaryArea)
+                    ))
+                    ancillaryAreaRow.valueStyleSignal.value = .rowTitleDisabled
+                    innerBag += sectionView.append(ancillaryAreaRow)
+                }
+                
+                if let yearOfConstruction = insurance.yearOfConstruction {
+                    let yearOfConstructionRow = KeyValueRow()
+                    yearOfConstructionRow.keySignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_KEY)
+                    yearOfConstructionRow.valueSignal.value = String(yearOfConstruction)
+                    yearOfConstructionRow.valueStyleSignal.value = .rowTitleDisabled
+                    innerBag += sectionView.append(yearOfConstructionRow)
+                }
+                
+                if let numberOfBathrooms = insurance.numberOfBathrooms {
+                    let numberOfBathroomsRow = KeyValueRow()
+                    numberOfBathroomsRow.keySignal.value = String(key: .MY_HOME_ROW_BATHROOMS_KEY)
+                    numberOfBathroomsRow.valueSignal.value = String(numberOfBathrooms)
+                    numberOfBathroomsRow.valueStyleSignal.value = .rowTitleDisabled
+                    innerBag += sectionView.append(numberOfBathroomsRow)
+                }
+                
+                if let extraBuildings = insurance.extraBuildings {
+                    let extraBuildingsSection = SectionView(
+                        headerView: UILabel(value: String(key: .MY_HOME_EXTRABUILDING_TITLE), style: .rowTitle),
+                        footerView: nil
+                    )
+                    sectionView.append(extraBuildingsSection)
+                    
+                    innerBag += extraBuildings.map { extraBuilding in
+                        ExtraBuildingRow(data: .static(extraBuilding))
+                    }.map { extraBuildingRow in
+                        extraBuildingsSection.append(extraBuildingRow)
+                    }
+                }
 
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = String(key: .MY_HOME_ROW_TYPE_KEY)
@@ -75,6 +116,8 @@ extension InsuranceSummarySection: Viewable {
                         apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_RENTAL_VALUE)
                     case .studentRent:
                         apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_RENTAL_VALUE)
+                    case .house:
+                        apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_HOUSE_VALUE)
                     case .__unknown:
                         apartmentTypeRow.valueSignal.value = String(key: .GENERIC_UNKNOWN)
                     }

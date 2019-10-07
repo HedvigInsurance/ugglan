@@ -72,26 +72,15 @@ extension RemoteVectorIcon: Viewable {
             }
 
             let renderer = UIGraphicsImageRenderer(size: imageSize)
-
-            var image = UIImage()
-
-            if threaded {
-                DispatchQueue.global(qos: .background).async {
-                    image = renderer.image(actions: { context in
-                        render(context.cgContext)
-                    })
-                    DispatchQueue.main.async {
-                        imageView.image = image
-                        self.finishedLoadingCallback.callAll()
-                    }
-                }
-            } else {
-                image = renderer.image(actions: { context in
-                    render(context.cgContext)
-                })
+            let image = renderer.image(actions: { context in
+                render(context.cgContext)
+            })
+            
+            DispatchQueue.main.async {
                 imageView.image = image
-                finishedLoadingCallback.callAll()
             }
+            
+            finishedLoadingCallback.callAll()
         }
 
         bag += imageView.didLayoutSignal.map { return imageView.bounds.size }.filter { $0.width != 0 && $0.height != 0 }.distinct()
@@ -131,7 +120,7 @@ extension RemoteVectorIcon: Viewable {
             }
 
             return nil
-        }.map { data in
+        }.map(on: threaded ? .background : .main) { data in
             guard let data = data else { return nil }
             guard let provider = CGDataProvider(data: data) else { return nil }
             return CGPDFDocument(provider)
