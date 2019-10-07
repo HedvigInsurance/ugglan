@@ -8,6 +8,10 @@ query MyHome {
         yearOfConstruction
         numberOfBathrooms
         extraBuildings {
+            ... on ExtraBuildingCore {
+                area
+                hasWaterConnected
+            }
             ... on ExtraBuildingGarage {
                 area
                 hasWaterConnected

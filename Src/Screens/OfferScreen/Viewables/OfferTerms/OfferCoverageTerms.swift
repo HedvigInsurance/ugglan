@@ -49,7 +49,7 @@ extension OfferCoverageTerms: Viewable {
         let image = UIImageView(image: Asset.offerTerms.image)
         image.contentMode = .scaleAspectFit
         image.tintColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .white : .darkPurple
+            trait.userInterfaceStyle == .dark ? .white : .black
         })
 
         image.snp.makeConstraints { make in

@@ -174,6 +174,11 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .secondaryText
     }
+    
+    static let rowTertitle = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(12)
+        style.color = .secondaryText
+    }
 
     static let rowSubtitlePrimary = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
         style.color = .primaryText

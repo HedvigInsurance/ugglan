@@ -13,13 +13,90 @@ import UIKit
 
 struct OfferTermsBulletPoints {
     @Inject var client: ApolloClient
+}
 
-    init() {}
+extension OfferTermsBulletPoints {
+    func bullets(for type: InsuranceType) -> [BulletPoint] {
+        var bulletList: [BulletPoint] = []
+        
+        if type.isApartment {
+            bulletList.append(BulletPoint(title: String(key: .OFFER_TERMS_NO_BINDING_PERIOD)))
+
+            if type.isOwnedApartment {
+                bulletList.append(BulletPoint(title: String(key: .OFFER_TERMS_NO_COVERAGE_LIMIT)))
+            }
+
+            if type.isStudent {
+                bulletList.append(
+                    BulletPoint(
+                        title: String(
+                            key: .OFFER_TERMS_MAX_COMPENSATION(
+                                maxCompensation: Localization.Key.MAX_COMPENSATION_STUDENT
+                            )
+                        )
+                    )
+                )
+            } else {
+                bulletList.append(
+                    BulletPoint(
+                        title: String(
+                            key: .OFFER_TERMS_MAX_COMPENSATION(
+                                maxCompensation: Localization.Key.MAX_COMPENSATION
+                            )
+                        )
+                    )
+                )
+            }
+            
+            bulletList.append(
+                BulletPoint(
+                    title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE))
+                )
+            )
+        } else {
+            bulletList.append(
+                BulletPoint(
+                    title: String(key: .OFFER_HOUSE_TRUST_HOUSE)
+                )
+            )
+            
+            bulletList.append(
+                BulletPoint(
+                    title: String(
+                        key: .OFFER_TERMS_MAX_COMPENSATION(
+                            maxCompensation: Localization.Key.MAX_COMPENSATION
+                        )
+                    )
+                )
+            )
+            
+            bulletList.append(
+                BulletPoint(
+                    title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE)),
+                    message: String(key: .OFFER_TRUST_INCREASED_DEDUCTIBLE)
+                )
+            )
+            
+            bulletList.append(
+                BulletPoint(
+                    title: String(key: .OFFER_HOUSE_TRUST_HDI)
+                )
+            )
+        }
+        
+        return bulletList
+    }
 }
 
 extension OfferTermsBulletPoints {
     struct BulletPoint: Viewable {
         let title: String
+        let message: String?
+        
+        init(title: String, message: String? = nil) {
+            self.title = title
+            self.message = message
+        }
 
         func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
             let bag = DisposeBag()
@@ -33,8 +110,13 @@ extension OfferTermsBulletPoints {
                 make.width.equalTo(20)
             }
 
-            let label = MultilineLabel(value: title, style: .rowSubtitle)
-            bag += stackView.addArranged(label)
+            let titleLabel = MultilineLabel(value: title, style: .rowSubtitle)
+            bag += stackView.addArranged(titleLabel)
+            
+            if let message = message {
+                let messageLabel = MultilineLabel(value: message, style: .rowTertitle)
+                bag += stackView.addArranged(messageLabel)
+            }
 
             return (stackView, bag)
         }
@@ -61,39 +143,9 @@ extension OfferTermsBulletPoints: Viewable {
             .onValueDisposePrevious { insuranceType in
                 let innerBag = DisposeBag()
 
-                innerBag += stackView.addArranged(BulletPoint(title: String(key: .OFFER_TERMS_NO_BINDING_PERIOD)))
-
-                if insuranceType.isOwnedApartment {
-                    innerBag += stackView.addArranged(BulletPoint(title: String(key: .OFFER_TERMS_NO_COVERAGE_LIMIT)))
-                }
-
-                if insuranceType.isStudent {
-                    innerBag += stackView.addArranged(
-                        BulletPoint(
-                            title: String(
-                                key: .OFFER_TERMS_MAX_COMPENSATION(
-                                    maxCompensation: Localization.Key.MAX_COMPENSATION_STUDENT
-                                )
-                            )
-                        )
-                    )
-                } else {
-                    innerBag += stackView.addArranged(
-                        BulletPoint(
-                            title: String(
-                                key: .OFFER_TERMS_MAX_COMPENSATION(
-                                    maxCompensation: Localization.Key.MAX_COMPENSATION
-                                )
-                            )
-                        )
-                    )
-                }
-
-                innerBag += stackView.addArranged(
-                    BulletPoint(
-                        title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE))
-                    )
-                )
+                innerBag += self.bullets(for: insuranceType).map({ bulletPoint in
+                    stackView.addArranged(bulletPoint)
+                })
 
                 return innerBag
             }

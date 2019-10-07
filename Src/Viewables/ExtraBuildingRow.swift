@@ -23,6 +23,16 @@ extension ExtraBuildingRow: Viewable {
         contentView.axis = .vertical
         contentView.layoutMargins = UIEdgeInsets(inset: 15)
         
+        let titleLabel = UILabel(value: "Garage", style: .rowSubtitle)
+        contentView.addArrangedSubview(titleLabel)
+        
+        let subtitleLabel = UILabel(value: "", style: .rowTertitle)
+        contentView.addArrangedSubview(subtitleLabel)
+        
+        bag += data.atOnce().map { String($0.area) }.onValue({ area in
+            subtitleLabel.text = area
+        })
+        
         row.append(contentView)
         
         return (row, bag)
