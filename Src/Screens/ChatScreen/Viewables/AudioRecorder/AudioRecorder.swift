@@ -13,15 +13,13 @@ import Foundation
 import UIKit
 
 struct AudioRecorder {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let chatState: ChatState
 
     init(
-        chatState: ChatState,
-        client: ApolloClient = ApolloContainer.shared.client
+        chatState: ChatState
     ) {
         self.chatState = chatState
-        self.client = client
     }
 }
 

@@ -10,8 +10,8 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import UIKit
 import StoreKit
+import UIKit
 
 struct Welcome {
     let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>

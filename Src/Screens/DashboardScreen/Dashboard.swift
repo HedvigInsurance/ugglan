@@ -14,13 +14,8 @@ import Presentation
 import UIKit
 
 struct Dashboard {
-    let client: ApolloClient
-    let remoteConfig: RemoteConfigContainer
-
-    init(client: ApolloClient = ApolloContainer.shared.client, remoteConfig: RemoteConfigContainer = RemoteConfigContainer.shared) {
-        self.client = client
-        self.remoteConfig = remoteConfig
-    }
+    @Inject var client: ApolloClient
+    @Inject var remoteConfig: RemoteConfigContainer
 }
 
 extension Dashboard: Presentable {

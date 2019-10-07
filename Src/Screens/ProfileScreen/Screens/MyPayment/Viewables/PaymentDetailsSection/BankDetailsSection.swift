@@ -12,12 +12,10 @@ import Form
 import Foundation
 
 struct BankDetailsSection {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension BankDetailsSection: Viewable {

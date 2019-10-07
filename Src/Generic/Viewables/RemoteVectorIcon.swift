@@ -15,17 +15,15 @@ struct RemoteVectorIcon {
     let iconSignal = ReadWriteSignal<IconFragment?>(nil)
     let finishedLoadingSignal: Signal<Void>
     let finishedLoadingCallback = Callbacker<Void>()
-    let environment: ApolloEnvironmentConfig
+    @Inject var environment: ApolloEnvironmentConfig
     let threaded: Bool
 
     init(
         _ icon: IconFragment? = nil,
-        environment: ApolloEnvironmentConfig = ApolloContainer.shared.environment,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon
         finishedLoadingSignal = finishedLoadingCallback.signal()
-        self.environment = environment
         self.threaded = threaded ?? false
     }
 }

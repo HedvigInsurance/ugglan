@@ -12,11 +12,10 @@ import Presentation
 import UIKit
 
 struct Offer {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
+    @Inject var analyticsCoordinator: AnalyticsCoordinator
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension Offer {
@@ -75,7 +74,7 @@ extension Offer {
                 presentationOptions: [.prefersNavigationBarHidden(true)]
             )
             viewController.present(overlay).onValue { _ in
-                AnalyticsCoordinator.logEcommercePurchase()
+                self.analyticsCoordinator.logEcommercePurchase()
                 viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
             }
         }

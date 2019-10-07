@@ -10,10 +10,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-
-#if canImport(Lottie)
-    import Lottie
-#endif
+import Lottie
 
 struct Launch {
     let hasLoadedSignal: Signal<Void>

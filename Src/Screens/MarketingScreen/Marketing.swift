@@ -13,11 +13,9 @@ import SnapKit
 import UIKit
 
 struct Marketing {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 enum MarketingResult {

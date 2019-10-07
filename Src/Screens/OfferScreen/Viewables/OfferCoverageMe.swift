@@ -12,15 +12,13 @@ import Foundation
 import UIKit
 
 struct OfferCoverageMe {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let presentingViewController: UIViewController
 
     init(
-        presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client
+        presentingViewController: UIViewController
     ) {
         self.presentingViewController = presentingViewController
-        self.client = client
     }
 }
 

@@ -14,7 +14,7 @@ class ChatState {
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
-    private let client: ApolloClient
+    @Inject private var client: ApolloClient
     private var handledGlobalIds: [GraphQLID] = []
     private var hasShownStatusMessage = false
 
@@ -181,8 +181,7 @@ class ChatState {
         }
     }
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
+    init() {
         filteredListSignal = listSignal.atOnce().map(on: .background) { messages in
             messages.enumerated().compactMap { offset, item -> ChatListContent? in
                 if item.right != nil {

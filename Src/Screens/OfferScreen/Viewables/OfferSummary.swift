@@ -6,9 +6,9 @@
 //
 
 import Flow
+import Form
 import Foundation
 import UIKit
-import Form
 
 struct OfferSummary {}
 
@@ -45,15 +45,15 @@ extension OfferSummary: Viewable {
             style: TextStyle.body.colored(.white).centerAligned
         )
         bag += stackView.addArranged(descriptionLabel)
-        
+
         bag += stackView.addArranged(Spacing(height: 10))
-        
+
         bag += stackView.addArranged(ExpandableContent(content: InsuranceSummarySection(), isExpanded: .static(false)))
 
         bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .top)) { blobView in
             blobView.backgroundColor = .midnight700
         }
-        
+
         return (outerView, bag)
     }
 }

@@ -10,8 +10,6 @@ import Flow
 import Foundation
 
 class RemoteConfigContainer {
-    static let shared = RemoteConfigContainer()
-
     private let remoteConfig: RemoteConfig
     let fetched: ReadWriteSignal<Bool>
 

@@ -14,7 +14,7 @@ import Presentation
 import UIKit
 
 struct Chat {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let reloadChatCallbacker = Callbacker<Void>()
     let chatState = ChatState()
 
@@ -22,9 +22,7 @@ struct Chat {
         reloadChatCallbacker.providedSignal
     }
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 typealias ChatListContent = Either<Message, Either<TypingIndicator, SingleSelectList>>

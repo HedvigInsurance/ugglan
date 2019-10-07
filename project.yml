@@ -24,7 +24,7 @@ targets:
       - Ugglan
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
-      - sdkroot:Photos.framework
+      - sdkroot:XCTest.framework
       - location: Carthage/Build/iOS/SnapshotTesting.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
@@ -88,23 +88,23 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
         outputs:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapshotTesting.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FlowFeedback.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AcknowList.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Disk.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FlowFeedback.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AcknowList.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Disk.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DynamicColor.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/UICollectionView_AnimatedScroll.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
     configuration:
       INFOPLIST_FILE: UITests/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests

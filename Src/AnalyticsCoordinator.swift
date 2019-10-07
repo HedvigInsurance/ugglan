@@ -11,7 +11,9 @@ import Flow
 import Foundation
 
 struct AnalyticsCoordinator {
-    static func logEcommercePurchase(client: ApolloClient = ApolloContainer.shared.client) {
+    @Inject private var client: ApolloClient
+    
+    func logEcommercePurchase() {
         let bag = DisposeBag()
         bag += client.fetch(query: InsurancePriceQuery())
             .valueSignal

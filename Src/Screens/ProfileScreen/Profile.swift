@@ -13,13 +13,7 @@ import Presentation
 import UIKit
 
 struct Profile {
-    let client: ApolloClient
-
-    init(
-        client: ApolloClient = ApolloContainer.shared.client
-    ) {
-        self.client = client
-    }
+    @Inject var client: ApolloClient
 }
 
 extension Profile: Presentable {

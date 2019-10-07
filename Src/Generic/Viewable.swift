@@ -16,7 +16,7 @@ protocol Viewable {
     associatedtype Matter
     associatedtype Result
     associatedtype Events
-
+    
     func materialize(events: Events) -> (Matter, Result)
 }
 

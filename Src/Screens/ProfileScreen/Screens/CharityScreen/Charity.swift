@@ -13,11 +13,9 @@ import Foundation
 import Presentation
 
 struct Charity {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension Charity: Presentable {

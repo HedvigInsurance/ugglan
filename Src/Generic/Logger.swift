@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Apollo
 
 private struct LogMessage: Encodable {
     let text: String
@@ -19,7 +20,7 @@ struct Logger {
         #if DEBUG
             // don't send anything when debugging
         #else
-            let client = ApolloContainer.shared.client
+            let client: ApolloClient = Dependencies.shared.resolve()
             client.perform(mutation: LogMutation(input: input), queue: queue).onValue { _ in }
         #endif
     }

@@ -13,16 +13,15 @@ import Presentation
 import UIKit
 
 struct About {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let state: State
 
     enum State {
         case onboarding, loggedIn
     }
 
-    init(state: State, client: ApolloClient = ApolloContainer.shared.client) {
+    init(state: State) {
         self.state = state
-        self.client = client
     }
 }
 

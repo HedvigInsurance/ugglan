@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 struct ChatTextView {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let chatState: ChatState
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 
@@ -22,11 +22,9 @@ struct ChatTextView {
     }
 
     init(
-        chatState: ChatState,
-        client: ApolloClient = ApolloContainer.shared.client
+        chatState: ChatState
     ) {
         self.chatState = chatState
-        self.client = client
     }
 }
 

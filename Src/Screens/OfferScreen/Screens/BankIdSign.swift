@@ -13,11 +13,9 @@ import Presentation
 import UIKit
 
 struct BankIdSign {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 enum BankIdSignError: Error {

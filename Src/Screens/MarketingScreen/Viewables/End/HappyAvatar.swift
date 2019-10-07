@@ -9,10 +9,8 @@
 import Flow
 import Foundation
 import UIKit
+import Lottie
 
-#if canImport(Lottie)
-    import Lottie
-#endif
 
 struct HappyAvatar {}
 

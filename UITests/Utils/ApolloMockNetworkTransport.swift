@@ -9,7 +9,26 @@ import Apollo
 import Dispatch
 import Foundation
 
-public final class MockNetworkTransport: NetworkTransport {
+public final class MockNetworkTransport: NetworkTransport, UploadingNetworkTransport {
+    public func upload<Operation>(operation: Operation, files: [GraphQLFile], completionHandler: @escaping (Result<GraphQLResponse<Operation>, Error>) -> Void) -> Cancellable where Operation : GraphQLOperation {
+        DispatchQueue.global(qos: .default).async {
+            completionHandler(Result {
+                GraphQLResponse(operation: operation, body: self.body)
+            })
+        }
+        return MockTask()
+    }
+    
+    public func send<Operation>(operation: Operation, completionHandler: @escaping (Result<GraphQLResponse<Operation>, Error>) -> Void) -> Cancellable where Operation : GraphQLOperation {
+        
+        DispatchQueue.global(qos: .default).async {
+            completionHandler(Result {
+                GraphQLResponse(operation: operation, body: self.body)
+            })
+        }
+        return MockTask()
+    }
+    
     let body: JSONObject
 
     public init(body: JSONObject) {

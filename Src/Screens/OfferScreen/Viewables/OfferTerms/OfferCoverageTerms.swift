@@ -12,15 +12,13 @@ import Foundation
 import UIKit
 
 struct OfferCoverageTerms {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let insuredAtOtherCompanySignal: ReadSignal<Bool>
 
     init(
-        insuredAtOtherCompanySignal: ReadSignal<Bool>,
-        client: ApolloClient = ApolloContainer.shared.client
+        insuredAtOtherCompanySignal: ReadSignal<Bool>
     ) {
         self.insuredAtOtherCompanySignal = insuredAtOtherCompanySignal
-        self.client = client
     }
 }
 

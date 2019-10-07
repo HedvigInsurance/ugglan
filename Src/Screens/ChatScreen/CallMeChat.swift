@@ -12,11 +12,9 @@ import Presentation
 import UIKit
 
 struct CallMeChat {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension CallMeChat: Presentable {

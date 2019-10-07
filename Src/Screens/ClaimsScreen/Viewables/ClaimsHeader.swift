@@ -13,24 +13,20 @@ import UIKit
 
 struct ClaimsHeader {
     let presentingViewController: UIViewController
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
     init(
-        presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client
+        presentingViewController: UIViewController
     ) {
         self.presentingViewController = presentingViewController
-        self.client = client
     }
 
     struct Title {}
     struct Description {}
     struct InactiveMessage {
-        let client: ApolloClient
+        @Inject var client: ApolloClient
 
-        init(client: ApolloClient = ApolloContainer.shared.client) {
-            self.client = client
-        }
+        init() {}
     }
 }
 

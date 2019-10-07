@@ -12,11 +12,9 @@ import Foundation
 import UIKit
 
 struct OfferCoverageSwitcher {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension OfferCoverageSwitcher: Viewable {

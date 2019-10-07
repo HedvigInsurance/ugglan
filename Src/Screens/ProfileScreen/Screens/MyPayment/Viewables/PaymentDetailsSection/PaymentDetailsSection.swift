@@ -14,18 +14,14 @@ import Presentation
 import UIKit
 
 struct PaymentDetailsSection {
-    let client: ApolloClient
-    let store: ApolloStore
+    @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let presentingViewController: UIViewController
 
     init(
-        presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client,
-        store: ApolloStore = ApolloContainer.shared.store
+        presentingViewController: UIViewController
     ) {
         self.presentingViewController = presentingViewController
-        self.client = client
-        self.store = store
     }
 }
 

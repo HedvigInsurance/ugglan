@@ -15,7 +15,7 @@ struct SingleSelectList: Hashable, Equatable {
     let id = UUID()
     let options: [SingleSelectOption]
     let chatState: ChatState
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let navigateCallbacker: Callbacker<NavigationEvent>
 
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -29,13 +29,11 @@ struct SingleSelectList: Hashable, Equatable {
     init(
         options: [SingleSelectOption],
         chatState: ChatState,
-        navigateCallbacker: Callbacker<NavigationEvent>,
-        client: ApolloClient = ApolloContainer.shared.client
+        navigateCallbacker: Callbacker<NavigationEvent>
     ) {
         self.options = options
         self.chatState = chatState
         self.navigateCallbacker = navigateCallbacker
-        self.client = client
     }
 }
 

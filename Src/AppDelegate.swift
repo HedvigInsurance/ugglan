@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
-        bag += ApolloContainer.shared.createClientFromNewSession().onValue { _ in
+        bag += ApolloClient.createClientFromNewSession().onValue { _ in
             self.bag.dispose()
             self.bag += ApplicationState.presentRootViewController(self.window)
         }
@@ -240,36 +240,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.makeKeyAndVisible()
         launchWindow?.makeKeyAndVisible()
 
-        #if APP_VARIANT_PRODUCTION
-
-            let apolloEnvironment = ApolloEnvironmentConfig(
-                endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
-                wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
-                assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
-            )
-
-        #elseif APP_VARIANT_DEV
-
-            let apolloEnvironment = ApolloEnvironmentConfig(
-                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
-                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
-            )
-
-        #endif
-
-        ApolloContainer.shared.environment = apolloEnvironment
-
         DefaultStyling.installCustom()
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
+        
+        let remoteConfigContainer = RemoteConfigContainer()
+        
+        Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
+            remoteConfigContainer
+        })
 
         bag += combineLatest(
-            ApolloContainer.shared.initClient().valueSignal.map { _ in true }.plain(),
-            RemoteConfigContainer.shared.fetched.plain()
+            ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
+            remoteConfigContainer.fetched.plain()
         ).atValue({ _ in
-            TranslationsRepo.fetch()
+            Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
+                AnalyticsCoordinator()
+            })
+            TranslationsRepo().fetch()
             self.bag += ApplicationState.presentRootViewController(self.window)
         }).delay(by: 0.1).onValue { _ in
             self.hasFinishedLoading.value = true
@@ -286,7 +275,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
-        ApolloContainer.shared.client.perform(mutation: RegisterPushTokenMutation(pushToken: fcmToken)).onValue { result in
+        let client: ApolloClient = Dependencies.shared.resolve()
+        client.perform(mutation: RegisterPushTokenMutation(pushToken: fcmToken)).onValue { result in
             if result.data?.registerPushToken != nil {
                 log.info("Did register push token for user")
             } else {

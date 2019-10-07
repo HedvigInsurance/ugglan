@@ -11,13 +11,10 @@ import Form
 import Presentation
 
 struct MyHome {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
     init(
-        client: ApolloClient = ApolloContainer.shared.client
-    ) {
-        self.client = client
-    }
+    ) {}
 }
 
 extension MyHome: Presentable {

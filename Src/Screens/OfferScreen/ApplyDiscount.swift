@@ -14,7 +14,7 @@ import Presentation
 import UIKit
 
 struct ApplyDiscount {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
     private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
 
@@ -22,9 +22,7 @@ struct ApplyDiscount {
         return didRedeemValidCodeCallbacker.providedSignal
     }
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension ApplyDiscount: Presentable {

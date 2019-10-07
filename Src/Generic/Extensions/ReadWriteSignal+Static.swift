@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2019-10-03.
 //
 
-import Foundation
 import Flow
+import Foundation
 
 extension ReadWriteSignal {
     static func `static`<Value>(_ value: Value) -> ReadWriteSignal<Value> {

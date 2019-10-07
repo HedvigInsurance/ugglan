@@ -13,16 +13,17 @@ import Presentation
 import UIKit
 
 struct ReferralsCode {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
+    @Inject var remoteConfigContainer: RemoteConfigContainer
     let codeSignal: Signal<String>
     let presentingViewController: UIViewController
-    let remoteConfigContainer: RemoteConfigContainer
 
-    init(codeSignal: Signal<String>, client: ApolloClient = ApolloContainer.shared.client, presentingViewController: UIViewController, remoteConfigContainer: RemoteConfigContainer = RemoteConfigContainer.shared) {
-        self.client = client
+    init(
+        codeSignal: Signal<String>,
+        presentingViewController: UIViewController
+    ) {
         self.codeSignal = codeSignal
         self.presentingViewController = presentingViewController
-        self.remoteConfigContainer = remoteConfigContainer
     }
 }
 

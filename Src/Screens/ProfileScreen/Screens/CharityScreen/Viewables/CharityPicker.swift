@@ -13,14 +13,12 @@ import Foundation
 import UIKit
 
 struct CharityPicker {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let presentingViewController: UIViewController
 
     init(
-        client: ApolloClient = ApolloContainer.shared.client,
         presentingViewController: UIViewController
     ) {
-        self.client = client
         self.presentingViewController = presentingViewController
     }
 }

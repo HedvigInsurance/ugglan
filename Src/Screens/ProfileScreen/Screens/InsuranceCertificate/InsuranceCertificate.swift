@@ -15,16 +15,15 @@ import SafariServices
 import UIKit
 
 struct InsuranceCertificate {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let type: CertificateType
 
     enum CertificateType {
         case current, renewal
     }
 
-    init(type: CertificateType, client: ApolloClient = ApolloContainer.shared.client) {
+    init(type: CertificateType) {
         self.type = type
-        self.client = client
     }
 }
 

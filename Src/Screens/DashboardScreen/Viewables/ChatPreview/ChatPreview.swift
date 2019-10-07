@@ -11,12 +11,11 @@ import Foundation
 import UIKit
 
 struct ChatPreview {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let presentingViewController: UIViewController
 
-    init(presentingViewController: UIViewController, client: ApolloClient = ApolloContainer.shared.client) {
+    init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
-        self.client = client
     }
 }
 

@@ -12,7 +12,7 @@ import UIKit
 
 struct PaymentNeedsSetupSection {
     let dataSignal: ReadWriteSignal<MyPaymentQuery.Data?> = ReadWriteSignal(nil)
-    let presentingViewController: UIViewController
+    var presentingViewController: UIViewController
 }
 
 extension PaymentNeedsSetupSection: Viewable {

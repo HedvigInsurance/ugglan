@@ -12,16 +12,14 @@ import Form
 import Foundation
 
 struct SelectedCharity {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let animateEntry: Bool
     let presentingViewController: UIViewController
 
     init(
-        client: ApolloClient = ApolloContainer.shared.client,
         animateEntry: Bool,
         presentingViewController: UIViewController
     ) {
-        self.client = client
         self.animateEntry = animateEntry
         self.presentingViewController = presentingViewController
     }

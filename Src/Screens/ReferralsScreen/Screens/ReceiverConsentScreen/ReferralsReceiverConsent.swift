@@ -17,11 +17,10 @@ enum ReferralsReceiverConsentResult {
 
 struct ReferralsReceiverConsent {
     let referralCode: String
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(referralCode: String, client: ApolloClient = ApolloContainer.shared.client) {
+    init(referralCode: String) {
         self.referralCode = referralCode
-        self.client = client
     }
 }
 

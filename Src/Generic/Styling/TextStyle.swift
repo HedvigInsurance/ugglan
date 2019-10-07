@@ -227,7 +227,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBold!.withSize(12)
         style.color = .primaryText
     }
-    
+
     static let offerSummaryTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(23)
         style.color = .violet200

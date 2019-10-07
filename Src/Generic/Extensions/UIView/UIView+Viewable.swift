@@ -24,8 +24,9 @@ extension UIView {
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
         )
+                            
         let (matter, result) = viewable.materialize(events: viewableEvents)
-
+            
         addSubview(matter)
 
         wasAddedCallbacker.callAll()

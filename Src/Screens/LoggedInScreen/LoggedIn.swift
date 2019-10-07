@@ -13,11 +13,10 @@ import Presentation
 import UIKit
 
 struct LoggedIn {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     let didSign: Bool
 
-    init(client: ApolloClient = ApolloContainer.shared.client, didSign: Bool = false) {
-        self.client = client
+    init(didSign: Bool = false) {
         self.didSign = didSign
     }
 }
@@ -53,7 +52,7 @@ extension LoggedIn: Presentable {
         let dashboard = Dashboard()
         let claims = Claims()
         let referrals = Referrals()
-        let profile = Profile(client: client)
+        let profile = Profile()
 
         let dashboardPresentation = Presentation(
             dashboard,

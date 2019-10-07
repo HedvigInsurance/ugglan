@@ -13,12 +13,10 @@ import Presentation
 import UIKit
 
 struct PostOnboarding {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
     typealias Content = ReusableViewable<ImageTextAction<TableAction>, TableAction>
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 
     enum TableAction {
         case payment, push, pushSkip

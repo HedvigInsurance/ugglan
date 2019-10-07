@@ -60,8 +60,7 @@ extension WhatsNew: Presentable {
         let pager = WhatsNewPager(
             scrollToNextCallbacker: scrollToNextCallbacker,
             scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker,
-            scrolledToEndCallbacker: scrolledToEndCallbacker,
-            presentingViewController: viewController
+            scrolledToEndCallbacker: scrolledToEndCallbacker
         )
 
         bag += containerView.addArranged(pager) { pagerView in

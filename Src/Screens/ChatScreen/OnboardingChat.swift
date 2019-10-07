@@ -13,11 +13,9 @@ import Presentation
 import UIKit
 
 struct OnboardingChat {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension OnboardingChat: Presentable {

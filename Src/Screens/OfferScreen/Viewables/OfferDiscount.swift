@@ -14,20 +14,16 @@ import UIKit
 struct OfferDiscount {
     let containerScrollView: UIScrollView
     let presentingViewController: UIViewController
-    let client: ApolloClient
-    let store: ApolloStore
+    @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let redeemedCampaignsSignal = ReadWriteSignal<[OfferQuery.Data.RedeemedCampaign]>([])
 
     init(
         containerScrollView: UIScrollView,
-        presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client,
-        store: ApolloStore = ApolloContainer.shared.store
+        presentingViewController: UIViewController
     ) {
         self.containerScrollView = containerScrollView
         self.presentingViewController = presentingViewController
-        self.client = client
-        self.store = store
     }
 }
 

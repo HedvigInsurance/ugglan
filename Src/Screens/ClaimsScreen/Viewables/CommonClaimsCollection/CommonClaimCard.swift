@@ -16,7 +16,7 @@ struct CommonClaimCard {
     let data: CommonClaimsQuery.Data.CommonClaim
     let index: TableIndex
     let presentingViewController: UIViewController
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
     enum State {
         case normal, expanded
@@ -87,13 +87,11 @@ struct CommonClaimCard {
     init(
         data: CommonClaimsQuery.Data.CommonClaim,
         index: TableIndex,
-        presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client
+        presentingViewController: UIViewController
     ) {
         self.index = index
         self.data = data
         self.presentingViewController = presentingViewController
-        self.client = client
         closeCallbacker = Callbacker()
         closeSignal = closeCallbacker.signal()
         claimButtonTapCallbacker = Callbacker()

@@ -16,7 +16,6 @@ struct WhatsNewPager {
     let scrollToNextCallbacker: Callbacker<Void>
     let scrolledToPageIndexCallbacker: Callbacker<Int>
     let scrolledToEndCallbacker: Callbacker<Void>
-    let presentingViewController: UIViewController
 }
 
 extension WhatsNewPager: Viewable {
@@ -38,7 +37,7 @@ extension WhatsNewPager: Viewable {
 
                 if slidesScrolledThrough > amountOfRealSlides {
                     let position = slidesScrolledThrough - amountOfRealSlides
-                    self.presentingViewController.view.alpha = 1 - position
+                    view.viewController?.view.alpha = 1 - position
 
                     if position == 1 {
                         self.scrolledToEndCallbacker.callAll()

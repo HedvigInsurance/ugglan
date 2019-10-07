@@ -12,11 +12,9 @@ import Foundation
 import Presentation
 
 struct MemberIdRow {
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
-    init(client: ApolloClient = ApolloContainer.shared.client) {
-        self.client = client
-    }
+    init() {}
 }
 
 extension MemberIdRow: Viewable {

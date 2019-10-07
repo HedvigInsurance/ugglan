@@ -8,12 +8,8 @@
 import Apollo
 import Firebase
 import FirebaseAnalytics
-#if canImport(FirebaseDynamicLinks)
-    import FirebaseDynamicLinks
-#endif
-#if canImport(FirebaseFirestore)
-    import FirebaseFirestore
-#endif
+import FirebaseDynamicLinks
+import FirebaseFirestore
 import Flow
 import Form
 import Foundation
@@ -25,16 +21,8 @@ enum ReferralsFailure: LocalizedError {
 }
 
 struct Referrals {
-    let client: ApolloClient
-    let remoteConfigContainer: RemoteConfigContainer
-
-    init(
-        client: ApolloClient = ApolloContainer.shared.client,
-        remoteConfigContainer: RemoteConfigContainer = RemoteConfigContainer.shared
-    ) {
-        self.client = client
-        self.remoteConfigContainer = remoteConfigContainer
-    }
+    @Inject var client: ApolloClient
+    @Inject var remoteConfigContainer: RemoteConfigContainer
 }
 
 extension Referrals: Presentable {

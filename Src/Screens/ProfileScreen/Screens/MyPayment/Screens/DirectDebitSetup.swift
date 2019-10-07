@@ -13,8 +13,8 @@ import Presentation
 import WebKit
 
 struct DirectDebitSetup {
-    let client: ApolloClient
-    let store: ApolloStore
+    @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let setupType: SetupType
     let applicationWillTerminateSignal: Signal<Void>
 
@@ -39,13 +39,9 @@ struct DirectDebitSetup {
 
     init(
         setupType: SetupType = .initial,
-        client: ApolloClient = ApolloContainer.shared.client,
-        store: ApolloStore = ApolloContainer.shared.store,
         applicationWillTerminateSignal: Signal<Void> = UIApplication.shared.appDelegate.applicationWillTerminateSignal
     ) {
         self.setupType = setupType
-        self.client = client
-        self.store = store
         self.applicationWillTerminateSignal = applicationWillTerminateSignal
     }
 }

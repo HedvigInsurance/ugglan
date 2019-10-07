@@ -15,16 +15,14 @@ import UIKit
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
-    let client: ApolloClient
+    @Inject var client: ApolloClient
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,
-        chatState: ChatState,
-        client: ApolloClient = ApolloContainer.shared.client
+        chatState: ChatState
     ) {
         self.isOpenSignal = isOpenSignal
         self.chatState = chatState
-        self.client = client
     }
 }
 

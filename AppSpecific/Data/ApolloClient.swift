@@ -7,11 +7,8 @@
 //
 
 import Apollo
-#if canImport(ApolloWebSocket)
-    import ApolloWebSocket
-#endif
+import ApolloWebSocket
 import Disk
-import FirebaseRemoteConfig
 import Flow
 import Foundation
 
@@ -21,33 +18,24 @@ struct ApolloEnvironmentConfig {
     let assetsEndpointURL: URL
 }
 
-class ApolloContainer {
-    static let shared = ApolloContainer()
-
-    private var _client: ApolloClient?
-    private var _store: ApolloStore?
-    private var _environment: ApolloEnvironmentConfig?
-
-    var client: ApolloClient {
-        return _client!
+extension ApolloClient {
+    static var environment: ApolloEnvironmentConfig {
+        #if APP_VARIANT_PRODUCTION
+            return ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+            )
+        #elseif APP_VARIANT_DEV
+            return ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+            )
+        #endif
     }
 
-    var store: ApolloStore {
-        return _store!
-    }
-
-    var environment: ApolloEnvironmentConfig {
-        get {
-            return _environment!
-        }
-        set(newValue) {
-            _environment = newValue
-        }
-    }
-
-    private init() {}
-
-    func createClient(token: String?) {
+    static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         let httpAdditionalHeaders = [
             "Authorization": token ?? "",
             "Accept-Language": Localization.Locale.currentLocale.acceptLanguageHeader,
@@ -76,18 +64,32 @@ class ApolloContainer {
         )
 
         let cache = InMemoryNormalizedCache()
-        _store = ApolloStore(cache: cache)
-        _client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+        let store = ApolloStore(cache: cache)
+        let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+
+        Dependencies.shared.add(module: Module { () -> ApolloClient in
+            client
+        })
+
+        Dependencies.shared.add(module: Module { () -> ApolloStore in
+            store
+        })
+        
+        Dependencies.shared.add(module: Module { () -> ApolloEnvironmentConfig in
+            environment
+        })
+        
+        return (store, client)
     }
 
-    func deleteToken() {
+    static func deleteToken() {
         try? Disk.remove(
             "authorization-token.json",
             from: .applicationSupport
         )
     }
 
-    func retreiveToken() -> AuthorizationToken? {
+    static func retreiveToken() -> AuthorizationToken? {
         return try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
@@ -95,7 +97,7 @@ class ApolloContainer {
         )
     }
 
-    func saveToken(token: String) {
+    static func saveToken(token: String) {
         let authorizationToken = AuthorizationToken(token: token)
         try? Disk.save(
             authorizationToken,
@@ -104,7 +106,7 @@ class ApolloContainer {
         )
     }
 
-    func createClientFromNewSession() -> Future<Void> {
+    static func createClientFromNewSession() -> Future<Void> {
         ApplicationState.setLastNewsSeen()
 
         let campaign = CampaignInput(
@@ -117,14 +119,14 @@ class ApolloContainer {
         let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
-            self.createClient(token: nil)
+            let (_, client) = self.createClient(token: nil)
 
-            self.client.perform(mutation: mutation).onValue { result in
+            client.perform(mutation: mutation).onValue { result in
                 if let token = result.data?.createSession {
                     self.saveToken(token: token)
                 }
 
-                self.createClient(
+                let _ = self.createClient(
                     token: result.data?.createSession
                 )
 
@@ -135,7 +137,7 @@ class ApolloContainer {
         }
     }
 
-    func initClient() -> Future<Void> {
+    static func initClient() -> Future<Void> {
         return Future { completion in
             let tokenData = self.retreiveToken()
 
@@ -151,7 +153,7 @@ class ApolloContainer {
                     }
                 }
             } else {
-                self.createClient(token: tokenData!.token)
+                let _ = self.createClient(token: tokenData!.token)
                 completion(.success)
             }
 

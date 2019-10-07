@@ -12,8 +12,8 @@ import Presentation
 import UIKit
 
 struct MyInfoState {
-    private let client: ApolloClient
-    private let store: ApolloStore
+    @Inject private var client: ApolloClient
+    @Inject private var store: ApolloStore
 
     let presentingViewController: UIViewController
 
@@ -138,13 +138,9 @@ struct MyInfoState {
     }
 
     init(
-        presentingViewController: UIViewController,
-        client: ApolloClient = ApolloContainer.shared.client,
-        store: ApolloStore = ApolloContainer.shared.store
+        presentingViewController: UIViewController
     ) {
         self.presentingViewController = presentingViewController
-        self.client = client
-        self.store = store
         onSaveSignal = onSaveCallbacker.signal()
     }
 }
