@@ -264,7 +264,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if ApplicationState.hasOverridenTargetEnvironment {
                 self.createToast(
                     symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().rawValue) environment."
+                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
                 )
             }
         }).delay(by: 0.1).onValue { _ in

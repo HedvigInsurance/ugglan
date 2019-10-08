@@ -87,6 +87,17 @@ struct ApplicationState {
             }
         }
         
+        var displayName: String {
+            switch self {
+            case .production:
+                return "production"
+            case .staging:
+                return "staging"
+            case .custom:
+                return "custom"
+            }
+        }
+        
         init?(rawValue: String) {
             switch rawValue {
             case "production":
