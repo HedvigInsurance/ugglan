@@ -51,6 +51,110 @@ struct ApplicationState {
     static func setLastNewsSeen() {
         UserDefaults.standard.set(Bundle.main.appVersion, forKey: ApplicationState.lastNewsSeenKey)
     }
+    
+    private static let targetEnvironmentKey = "targetEnvironment"
+    
+    enum Environment: Hashable {
+        case production
+        case staging
+        case custom(endpointURL: URL, wsEndpointURL: URL, assetsEndpointURL: URL)
+        
+        fileprivate struct RawCustomStorage: Codable {
+            let endpointURL: URL
+            let wsEndpointURL: URL
+            let assetsEndpointURL: URL
+        }
+        
+        var rawValue: String {
+            switch self {
+            case .production:
+                return "production"
+            case .staging:
+                return "staging"
+            case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
+                let rawCustomStorage = RawCustomStorage(
+                    endpointURL: endpointURL,
+                    wsEndpointURL: wsEndpointURL,
+                    assetsEndpointURL: assetsEndpointURL
+                )
+                let data = try? JSONEncoder().encode(rawCustomStorage)
+                
+                if let data = data {
+                    return String(data: data, encoding: .utf8) ?? "staging"
+                }
+                
+                return "staging"
+            }
+        }
+        
+        init?(rawValue: String) {
+            switch rawValue {
+            case "production":
+                self = .production
+            case "staging":
+                self = .staging
+            default:
+                guard let data = rawValue.data(using: .utf8) else {
+                    return nil
+                }
+                
+                guard let rawCustomStorage = try? JSONDecoder().decode(RawCustomStorage.self, from: data) else {
+                    return nil
+                }
+                                
+                self = .custom(
+                    endpointURL: rawCustomStorage.endpointURL,
+                    wsEndpointURL: rawCustomStorage.wsEndpointURL,
+                    assetsEndpointURL: rawCustomStorage.assetsEndpointURL
+                )
+            }
+        }
+        
+        var apolloEnvironmentConfig: ApolloEnvironmentConfig {
+            switch getTargetEnvironment() {
+            case .staging:
+                return ApolloEnvironmentConfig(
+                    endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+                    wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+                    assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+                )
+            case .production:
+                return  ApolloEnvironmentConfig(
+                               endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+                               wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+                               assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+                           )
+            case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
+                return  ApolloEnvironmentConfig(
+                    endpointURL: endpointURL,
+                    wsEndpointURL: wsEndpointURL,
+                    assetsEndpointURL: assetsEndpointURL
+                )
+            }
+        }
+    }
+    
+    static func setTargetEnvironment(_ environment: Environment) {
+        UserDefaults.standard.set(environment.rawValue, forKey: targetEnvironmentKey)
+    }
+    
+    static func getTargetEnvironment() -> Environment {
+        guard
+            let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
+            let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
+                #if APP_VARIANT_PRODUCTION
+                setTargetEnvironment(.production)
+                return .production
+                #elseif APP_VARIANT_DEV
+                setTargetEnvironment(.staging)
+                return .staging
+                #else
+                setTargetEnvironment(.production)
+                return .production
+                #endif
+        }
+        return targetEnvironment
+    }
 
     static func presentRootViewController(_ window: UIWindow) -> Disposable {
         guard let applicationState = currentState

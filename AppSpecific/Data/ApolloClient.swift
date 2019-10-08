@@ -20,19 +20,7 @@ struct ApolloEnvironmentConfig {
 
 extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
-        #if APP_VARIANT_PRODUCTION
-            return ApolloEnvironmentConfig(
-                endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
-                wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
-                assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
-            )
-        #elseif APP_VARIANT_DEV
-            return ApolloEnvironmentConfig(
-                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
-                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
-            )
-        #endif
+        ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
     }
 
     static func createClient(token: String?) -> (ApolloStore, ApolloClient) {

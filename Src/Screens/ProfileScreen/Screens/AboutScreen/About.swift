@@ -11,6 +11,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import SwiftUI
 
 struct About {
     @Inject var client: ApolloClient
@@ -61,7 +62,18 @@ extension About: Presentable {
         )
 
         let versionRow = VersionRow()
-        bag += versionSection.append(versionRow)
+        bag += versionSection.append(versionRow) { versionRowView in
+            let tapGestureRecongnizer = UITapGestureRecognizer()
+            tapGestureRecongnizer.numberOfTapsRequired = 2
+                        
+            versionRowView.viewRepresentation.addGestureRecognizer(tapGestureRecongnizer)
+            
+            bag += tapGestureRecongnizer.signal(forState: .recognized).onValue { _ in
+                if #available(iOS 13, *) {
+                    viewController.present(UIHostingController(rootView: Debug()), style: .modally())
+                }
+            }
+        }
 
         let memberIdRow = MemberIdRow()
         bag += versionSection.append(memberIdRow)
