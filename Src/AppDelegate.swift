@@ -260,6 +260,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             })
             TranslationsRepo().fetch()
             self.bag += ApplicationState.presentRootViewController(self.window)
+            
+            if ApplicationState.hasOverridenTargetEnvironment {
+                self.createToast(
+                    symbol: .character("🧙‍♂️"),
+                    body: "You are using the \(ApplicationState.getTargetEnvironment().rawValue) environment."
+                )
+            }
         }).delay(by: 0.1).onValue { _ in
             self.hasFinishedLoading.value = true
         }

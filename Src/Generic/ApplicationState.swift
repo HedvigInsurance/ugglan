@@ -138,18 +138,19 @@ struct ApplicationState {
         UserDefaults.standard.set(environment.rawValue, forKey: targetEnvironmentKey)
     }
     
+    static var hasOverridenTargetEnvironment: Bool {
+        return UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
+    }
+    
     static func getTargetEnvironment() -> Environment {
         guard
             let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
             let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
                 #if APP_VARIANT_PRODUCTION
-                setTargetEnvironment(.production)
                 return .production
                 #elseif APP_VARIANT_DEV
-                setTargetEnvironment(.staging)
                 return .staging
                 #else
-                setTargetEnvironment(.production)
                 return .production
                 #endif
         }

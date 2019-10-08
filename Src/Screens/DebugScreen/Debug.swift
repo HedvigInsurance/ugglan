@@ -31,7 +31,6 @@ struct Debug: View {
         case .staging:
             return .staging
         case .custom:
-            
             return .custom
         }
     }
