@@ -12,22 +12,6 @@ query MyHome {
                 area
                 hasWaterConnected
             }
-            ... on ExtraBuildingGarage {
-                area
-                hasWaterConnected
-            }
-            ... on ExtraBuildingAttefalls {
-                area
-                hasWaterConnected
-            }
-            ... on ExtraBuildingFriggebod {
-                area
-                hasWaterConnected
-            }
-            ... on ExtraBuildingOther {
-                area
-                hasWaterConnected
-            }
         }
         isSubleted
     }
