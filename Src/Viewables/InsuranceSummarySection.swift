@@ -36,7 +36,6 @@ extension InsuranceSummarySection: Viewable {
         sectionView.dynamicStyle = .sectionPlain
 
         bag += client.watch(query: MyHomeQuery()).onValueDisposePrevious { result in
-            print("error", result)
             let innerBag = DisposeBag()
             if let insurance = result.data?.insurance {
                 let adressRow = KeyValueRow()
