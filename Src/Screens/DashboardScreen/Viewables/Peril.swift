@@ -96,7 +96,7 @@ extension Peril: Reusable {
                     titleLabel.snp.makeConstraints { make in
                         make.top.equalTo(perilIcon.frame.height + 5)
                         make.centerX.equalToSuperview()
-                        make.width.equalTo(50)
+                        make.width.equalToSuperview()
                     }
                 }
 
