@@ -24,14 +24,14 @@ extension ExtraBuildingRow: Viewable {
         contentView.spacing = 5
         contentView.layoutMargins = UIEdgeInsets(inset: 15)
         
-        let titleLabel = UILabel(value: "", style: .rowSubtitle)
+        let titleLabel = UILabel(value: "", style: .rowTitle)
         contentView.addArrangedSubview(titleLabel)
         
         bag += data.atOnce().map { $0.displayName }.onValue({ displayName in
             titleLabel.text = displayName
         })
         
-        let subtitleLabel = UILabel(value: "", style: .rowTertitle)
+        let subtitleLabel = UILabel(value: "", style: .rowSubtitle)
         contentView.addArrangedSubview(subtitleLabel)
                 
         bag += data.atOnce().map { (String($0.area), $0.hasWaterConnected) }.onValue({ area, hasWaterConnected in
