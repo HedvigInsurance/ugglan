@@ -64,7 +64,7 @@ extension OfferTermsBulletPoints {
                 BulletPoint(
                     title: String(
                         key: .OFFER_TERMS_MAX_COMPENSATION(
-                            maxCompensation: Localization.Key.MAX_COMPENSATION
+                            maxCompensation: Localization.Key.MAX_COMPENSATION_HOUSE
                         )
                     )
                 )
