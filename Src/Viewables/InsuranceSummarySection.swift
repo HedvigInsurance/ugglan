@@ -133,7 +133,7 @@ extension InsuranceSummarySection: Viewable {
                 }
                 innerBag += sectionView.append(apartmentTypeRow)
                 
-                if let extraBuildings = insurance.extraBuildings {
+                if let extraBuildings = insurance.extraBuildings, !extraBuildings.isEmpty {
                     let extraBuildingsSection = SectionView(
                         headerView: UILabel(value: String(key: .MY_HOME_EXTRABUILDING_TITLE), style: .rowTitle),
                         footerView: nil
@@ -145,7 +145,7 @@ extension InsuranceSummarySection: Viewable {
                     innerBag += {
                         extraBuildingsSection.removeFromSuperview()
                     }
-                    
+                                        
                     innerBag += extraBuildings.map { extraBuilding in
                         ExtraBuildingRow(data: .static(extraBuilding))
                     }.map { extraBuildingRow in

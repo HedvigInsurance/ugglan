@@ -92,12 +92,7 @@ extension ExpandableContent: Viewable {
         }
 
         bag += shadowView.didLayoutSignal.onValue { _ in
-            let animation = CABasicAnimation(keyPath: "bounds")
-            animation.fromValue = gradient.bounds
-            animation.toValue = shadowView.bounds
-            animation.fillMode = .forwards
-            gradient.bounds = shadowView.bounds
-            gradient.add(animation, forKey: "bounds")
+            gradient.frame = shadowView.bounds
         }
 
         outerContainer.addSubview(shadowView)
@@ -124,9 +119,9 @@ extension ExpandableContent: Viewable {
 
         bag += isExpanded
             .atOnce()
-            .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeIn(duration: 0.25) }) { isExpanded in
+            .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.30) }) { isExpanded in
                 shadowView.alpha = isExpanded ? 0 : 1
-                shadowView.layoutIfNeeded()
+                outerContainer.layoutIfNeeded()
             }
 
         return (outerContainer, bag)
