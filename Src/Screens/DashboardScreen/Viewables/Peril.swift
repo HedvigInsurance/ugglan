@@ -36,13 +36,17 @@ extension Peril {
             return Asset.meSick
         case "ME.TRAVEL.LUGGAGE.DELAY":
             return Asset.meDelayedLuggage
-        case "HOUSE.BRF.FIRE", "HOUSE.RENT.FIRE", "HOUSE.SUBLET.BRF.FIRE", "HOUSE.SUBLET.RENT.FIRE":
+        case "HOUSE.BRF.FIRE", "HOUSE.RENT.FIRE", "HOUSE.SUBLET.BRF.FIRE", "HOUSE.SUBLET.RENT.FIRE", "HOUSE.HOUSE.FIRE":
             return Asset.houseFire
-        case "HOUSE.BRF.APPLIANCES", "HOUSE.RENT.APPLIANCES", "HOUSE.SUBLET.BRF.APPLIANCES", "HOUSE.SUBLET.RENT.APPLIANCES":
+        case "HOUSE.BRF.APPLIANCES", "HOUSE.RENT.APPLIANCES", "HOUSE.SUBLET.BRF.APPLIANCES", "HOUSE.SUBLET.RENT.APPLIANCES", "HOUSE.HOUSE.APPLICANES":
             return Asset.houseAppliances
-        case "HOUSE.BRF.WEATHER", "HOUSE.RENT.WEATHER", "HOUSE.SUBLET.BRF.WEATHER", "HOUSE.SUBLET.RENT.WEATHER":
+        case "HOUSE.HOUSE.REBUILDING":
+            return Asset.houseRebuilding
+        case "HOUSE.HOUSE.VERMIN":
+            return Asset.houseRebuilding
+        case "HOUSE.BRF.WEATHER", "HOUSE.RENT.WEATHER", "HOUSE.HOUSE.NATURE", "HOUSE.SUBLET.BRF.WEATHER", "HOUSE.SUBLET.RENT.WEATHER":
             return Asset.houseWeather
-        case "HOUSE.BRF.WATER", "HOUSE.RENT.WATER", "HOUSE.SUBLET.BRF.WATER", "HOUSE.SUBLET.RENT.WATER":
+        case "HOUSE.BRF.WATER", "HOUSE.RENT.WATER", "HOUSE.SUBLET.BRF.WATER", "HOUSE.SUBLET.RENT.WATER", "HOUSE.HOUSE.WATER":
             return Asset.houseWaterLeak
         case "HOUSE.BREAK-IN":
             return Asset.houseBreakIn
@@ -54,11 +58,11 @@ extension Peril {
             return Asset.stuffTheft
         case "STUFF.DAMAGE":
             return Asset.stuffDamage
-        case "STUFF.BRF.FIRE", "STUFF.RENT.FIRE", "STUFF.SUBLET.BRF.FIRE", "STUFF.SUBLET.RENT.FIRE":
+        case "STUFF.BRF.FIRE", "STUFF.RENT.FIRE", "STUFF.SUBLET.BRF.FIRE", "STUFF.SUBLET.RENT.FIRE", "STUFF.HOUSE.FIRE":
             return Asset.stuffFire
-        case "STUFF.BRF.WATER", "STUFF.RENT.WATER", "STUFF.SUBLET.BRF.WATER", "STUFF.SUBLET.RENT.WATER":
+        case "STUFF.BRF.WATER", "STUFF.RENT.WATER", "STUFF.SUBLET.BRF.WATER", "STUFF.SUBLET.RENT.WATER", "STUFF.HOUSE.WATER":
             return Asset.stuffWaterLeak
-        case "STUFF.BRF.WEATHER", "STUFF.RENT.WEATHER", "STUFF.SUBLET.BRF.WEATHER", "STUFF.SUBLET.RENT.WEATHER":
+        case "STUFF.BRF.WEATHER", "STUFF.RENT.WEATHER", "STUFF.SUBLET.BRF.WEATHER", "STUFF.SUBLET.RENT.WEATHER", "STUFF.HOUSE.WEATHER":
             return Asset.stuffWeather
         default:
             return Asset.houseBreakIn
@@ -78,7 +82,7 @@ extension Peril: Reusable {
             let bag = DisposeBag()
 
             let perilIcon = Icon(icon: Peril.iconAsset(for: peril.id), iconWidth: 40)
-
+            
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in
                 make.centerX.top.equalToSuperview()
