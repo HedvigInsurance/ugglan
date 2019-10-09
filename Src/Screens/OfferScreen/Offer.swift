@@ -19,6 +19,17 @@ struct Offer {
 }
 
 extension Offer {
+    func startSignProcess(_ viewController: UIViewController) {
+        let overlay = DraggableOverlay(
+            presentable: BankIdSign(),
+            presentationOptions: [.prefersNavigationBarHidden(true)]
+        )
+        viewController.present(overlay).onValue { _ in
+            self.analyticsCoordinator.logEcommercePurchase()
+            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
+        }
+    }
+    
     static var primaryAccentColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .primaryBackground : .midnight500
@@ -69,14 +80,7 @@ extension Offer {
         )
 
         bag += signButton.onTapSignal.onValue { _ in
-            let overlay = DraggableOverlay(
-                presentable: BankIdSign(),
-                presentationOptions: [.prefersNavigationBarHidden(true)]
-            )
-            viewController.present(overlay).onValue { _ in
-                self.analyticsCoordinator.logEcommercePurchase()
-                viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
-            }
+            self.startSignProcess(viewController)
         }
 
         let signButtonBarItem = UIBarButtonItem(viewable: signButton)
@@ -229,9 +233,7 @@ extension Offer: Presentable {
         )
 
         bag += button.onTapSignal.onValue { _ in
-            viewController.present(DraggableOverlay(presentable: BankIdSign(), presentationOptions: [.prefersNavigationBarHidden(true)])).onValue { _ in
-                viewController.present(LoggedIn(didSign: true), options: [.prefersNavigationBarHidden(true)])
-            }
+            self.startSignProcess(viewController)
         }
 
         bag += view.add(button) { buttonView in
