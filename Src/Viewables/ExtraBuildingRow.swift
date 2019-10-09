@@ -24,8 +24,12 @@ extension ExtraBuildingRow: Viewable {
         contentView.spacing = 5
         contentView.layoutMargins = UIEdgeInsets(inset: 15)
         
-        let titleLabel = UILabel(value: "TODO USE DISPLAY NAME HERE", style: .rowSubtitle)
+        let titleLabel = UILabel(value: "", style: .rowSubtitle)
         contentView.addArrangedSubview(titleLabel)
+        
+        bag += data.atOnce().map { $0.displayName }.onValue({ displayName in
+            titleLabel.text = displayName
+        })
         
         let subtitleLabel = UILabel(value: "", style: .rowTertitle)
         contentView.addArrangedSubview(subtitleLabel)

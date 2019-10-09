@@ -89,6 +89,16 @@ extension InsuranceSummarySection: Viewable {
                     innerBag += sectionView.append(numberOfBathroomsRow)
                 }
                 
+                if let isSubleted = insurance.isSubleted {
+                    let isSubletedRow = KeyValueRow()
+                    isSubletedRow.keySignal.value = String(key: .MY_HOME_ROW_SUBLETED_KEY)
+                    isSubletedRow.valueSignal.value = isSubleted ?
+                        String(key: .MY_HOME_ROW_SUBLETED_VALUE_YES) :
+                        String(key: .MY_HOME_ROW_SUBLETED_VALUE_NO)
+                    isSubletedRow.valueStyleSignal.value = .rowTitleDisabled
+                    innerBag += sectionView.append(isSubletedRow)
+                }
+                
                 let adressRow = KeyValueRow()
                  adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
                  adressRow.valueSignal.value = insurance.address ?? ""

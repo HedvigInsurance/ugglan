@@ -9,6 +9,7 @@ query MyHome {
         numberOfBathrooms
         extraBuildings {
             ... on ExtraBuildingCore {
+                displayName
                 area
                 hasWaterConnected
             }

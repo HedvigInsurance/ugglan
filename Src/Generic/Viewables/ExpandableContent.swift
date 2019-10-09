@@ -72,24 +72,11 @@ extension ExpandableContent: Viewable {
 
         bag += expandButton.onTapSignal.withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }.bindTo(isExpanded)
 
-        bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
-            bag += isExpanded.atOnce().map { !$0 ? String(key: .EXPANDABLE_CONTENT_EXPAND) : String(key: .EXPANDABLE_CONTENT_COLLAPSE) }.bindTo(
-                transition: buttonView,
-                style: .crossDissolve(duration: 0.25),
-                expandButton,
-                \.title.value
-            )
-
-            buttonView.snp.makeConstraints { make in
-                make.bottom.equalToSuperview()
-                make.centerX.equalToSuperview()
-            }
-        }
-
         let shadowView = UIView()
 
         let gradient = CAGradientLayer()
         gradient.locations = [0, 0.5, 1]
+        gradient.cornerRadius = 13
         shadowView.layer.addSublayer(gradient)
 
         func setGradientColors() {
@@ -105,21 +92,41 @@ extension ExpandableContent: Viewable {
         }
 
         bag += shadowView.didLayoutSignal.onValue { _ in
-            gradient.frame = shadowView.bounds
+            let animation = CABasicAnimation(keyPath: "bounds")
+            animation.fromValue = gradient.bounds
+            animation.toValue = shadowView.bounds
+            animation.fillMode = .forwards
+            gradient.bounds = shadowView.bounds
+            gradient.add(animation, forKey: "bounds")
         }
 
-        scrollView.addSubview(shadowView)
+        outerContainer.addSubview(shadowView)
 
         shadowView.snp.makeConstraints { make in
             make.width.centerX.equalToSuperview()
-            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(buttonHalfHeight)
             make.height.equalToSuperview()
+        }
+                
+        bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
+            bag += isExpanded.atOnce().map { !$0 ? String(key: .EXPANDABLE_CONTENT_EXPAND) : String(key: .EXPANDABLE_CONTENT_COLLAPSE) }.bindTo(
+                transition: buttonView,
+                style: .crossDissolve(duration: 0.25),
+                expandButton,
+                \.title.value
+            )
+
+            buttonView.snp.makeConstraints { make in
+                make.bottom.equalToSuperview()
+                make.centerX.equalToSuperview()
+            }
         }
 
         bag += isExpanded
             .atOnce()
-            .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeIn(duration: 0.25, delay: 0.1) }) { isExpanded in
+            .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeIn(duration: 0.25) }) { isExpanded in
                 shadowView.alpha = isExpanded ? 0 : 1
+                shadowView.layoutIfNeeded()
             }
 
         return (outerContainer, bag)
