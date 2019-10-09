@@ -121,7 +121,7 @@ extension ExpandableContent: Viewable {
             .atOnce()
             .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.30) }) { isExpanded in
                 shadowView.alpha = isExpanded ? 0 : 1
-                outerContainer.layoutIfNeeded()
+                shadowView.layoutIfNeeded()
             }
 
         return (outerContainer, bag)
