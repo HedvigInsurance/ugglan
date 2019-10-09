@@ -28,7 +28,7 @@ extension ExpandableContent: Viewable {
         scrollView.backgroundColor = .primaryBackground
 
         let tapGestureRecognizer = UITapGestureRecognizer()
-        scrollView.addGestureRecognizer(tapGestureRecognizer)
+        outerContainer.addGestureRecognizer(tapGestureRecognizer)
 
         bag += tapGestureRecognizer.signal(forState: .recognized).map { true }.bindTo(isExpanded)
 
