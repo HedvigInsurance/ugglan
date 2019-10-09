@@ -28,32 +28,34 @@ struct InsuranceSummarySection {
 extension InsuranceSummarySection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
+        
+        let containerView = UIView()
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 10
 
+        containerView.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+        
         let sectionView = SectionView(
             headerView: headerView,
             footerView: footerView
         )
         sectionView.dynamicStyle = .sectionPlain
+        
+        stackView.addArrangedSubview(sectionView)
 
         bag += client.watch(query: MyHomeQuery()).onValueDisposePrevious { result in
             let innerBag = DisposeBag()
+                                    
             if let insurance = result.data?.insurance {
-                let adressRow = KeyValueRow()
-                adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
-                adressRow.valueSignal.value = insurance.address ?? ""
-                adressRow.valueStyleSignal.value = .rowTitleDisabled
-                innerBag += sectionView.append(adressRow)
-
-                let postalCodeRow = KeyValueRow()
-                postalCodeRow.keySignal.value = String(key: .MY_HOME_ROW_POSTAL_CODE_KEY)
-                postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
-                postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
-                innerBag += sectionView.append(postalCodeRow)
-
-                let livingSpaceRow = KeyValueRow()
-                livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
-
                 if let livingSpace = insurance.livingSpace {
+                    let livingSpaceRow = KeyValueRow()
+                    livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
                     livingSpaceRow.valueSignal.value = String(key: .MY_HOME_ROW_SIZE_VALUE(
                         livingSpace: String(livingSpace)
                     ))
@@ -73,7 +75,7 @@ extension InsuranceSummarySection: Viewable {
                 
                 if let yearOfConstruction = insurance.yearOfConstruction {
                     let yearOfConstructionRow = KeyValueRow()
-                    yearOfConstructionRow.keySignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_KEY)
+                    yearOfConstructionRow.keySignal.value = String(key: .MY_HOME_ROW_CONSTRUCTION_YEAR_KEY)
                     yearOfConstructionRow.valueSignal.value = String(yearOfConstruction)
                     yearOfConstructionRow.valueStyleSignal.value = .rowTitleDisabled
                     innerBag += sectionView.append(yearOfConstructionRow)
@@ -87,19 +89,17 @@ extension InsuranceSummarySection: Viewable {
                     innerBag += sectionView.append(numberOfBathroomsRow)
                 }
                 
-                if let extraBuildings = insurance.extraBuildings {
-                    let extraBuildingsSection = SectionView(
-                        headerView: UILabel(value: String(key: .MY_HOME_EXTRABUILDING_TITLE), style: .rowTitle),
-                        footerView: nil
-                    )
-                    sectionView.append(extraBuildingsSection)
-                    
-                    innerBag += extraBuildings.map { extraBuilding in
-                        ExtraBuildingRow(data: .static(extraBuilding))
-                    }.map { extraBuildingRow in
-                        extraBuildingsSection.append(extraBuildingRow)
-                    }
-                }
+                let adressRow = KeyValueRow()
+                 adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
+                 adressRow.valueSignal.value = insurance.address ?? ""
+                 adressRow.valueStyleSignal.value = .rowTitleDisabled
+                 innerBag += sectionView.append(adressRow)
+
+                 let postalCodeRow = KeyValueRow()
+                 postalCodeRow.keySignal.value = String(key: .MY_HOME_ROW_POSTAL_CODE_KEY)
+                 postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
+                 postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
+                 innerBag += sectionView.append(postalCodeRow)
 
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = String(key: .MY_HOME_ROW_TYPE_KEY)
@@ -122,10 +122,30 @@ extension InsuranceSummarySection: Viewable {
                     }
                 }
                 innerBag += sectionView.append(apartmentTypeRow)
+                
+                if let extraBuildings = insurance.extraBuildings {
+                    let extraBuildingsSection = SectionView(
+                        headerView: UILabel(value: String(key: .MY_HOME_EXTRABUILDING_TITLE), style: .rowTitle),
+                        footerView: nil
+                    )
+                    extraBuildingsSection.dynamicStyle = .sectionPlain
+                    
+                    stackView.addArrangedSubview(extraBuildingsSection)
+                    
+                    innerBag += {
+                        extraBuildingsSection.removeFromSuperview()
+                    }
+                    
+                    innerBag += extraBuildings.map { extraBuilding in
+                        ExtraBuildingRow(data: .static(extraBuilding))
+                    }.map { extraBuildingRow in
+                        extraBuildingsSection.append(extraBuildingRow)
+                    }
+                }
             }
             return innerBag
         }
 
-        return (sectionView, bag)
+        return (containerView, bag)
     }
 }

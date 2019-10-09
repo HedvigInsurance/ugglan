@@ -17,10 +17,15 @@ extension OfferSummary: Viewable {
         let bag = DisposeBag()
         let outerView = UIStackView()
         outerView.axis = .vertical
-        bag += outerView.addArranged(Blob(color: .midnight700, position: .top))
+        
+        let backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? UIColor.black.lighter(amount: 0.1) : .midnight700
+        })
+        
+        bag += outerView.addArranged(Blob(color: backgroundColor, position: .top))
 
         let containerView = UIView()
-        containerView.backgroundColor = .midnight700
+        containerView.backgroundColor = backgroundColor
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -51,7 +56,7 @@ extension OfferSummary: Viewable {
         bag += stackView.addArranged(ExpandableContent(content: InsuranceSummarySection(), isExpanded: .static(false)))
 
         bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .top)) { blobView in
-            blobView.backgroundColor = .midnight700
+            blobView.backgroundColor = backgroundColor
         }
 
         return (outerView, bag)

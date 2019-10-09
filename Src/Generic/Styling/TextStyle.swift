@@ -176,7 +176,7 @@ extension TextStyle {
     }
     
     static let rowTertitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.circularStdBook!.withSize(12)
+        style.font = HedvigFonts.circularStdBook!.withSize(11)
         style.color = .secondaryText
     }
 

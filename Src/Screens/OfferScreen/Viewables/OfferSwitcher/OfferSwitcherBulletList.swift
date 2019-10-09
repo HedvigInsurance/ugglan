@@ -13,8 +13,6 @@ import UIKit
 
 struct OfferSwitcherBulletList {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension OfferSwitcherBulletList {

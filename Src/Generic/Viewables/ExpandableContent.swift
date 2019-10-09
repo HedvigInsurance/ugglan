@@ -34,7 +34,7 @@ extension ExpandableContent: Viewable {
 
         outerContainer.addSubview(scrollView)
 
-        let expandButton = Button(title: "Expandera", type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
+        let expandButton = Button(title: "", type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
         let buttonHalfHeight = expandButton.type.value.height / 2
 
         scrollView.snp.makeConstraints { make in
@@ -118,7 +118,7 @@ extension ExpandableContent: Viewable {
 
         bag += isExpanded
             .atOnce()
-            .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.25) }) { isExpanded in
+            .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeIn(duration: 0.25, delay: 0.1) }) { isExpanded in
                 shadowView.alpha = isExpanded ? 0 : 1
             }
 

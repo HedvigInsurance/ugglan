@@ -102,20 +102,28 @@ extension OfferTermsBulletPoints {
             let bag = DisposeBag()
             let stackView = UIStackView()
             stackView.spacing = 15
-
+            
             let checkMark = Icon(icon: Asset.greenCircularCheckmark, iconWidth: 20)
             stackView.addArrangedSubview(checkMark)
 
             checkMark.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
+            
+            let textStackView = UIStackView()
+            textStackView.axis = .vertical
+            textStackView.spacing = 5
+            
+            stackView.addArrangedSubview(textStackView)
 
             let titleLabel = MultilineLabel(value: title, style: .rowSubtitle)
-            bag += stackView.addArranged(titleLabel)
+            bag += textStackView.addArranged(titleLabel)
             
             if let message = message {
+                stackView.alignment = .top
+                
                 let messageLabel = MultilineLabel(value: message, style: .rowTertitle)
-                bag += stackView.addArranged(messageLabel)
+                bag += textStackView.addArranged(messageLabel)
             }
 
             return (stackView, bag)
