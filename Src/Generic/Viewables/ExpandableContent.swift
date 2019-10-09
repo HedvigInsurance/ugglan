@@ -104,12 +104,12 @@ extension ExpandableContent: Viewable {
         }
                 
         bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
-            bag += isExpanded.atOnce().map { !$0 ? String(key: .EXPANDABLE_CONTENT_EXPAND) : String(key: .EXPANDABLE_CONTENT_COLLAPSE) }.bindTo(
-                transition: buttonView,
-                style: .crossDissolve(duration: 0.25),
-                expandButton,
-                \.title.value
-            )
+            bag += isExpanded.atOnce().map { !$0 ? String(key: .EXPANDABLE_CONTENT_EXPAND) : String(key: .EXPANDABLE_CONTENT_COLLAPSE) }.onValue({ value in
+                UIView.transition(with: buttonView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    expandButton.title.value = value
+                    buttonView.layoutIfNeeded()
+                }, completion: nil)
+            })
 
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalToSuperview()
@@ -121,7 +121,6 @@ extension ExpandableContent: Viewable {
             .atOnce()
             .animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.30) }) { isExpanded in
                 shadowView.alpha = isExpanded ? 0 : 1
-                shadowView.layoutIfNeeded()
             }
 
         return (outerContainer, bag)
