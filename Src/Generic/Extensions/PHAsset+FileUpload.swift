@@ -13,7 +13,7 @@ import Photos
 
 extension PHAsset {
     enum GenerateFileUploadError: Error {
-        case failedToGenerateFileName, failedToGenerateMimeType, failedToGetVideoURL, failedToGetVideoData
+        case failedToGenerateFileName, failedToGenerateMimeType, failedToGetVideoURL, failedToGetVideoData, failedToConvertHEIC
     }
 
     /// generates a fileUpload for current PHAsset
@@ -56,6 +56,8 @@ extension PHAsset {
                         })
                     }
                 case .image:
+                    
+                    
                     guard let uti = contentInput?.uniformTypeIdentifier else {
                         completion(.failure(GenerateFileUploadError.failedToGenerateMimeType))
                         return
@@ -77,14 +79,29 @@ extension PHAsset {
                             completion(.failure(GenerateFileUploadError.failedToGenerateFileName))
                             return
                         }
+                                                
+                        if fileName.lowercased().contains("heic") {
+                            guard let image = UIImage(data: data), let jpegData = image.jpegData(compressionQuality: 0.9) else {
+                                completion(.failure(GenerateFileUploadError.failedToConvertHEIC))
+                                return
+                            }
+                                                        
+                            let fileUpload = FileUpload(
+                               data: jpegData,
+                               mimeType: "image/jpeg",
+                               fileName: fileName
+                           )
 
-                        let fileUpload = FileUpload(
-                            data: data,
-                            mimeType: mimeType,
-                            fileName: fileName
-                        )
+                           completion(.success(fileUpload))
+                        } else {
+                            let fileUpload = FileUpload(
+                               data: data,
+                               mimeType: mimeType,
+                               fileName: fileName
+                           )
 
-                        completion(.success(fileUpload))
+                           completion(.success(fileUpload))
+                        }
                     }
                 case .unknown:
                     break
