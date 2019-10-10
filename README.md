@@ -73,6 +73,6 @@
 
 3. Create a GitHub release and add a description containing all commits included in the release, use the following command to retrieve the list:
 
-   `git log --pretty=oneline RELEASE-\(previousVersionNumber)...RELEASE-\(versionNumber)`
+   `git log --pretty=oneline RELEASE-\(previousVersionNumber)...RELEASE-\(versionNumber) --first-parent master`
    
 4. Submit the release to review in App Store connect as usual
