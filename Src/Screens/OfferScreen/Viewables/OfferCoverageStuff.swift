@@ -69,12 +69,12 @@ extension OfferCoverageStuff: Viewable {
             .onValue { insuranceType in
                 if insuranceType.isStudent {
                     descriptionLabel.styledTextSignal.value = StyledText(
-                        text: String(key: .OFFER_STUFF_PROTECTION_DESCRIPTION(protectionAmount: Localization.Key.STUFF_PROTECTION_AMOUNT)),
+                        text: String(key: .OFFER_STUFF_PROTECTION_DESCRIPTION(protectionAmount: Localization.Key.STUFF_PROTECTION_AMOUNT_STUDENT)),
                         style: descriptionLabel.styledTextSignal.value.style
                     )
                 } else {
                     descriptionLabel.styledTextSignal.value = StyledText(
-                        text: String(key: .OFFER_STUFF_PROTECTION_DESCRIPTION(protectionAmount: Localization.Key.STUFF_PROTECTION_AMOUNT_STUDENT)),
+                        text: String(key: .OFFER_STUFF_PROTECTION_DESCRIPTION(protectionAmount: Localization.Key.STUFF_PROTECTION_AMOUNT)),
                         style: descriptionLabel.styledTextSignal.value.style
                     )
                 }
