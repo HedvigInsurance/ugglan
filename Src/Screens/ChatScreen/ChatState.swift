@@ -202,7 +202,7 @@ class ChatState {
             }
         }
 
-        currentMessageSignal = filteredListSignal.atOnce().map { list in list.first?.left }
+        currentMessageSignal = listSignal.atOnce().map { list in list.first?.left }
         tableSignal = filteredListSignal.atOnce().map(on: .background) { Table(rows: $0) }
 
         editBag += listSignal.atOnce().onValueDisposePrevious(on: .background) { messages -> Disposable? in
