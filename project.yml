@@ -111,7 +111,7 @@ targets:
       TEST_TARGET_NAME: Ugglan
       SWIFT_VERSION: "5.0"
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
-      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
+      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC -weak_framework SwiftUI -weak_framework Combine"
       LD_RUNPATH_SEARCH_PATHS:
         - $(inherited)
         - "@executable_path/Frameworks"
@@ -207,7 +207,7 @@ targets:
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       SWIFT_VERSION: "5.0"
       DEVELOPMENT_TEAM: "AW656G5PFM"
-      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
+      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC -weak_framework SwiftUI -weak_framework Combine"
       TARGETED_DEVICE_FAMILY: "1,2"
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
