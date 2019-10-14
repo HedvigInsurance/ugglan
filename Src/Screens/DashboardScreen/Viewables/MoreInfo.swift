@@ -9,8 +9,11 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Apollo
 
-struct MoreInfo {}
+struct MoreInfo {
+    @Inject private var client: ApolloClient
+}
 
 extension MoreInfo: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -29,36 +32,78 @@ extension MoreInfo: Viewable {
         moreInfoStackView.spacing = 6
         moreInfoStackView.axis = .vertical
         moreInfoStackView.edgeInsets = contentViewInsets
+        
+        bag += client.watch(query: DashboardQuery()).compactMap { $0.data?.insurance.type }.onValueDisposePrevious({ type in
+            let innerBag = DisposeBag()
+                        
+            if type.isApartment {
+                let deductibleCheckmark = MultilineLabelIcon(
+                   styledText: StyledText(
+                       text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
+                       style: .bodyOffBlack
+                   ),
+                   icon: Asset.greenCircularCheckmark,
+                   iconWidth: 15
+                )
+                innerBag += moreInfoStackView.addArranged(deductibleCheckmark)
 
-        let deductibleCheckmark = MultilineLabelIcon(
-            styledText: StyledText(
-                text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
-                style: .bodyOffBlack
-            ),
-            icon: Asset.greenCircularCheckmark,
-            iconWidth: 15
-        )
-        bag += moreInfoStackView.addArranged(deductibleCheckmark)
+                if type.isStudent {
+                    let totalAmountCheckmark = MultilineLabelIcon(
+                        styledText: StyledText(
+                         text: String(key: .DASHBOARD_INFO_INSURANCE_STUFF_AMOUNT(maxCompensation: Localization.Key.MAX_COMPENSATION_STUDENT)),
+                            style: .bodyOffBlack
+                        ),
+                        icon: Asset.greenCircularCheckmark,
+                        iconWidth: 15
+                    )
+                    innerBag += moreInfoStackView.addArranged(totalAmountCheckmark)
+                } else {
+                    let totalAmountCheckmark = MultilineLabelIcon(
+                        styledText: StyledText(
+                         text: String(key: .DASHBOARD_INFO_INSURANCE_STUFF_AMOUNT(maxCompensation: Localization.Key.MAX_COMPENSATION)),
+                            style: .bodyOffBlack
+                        ),
+                        icon: Asset.greenCircularCheckmark,
+                        iconWidth: 15
+                    )
+                    innerBag += moreInfoStackView.addArranged(totalAmountCheckmark)
+                }
+            } else {
+                let insuredValueCheckmark = MultilineLabelIcon(
+                    styledText: StyledText(
+                        text: String(key: .DASHBOARD_INFO_HOUSE_VALUE),
+                        style: .bodyOffBlack
+                    ),
+                    icon: Asset.greenCircularCheckmark,
+                    iconWidth: 15
+                )
+                innerBag += moreInfoStackView.addArranged(insuredValueCheckmark)
+                
+                let deductibleCheckmark = MultilineLabelIcon(
+                    styledText: StyledText(
+                        text: String(key: .DASHBOARD_INFO_DEDUCTIBLE_HOUSE(deductible: Localization.Key.MAX_COMPENSATION_HOUSE)),
+                        style: .bodyOffBlack
+                    ),
+                    icon: Asset.greenCircularCheckmark,
+                    iconWidth: 15
+                )
+                innerBag += moreInfoStackView.addArranged(deductibleCheckmark)
+            }
+            
+            let travelValidCheckmark = MultilineLabelIcon(
+                styledText: StyledText(
+                    text: String(key: .DASHBOARD_INFO_TRAVEL),
+                    style: .bodyOffBlack
+                ),
+                icon: Asset.greenCircularCheckmark,
+                iconWidth: 15
+            )
+            innerBag += moreInfoStackView.addArranged(travelValidCheckmark)
+            
+            return innerBag
+        })
 
-        let totalAmountCheckmark = MultilineLabelIcon(
-            styledText: StyledText(
-                text: String(key: .DASHBOARD_INFO_INSURANCE_AMOUNT),
-                style: .bodyOffBlack
-            ),
-            icon: Asset.greenCircularCheckmark,
-            iconWidth: 15
-        )
-        bag += moreInfoStackView.addArranged(totalAmountCheckmark)
-
-        let travelValidCheckmark = MultilineLabelIcon(
-            styledText: StyledText(
-                text: String(key: .DASHBOARD_INFO_TRAVEL),
-                style: .bodyOffBlack
-            ),
-            icon: Asset.greenCircularCheckmark,
-            iconWidth: 15
-        )
-        bag += moreInfoStackView.addArranged(travelValidCheckmark)
+       
 
         return (moreInfoStackView, bag)
     }
