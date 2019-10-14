@@ -24,16 +24,9 @@ extension ReferralsTitle: Viewable {
         view.spacing = 8
 
         let title = MultilineLabel(
-            value: "",
+            value: String(key: .REFERRAL_PROGRESS_HEADLINE),
             style: TextStyle.standaloneLargeTitle.centerAligned
         )
-
-        bag += peopleLeftToInviteSignal
-            .atOnce()
-            .compactMap { $0 }
-            .map { String(key: .REFERRAL_PROGRESS_HEADLINE(numberOfFriendsLeft: String($0))) }
-            .map { StyledText(text: $0, style: TextStyle.standaloneLargeTitle.centerAligned) }
-            .bindTo(title.styledTextSignal)
 
         bag += view.addArranged(title) { titleView in
             titleView.snp.makeConstraints { make in
