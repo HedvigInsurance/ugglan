@@ -125,7 +125,13 @@ extension BankIDLogin: Presentable {
 
             bag += statusSignal.distinct().onValue({ authState in
                 if authState == .success {
-                    let window = UIApplication.shared.appDelegate.window
+                    let appDelegate = UIApplication.shared.appDelegate
+                    
+                    if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                        appDelegate.registerFCMToken(fcmToken)
+                    }
+                                        
+                    let window = appDelegate.window
                     bag += window.present(LoggedIn(), animated: true)
                 }
             })

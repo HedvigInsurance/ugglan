@@ -281,15 +281,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 extension AppDelegate: MessagingDelegate {
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
+    func registerFCMToken(_ token: String) {
         let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(mutation: RegisterPushTokenMutation(pushToken: fcmToken)).onValue { result in
+        client.perform(mutation: RegisterPushTokenMutation(pushToken: token)).onValue { result in
             if result.data?.registerPushToken != nil {
                 log.info("Did register push token for user")
             } else {
                 log.info("Failed to register push token for user")
             }
         }
+    }
+    
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        ApplicationState.setFirebaseMessagingToken(fcmToken)
+        registerFCMToken(fcmToken)
     }
 }
 

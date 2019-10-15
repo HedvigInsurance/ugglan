@@ -14,8 +14,6 @@ import UIKit
 
 struct BankIdSign {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 enum BankIdSignError: Error {
@@ -127,6 +125,10 @@ extension BankIdSign: Presentable {
                 .filter { state in state == .completed }
                 .take(first: 1)
                 .onValue { _ in
+                    if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                        UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
+                    }
+                    
                     completion(.success)
                 }
 
