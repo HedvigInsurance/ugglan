@@ -54,21 +54,10 @@ extension PriceBubble: Viewable {
 
         let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
 
-        bag += bubbleView.windowSignal.compactMap { $0 }.onValue({ window in
-            if window.frame.height < 700 {
-                bubbleView.snp.makeConstraints({ make in
-                    make.width.height.equalTo(125)
-                })
-                priceLabel.style = priceLabel.style.resized(to: 40)
-                bubbleView.layer.cornerRadius = 125 / 2
-            } else {
-                bubbleView.snp.makeConstraints({ make in
-                    make.width.height.equalTo(180)
-                })
-                priceLabel.style = priceLabel.style.resized(to: TextStyle.largePriceBubbleTitle.font.pointSize)
-                bubbleView.layer.cornerRadius = 180 / 2
-            }
+        bubbleView.snp.makeConstraints({ make in
+            make.width.height.equalTo(180)
         })
+        bubbleView.layer.cornerRadius = 180 / 2
 
         let ease: Ease<CGFloat> = Ease(0, minimumStep: 1)
 
