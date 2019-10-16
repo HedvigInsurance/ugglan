@@ -14,8 +14,6 @@ import SafariServices
 
 struct OfferTermsLinks {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension OfferTermsLinks {

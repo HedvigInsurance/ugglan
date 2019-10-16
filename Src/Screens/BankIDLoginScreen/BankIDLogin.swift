@@ -14,8 +14,6 @@ import UIKit
 
 struct BankIDLogin {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension BankIDLogin: Presentable {

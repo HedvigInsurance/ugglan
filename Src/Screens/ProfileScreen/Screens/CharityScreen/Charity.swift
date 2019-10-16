@@ -14,8 +14,6 @@ import Presentation
 
 struct Charity {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension Charity: Presentable {

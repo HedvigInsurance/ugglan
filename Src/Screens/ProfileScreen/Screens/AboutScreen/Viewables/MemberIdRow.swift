@@ -13,8 +13,6 @@ import Presentation
 
 struct MemberIdRow {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension MemberIdRow: Viewable {

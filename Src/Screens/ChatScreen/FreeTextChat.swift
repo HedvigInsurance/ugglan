@@ -13,8 +13,6 @@ import UIKit
 
 struct FreeTextChat {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension FreeTextChat: Presentable {

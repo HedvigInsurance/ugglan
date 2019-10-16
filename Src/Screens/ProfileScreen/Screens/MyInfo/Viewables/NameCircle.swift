@@ -13,8 +13,6 @@ import UIKit
 
 struct NameCircle {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension NameCircle: Viewable {

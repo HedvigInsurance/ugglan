@@ -14,8 +14,6 @@ import Foundation
 struct BankDetailsSection {
     @Inject var client: ApolloClient
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
-
-    init() {}
 }
 
 extension BankDetailsSection: Viewable {

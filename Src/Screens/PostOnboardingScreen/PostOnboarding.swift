@@ -16,8 +16,6 @@ struct PostOnboarding {
     @Inject var client: ApolloClient
     typealias Content = ReusableViewable<ImageTextAction<TableAction>, TableAction>
 
-    init() {}
-
     enum TableAction {
         case payment, push, pushSkip
     }

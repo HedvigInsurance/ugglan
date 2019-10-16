@@ -21,8 +21,6 @@ struct Chat {
     private var reloadChatSignal: Signal<Void> {
         reloadChatCallbacker.providedSignal
     }
-
-    init() {}
 }
 
 typealias ChatListContent = Either<Message, Either<TypingIndicator, SingleSelectList>>

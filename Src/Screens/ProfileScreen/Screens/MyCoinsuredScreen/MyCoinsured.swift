@@ -15,8 +15,6 @@ import UIKit
 
 struct MyCoinsured {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension MyCoinsured: Presentable {

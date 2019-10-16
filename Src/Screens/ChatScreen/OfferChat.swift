@@ -13,8 +13,6 @@ import UIKit
 
 struct OfferChat {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension OfferChat: Presentable {

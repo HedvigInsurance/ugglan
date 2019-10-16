@@ -13,8 +13,6 @@ import UIKit
 
 struct CallMeChat {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension CallMeChat: Presentable {

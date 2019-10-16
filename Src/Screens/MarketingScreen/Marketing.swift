@@ -14,8 +14,6 @@ import UIKit
 
 struct Marketing {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 enum MarketingResult {

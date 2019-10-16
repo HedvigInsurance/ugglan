@@ -13,8 +13,6 @@ import UIKit
 
 struct ClaimsChat {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension ClaimsChat: Presentable {

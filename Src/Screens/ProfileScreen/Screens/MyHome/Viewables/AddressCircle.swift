@@ -12,8 +12,6 @@ import UIKit
 
 struct AddressCircle {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension AddressCircle: Viewable {

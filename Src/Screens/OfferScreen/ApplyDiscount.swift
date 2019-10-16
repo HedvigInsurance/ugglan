@@ -21,8 +21,6 @@ struct ApplyDiscount {
     var didRedeemValidCodeSignal: Signal<RedeemCodeMutation.Data.RedeemCode> {
         return didRedeemValidCodeCallbacker.providedSignal
     }
-
-    init() {}
 }
 
 extension ApplyDiscount: Presentable {

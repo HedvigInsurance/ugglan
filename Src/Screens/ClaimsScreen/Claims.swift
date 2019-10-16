@@ -13,8 +13,6 @@ import UIKit
 
 struct Claims {
     @Inject var client: ApolloClient
-
-    init() {}
 }
 
 extension Claims: Presentable {

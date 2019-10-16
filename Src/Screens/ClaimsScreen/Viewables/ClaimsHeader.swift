@@ -25,8 +25,6 @@ struct ClaimsHeader {
     struct Description {}
     struct InactiveMessage {
         @Inject var client: ApolloClient
-
-        init() {}
     }
 }
 
