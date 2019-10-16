@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import SafariServices
 
 struct OfferTermsLinks {
     @Inject var client: ApolloClient
@@ -39,7 +40,7 @@ extension OfferTermsLinks {
             }
 
             bag += control.signal(for: .touchUpInside).onValue { _ in
-                control.viewController?.present(SafariView(url: self.url), options: [])
+                control.viewController?.present(SFSafariViewController(url: self.url), animated: true, completion: nil)
             }
 
             let stackView = UIStackView()
