@@ -117,44 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
             guard let dynamicLinkUrl = link?.url else { return }
-
-            if dynamicLinkUrl.pathComponents.contains("direct-debit") {
-                guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
-                guard let rootViewController = self.window.rootViewController else { return }
-
-                self.bag += rootViewController.present(
-                    DirectDebitSetup(setupType: .initial),
-                    style: .modal,
-                    options: [.defaults]
-                )
-
-                return
-            }
-
-            guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
-            guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
-
-            guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
-            guard let rootViewController = self.window.rootViewController else { return }
-            let innerBag = self.bag.innerBag()
-
-            innerBag += rootViewController.present(
-                ReferralsReceiverConsent(referralCode: referralCode),
-                style: .modal,
-                options: [
-                    .prefersNavigationBarHidden(true),
-                ]
-            ).onValue { result in
-                if result == .accept {
-                    if ApplicationState.currentState?.isOneOf([.marketing]) == true {
-                        self.bag += rootViewController.present(
-                            OnboardingChat(),
-                            options: [.prefersNavigationBarHidden(false)]
-                        )
-                    }
-                }
-                innerBag.dispose()
-            }
+            self.handleDeepLink(dynamicLinkUrl)
         }
 
         return handled
@@ -191,6 +154,61 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         return .portrait
+    }
+
+    func handleDeepLink(_ dynamicLinkUrl: URL) {
+        if dynamicLinkUrl.pathComponents.contains("direct-debit") {
+            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
+            guard let rootViewController = self.window.rootViewController else { return }
+
+            bag += rootViewController.present(
+                DirectDebitSetup(setupType: .initial),
+                style: .modal,
+                options: [.defaults]
+            )
+
+            return
+        }
+
+        guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
+        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
+
+        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
+        guard let rootViewController = self.window.rootViewController else { return }
+        let innerBag = bag.innerBag()
+
+        innerBag += rootViewController.present(
+            ReferralsReceiverConsent(referralCode: referralCode),
+            style: .modal,
+            options: [
+                .prefersNavigationBarHidden(true),
+            ]
+        ).onValue { result in
+            if result == .accept {
+                if ApplicationState.currentState?.isOneOf([.marketing]) == true {
+                    self.bag += rootViewController.present(
+                        OnboardingChat(),
+                        options: [.prefersNavigationBarHidden(false)]
+                    )
+                }
+            }
+            innerBag.dispose()
+        }
+    }
+
+    func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
+            guard let dynamicLinkUrl = dynamicLink.url else { return false }
+            handleDeepLink(dynamicLinkUrl)
+            return true
+        }
+        return false
+    }
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        return application(app, open: url,
+                           sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                           annotation: "")
     }
 
     func application(
@@ -244,9 +262,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-        
+
         let remoteConfigContainer = RemoteConfigContainer()
-        
+
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             remoteConfigContainer
         })
@@ -260,7 +278,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             })
             TranslationsRepo().fetch()
             self.bag += ApplicationState.presentRootViewController(self.window)
-            
+
             if ApplicationState.hasOverridenTargetEnvironment {
                 self.createToast(
                     symbol: .character("🧙‍♂️"),
@@ -291,7 +309,7 @@ extension AppDelegate: MessagingDelegate {
             }
         }
     }
-    
+
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
         ApplicationState.setFirebaseMessagingToken(fcmToken)
         registerFCMToken(fcmToken)
