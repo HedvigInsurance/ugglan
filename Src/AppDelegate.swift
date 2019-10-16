@@ -141,21 +141,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func application(
-        _: UIApplication,
-        supportedInterfaceOrientationsFor window: UIWindow?
-    ) -> UIInterfaceOrientationMask {
-        guard let vc = (window?.rootViewController?.presentedViewController) else {
-            return .portrait
-        }
-
-        if String(describing: vc).contains("VideoPlayerViewController") {
-            return .allButUpsideDown
-        }
-
-        return .portrait
-    }
-
     func handleDeepLink(_ dynamicLinkUrl: URL) {
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
@@ -268,6 +253,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             remoteConfigContainer
         })
+        
+        ApplicationState.preserveState(.offer)
 
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
