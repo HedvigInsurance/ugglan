@@ -26,10 +26,33 @@ extension OfferChat: Presentable {
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
         restartButton.tintColor = .darkGray
-
+        
         bag += restartButton.onValue { _ in
-            ApplicationState.preserveState(.onboardingChat)
-            UIApplication.shared.appDelegate.logout()
+            let alert = Alert(
+                title: String(key: .CHAT_RESTART_ALERT_TITLE),
+                message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
+                actions: [
+                    Alert.Action(
+                        title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
+                        action: {
+                            UIView.transition(
+                                with: UIApplication.shared.appDelegate.window,
+                                duration: 0.25,
+                                options: .transitionCrossDissolve,
+                                animations: {
+                                ApplicationState.preserveState(.onboardingChat)
+                                UIApplication.shared.appDelegate.logout()
+                            }, completion: nil)
+                        }
+                    ),
+                    Alert.Action(
+                        title: String(key: .CHAT_RESTART_ALERT_CANCEL),
+                        action: {}
+                    ),
+                ]
+            )
+
+            viewController.present(alert)
         }
 
         viewController.navigationItem.rightBarButtonItem = restartButton
