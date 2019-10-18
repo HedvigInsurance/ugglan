@@ -301,7 +301,7 @@ extension SectionStyle {
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
         minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standardLightRoundedBorder,
-        selectedBackground: .selected,
+        selectedBackground: .selectedRoundedBorder,
         header: .standard,
         footer: .standard
     )
@@ -311,7 +311,7 @@ extension SectionStyle {
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
         minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standardDarkRoundedBorder,
-        selectedBackground: .selected,
+        selectedBackground: .selectedRoundedBorder,
         header: .standard,
         footer: .standard
     )
@@ -341,7 +341,7 @@ extension SectionStyle {
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
         minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standardDarkLargeIconsRoundedBorder,
-        selectedBackground: .selectedLargeIcons,
+        selectedBackground: .selectedRoundedBorder,
         header: .standard,
         footer: .standard
     )
@@ -351,15 +351,23 @@ extension SectionStyle {
         itemSpacing: SectionStyle.sectionPlainItemSpacing,
         minRowHeight: SectionStyle.sectionPlainMinRowHeight,
         background: .standardLightLargeIconsRoundedBorder,
-        selectedBackground: .selectedLargeIcons,
+        selectedBackground: .selectedRoundedBorder,
         header: .standard,
         footer: .standard
     )
 }
 
 extension DynamicSectionStyle {
+    static let sectionPlainRounded = DynamicSectionStyle { trait -> SectionStyle in
+        trait.userInterfaceStyle == .dark ? .sectionPlainDarkRoundedBorder : .sectionPlainLightRoundedBorder
+    }
+    
     static let sectionPlain = DynamicSectionStyle { trait -> SectionStyle in
-        trait.userInterfaceStyle == .dark ? .sectionPlainDark : .sectionPlainLight
+        if trait.isPad {
+            return Self.sectionPlainRounded.styleGenerator(trait)
+        }
+        
+        return trait.userInterfaceStyle == .dark ? .sectionPlainDark : .sectionPlainLight
     }
 
     static let sectionPlainLargeIcons = DynamicSectionStyle { trait -> SectionStyle in

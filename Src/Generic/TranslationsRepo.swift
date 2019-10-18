@@ -8,21 +8,34 @@
 
 import Apollo
 import Foundation
+import Flow
 
 struct TranslationsRepo {
-    @Inject private var client: ApolloClient
     private static var translations: [String: String] = [:]
+    
+    static func clear() -> Future<Void> {
+        translations = [:]
+        return fetch()
+    }
 
-    func fetch() {
+    static func fetch() -> Future<Void> {
         let localeCode = String(describing: Localization.Locale.currentLocale)
-        client.fetch(query: TranslationsQuery(code: localeCode)).onValue { result in
-            let translations = result.data?.languages.first??.translations ?? []
+        let client: ApolloClient = Dependencies.shared.resolve()
+        
+        return Future { completion in
+            client.fetch(query: TranslationsQuery(code: localeCode), cachePolicy: .fetchIgnoringCacheCompletely).onValue { result in
+                let translations = result.data?.languages.first??.translations ?? []
 
-            translations.forEach { translation in
-                if let key = translation.key?.value {
-                    TranslationsRepo.translations[key] = translation.text
+                translations.forEach { translation in
+                    if let key = translation.key?.value {
+                        TranslationsRepo.translations[key] = translation.text
+                    }
                 }
+                
+                completion(.success)
             }
+            
+            return NilDisposer()
         }
     }
 

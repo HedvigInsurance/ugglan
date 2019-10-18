@@ -111,20 +111,31 @@ extension About: Presentable {
                     }
             }
         }
-
+        
         bag += form.append(Spacing(height: 20))
 
-        let licensesSection = form.appendSection(
+        let otherSection = form.appendSection(
             headerView: nil,
             footerView: nil,
             style: .sectionPlain
         )
+        
+        let languageRow = LanguageRow(
+            presentingViewController: viewController
+        )
+
+        bag += otherSection.append(languageRow) { row in
+            bag += viewController.registerForPreviewing(
+                sourceView: row.viewRepresentation,
+                previewable: languageRow
+            )
+        }
 
         let licensesRow = LicensesRow(
             presentingViewController: viewController
         )
 
-        bag += licensesSection.append(licensesRow) { row in
+        bag += otherSection.append(licensesRow) { row in
             bag += viewController.registerForPreviewing(
                 sourceView: row.viewRepresentation,
                 previewable: licensesRow

@@ -14,7 +14,7 @@ struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 
     enum Screen: String {
-        case marketing, onboardingChat, offer, loggedIn
+        case marketing, onboardingChat, offer, loggedIn, languagePicker
 
         func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
@@ -60,6 +60,32 @@ struct ApplicationState {
 
     static func setLastNewsSeen() {
         UserDefaults.standard.set(Bundle.main.appVersion, forKey: ApplicationState.lastNewsSeenKey)
+    }
+    
+    private static let preferredLocaleKey = "preferredLocale"
+    
+    static func setPreferredLocale(_ locale: Localization.Locale) {
+        UserDefaults.standard.set(locale.rawValue, forKey: ApplicationState.preferredLocaleKey)
+    }
+    
+    static var preferredLocale: Localization.Locale {
+        guard
+            let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
+            let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) else {
+                
+                let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
+
+                       let bestMatchedLanguage = Bundle.preferredLocalizations(
+                           from: availableLanguages
+                       ).first
+
+                       if let bestMatchedLanguage = bestMatchedLanguage {
+                           return Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
+                       }
+                return .en_SE
+        }
+        
+        return preferredLocale
     }
     
     private static let targetEnvironmentKey = "targetEnvironment"
@@ -180,13 +206,29 @@ struct ApplicationState {
 
     static func presentRootViewController(_ window: UIWindow) -> Disposable {
         guard let applicationState = currentState
-        else { return window.present(
-            Marketing(),
-            options: [.defaults, .prefersNavigationBarHidden(true)],
-            animated: false
-        ).disposable }
+        else {
+            if Localization.Locale.currentLocale == .en_SE {
+                return window.present(
+                    LanguagePicker(),
+                    options: [.defaults, .prefersNavigationBarHidden(true)],
+                    animated: false
+                )
+            } else {
+                return window.present(
+                    Marketing(),
+                    options: [.defaults, .prefersNavigationBarHidden(true)],
+                    animated: false
+                ).disposable
+            }
+        }
 
         switch applicationState {
+        case .languagePicker:
+            return window.present(
+                LanguagePicker(),
+                options: [.defaults, .prefersNavigationBarHidden(true)],
+                animated: false
+            )
         case .marketing:
             return window.present(
                 Marketing(),

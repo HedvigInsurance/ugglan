@@ -12,9 +12,7 @@ import Form
 import Presentation
 import UIKit
 
-struct Licenses {
-    let presentingViewController: UIViewController
-}
+struct Licenses {}
 
 extension Acknow: Reusable {
     public static func makeAndConfigure() -> (make: RowView, configure: (Acknow) -> Disposable) {
@@ -95,7 +93,7 @@ extension Licenses: Presentable {
 
         bag += tableKit.delegate.didSelectRow.onValue { acknowledgement in
             let license = License(acknowledgement: acknowledgement)
-            self.presentingViewController.present(license)
+            viewController.present(license)
         }
 
         bag += tableKit.delegate.willDisplayCell.onValue { cell, index in

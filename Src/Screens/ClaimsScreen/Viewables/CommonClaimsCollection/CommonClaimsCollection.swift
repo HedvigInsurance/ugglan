@@ -48,24 +48,36 @@ extension CommonClaimsCollection: Viewable {
         bag += collectionKit.delegate.willDisplayCell.onValue { cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
         }
+        
+        func fetchData() {
+            bag += client.fetch(
+                query: CommonClaimsQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                )
+            )
+                .valueSignal
+                .compactMap { $0.data?.commonClaims }
+                .onValue { commonClaims in
+                    let rows = commonClaims.enumerated().map {
+                        CommonClaimCard(
+                            data: $0.element,
+                            index: TableIndex(section: 0, row: $0.offset),
+                            presentingViewController: self.presentingViewController
+                        )
+                    }
 
-        bag += client.fetch(query: CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-            .valueSignal
-            .compactMap { $0.data?.commonClaims }
-            .onValue { commonClaims in
-                let rows = commonClaims.enumerated().map {
-                    CommonClaimCard(
-                        data: $0.element,
-                        index: TableIndex(section: 0, row: $0.offset),
-                        presentingViewController: self.presentingViewController
+                    collectionKit.set(
+                        Table(rows: rows),
+                        rowIdentifier: { $0.data.title }
                     )
                 }
-
-                collectionKit.set(
-                    Table(rows: rows),
-                    rowIdentifier: { $0.data.title }
-                )
-            }
+        }
+        
+        fetchData()
+        
+        bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue({ _ in
+            fetchData()
+        })
 
         let stackView = UIStackView()
         stackView.axis = .vertical

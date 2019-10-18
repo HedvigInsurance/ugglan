@@ -200,17 +200,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
-
-        let bestMatchedLanguage = Bundle.preferredLocalizations(
-            from: availableLanguages
-        ).first
-
-        if let bestMatchedLanguage = bestMatchedLanguage {
-            Localization.Locale.currentLocale = Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
-        } else {
-            Localization.Locale.currentLocale = .en_SE
-        }
+        Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
         FirebaseApp.configure()
 
@@ -254,16 +244,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             remoteConfigContainer
         })
         
-        ApplicationState.preserveState(.offer)
-
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
-            remoteConfigContainer.fetched.plain()
+            remoteConfigContainer.fetched.plain(),
+            TranslationsRepo.fetch().valueSignal.plain()
         ).atValue({ _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
                 AnalyticsCoordinator()
             })
-            TranslationsRepo().fetch()
+            
             self.bag += ApplicationState.presentRootViewController(self.window)
 
             if ApplicationState.hasOverridenTargetEnvironment {

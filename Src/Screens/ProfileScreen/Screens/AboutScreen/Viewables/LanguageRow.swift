@@ -1,9 +1,8 @@
 //
-//  LicensesRow.swift
-//  Hedvig
+//  LanguageRow.swift
+//  test
 //
-//  Created by Sam Pettersson on 2019-01-16.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
+//  Created by Sam Pettersson on 2019-10-17.
 //
 
 import Flow
@@ -11,16 +10,16 @@ import Form
 import Foundation
 import Presentation
 
-struct LicensesRow {
+struct LanguageRow {
     let presentingViewController: UIViewController
 }
 
-extension LicensesRow: Viewable {
+extension LanguageRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: String(key: .ABOUT_LICENSES_ROW), style: .rowTitle))
+        row.append(UILabel(value: "Language/Språk", style: .rowTitle))
 
         let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 
@@ -32,7 +31,7 @@ extension LicensesRow: Viewable {
 
         bag += events.onSelect.onValue {
             self.presentingViewController.present(
-                Licenses(),
+                LanguageSwitcher(),
                 style: .default,
                 options: [.autoPop, .largeTitleDisplayMode(.never)]
             )
@@ -42,8 +41,9 @@ extension LicensesRow: Viewable {
     }
 }
 
-extension LicensesRow: Previewable {
-    func preview() -> (Licenses, PresentationOptions) {
-        return (Licenses(), [.autoPop, .largeTitleDisplayMode(.never)])
+extension LanguageRow: Previewable {
+    func preview() -> (LanguageSwitcher, PresentationOptions) {
+        return (LanguageSwitcher(), [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }
+
