@@ -344,6 +344,22 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         options: [.prefersNavigationBarHidden(false)]
                     )
                 }
+            } else if notificationType == "CONNECT_DIRECT_DEBIT" {
+                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    self.window.rootViewController?.present(
+                        DirectDebitSetup(),
+                        style: .modal,
+                        options: [.defaults]
+                    )
+                }
+            } else if notificationType == "PAYMENT_FAILED" {
+                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    self.window.rootViewController?.present(
+                        DirectDebitSetup(),
+                        style: .modal,
+                        options: [.defaults]
+                    )
+                }
             }
         }
 
