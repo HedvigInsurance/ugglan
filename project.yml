@@ -23,6 +23,7 @@ targets:
     references:
       - Ugglan
       - sdkroot:UIKit.framework
+      - sdkroot:AdSupport.framework
       - sdkroot:SceneKit.framework
       - sdkroot:XCTest.framework
       - location: Carthage/Build/iOS/SnapshotTesting.framework
@@ -168,6 +169,7 @@ targets:
     references:
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
+      - sdkroot:AdSupport.framework
       - location: Carthage/Build/iOS/DeviceKit.framework
       - location: Carthage/Build/iOS/Apollo.framework
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
