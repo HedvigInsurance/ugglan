@@ -32,6 +32,7 @@ targets:
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
+      - location: Carthage/Build/iOS/abseil.framework
       - location: Carthage/Build/iOS/FirebaseCore.framework
       - location: Carthage/Build/iOS/FirebaseAnalytics.framework
       - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
@@ -175,6 +176,7 @@ targets:
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
+      - location: Carthage/Build/iOS/abseil.framework
       - location: Carthage/Build/iOS/FirebaseCore.framework
       - location: Carthage/Build/iOS/FirebaseAnalytics.framework
       - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework

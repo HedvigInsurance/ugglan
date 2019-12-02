@@ -81,29 +81,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func createToast(
-        symbol: ToastSymbol,
-        body: String,
-        textColor: UIColor = UIColor.primaryText,
-        backgroundColor: UIColor = UIColor.secondaryBackground,
-        duration: TimeInterval = 5.0
-    ) {
-        bag += Signal(after: 0).withLatestFrom(toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
-            let toast = Toast(
-                symbol: symbol,
-                body: body,
-                textColor: textColor,
-                backgroundColor: backgroundColor,
-                duration: duration
-            )
+    func displayToast(
+        _ toast: Toast
+    ) -> Future<Void> {
+        return Future { completion in
+            self.bag += Signal(after: 0).withLatestFrom(self.toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
+                if self.toastSignal.value == nil {
+                    self.presentToasts()
+                }
 
-            if self.toastSignal.value == nil {
-                self.presentToasts()
+                if toast != previousToast {
+                    self.toastSignal.value = toast
+                }
+                
+                self.bag += self.toastSignal.take(first: 1).onValue { _ in
+                    completion(.success)
+                }
             }
-
-            if toast != previousToast {
-                self.toastSignal.value = toast
-            }
+            
+            return NilDisposer()
         }
     }
 
@@ -256,10 +252,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.bag += ApplicationState.presentRootViewController(self.window)
 
             if ApplicationState.hasOverridenTargetEnvironment {
-                self.createToast(
+                self.displayToast(Toast(
                     symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
-                )
+                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment.")
+                ).onValue { _ in }
             }
         }).delay(by: 0.1).onValue { _ in
             self.hasFinishedLoading.value = true

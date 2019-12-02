@@ -31,12 +31,47 @@ enum ToastSymbol: Equatable {
     case icon(_ icon: ImageAsset)
 }
 
+        
+
 struct Toast: Equatable {
+    static func == (lhs: Toast, rhs: Toast) -> Bool {
+        return
+                lhs.symbol == rhs.symbol &&
+                lhs.body == rhs.body &&
+                lhs.textColor == rhs.textColor &&
+                lhs.backgroundColor == rhs.backgroundColor &&
+                lhs.duration == rhs.duration
+    }
+    
     let symbol: ToastSymbol
     let body: String
+    let subtitle: String?
     let textColor: UIColor
+    let subtitleColor: UIColor
     let backgroundColor: UIColor
     let duration: TimeInterval
+    var onTap: Signal<Void> {
+        return onTapCallbacker.providedSignal
+    }
+    private let onTapCallbacker = Callbacker<Void>()
+    
+    init(
+        symbol: ToastSymbol,
+        body: String,
+        subtitle: String? = nil,
+        textColor: UIColor = UIColor.primaryText,
+        subtitleColor: UIColor = .purple,
+        backgroundColor: UIColor = UIColor.secondaryBackground,
+        duration: TimeInterval = 5.0
+    ) {
+        self.symbol = symbol
+        self.body = body
+        self.subtitle = subtitle
+        self.textColor = textColor
+        self.subtitleColor = subtitleColor
+        self.backgroundColor = backgroundColor
+        self.duration = duration
+    }
 }
 
 extension Toast: Viewable {
@@ -64,7 +99,16 @@ extension Toast: Viewable {
         let bag = DisposeBag()
 
         let containerView = UIView()
-        containerView.layer.cornerRadius = 25
+        bag += containerView.didLayoutSignal.onValue { _ in
+            containerView.layer.cornerRadius = containerView.frame.height / 2
+        }
+        
+        let tap = UITapGestureRecognizer()
+        bag += tap.signal(forState: .recognized).onValue { _ in
+            self.onTapCallbacker.callAll()
+        }
+        
+        bag += containerView.install(tap)
 
         containerView.backgroundColor = backgroundColor
         bag += containerView.applyShadow { trait in
@@ -79,7 +123,7 @@ extension Toast: Viewable {
 
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
+        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 30, verticalInset: 15)
         stackView.spacing = 10
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
@@ -105,10 +149,16 @@ extension Toast: Viewable {
         let textContainer = UIStackView()
         textContainer.axis = .vertical
         textContainer.insetsLayoutMarginsFromSafeArea = false
+        textContainer.spacing = 5
 
         let bodyLabel = MultilineLabel(value: body, style: TextStyle.toastBody.colored(textColor))
         bag += textContainer.addArranged(bodyLabel)
-
+        
+        if let subtitle = subtitle {
+            let bodySubtitleLabel = MultilineLabel(value: subtitle, style: TextStyle.toastBodySubtitle.colored(subtitleColor).centerAligned)
+            bag += textContainer.addArranged(bodySubtitleLabel)
+        }
+        
         stackView.addArrangedSubview(textContainer)
 
         return (containerView, bag)

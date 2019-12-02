@@ -54,7 +54,32 @@ class ChatState {
 
         if let statusMessage = message.header.statusMessage, !hasShownStatusMessage {
             hasShownStatusMessage = true
-            UIApplication.shared.appDelegate.createToast(symbol: .character("✉️"), body: statusMessage)
+            let innerBag = bag.innerBag()
+            
+            func createToast() -> Toast {
+                if UIApplication.shared.isRegisteredForRemoteNotifications {
+                    return Toast(
+                        symbol: .character("✉️"),
+                        body: statusMessage
+                    )
+                }
+                
+                return Toast(
+                    symbol: .character("✉️"),
+                    body: statusMessage,
+                    subtitle: String(key: .CHAT_TOAST_PUSH_NOTIFICATIONS_SUBTITLE)
+                )
+            }
+            
+            let toast = createToast()
+            
+            innerBag += toast.onTap.onValue { _ in
+                self.bag += UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
+            }
+            
+            bag += UIApplication.shared.appDelegate.displayToast(toast).onValue { _ in
+                innerBag.dispose()
+            }
         }
     }
 
