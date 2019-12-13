@@ -52,10 +52,10 @@ extension ReferralsCode: Viewable {
 
             return self.presentingViewController.present(register).onValue { _ in
                 UIPasteboard.general.value = code
-                UIApplication.shared.appDelegate.createToast(
+                UIApplication.shared.appDelegate.displayToast(Toast(
                     symbol: .character("🎉"),
                     body: String(key: .COPIED)
-                )
+                )).onValue { _ in }
             }.disposable
         }
 

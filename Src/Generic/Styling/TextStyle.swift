@@ -48,6 +48,11 @@ extension TextStyle {
         style.color = .secondaryText
         style.font = HedvigFonts.circularStdBook!.withSize(15)
     }
+    
+    static let toastBodySubtitle = TextStyle.body.restyled { (style: inout TextStyle) in
+        style.color = .secondaryText
+        style.font = HedvigFonts.circularStdBook!.withSize(12)
+    }
 
     static let bodyWhite = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .white
