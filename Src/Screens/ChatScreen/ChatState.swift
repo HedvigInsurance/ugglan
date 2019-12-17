@@ -74,7 +74,7 @@ class ChatState {
             let toast = createToast()
             
             innerBag += toast.onTap.onValue { _ in
-                self.bag += UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
+                UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
             }
             
             bag += UIApplication.shared.appDelegate.displayToast(toast).onValue { _ in

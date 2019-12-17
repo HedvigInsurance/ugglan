@@ -60,7 +60,7 @@ struct Toast: Equatable {
         body: String,
         subtitle: String? = nil,
         textColor: UIColor = UIColor.primaryText,
-        subtitleColor: UIColor = .purple,
+        subtitleColor: UIColor = .primaryTintColor,
         backgroundColor: UIColor = UIColor.secondaryBackground,
         duration: TimeInterval = 5.0
     ) {
@@ -98,18 +98,27 @@ extension Toast: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let containerView = UIView()
+        let containerView = UIControl()
         bag += containerView.didLayoutSignal.onValue { _ in
             containerView.layer.cornerRadius = containerView.frame.height / 2
         }
         
-        let tap = UITapGestureRecognizer()
-        bag += tap.signal(forState: .recognized).onValue { _ in
+        bag += containerView.signal(for: .touchUpInside).onValue { _ in
             self.onTapCallbacker.callAll()
         }
         
-        bag += containerView.install(tap)
+        bag += containerView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            if !self.onTapCallbacker.isEmpty {
+                containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }
+        }
 
+        bag += containerView.delayedTouchCancel(delay: 0.1).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            if !self.onTapCallbacker.isEmpty {
+                containerView.transform = CGAffineTransform.identity
+            }
+        }
+        
         containerView.backgroundColor = backgroundColor
         bag += containerView.applyShadow { trait in
             UIView.ShadowProperties(
@@ -122,6 +131,7 @@ extension Toast: Viewable {
         }
 
         let stackView = UIStackView()
+        stackView.isUserInteractionEnabled = false
         stackView.axis = .horizontal
         stackView.layoutMargins = UIEdgeInsets(horizontalInset: 30, verticalInset: 15)
         stackView.spacing = 10
@@ -185,8 +195,12 @@ extension Toasts: Viewable {
         stackView.alignment = .center
 
         containerView.addArrangedSubview(stackView)
+        
+        var numberOfShownToasts = 0
 
         bag += toastSignal.atOnce().compactMap { $0 }.onValue { toast in
+            numberOfShownToasts = numberOfShownToasts + 1
+            
             bag += stackView.addArranged(toast) { toastView in
                 toastView.layer.opacity = 0
                 toastView.transform = CGAffineTransform(translationX: 0, y: -50)
@@ -230,10 +244,12 @@ extension Toasts: Viewable {
                         }.onValue { _ in
                             stackView.removeArrangedSubview(toastView)
                             toastView.removeFromSuperview()
-
-                            if stackView.subviews.isEmpty {
+                            
+                            if numberOfShownToasts == 1 {
                                 self.idleCallbacker.callAll()
                             }
+                            
+                            numberOfShownToasts = numberOfShownToasts - 1
 
                             innerBag.dispose()
                         }

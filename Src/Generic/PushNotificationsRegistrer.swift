@@ -34,14 +34,6 @@ struct PushNotificationsRegister: Presentable {
             message: message,
             actions: [
                 Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_OK), action: {
-                    UNUserNotificationCenter.current().getNotificationSettings { settings in
-                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
-                        if settings.authorizationStatus == .denied {
-                            DispatchQueue.main.async {
-                                UIApplication.shared.open(settingsUrl)
-                            }
-                        }
-                    }
                     UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
                 }),
                 Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW), action: {

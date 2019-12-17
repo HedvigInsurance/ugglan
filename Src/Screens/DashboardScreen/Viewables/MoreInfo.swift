@@ -81,7 +81,10 @@ extension MoreInfo: Viewable {
                 
                 let deductibleCheckmark = MultilineLabelIcon(
                     styledText: StyledText(
-                        text: String(key: .DASHBOARD_INFO_DEDUCTIBLE_HOUSE(deductible: Localization.Key.DEDUCTIBLE)),
+                        text: String(key: .DASHBOARD_INFO_DEDUCTIBLE_HOUSE(
+                                deductible: Localization.Key.DEDUCTIBLE
+                            )
+                        ),
                         style: .bodyOffBlack
                     ),
                     icon: Asset.greenCircularCheckmark,

@@ -43,12 +43,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
 
-        let toastBag = DisposeBag()
+        let toastBag = bag.innerBag()
         let toasts = Toasts(toastSignal: toastSignal)
 
         toastBag += keyWindow.add(toasts) { toastsView in
             toastBag += toastSignal.atOnce().onValue { _ in
-                toastsView.layer.zPosition = .greatestFiniteMagnitude
                 toastsView.snp.remakeConstraints { make in
                     if #available(iOS 13, *), !keyWindow.traitCollection.isPad {
                         if keyWindow.rootViewController?.presentedViewController != nil {
@@ -121,6 +120,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func registerForPushNotifications() -> Future<Void> {
         return Future { completion in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
+                if settings.authorizationStatus == .denied {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.open(settingsUrl)
+                    }
+                }
+            }
+            
             let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
             UNUserNotificationCenter.current().requestAuthorization(
                 options: authOptions,
