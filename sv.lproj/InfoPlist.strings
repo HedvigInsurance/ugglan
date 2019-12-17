@@ -8,3 +8,4 @@
 NSPhotoLibraryUsageDescription = "Hedvig använder kamera bibliotket för att låta dig ladda upp filer.";
 NSMicrophoneUsageDescription = "Hedvig använder mikrofonen för att låta dig spela in ljudmeddelanden och filma.";
 NSCameraUsageDescription = "Hedvig använder kameran för att göra det lätt för dig att skicka in bilder och filmer till oss.";
+NSPhotoLibraryAddUsageDescription = "Hedvig använder kamera bibliotket för att låta dig ladda upp filer.";
