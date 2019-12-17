@@ -63,6 +63,7 @@ targets:
       - location: Carthage/Build/iOS/Kingfisher.framework
       - location: Carthage/Build/iOS/Fabric.framework
       - location: Carthage/Build/iOS/Crashlytics.framework
+      - location: Carthage/Build/iOS/FBSDKCoreKit.framework
     platform: ios
     type: ":bundle.ui-testing"
     scripts:
@@ -88,6 +89,7 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
+          - $(SRCROOT)/Carthage/Build/iOS/FBSDKCoreKit.framework
         outputs:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapshotTesting.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
@@ -107,6 +109,7 @@ targets:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
+          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSDKCoreKit.framework
     configuration:
       INFOPLIST_FILE: UITests/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
@@ -149,6 +152,7 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
+          - $(SRCROOT)/Carthage/Build/iOS/FBSDKCoreKit.framework
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
@@ -167,6 +171,7 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/MarkdownKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSDKCoreKit.framework
     references:
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
@@ -207,6 +212,7 @@ targets:
       - location: Carthage/Build/iOS/Kingfisher.framework
       - location: Carthage/Build/iOS/Fabric.framework
       - location: Carthage/Build/iOS/Crashlytics.framework
+      - location: Carthage/Build/iOS/FBSDKCoreKit.framework
     configuration:
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       SWIFT_VERSION: "5.0"

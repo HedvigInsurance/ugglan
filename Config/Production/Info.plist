@@ -33,6 +33,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>hedvig</string>
+				<string>fb170982226921693</string>
 			</array>
 		</dict>
 	</array>
@@ -92,5 +93,13 @@
 	<array>
 		<dict/>
 	</array>
+	<key>FacebookAppID</key>
+	<string>170982226921693</string>
+	<key>FacebookDisplayName</key>
+	<string>Hedvig</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
 </dict>
 </plist>
