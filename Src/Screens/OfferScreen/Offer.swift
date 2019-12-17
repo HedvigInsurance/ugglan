@@ -151,6 +151,7 @@ extension Offer: Presentable {
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 80)
 
         ApplicationState.preserveState(.offer)
+        analyticsCoordinator.logAddToCart()
 
         let bag = DisposeBag()
 
