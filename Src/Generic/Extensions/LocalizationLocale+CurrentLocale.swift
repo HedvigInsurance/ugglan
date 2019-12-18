@@ -17,6 +17,15 @@ extension Localization.Locale {
             return "en-SE"
         }
     }
+    
+    var code: String {
+       switch self {
+       case .sv_SE:
+           return "sv_SE"
+       case .en_SE:
+           return "en_SE"
+       }
+   }
 
     func asGraphQLLocale() -> Locale {
         switch self {

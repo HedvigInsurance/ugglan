@@ -96,8 +96,22 @@ extension Marketing: Presentable {
             bag += loadingIndicatorBag
 
             loadingIndicatorBag += containerView.add(loadingIndicator)
+            
+            func getEnvironment() -> Environment {
+                switch ApplicationState.getTargetEnvironment() {
+                case .production:
+                    return .production
+                case .staging:
+                    return .staging
+                case .custom:
+                    return .staging
+                }
+            }
 
-            bag += self.client.fetch(query: MarketingStoriesQuery()).onValue { result in
+            bag += self.client.fetch(query: MarketingStoriesQuery(
+                languageCode: Localization.Locale.currentLocale.code,
+                environment: getEnvironment()
+            )).onValue { result in
                 guard let data = result.data else { return }
                 let rows = data.marketingStories.map { (marketingStoryData) -> MarketingStory in
                     MarketingStory(apollo: marketingStoryData!)
