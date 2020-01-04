@@ -11,7 +11,6 @@ import Foundation
 import UIKit
 
 struct TextView {
-    let value: ReadWriteSignal<String>
     let placeholder: ReadWriteSignal<String>
     let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
     let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
@@ -26,14 +25,12 @@ struct TextView {
     }
 
     init(
-        value: String,
         placeholder: String,
         keyboardTypeSignal: UIKeyboardType? = nil,
         textContentType: UITextContentType? = nil,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true
     ) {
-        self.value = ReadWriteSignal(value)
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
         self.keyboardTypeSignal = ReadWriteSignal(keyboardTypeSignal)
@@ -52,18 +49,20 @@ extension UITextView: SignalProvider {
             })
 
             return bag
-        }.readable(initial: text ?? "").writable(setValue: { newValue in
+        }.readable(getValue: { () -> String in
+            return self.text
+        }).writable(setValue: { newValue in
             self.text = newValue
         })
     }
-
+    
     public var didBeginEditingSignal: Signal<Void> {
         return NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
     }
 }
 
 extension TextView: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
@@ -100,7 +99,6 @@ extension TextView: Viewable {
         textView.tintColor = .primaryTintColor
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
         textView.backgroundColor = .clear
-        bag += value.atOnce().bidirectionallyBindTo(textView)
 
         bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
             textView.textContentType = textContentType
@@ -161,14 +159,23 @@ extension TextView: Viewable {
             make.width.equalToSuperview()
         }
 
-        bag += value.onValue { value in
+        bag += textView.atOnce().onValue { value in
             placeholderLabel.alpha = value.isEmpty ? 1 : 0
         }
 
         bag += view.signal(for: .touchDown).filter { !textView.isFirstResponder }.onValue { _ in
             textView.becomeFirstResponder()
         }
-
-        return (view, bag)
+        
+        return (view, Signal { callback in
+            bag += textView.providedSignal.onValue { value in
+                callback(value)
+            }
+            
+            return bag
+        }.readable(getValue: { textView.value }).writable(setValue: { newValue in
+            placeholderLabel.alpha = newValue.isEmpty ? 1 : 0
+            textView.value = newValue
+        }))
     }
 }

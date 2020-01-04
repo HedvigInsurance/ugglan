@@ -33,11 +33,10 @@ extension ChatTextView: Viewable {
         let defaultPlaceholder = "Aa"
 
         let textView = TextView(
-            value: "",
             placeholder: defaultPlaceholder,
             insets: UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 40)
         )
-        let (view, result) = textView.materialize(events: events)
+        let (view, value) = textView.materialize(events: events)
 
         let bag = DisposeBag()
 
@@ -46,7 +45,7 @@ extension ChatTextView: Viewable {
             textView.placeholder.value = message.placeholder ?? defaultPlaceholder
         }
 
-        bag += textView.value.onValue { _ in
+        bag += value.onValue { _ in
             if let message = self.chatState.currentMessageSignal.value {
                 switch message.responseType {
                 case .text:
@@ -70,14 +69,11 @@ extension ChatTextView: Viewable {
                 make.bottom.equalToSuperview().inset(5)
                 make.right.equalToSuperview().inset(5)
             })
-        }.withLatestFrom(textView.value.plain()).onValue({ _, textFieldValue in
-            textView.value.value = ""
+        }.withLatestFrom(value.plain()).onValue({ _, textFieldValue in
+            value.value = ""
             self.chatState.sendChatFreeTextResponse(text: textFieldValue)                   
         })
 
-        return (view, Disposer {
-            bag.dispose()
-            result.dispose()
-        })
+        return (view, bag)
     }
 }
