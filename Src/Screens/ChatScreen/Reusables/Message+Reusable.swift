@@ -338,6 +338,55 @@ extension Message: Reusable {
                     bag += {
                         imageViewContainer.removeFromSuperview()
                     }
+                    
+                case let .gif(url):
+                    bubble.backgroundColor = .transparent
+                    let imageViewContainer = UIView()
+                    
+                    let imageView = UIImageView()
+                    imageView.contentMode = .scaleAspectFill
+                    imageView.layer.cornerRadius = 5
+                    imageView.backgroundColor = .clear
+                    imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
+                    imageView.kf.setImage(
+                        with: url,
+                        options: []) { result in
+                            switch result {
+                            case let .success(imageResult):
+                                let width = imageResult.image.size.width
+                                let height = imageResult.image.size.height
+                                
+                                if width > height {
+                                    imageViewContainer.snp.makeConstraints { (make) in
+                                        make.width.equalTo(300)
+                                    }
+                                } else {
+                                    imageViewContainer.snp.makeConstraints { (make) in
+                                        make.width.equalTo(150)
+                                    }
+                                }
+
+                            case .failure:
+                                break
+                            }
+                    }
+                    
+                    imageViewContainer.addSubview(imageView)
+                    imageView.snp.makeConstraints { (make) in
+                        make.height.equalToSuperview()
+                        make.width.equalToSuperview()
+                    }
+                    
+                    imageViewContainer.snp.makeConstraints { (make) in
+                        make.height.equalTo(200)
+                    }
+                    
+                    contentContainer.addArrangedSubview(imageViewContainer)
+                    
+                    bag += {
+                        imageViewContainer.removeFromSuperview()
+                    }
+                    
                 case let .file(url):
                     let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
 

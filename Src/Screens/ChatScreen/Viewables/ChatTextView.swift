@@ -72,7 +72,7 @@ extension ChatTextView: Viewable {
             })
         }.withLatestFrom(textView.value.plain()).onValue({ _, textFieldValue in
             textView.value.value = ""
-            self.chatState.sendChatFreeTextResponse(text: textFieldValue)
+            bag += self.chatState.sendChatFreeTextResponse(text: textFieldValue).onValue { _ in }
         })
 
         return (view, Disposer {
