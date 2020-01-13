@@ -62,6 +62,8 @@ struct Message: Equatable, Hashable {
                 return true
             case (.video(_), .video(_)):
                 return true
+            case (.gif(_), .gif(_)):
+                return true
             default:
                 return false
             }
@@ -74,6 +76,8 @@ struct Message: Equatable, Hashable {
             case .image:
                 return true
             case .video:
+                return true
+            case .gif:
                 return true
             case .file:
                 return true
@@ -97,12 +101,21 @@ struct Message: Equatable, Hashable {
                 return false
             }
         }
-
-        var isVideoOrImageType: Bool {
-            return isImageType || isVideoType
+        
+        var isGIFType: Bool {
+            switch self {
+            case .gif:
+                return true
+            default:
+                return false
+            }
         }
 
-        case text, image(url: URL?), video(url: URL?), file(url: URL?)
+        var isVideoOrImageType: Bool {
+            return isImageType || isVideoType || isGIFType
+        }
+
+        case text, image(url: URL?), video(url: URL?), file(url: URL?), gif(url: URL?)
     }
 
     var shouldShowEditButton: Bool {
@@ -358,7 +371,11 @@ struct Message: Equatable, Hashable {
             placeholder = text.placeholder
             keyboardType = UIKeyboardType.from(text.keyboard)
             textContentType = UITextContentType.from(text.textContentType)
-            type = .text
+            if text.text.isValidURL {
+                type = .gif(url: URL(string: text.text))
+            } else {
+                type = .text
+            }
         } else if let number = message.body.asMessageBodyNumber {
             body = number.text
             responseType = .text
