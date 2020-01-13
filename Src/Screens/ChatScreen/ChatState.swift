@@ -169,16 +169,23 @@ class ChatState {
         }
     }
 
-    func sendChatFreeTextResponse(text: String) {
-        bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.take(first: 1).onValue { globalId in
-            self.bag += self.client.perform(
-                mutation: SendChatTextResponseMutation(globalId: globalId, text: text)
-            ).onValue { _ in
-                self.fetch(cachePolicy: .fetchIgnoringCacheData)
+    func sendChatFreeTextResponse(text: String) -> Signal<Void> {
+        Signal { callback in
+            let innerBag = DisposeBag()
+            
+            innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.take(first: 1).onValue { globalId in
+                innerBag += self.client.perform(
+                    mutation: SendChatTextResponseMutation(globalId: globalId, text: text)
+                ).onValue { _ in
+                    callback(())
+                    self.fetch(cachePolicy: .fetchIgnoringCacheData)
+                }
             }
+            
+            return innerBag
         }
     }
-
+    
     func sendChatFileResponseMutation(key: String, mimeType: String) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.perform(

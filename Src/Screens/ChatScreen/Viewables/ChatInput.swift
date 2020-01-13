@@ -148,7 +148,7 @@ extension ChatInput: Viewable {
                 if attachFilePaneIsOpen {
                     isHidden = true
                 } else if currentMessage?.richTextCompatible == true {
-                    isHidden = true
+                    isHidden = false
                 } else {
                     isHidden = true
                 }
@@ -173,6 +173,17 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: padding
             )
+            
+            bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { attachGifPaneIsOpen in
+                var isHidden: Bool
+                
+                if attachGifPaneIsOpen {
+                    isHidden = true
+                } else {
+                    isHidden = false
+                }
+                stackView.alpha = isHidden ? 0 : 1
+            }
         }
 
         contentView.addArrangedSubview(inputBar)
@@ -268,7 +279,8 @@ extension ChatInput: Viewable {
         )
         bag += containerView.addArranged(
             AttachGIFPane(
-                isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()
+                isOpenSignal: attachGIFPaneIsOpenSignal,
+                chatState: self.chatState
             )
         )
 
