@@ -128,28 +128,5 @@ extension AttachGIFImage: Reusable {
         })
         
     }
-
-
-    
-//    bag += view.signal(for: .touchUpInside).onValue { _ in
-//        print("Tapped Gif")
-//        if !sendOverlayBag.isEmpty{
-//            sendOverlayBag.dispose()
-//        }
-//        return
-//    }
-//
-//    let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-//    effectView.clipsToBounds = true
-//    effectView.alpha = 0
-//    view.addSubview(effectView)
-//
-//    effectView.snp.makeConstraints { (make) in
-//        make.width.height.centerX.centerY.equalToSuperview()
-//    }
-//
-//    sendOverlayBag += Signal(after: 0).animated(style: .easeOut(duration: 0.25)) { _ in
-//        effectView.alpha = 1
-//    }
     
 }

@@ -25,7 +25,7 @@ struct AttachGIFPane {
 }
 
 extension AttachGIFPane: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIView()
 
@@ -63,51 +63,62 @@ extension AttachGIFPane: Viewable {
         
         let infoText = MultilineLabel(styledText: .init(text: String(key: .LABEL_SEARCH_GIF),
                                                         style: .centeredBody))
-        let searchBar = TextView(value: "",
-                                 placeholder: String(key: .SEARCH_BAR_GIF))
+        let searchBar = TextView(placeholder: String(key: .SEARCH_BAR_GIF))
         
-
-        bag += view.add(searchBar.wrappedIn(UIStackView())) { searchBarView in
-            searchBarView.snp.makeConstraints({ (make) in
-                make.top.equalTo(view)
-                make.left.equalTo(view).offset(10)
-                make.right.equalTo(view).offset(-10)
-            })
- 
-            view.addSubview(collectionKit.view)
-            collectionKit.view.snp.makeConstraints { (make) in
-                make.top.equalTo(searchBarView.snp.bottom).offset(10)
-                make.left.right.equalTo(view)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
-            }
-
-            bag += view.add(infoText) { labelView in
-                labelView.snp.makeConstraints { (make) in
-                    labelView.textColor = .darkGray
-                    make.top.equalTo(searchBarView.snp.bottom).offset(10)
-                    make.left.equalTo(view).offset(10)
-                    make.right.bottom.equalTo(view).offset(-10)
-                    
-                    bag += searchBar.value.map { string -> Bool in
-                        string.count == 0
-                    }.onValue { isEmpty in
-                        if isEmpty {
-                            labelView.alpha = 1
-                        } else {
-                            labelView.alpha = 0
-                        }
-                    }
-                }
-            }
+        let (searchBarView, searchBarValue) = searchBar.materialize(events: events)
+        
+        bag += searchBarValue.onValue { _ in}
+        
+        let searchBarContainer = UIStackView()
+        searchBarContainer.addArrangedSubview(searchBarView)
+        
+        view.addSubview(searchBarContainer)
+        
+        searchBarContainer.snp.makeConstraints { (make) in
+            make.top.equalToSuperview()
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
         }
+
+        searchBarView.snp.makeConstraints({ (make) in
+                       make.top.equalTo(view)
+                       make.left.equalTo(view).offset(10)
+                       make.right.equalTo(view).offset(-10)
+                   })
+        
+                   view.addSubview(collectionKit.view)
+                   collectionKit.view.snp.makeConstraints { (make) in
+                       make.top.equalTo(searchBarView.snp.bottom).offset(10)
+                       make.left.right.equalTo(view)
+                       make.bottom.equalTo(view.safeAreaLayoutGuide)
+                   }
+
+                   bag += view.add(infoText) { labelView in
+                       labelView.snp.makeConstraints { (make) in
+                           labelView.textColor = .darkGray
+                           make.top.equalTo(searchBarView.snp.bottom).offset(10)
+                           make.left.equalTo(view).offset(10)
+                           make.right.bottom.equalTo(view).offset(-10)
+                           
+                           bag += searchBarValue.map { string -> Bool in
+                               string.count == 0
+                           }.onValue { isEmpty in
+                               if isEmpty {
+                                   labelView.alpha = 1
+                               } else {
+                                   labelView.alpha = 0
+                               }
+                           }
+                       }
+                   }
         
         bag += isOpenSignal.onValue({ (isOpen) in
             if !isOpen {
-                searchBar.value.value = ""
+                searchBarValue.value = ""
             }
         })
 
-        bag += searchBar.value.mapLatestToFuture { value in
+        bag += searchBarValue.mapLatestToFuture { value in
             self.client.fetch(query: GifQuery(query: value))
         }.compactMap({ result in
             result.data?.gifs.compactMap { $0 }
