@@ -102,7 +102,7 @@ struct Message: Equatable, Hashable {
             }
         }
         
-        var isRichMediaType: Bool {
+        var isGIFType: Bool {
             switch self {
             case .gif:
                 return true
@@ -112,7 +112,7 @@ struct Message: Equatable, Hashable {
         }
 
         var isVideoOrImageType: Bool {
-            return isImageType || isVideoType || isRichMediaType
+            return isImageType || isVideoType || isGIFType
         }
 
         case text, image(url: URL?), video(url: URL?), file(url: URL?), gif(url: URL?)
