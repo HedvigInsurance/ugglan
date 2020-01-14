@@ -177,6 +177,11 @@ extension Offer: Presentable {
 
         bag += insuranceSignal
             .bindTo(offerBubbles.insuranceSignal)
+        
+        let startDateButton = OfferStartDateButton(containerScrollView: scrollView)
+        bag += stackView.addArranged(startDateButton)
+        
+        bag += stackView.addArranged(Spacing(height: 16))
 
         let offerDiscount = OfferDiscount(containerScrollView: scrollView, presentingViewController: viewController)
         bag += offerSignal.compactMap { $0.data?.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
