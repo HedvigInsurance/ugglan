@@ -89,7 +89,6 @@ extension DraggableOverlay: Presentable {
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalTo(0)
-            make.center.equalToSuperview()
         }
 
         let overshoot = UIView()
@@ -129,6 +128,22 @@ extension DraggableOverlay: Presentable {
         }
 
         let overlayContainer = UIView()
+        
+        bag += merge(
+        NotificationCenter.default
+        .signal(forName: UIApplication.willEnterForegroundNotification),
+        NotificationCenter.default
+            .signal(forName: UIApplication.didEnterBackgroundNotification)
+        )
+            .onValue { _ in
+            overlay.center.y = overlayCenter
+            ease.value = overlay.center.y
+            ease.targetValue = overlay.center.y
+
+            overlay.layoutIfNeeded()
+            view.layoutIfNeeded()
+            overshoot.layoutIfNeeded()
+        }
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillShowNotification)
