@@ -42,7 +42,8 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
                     .prefersLargeTitles(false),
                     .largeTitleDisplayMode(.never),
                     .prefersNavigationBarHidden(true),
-                ]
+                ],
+                adjustsToKeyboard: false
             )
             viewController.present(overlay)
         }

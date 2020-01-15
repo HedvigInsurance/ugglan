@@ -89,6 +89,7 @@ extension DraggableOverlay: Presentable {
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalTo(0)
+            make.center.equalToSuperview()
         }
 
         let overshoot = UIView()
