@@ -26,14 +26,14 @@ private var didPickImageCallbackerKey = 0
 private var didCancelImagePickerCallbackerKey = 1
 
 extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    private var didPickImageCallbacker: Callbacker<PHAsset> {
-        if let callbacker = objc_getAssociatedObject(self, &didPickImageCallbackerKey) as? Callbacker<PHAsset> {
+    private var didPickImageCallbacker: Callbacker<Either<PHAsset, UIImage>> {
+        if let callbacker = objc_getAssociatedObject(self, &didPickImageCallbackerKey) as? Callbacker<Either<PHAsset, UIImage>> {
             return callbacker
         }
 
         delegate = self
 
-        let callbacker = Callbacker<PHAsset>()
+        let callbacker = Callbacker<Either<PHAsset, UIImage>>()
 
         objc_setAssociatedObject(self, &didPickImageCallbackerKey, callbacker, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 
@@ -54,7 +54,7 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
         return callbacker
     }
 
-    var didPickImageSignal: Signal<PHAsset> {
+    var didPickImageSignal: Signal<Either<PHAsset, UIImage>> {
         didPickImageCallbacker.providedSignal
     }
 
@@ -70,10 +70,14 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
         _: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
         guard let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset else {
+            if let originalImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+                didPickImageCallbacker.callAll(with: .make(originalImage))
+            }
+            
             return
         }
 
-        didPickImageCallbacker.callAll(with: asset)
+        didPickImageCallbacker.callAll(with: .make(asset))
     }
 }
 
@@ -82,7 +86,7 @@ enum ImagePickerError: Error {
 }
 
 extension ImagePicker: Presentable {
-    func materialize() -> (UIImagePickerController, Future<PHAsset>) {
+    func materialize() -> (UIImagePickerController, Future<Either<PHAsset, UIImage>>) {
         let viewController = UIImagePickerController()
         viewController.sourceType = sourceType
         viewController.preferredPresentationStyle = .modally(
@@ -103,8 +107,8 @@ extension ImagePicker: Presentable {
         return (viewController, Future { completion in
             let bag = DisposeBag()
 
-            bag += viewController.didPickImageSignal.onValue { asset in
-                completion(.success(asset))
+            bag += viewController.didPickImageSignal.onValue { result in
+                completion(.success(result))
             }
 
             bag += viewController.didCancelSignal.onValue { _ in

@@ -42,16 +42,34 @@ extension FilePickerHeader: Viewable {
         containerView.distribution = .fillEqually
         containerView.spacing = 5
 
-        func processAsset(_ asset: PHAsset) -> Disposable {
+        func processPickResult(_ result: Either<PHAsset, UIImage>) -> Disposable {
             let innerBag = DisposeBag()
-
-            asset.fileUpload.onValue { fileUpload in
+            
+            if let asset = result.left {
+                asset.fileUpload.onValue { fileUpload in
+                    innerBag += self.uploadFileDelegate.call(
+                        fileUpload
+                    )?.onValue { _ in }
+                }.onError { error in
+                    log.error(error.localizedDescription)
+                }
+            } else if let image = result.right {
+                guard let jpegData = image.jpegData(compressionQuality: 0.9) else {
+                     log.error("couldn't process image")
+                     return innerBag
+                 }
+                
+                let fileUpload = FileUpload(
+                    data: jpegData,
+                    mimeType: "image/jpeg",
+                    fileName: "image.jpg"
+                )
+                
                 innerBag += self.uploadFileDelegate.call(
                     fileUpload
                 )?.onValue { _ in }
-            }.onError { error in
-                log.error(error.localizedDescription)
             }
+            
 
             return innerBag
         }
@@ -63,7 +81,7 @@ extension FilePickerHeader: Viewable {
                     sourceType: .camera,
                     mediaTypes: [.video, .photo]
                 )
-            ).valueSignal.onValueDisposePrevious(processAsset)
+            ).valueSignal.onValueDisposePrevious(processPickResult)
         }
 
         let photoLibraryButton = PickerButton(icon: Asset.photoLibrary.image)
@@ -73,7 +91,7 @@ extension FilePickerHeader: Viewable {
                     sourceType: .photoLibrary,
                     mediaTypes: [.video, .photo]
                 )
-            ).valueSignal.onValueDisposePrevious(processAsset)
+            ).valueSignal.onValueDisposePrevious(processPickResult)
         }
 
         let filesButton = PickerButton(icon: Asset.files.image)
