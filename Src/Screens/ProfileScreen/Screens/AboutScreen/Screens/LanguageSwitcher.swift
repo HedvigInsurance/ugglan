@@ -15,7 +15,9 @@ extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
 }
 
-struct LanguageSwitcher {}
+struct LanguageSwitcher {
+    @Inject var client: ApolloClient
+}
 
 extension LanguageSwitcher: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -109,16 +111,21 @@ extension LanguageSwitcher: Presentable {
             swedishRowImageView.image = Asset.greenCircularCheckmark.image
         }
         
-        let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
-        bag += section.append(englishRow).onValue { _ in
-            ApplicationState.setPreferredLocale(.en_SE)
-            Localization.Locale.currentLocale = .en_SE
+        func pickLanguage(locale: Localization.Locale) {
+            ApplicationState.setPreferredLocale(locale)
+            Localization.Locale.currentLocale = locale
             ApolloClient.initClient().always {
                 TranslationsRepo.clear().onValue { _ in
                     reloadAllLabels()
                     NotificationCenter.default.post(Notification(name: .localeSwitched))
                 }
             }
+            bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+        }
+        
+        let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+        bag += section.append(englishRow).onValue { _ in
+            pickLanguage(locale: .en_SE)
                         
             UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 englishRowImageView.image = Asset.greenCircularCheckmark.image
@@ -134,15 +141,8 @@ extension LanguageSwitcher: Presentable {
         
         let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
         bag += section.append(swedishRow).onValue { _ in
-            ApplicationState.setPreferredLocale(.sv_SE)
-            Localization.Locale.currentLocale = .sv_SE
-            ApolloClient.initClient().always {
-               TranslationsRepo.clear().onValue { _ in
-                    reloadAllLabels()
-                    NotificationCenter.default.post(Notification(name: .localeSwitched))
-                }
-            }
-            
+            pickLanguage(locale: .sv_SE)
+
             UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 englishRowImageView.image = nil
             }, completion: nil)
