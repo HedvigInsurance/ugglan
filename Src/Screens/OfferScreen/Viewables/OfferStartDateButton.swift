@@ -11,6 +11,14 @@ import UIKit
 
 struct OfferStartDateButton {
     let containerScrollView: UIScrollView
+    let presentingViewController: UIViewController
+    
+    init(containerScrollView: UIScrollView,
+         presentingViewController: UIViewController
+    ) {
+        self.containerScrollView = containerScrollView
+        self.presentingViewController = presentingViewController
+    }
 }
 
 extension UIView {
@@ -48,6 +56,7 @@ extension OfferStartDateButton: Viewable {
         bag += button.applyCornerRadius { _ -> CGFloat in
             return button.layer.frame.height / 2
         }
+        
         containerStackView.addArrangedSubview(button)
         
         bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
@@ -56,14 +65,28 @@ extension OfferStartDateButton: Viewable {
                 y: (contentOffset.y / 5)
             )
         }
-                
+        
+        let touchUpInside = button.signal(for: .touchUpInside)
+        bag += touchUpInside.feedback(type: .impactLight)
+        
+        let present = PresentStartDate()
+        
+        bag += touchUpInside.onValue({ _ in
+            bag += self.presentingViewController.present(
+                DraggableOverlay(presentable: present,
+                                 presentationOptions: [.defaults , .prefersNavigationBarHidden(true)]
+                )
+            ).disposable
+        })
+        
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .equalCentering
+        stackView.distribution = .equalSpacing
         stackView.alignment = .center
         stackView.spacing = 8
         stackView.layoutMargins = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.isUserInteractionEnabled = false
         button.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
@@ -72,10 +95,16 @@ extension OfferStartDateButton: Viewable {
         
         let keyLabel = UILabel(value: "Startdatum", style: .body)
         stackView.addArrangedSubview(keyLabel)
+        keyLabel.textColor = .white
         
         let valueLabel = UILabel(value: "Idag", style: .bodyBold)
+        valueLabel.textColor = .white
         stackView.addArrangedSubview(valueLabel)
-                
+    
+        let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)
+        iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+        stackView.addArrangedSubview(iconView)
+        
         return (containerStackView, bag)
     }
 }

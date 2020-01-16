@@ -178,7 +178,7 @@ extension Offer: Presentable {
         bag += insuranceSignal
             .bindTo(offerBubbles.insuranceSignal)
         
-        let startDateButton = OfferStartDateButton(containerScrollView: scrollView)
+        let startDateButton = OfferStartDateButton(containerScrollView: scrollView, presentingViewController: viewController)
         bag += stackView.addArranged(startDateButton)
         
         bag += stackView.addArranged(Spacing(height: 16))
