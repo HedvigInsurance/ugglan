@@ -1,0 +1,73 @@
+fragment EmbarkLinkFragment on EmbarkLink {
+    name
+    label
+}
+
+fragment BasicExpressionFragment on EmbarkExpression {
+    ... on EmbarkExpressionUnary {
+        expressionUnaryType: type
+        text
+    }
+    ... on EmbarkExpressionBinary {
+        expressionBinaryType: type
+        key
+        value
+        text
+    }
+}
+
+fragment ExpressionFragment on EmbarkExpression {
+    ...BasicExpressionFragment
+    ... on EmbarkExpressionMultiple {
+        expressionMultipleType: type
+        text
+        subExpressions {
+            ...BasicExpressionFragment
+        }
+    }
+}
+
+query EmbarkStory($name: String!) {
+    embarkStory(name: $name) {
+        id
+        startPassage
+        name
+        passages {
+            id
+            name
+            messages {
+                text
+                expressions {
+                    ...ExpressionFragment
+                }
+            }
+            action {
+                ... on EmbarkActionCore {
+                    component
+                }
+                ... on EmbarkTextAction {
+                    component
+                    textActionData: data {
+                        key
+                        placeholder
+                        link {
+                            ...EmbarkLinkFragment
+                        }
+                    }
+                }
+                ... on EmbarkSelectAction {
+                    component
+                    selectActionData: data {
+                        options {
+                            key
+                            value
+                            link {
+                                ...EmbarkLinkFragment
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
