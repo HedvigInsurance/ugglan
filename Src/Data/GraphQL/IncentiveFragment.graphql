@@ -8,4 +8,8 @@ fragment IncentiveFragment on Incentive {
             amount
         }
     }
+    ... on PercentageDiscountMonths {
+        percentageDiscount
+        percentageNumberOfMonths: quantity
+    }
 }

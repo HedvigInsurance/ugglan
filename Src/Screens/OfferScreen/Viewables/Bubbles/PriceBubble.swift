@@ -120,6 +120,13 @@ extension PriceBubble: Viewable {
             if let freeMonths = incentiveFragment?.asFreeMonths {
                 return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
             }
+            
+            if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
+                return CampaignBubble.CampaignType.percentageDiscount(
+                    value: percentageDiscount.percentageDiscount,
+                    months: percentageDiscount.percentageNumberOfMonths
+                )
+            }
 
             if incentiveFragment?.asMonthlyCostDeduction != nil {
                 return CampaignBubble.CampaignType.invited
