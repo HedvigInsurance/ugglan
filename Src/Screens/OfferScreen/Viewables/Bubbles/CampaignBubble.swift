@@ -14,7 +14,7 @@ struct CampaignBubble {
     let campaignTypeSignal: ReadSignal<CampaignType?>
 
     enum CampaignType {
-        case freeMonths(number: Int), percentageDiscount(value: Double, months: Int), invited
+        case freeMonths(number: Int), percentageDiscount(value: Double, months: Int), invited, monthlyDeduction(amount: String)
     }
 }
 
@@ -81,6 +81,10 @@ extension CampaignBubble: Viewable {
                     } else {
                         subtitlelabel.text = String(key: .OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL(months: months, percentage: Int(value)))
                     }
+                case let .monthlyDeduction(amount):
+                    titleLabel.text = String(key: .OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
+                    titleLabel.animationSafeIsHidden = false
+                    subtitlelabel.text = "-\(amount)/mån"
                 case .invited:
                     titleLabel.text = ""
                     titleLabel.animationSafeIsHidden = true

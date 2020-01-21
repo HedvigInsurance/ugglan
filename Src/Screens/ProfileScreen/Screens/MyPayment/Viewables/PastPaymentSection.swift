@@ -28,6 +28,8 @@ extension PastPaymentsSection: Viewable {
         )
         
         let dataValueSignal = client.watch(query: MyPaymentQuery())
+        bag += dataValueSignal.map { $0.data?.chargeHistory.isEmpty ?? true }.bindTo(section, \.isHidden)
+        
         let dataSignal = dataValueSignal.compactMap { $0.data }
         
         bag += dataSignal.onValueDisposePrevious { data -> Disposable? in

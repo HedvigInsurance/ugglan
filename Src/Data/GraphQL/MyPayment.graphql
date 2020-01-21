@@ -10,6 +10,9 @@ query MyPayment {
     }
     nextChargeDate
     directDebitStatus
+    redeemedCampaigns {
+        ...CampaignFragment
+    }
     balance {
         currentBalance {
             ...MonetaryAmountFragment

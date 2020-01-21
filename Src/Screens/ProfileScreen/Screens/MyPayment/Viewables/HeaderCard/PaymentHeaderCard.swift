@@ -39,7 +39,45 @@ extension PaymentHeaderCard: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        topViewStack.addArrangedSubview(UILabel(value: "Nästa betalning", style: TextStyle.blockRowTitle.colored(.white)))
+        let leftTopViewStack = UIStackView()
+        leftTopViewStack.axis = .vertical
+        leftTopViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_TITLE), style: TextStyle.blockRowTitle.colored(.white)))
+        
+        let dataSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+        
+        let grossPriceSignal = dataSignal
+            .map { $0.data?.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }
+            .toInt()
+            .plain()
+            .compactMap { $0 }
+            .readable(initial: 0)
+        let discountSignal = dataSignal.map { $0.data?.chargeEstimation.discount.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
+        let netSignal = dataSignal.map { $0.data?.chargeEstimation.charge.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
+
+        
+        bag += leftTopViewStack.addArranged(PaymentHeaderPrice(grossPriceSignal: grossPriceSignal, discountSignal: discountSignal, monthlyNetPriceSignal: netSignal))
+        
+        topViewStack.addArrangedSubview(leftTopViewStack)
+        
+        let campaignTypeSignal = dataSignal.map { $0.data?.redeemedCampaigns.first }.map { campaign ->  CampaignBubble.CampaignType? in
+            guard let campaign = campaign else {
+                return nil
+            }
+            
+            let incentiveFragment = campaign.fragments.campaignFragment.incentive?.fragments.incentiveFragment
+            
+            if let freeMonths = incentiveFragment?.asFreeMonths {
+                return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
+            } else if let monthlyDeduction = incentiveFragment?.asMonthlyCostDeduction {
+                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.formattedAmount ?? "")
+            } else if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
+                return CampaignBubble.CampaignType.percentageDiscount(value: percentageDiscount.percentageDiscount, months: percentageDiscount.percentageNumberOfMonths)
+            }
+            
+            return nil
+        }.plain().readable(initial: nil)
+        
+        bag += topViewStack.addArranged(CampaignBubble(campaignTypeSignal: campaignTypeSignal))
         
         view.addArrangedSubview(topView)
         
@@ -68,7 +106,7 @@ extension PaymentHeaderCard: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        bottomViewStack.addArrangedSubview(UILabel(value: "Datum", style: .body))
+        bottomViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_DATE), style: .body))
         bag += bottomViewStack.addArranged(PaymentHeaderNextCharge())
         
         view.addArrangedSubview(bottomView)

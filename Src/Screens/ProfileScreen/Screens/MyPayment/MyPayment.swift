@@ -13,9 +13,6 @@ import Presentation
 
 struct MyPayment {
     @Inject var client: ApolloClient
-
-    init(
-    ) {}
 }
 
 extension MyPayment: Presentable {
@@ -71,6 +68,8 @@ extension MyPayment: Presentable {
 
         bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()
+            
+            print(result)
 
             let hasAlreadyConnected = result.data?.bankAccount != nil
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
