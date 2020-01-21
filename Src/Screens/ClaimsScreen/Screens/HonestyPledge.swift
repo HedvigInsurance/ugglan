@@ -10,7 +10,40 @@ import Foundation
 import Presentation
 import UIKit
 
-struct HonestyPledge {}
+struct HonestyPledge {
+    enum PushNotificationsAction {
+        case ask, skip
+    }
+    
+    func pushNotificationsPresentable() -> PresentableViewable<ImageTextAction<PushNotificationsAction>, PushNotificationsAction> {
+        let pushNotificationsDoButton = Button(
+            title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+        )
+
+        let pushNotificationsSkipButton = Button(
+            title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS),
+            type: .transparent(textColor: .pink)
+        )
+        
+        let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
+            image: Asset.activatePushNotificationsIllustration.image,
+            title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_HEADLINE),
+            body: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
+            actions: [
+               (.ask, pushNotificationsDoButton),
+               (.skip, pushNotificationsSkipButton),
+            ],
+            showLogo: false
+        )
+
+        return PresentableViewable(viewable: pushNotificationsAction) {
+            let viewController = UIViewController()
+            viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
+            return viewController
+        }
+    }
+}
 
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
@@ -53,14 +86,36 @@ extension HonestyPledge: Presentable {
         bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         viewController.view = containerStackView
+           
 
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
-                viewController.present(
-                    ClaimsChat().withCloseButton,
-                    style: .default,
-                    options: [.prefersNavigationBarHidden(false)]
-                ).onResult(completion)
+                func presentClaimsChat() {
+                    viewController.present(
+                        ClaimsChat().withCloseButton,
+                        style: .default,
+                        options: [.prefersNavigationBarHidden(false)]
+                    ).onResult(completion)
+                }
+                
+                if UIApplication.shared.isRegisteredForRemoteNotifications {
+                    presentClaimsChat()
+                } else {
+                    bag += viewController.present(
+                       self.pushNotificationsPresentable(),
+                       style: .default,
+                       options: [.prefersNavigationBarHidden(true)]
+                   ).onValue { action in
+                       if action == .ask {
+                           UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in
+                               presentClaimsChat()
+                           }
+                       } else {
+                           presentClaimsChat()
+                       }
+                   }
+                }
+               
             }
 
             return DelayedDisposer(bag, delay: 1)
