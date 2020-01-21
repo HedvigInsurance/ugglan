@@ -4,8 +4,7 @@ fragment IncentiveFragment on Incentive {
     }
     ... on MonthlyCostDeduction {
         amount {
-            currency
-            amount
+            ...MonetaryAmountFragment
         }
     }
     ... on PercentageDiscountMonths {

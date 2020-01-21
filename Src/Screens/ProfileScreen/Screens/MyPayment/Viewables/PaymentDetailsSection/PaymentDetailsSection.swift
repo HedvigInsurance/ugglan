@@ -37,35 +37,6 @@ extension PaymentDetailsSection: Viewable {
             style: .sectionPlain
         )
 
-        let freeMonthsRow = KeyValueRow()
-        freeMonthsRow.isHiddenSignal.value = true
-        freeMonthsRow.keySignal.value = String(key: .MY_PAYMENT_FREE_UNTIL_MESSAGE)
-
-        bag += section.append(freeMonthsRow)
-
-        bag += dataValueSignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.freeUntil }
-            .onValue { freeUntilDate in
-                freeMonthsRow.valueSignal.value = freeUntilDate
-                freeMonthsRow.isHiddenSignal.value = false
-            }
-
-        let paymentTypeRow = KeyValueRow()
-        paymentTypeRow.keySignal.value = String(key: .MY_PAYMENT_TYPE)
-        paymentTypeRow.valueStyleSignal.value = .rowTitleDisabled
-
-        bag += dataValueSignal.map {
-            $0.data?.nextChargeDate
-        }.map { paymentDate in
-            if let paymentDate = paymentDate {
-                return String(key: .MY_PAYMENT_DATE(paymentDate: paymentDate))
-            }
-
-            return ""
-        }.bindTo(paymentTypeRow.valueSignal)
-
-        bag += section.append(paymentTypeRow)
-
         let grossPriceRow = KeyValueRow()
         grossPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_PRICE_LABEL)
         grossPriceRow.valueStyleSignal.value = .rowTitleDisabled

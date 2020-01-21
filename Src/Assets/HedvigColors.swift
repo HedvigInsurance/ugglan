@@ -94,6 +94,8 @@ extension UIColor {
     static let pink = UIColor(red: 1.00, green: 0.54, blue: 0.50, alpha: 1.0)
     static let darkPink = UIColor(red: 0.67, green: 0.0, blue: 0.27, alpha: 1.0)
     static let yellow = UIColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1.0)
+    static let grass500 = UIColor(red: 0.0, green: 0.56, blue: 0.45, alpha: 1.0)
+    static let sunflower300 = UIColor(red: 251.0 / 255.0, green: 227.0 / 255.0, blue: 86.0 / 255.0, alpha: 1.0)
 
     static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
 

@@ -13,9 +13,6 @@ import Presentation
 
 struct MyPayment {
     @Inject var client: ApolloClient
-
-    init(
-    ) {}
 }
 
 extension MyPayment: Presentable {
@@ -28,8 +25,8 @@ extension MyPayment: Presentable {
         let form = FormView()
         bag += viewController.install(form)
 
-        let monthlyPaymentCircle = MonthlyPaymentCircle()
-        bag += form.prepend(monthlyPaymentCircle)
+        let paymentHeaderCard = PaymentHeaderCard()
+        bag += form.prepend(paymentHeaderCard)
 
         let updatingMessageSectionSpacing = Spacing(height: 20)
         updatingMessageSectionSpacing.isHiddenSignal.value = true
@@ -43,6 +40,9 @@ extension MyPayment: Presentable {
         bag += updatingMessageSection.append(updatingMessage)
 
         form.append(updatingMessageSection)
+        
+        let pastPaymentsSection = PastPaymentsSection(presentingViewController: viewController)
+        bag += form.append(pastPaymentsSection)
 
         let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
@@ -66,13 +66,10 @@ extension MyPayment: Presentable {
 
         let myPaymentQuerySignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
-        bag += myPaymentQuerySignal
-            .map { $0.data?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
-            .toInt()
-            .bindTo(monthlyPaymentCircle.monthlyCostSignal)
-
         bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()
+            
+            print(result)
 
             let hasAlreadyConnected = result.data?.bankAccount != nil
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
