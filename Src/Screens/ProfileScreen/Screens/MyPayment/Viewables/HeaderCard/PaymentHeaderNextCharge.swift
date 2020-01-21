@@ -46,7 +46,7 @@ extension PaymentHeaderNextCharge: Viewable {
                     label.value = dateDisplayFormatter.string(from: date)
                }
                 
-                view.backgroundColor = .lightGray
+                view.backgroundColor = .primaryBackground
             } else {
                 label.value = String(key: .PAYMENTS_CARD_NO_STARTDATE)
                 view.backgroundColor = .sunflower300
