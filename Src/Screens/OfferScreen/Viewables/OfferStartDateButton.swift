@@ -8,10 +8,12 @@
 import Foundation
 import Flow
 import UIKit
+import Apollo
 
 struct OfferStartDateButton {
     let containerScrollView: UIScrollView
     let presentingViewController: UIViewController
+    @Inject var client: ApolloClient
     
     init(containerScrollView: UIScrollView,
          presentingViewController: UIViewController
@@ -97,13 +99,35 @@ extension OfferStartDateButton: Viewable {
         stackView.addArrangedSubview(keyLabel)
         keyLabel.textColor = .white
         
-        let valueLabel = UILabel(value: "Idag", style: .bodyBold)
-        valueLabel.textColor = .white
-        stackView.addArrangedSubview(valueLabel)
-    
-        let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)
-        iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
-        stackView.addArrangedSubview(iconView)
+        let valueLabel = UILabel(value: "", style: .bodyBold)
+            valueLabel.textColor = .white
+            stackView.addArrangedSubview(valueLabel)
+        
+            let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)
+            iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+            stackView.addArrangedSubview(iconView)
+        
+        bag += self.client.watch(query: HasStartDateQuery()).onValue { result in
+            let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate
+            
+            let today = Date()
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            formatter.dateFormat = "yyyy-MM-dd"
+            let todayString = formatter.string(from: today)
+        
+            if startDate == todayString {
+                print("Idag: \(String(describing: startDate))")
+                valueLabel.text = "Idag"
+            } else if startDate == nil {
+                print("EJ: \(String(describing: startDate))")
+                valueLabel.text = "Välj datum"
+            } else {
+                print("nej: \(String(describing: startDate))")
+                valueLabel.text = startDate!
+            }
+        }
+        
         
         return (containerStackView, bag)
     }

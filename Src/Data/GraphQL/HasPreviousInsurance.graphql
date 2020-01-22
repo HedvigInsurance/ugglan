@@ -1,0 +1,7 @@
+query HasPreviousInsurance {
+    insurance {
+        previousInsurer {
+            id
+        }
+    }
+}

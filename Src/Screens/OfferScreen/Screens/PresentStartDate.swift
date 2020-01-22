@@ -10,21 +10,24 @@ import Flow
 import Presentation
 import UIKit
 import SnapKit
+import Apollo
 
 struct PresentStartDate {
+    @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
+    
 }
 
 extension PresentStartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        viewController.preferredContentSize = CGSize(width: 50, height: 511)
-
         let bag = DisposeBag()
         
         let containerView = UIStackView()
         containerView.axis = .vertical
         
+        bag += containerView.applySafeAreaBottomLayoutMargin()
         bag += containerView.applyPreferredContentSize(on: viewController)
 
         viewController.view = containerView
@@ -33,7 +36,7 @@ extension PresentStartDate: Presentable {
         textStackView.spacing = 8
         textStackView.axis = .vertical
         textStackView.layoutMargins = UIEdgeInsets(top: 32, left: 24, bottom: 32, right: 24)
-        textStackView.isLayoutMarginsRelativeArrangement = true        
+        textStackView.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(textStackView)
         
         let pickerStackView = UIStackView()
@@ -50,7 +53,7 @@ extension PresentStartDate: Presentable {
         actionStackView.spacing = 24
         actionStackView.axis = .vertical
         actionStackView.alignment = .center
-        actionStackView.layoutMargins = UIEdgeInsets(top: 32, left: 129, bottom: 56, right: 129)
+        actionStackView.layoutMargins = UIEdgeInsets(top: 32, left: 0, bottom: 10, right: 0)
         actionStackView.isLayoutMarginsRelativeArrangement = true
         actionStackView.isUserInteractionEnabled = true
         
@@ -75,30 +78,100 @@ extension PresentStartDate: Presentable {
         picker.calendar = Calendar.current
         picker.datePickerMode = .date
         picker.minimumDate = Date()
-        picker.maximumDate = Calendar.current.date(byAdding: .year, value: 1, to: Date())
+        picker.maximumDate = Calendar.current.date(byAdding: .year,
+                                                   value: 1,
+                                                   to: Date())
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = NSTimeZone.local
+        let today = dateFormatter.string(from: Date())
+        
+        var valueSelected: String = today
+        
+        bag += picker.atOnce().onValue({ (_) in
+            let pickedValue = dateFormatter.string(from: picker.value)
+            valueSelected = pickedValue
+            print("PICKED VALUE: \(valueSelected)")
+        })
 
         pickerStackView.addArrangedSubview(picker)
         
-        let chooseDateButton = Button(title: "Välj datum", type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
-        let activateNowButton = Button(title: "Aktivera idag", type: .transparent(textColor: .primaryTintColor))
+        let chooseDateButton = Button(title: "Välj datum",
+                                      type: .standard(backgroundColor: .primaryTintColor,
+                                                      textColor: .white))
         
-        bag += actionStackView.addArranged(chooseDateButton)
-        bag += actionStackView.addArranged(activateNowButton)
+        let loadableChooseDateButton = LoadableButton(button: chooseDateButton,
+                                                  initialLoadingState: false)
         
-        bag += chooseDateButton.onTapSignal.onValue({ date in
-            let dateChoosen = picker.date
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            dateFormatter.timeZone = NSTimeZone.local
-            print("Date Choosen: \(dateFormatter.string(from: dateChoosen))")
-        })
+        let activateNowButton = Button(title: "",
+                                       type: .transparent(textColor: .primaryTintColor))
         
-        bag += activateNowButton.onTapSignal.onValue({ _ in
-            print("Start Today: \(Date())")
-        })
+        let loadableActivateButton = LoadableButton(button: activateNowButton,
+                                                    initialLoadingState: false)
+        
+        bag += actionStackView.addArranged(loadableChooseDateButton.wrappedIn(UIStackView()))
+        bag += actionStackView.addArranged(loadableActivateButton.wrappedIn(UIStackView()))
+        
+        
+        let innerbag = bag.innerBag()
+        
+        bag += self.client.fetch(query: HasPreviousInsuranceQuery()).map{
+            let previousInsuranceId = $0.data?.insurance.previousInsurer?.id
+            
+            if previousInsuranceId == nil {
+                activateNowButton.title.value = "Aktivera idag"
 
-        return (viewController, Future { _ in
-            bag
+                innerbag += loadableActivateButton.onTapSignal.onValue({ _ in
+                    loadableActivateButton.isLoadingSignal.value = true
+                    //DO STUFF
+                    self.client.fetch(query: LastQuoteOfMemberQuery()).valueSignal.compactMap {
+                        $0.data?.lastQuoteOfMember.asCompleteQuote?.id
+                    }.mapLatestToFuture({ id in
+                        self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: today))
+                    })
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        loadableActivateButton.isLoadingSignal.value = false
+
+                        viewController.dismiss(animated: true, completion: nil)
+                        innerbag.dispose()
+                    }
+                })
+            } else {
+                activateNowButton.title.value = "Aktivera när din nuvarande försäkring går ut"
+                
+                innerbag += loadableActivateButton.onTapSignal.onValue({ _ in
+                    loadableActivateButton.isLoadingSignal.value = true
+                    
+                    //DO STUFF
+                    
+                })
+            }
+        }
+
+        return (viewController, Future { completion in
+            innerbag += loadableChooseDateButton.onTapSignal.onValue({ date in
+                loadableChooseDateButton.isLoadingSignal.value = true
+                print("Choosen date is: \(valueSelected)")
+                innerbag += self.client.fetch(query: LastQuoteOfMemberQuery()).valueSignal.compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.id
+                }.mapLatestToFuture({ id in
+                    self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: valueSelected))
+                }).onValue({ result in
+                    print("RESOULT IS: \(result)")
+                    
+                    innerbag += Signal(after: 0.5).onValue { _ in
+                        loadableChooseDateButton.isLoadingSignal.value = false
+                        completion(.success)
+                    }
+                    
+                    self.store.update(query: HasStartDateQuery()) { (data: inout HasStartDateQuery.Data) in
+                        data.lastQuoteOfMember.asCompleteQuote?.startDate = result.data?.editQuote.asCompleteQuote?.startDate
+                    }
+                })
+            })
+            
+            return bag
         })
     }
 }

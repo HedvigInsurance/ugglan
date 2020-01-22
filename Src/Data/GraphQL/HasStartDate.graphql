@@ -1,0 +1,7 @@
+query HasStartDate {
+    lastQuoteOfMember{
+      ... on CompleteQuote {
+          startDate
+      }
+    }
+}
