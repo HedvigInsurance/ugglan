@@ -95,7 +95,7 @@ extension OfferStartDateButton: Viewable {
         
         bag += self.client.watch(query: OfferQuery()).onValue { result in
             let calendar = Calendar.current
-            guard let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.displayValue.localDateToDate! else {
+            guard let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.description.localDateToDate else {
                 valueLabel.text = String(key: .CHOOSE_DATE_BTN)
                 return
             }

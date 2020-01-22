@@ -136,10 +136,10 @@ extension ChooseStartDate: Presentable {
                 })
             })
             
-            bag += self.client.fetch(query: HasPreviousInsuranceQuery()).map{
-                let previousInsuranceId = $0.data?.insurance.previousInsurer?.id
-                
-                if previousInsuranceId == nil {
+            bag += self.client.fetch(query: OfferQuery()).onValue { result in
+                let previousInsurance = result.data?.insurance.previousInsurer
+                print("ID IS: \(previousInsurance)")
+                if previousInsurance == nil {
                     activateNowButton.title.value = String(key: .ACTIVATE_TODAY_BTN)
 
                     bag += loadableActivateButton.onTapSignal.onValue({ _ in
@@ -155,7 +155,7 @@ extension ChooseStartDate: Presentable {
                                     completion(.success)
                                 })
                                 
-                                self.store.update(query: HasStartDateQuery()) { (data: inout HasStartDateQuery.Data) in
+                                self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
                                     data.lastQuoteOfMember.asCompleteQuote?.startDate = result.data?.editQuote.asCompleteQuote?.startDate
                                 }
 
@@ -169,8 +169,7 @@ extension ChooseStartDate: Presentable {
                     bag += loadableActivateButton.onTapSignal.onValue({ _ in
                         loadableActivateButton.isLoadingSignal.value = true
                         
-
-                        self.client.fetch(query: LastQuoteOfMemberQuery()).onValue { (result) in
+                        self.client.fetch(query: OfferQuery()).onValue { (result) in
                             guard let memberID = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
                             
                             self.client.perform(mutation: RemoveStartDateMutation(id: memberID)).onValue { (result) in
@@ -179,7 +178,6 @@ extension ChooseStartDate: Presentable {
                                     completion(.success)
                                 })
                             }
-                            
                         }
                     })
                 }
