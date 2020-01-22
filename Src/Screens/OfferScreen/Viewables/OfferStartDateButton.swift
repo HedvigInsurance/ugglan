@@ -23,22 +23,7 @@ struct OfferStartDateButton {
     }
 }
 
-extension UIView {
-    func applyCornerRadius(getCornerRadius: @escaping (_ traitCollection: UITraitCollection) -> CGFloat) -> Disposable {
-        
-        let bag = DisposeBag()
-        
-        bag += didLayoutSignal.onValue { _ in
-            self.layer.cornerRadius = getCornerRadius(self.traitCollection)
-        }
-        
-        bag += traitCollectionSignal.onValue { trait in
-            self.layer.cornerRadius = getCornerRadius(trait)
-        }
-        
-        return bag
-    }
-}
+
 
 
 
@@ -55,6 +40,7 @@ extension OfferStartDateButton: Viewable {
         bag += button.applyBorderColor { traitCollection -> UIColor in
             return .white
         }
+        
         bag += button.applyCornerRadius { _ -> CGFloat in
             return button.layer.frame.height / 2
         }
@@ -71,7 +57,7 @@ extension OfferStartDateButton: Viewable {
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
         
-        let present = PresentStartDate()
+        let present = ChooseStartDate()
         
         bag += touchUpInside.onValue({ _ in
             bag += self.presentingViewController.present(
@@ -95,7 +81,7 @@ extension OfferStartDateButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        let keyLabel = UILabel(value: "Startdatum", style: .body)
+        let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .body)
         stackView.addArrangedSubview(keyLabel)
         keyLabel.textColor = .white
         
@@ -107,27 +93,21 @@ extension OfferStartDateButton: Viewable {
             iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
             stackView.addArrangedSubview(iconView)
         
-        bag += self.client.watch(query: HasStartDateQuery()).onValue { result in
-            let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate
-            
-            let today = Date()
-            let formatter = DateFormatter()
-            formatter.dateStyle = .short
-            formatter.dateFormat = "yyyy-MM-dd"
-            let todayString = formatter.string(from: today)
-        
-            if startDate == todayString {
-                print("Idag: \(String(describing: startDate))")
-                valueLabel.text = "Idag"
-            } else if startDate == nil {
-                print("EJ: \(String(describing: startDate))")
-                valueLabel.text = "Välj datum"
+        bag += self.client.watch(query: OfferQuery()).onValue { result in
+            let calendar = Calendar.current
+            guard let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.displayValue.localDateToDate! else {
+                valueLabel.text = String(key: .CHOOSE_DATE_BTN)
+                return
+            }
+
+            if calendar.isDateInToday(startDate) {
+                valueLabel.text = String(key: .START_DATE_TODAY)
             } else {
-                print("nej: \(String(describing: startDate))")
-                valueLabel.text = startDate!
+                valueLabel.text = startDate.localDateString
             }
         }
         
+
         
         return (containerStackView, bag)
     }

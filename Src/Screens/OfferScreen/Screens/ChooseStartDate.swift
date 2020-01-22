@@ -12,7 +12,7 @@ import UIKit
 import SnapKit
 import Apollo
 
-struct PresentStartDate {
+struct ChooseStartDate {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
@@ -35,7 +35,7 @@ extension ChooseStartDate: Presentable {
         let textStackView = UIStackView()
         textStackView.spacing = 8
         textStackView.axis = .vertical
-        textStackView.layoutMargins = UIEdgeInsets(top: 32, left: 24, bottom: 32, right: 24)
+        textStackView.layoutMargins = UIEdgeInsets(top: 32, left: 0, bottom: 32, right: 0)
         textStackView.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(textStackView)
         
@@ -60,14 +60,14 @@ extension ChooseStartDate: Presentable {
         containerView.addArrangedSubview(actionStackView)
 
         let titleLabel = MultilineLabel(
-            value: String("Byt startdatum"),
+            value: String(key: .DRAGGABLE_STARTDATE_TITLE),
             style: .draggableOverlayTitle
         )
       
         bag += textStackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
-            value: String("Vilket datum vill du att din försäkring aktiveras?"),
+            value: String(key: .DRAGGABLE_STARTDATE_DESCRIPTION),
             style: .startDateDescription
         )
         
@@ -92,12 +92,11 @@ extension ChooseStartDate: Presentable {
         bag += picker.atOnce().onValue({ (_) in
             let pickedValue = dateFormatter.string(from: picker.value)
             valueSelected = pickedValue
-            print("PICKED VALUE: \(valueSelected)")
         })
 
         pickerStackView.addArrangedSubview(picker)
         
-        let chooseDateButton = Button(title: "Välj datum",
+        let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
                                       type: .standard(backgroundColor: .primaryTintColor,
                                                       textColor: .white))
         
@@ -118,20 +117,20 @@ extension ChooseStartDate: Presentable {
         return (viewController, Future { completion in
             
             bag += loadableChooseDateButton.onTapSignal.onValue({ date in
+                
                 loadableChooseDateButton.isLoadingSignal.value = true
-                print("Choosen date is: \(valueSelected)")
-                bag += self.client.fetch(query: LastQuoteOfMemberQuery()).valueSignal.compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.id
+                
+                bag += self.client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.id
                 }.mapLatestToFuture({ id in
                     self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: valueSelected))
                 }).onValue({ result in
-                    print("IS: \(result)")
-                    
+
                     bag += Signal(after: 0.5).onValue { _ in
                         loadableChooseDateButton.isLoadingSignal.value = false
                         completion(.success)
                     }
                     
-                    self.store.update(query: HasStartDateQuery()) { (data: inout HasStartDateQuery.Data) in
+                    self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
                         data.lastQuoteOfMember.asCompleteQuote?.startDate = result.data?.editQuote.asCompleteQuote?.startDate
                     }
                 })
@@ -141,19 +140,16 @@ extension ChooseStartDate: Presentable {
                 let previousInsuranceId = $0.data?.insurance.previousInsurer?.id
                 
                 if previousInsuranceId == nil {
-                    activateNowButton.title.value = "Aktivera idag"
+                    activateNowButton.title.value = String(key: .ACTIVATE_TODAY_BTN)
 
                     bag += loadableActivateButton.onTapSignal.onValue({ _ in
                         loadableActivateButton.isLoadingSignal.value = true
-                        //DO STUFF
-                        
-                        
-                        self.client.fetch(query: LastQuoteOfMemberQuery()).onValue { result in
+
+                        self.client.fetch(query: OfferQuery()).onValue { result in
                             guard let id = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
                             
                             self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: today)).onValue { (result) in
-                                print("TAPPED!")
-                                print("TODAY: \(today)")
+
                                 bag += Signal(after: 0.5).onValue({ _ in
                                     loadableActivateButton.isLoadingSignal.value = false
                                     completion(.success)
@@ -168,17 +164,16 @@ extension ChooseStartDate: Presentable {
                         
                     })
                 } else {
-                    activateNowButton.title.value = "Aktivera när din nuvarande försäkring går ut"
+                    activateNowButton.title.value = String(key: .ACTIVATE_INSURANCE_END_BTN)
                     
                     bag += loadableActivateButton.onTapSignal.onValue({ _ in
                         loadableActivateButton.isLoadingSignal.value = true
                         
-                        //DO STUFF REMOVESTARTDATE
+
                         self.client.fetch(query: LastQuoteOfMemberQuery()).onValue { (result) in
                             guard let memberID = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
                             
                             self.client.perform(mutation: RemoveStartDateMutation(id: memberID)).onValue { (result) in
-                                print("Removed Startdate: \(result)")
                                 bag += Signal(after: 0.5).onValue({ (_) in
                                     loadableActivateButton.isLoadingSignal.value = false
                                     completion(.success)
