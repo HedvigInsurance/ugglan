@@ -14,18 +14,7 @@ struct OfferStartDateButton {
     let containerScrollView: UIScrollView
     let presentingViewController: UIViewController
     @Inject var client: ApolloClient
-    
-    init(containerScrollView: UIScrollView,
-         presentingViewController: UIViewController
-    ) {
-        self.containerScrollView = containerScrollView
-        self.presentingViewController = presentingViewController
-    }
 }
-
-
-
-
 
 extension OfferStartDateButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
@@ -37,6 +26,8 @@ extension OfferStartDateButton: Viewable {
         
         let button = UIControl()
         button.layer.borderWidth = 1
+        button.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(CGAffineTransform(translationX: 0, y: -30))
+        button.alpha = 0
         bag += button.applyBorderColor { traitCollection -> UIColor in
             return .white
         }
@@ -54,18 +45,26 @@ extension OfferStartDateButton: Viewable {
             )
         }
         
+        let dataSignal = self.client.watch(query: OfferQuery())
+
+        bag += dataSignal.take(first: 1).animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) { _ in
+            button.transform = CGAffineTransform.identity
+            button.alpha = 1
+        }
+        
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
         
-        let present = ChooseStartDate()
+        let chooseStartDate = ChooseStartDate()
         
-        bag += touchUpInside.onValue({ _ in
+        bag += touchUpInside.onValue { _ in
             bag += self.presentingViewController.present(
-                DraggableOverlay(presentable: present,
-                                 presentationOptions: [.defaults , .prefersNavigationBarHidden(true)]
+                DraggableOverlay(
+                    presentable: chooseStartDate,
+                    presentationOptions: [.defaults , .prefersNavigationBarHidden(true)]
                 )
             ).disposable
-        })
+        }
         
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -89,25 +88,22 @@ extension OfferStartDateButton: Viewable {
             valueLabel.textColor = .white
             stackView.addArrangedSubview(valueLabel)
         
-            let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)
-            iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
-            stackView.addArrangedSubview(iconView)
+        let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)
+        iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+        stackView.addArrangedSubview(iconView)
         
-        bag += self.client.watch(query: OfferQuery()).onValue { result in
-            let calendar = Calendar.current
+        bag += dataSignal.onValue { result in
             guard let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.description.localDateToDate else {
                 valueLabel.text = String(key: .CHOOSE_DATE_BTN)
                 return
             }
 
-            if calendar.isDateInToday(startDate) {
+            if Calendar.current.isDateInToday(startDate) {
                 valueLabel.text = String(key: .START_DATE_TODAY)
             } else {
                 valueLabel.text = startDate.localDateString
             }
         }
-        
-
         
         return (containerStackView, bag)
     }

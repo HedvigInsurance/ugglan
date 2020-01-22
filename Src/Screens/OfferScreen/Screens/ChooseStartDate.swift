@@ -15,8 +15,6 @@ import Apollo
 struct ChooseStartDate {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
-    
 }
 
 extension ChooseStartDate: Presentable {
@@ -68,7 +66,7 @@ extension ChooseStartDate: Presentable {
 
         let descriptionLabel = MultilineLabel(
             value: String(key: .DRAGGABLE_STARTDATE_DESCRIPTION),
-            style: .startDateDescription
+            style: .draggableOverlayDescription
         )
         
         bag += textStackView.addArranged(descriptionLabel)
@@ -82,18 +80,6 @@ extension ChooseStartDate: Presentable {
                                                    value: 1,
                                                    to: Date())
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = NSTimeZone.local
-        let today = dateFormatter.string(from: Date())
-        
-        var valueSelected: String = today
-        
-        bag += picker.atOnce().onValue({ (_) in
-            let pickedValue = dateFormatter.string(from: picker.value)
-            valueSelected = pickedValue
-        })
-
         pickerStackView.addArrangedSubview(picker)
         
         let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
@@ -112,7 +98,11 @@ extension ChooseStartDate: Presentable {
         bag += actionStackView.addArranged(loadableChooseDateButton.wrappedIn(UIStackView()))
         bag += actionStackView.addArranged(loadableActivateButton.wrappedIn(UIStackView()))
         
-        
+        func updateStartDateCache(startDate: String?) {
+            self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
+                data.lastQuoteOfMember.asCompleteQuote?.startDate = startDate
+            }
+        }
 
         return (viewController, Future { completion in
             
@@ -120,26 +110,25 @@ extension ChooseStartDate: Presentable {
                 
                 loadableChooseDateButton.isLoadingSignal.value = true
                 
-                bag += self.client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.id
-                }.mapLatestToFuture({ id in
-                    self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: valueSelected))
+                bag += self.client.fetch(query: OfferQuery()).valueSignal.compactMap {
+                    $0.data?.lastQuoteOfMember.asCompleteQuote?.id
+                }
+                    .plain()
+                    .withLatestFrom(picker.atOnce().plain())
+                    .mapLatestToFuture({ id, pickedStartDate in
+                    self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: pickedStartDate.localDateString ?? ""))
                 }).onValue({ result in
-
                     bag += Signal(after: 0.5).onValue { _ in
                         loadableChooseDateButton.isLoadingSignal.value = false
                         completion(.success)
                     }
                     
-                    self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
-                        data.lastQuoteOfMember.asCompleteQuote?.startDate = result.data?.editQuote.asCompleteQuote?.startDate
-                    }
+                    updateStartDateCache(startDate: result.data?.editQuote.asCompleteQuote?.startDate)
                 })
             })
             
-            bag += self.client.fetch(query: OfferQuery()).onValue { result in
-                let previousInsurance = result.data?.insurance.previousInsurer
-                print("ID IS: \(previousInsurance)")
-                if previousInsurance == nil {
+            bag += self.client.fetch(query: OfferQuery()).map { $0.data?.insurance.previousInsurer }.onValue { previousInsurer in
+                if previousInsurer == nil {
                     activateNowButton.title.value = String(key: .ACTIVATE_TODAY_BTN)
 
                     bag += loadableActivateButton.onTapSignal.onValue({ _ in
@@ -148,17 +137,13 @@ extension ChooseStartDate: Presentable {
                         self.client.fetch(query: OfferQuery()).onValue { result in
                             guard let id = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
                             
-                            self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: today)).onValue { (result) in
-
+                            self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: Date().localDateString ?? "")).onValue { result in
                                 bag += Signal(after: 0.5).onValue({ _ in
                                     loadableActivateButton.isLoadingSignal.value = false
                                     completion(.success)
                                 })
-                                
-                                self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
-                                    data.lastQuoteOfMember.asCompleteQuote?.startDate = result.data?.editQuote.asCompleteQuote?.startDate
-                                }
 
+                                updateStartDateCache(startDate: result.data?.editQuote.asCompleteQuote?.startDate)
                             }
                         }
                         
@@ -169,14 +154,14 @@ extension ChooseStartDate: Presentable {
                     bag += loadableActivateButton.onTapSignal.onValue({ _ in
                         loadableActivateButton.isLoadingSignal.value = true
                         
-                        self.client.fetch(query: OfferQuery()).onValue { (result) in
-                            guard let memberID = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
+                        self.client.fetch(query: OfferQuery()).onValue { result in
+                            guard let quoteId = result.data?.lastQuoteOfMember.asCompleteQuote?.id else { return }
                             
-                            self.client.perform(mutation: RemoveStartDateMutation(id: memberID)).onValue { (result) in
-                                bag += Signal(after: 0.5).onValue({ (_) in
+                            self.client.perform(mutation: RemoveStartDateMutation(id: quoteId)).onValue { result in
+                                bag += Signal(after: 0.5).onValue { _ in
                                     loadableActivateButton.isLoadingSignal.value = false
                                     completion(.success)
-                                })
+                                }
                             }
                         }
                     })
