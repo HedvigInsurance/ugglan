@@ -1,7 +1,0 @@
-query LastQuoteOfMember {
-    lastQuoteOfMember {
-        ... on CompleteQuote {
-            id
-        }
-    }
-}

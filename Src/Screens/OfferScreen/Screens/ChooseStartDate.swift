@@ -19,7 +19,7 @@ struct PresentStartDate {
     
 }
 
-extension PresentStartDate: Presentable {
+extension ChooseStartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
@@ -61,7 +61,7 @@ extension PresentStartDate: Presentable {
 
         let titleLabel = MultilineLabel(
             value: String("Byt startdatum"),
-            style: .startDateTitle
+            style: .draggableOverlayTitle
         )
       
         bag += textStackView.addArranged(titleLabel)
@@ -114,53 +114,19 @@ extension PresentStartDate: Presentable {
         bag += actionStackView.addArranged(loadableActivateButton.wrappedIn(UIStackView()))
         
         
-        let innerbag = bag.innerBag()
-        
-        bag += self.client.fetch(query: HasPreviousInsuranceQuery()).map{
-            let previousInsuranceId = $0.data?.insurance.previousInsurer?.id
-            
-            if previousInsuranceId == nil {
-                activateNowButton.title.value = "Aktivera idag"
-
-                innerbag += loadableActivateButton.onTapSignal.onValue({ _ in
-                    loadableActivateButton.isLoadingSignal.value = true
-                    //DO STUFF
-                    self.client.fetch(query: LastQuoteOfMemberQuery()).valueSignal.compactMap {
-                        $0.data?.lastQuoteOfMember.asCompleteQuote?.id
-                    }.mapLatestToFuture({ id in
-                        self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: today))
-                    })
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        loadableActivateButton.isLoadingSignal.value = false
-
-                        viewController.dismiss(animated: true, completion: nil)
-                        innerbag.dispose()
-                    }
-                })
-            } else {
-                activateNowButton.title.value = "Aktivera när din nuvarande försäkring går ut"
-                
-                innerbag += loadableActivateButton.onTapSignal.onValue({ _ in
-                    loadableActivateButton.isLoadingSignal.value = true
-                    
-                    //DO STUFF
-                    
-                })
-            }
-        }
 
         return (viewController, Future { completion in
-            innerbag += loadableChooseDateButton.onTapSignal.onValue({ date in
+            
+            bag += loadableChooseDateButton.onTapSignal.onValue({ date in
                 loadableChooseDateButton.isLoadingSignal.value = true
                 print("Choosen date is: \(valueSelected)")
-                innerbag += self.client.fetch(query: LastQuoteOfMemberQuery()).valueSignal.compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.id
+                bag += self.client.fetch(query: LastQuoteOfMemberQuery()).valueSignal.compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.id
                 }.mapLatestToFuture({ id in
                     self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: valueSelected))
                 }).onValue({ result in
-                    print("RESOULT IS: \(result)")
+                    print("IS: \(result)")
                     
-                    innerbag += Signal(after: 0.5).onValue { _ in
+                    bag += Signal(after: 0.5).onValue { _ in
                         loadableChooseDateButton.isLoadingSignal.value = false
                         completion(.success)
                     }
@@ -170,6 +136,59 @@ extension PresentStartDate: Presentable {
                     }
                 })
             })
+            
+            bag += self.client.fetch(query: HasPreviousInsuranceQuery()).map{
+                let previousInsuranceId = $0.data?.insurance.previousInsurer?.id
+                
+                if previousInsuranceId == nil {
+                    activateNowButton.title.value = "Aktivera idag"
+
+                    bag += loadableActivateButton.onTapSignal.onValue({ _ in
+                        loadableActivateButton.isLoadingSignal.value = true
+                        //DO STUFF
+                        
+                        
+                        self.client.fetch(query: LastQuoteOfMemberQuery()).onValue { result in
+                            guard let id = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
+                            
+                            self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: today)).onValue { (result) in
+                                print("TAPPED!")
+                                print("TODAY: \(today)")
+                                bag += Signal(after: 0.5).onValue({ _ in
+                                    loadableActivateButton.isLoadingSignal.value = false
+                                    completion(.success)
+                                })
+                                
+                                self.store.update(query: HasStartDateQuery()) { (data: inout HasStartDateQuery.Data) in
+                                    data.lastQuoteOfMember.asCompleteQuote?.startDate = result.data?.editQuote.asCompleteQuote?.startDate
+                                }
+
+                            }
+                        }
+                        
+                    })
+                } else {
+                    activateNowButton.title.value = "Aktivera när din nuvarande försäkring går ut"
+                    
+                    bag += loadableActivateButton.onTapSignal.onValue({ _ in
+                        loadableActivateButton.isLoadingSignal.value = true
+                        
+                        //DO STUFF REMOVESTARTDATE
+                        self.client.fetch(query: LastQuoteOfMemberQuery()).onValue { (result) in
+                            guard let memberID = result.data?.lastQuoteOfMember.asCompleteQuote?.id else {return}
+                            
+                            self.client.perform(mutation: RemoveStartDateMutation(id: memberID)).onValue { (result) in
+                                print("Removed Startdate: \(result)")
+                                bag += Signal(after: 0.5).onValue({ (_) in
+                                    loadableActivateButton.isLoadingSignal.value = false
+                                    completion(.success)
+                                })
+                            }
+                            
+                        }
+                    })
+                }
+            }
             
             return bag
         })
