@@ -18,12 +18,23 @@ struct MyPayment {
 extension MyPayment: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
+        
+        let dataSignal = self.client.watch(query: MyPaymentQuery())
 
         let viewController = UIViewController()
         viewController.title = String(key: .MY_PAYMENT_TITLE)
 
         let form = FormView()
         bag += viewController.install(form)
+        
+        bag += dataSignal.map { $0.data?.balance.failedCharges }.onValue({ failedCharges in
+            guard let failedCharges = failedCharges else { return }
+            print("FAILEDCHARGES\(failedCharges)")
+            if failedCharges == 0 {
+                let latePaymentHeaderCard = LatePaymentHeaderSection()
+                bag += form.prepend(latePaymentHeaderCard)
+            }
+        })
 
         let paymentHeaderCard = PaymentHeaderCard()
         bag += form.prepend(paymentHeaderCard)
