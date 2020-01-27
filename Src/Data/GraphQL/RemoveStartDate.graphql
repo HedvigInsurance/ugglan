@@ -6,6 +6,7 @@ mutation RemoveStartDate($id: ID!){
     ){
         ... on CompleteQuote {
             id
+            startDate
             }
       }
 }
