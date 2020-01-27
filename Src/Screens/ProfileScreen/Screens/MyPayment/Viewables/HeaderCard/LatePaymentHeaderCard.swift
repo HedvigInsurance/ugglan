@@ -14,50 +14,66 @@ import Form
 
 struct LatePaymentHeaderSection {
     @Inject var client: ApolloClient
+    let failedCharges: Int
+    let lastDate: String
 }
 
 extension LatePaymentHeaderSection: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIView()
-        view.layer.cornerRadius = 5
-        view.backgroundColor = .coral200
+        let childView = UIView()
+        view.addSubview(childView)
+        childView.layer.cornerRadius = 5
+        childView.backgroundColor = .coral200
+        
+        childView.snp.makeConstraints { make in
+            make.left.top.equalTo(view).offset(20)
+            make.right.equalTo(view).offset(-20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
         
         let containerView = UIStackView()
-        containerView.layoutMargins = UIEdgeInsets(inset: 5)
         containerView.axis = .horizontal
         containerView.alignment = .top
         
-        view.addSubview(containerView)
+        childView.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview()
+            make.leading.trailing.equalTo(childView.safeAreaLayoutGuide)
+            make.top.equalTo(childView).offset(15)
+            make.bottom.equalTo(childView).offset(-15)
         }
 
         let dataSignal = self.client.watch(query: MyPaymentQuery()).map { $0.data }
         
-        let failedChargesSignalData = dataSignal.map { $0?.balance.failedCharges }
-        let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
+//        let failedChargesSignalData = dataSignal.map { $0?.balance.failedCharges }
+//        let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
         
         let icon = Icon(icon: Asset.pinkCircularExclamationPoint, iconWidth: 15)
         containerView.addArrangedSubview(icon)
         
         icon.snp.makeConstraints { make in
             make.width.equalTo(15)
+            make.left.equalTo(15)
+            make.top.equalTo(0)
         }
         
-        let infoLabel = MultilineLabel(value: "PLACEHOLDER TEXT", style: .body)
+        containerView.setCustomSpacing(15, after: icon)
+        
+        let infoLabel = MultilineLabel(value: "Du ligger \(failedCharges) månader efter med dina betalningar. Vi kommer att dra mer pengar än din odinarie premie den \(self.lastDate).", style: .body)
         bag += containerView.addArranged(infoLabel)
         
-        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValue({ failedCharges, nextPayment in
-            guard let nextPayment = nextPayment, let failedCharges = failedCharges else { return }
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd-MM-,yyyy"
-            
-            if let date = dateFormatter.date(from: nextPayment) {
-                infoLabel.styledTextSignal.value.text = "Du ligger \(failedCharges) månader efter med dina betalningar. Vi kommer att dra mer pengar än din odinarie premie den \(date)."
-            }
-        })
+//        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValue({ failedCharges, nextPayment in
+//            guard let nextPayment = nextPayment, let failedCharges = failedCharges else { return }
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.dateFormat = "dd-MM-,yyyy"
+//
+//            if let date = dateFormatter.date(from: nextPayment) {
+//                print("NUMBERS OF FAILDCHARGES: \(failedCharges), WHATDATE: \(date)")
+//                infoLabel.styledTextSignal.value.text = "Du ligger \(failedCharges) månader efter med dina betalningar. Vi kommer att dra mer pengar än din odinarie premie den \(date)."
+//            }
+//        })
         
         return (view, bag)
     }
