@@ -10,4 +10,30 @@ query MyPayment {
     }
     nextChargeDate
     directDebitStatus
+    redeemedCampaigns {
+        ...CampaignFragment
+    }
+    balance {
+        currentBalance {
+            ...MonetaryAmountFragment
+        }
+        failedCharges
+    }
+    chargeEstimation {
+        charge {
+            ...MonetaryAmountFragment
+        }
+        discount {
+            ...MonetaryAmountFragment
+        }
+        subscription {
+            ...MonetaryAmountFragment
+        }
+    }
+    chargeHistory {
+        amount {
+            ...MonetaryAmountFragment
+        }
+        date
+    }
 }

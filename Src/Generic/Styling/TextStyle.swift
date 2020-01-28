@@ -243,4 +243,10 @@ extension TextStyle {
         style.color = .violet200
         style.lineHeight = 24
     }
+    
+    static let draggableOverlayDescription = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
+        style.lineHeight = 20
+        style.color = .secondaryText
+    }
 }

@@ -34,6 +34,7 @@ extension SectionView {
         onCreate(rowAndProvider)
 
         return Disposer {
+            self.remove(rowAndProvider)
             bag.dispose()
             result.dispose()
             disposable.dispose()
@@ -58,6 +59,7 @@ extension SectionView {
         onCreate(rowAndProvider)
 
         return Disposer {
+            self.remove(rowAndProvider)
             bag.dispose()
             result.dispose()
             disposable.dispose()
@@ -82,6 +84,7 @@ extension SectionView {
         onCreate(subviewOrderable)
 
         return Disposer {
+            subviewOrderable.removeFromSuperview()
             bag.dispose()
             result.dispose()
             disposable.dispose()

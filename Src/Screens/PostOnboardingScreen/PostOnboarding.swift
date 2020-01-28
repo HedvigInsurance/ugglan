@@ -87,6 +87,8 @@ extension PostOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        
+        ApplicationState.preserveState(.loggedIn)
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal

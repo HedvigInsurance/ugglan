@@ -25,6 +25,7 @@ extension FormView {
         onCreate(matter)
 
         return Disposer {
+            matter.removeFromSuperview()
             result.dispose()
             disposable.dispose()
         }
@@ -44,6 +45,7 @@ extension FormView {
         onCreate(matter)
 
         return Disposer {
+            matter.removeFromSuperview()
             result.dispose()
             disposable.dispose()
         }
