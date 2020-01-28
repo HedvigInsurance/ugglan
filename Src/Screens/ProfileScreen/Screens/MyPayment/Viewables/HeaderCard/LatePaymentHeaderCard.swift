@@ -58,7 +58,7 @@ extension LatePaymentHeaderSection: Viewable {
         
         containerView.setCustomSpacing(10, after: icon)
         
-        let infoLabel = MultilineLabel(styledText: StyledText(text: String(key: .LATE_PAYMENT_MESSAGE(date: self.failedCharges, months: self.lastDate)), style: TextStyle.body.colored(UIColor.almostBlack)))
+        let infoLabel = MultilineLabel(styledText: StyledText(text: String(key: .LATE_PAYMENT_MESSAGE(date: self.lastDate, months: self.failedCharges)), style: TextStyle.body.colored(UIColor.almostBlack)))
         
         bag += containerView.addArranged(infoLabel)
 
