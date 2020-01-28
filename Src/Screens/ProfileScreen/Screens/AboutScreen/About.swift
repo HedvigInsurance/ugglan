@@ -98,9 +98,14 @@ extension About: Presentable {
                         forceAsk: true
                     )
                     
-                    activatePushNotificationsRow.isHiddenSignal.value = true
-            
-                    return viewController.present(register).disposable
+                    return viewController.present(register).onResult { result in
+                        switch result {
+                        case .success(_): activatePushNotificationsRow.isHiddenSignal.value = true
+                            break
+                        case .failure(_):
+                            break
+                        }
+                    }.disposable
                 }
             } else {
                 activatePushNotificationsRow.isHiddenSignal.value = true
