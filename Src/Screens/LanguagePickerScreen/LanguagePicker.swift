@@ -25,12 +25,24 @@ extension UIView {
     }
 }
 
+struct PreMarketingLanguagePicker: Presentable {
+    func materialize() -> (UIViewController, Disposable) {
+        let (viewController, future) = LanguagePicker().materialize()
+        
+        future.onResult { _ in
+            viewController.present(Marketing())
+        }
+        
+        return (viewController, NilDisposer())
+    }
+}
+
 struct LanguagePicker {
     @Inject var client: ApolloClient
 }
 
 extension LanguagePicker: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
@@ -103,32 +115,6 @@ extension LanguagePicker: Presentable {
         
         let section = form.appendSection(header: nil, footer: nil, style: .sectionPlainRounded)
         
-        func pickLanguage(locale: Localization.Locale) {
-            ApplicationState.setPreferredLocale(locale)
-            Localization.Locale.currentLocale = locale
-            TranslationsRepo.clear().onValue { _ in}
-            ApolloClient.initClient().always {
-                viewController.present(Marketing())
-            }
-            bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
-        }
-        
-        let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
-        bag += section.append(englishRow).onValue { _ in
-            pickLanguage(locale: .en_SE)
-        }
-        
-        englishRow.prepend(Asset.flagGB.image)
-        englishRow.append(Asset.chevronRight.image)
-        
-        let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
-        bag += section.append(swedishRow).onValue { _ in
-            pickLanguage(locale: .sv_SE)
-        }
-        
-        swedishRow.prepend(Asset.flagSE.image)
-        swedishRow.append(Asset.chevronRight.image)
-        
         textContainer.transform = CGAffineTransform(translationX: 0, y: 125)
         textContainer.alpha = 0
         form.transform = CGAffineTransform(translationX: 0, y: 100)
@@ -143,7 +129,37 @@ extension LanguagePicker: Presentable {
             form.transform = CGAffineTransform.identity
             form.alpha = 1
         })
-        
-        return (viewController, bag)
+                
+        return (viewController, Future { completion in
+            func pickLanguage(locale: Localization.Locale) {
+                ApplicationState.setPreferredLocale(locale)
+                Localization.Locale.currentLocale = locale
+                TranslationsRepo.clear().onValue { _ in
+                     UIApplication.shared.reloadAllLabels()
+                }
+                ApolloClient.initClient().always {
+                    completion(.success)
+                }
+                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+            }
+            
+            let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+            bag += section.append(englishRow).onValue { _ in
+                pickLanguage(locale: .en_SE)
+            }
+            
+            englishRow.prepend(Asset.flagGB.image)
+            englishRow.append(Asset.chevronRight.image)
+            
+            let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
+            bag += section.append(swedishRow).onValue { _ in
+                pickLanguage(locale: .sv_SE)
+            }
+            
+            swedishRow.prepend(Asset.flagSE.image)
+            swedishRow.append(Asset.chevronRight.image)
+            
+            return bag
+        })
     }
 }

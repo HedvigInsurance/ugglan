@@ -15,21 +15,9 @@ extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
 }
 
-struct LanguageSwitcher {
-    @Inject var client: ApolloClient
-}
-
-extension LanguageSwitcher: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        viewController.title = "Språk/Language"
-        let bag = DisposeBag()
-        
-        let form = FormView(sections: [], style: .defaultGrouped)
-        bag += viewController.install(form)
-        
-        let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
-        
+extension UIApplication {
+    // reloads all text that is derived from translations in the app
+    func reloadAllLabels() {
         func reloadLabels(in base: UIView) {
             for view in base.subviews {
                 if let label = view as? UILabel {
@@ -79,16 +67,35 @@ extension LanguageSwitcher: Presentable {
             }
         }
         
-        func reloadAllLabels() {
-            UIApplication.shared.windows.forEach { window in
-                guard let rootViewController = window.rootViewController else {
-                    return
-                }
-                
-                UIView.transition(with: window, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    reloadViewControllers(in: rootViewController)
-                }, completion: nil)
+        windows.forEach { window in
+            guard let rootViewController = window.rootViewController else {
+                return
             }
+            
+            UIView.transition(with: window, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                reloadViewControllers(in: rootViewController)
+            }, completion: nil)
+        }
+    }
+}
+
+struct LanguageSwitcher {
+    @Inject var client: ApolloClient
+}
+
+extension LanguageSwitcher: Presentable {
+    func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        viewController.title = "Språk/Language"
+        let bag = DisposeBag()
+        
+        let form = FormView(sections: [], style: .defaultGrouped)
+        bag += viewController.install(form)
+        
+        let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
+        
+        func reloadAllLabels() {
+            UIApplication.shared.reloadAllLabels()
         }
         
         let englishRowImageView = UIImageView()

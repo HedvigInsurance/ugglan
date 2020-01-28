@@ -82,6 +82,15 @@ extension ChooseStartDate: Presentable {
         
         pickerStackView.addArrangedSubview(picker)
         
+        bag += self.client.watch(query: OfferQuery()).map { ($0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate) }.onValue { date in
+            
+            if let date = date {
+                picker.date = date
+            } else {
+                picker.date = Date()
+            }
+        }
+        
         let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
                                       type: .standard(backgroundColor: .primaryTintColor,
                                                       textColor: .white))
@@ -118,6 +127,7 @@ extension ChooseStartDate: Presentable {
                     .mapLatestToFuture({ id, pickedStartDate in
                     self.client.perform(mutation: ChangeStartDateMutationMutation(id: id, startDate: pickedStartDate.localDateString ?? ""))
                 }).onValue({ result in
+                    
                     bag += Signal(after: 0.5).onValue { _ in
                         loadableChooseDateButton.isLoadingSignal.value = false
                         completion(.success)
@@ -158,6 +168,8 @@ extension ChooseStartDate: Presentable {
                             guard let quoteId = result.data?.lastQuoteOfMember.asCompleteQuote?.id else { return }
                             
                             self.client.perform(mutation: RemoveStartDateMutation(id: quoteId)).onValue { result in
+                                updateStartDateCache(startDate: nil)
+                                
                                 bag += Signal(after: 0.5).onValue { _ in
                                     loadableActivateButton.isLoadingSignal.value = false
                                     completion(.success)
