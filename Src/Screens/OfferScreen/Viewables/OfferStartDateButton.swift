@@ -87,8 +87,7 @@ extension OfferStartDateButton: Viewable {
         stackView.addArrangedSubview(iconView)
         
         let alert = Alert<Void>(title: String(key: .ALERT_TITLE_STARTDATE),
-                                message: "Om du väljer eget startdatum får du själv säga upp din nuvarande försäkring så att allt blir rätt",
-                                //Replace with .START_DATE_DESCRIPTION
+                                message: String(key: .ALERT_DESCRIPTION_STARTDATE),
                             tintColor: .black,
                             actions: [Alert.Action(title: String(key: .ALERT_CANCEL), action: {  }),
                                       Alert.Action(title: String(key: .ALERT_CONTINUE), action: {
@@ -101,8 +100,8 @@ extension OfferStartDateButton: Viewable {
                                       })])
         
         bag += touchUpInside.onValue({ _ in
-            bag += self.client.fetch(query: OfferQuery()).onValue({ result in
-                if result.data?.insurance.previousInsurer != nil && result.data?.lastQuoteOfMember.asCompleteQuote?.startDate == nil  {
+            bag += self.client.fetch(query: OfferQuery()).map { $0.data }.onValue({ result in
+                if result?.insurance.previousInsurer != nil && result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil  {
                     self.presentingViewController.present(alert)
                 } else {
                     bag += self.presentingViewController.present(
@@ -115,20 +114,19 @@ extension OfferStartDateButton: Viewable {
             })
         })
 
-        bag += self.client.watch(query: OfferQuery()).onValue({ result in
+        bag += self.client.watch(query: OfferQuery()).map { $0.data }.onValue({ result in
             
-            if result.data?.insurance.previousInsurer != nil && result.data?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
-                valueLabel.text = "När min bindningstid går ut" //Replace with .START_DATE_EXPIRES
-            } else if result.data?.insurance.previousInsurer == nil && result.data?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+            if result?.insurance.previousInsurer != nil && result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+                valueLabel.text = String(key: .START_DATE_EXPIRES)
+            } else if result?.insurance.previousInsurer == nil && result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                 valueLabel.text = String(key: .CHOOSE_DATE_BTN)
             } else {
-                valueLabel.text = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate
+                valueLabel.text = result?.lastQuoteOfMember.asCompleteQuote?.startDate
             }
-
         })
 
-        bag += dataSignal.onValue { result in
-            if let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.description.localDateToDate {
+        bag += dataSignal.map { $0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.description.localDateToDate }.onValue { startDay in
+            if let startDate = startDay {
                 if Calendar.current.isDateInToday(startDate) {
                     valueLabel.text = String(key: .START_DATE_TODAY)
                 } else {

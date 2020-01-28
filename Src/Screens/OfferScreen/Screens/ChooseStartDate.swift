@@ -15,7 +15,6 @@ import Apollo
 struct ChooseStartDate {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    let uploadTextDelegate = Delegate<String, Signal<Void>>()
 }
 
 extension ChooseStartDate: Presentable {
@@ -85,8 +84,8 @@ extension ChooseStartDate: Presentable {
         
         bag += self.client.watch(query: OfferQuery()).map { ($0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate) }.onValue { date in
             
-            if date != nil {
-                picker.date = date!
+            if let date = date {
+                picker.date = date
             } else {
                 picker.date = Date()
             }
