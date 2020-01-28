@@ -9,6 +9,7 @@ import Foundation
 import Flow
 import UIKit
 import Apollo
+import Presentation
 
 struct OfferStartDateButton {
     let containerScrollView: UIScrollView
@@ -32,6 +33,7 @@ extension OfferStartDateButton: Viewable {
             return .white
         }
         
+        
         bag += button.applyCornerRadius { _ -> CGFloat in
             return button.layer.frame.height / 2
         }
@@ -52,19 +54,11 @@ extension OfferStartDateButton: Viewable {
             button.alpha = 1
         }
         
+        
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
         
         let chooseStartDate = ChooseStartDate()
-        
-        bag += touchUpInside.onValue { _ in
-            bag += self.presentingViewController.present(
-                DraggableOverlay(
-                    presentable: chooseStartDate,
-                    presentationOptions: [.defaults , .prefersNavigationBarHidden(true)]
-                )
-            ).disposable
-        }
         
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -92,16 +86,52 @@ extension OfferStartDateButton: Viewable {
         iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
         stackView.addArrangedSubview(iconView)
         
-        bag += dataSignal.onValue { result in
-            guard let startDate = result.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.description.localDateToDate else {
-                valueLabel.text = String(key: .CHOOSE_DATE_BTN)
-                return
-            }
+        let alert = Alert<Void>(title: String(key: .ALERT_TITLE_STARTDATE),
+                                message: String(key: .ALERT_DESCRIPTION_STARTDATE),
+                            tintColor: .black,
+                            actions: [Alert.Action(title: String(key: .ALERT_CANCEL), action: {  }),
+                                      Alert.Action(title: String(key: .ALERT_CONTINUE), action: {
+                                            bag += self.presentingViewController.present(
+                                                DraggableOverlay(
+                                                    presentable: chooseStartDate,
+                                                    presentationOptions: [.defaults , .prefersNavigationBarHidden(true)]
+                                                )
+                                            )
+                                      })])
+        
+        bag += touchUpInside.onValue({ _ in
+            bag += self.client.fetch(query: OfferQuery()).map { $0.data }.onValue({ result in
+                if result?.insurance.previousInsurer != nil && result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil  {
+                    self.presentingViewController.present(alert)
+                } else {
+                    bag += self.presentingViewController.present(
+                        DraggableOverlay(
+                            presentable: chooseStartDate,
+                            presentationOptions: [.defaults , .prefersNavigationBarHidden(true)]
+                        )
+                    ).disposable
+                }
+            })
+        })
 
-            if Calendar.current.isDateInToday(startDate) {
-                valueLabel.text = String(key: .START_DATE_TODAY)
+        bag += self.client.watch(query: OfferQuery()).map { $0.data }.onValue({ result in
+            
+            if result?.insurance.previousInsurer != nil && result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+                valueLabel.text = String(key: .START_DATE_EXPIRES)
+            } else if result?.insurance.previousInsurer == nil && result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+                valueLabel.text = String(key: .CHOOSE_DATE_BTN)
             } else {
-                valueLabel.text = startDate.localDateString
+                valueLabel.text = result?.lastQuoteOfMember.asCompleteQuote?.startDate
+            }
+        })
+
+        bag += dataSignal.map { $0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.description.localDateToDate }.onValue { startDay in
+            if let startDate = startDay {
+                if Calendar.current.isDateInToday(startDate) {
+                    valueLabel.text = String(key: .START_DATE_TODAY)
+                } else {
+                    valueLabel.text = startDate.localDateString
+                }
             }
         }
         
