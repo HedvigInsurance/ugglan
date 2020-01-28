@@ -45,11 +45,6 @@ extension LatePaymentHeaderSection: Viewable {
             make.bottom.equalTo(childView).offset(-15)
         }
 
-        let dataSignal = self.client.watch(query: MyPaymentQuery()).map { $0.data }
-        
-//        let failedChargesSignalData = dataSignal.map { $0?.balance.failedCharges }
-//        let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
-        
         let icon = Icon(icon: Asset.pinkCircularExclamationPoint, iconWidth: 15)
         containerView.addArrangedSubview(icon)
         
@@ -61,7 +56,7 @@ extension LatePaymentHeaderSection: Viewable {
         
         containerView.setCustomSpacing(15, after: icon)
         
-        let infoLabel = MultilineLabel(value: "Du ligger \(failedCharges) månader efter med dina betalningar. Vi kommer att dra mer pengar än din odinarie premie den \(self.lastDate).", style: .body)
+        let infoLabel = MultilineLabel(value: String(key: .LATE_PAYMENT_MESSAGE(date: self.failedCharges, months: self.lastDate)), style: .body)
         bag += containerView.addArranged(infoLabel)
         
 //        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValue({ failedCharges, nextPayment in
