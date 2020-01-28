@@ -33,7 +33,7 @@ extension MyPayment: Presentable {
             guard let failedCharges = failedCharges else { return }
             guard let nextPayment = nextPayment else { return }
   
-            if failedCharges == 0 {
+            if failedCharges > 0 {
                 let latePaymentHeaderCard = LatePaymentHeaderSection(failedCharges: failedCharges, lastDate: nextPayment)
                 bag += form.prepend(latePaymentHeaderCard)
             }

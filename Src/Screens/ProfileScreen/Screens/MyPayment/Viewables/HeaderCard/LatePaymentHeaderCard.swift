@@ -58,18 +58,7 @@ extension LatePaymentHeaderSection: Viewable {
         
         let infoLabel = MultilineLabel(value: String(key: .LATE_PAYMENT_MESSAGE(date: self.failedCharges, months: self.lastDate)), style: .body)
         bag += containerView.addArranged(infoLabel)
-        
-//        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValue({ failedCharges, nextPayment in
-//            guard let nextPayment = nextPayment, let failedCharges = failedCharges else { return }
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "dd-MM-,yyyy"
-//
-//            if let date = dateFormatter.date(from: nextPayment) {
-//                print("NUMBERS OF FAILDCHARGES: \(failedCharges), WHATDATE: \(date)")
-//                infoLabel.styledTextSignal.value.text = "Du ligger \(failedCharges) månader efter med dina betalningar. Vi kommer att dra mer pengar än din odinarie premie den \(date)."
-//            }
-//        })
-        
+
         return (view, bag)
     }
 }
