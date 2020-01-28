@@ -29,15 +29,16 @@ extension MyPayment: Presentable {
         let form = FormView()
         bag += viewController.install(form)
         
-        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValue({ failedCharges, nextPayment in
-            guard let failedCharges = failedCharges else { return }
-            guard let nextPayment = nextPayment else { return }
-  
-            if failedCharges > 0 {
-                let latePaymentHeaderCard = LatePaymentHeaderSection(failedCharges: failedCharges, lastDate: nextPayment)
-                bag += form.prepend(latePaymentHeaderCard)
+        bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious{ failedCharges, nextPayment in
+            let innerbag = DisposeBag()
+            if let failedCharges = failedCharges, let nextPayment = nextPayment {
+                  if failedCharges > 0 {
+                      let latePaymentHeaderCard = LatePaymentHeaderSection(failedCharges: failedCharges, lastDate: nextPayment)
+                      innerbag += form.prepend(latePaymentHeaderCard)
+                  }
             }
-        })
+            return innerbag
+        }
 
         let paymentHeaderCard = PaymentHeaderCard()
         bag += form.prepend(paymentHeaderCard)
