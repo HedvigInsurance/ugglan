@@ -68,6 +68,10 @@ struct ApplicationState {
         UserDefaults.standard.set(locale.rawValue, forKey: ApplicationState.preferredLocaleKey)
     }
     
+    static var hasPreferredLocale: Bool {
+        return UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
+    }
+    
     static var preferredLocale: Localization.Locale {
         guard
             let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
@@ -209,7 +213,7 @@ struct ApplicationState {
         else {
             if Localization.Locale.currentLocale == .en_SE {
                 return window.present(
-                    LanguagePicker(),
+                    PreMarketingLanguagePicker(),
                     options: [.defaults, .prefersNavigationBarHidden(true)],
                     animated: false
                 )
@@ -225,7 +229,7 @@ struct ApplicationState {
         switch applicationState {
         case .languagePicker:
             return window.present(
-                LanguagePicker(),
+                PreMarketingLanguagePicker(),
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false
             )
