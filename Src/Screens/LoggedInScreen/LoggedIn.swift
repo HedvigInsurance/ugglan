@@ -50,12 +50,19 @@ extension LoggedIn: Presentable {
         let bag = DisposeBag()
 
         let dashboard = Dashboard()
+        let keyGear = KeyGearOverview()
         let claims = Claims()
         let referrals = Referrals()
         let profile = Profile()
 
         let dashboardPresentation = Presentation(
             dashboard,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
+        
+        let keyGearPresentation = Presentation(
+            keyGear,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
@@ -80,6 +87,7 @@ extension LoggedIn: Presentable {
 
         bag += tabBarController.presentTabs(
             dashboardPresentation,
+            keyGearPresentation,
             claimsPresentation,
             referralsPresentation,
             profilePresentation

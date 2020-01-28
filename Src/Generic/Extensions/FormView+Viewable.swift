@@ -50,6 +50,44 @@ extension FormView {
             disposable.dispose()
         }
     }
+    
+    func append<V: Viewable, View: UIView, SignalValue>(
+           _ viewable: V,
+           onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+    ) -> V.Result where
+           V.Matter == View,
+            V.Result == Signal<SignalValue>,
+           V.Events == ViewableEvents {
+           let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+               self.append(matter)
+           }
+
+           onCreate(matter)
+                        
+            return result.hold(Disposer {
+                matter.removeFromSuperview()
+                disposable.dispose()
+            })
+       }
+    
+    func append<V: Viewable, View: UIView, SignalKind, SignalValue>(
+           _ viewable: V,
+           onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+    ) -> V.Result where
+           V.Matter == View,
+            V.Result == CoreSignal<SignalKind, SignalValue>,
+           V.Events == ViewableEvents {
+           let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+               self.append(matter)
+           }
+
+           onCreate(matter)
+                        
+            return result.hold(Disposer {
+                matter.removeFromSuperview()
+                disposable.dispose()
+            })
+       }
 
     func prepend<V: Viewable, Matter: Viewable, View: UIView>(
         _ viewable: V,
