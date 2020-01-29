@@ -36,7 +36,6 @@ extension PaymentHeaderNextCharge: Viewable {
         
         bag += client.watch(query: MyPaymentQuery()).map { $0.data?.nextChargeDate }.onValue { nextChargeDate in
             if let nextChargeDate = nextChargeDate {
-                
                let dateParsingFormatter = DateFormatter()
                dateParsingFormatter.dateFormat = "yyyy-MM-dd"
                
