@@ -83,17 +83,34 @@ extension About: Presentable {
                 text: String(key: .ABOUT_PUSH_ROW),
                 style: .normalButton
             )
+            
             bag += versionSection.append(activatePushNotificationsRow)
-
-            bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
-                let register = PushNotificationsRegister(
-                    title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
-                    message: "",
-                    forceAsk: true
-                )
-                return viewController.present(register).disposable
+            
+            let isRegisteredForRemoteNotifications = UIApplication.shared.isRegisteredForRemoteNotifications
+            
+            if !isRegisteredForRemoteNotifications {
+                activatePushNotificationsRow.isHiddenSignal.value = false
+                
+                bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
+                    let register = PushNotificationsRegister(
+                        title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                        message: "",
+                        forceAsk: true
+                    )
+                    
+                    return viewController.present(register).onResult { result in
+                        switch result {
+                        case .success: activatePushNotificationsRow.isHiddenSignal.value = true
+                            break
+                        case .failure:
+                            break
+                        }
+                    }.disposable
+                }
+            } else {
+                activatePushNotificationsRow.isHiddenSignal.value = true
             }
-
+            
             let showWhatsNew = ButtonRow(
                 text: String(key: .ABOUT_SHOW_INTRO_ROW),
                 style: .normalButton
