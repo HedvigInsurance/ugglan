@@ -128,6 +128,8 @@ extension BankIDLogin: Presentable {
                     if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
                         appDelegate.registerFCMToken(fcmToken)
                     }
+                    
+                    appDelegate.setFirebaseUserId()
                                         
                     let window = appDelegate.window
                     bag += window.present(LoggedIn(), animated: true)

@@ -203,7 +203,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func setFirebaseUserId() {
         let client: ApolloClient = Dependencies.shared.resolve()
         
-        client.fetch(query: MemberIdQuery()).map { $0.data?.member.id }.onValue { id in
+        client.fetch(query: MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely).map { $0.data?.member.id }.onValue { id in
             guard let id = id else {
                 return
             }
