@@ -14,6 +14,27 @@ import FBSDKCoreKit
 struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient
     
+    func setUserId() {
+        client.fetch(
+            query: MemberIdQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        ).map { $0.data?.member.id }.onValue { id in
+            guard let id = id else {
+                return
+            }
+            
+            Analytics.setUserID(id)
+        }
+    }
+    
+    func logAddPaymentInfo() {
+        AppEvents.logEvent(
+            .addedPaymentInfo
+        )
+        
+        Analytics.logEvent("add_payment_info", parameters: [:])
+    }
+    
     func logAddToCart() {
         let bag = DisposeBag()
         bag += client.fetch(query: InsurancePriceQuery())
