@@ -199,6 +199,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
     }
+    
+    func setFirebaseUserId() {
+        let client: ApolloClient = Dependencies.shared.resolve()
+        
+        client.fetch(query: MemberIdQuery()).map { $0.data?.member.id }.onValue { id in
+            guard let id = id else {
+                return
+            }
+            
+            Analytics.setUserID(id)
+        }
+    }
 
     func application(
         _: UIApplication,
@@ -256,6 +268,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
                 AnalyticsCoordinator()
             })
+            
+            self.setFirebaseUserId()
             
             self.bag += ApplicationState.presentRootViewController(self.window)
             
