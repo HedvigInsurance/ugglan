@@ -16,10 +16,13 @@ struct KeyGearImageCarouselItem {
 extension KeyGearImageCarouselItem: Reusable {
     static func makeAndConfigure() -> (make: UIImageView, configure: (KeyGearImageCarouselItem) -> Disposable) {
         let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        
         return (imageView, { `self` in
             let bag = DisposeBag()
             
             imageView.kf.setImage(with: self.imageUrl)
+            imageView.contentMode = .scaleAspectFill
             
             return bag
         })
