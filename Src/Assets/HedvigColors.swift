@@ -72,6 +72,12 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .transparent : .darkGray
         })
     }
+    
+    static var dynamicBackgroundColor: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .grass700 : .turquoise
+        })
+    }
 
     static let violet200 = UIColor(red: 193.0 / 255.0, green: 165.0 / 255.0, blue: 1.0, alpha: 1.0)
     static let coral700 = UIColor(red: 0.80, green: 0.43, blue: 0.40, alpha: 1.0)
@@ -96,7 +102,7 @@ extension UIColor {
     static let yellow = UIColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1.0)
     static let grass500 = UIColor(red: 0.0, green: 0.56, blue: 0.45, alpha: 1.0)
     static let sunflower300 = UIColor(red: 251.0 / 255.0, green: 227.0 / 255.0, blue: 86.0 / 255.0, alpha: 1.0)
-
+    static let grass700 = UIColor(red: 0.0, green: 113.0 / 255.0, blue: 91.0 / 255.0, alpha: 1.0)
     static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
 
     static var primaryTintColor: UIColor {
