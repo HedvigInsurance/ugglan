@@ -100,9 +100,9 @@ extension About: Presentable {
                     
                     return viewController.present(register).onResult { result in
                         switch result {
-                        case .success(_): activatePushNotificationsRow.isHiddenSignal.value = true
+                        case .success: activatePushNotificationsRow.isHiddenSignal.value = true
                             break
-                        case .failure(_):
+                        case .failure:
                             break
                         }
                     }.disposable
