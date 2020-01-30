@@ -30,6 +30,12 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .white : .black
         })
     }
+    
+    static var primaryTextMuted: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .white : .darkGray
+        })
+    }
 
     static var secondaryText: UIColor {
         UIColor(dynamic: { trait -> UIColor in
