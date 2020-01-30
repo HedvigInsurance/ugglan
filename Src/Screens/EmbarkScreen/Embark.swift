@@ -23,10 +23,27 @@ extension Embark: Presentable {
         let bag = DisposeBag()
         
         let view = UIView()
-        view.backgroundColor = .darkGreen
+        view.backgroundColor = .white
         viewController.view = view
         
+        let imageBackground = UIImageView(image: Asset.embarkBackground.image)
+        imageBackground.contentMode = .scaleAspectFill
+        view.addSubview(imageBackground)
+        imageBackground.snp.makeConstraints { make in
+            make.height.width.equalToSuperview()
+        }
+        
         viewController.installChatButton()
+        
+        let titleHedvigLogo = UIImageView()
+        titleHedvigLogo.image = Asset.wordmark.image
+        titleHedvigLogo.contentMode = .scaleAspectFit
+
+        viewController.navigationItem.titleView = titleHedvigLogo
+
+        titleHedvigLogo.snp.makeConstraints { make in
+            make.width.equalTo(80)
+        }
         
         let passagesSignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
         let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)

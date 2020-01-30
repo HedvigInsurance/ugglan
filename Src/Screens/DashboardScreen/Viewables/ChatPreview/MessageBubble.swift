@@ -57,11 +57,10 @@ extension MessageBubble: Viewable {
                 .atOnce()
                 .map { StyledText(text: $0, style: .bodyOffBlack) }
                 .delay(by: delay)
-                .animated(style: SpringAnimationStyle.lightBounce()) { styledText in
+                .onValue { styledText in
                     label.styledTextSignal.value = styledText
                     containerStackView.isHidden = false
                     stylingView.alpha = 1
-                }.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                     labelView.alpha = 1
                 }
         }

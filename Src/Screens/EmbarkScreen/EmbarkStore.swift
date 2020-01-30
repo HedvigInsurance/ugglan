@@ -39,7 +39,7 @@ class EmbarkStore {
             store[key] = value
         }
         
-        print(store)
+        print("STORE:", store)
     }
     
     func passes(expression: BasicExpressionFragment) -> Bool {

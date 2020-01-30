@@ -55,6 +55,18 @@ query EmbarkStory($name: String!) {
                         }
                     }
                 }
+                ... on EmbarkNumberAction {
+                    component
+                    numberActionData: data {
+                        placeholder
+                        unit
+                        maxValue
+                        minValue
+                        link {
+                            ...EmbarkLinkFragment
+                        }
+                    }
+                }
                 ... on EmbarkSelectAction {
                     component
                     selectActionData: data {

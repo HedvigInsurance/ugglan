@@ -165,7 +165,7 @@ struct ApplicationState {
             switch getTargetEnvironment() {
             case .staging:
                 return ApolloEnvironmentConfig(
-                    endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+                    endpointURL: URL(string: "http://localhost:4000/graphql")!,
                     wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
                     assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
                 )
@@ -240,7 +240,7 @@ struct ApplicationState {
                 animated: false
             ).disposable
         case .onboardingChat:
-            return window.present(OnboardingChat(), options: [.defaults], animated: false)
+            return window.present(Embark(name: "Web Onboarding - Swedish Needer"), options: [.defaults], animated: false)
         case .offer:
             return window.present(
                 Offer(),

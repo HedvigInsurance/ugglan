@@ -22,8 +22,16 @@ extension EmbarkMessages: Viewable {
         view.spacing = 10
         let bag = DisposeBag()
         
-        bag += dataSignal.atOnce().compactMap { $0 }.onValueDisposePrevious { messages in
-           let innerBag = DisposeBag()
+        
+        bag += dataSignal.animated(style: .lightBounce(), animations: { _ in
+            for (index, stackedMessage) in view.subviews.enumerated() {
+                stackedMessage.transform = CGAffineTransform(translationX: 0, y: CGFloat(-70-(1/(index+1))*20))
+                stackedMessage.alpha = 0
+            }
+        })
+        
+        bag += dataSignal.atOnce().delay(by: 0.8).compactMap { $0 }.onValueDisposePrevious { messages in
+            let innerBag = DisposeBag()
            
             innerBag += messages.map({ message -> String? in
                 if message.expressions.count == 0 {
@@ -53,9 +61,20 @@ extension EmbarkMessages: Viewable {
                 return nil
             }).compactMap { $0 }.enumerated().map { arg in
                 let (offset, messageText) = arg
-                return view.addArranged(MessageBubble(text: messageText, delay: 0.10 * Double(offset)))
+                return view.addArranged(MessageBubble(text: messageText, delay: 0))
+            }
+            
+            for (index, stackedMessage) in view.subviews.enumerated() {
+                stackedMessage.transform = CGAffineTransform.identity
+                stackedMessage.transform = CGAffineTransform(translationX: 0, y: 40)
+                stackedMessage.alpha = 0
+               
+               innerBag += Signal(after: 0.1+Double(index)*0.1).animated(style: .lightBounce(), animations: { _ in
+                   stackedMessage.transform = CGAffineTransform.identity
+                   stackedMessage.alpha = 1
+               })
            }
-           
+            
            return innerBag
         }
         

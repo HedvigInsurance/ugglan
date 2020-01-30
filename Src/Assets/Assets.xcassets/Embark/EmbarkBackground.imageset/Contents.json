@@ -1,0 +1,19 @@
+{
+  "images" : [
+    {
+      "idiom" : "iphone",
+      "filename" : "orange-juice-copy-2@2x.png"
+    },
+    {
+      "idiom" : "ipad",
+      "filename" : "orange-juice-copy.png"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

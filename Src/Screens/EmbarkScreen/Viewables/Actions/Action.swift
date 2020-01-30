@@ -33,6 +33,11 @@ extension Action: Viewable {
                         store: self.store,
                         data: textAction
                     )).onValue(callback)
+                } else if let numberAction = data?.asEmbarkNumberAction {
+                    innerBag += view.addArranged(EmbarkNumberAction(
+                        store: self.store,
+                        data: numberAction
+                    )).onValue(callback)
                 }
                 
                 return innerBag
