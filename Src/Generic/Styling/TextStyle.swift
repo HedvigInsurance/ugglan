@@ -109,6 +109,13 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .secondaryText
     }
+    
+    static let informationBodyText = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(16)
+        style.color = .darkGray
+        style.lineHeight = 24
+        style.letterSpacing = 0.19
+    }
 
     static let headingOne = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(40)
@@ -248,5 +255,11 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .secondaryText
+    }
+    
+    static let infoTextHeader = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.soRayExtraBold!.withSize(48)
+        style.color = .black
+        style.lineHeight = 48
     }
 }
