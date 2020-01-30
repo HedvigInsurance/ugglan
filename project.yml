@@ -20,6 +20,7 @@ targets:
     sources:
       - UITests
       - Src
+      - Resources
     references:
       - Ugglan
       - sdkroot:UIKit.framework
@@ -130,6 +131,7 @@ targets:
     sources:
       - Src
       - AppSpecific
+      - Resources
     scripts:
       - scripts/clean-frameworks.sh
       - script: scripts/copy-frameworks.sh
