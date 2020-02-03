@@ -30,7 +30,7 @@ extension KeyGearOverview: Presentable {
         formView.append(button)
         bag += button.onValue { _ in
             bag += viewController.present(
-                KeyGearInfo().withCloseButton,
+                KeyGearValuationInformation().withCloseButton,
                 style: .modally(
                     presentationStyle: .pageSheet,
                     transitionStyle: nil,

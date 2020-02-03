@@ -110,9 +110,28 @@ extension TextStyle {
         style.color = .secondaryText
     }
     
-    static let informationBodyText = TextStyle.default.restyled { (style: inout TextStyle) in
+    static let keySmallText = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
+        style.color = .primarySubColor
+        style.lineHeight = 20
+    }
+    
+    static let keyTitleText = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(14)
+        style.color = .primarySubColor
+        style.lineSpacing = 4
+    }
+    
+    static let keyInformationBodyText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
-        style.color = .darkGray
+        style.color = .primarySubColor
+        style.lineHeight = 24
+        style.letterSpacing = 0.19
+    }
+    
+    static let keyBoldTitletext = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBold!.withSize(16)
+        style.color = .primaryText
         style.lineHeight = 24
         style.letterSpacing = 0.19
     }
@@ -259,7 +278,6 @@ extension TextStyle {
     
     static let infoTextHeader = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(48)
-        style.color = .black
-        style.lineHeight = 48
+        style.color = .primaryText
     }
 }
