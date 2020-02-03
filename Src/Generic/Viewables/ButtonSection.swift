@@ -42,44 +42,22 @@ extension ButtonSection: Viewable {
 
         section.dynamicStyle = DynamicSectionStyle { trait -> SectionStyle in
             let lightStyle = SectionStyle.sectionPlainLight.restyled { (style: inout SectionStyle) in
-                if trait.isPad {
-                    style.background = .standardLightRoundedBorder
+                style.background = .standardLightRoundedBorder
 
-                    if self.style == .normal {
-                        style.selectedBackground = .selectedRoundedBorder
-                    } else {
-                        style.selectedBackground = .selectedDangerRoundedBorder
-                    }
+                if self.style == .normal {
+                    style.selectedBackground = .selectedRoundedBorder
                 } else {
-                    style.background = .standardLight
-                    style.selectedBackground = .selectedDanger
-
-                    if self.style == .normal {
-                        style.selectedBackground = .selectedRoundedBorder
-                    } else {
-                        style.selectedBackground = .selectedDangerRoundedBorder
-                    }
+                    style.selectedBackground = .selectedDangerRoundedBorder
                 }
             }
 
             let darkStyle = SectionStyle.sectionPlainDark.restyled { (style: inout SectionStyle) in
-                if trait.isPad {
-                    style.background = .standardDarkRoundedBorder
+                style.background = .standardDarkRoundedBorder
 
-                    if self.style == .normal {
-                        style.selectedBackground = .selectedRoundedBorder
-                    } else {
-                        style.selectedBackground = .selectedDangerRoundedBorder
-                    }
+                if self.style == .normal {
+                    style.selectedBackground = .selectedRoundedBorder
                 } else {
-                    style.background = .standardDark
-                    style.selectedBackground = .selectedDanger
-
-                    if self.style == .normal {
-                        style.selectedBackground = .selectedRoundedBorder
-                    } else {
-                        style.selectedBackground = .selectedDangerRoundedBorder
-                    }
+                    style.selectedBackground = .selectedDangerRoundedBorder
                 }
             }
 

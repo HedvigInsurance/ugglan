@@ -193,6 +193,11 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryTintColor
     }
+    
+    static let rowValueEditableMuted = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .primaryTextMuted
+    }
 
     static let rowValueEditableRight = TextStyle.rowValueEditable.restyled { (style: inout TextStyle) in
         style.alignment = .right
