@@ -26,18 +26,6 @@ extension KeyGearOverview: Presentable {
         
         bag += formView.prepend(TabHeader(image: Asset.claimsHeader.image, title: "Hej hej", description: "Hej hej"))
         
-        let button = UIButton(title: "TAP ME")
-        formView.append(button)
-        bag += button.onValue { _ in
-            bag += viewController.present(
-                KeyGearValuationInformation().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
-            ).disposable
-        }
         bag += formView.append(KeyGearListCollection()).onValue { result in
             switch result {
             case .add:
