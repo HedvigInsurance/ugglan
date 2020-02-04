@@ -13,12 +13,8 @@ import UIKit
 extension FieldStyle {
     static let `default` = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.cursorColor = .primaryTintColor
-        style.text = .bodyOffBlack
-
-        style.placeholder = TextStyle.body.restyled { (textStyle: inout TextStyle) in
-            textStyle.color = .darkGray
-            textStyle.lineHeight = 2.4
-        }
+        style.text = .rowValueEditableMuted
+        style.placeholder = .rowValueEditableMuted
     }
 
     static let editableRow = FieldStyle.default.restyled { (style: inout FieldStyle) in
