@@ -23,7 +23,7 @@ extension Embark: Presentable {
         let bag = DisposeBag()
         
         let view = UIView()
-        view.backgroundColor = .blackPurple
+        view.backgroundColor = .darkPurple
         viewController.view = view
         
         /*let imageBackground = UIImageView(image: Asset.embarkBackground.image)

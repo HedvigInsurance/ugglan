@@ -20,11 +20,22 @@ extension EmbarkSelectActionOption: Viewable {
         let control = UIControl()
         control.backgroundColor = .white
         control.layer.cornerRadius = 10
+        bag += control.applyShadow({ _ -> UIView.ShadowProperties in
+            UIView.ShadowProperties(
+                opacity: 0.25,
+                offset: CGSize(width: 0, height: 6),
+                radius: 8,
+                color: UIColor.primaryShadowColor,
+                path: nil
+            )
+        })
         
         let stackView = UIStackView()
         stackView.isUserInteractionEnabled = false
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        stackView.axis = .vertical
+        stackView.spacing = 6
+        stackView.layoutMargins = UIEdgeInsets(top: 15, left: 10, bottom: 15, right: 10)
         stackView.isLayoutMarginsRelativeArrangement = true
         control.addSubview(stackView)
         
@@ -33,13 +44,25 @@ extension EmbarkSelectActionOption: Viewable {
         }
         
         bag += stackView.addArranged(MultilineLabel(value: data.link.fragments.embarkLinkFragment.label, style: TextStyle.bodyBold.aligned(to: .center)))
+        bag += stackView.addArranged(MultilineLabel(value: "Välj", style: TextStyle.navigationSubtitleWhite.colored(.purple).aligned(to: .center)))
                 
         return (control, Signal { callback in
+            bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                control.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }
+
+            bag += control.delayedTouchCancel(delay: 0.1).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                control.transform = CGAffineTransform.identity
+            }
+            
+            bag += control.signal(for: .touchUpInside).feedback(type: .impactLight)
+            
             bag += control.signal(for: .touchUpInside).onValue { _ in
                 let key = self.data.key ?? "\(self.data.link.fragments.embarkLinkFragment.name)Result"
                 let value = self.data.value ?? self.data.link.fragments.embarkLinkFragment.label
                 callback(ActionResponseData(key: key, value: value))
             }
+            
             return bag
         })
     }

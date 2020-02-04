@@ -31,7 +31,7 @@ extension ApolloClient {
     }
 
     static var environment = ApolloEnvironmentConfig(
-        endpointURL: URL(string: "http://localhost:4000/graphql")!,
+        endpointURL: URL(string: "http://515a5c8b.ngrok.io/graphql")!,
         wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
         assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
     )

@@ -26,6 +26,7 @@ extension Passage: Viewable {
         let embarkMessages = EmbarkMessages(
             store: store,
             dataSignal: dataSignal.map { $0?.messages }
+            
         )
         bag += view.addArranged(embarkMessages)
         

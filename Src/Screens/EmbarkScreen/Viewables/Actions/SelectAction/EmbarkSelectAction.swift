@@ -20,16 +20,30 @@ struct EmbarkSelectAction {
 extension EmbarkSelectAction: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let view = UIStackView()
-        view.distribution = .fillEqually
+        view.axis = .vertical
         view.spacing = 10
+        
         let bag = DisposeBag()
         
         return (view, Signal { callback in
-            bag += self.data.selectActionData.options.map { option in
-                view.addArranged(EmbarkSelectActionOption(data: option)).onValue { result in
-                    self.store.setValue(key: result.key, value: result.value)
-                    callback(option.link.fragments.embarkLinkFragment)
+            
+            let options = self.data.selectActionData.options
+            let numberOfStacks = options.count % 2 == 0 ? options.count / 2 : Int(floor(Double(options.count) / 2) + 1)
+            
+            for i in 1...numberOfStacks {
+                let stack = UIStackView()
+                stack.spacing = 10
+                stack.distribution = .fillEqually
+                view.addArrangedSubview(stack)
+                
+                let optionsSlice = Array(options[2*i-2..<min(2*i, options.count)])
+                bag += optionsSlice.map { option in
+                    return stack.addArranged(EmbarkSelectActionOption(data: option)).onValue { result in
+                        self.store.setValue(key: result.key, value: result.value)
+                        callback(option.link.fragments.embarkLinkFragment)
+                    }
                 }
+                if optionsSlice.count < 2 { stack.addArrangedSubview(UIView()) }
             }
             
             return bag

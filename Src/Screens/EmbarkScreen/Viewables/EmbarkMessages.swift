@@ -22,15 +22,16 @@ extension EmbarkMessages: Viewable {
         view.spacing = 10
         let bag = DisposeBag()
         
-        
-        bag += dataSignal.animated(style: .lightBounce(), animations: { _ in
+        let animateOutSignal: Signal = dataSignal.animated(style: .lightBounce(), animations: { _ in
             for (index, stackedMessage) in view.subviews.enumerated() {
                 stackedMessage.transform = CGAffineTransform(translationX: 0, y: CGFloat(-70-(1/(index+1))*20))
                 stackedMessage.alpha = 0
             }
         })
         
-        bag += dataSignal.atOnce().delay(by: 0.8).compactMap { $0 }.onValueDisposePrevious { messages in
+        let delaySignal = Signal(after: 1.5).readable()
+        
+        bag += combineLatest(dataSignal.compactMap { $0 }.driven(by: animateOutSignal), delaySignal.compactMap { $0 }).onValueDisposePrevious { messages, _ in
             let innerBag = DisposeBag()
            
             innerBag += messages.map({ message -> String? in
@@ -59,8 +60,7 @@ extension EmbarkMessages: Viewable {
                 }
                 
                 return nil
-            }).compactMap { $0 }.enumerated().map { arg in
-                let (offset, messageText) = arg
+            }).compactMap { $0 }.map { messageText in
                 return view.addArranged(MessageBubble(text: messageText, delay: 0))
             }
             
