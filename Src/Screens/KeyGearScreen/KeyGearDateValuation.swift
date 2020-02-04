@@ -34,7 +34,7 @@ extension KeyGearDateValuation: Presentable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
         
-        let firstTitle = MultilineLabel(value: "Beräkna värdering", style: .headlineLargeLargCenter)
+        let firstTitle = MultilineLabel(value: "Beräkna värdering", style: .headlineLargeLargeCenter)
         bag += containerView.addArranged(firstTitle)
         
         bag += containerView.addArranged(Spacing(height: 8))

@@ -31,7 +31,7 @@ extension UIColor {
         })
     }
     
-    static var switchPrimaryText: UIColor {
+    static var primaryTextNeg: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .black : .white
         })
