@@ -15,7 +15,7 @@ struct EmbarkSelectActionOption {
 }
 
 extension EmbarkSelectActionOption: Viewable {
-    func materialize(events: ViewableEvents) -> (UIControl, Signal<(String, String)>) {
+    func materialize(events: ViewableEvents) -> (UIControl, Signal<ActionResponseData>) {
         let bag = DisposeBag()
         let control = UIControl()
         control.backgroundColor = .white
@@ -36,13 +36,9 @@ extension EmbarkSelectActionOption: Viewable {
                 
         return (control, Signal { callback in
             bag += control.signal(for: .touchUpInside).onValue { _ in
-                //callback(["apartmentType": "BRF"])
-                guard let value = self.data.value else { return }
-                if let key = self.data.key {
-                    callback((key, value))
-                } else {
-                    callback(("\(self.data.link.fragments.embarkLinkFragment.name)Result", value))
-                }
+                let key = self.data.key ?? "\(self.data.link.fragments.embarkLinkFragment.name)Result"
+                let value = self.data.value ?? self.data.link.fragments.embarkLinkFragment.label
+                callback(ActionResponseData(key: key, value: value))
             }
             return bag
         })

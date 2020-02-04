@@ -27,8 +27,7 @@ extension EmbarkSelectAction: Viewable {
         return (view, Signal { callback in
             bag += self.data.selectActionData.options.map { option in
                 view.addArranged(EmbarkSelectActionOption(data: option)).onValue { result in
-                    print("RESULT:", result)
-                    self.store.setValue(key: result.0, value: result.1)
+                    self.store.setValue(key: result.key, value: result.value)
                     callback(option.link.fragments.embarkLinkFragment)
                 }
             }

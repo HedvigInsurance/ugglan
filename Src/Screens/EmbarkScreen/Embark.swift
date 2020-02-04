@@ -23,15 +23,15 @@ extension Embark: Presentable {
         let bag = DisposeBag()
         
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .blackPurple
         viewController.view = view
         
-        let imageBackground = UIImageView(image: Asset.embarkBackground.image)
+        /*let imageBackground = UIImageView(image: Asset.embarkBackground.image)
         imageBackground.contentMode = .scaleAspectFill
         view.addSubview(imageBackground)
         imageBackground.snp.makeConstraints { make in
             make.height.width.equalToSuperview()
-        }
+        }*/
         
         viewController.installChatButton()
         

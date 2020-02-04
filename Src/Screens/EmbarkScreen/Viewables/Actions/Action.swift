@@ -14,6 +14,16 @@ struct Action {
     let dataSignal: ReadSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage.Action?>
 }
 
+struct ActionResponse {
+    let link: EmbarkLinkFragment
+    let data: ActionResponseData
+}
+
+struct ActionResponseData {
+    let key: String
+    let value: String
+}
+
 extension Action: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let view = UIStackView()

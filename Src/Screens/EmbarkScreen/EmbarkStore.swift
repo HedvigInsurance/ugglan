@@ -34,9 +34,9 @@ class EmbarkStore {
                     let (offset, key) = arg
                     setValue(key: String(key), value: String(values[offset]))
                 }
+            } else {
+                store[key] = value
             }
-            
-            store[key] = value
         }
         
         print("STORE:", store)
