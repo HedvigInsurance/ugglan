@@ -35,7 +35,6 @@ extension KeyGearImageCarousel: Viewable {
         let pagerDots = PagerDots()
         
         
-        
         bag += collectionKit.view.add(pagerDots) { pagerDotsView in
             pagerDotsView.snp.makeConstraints { make in
                 make.bottom.equalToSuperview().inset(20)

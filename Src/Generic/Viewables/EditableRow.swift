@@ -31,7 +31,7 @@ extension EditableRow: Viewable {
         bag += valueSignal.atOnce().bindTo(textField, \.value)
         
         let button = Button(
-            title: String(key: .EDITABLE_ROW_SAVE),
+            title: String(key: .EDITABLE_ROW_EDIT),
             type: .outline(borderColor: .transparent, textColor: .primaryTintColor)
         )
        

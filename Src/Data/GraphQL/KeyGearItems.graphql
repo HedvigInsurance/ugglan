@@ -1,0 +1,26 @@
+query KeyGearItems {
+    keyGearItemsSimple {
+        id
+        deleted
+        physicalReferenceHash
+        photos {
+            id
+            file {
+                key
+                bucket
+            }
+        }
+        category
+        receipts {
+            id
+            file {
+                key
+                bucket
+            }
+        }
+        purchasePrice {
+            ...MonetaryAmountFragment
+        }
+        timeOfPurchase
+    }
+}

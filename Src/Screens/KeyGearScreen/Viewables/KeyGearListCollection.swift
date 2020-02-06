@@ -9,8 +9,11 @@ import Foundation
 import UIKit
 import Flow
 import Form
+import Apollo
 
 struct KeyGearListCollection {
+    @Inject var client: ApolloClient
+    
     enum Effect {
         case add, row(id: String)
     }
@@ -23,16 +26,13 @@ extension KeyGearListCollection: Viewable {
         let bag = DisposeBag()
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        layout.sectionInset = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
         
-        var rows: [KeyGearListCollectionRow] = Array.init(repeating: .make(KeyGearListItem(id: "todo", imageUrl: nil, wasAddedAutomatically: true)), count: 500)
         
         let addButton = ReusableSignalViewable(viewable: KeyGearAddButton())
         
-        rows.insert(.make(addButton), at: 0)
-        
         let collectionKit = CollectionKit<EmptySection, KeyGearListCollectionRow>(
-            table: .init(rows: rows),
+            table: Table(rows: []),
             layout: layout
         )
         collectionKit.view.backgroundColor = .transparent
@@ -44,7 +44,22 @@ extension KeyGearListCollection: Viewable {
         }
         
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            return CGSize(width: collectionKit.view.frame.width / 2 - 5 - 15, height: 120)
+            return CGSize(width: collectionKit.view.frame.width / 2 - 5, height: 120)
+        }
+        
+        bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItemsSimple }.onValue { items in
+            guard let items = items, !items.isEmpty else {
+                collectionKit.table = Table(rows: [.make(addButton)])
+                return
+            }
+            
+            var rows: [KeyGearListCollectionRow] = items.compactMap { $0 }.map { item in
+                .make(KeyGearListItem(id: item.id, imageUrl: nil, wasAddedAutomatically: true))
+            }
+            
+            rows.insert(.make(addButton), at: 0)
+            
+            collectionKit.table = Table(rows: rows)
         }
                 
         return (collectionKit.view, Signal { callback in

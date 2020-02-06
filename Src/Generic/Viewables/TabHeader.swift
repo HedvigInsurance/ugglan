@@ -49,7 +49,7 @@ extension TabHeader.Text: Viewable {
 extension TabHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let view = UIStackView()
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
+        view.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
         view.axis = .vertical
         view.alignment = .center
         view.isLayoutMarginsRelativeArrangement = true

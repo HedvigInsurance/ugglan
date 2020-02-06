@@ -12,25 +12,57 @@ import Apollo
 import Presentation
 import Form
 
-struct AddKeyGearItem {}
+struct AddKeyGearItem {
+    @Inject var client: ApolloClient
+}
 
 extension AddKeyGearItem: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
-        viewController.title = "Lägg till pryl"
+        viewController.title = String(key: .KEY_GEAR_ADD_ITEM_PAGE_TITLE)
         
         let form = FormView()
         bag += viewController.install(form)
+        
+        let pickImageBox = UIView()
+        pickImageBox.backgroundColor = .purple
+        
+        form.prepend(pickImageBox)
+        
+        pickImageBox.snp.makeConstraints { make in
+            make.height.equalTo(300)
+        }
         
         return (viewController, Future { completion in
             
             let button = Button(title: "Lägg till", type: .standard(backgroundColor: .primaryTintColor, textColor: .primaryText))
             
-            bag += button.onTapSignal.onValue({ _ in
-                completion(.success)
-            })
+            bag += button.onTapSignal.mapLatestToFuture { viewController.present(ImagePicker(sourceType: .camera, mediaTypes: [.photo])) }.onValue { result in
+                if let image = result.right {
+                    self.classifyImage(image).onValue { category in
+                        print(category)
+                                                
+                        let bubbleLoading = BubbleLoading(
+                            originatingView: pickImageBox,
+                            dismissSignal: Signal(after: 2)
+                        )
+
+                        viewController.present(
+                            bubbleLoading,
+                            style: .modally(
+                                presentationStyle: .overFullScreen,
+                                transitionStyle: .none,
+                                capturesStatusBarAppearance: true
+                            ),
+                            options: [.unanimated]
+                        ).onValue { _ in
+                            completion(.success)
+                        }
+                    }
+                }
+            }
             
             bag += form.prepend(button)
             
