@@ -15,6 +15,8 @@ struct KeyGearAddButton {}
 extension KeyGearAddButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIControl, Signal<Void>) {
         let view = UIControl()
+        view.accessibilityLabel = String(key: .KEY_GEAR_ADD_BUTTON)
+        
         let bag = DisposeBag()
 
         view.layer.cornerRadius = 8
@@ -38,7 +40,7 @@ extension KeyGearAddButton: Viewable {
         let label = MultilineLabel(value: String(key: .KEY_GEAR_ADD_BUTTON), style: TextStyle.body.colored(.primaryTintColor))
         bag += contentContainer.addArranged(label)
                 
-        let touchUpInsideSignal = view.signal(for: .touchUpInside)
+        let touchUpInsideSignal = view.trackedTouchUpInsideSignal
         
         bag += touchUpInsideSignal.feedback(type: .impactLight)
         
