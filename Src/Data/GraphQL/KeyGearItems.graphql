@@ -6,16 +6,14 @@ query KeyGearItems {
         photos {
             id
             file {
-                key
-                bucket
+                preSignedUrl
             }
         }
         category
         receipts {
             id
             file {
-                key
-                bucket
+                preSignedUrl
             }
         }
         purchasePrice {

@@ -20,6 +20,10 @@ extension UIControl {
                         "context": "UIControl"
                     ])
                 }
+            } else if let accessibilityIdentifier = self.accessibilityIdentifier {
+                Analytics.logEvent(accessibilityIdentifier, parameters: [
+                    "context": "UIControl"
+                ])
             }
         }
     }

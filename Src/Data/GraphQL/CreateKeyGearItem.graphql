@@ -1,0 +1,5 @@
+mutation CreateKeyGearItem($input: CreateKeyGearItemInput!) {
+    createKeyGearItem(input: $input) {
+        id
+    }
+}

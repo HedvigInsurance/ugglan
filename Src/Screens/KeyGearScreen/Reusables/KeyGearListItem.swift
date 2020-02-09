@@ -30,8 +30,18 @@ extension KeyGearListItem: Reusable {
         let view = UIControl()
         view.layer.cornerRadius = 8
         view.backgroundColor = .sunflower300
+        
+        let imageView = UIImageView()
+        view.addSubview(imageView)
+        
+        imageView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
+        
         return (view, { `self` in
             let bag = DisposeBag()
+            
+            imageView.kf.setImage(with: self.imageUrl)
             
             bag += view.signal(for: .touchUpInside).onValue { _ in
                 self.callbacker.callAll()

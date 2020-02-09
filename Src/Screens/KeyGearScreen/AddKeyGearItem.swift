@@ -45,6 +45,10 @@ extension AddKeyGearItem: Presentable {
             
             let button = Button(title: "Lägg till", type: .standard(backgroundColor: .primaryTintColor, textColor: .primaryText))
             
+            func handleImage() {
+                
+            }
+            
             bag += button.onTapSignal.onValue {
                 viewController.present(ImagePicker(sourceType: .camera, mediaTypes: [.photo])).onValue { result in
                     if let image = result.right {
@@ -53,7 +57,24 @@ extension AddKeyGearItem: Presentable {
                                 originatingView: pickImageBox,
                                 dismissSignal: Signal(after: 2)
                             )
-
+                            
+                            guard let jpegData = image.jpegData(compressionQuality: 0.9) else {
+                                 log.error("couldn't process image")
+                                 return
+                             }
+                            
+                            let fileUpload = FileUpload(
+                                data: jpegData,
+                                mimeType: "image/jpeg",
+                                fileName: "image.jpg"
+                            )
+                            
+                            fileUpload.upload().onValue { key, bucket in
+                                self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
+                                  S3FileInput(bucket: bucket, key: key)
+                                ], category: .computer)))
+                            }
+                            
                             viewController.present(
                                 bubbleLoading,
                                 style: .modally(
@@ -66,6 +87,33 @@ extension AddKeyGearItem: Presentable {
                                 completion(.success)
                             }
                         }
+                    } else if let asset = result.left {
+                        
+                        let bubbleLoading = BubbleLoading(
+                            originatingView: pickImageBox,
+                            dismissSignal: Signal(after: 2)
+                        )
+                        
+                        bag += asset.image.valueSignal.compactMap { $0 }.mapLatestToFuture { self.classifyImage($0) }.onValue { category in
+                            asset.fileUpload.flatMap { $0.upload() }.onValue { key, bucket in
+                               self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
+                                 S3FileInput(bucket: bucket, key: key)
+                               ], category: .computer)))
+                            }
+                        }
+                        
+                        viewController.present(
+                            bubbleLoading,
+                            style: .modally(
+                                presentationStyle: .overFullScreen,
+                                transitionStyle: .none,
+                                capturesStatusBarAppearance: true
+                            ),
+                            options: [.unanimated]
+                        ).onValue { _ in
+                            completion(.success)
+                        }
+                        
                     }
                 }
 

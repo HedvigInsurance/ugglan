@@ -80,6 +80,7 @@ extension Peril: Reusable {
             }
             
             perilView.accessibilityLabel = peril.title
+            perilView.accessibilityIdentifier = peril.id
 
             let bag = DisposeBag()
 
