@@ -8,18 +8,46 @@
 import Foundation
 import Flow
 import UIKit
+import Form
 
 struct AddPhotoButton {}
 
 extension AddPhotoButton: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
-        view.backgroundColor = .purple
+    func materialize(events: ViewableEvents) -> (UIControl, Signal<Void>) {
+        let bag = DisposeBag()
+        let view = UIControl()
+        view.backgroundColor = .secondaryTintColor
+        view.accessibilityLabel = String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON)
+        
+        view.layer.cornerRadius = 8
         
         view.snp.makeConstraints { make in
             make.height.equalTo(300)
         }
         
-        return (view, NilDisposer())
+        let contentContainer = UIStackView()
+        contentContainer.spacing = 8
+        contentContainer.axis = .vertical
+        contentContainer.alignment = .center
+        
+        contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto, iconWidth: 40))
+        bag += contentContainer.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON), style: TextStyle.body.colored(.primaryTintColor)))
+        
+        view.addSubview(contentContainer)
+        
+        contentContainer.snp.makeConstraints { make in
+            make.trailing.leading.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+        
+        bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+            view.backgroundColor = UIColor.secondaryTintColor.darkened(amount:  0.05)
+        }
+        
+        bag += view.delayedTouchCancel(delay: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+            view.backgroundColor = .secondaryTintColor
+        }
+        
+        return (view, view.trackedTouchUpInsideSignal.hold(bag))
     }
 }
