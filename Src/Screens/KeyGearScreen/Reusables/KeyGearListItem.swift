@@ -42,7 +42,7 @@ extension KeyGearListItem: Reusable {
             let bag = DisposeBag()
             
             imageView.kf.setImage(with: self.imageUrl)
-            
+                        
             bag += view.signal(for: .touchUpInside).onValue { _ in
                 self.callbacker.callAll()
             }

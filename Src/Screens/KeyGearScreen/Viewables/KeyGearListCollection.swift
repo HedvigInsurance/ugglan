@@ -47,18 +47,13 @@ extension KeyGearListCollection: Viewable {
         }
         
         bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItemsSimple }.onValue { items in
-            print("items", items)
             guard let items = items, !items.isEmpty else {
                 collectionKit.table = Table(rows: [.make(addButton)])
                 return
             }
-            
+                        
             var rows: [KeyGearListCollectionRow] = items.compactMap { $0 }.map { item in
-                
                 let photo = item.photos.first
-                
-                
-                
                 return .make(KeyGearListItem(id: item.id, imageUrl: URL(string: photo?.file.preSignedUrl), wasAddedAutomatically: true))
             }
             

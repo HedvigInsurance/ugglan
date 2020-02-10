@@ -30,13 +30,8 @@ extension AddKeyGearItem: Presentable {
         bag += viewController.install(form)
         
         let pickImageBox = UIView()
-        pickImageBox.backgroundColor = .purple
         
-        form.prepend(pickImageBox)
-        
-        pickImageBox.snp.makeConstraints { make in
-            make.height.equalTo(300)
-        }
+        bag += form.prepend(AddPhotoButton())
         
         return (viewController, Future { completion in
             bag += cancelButton.onValue {
@@ -73,6 +68,10 @@ extension AddKeyGearItem: Presentable {
                                 self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
                                   S3FileInput(bucket: bucket, key: key)
                                 ], category: .computer)))
+                                
+                                self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { result in
+                                    print(result)
+                                }
                             }
                             
                             viewController.present(
@@ -99,6 +98,10 @@ extension AddKeyGearItem: Presentable {
                                self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
                                  S3FileInput(bucket: bucket, key: key)
                                ], category: .computer)))
+                                
+                                self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { result in
+                                    print(result)
+                                }
                             }
                         }
                         

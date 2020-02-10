@@ -1,5 +1,5 @@
 query KeyGearItems {
-    keyGearItemsSimple {
+    keyGearItemsSimple(where: { deleted : false }) {
         id
         deleted
         physicalReferenceHash
