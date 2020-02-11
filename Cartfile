@@ -23,5 +23,3 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json"
 binary "Crashlytics.json"
-
-github "hedviginsurance/flow"
