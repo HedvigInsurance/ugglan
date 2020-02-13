@@ -29,9 +29,10 @@ extension KeyGearListItem: Reusable {
     static func makeAndConfigure() -> (make: UIControl, configure: (KeyGearListItem) -> Disposable) {
         let view = UIControl()
         view.layer.cornerRadius = 8
-        view.backgroundColor = .sunflower300
+        view.backgroundColor = .secondaryBackground
         
         let imageView = UIImageView()
+        imageView.isUserInteractionEnabled = false
         view.addSubview(imageView)
         
         imageView.snp.makeConstraints { make in
@@ -40,6 +41,10 @@ extension KeyGearListItem: Reusable {
         
         return (view, { `self` in
             let bag = DisposeBag()
+            
+            bag += view.applyBorderColor { trait -> UIColor in
+                return UIColor.primaryBorder
+            }
             
             imageView.kf.setImage(with: self.imageUrl)
                         
