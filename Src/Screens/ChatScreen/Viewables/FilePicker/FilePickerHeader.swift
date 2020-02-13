@@ -12,7 +12,7 @@ import Photos
 import UIKit
 
 struct FilePickerHeader {
-    let uploadFileDelegate = Delegate<FileUpload, Signal<Bool>>()
+    let uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 }
 
 extension FilePickerHeader: Reusable {
@@ -47,7 +47,7 @@ extension FilePickerHeader: Viewable {
             
             if let asset = result.left {
                 asset.fileUpload.onValue { fileUpload in
-                    innerBag += self.uploadFileDelegate.call(
+                    self.uploadFileDelegate.call(
                         fileUpload
                     )?.onValue { _ in }
                 }.onError { error in
@@ -65,7 +65,7 @@ extension FilePickerHeader: Viewable {
                     fileName: "image.jpg"
                 )
                 
-                innerBag += self.uploadFileDelegate.call(
+                self.uploadFileDelegate.call(
                     fileUpload
                 )?.onValue { _ in }
             }
@@ -114,7 +114,7 @@ extension FilePickerHeader: Viewable {
                 return join(fileUploads).valueSignal
                     .map { fileUploads -> [Disposable] in
                         fileUploads.compactMap {
-                            self.uploadFileDelegate.call($0)?.onValue { _ in }
+                            self.uploadFileDelegate.call($0)?.valueSignal.onValue { _ in }
                         }
                     }.onValueDisposePrevious { list -> Disposable? in
                         DisposeBag(list)

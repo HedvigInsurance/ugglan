@@ -20,11 +20,15 @@ extension KeyGearOverview: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = "Prylar"
+        viewController.title = String(key: .KEY_GEAR_TAB_TITLE)
         
         let formView = FormView()
         
-        bag += formView.prepend(TabHeader(image: Asset.claimsHeader.image, title: "Hej hej", description: "Hej hej"))
+        bag += formView.prepend(TabHeader(
+            image: Asset.keyGearOverviewHeader.image,
+            title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
+            description: String(key: .KEY_GEAR_START_EMPTY_BODY)
+        ))
         
         bag += formView.append(KeyGearListCollection()).onValue { result in
             switch result {
@@ -38,7 +42,7 @@ extension KeyGearOverview: Presentable {
         }
         
         let refreshControl = UIRefreshControl()
-        bag += client.refetchOnRefresh(query: OfferQuery(), refreshControl: refreshControl)
+        bag += client.refetchOnRefresh(query: KeyGearItemsQuery(), refreshControl: refreshControl)
         
         bag += viewController.install(formView) { scrollView in
             scrollView.refreshControl = refreshControl
@@ -50,6 +54,10 @@ extension KeyGearOverview: Presentable {
 
 extension KeyGearOverview: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(title: nil, image: nil, selectedImage: nil)
+        return UITabBarItem(
+            title: String(key: .KEY_GEAR_TAB_TITLE),
+            image: Asset.keyGearTabIcon.image,
+            selectedImage: Asset.keyGearTabIcon.image
+        )
     }
 }

@@ -88,7 +88,13 @@ enum ImagePickerError: Error {
 extension ImagePicker: Presentable {
     func materialize() -> (UIImagePickerController, Future<Either<PHAsset, UIImage>>) {
         let viewController = UIImagePickerController()
-        viewController.sourceType = sourceType
+        
+        if UIImagePickerController.isSourceTypeAvailable(sourceType) {
+            viewController.sourceType = sourceType
+        } else {
+            viewController.sourceType = .photoLibrary
+        }
+        
         viewController.preferredPresentationStyle = .modally(
             presentationStyle: .pageSheet,
             transitionStyle: nil,

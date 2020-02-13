@@ -84,7 +84,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ toast: Toast
     ) -> Future<Void> {
         return Future { completion in
-            self.bag += Signal(after: 0).withLatestFrom(self.toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
+            self.bag += self.hasFinishedLoading
+                .atOnce()
+                .filter { $0 }
+                .withLatestFrom(self.toastSignal.atOnce().plain())
+                .take(first: 1)
+                .onValue(on: .main) { _, previousToast in
                 if self.toastSignal.value == nil {
                     self.presentToasts()
                 }
@@ -222,8 +227,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         alertActionWasPressed = { _, title in
             if let localizationKey = title.localizationKey?.description {
                 Analytics.logEvent(
-                    "alert_action_tap_\(localizationKey)",
-                    parameters: nil
+                    localizationKey,
+                    parameters: [
+                        "context": "Alert"
+                    ]
                 )
             }
         }
