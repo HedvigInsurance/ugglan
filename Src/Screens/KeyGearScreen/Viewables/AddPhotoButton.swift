@@ -10,7 +10,9 @@ import Flow
 import UIKit
 import Form
 
-struct AddPhotoButton {}
+struct AddPhotoButton {
+    let pickedPhotoSignal = ReadWriteSignal<UIImage?>(nil)
+}
 
 extension AddPhotoButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIControl, Signal<Void>) {
@@ -38,6 +40,24 @@ extension AddPhotoButton: Viewable {
         contentContainer.snp.makeConstraints { make in
             make.trailing.leading.equalToSuperview()
             make.centerY.equalToSuperview()
+        }
+        
+        bag += pickedPhotoSignal.atOnce().onValueDisposePrevious { image -> Disposable? in            
+            let imageView = UIImageView()
+            imageView.image = image
+            imageView.layer.cornerRadius = 8
+            imageView.clipsToBounds = true
+            imageView.contentMode = .scaleAspectFill
+            
+            view.addSubview(imageView)
+            
+            imageView.snp.makeConstraints { make in
+                make.top.bottom.trailing.leading.equalToSuperview()
+            }
+            
+            return Disposer {
+                imageView.removeFromSuperview()
+            }
         }
         
         bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in

@@ -56,6 +56,12 @@ extension UIColor {
         })
     }
     
+    static var tertiaryBackground: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+        })
+    }
+    
     static var regularBody: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .lightGray : .darkerGray

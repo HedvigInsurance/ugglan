@@ -13,7 +13,7 @@ import Flow
 import Apollo
 
 extension AddKeyGearItem {
-    enum Category: String {
+    private enum Category: String {
         case smartWatch = "SmartWatches",
         watch = "Watches",
         appliance = "Applicances",
@@ -24,7 +24,7 @@ extension AddKeyGearItem {
         computer = "Computer"
     }
     
-    func classifyImage(_ image: UIImage) -> Future<Category?> {
+    func classifyImage(_ image: UIImage) -> Future<KeyGearItemCategory?> {
         return Future { completion in
             let bag = DisposeBag()
             
@@ -36,7 +36,29 @@ extension AddKeyGearItem {
                     let classifications = result.left?.results as! [VNClassificationObservation]
                     if let classification = classifications.first {
                         if classification.confidence > 0.9 {
-                            completion(.success(Category(rawValue: classification.identifier)))
+                            guard let category = Category(rawValue: classification.identifier) else {
+                                completion(.success(nil))
+                                return
+                            }
+                            
+                            switch category {
+                            case .smartWatch:
+                                completion(.success(KeyGearItemCategory.jewelry))
+                            case .watch:
+                                completion(.success(KeyGearItemCategory.jewelry))
+                            case .appliance:
+                                completion(.success(nil))
+                            case .camera:
+                                completion(.success(nil))
+                            case .phone:
+                                completion(.success(KeyGearItemCategory.phone))
+                            case .bicycle:
+                                completion(.success(nil))
+                            case .computer:
+                                completion(.success(KeyGearItemCategory.computer))
+                            case .jewelry:
+                                completion(.success(KeyGearItemCategory.jewelry))
+                            }
                         } else {
                             completion(.success(nil))
                         }
