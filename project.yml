@@ -135,7 +135,6 @@ targets:
       - script: scripts/copy-frameworks.sh
         shell: /bin/bash
         inputs:
-          - $(SRCROOT)/Carthage/Build/iOS/RevealServer.framework
           - $(SRCROOT)/Carthage/Build/iOS/DeviceKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Apollo.framework
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
@@ -155,7 +154,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
           - $(SRCROOT)/Carthage/Build/iOS/FBSDKCoreKit.framework
         outputs:
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RevealServer.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
@@ -235,8 +233,6 @@ variants:
         CODE_SIGN_ENTITLEMENTS: Config/Test/Entitlements.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.test.app"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_VARIANT_DEV
-      references:
-        - location: Carthage/Build/iOS/RevealServer.framework
   production:
     Ugglan:
       sources: Config/Production
