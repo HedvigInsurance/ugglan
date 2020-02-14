@@ -11,9 +11,55 @@ import UIKit
 import Flow
 import Form
 import Apollo
+import WatchConnectivity
 
 struct KeyGearOverview {
     @Inject var client: ApolloClient
+    
+    func autoAddDevices() {
+        if WCSession.isSupported() {
+            let bag = DisposeBag()
+            let session = WCSession.default
+            let coordinator = Coordinator { [unowned bag] in
+                bag.dispose()
+            }
+            bag.hold(coordinator)
+            session.delegate = coordinator
+
+            session.activate()
+            
+            class Coordinator: NSObject, WCSessionDelegate {
+                let onDone: () -> Void
+                
+                init(onDone: @escaping () -> Void) {
+                    self.onDone = onDone
+                }
+                
+                func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+                    print("hello", session)
+                    
+                    if session.isPaired {
+                        print("have an apple watch")
+                    }
+                    
+                    onDone()
+                }
+                
+                func sessionDidBecomeInactive(_ session: WCSession) {
+                    
+                }
+                
+                func sessionDidDeactivate(_ session: WCSession) {
+                    
+                }
+                
+                
+            }
+            
+
+            
+        }
+    }
 }
 
 extension KeyGearOverview: Presentable {
@@ -21,6 +67,8 @@ extension KeyGearOverview: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.title = String(key: .KEY_GEAR_TAB_TITLE)
+        
+        autoAddDevices()
         
         let formView = FormView()
         

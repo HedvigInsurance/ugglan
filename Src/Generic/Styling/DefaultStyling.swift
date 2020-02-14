@@ -83,6 +83,13 @@ extension DefaultStyling {
         )
 
         UIBarButtonItem.appearance().tintColor = .primaryTintColor
+        
+        let barButtonItemAppearance = UIBarButtonItem.appearance()
+        barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .normal)
+        barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .highlighted)
+
+        UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
+        UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
 
         UITabBar.appearance().barTintColor = UIColor.primaryBackground
 

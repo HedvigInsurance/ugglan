@@ -32,6 +32,15 @@ struct KeyGearItem {
         
         var preservedNavigationBarAttributes: [PreservedNavigationBarAttributes] = []
         
+        init() {
+            
+            super.init(nibName: nil, bundle: nil)
+        }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
         override func viewWillAppear(_ animated: Bool) {
             
             let navigationBar = self.navigationController!.navigationBar
@@ -44,14 +53,42 @@ struct KeyGearItem {
             preservedNavigationBarAttributes.append(.titleTextAttributes(attributes: navigationBar.titleTextAttributes))
             preservedNavigationBarAttributes.append(.barStyle(style: navigationBar.barStyle))
             
-            navigationBar.setBackgroundImage(UIImage(), for: .default)
-            navigationBar.setBackgroundImage(UIImage(), for: .compact)
+            navigationBar.tintColor = UIColor.white
+
+            navigationBar.backIndicatorImage = Asset.backButtonWhite.image
+
             navigationBar.barTintColor = UIColor.transparent
             navigationBar.isTranslucent = true
             navigationBar.shadowImage = UIImage()
-            navigationBar.tintColor = UIColor.red
             navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
             navigationBar.barStyle = .black
+            
+            let gradient = CAGradientLayer()
+            var bounds = navigationBar.bounds
+            bounds.size.height += UIApplication.shared.statusBarFrame.size.height
+            gradient.frame = bounds
+            gradient.colors = [UIColor.black.cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+            gradient.startPoint = CGPoint(x: 0, y: 0)
+            gradient.endPoint = CGPoint(x: 0, y: 1)
+
+            if let image = getGradientImage(gradientLayer: gradient) {
+                navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
+                navigationBar.setBackgroundImage(image, for: .compact)
+            }
+        }
+        
+        func getGradientImage(gradientLayer :CAGradientLayer) -> UIImage? {
+            var gradientImage: UIImage?
+            UIGraphicsBeginImageContext(gradientLayer.frame.size)
+            
+            if let context = UIGraphicsGetCurrentContext() {
+                gradientLayer.render(in: context)
+                gradientImage = UIGraphicsGetImageFromCurrentImageContext()?.resizableImage(withCapInsets: UIEdgeInsets.zero, resizingMode: .stretch)
+            }
+            
+            UIGraphicsEndImageContext()
+            
+            return gradientImage
         }
         
         override func viewWillDisappear(_ animated: Bool) {
@@ -146,7 +183,7 @@ extension KeyGearItem: Presentable {
                 
         let section = innerForm.appendSection()
         section.dynamicStyle = .sectionPlain
-        
+                
         bag += section.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
             print("was saved")
         }
