@@ -11,10 +11,10 @@ import Form
 import Presentation
 import UIKit
 
-struct KeyGearReceiptButton {
+struct KeyGearAddReceiptRow {
 }
 
-extension KeyGearReceiptButton: Viewable {
+extension KeyGearAddReceiptRow: Viewable {
     func materialize(events: ViewableEvents) -> (RowView, Signal<Void>) {
         let bag = DisposeBag()
         let row = RowView()
