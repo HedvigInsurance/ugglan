@@ -15,59 +15,42 @@ struct KeyGearReceiptButton {
 }
 
 extension KeyGearReceiptButton: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Signal<Void>) {
+    func materialize(events: ViewableEvents) -> (RowView, Signal<Void>) {
         let bag = DisposeBag()
-        let view = UIView()
-        view.layer.cornerRadius = 9
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.lightGray.cgColor
-        view.backgroundColor = .white
-        
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.edgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 0)
-        stackView.distribution = .fillProportionally
-        stackView.alignment = .center
-        
-        view.addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
-        }
+        let row = RowView()
+        row.edgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        row.distribution = .fill
+        row.alignment = .center
         
         let icon = Icon(icon: Asset.addReceiptSecondaryCopy, iconWidth: 40)
-        stackView.addArrangedSubview(icon)
+        row.append(icon)
         
         let receiptText = MultilineLabel(value: "Kvitto", style: .smallTitle)
-        bag += stackView.addArranged(receiptText) { label in
+        bag += row.append(receiptText) { label in
             label.snp.makeConstraints { make in
-                make.centerY.equalTo(view)
+                make.left.equalTo(icon.snp.right).offset(8)
+                make.centerY.equalToSuperview()
             }
         }
         
-        stackView.setCustomSpacing(8, after: icon)
-        
-        let trailingStackView = UIStackView()
-        trailingStackView.axis = .horizontal
-        trailingStackView.edgeInsets = UIEdgeInsets(top: 18, left: 0, bottom: 18, right: 16)
-        trailingStackView.distribution = .fill
-        trailingStackView.alignment = .center
-        
-        view.addSubview(trailingStackView)
-        trailingStackView.snp.makeConstraints { make in
-            make.top.right.bottom.equalToSuperview()
-        }
+        let dummyView = UIView()
+        dummyView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        row.addArrangedSubview(dummyView)
         
         let control = UIControl()
-        let addReceiptText = MultilineLabel(value: "Lägg till kvitto +", style: .blockRowDescription)
-        bag += control.add(addReceiptText) { view in
-            view.snp.makeConstraints { make in
-                view.textColor = .purple
+        let addReceiptText = MultilineLabel(value: "Lägg till +", style: .blockRowDescription)
+        bag += control.add(addReceiptText) { label in
+            label.textColor = .purple
+            label.snp.makeConstraints { make in
                 make.top.left.right.bottom.equalToSuperview()
             }
         }
-        
-        trailingStackView.addArrangedSubview(control)
-        
-        return (view, control.signal(for: .touchUpInside).hold(bag))
+    
+        row.append(control)
+        control.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+        }
+
+        return (row, control.signal(for: .touchUpInside).hold(bag))
     }
 }
