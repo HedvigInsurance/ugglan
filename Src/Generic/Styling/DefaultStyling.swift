@@ -88,9 +88,6 @@ extension DefaultStyling {
         barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .normal)
         barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .highlighted)
 
-        UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
-        UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
-
         UITabBar.appearance().barTintColor = UIColor.primaryBackground
 
         if #available(iOS 13.0, *) {
@@ -109,9 +106,25 @@ extension DefaultStyling {
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).shadowImage = UIColor.grayBorder.as1ptImage()
+            
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).backIndicatorImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).backIndicatorTransitionMaskImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
+            
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).backIndicatorImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).backIndicatorTransitionMaskImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
         } else {
             UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
             UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+            UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
+            UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
         }
 
         UITabBarItem.appearance().setBadgeTextAttributes([

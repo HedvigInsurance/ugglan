@@ -54,9 +54,7 @@ struct KeyGearItem {
             preservedNavigationBarAttributes.append(.barStyle(style: navigationBar.barStyle))
             
             navigationBar.tintColor = UIColor.white
-
             navigationBar.backIndicatorImage = Asset.backButtonWhite.image
-
             navigationBar.barTintColor = UIColor.transparent
             navigationBar.isTranslucent = true
             navigationBar.shadowImage = UIImage()
@@ -119,17 +117,16 @@ struct KeyGearItem {
 }
 
 extension KeyGearItem: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
+        let bag = DisposeBag()
         let viewController = KeyGearItemViewController()
         
-        let backButtonItem = UIBarButtonItem()
-        backButtonItem.tintColor = .white
+        let optionsButton = UIBarButtonItem()
+        optionsButton.tintColor = .white
+        optionsButton.image = Asset.menuIcon.image
         
-        viewController.navigationItem.backBarButtonItem = backButtonItem
-        
-        
-        let bag = DisposeBag()
-        
+        viewController.navigationItem.rightBarButtonItem = optionsButton
+                
         viewController.title = name
         
         let scrollView = UIScrollView()
@@ -188,6 +185,19 @@ extension KeyGearItem: Presentable {
             print("was saved")
         }
         
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            bag += optionsButton.onValue {
+                viewController.present(Alert(actions: [
+                    Alert.Action.init(title: "Delete", style: .destructive, action: { _ in
+                        completion(.success)
+                    }),
+                    Alert.Action.init(title: "Cancel", style: .cancel, action: { _ in
+                    
+                    })
+                ]), style: .sheet())
+            }
+            
+            return bag
+        })
     }
 }

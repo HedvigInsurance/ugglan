@@ -18,8 +18,6 @@ struct PaymentHeaderCard {
 extension PaymentHeaderCard: Viewable {
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let view = UIStackView()
-        view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-        view.isLayoutMarginsRelativeArrangement = true
         view.axis = .vertical
         let bag = DisposeBag()
         
