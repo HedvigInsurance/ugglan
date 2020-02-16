@@ -177,10 +177,14 @@ extension KeyGearItem: Presentable {
         innerForm.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
+        
+        bag += innerForm.append(KeyGearItemHeader())
+        
+        bag += innerForm.append(Spacing(height: 10))
                 
         let section = innerForm.appendSection()
         section.dynamicStyle = .sectionPlain
-                
+                        
         bag += section.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
             print("was saved")
         }
