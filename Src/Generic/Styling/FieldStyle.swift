@@ -16,6 +16,12 @@ extension FieldStyle {
         style.text = .rowValueEditableMuted
         style.placeholder = .rowValueEditableMuted
     }
+    
+    static let defaultRight = FieldStyle.default.restyled { (style: inout FieldStyle) in
+        style.cursorColor = .primaryTintColor
+        style.text = TextStyle.rowValueEditable.aligned(to: .right)
+        style.placeholder = TextStyle.rowValueEditableMuted.aligned(to: .right)
+    }
 
     static let editableRow = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.cursorColor = .purple

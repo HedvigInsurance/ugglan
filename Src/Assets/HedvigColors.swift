@@ -37,12 +37,9 @@ extension UIColor {
         })
     }
                           
-    static var primaryTextMuted: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .white : .darkGray
-
-        })
-    }
+    static let primaryTextMuted: UIColor = UIColor(dynamic: { trait -> UIColor in
+        trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+    })
 
     static var secondaryText: UIColor {
         UIColor(dynamic: { trait -> UIColor in
@@ -104,11 +101,7 @@ extension UIColor {
         })
     }
     
-    static var linksRegular: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .white : .violet500
-        })
-    }
+    static let linksRegular = UIColor.primaryTintColor
 
     static let violet100 = UIColor(red: 239.0 / 255.0, green: 232.0 / 255.0, blue: 1.0, alpha: 1.0)
     static let violet200 = UIColor(red: 193.0 / 255.0, green: 165.0 / 255.0, blue: 1.0, alpha: 1.0)

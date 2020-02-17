@@ -29,7 +29,7 @@ struct AddKeyGearItem {
 }
 
 extension AddKeyGearItem: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Future<String>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
@@ -95,26 +95,30 @@ extension AddKeyGearItem: Presentable {
                 fileUpload.upload().onValue { key, bucket in
                     self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
                       S3FileInput(bucket: bucket, key: key)
-                    ], category: .computer)))
-                    
-                    self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { result in
-                        let bubbleLoading = BubbleLoading(
-                                           originatingView: saveButtonPointer.current,
-                                           dismissSignal: Signal(after: 2)
-                                       )
+                    ], category: .computer))).onValue { result in
+                        print("added item", result)
                         
-                        viewController.present(
-                            bubbleLoading,
-                            style: .modally(
-                                presentationStyle: .overFullScreen,
-                                transitionStyle: .none,
-                                capturesStatusBarAppearance: true
-                            ),
-                            options: [.unanimated]
-                        ).onValue { _ in
-                            completion(.success)
+                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                            let bubbleLoading = BubbleLoading(
+                                               originatingView: saveButtonPointer.current,
+                                               dismissSignal: Signal(after: 2)
+                                           )
+                            
+                            viewController.present(
+                                bubbleLoading,
+                                style: .modally(
+                                    presentationStyle: .overFullScreen,
+                                    transitionStyle: .none,
+                                    capturesStatusBarAppearance: true
+                                ),
+                                options: [.unanimated]
+                            ).onValue { _ in
+                                completion(.success(result.data?.createKeyGearItem.id ?? ""))
+                            }
                         }
                     }
+                                        
+                    
                 }
                 
                 

@@ -42,7 +42,10 @@ extension AttachGIFImage: Reusable {
         return (view, { `self` in
             let bag = DisposeBag()
             let sendOverlayBag = bag.innerBag()
-            imageView.kf.setImage(with: self.url)
+            imageView.kf.setImage(with: self.url, options: [
+                .preloadAllAnimationData,
+                .transition(.fade(1)),
+            ])
             
             bag += view.signal(for: .touchUpInside).onValue { _ in
                 if !sendOverlayBag.isEmpty {

@@ -10,10 +10,54 @@ import Flow
 import UIKit
 import Form
 
-struct KeyGearItemHeader {}
+struct KeyGearItemHeader {
+    let presentingViewController: UIViewController
+}
+
+struct DeductibleBox: Viewable {
+    func materialize(events: ViewableEvents) -> (RowView, Disposable) {
+        let row = RowView()
+                
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 5
+        
+        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_TITLE), style: .bodyBold))
+        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_VALUE), style: .blockRowTitle))
+        
+        row.append(stackView)
+        
+        return (row, NilDisposer())
+    }
+}
+
+struct ValuationBox: Viewable {
+    let presentingViewController: UIViewController
+    
+    func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
+        let bag = DisposeBag()
+        let row = RowView()
+                
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 5
+               
+        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodyBold))
+        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight))
+        
+        row.append(stackView)
+        
+        bag += events.onSelect.onValue { _ in
+            self.presentingViewController.present(KeyGearAddValuation(), style: .modal)
+        }
+        
+        return (row, bag)
+    }
+}
 
 extension KeyGearItemHeader: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+        let bag = DisposeBag()
         let stackView = UIStackView()
         stackView.spacing = 10
         stackView.distribution = .fillEqually
@@ -21,25 +65,17 @@ extension KeyGearItemHeader: Viewable {
         let valuationBox = SectionView()
         valuationBox.dynamicStyle = .sectionPlain
         
-        valuationBox.appendRow(RowView().append(UILabel(value: "Fisk", style: .body)))
+        bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController))
         
         stackView.addArrangedSubview(valuationBox)
-        
-        valuationBox.snp.makeConstraints { make in
-            make.height.equalTo(100)
-        }
         
         let deductibleBox = SectionView()
         deductibleBox.dynamicStyle = .sectionPlain
         
-        deductibleBox.appendRow(RowView().append(UILabel(value: "Fisk", style: .body)))
+        bag += deductibleBox.append(DeductibleBox())
         
         stackView.addArrangedSubview(deductibleBox)
         
-        deductibleBox.snp.makeConstraints { make in
-            make.height.equalTo(100)
-        }
-        
-        return (stackView, NilDisposer())
+        return (stackView, bag)
     }
 }

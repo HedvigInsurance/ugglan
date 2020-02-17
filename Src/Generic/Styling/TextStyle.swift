@@ -391,6 +391,7 @@ extension TextStyle {
     
     static let bodyRegularRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
+        style.alignment = .center
         style.lineHeight = 24
         style.color = .regularBody
         style.letterSpacing = 0.2

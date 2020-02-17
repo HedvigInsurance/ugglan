@@ -68,16 +68,21 @@ extension KeyGearListCollection: Viewable {
             }
             
             bag += collectionKit.onValueDisposePrevious { table -> Disposable? in
-                table.signal().onValueDisposePrevious { value -> Disposable? in
+                let bag = DisposeBag()
+                
+                bag += table.signal().onValue { value in
                     switch (value) {
                     case let .left(row):
-                        return row.onValue { _ in
+                        bag += row.onValue { _ in
+                            print("hello")
                             callback(.row(id: row.id))
                         }
                     case .right:
-                        return NilDisposer()
+                        break
                     }
                 }
+                
+                return bag
             }
             
             return bag

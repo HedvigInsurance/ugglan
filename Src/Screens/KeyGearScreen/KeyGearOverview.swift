@@ -81,11 +81,11 @@ extension KeyGearOverview: Presentable {
         bag += formView.append(KeyGearListCollection()).onValue { result in
             switch result {
             case .add:
-                viewController.present(AddKeyGearItem(), style: .modally()).onValue { _ in
-                    viewController.present(KeyGearItem(name: "test"), style: .default, options: [.largeTitleDisplayMode(.never)])
+                viewController.present(AddKeyGearItem(), style: .modally()).onValue { id in
+                    viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never)])
                 }
-            case .row:
-                viewController.present(KeyGearItem(name: "test"), style: .default, options: [.largeTitleDisplayMode(.never)])
+            case let .row(id):
+                viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never)])
             }
         }
         

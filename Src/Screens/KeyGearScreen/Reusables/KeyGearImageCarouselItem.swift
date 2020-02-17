@@ -21,7 +21,10 @@ extension KeyGearImageCarouselItem: Reusable {
         return (imageView, { `self` in
             let bag = DisposeBag()
             
-            imageView.kf.setImage(with: self.imageUrl)
+            imageView.kf.setImage(with: self.imageUrl, options: [
+                .preloadAllAnimationData,
+                .transition(.fade(1)),
+            ])
             imageView.contentMode = .scaleAspectFill
             
             return bag

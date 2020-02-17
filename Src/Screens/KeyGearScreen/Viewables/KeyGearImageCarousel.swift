@@ -10,19 +10,22 @@ import Form
 import UIKit
 import Flow
 
-struct KeyGearImageCarousel {}
+struct KeyGearImageCarousel {
+    let imagesSignal: ReadSignal<[URL]>
+}
 
 extension KeyGearImageCarousel: Viewable {
     func materialize(events: ViewableEvents) -> (UICollectionView, Disposable) {
-        let table = Table(rows: [
-            KeyGearImageCarouselItem(imageUrl: URL(string: "https://images.unsplash.com/photo-1571863033270-be3332c7f524?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80")!),
-            KeyGearImageCarouselItem(imageUrl: URL(string: "https://images.unsplash.com/photo-1571863033270-be3332c7f524?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80")!)
-        ])
+        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        let collectionKit = CollectionKit<EmptySection, KeyGearImageCarouselItem>(table: table, layout: layout)
+        let collectionKit = CollectionKit<EmptySection, KeyGearImageCarouselItem>(table: Table(rows: []), layout: layout)
         collectionKit.view.isPagingEnabled = true
         let bag = DisposeBag()
+        
+        bag += imagesSignal.atOnce().onValue { images in
+            collectionKit.table = Table(rows: images.map { KeyGearImageCarouselItem(imageUrl: $0) })
+        }
         
         bag += collectionKit.delegate.sizeForItemAt.set({ _ -> CGSize in
             return CGSize(width: collectionKit.view.frame.width, height: 400)

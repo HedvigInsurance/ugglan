@@ -29,10 +29,12 @@ extension KeyGearListItem: Reusable {
     static func makeAndConfigure() -> (make: UIControl, configure: (KeyGearListItem) -> Disposable) {
         let view = UIControl()
         view.layer.cornerRadius = 8
+        view.clipsToBounds = true
         view.backgroundColor = .secondaryBackground
         
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = false
+        imageView.contentMode = .scaleAspectFill
         view.addSubview(imageView)
         
         imageView.snp.makeConstraints { make in
@@ -46,7 +48,22 @@ extension KeyGearListItem: Reusable {
                 return UIColor.primaryBorder
             }
             
-            imageView.kf.setImage(with: self.imageUrl)
+            let touchUpInsideSignal = view.trackedTouchUpInsideSignal
+                  
+            bag += touchUpInsideSignal.feedback(type: .impactLight)
+          
+            bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.35)) {
+                view.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+            }
+                  
+            bag += view.delayedTouchCancel(delay: 0.1).animated(style: AnimationStyle.easeOut(duration: 0.35)) {
+                view.transform = CGAffineTransform.identity
+            }
+                        
+            imageView.kf.setImage(with: self.imageUrl, options: [
+                .preloadAllAnimationData,
+                .transition(.fade(1)),
+            ])
                         
             bag += view.signal(for: .touchUpInside).onValue { _ in
                 self.callbacker.callAll()

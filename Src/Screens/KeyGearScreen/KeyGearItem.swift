@@ -13,7 +13,8 @@ import Presentation
 import Form
 
 struct KeyGearItem {
-    let name: String
+    let id: String
+    @Inject var client: ApolloClient
     
     class KeyGearItemViewController: UIViewController {
         override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -127,7 +128,11 @@ extension KeyGearItem: Presentable {
         
         viewController.navigationItem.rightBarButtonItem = optionsButton
                 
-        viewController.title = name
+        let dataSignal = client.watch(query: KeyGearItemQuery(id: id)).compactMap { $0.data?.keyGearItem }
+        
+        bag += dataSignal.onValue({ data in
+            print(data)
+        })
         
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .primaryBackground
@@ -142,7 +147,9 @@ extension KeyGearItem: Presentable {
         
         bag += viewController.install(form, scrollView: scrollView)
         
-        bag += form.prepend(KeyGearImageCarousel()) { imageCarouselView in
+        let imagesSignal = dataSignal.map { $0.photos.compactMap { $0.file.preSignedUrl }}.compactMap { $0.compactMap { URL(string: $0) } }.readable(initial: [])
+        
+        bag += form.prepend(KeyGearImageCarousel(imagesSignal: imagesSignal)) { imageCarouselView in
             
             bag += scrollView.contentOffsetSignal.onValue({ offset in
                 let realOffset = offset.y + scrollView.safeAreaInsets.top
@@ -178,7 +185,7 @@ extension KeyGearItem: Presentable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
         
-        bag += innerForm.append(KeyGearItemHeader())
+        bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController))
         
         bag += innerForm.append(Spacing(height: 10))
                 

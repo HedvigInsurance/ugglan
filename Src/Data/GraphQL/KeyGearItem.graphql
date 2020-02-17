@@ -1,0 +1,9 @@
+query KeyGearItem($id: ID!) {
+    keyGearItem(id: $id) {
+      photos {
+        file {
+          preSignedUrl
+        }
+      }
+    }
+}
