@@ -22,8 +22,19 @@ struct DeductibleBox: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 5
         
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_TITLE), style: .bodyBold))
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_VALUE), style: .blockRowTitle))
+        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_TITLE), style: .bodySmallSmallLeft))
+        
+        let deductibleValueContainerContainer = UIStackView()
+        deductibleValueContainerContainer.alignment = .leading
+        deductibleValueContainerContainer.axis = .vertical
+        stackView.addArrangedSubview(deductibleValueContainerContainer)
+        
+        let deductibleValueContainer = UIStackView()
+        deductibleValueContainerContainer.addArrangedSubview(deductibleValueContainer)
+        
+        deductibleValueContainer.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_VALUE), style: .headlineLargeLargeLeft))
+        deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .bodySmallSmallLeft))
+        
         
         row.append(stackView)
         
@@ -42,7 +53,7 @@ struct ValuationBox: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 5
                
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodyBold))
+        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodySmallSmallLeft))
         stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight))
         
         row.append(stackView)

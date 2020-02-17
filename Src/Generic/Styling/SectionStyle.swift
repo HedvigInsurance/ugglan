@@ -257,9 +257,9 @@ extension HeaderFooterStyle {
         backgroundImage: nil,
         insets: UIEdgeInsets(
             top: 15,
-            left: 10,
+            left: 5,
             bottom: 10,
-            right: 10
+            right: 5
         ),
         emptyHeight: 0
     )

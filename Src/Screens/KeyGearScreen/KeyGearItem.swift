@@ -66,7 +66,7 @@ struct KeyGearItem {
             var bounds = navigationBar.bounds
             bounds.size.height += UIApplication.shared.statusBarFrame.size.height
             gradient.frame = bounds
-            gradient.colors = [UIColor.black.cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+            gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
             gradient.startPoint = CGPoint(x: 0, y: 0)
             gradient.endPoint = CGPoint(x: 0, y: 1)
 
@@ -93,26 +93,28 @@ struct KeyGearItem {
         override func viewWillDisappear(_ animated: Bool) {
             let navigationBar = self.navigationController!.navigationBar
 
-            preservedNavigationBarAttributes.forEach { attribute in
-                switch attribute {
-                case let .backgroundImage(compact, defaultMetric):
-                    navigationBar.setBackgroundImage(defaultMetric, for: .default)
-                    navigationBar.setBackgroundImage(compact, for: .compact)
-                case let .barTintColor(color):
-                    navigationBar.barTintColor = color
-                case let .isTranslucent(value):
-                    navigationBar.isTranslucent = value
-                case let .shadowImage(image):
-                    navigationBar.shadowImage = image
-                case let .tintColor(color):
-                    navigationBar.tintColor = color
-                case let .titleTextAttributes(attributes):
-                    navigationBar.titleTextAttributes = attributes
-                case let .barStyle(style):
-                    navigationBar.barStyle = style
+            UIView.transition(with: navigationBar, duration: 0.35, options: [], animations: {
+                self.preservedNavigationBarAttributes.forEach { attribute in
+                    switch attribute {
+                    case let .backgroundImage(compact, defaultMetric):
+                        navigationBar.setBackgroundImage(defaultMetric, for: .default)
+                        navigationBar.setBackgroundImage(compact, for: .compact)
+                    case let .barTintColor(color):
+                        navigationBar.barTintColor = color
+                    case let .isTranslucent(value):
+                        navigationBar.isTranslucent = value
+                    case let .shadowImage(image):
+                        navigationBar.shadowImage = image
+                    case let .tintColor(color):
+                        navigationBar.tintColor = color
+                    case let .titleTextAttributes(attributes):
+                        navigationBar.titleTextAttributes = attributes
+                    case let .barStyle(style):
+                        navigationBar.barStyle = style
+                    }
                 }
-            }
-            preservedNavigationBarAttributes = []
+                self.preservedNavigationBarAttributes = []
+            }, completion: nil)
         }
     }
 }
@@ -188,11 +190,25 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController))
         
         bag += innerForm.append(Spacing(height: 10))
+        
+        let coveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE))
+        coveragesSection.dynamicStyle = .sectionPlain
+        
+        bag += coveragesSection.append(KeyGearCoverage())
+        
+        bag += innerForm.append(Spacing(height: 15))
+        
+        let nonCoveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE))
+        nonCoveragesSection.dynamicStyle = .sectionPlain
+      
+        bag += nonCoveragesSection.append(KeyGearCoverage())
+        
+        bag += innerForm.append(Spacing(height: 30))
                 
-        let section = innerForm.appendSection()
-        section.dynamicStyle = .sectionPlain
+        let nameSection = innerForm.appendSection()
+        nameSection.dynamicStyle = .sectionPlain
                         
-        bag += section.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
+        bag += nameSection.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
             print("was saved")
         }
         
