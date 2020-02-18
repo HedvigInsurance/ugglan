@@ -18,7 +18,7 @@ extension MonetaryAmountFragment {
         default:
             return "\(amount) \(currency)"
         }
-        
+
         return "\(amount) \(currency)"
     }
 }

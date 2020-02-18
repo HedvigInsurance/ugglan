@@ -8,19 +8,19 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import Presentation
+import UIKit
 
 struct PresentableViewable<View: Viewable, SignalValue>: Presentable where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<SignalValue> {
     let viewable: View
     let customizeViewController: () -> UIViewController
-    
+
     func materialize() -> (UIViewController, Signal<SignalValue>) {
         let viewController = customizeViewController()
         viewController.preferredContentSize = CGSize(width: 1, height: UIScreen.main.bounds.height - 100)
         let containerView = UIView()
         viewController.view = containerView
-        
+
         return (viewController, containerView.add(viewable) { view in
             view.snp.remakeConstraints { make in
                 make.top.bottom.trailing.leading.equalToSuperview()
@@ -28,4 +28,3 @@ struct PresentableViewable<View: Viewable, SignalValue>: Presentable where View.
         })
     }
 }
-

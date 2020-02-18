@@ -61,7 +61,7 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         let keyGearPresentation = Presentation(
             keyGear,
             style: .default,
@@ -85,7 +85,7 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         if remoteConfig.keyGearEnabled {
             bag += tabBarController.presentTabs(
                 dashboardPresentation,
@@ -102,8 +102,6 @@ extension LoggedIn: Presentable {
                 profilePresentation
             )
         }
-
-        
 
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()

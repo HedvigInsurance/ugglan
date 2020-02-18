@@ -5,11 +5,11 @@
 //  Created by Sam Pettersson on 2020-01-20.
 //
 
-import Foundation
-import Flow
-import UIKit
 import Ease
+import Flow
 import Form
+import Foundation
+import UIKit
 
 struct PaymentHeaderPrice {
     let grossPriceSignal: ReadSignal<Int>
@@ -18,9 +18,9 @@ struct PaymentHeaderPrice {
 }
 
 extension PaymentHeaderPrice: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
-        
+
         let stackView = UIStackView()
         stackView.distribution = .fillProportionally
         stackView.axis = .vertical
@@ -28,7 +28,7 @@ extension PaymentHeaderPrice: Viewable {
 
         let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
         stackView.addArrangedSubview(priceLabel)
-        
+
         let grossPriceLabel = UILabel(value: "", style: TextStyle.priceBubbleGrossTitle)
         grossPriceLabel.animationSafeIsHidden = true
 
@@ -41,10 +41,10 @@ extension PaymentHeaderPrice: Viewable {
                 grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
             })
 
-        bag += monthlyNetPriceSignal.onValue({ amount in
+        bag += monthlyNetPriceSignal.onValue { amount in
             priceLabel.styledText = StyledText(text: "\(String(Int(amount))) kr", style: TextStyle.largePriceBubbleTitle.colored(.white))
             priceLabel.layoutIfNeeded()
-        })
+        }
 
         return (stackView, bag)
     }

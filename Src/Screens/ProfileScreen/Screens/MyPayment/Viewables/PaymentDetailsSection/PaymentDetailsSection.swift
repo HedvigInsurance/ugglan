@@ -36,7 +36,7 @@ extension PaymentDetailsSection: Viewable {
             footer: nil,
             style: .sectionPlain
         )
- 
+
         let grossPriceRow = KeyValueRow()
         grossPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_PRICE_LABEL)
         grossPriceRow.valueStyleSignal.value = .rowTitleDisabled

@@ -10,7 +10,7 @@ import Dispatch
 import Foundation
 
 public final class MockNetworkTransport: NetworkTransport, UploadingNetworkTransport {
-    public func upload<Operation>(operation: Operation, files: [GraphQLFile], completionHandler: @escaping (Result<GraphQLResponse<Operation>, Error>) -> Void) -> Cancellable where Operation : GraphQLOperation {
+    public func upload<Operation>(operation: Operation, files _: [GraphQLFile], completionHandler: @escaping (Result<GraphQLResponse<Operation>, Error>) -> Void) -> Cancellable where Operation: GraphQLOperation {
         DispatchQueue.global(qos: .default).async {
             completionHandler(Result {
                 GraphQLResponse(operation: operation, body: self.body)
@@ -18,9 +18,8 @@ public final class MockNetworkTransport: NetworkTransport, UploadingNetworkTrans
         }
         return MockTask()
     }
-    
-    public func send<Operation>(operation: Operation, completionHandler: @escaping (Result<GraphQLResponse<Operation>, Error>) -> Void) -> Cancellable where Operation : GraphQLOperation {
-        
+
+    public func send<Operation>(operation: Operation, completionHandler: @escaping (Result<GraphQLResponse<Operation>, Error>) -> Void) -> Cancellable where Operation: GraphQLOperation {
         DispatchQueue.global(qos: .default).async {
             completionHandler(Result {
                 GraphQLResponse(operation: operation, body: self.body)
@@ -28,7 +27,7 @@ public final class MockNetworkTransport: NetworkTransport, UploadingNetworkTrans
         }
         return MockTask()
     }
-    
+
     let body: JSONObject
 
     public init(body: JSONObject) {

@@ -25,7 +25,7 @@ extension InsuranceType {
             return false
         }
     }
-    
+
     var isApartment: Bool {
         switch self {
         case .studentBrf, .studentRent, .brf, .rent:

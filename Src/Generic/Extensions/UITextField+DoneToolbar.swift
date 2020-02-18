@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2020-02-18.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 extension UITextField {
@@ -18,7 +18,7 @@ extension UITextField {
         let done = UIBarButtonItem(title: String(key: .TOOLBAR_DONE_BUTTON), style: .navigationBarButtonPrimary)
 
         doneToolbar.items = [flexSpace, done]
-        
+
         bag += didLayoutSignal.onValue { _ in
             doneToolbar.sizeToFit()
         }
@@ -28,7 +28,7 @@ extension UITextField {
         bag += done.onValue { _ in
             self.resignFirstResponder()
         }
-    
+
         return bag
     }
 }

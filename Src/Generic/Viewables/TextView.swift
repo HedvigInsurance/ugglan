@@ -44,18 +44,18 @@ extension UITextView: SignalProvider {
         return Signal { callback in
             let bag = DisposeBag()
 
-            bag += NotificationCenter.default.signal(forName: UITextView.textDidChangeNotification, object: self).onValue({ _ in
+            bag += NotificationCenter.default.signal(forName: UITextView.textDidChangeNotification, object: self).onValue { _ in
                 callback(self.text)
-            })
+            }
 
             return bag
         }.readable(getValue: { () -> String in
-            return self.text
+            self.text
         }).writable(setValue: { newValue in
             self.text = newValue
         })
     }
-    
+
     public var didBeginEditingSignal: Signal<Void> {
         return NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
     }
@@ -67,13 +67,13 @@ extension TextView: Viewable {
         let view = UIControl()
         view.isUserInteractionEnabled = true
 
-        bag += view.traitCollectionSignal.atOnce().onValue({ trait in
+        bag += view.traitCollectionSignal.atOnce().onValue { trait in
             if trait.userInterfaceStyle == .dark {
                 view.backgroundColor = UIColor.secondaryBackground
             } else {
                 view.backgroundColor = UIColor.darkGray.lighter(amount: 0.3)
             }
-        })
+        }
 
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
@@ -100,23 +100,23 @@ extension TextView: Viewable {
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
         textView.backgroundColor = .clear
 
-        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
+        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo { (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
             textView.textContentType = textContentType
             textView.keyboardType = keyboardType ?? .default
             textView.reloadInputViews()
-        })
+        }
 
         textView.snp.remakeConstraints { make in
             make.height.equalTo(34)
         }
 
-        view.snp.makeConstraints({ make in
+        view.snp.makeConstraints { make in
             make.height.equalTo(40)
-        })
+        }
 
-        bag += textView.didBeginEditingSignal.onValue({ _ in
+        bag += textView.didBeginEditingSignal.onValue { _ in
             self.didBeginEditingCallbacker.callAll()
-        })
+        }
 
         let contentHeightSignal = ReadWriteSignal<CGFloat>(0)
 
@@ -127,9 +127,9 @@ extension TextView: Viewable {
                 make.height.equalTo(cappedContentHeight)
             }
 
-            view.snp.remakeConstraints({ make in
+            view.snp.remakeConstraints { make in
                 make.height.equalTo(cappedContentHeight + 6)
-            })
+            }
 
             textView.layoutIfNeeded()
             textView.layoutSuperviewsIfNeeded()
@@ -166,12 +166,12 @@ extension TextView: Viewable {
         bag += view.signal(for: .touchDown).filter { !textView.isFirstResponder }.onValue { _ in
             textView.becomeFirstResponder()
         }
-        
+
         return (view, Signal { callback in
             bag += textView.providedSignal.onValue { value in
                 callback(value)
             }
-            
+
             return bag
         }.readable(getValue: { textView.value }).writable(setValue: { newValue in
             placeholderLabel.alpha = newValue.isEmpty ? 1 : 0

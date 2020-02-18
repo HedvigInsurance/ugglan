@@ -30,13 +30,13 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .white : .black
         })
     }
-    
+
     static var primaryTextNeg: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .black : .white
         })
     }
-                          
+
     static let primaryTextMuted: UIColor = UIColor(dynamic: { trait -> UIColor in
         trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
     })
@@ -52,13 +52,13 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
         })
     }
-    
+
     static var tertiaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
         })
     }
-    
+
     static var regularBody: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .lightGray : .darkerGray
@@ -94,13 +94,13 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .transparent : .darkGray
         })
     }
-    
+
     static var regularCaution: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .coral500 : .coral500
         })
     }
-    
+
     static let linksRegular = UIColor.primaryTintColor
 
     static let violet100 = UIColor(red: 239.0 / 255.0, green: 232.0 / 255.0, blue: 1.0, alpha: 1.0)
@@ -138,7 +138,7 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .violet300 : .purple
         })
     }
-    
+
     static var secondaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .violet200 : .violet100

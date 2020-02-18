@@ -31,18 +31,16 @@ enum ToastSymbol: Equatable {
     case icon(_ icon: ImageAsset)
 }
 
-        
-
 struct Toast: Equatable {
     static func == (lhs: Toast, rhs: Toast) -> Bool {
         return
-                lhs.symbol == rhs.symbol &&
-                lhs.body == rhs.body &&
-                lhs.textColor == rhs.textColor &&
-                lhs.backgroundColor == rhs.backgroundColor &&
-                lhs.duration == rhs.duration
+            lhs.symbol == rhs.symbol &&
+            lhs.body == rhs.body &&
+            lhs.textColor == rhs.textColor &&
+            lhs.backgroundColor == rhs.backgroundColor &&
+            lhs.duration == rhs.duration
     }
-    
+
     let symbol: ToastSymbol
     let body: String
     let subtitle: String?
@@ -53,8 +51,9 @@ struct Toast: Equatable {
     var onTap: Signal<Void> {
         return onTapCallbacker.providedSignal
     }
+
     private let onTapCallbacker = Callbacker<Void>()
-    
+
     init(
         symbol: ToastSymbol,
         body: String,
@@ -102,11 +101,11 @@ extension Toast: Viewable {
         bag += containerView.didLayoutSignal.onValue { _ in
             containerView.layer.cornerRadius = containerView.frame.height / 2
         }
-        
+
         bag += containerView.signal(for: .touchUpInside).onValue { _ in
             self.onTapCallbacker.callAll()
         }
-        
+
         bag += containerView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
             if !self.onTapCallbacker.isEmpty {
                 containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
@@ -118,7 +117,7 @@ extension Toast: Viewable {
                 containerView.transform = CGAffineTransform.identity
             }
         }
-        
+
         containerView.backgroundColor = backgroundColor
         bag += containerView.applyShadow { trait in
             UIView.ShadowProperties(
@@ -163,12 +162,12 @@ extension Toast: Viewable {
 
         let bodyLabel = MultilineLabel(value: body, style: TextStyle.toastBody.colored(textColor))
         bag += textContainer.addArranged(bodyLabel)
-        
+
         if let subtitle = subtitle {
             let bodySubtitleLabel = MultilineLabel(value: subtitle, style: TextStyle.toastBodySubtitle.colored(subtitleColor).centerAligned)
             bag += textContainer.addArranged(bodySubtitleLabel)
         }
-        
+
         stackView.addArrangedSubview(textContainer)
 
         return (containerView, bag)
@@ -195,12 +194,12 @@ extension Toasts: Viewable {
         stackView.alignment = .center
 
         containerView.addArrangedSubview(stackView)
-        
+
         var numberOfShownToasts = 0
 
         bag += toastSignal.atOnce().compactMap { $0 }.onValue { toast in
             numberOfShownToasts = numberOfShownToasts + 1
-            
+
             bag += stackView.addArranged(toast) { toastView in
                 toastView.layer.opacity = 0
                 toastView.transform = CGAffineTransform(translationX: 0, y: -50)
@@ -244,11 +243,11 @@ extension Toasts: Viewable {
                         }.onValue { _ in
                             stackView.removeArrangedSubview(toastView)
                             toastView.removeFromSuperview()
-                            
+
                             if numberOfShownToasts == 1 {
                                 self.idleCallbacker.callAll()
                             }
-                            
+
                             numberOfShownToasts = numberOfShownToasts - 1
 
                             innerBag.dispose()

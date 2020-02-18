@@ -40,7 +40,7 @@ struct ReusableSignalViewable<View: Viewable, SignalValue>: Reusable, SignalProv
 
     static func makeAndConfigure() -> (make: UIView, configure: (Self) -> Disposable) {
         let containerView = UIView()
-        
+
         return (containerView, { anyReusable in
             let bag = DisposeBag()
 

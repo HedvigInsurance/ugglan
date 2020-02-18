@@ -48,7 +48,7 @@ extension TextStyle {
         style.color = .secondaryText
         style.font = HedvigFonts.circularStdBook!.withSize(15)
     }
-    
+
     static let toastBodySubtitle = TextStyle.body.restyled { (style: inout TextStyle) in
         style.color = .secondaryText
         style.font = HedvigFonts.circularStdBook!.withSize(12)
@@ -179,7 +179,7 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .secondaryText
     }
-    
+
     static let rowTertitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.color = .secondaryText
@@ -193,12 +193,12 @@ extension TextStyle {
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryTintColor
     }
-    
+
     static let rowValueEditableMuted = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryText
     }
-    
+
     static let rowValueEditablePlaceholder = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryTextMuted
@@ -253,131 +253,131 @@ extension TextStyle {
         style.color = .violet200
         style.lineHeight = 24
     }
-    
+
     static let draggableOverlayDescription = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .secondaryText
     }
-    
+
     static let headerLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(30)
         style.lineHeight = 32
         style.color = .primaryText
     }
-    
+
     static let headlineLargeLargeRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.lineHeight = 24
         style.alignment = .right
         style.color = .primaryText
     }
-    
+
     static let headlineLargeLargeLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryText
     }
-    
+
     static let headlineLargeNegLargeNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryTextNeg
     }
-    
+
     static let headlineLargeLargeCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryText
         style.alignment = .center
     }
-    
+
     static let headlineLargeNegLargeNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .center
     }
-    
+
     static let headlineLargeNegLargeNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.soRayExtraBold!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .right
     }
-    
+
     static let headlineMediumNegMediumNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .right
     }
-    
+
     static let headlineMediumNegMediumNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
     }
-    
+
     static let headlineMediumMediumLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryText
     }
-    
+
     static let headlineMediumMediumRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryText
         style.alignment = .right
     }
-    
+
     static let headlineMediumNegMediumNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .center
     }
-    
+
     static let headlineMediumMediumCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryText
         style.alignment = .center
     }
-    
+
     static let linksRegularCautionRegularLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
         style.letterSpacing = 0.2
         style.color = .regularCaution
     }
-    
+
     static let linksRegularRegularRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
         style.letterSpacing = 0.2
         style.color = .linksRegular
     }
-    
+
     static let headerRegularTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 18
         style.color = .primaryText
     }
-    
+
     static let linksRegularRegularLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 18
         style.color = .linksRegular
     }
-    
+
     static let bodyRegularRegularLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 18
         style.color = .regularBody
     }
-    
+
     static let bodyRegularNegRegularNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
@@ -385,7 +385,7 @@ extension TextStyle {
         style.color = .regularBody
         style.alignment = .center
     }
-    
+
     static let linksRegularRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
@@ -393,7 +393,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .center
     }
-    
+
     static let bodyRegularRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.alignment = .center
@@ -401,14 +401,14 @@ extension TextStyle {
         style.color = .regularBody
         style.letterSpacing = 0.2
     }
-    
+
     static let bodyRegularNegRegularNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.letterSpacing = 0.2
     }
-    
+
     static let bodyRegularRegularRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
@@ -416,7 +416,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .right
     }
-    
+
     static let bodyRegularNegRegularNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
@@ -424,7 +424,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .right
     }
-    
+
     static let linksRegularCautionRegularRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
@@ -432,7 +432,7 @@ extension TextStyle {
         style.color = .linksRegular
         style.alignment = .right
     }
-    
+
     static let linksRegularCautionRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(16)
         style.lineHeight = 24
@@ -440,47 +440,47 @@ extension TextStyle {
         style.color = .linksRegular
         style.alignment = .center
     }
-    
+
     static let headLineSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryText
         style.alignment = .center
     }
-    
+
     static let headlineSmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryTextNeg
         style.alignment = .right
     }
-    
+
     static let headlineSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryText
         style.alignment = .right
     }
-    
+
     static let headlineSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryText
     }
-    
+
     static let headlineSmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryTextNeg
         style.alignment = .center
     }
-    
+
     static let headlineSmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryTextNeg
     }
-    
+
     static let bodySmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -488,7 +488,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .right
     }
-    
+
     static let linksSmallCautionSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -496,7 +496,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .center
     }
-    
+
     static let bodySmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -504,7 +504,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .right
     }
-    
+
     static let linksSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -512,21 +512,21 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .center
     }
-    
+
     static let bodySmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryTextNeg
         style.letterSpacing = 0.2
     }
-    
+
     static let linksSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .linksRegular
         style.letterSpacing = 0.2
     }
-    
+
     static let bodySmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -534,14 +534,14 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .center
     }
-    
+
     static let bodySmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .regularBody
         style.letterSpacing = 0.2
     }
-    
+
     static let bodySmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -549,14 +549,14 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .center
     }
-    
+
     static let linksSmallCautionSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .regularCaution
         style.letterSpacing = 0.2
     }
-    
+
     static let linksSmallCautionSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -564,7 +564,7 @@ extension TextStyle {
         style.letterSpacing = 0.2
         style.alignment = .right
     }
-    
+
     static let linksSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.lineHeight = 20
@@ -579,7 +579,7 @@ extension TextStyle {
         style.letterSpacing = 0.1
         style.alignment = .center
     }
-    
+
     static let bodyXSmallXSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.lineHeight = 16
@@ -587,7 +587,7 @@ extension TextStyle {
         style.letterSpacing = 0.1
         style.alignment = .center
     }
-    
+
     static let bodyXSmallNegXSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.lineHeight = 16
@@ -595,21 +595,21 @@ extension TextStyle {
         style.letterSpacing = 0.1
         style.alignment = .right
     }
-    
+
     static let bodyXSmallXSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.lineHeight = 16
         style.color = .regularBody
         style.letterSpacing = 0.1
     }
-    
+
     static let bodyXSmallNegXSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.lineHeight = 16
         style.color = .primaryTextNeg
         style.letterSpacing = 0.1
     }
-    
+
     static let bodyXSmallXSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(12)
         style.lineHeight = 16
@@ -617,7 +617,7 @@ extension TextStyle {
         style.letterSpacing = 0.1
         style.alignment = .right
     }
-    
+
     static let specialTabBarActive = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(11)
         style.lineHeight = 11
@@ -631,5 +631,4 @@ extension TextStyle {
         style.color = .regularBody
         style.alignment = .center
     }
-    
 }

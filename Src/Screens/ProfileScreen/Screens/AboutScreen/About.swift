@@ -10,8 +10,8 @@ import Apollo
 import Flow
 import Form
 import Presentation
-import UIKit
 import SwiftUI
+import UIKit
 
 struct About {
     @Inject var client: ApolloClient
@@ -65,9 +65,9 @@ extension About: Presentable {
         bag += versionSection.append(versionRow) { versionRowView in
             let tapGestureRecongnizer = UITapGestureRecognizer()
             tapGestureRecongnizer.numberOfTapsRequired = 2
-                        
+
             versionRowView.viewRepresentation.addGestureRecognizer(tapGestureRecongnizer)
-            
+
             bag += tapGestureRecongnizer.signal(forState: .recognized).onValue { _ in
                 if #available(iOS 13, *) {
                     viewController.present(UIHostingController(rootView: Debug()), style: .modally(), options: [])
@@ -111,7 +111,7 @@ extension About: Presentable {
                     }
             }
         }
-        
+
         bag += form.append(Spacing(height: 20))
 
         let otherSection = form.appendSection(
@@ -119,7 +119,7 @@ extension About: Presentable {
             footerView: nil,
             style: .sectionPlain
         )
-        
+
         let languageRow = LanguageRow(
             presentingViewController: viewController
         )

@@ -8,9 +8,8 @@
 
 import Flow
 import Foundation
-import UIKit
 import Lottie
-
+import UIKit
 
 struct HappyAvatar {}
 

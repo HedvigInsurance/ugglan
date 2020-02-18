@@ -15,11 +15,11 @@ extension PHAsset {
     enum GenerateFileUploadError: Error {
         case failedToGenerateFileName, failedToGenerateMimeType, failedToGetVideoURL, failedToGetVideoData, failedToConvertHEIC
     }
-    
+
     enum ProcessImageError: Error {
         case noData, failedToConvert, notAnImage
     }
-    
+
     /// returns a UIImage when PHAsset has mediaType == .image
     var image: Future<UIImage?> {
         Future { completion in
@@ -27,7 +27,7 @@ extension PHAsset {
                 completion(.failure(ProcessImageError.notAnImage))
                 return NilDisposer()
             }
-            
+
             PHImageManager.default().requestImageData(for: self, options: nil) { data, _, _, _ in
                 guard let data = data else {
                     completion(.failure(ProcessImageError.noData))
@@ -37,10 +37,10 @@ extension PHAsset {
                     completion(.failure(ProcessImageError.failedToConvert))
                     return
                 }
-                
+
                 completion(.success(image))
             }
-         
+
             return NilDisposer()
         }
     }
@@ -85,8 +85,7 @@ extension PHAsset {
                         })
                     }
                 case .image:
-                    
-                    
+
                     guard let uti = contentInput?.uniformTypeIdentifier else {
                         completion(.failure(GenerateFileUploadError.failedToGenerateMimeType))
                         return
@@ -108,28 +107,28 @@ extension PHAsset {
                             completion(.failure(GenerateFileUploadError.failedToGenerateFileName))
                             return
                         }
-                                                
+
                         if fileName.lowercased().contains("heic") {
                             guard let image = UIImage(data: data), let jpegData = image.jpegData(compressionQuality: 0.9) else {
                                 completion(.failure(GenerateFileUploadError.failedToConvertHEIC))
                                 return
                             }
-                                                        
-                            let fileUpload = FileUpload(
-                               data: jpegData,
-                               mimeType: "image/jpeg",
-                               fileName: fileName
-                           )
 
-                           completion(.success(fileUpload))
+                            let fileUpload = FileUpload(
+                                data: jpegData,
+                                mimeType: "image/jpeg",
+                                fileName: fileName
+                            )
+
+                            completion(.success(fileUpload))
                         } else {
                             let fileUpload = FileUpload(
-                               data: data,
-                               mimeType: mimeType,
-                               fileName: fileName
-                           )
+                                data: data,
+                                mimeType: mimeType,
+                                fileName: fileName
+                            )
 
-                           completion(.success(fileUpload))
+                            completion(.success(fileUpload))
                         }
                     }
                 case .unknown:

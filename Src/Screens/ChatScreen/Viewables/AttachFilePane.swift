@@ -30,10 +30,10 @@ struct FileUpload {
     let data: Data
     let mimeType: String
     let fileName: String
-    
+
     func upload() -> Future<(key: String, bucket: String)> {
         let client: ApolloClient = Dependencies.shared.resolve()
-        
+
         let file = GraphQLFile(
             fieldName: "file",
             originalName: fileName,
@@ -93,15 +93,15 @@ extension AttachFilePane: Viewable {
 
         func uploadFile(_ fileUpload: FileUpload) -> Future<(key: String, bucket: String)> {
             let future = fileUpload.upload()
-            
-            future.onValue { (key, _) in
+
+            future.onValue { key, _ in
                 self.chatState.sendChatFileResponseMutation(
                     key: key,
                     mimeType: fileUpload.mimeType
                 )
                 self.isOpenSignal.value = false
             }
-            
+
             return future
         }
 
@@ -126,14 +126,14 @@ extension AttachFilePane: Viewable {
         }
 
         bag += view.didMoveToWindowSignal.onValue { _ in
-            view.snp.remakeConstraints({ make in
+            view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalTo(300)
-            })
+            }
         }
 
         bag += collectionKit.onValueDisposePrevious { table in
-            return DisposeBag(table.map { asset -> Disposable in
+            DisposeBag(table.map { asset -> Disposable in
                 asset.uploadFileDelegate.set { data -> Future<(key: String, bucket: String)> in
                     uploadFile(data)
                 }

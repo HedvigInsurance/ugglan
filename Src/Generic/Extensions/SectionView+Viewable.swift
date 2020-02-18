@@ -13,7 +13,7 @@ import Foundation
 extension SectionView {
     func append<V: Viewable>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == RowView,
         V.Result == Disposable,
@@ -43,7 +43,7 @@ extension SectionView {
 
     func append<V: Viewable>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == RowView,
         V.Result == Disposable,
@@ -90,7 +90,7 @@ extension SectionView {
             disposable.dispose()
         }
     }
-    
+
     func append<V: Viewable, View: UIView, SignalValue>(
         _ viewable: V,
         onCreate: @escaping (_ row: SubviewOrderable) -> Void = { _ in }
@@ -117,7 +117,7 @@ extension SectionView {
 
     func append<V: Viewable, Matter: Viewable>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == Matter,
         Matter.Matter == RowView,

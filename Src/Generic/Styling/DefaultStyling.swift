@@ -83,7 +83,7 @@ extension DefaultStyling {
         )
 
         UIBarButtonItem.appearance().tintColor = .primaryTintColor
-        
+
         let barButtonItemAppearance = UIBarButtonItem.appearance()
         barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .normal)
         barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .highlighted)
@@ -106,14 +106,14 @@ extension DefaultStyling {
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).shadowImage = UIColor.grayBorder.as1ptImage()
-            
+
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).backIndicatorImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).backIndicatorTransitionMaskImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
-            
+
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
             ).backIndicatorImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)

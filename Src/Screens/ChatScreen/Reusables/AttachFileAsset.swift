@@ -66,10 +66,10 @@ struct AttachFileAsset: Reusable {
                     loadableButton.isLoadingSignal.value = true
 
                     self.asset.fileUpload.onValue { fileUpload in
-                        self.uploadFileDelegate.call(fileUpload)?.onValue({ _ in
+                        self.uploadFileDelegate.call(fileUpload)?.onValue { _ in
                             loadableButton.isLoadingSignal.value = false
                             sendOverlayBag.dispose()
-                        })
+                        }
                     }
                 }
 

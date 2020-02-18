@@ -15,16 +15,16 @@ struct Debug: View {
         case staging = "Staging"
         case custom = "Custom"
     }
-    
+
     @State private var pickedEnvironment: EnvironmentOption
     @State private var endpointURL: String = ""
     @State private var wsEndpointURL: String = ""
     @State private var assetsEndpointURL: String = ""
     @State private var showFaultyEndpointAlert = false
-    
+
     static var environmentOptionFromTarget: EnvironmentOption {
         let targetEnvironment = ApplicationState.getTargetEnvironment()
-                
+
         switch targetEnvironment {
         case .production:
             return .production
@@ -34,7 +34,7 @@ struct Debug: View {
             return .custom
         }
     }
-    
+
     init() {
         switch ApplicationState.getTargetEnvironment() {
         case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
@@ -44,17 +44,17 @@ struct Debug: View {
         default:
             break
         }
-        
+
         _pickedEnvironment = State(initialValue: Debug.environmentOptionFromTarget)
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
                 Section {
                     Text("Which environment do you want to use?")
                     Picker(selection: $pickedEnvironment, label: Text("Which environment do you want to use?")) {
-                        ForEach(0..<EnvironmentOption.allCases.count) { index in
+                        ForEach(0 ..< EnvironmentOption.allCases.count) { index in
                             Text(EnvironmentOption.allCases[index].rawValue).tag(EnvironmentOption.allCases[index])
                         }
                     }.pickerStyle(SegmentedPickerStyle())
@@ -89,14 +89,14 @@ struct Debug: View {
                         self.showFaultyEndpointAlert = true
                         return
                     }
-                    
+
                     ApplicationState.setTargetEnvironment(.custom(
                         endpointURL: endpointURL,
                         wsEndpointURL: wsEndpointURL,
                         assetsEndpointURL: assetsEndpointURL
                     ))
                 }
-                
+
                 ApplicationState.preserveState(.marketing)
                 UIApplication.shared.appDelegate.logout()
             }))

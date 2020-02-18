@@ -33,8 +33,8 @@ extension ReferralsInvitationsTable: Viewable {
             style.form.insets = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
 
             style.section.background = trait.userInterfaceStyle == .dark ?
-                               SectionStyle.Background.standardDarkLargeIconsRoundedBorder :
-                               SectionStyle.Background.standardLightLargeIconsRoundedBorder
+                SectionStyle.Background.standardDarkLargeIconsRoundedBorder :
+                SectionStyle.Background.standardLightLargeIconsRoundedBorder
         }
 
         let tableKit = TableKit<String, InvitationsListRow>(

@@ -38,7 +38,7 @@ class RemoteConfigContainer {
     var referralsWebLandingPrefix: String {
         return remoteConfig.configValue(forKey: "Referrals_WebLanding_Prefix").stringValue ?? ""
     }
-    
+
     var keyGearEnabled: Bool {
         remoteConfig.configValue(forKey: "Key_Gear_Enabled").boolValue
     }

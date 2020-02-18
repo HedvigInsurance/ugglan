@@ -40,7 +40,7 @@ extension MyPayment: Presentable {
         bag += updatingMessageSection.append(updatingMessage)
 
         form.append(updatingMessageSection)
-        
+
         let pastPaymentsSection = PastPaymentsSection(presentingViewController: viewController)
         bag += form.append(pastPaymentsSection)
 
@@ -62,7 +62,7 @@ extension MyPayment: Presentable {
 
         bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()
-            
+
             let hasAlreadyConnected = result.data?.bankAccount != nil
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
 

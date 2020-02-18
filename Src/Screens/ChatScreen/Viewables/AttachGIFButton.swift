@@ -26,12 +26,12 @@ extension AttachGIFButton: Viewable {
 
         let icon = Icon(icon: Asset.gif, iconWidth: 20)
         control.addSubview(icon)
-        
+
         icon.snp.makeConstraints { make in
             make.width.height.equalTo(20)
             make.center.equalToSuperview()
         }
-        
+
         bag += isOpenSignal.atOnce().animated(style: AnimationStyle.linear(duration: 0.1)) { isOpen in
             if isOpen {
                 icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(45)))
@@ -43,7 +43,7 @@ extension AttachGIFButton: Viewable {
                 icon.iconWidth = 20
             }
         }
-        
+
         let touchUpInside = control.signal(for: .touchUpInside)
 
         bag += touchUpInside.feedback(type: .impactLight)

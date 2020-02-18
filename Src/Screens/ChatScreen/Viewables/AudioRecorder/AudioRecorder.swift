@@ -152,7 +152,7 @@ extension AudioRecorder: Viewable {
             let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
             let loadableSendButton = LoadableButton(button: sendButton)
 
-            bag += loadableSendButton.onTapSignal.onValue({ _ in
+            bag += loadableSendButton.onTapSignal.onValue { _ in
                 guard let fileUrl = currentAudioFileUrl.value else {
                     return
                 }
@@ -163,7 +163,7 @@ extension AudioRecorder: Viewable {
                 }
 
                 self.chatState.sendChatAudioResponse(fileUrl: fileUrl)
-            })
+            }
 
             bag += playContainer.addArranged(loadableSendButton.wrappedIn(UIStackView())) { stackView in
                 stackView.axis = .vertical

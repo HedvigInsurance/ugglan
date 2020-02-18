@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2020-02-06.
 //
 
-import Foundation
 import Firebase
-import UIKit
 import Flow
+import Foundation
+import UIKit
 
 extension UIControl {
     /// Triggers on touchUpInside and uses accessibilityLabel to trigger an analytics event
@@ -17,12 +17,12 @@ extension UIControl {
             if let accessibilityLabel = self.accessibilityLabel {
                 if let localizationKey = accessibilityLabel.localizationKey?.description {
                     Analytics.logEvent(localizationKey, parameters: [
-                        "context": "UIControl"
+                        "context": "UIControl",
                     ])
                 }
             } else if let accessibilityIdentifier = self.accessibilityIdentifier {
                 Analytics.logEvent(accessibilityIdentifier, parameters: [
-                    "context": "UIControl"
+                    "context": "UIControl",
                 ])
             }
         }

@@ -43,9 +43,9 @@ extension Marketing: Presentable {
                 case .onboard:
                     bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
                 case .login:
-                    bag += viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.defaults])).onError({ _ in
+                    bag += viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.defaults])).onError { _ in
                         pausedCallbacker.callAll(with: false)
-                    })
+                    }
                 }
             }
 
@@ -96,7 +96,7 @@ extension Marketing: Presentable {
             bag += loadingIndicatorBag
 
             loadingIndicatorBag += containerView.add(loadingIndicator)
-            
+
             func getEnvironment() -> Environment {
                 switch ApplicationState.getTargetEnvironment() {
                 case .production:

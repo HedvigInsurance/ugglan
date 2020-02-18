@@ -44,7 +44,7 @@ extension FilePickerHeader: Viewable {
 
         func processPickResult(_ result: Either<PHAsset, UIImage>) -> Disposable {
             let innerBag = DisposeBag()
-            
+
             if let asset = result.left {
                 asset.fileUpload.onValue { fileUpload in
                     self.uploadFileDelegate.call(
@@ -55,21 +55,20 @@ extension FilePickerHeader: Viewable {
                 }
             } else if let image = result.right {
                 guard let jpegData = image.jpegData(compressionQuality: 0.9) else {
-                     log.error("couldn't process image")
-                     return innerBag
-                 }
-                
+                    log.error("couldn't process image")
+                    return innerBag
+                }
+
                 let fileUpload = FileUpload(
                     data: jpegData,
                     mimeType: "image/jpeg",
                     fileName: "image.jpg"
                 )
-                
-                self.uploadFileDelegate.call(
+
+                uploadFileDelegate.call(
                     fileUpload
                 )?.onValue { _ in }
             }
-            
 
             return innerBag
         }

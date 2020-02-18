@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2020-01-30.
 //
 
-import Foundation
-import Form
-import UIKit
 import Flow
+import Form
+import Foundation
+import UIKit
 
 extension RowView {
     func append<V: Viewable, View: UIView>(
@@ -25,7 +25,7 @@ extension RowView {
         ))
 
         let bag = DisposeBag()
-            
+
         append(matter)
         onCreate(matter)
 

@@ -15,11 +15,11 @@ class UICollectionViewTagLayout: UICollectionViewFlowLayout {
         minimumLineSpacing = 10
         minimumInteritemSpacing = 10
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutAttributesForElements(
         in rect: CGRect
     ) -> [UICollectionViewLayoutAttributes]? {
@@ -38,7 +38,7 @@ class UICollectionViewTagLayout: UICollectionViewFlowLayout {
             x += attr.frame.width + minimumInteritemSpacing
             y = attr.frame.maxY
         }
-        
+
         return attributes
     }
 }

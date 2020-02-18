@@ -78,14 +78,14 @@ extension Peril: Reusable {
             perilView.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-            
+
             perilView.accessibilityLabel = peril.title
             perilView.accessibilityIdentifier = peril.id
 
             let bag = DisposeBag()
 
             let perilIcon = Icon(icon: Peril.iconAsset(for: peril.id), iconWidth: 40)
-            
+
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in
                 make.centerX.top.equalToSuperview()
@@ -105,7 +105,7 @@ extension Peril: Reusable {
 
                 titleLabel.sizeToFit()
             }
-            
+
             let touchUpInsideSignal = perilView.trackedTouchUpInsideSignal
 
             bag += touchUpInsideSignal.feedback(type: .impactLight)

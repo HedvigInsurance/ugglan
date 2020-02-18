@@ -79,9 +79,9 @@ extension Chat: Presentable {
             sectionStyle
         }
 
-        let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: DynamicFormStyle.default.restyled({ (style: inout FormStyle) in
+        let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: DynamicFormStyle.default.restyled { (style: inout FormStyle) in
             style.insets = .zero
-        }))
+        })
 
         let headerPushView = UIView()
         headerPushView.snp.makeConstraints { make in

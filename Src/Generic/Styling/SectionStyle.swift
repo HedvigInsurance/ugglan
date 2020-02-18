@@ -358,7 +358,7 @@ extension SectionStyle {
 }
 
 extension DynamicFormStyle {
-    static let `default` = DynamicFormStyle { trait -> FormStyle in
+    static let `default` = DynamicFormStyle { _ -> FormStyle in
         FormStyle(insets: UIEdgeInsets(horizontalInset: 20, verticalInset: 15))
     }
 }
@@ -367,9 +367,9 @@ extension DynamicSectionStyle {
     static let sectionPlainRounded = DynamicSectionStyle { trait -> SectionStyle in
         trait.userInterfaceStyle == .dark ? .sectionPlainDarkRoundedBorder : .sectionPlainLightRoundedBorder
     }
-    
+
     static let sectionPlain = DynamicSectionStyle { trait -> SectionStyle in
-        return Self.sectionPlainRounded.styleGenerator(trait)
+        Self.sectionPlainRounded.styleGenerator(trait)
     }
 
     static let sectionPlainLargeIcons = DynamicSectionStyle { trait -> SectionStyle in

@@ -36,7 +36,7 @@ extension OfferBubbles: Viewable {
         bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
             containerView.transform = CGAffineTransform(
                 translationX: 0,
-                y: (contentOffset.y / 5)
+                y: contentOffset.y / 5
             )
         }
 
