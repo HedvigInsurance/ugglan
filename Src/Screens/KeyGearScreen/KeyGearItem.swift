@@ -139,6 +139,18 @@ extension KeyGearItem: Presentable {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .primaryBackground
         
+        bag += scrollView.scrollToRevealFirstResponder({ view -> UIEdgeInsets in
+            let rowInsets = alignToRow(view)
+            
+            return UIEdgeInsets(
+                top: rowInsets.top,
+                left: rowInsets.left,
+                bottom: rowInsets.bottom - 20,
+                right: rowInsets.right
+            )
+        })
+        bag += scrollView.adjustInsetsForKeyboard()
+        
         let form = FormView()
         
         bag += form.didLayoutSignal.take(first: 1).onValue { _ in
@@ -147,7 +159,7 @@ extension KeyGearItem: Presentable {
             })
         }
         
-        bag += viewController.install(form, scrollView: scrollView)
+        bag += viewController.install(form, options: [], scrollView: scrollView)
         
         let imagesSignal = dataSignal.map { $0.photos.compactMap { $0.file.preSignedUrl }}.compactMap { $0.compactMap { URL(string: $0) } }.readable(initial: [])
         

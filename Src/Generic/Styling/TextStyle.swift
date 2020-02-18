@@ -196,6 +196,11 @@ extension TextStyle {
     
     static let rowValueEditableMuted = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
+        style.color = .primaryText
+    }
+    
+    static let rowValueEditablePlaceholder = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.circularStdBook!.withSize(17)
         style.color = .primaryTextMuted
     }
 

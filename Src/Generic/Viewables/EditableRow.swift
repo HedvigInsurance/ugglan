@@ -27,6 +27,8 @@ extension EditableRow: Viewable {
             placeholder: placeholderSignal.value,
             style: .default
         )
+        textField.autocorrectionType = .no
+        
         bag += placeholderSignal.atOnce().bindTo(textField, \.placeholder)
         bag += valueSignal.atOnce().bindTo(textField, \.value)
         
@@ -56,9 +58,12 @@ extension EditableRow: Viewable {
         bag += row.append(
             button
         )
-        
+                
         return (row, Signal { callback in
-            bag += button.onTapSignal.onValue { _ in
+            bag += merge(
+                textField.signal(for: .primaryActionTriggered),
+                button.onTapSignal
+            ).onValue { _ in
               if textField.isFirstResponder {
                 callback(textField.value)
                   textField.resignFirstResponder()

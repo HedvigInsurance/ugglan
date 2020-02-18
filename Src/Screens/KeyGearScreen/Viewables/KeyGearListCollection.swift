@@ -36,10 +36,13 @@ extension KeyGearListCollection: Viewable {
         )
         collectionKit.view.backgroundColor = .transparent
         
+        
         bag += collectionKit.view.didLayoutSignal.onValue { _ in
-            collectionKit.view.snp.makeConstraints { make in
-                make.height.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.height)
-            }
+           collectionKit.view.snp.updateConstraints { make in
+               make.height.equalTo(
+                   collectionKit.view.collectionViewLayout.collectionViewContentSize.height
+               )
+           }
         }
         
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
@@ -74,7 +77,6 @@ extension KeyGearListCollection: Viewable {
                     switch (value) {
                     case let .left(row):
                         bag += row.onValue { _ in
-                            print("hello")
                             callback(.row(id: row.id))
                         }
                     case .right:

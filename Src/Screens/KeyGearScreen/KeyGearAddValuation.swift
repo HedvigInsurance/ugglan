@@ -22,6 +22,8 @@ struct PurchasePrice: Viewable {
         let textField = UITextField(value: "", placeholder: "0", style: .defaultRight)
         textField.keyboardType = .numeric
         
+        bag += textField.addDoneToolbar()
+        
         row.append(textField)
         
         return (row, bag)
@@ -44,7 +46,7 @@ struct DatePicker: Viewable {
         
         mainRowContainerView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_YEARMONTH_PICKER_TITLE), style: .headlineMediumMediumLeft))
         
-        let value = UILabel(value: "", style: .rowValueEditableRight)
+        let value = UILabel(value: Date().localDateString ?? "", style: .rowValueEditableRight)
         mainRowContainerView.addArrangedSubview(value)
         
         let picker = UIDatePicker()
@@ -53,12 +55,18 @@ struct DatePicker: Viewable {
         picker.isHidden = true
         containerView.addArrangedSubview(picker)
         
+        picker.snp.makeConstraints { make in
+            make.height.equalTo(216)
+        }
+        
         bag += picker.onValue { date in
             value.value = date.localDateString ?? ""
         }
         
         bag += events.onSelect.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
             picker.isHidden = !picker.isHidden
+            picker.layoutSuperviewsIfNeeded()
+            picker.layoutIfNeeded()
             picker.alpha = picker.isHidden ? 0 : 1
         })
         

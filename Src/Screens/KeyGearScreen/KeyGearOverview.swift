@@ -36,7 +36,6 @@ struct KeyGearOverview {
                 }
                 
                 func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-                    print("hello", session)
                     
                     if session.isPaired {
                         print("have an apple watch")
