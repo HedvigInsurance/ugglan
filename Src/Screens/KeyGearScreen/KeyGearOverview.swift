@@ -71,10 +71,10 @@ extension KeyGearOverview: Presentable {
             switch result {
             case .add:
                 viewController.present(AddKeyGearItem(), style: .modally()).onValue { id in
-                    viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never)])
+                    viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never), .autoPop])
                 }
             case let .row(id):
-                viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never)])
+                viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never), .autoPop])
             }
         }
 

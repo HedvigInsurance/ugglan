@@ -56,7 +56,11 @@ extension KeyGearListCollection: Viewable {
 
             var rows: [KeyGearListCollectionRow] = items.compactMap { $0 }.map { item in
                 let photo = item.photos.first
-                return .make(KeyGearListItem(id: item.id, imageUrl: URL(string: photo?.file.preSignedUrl), wasAddedAutomatically: true))
+                return .make(KeyGearListItem(
+                    id: item.id,
+                    imageUrl: URL(string: photo?.file.preSignedUrl),
+                    wasAddedAutomatically: item.physicalReferenceHash != nil
+                ))
             }
 
             rows.insert(.make(addButton), at: 0)

@@ -15,23 +15,74 @@ import UIKit
 struct KeyGearItem {
     let id: String
     @Inject var client: ApolloClient
+    
+    func getGradientImage(gradientLayer: CAGradientLayer) -> UIImage? {
+        var gradientImage: UIImage?
+        UIGraphicsBeginImageContext(gradientLayer.frame.size)
+
+        if let context = UIGraphicsGetCurrentContext() {
+            gradientLayer.render(in: context)
+            gradientImage = UIGraphicsGetImageFromCurrentImageContext()?.resizableImage(withCapInsets: UIEdgeInsets.zero, resizingMode: .stretch)
+        }
+
+        UIGraphicsEndImageContext()
+
+        return gradientImage
+    }
+    
+    func addNavigationBar(
+        scrollView: UIScrollView,
+        viewController: UIViewController
+    ) -> (Disposable, UINavigationBar) {
+        let bag = DisposeBag()
+
+        let navigationBar = UINavigationBar()
+
+        navigationBar.items = [viewController.navigationItem]
+        
+        navigationBar.tintColor = UIColor.clear
+        navigationBar.barTintColor = UIColor.clear
+        navigationBar.backIndicatorImage = Asset.backButtonWhite.image
+        navigationBar.isTranslucent = true
+        navigationBar.shadowImage = UIImage()
+        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBar.barStyle = .blackTranslucent
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.setBackgroundImage(UIImage(), for: .compact)
+
+       let gradient = CAGradientLayer()
+       gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+       gradient.startPoint = CGPoint(x: 0, y: 0)
+       gradient.endPoint = CGPoint(x: 0, y: 1)
+        
+        let gradientView = UIView()
+        gradientView.layer.addSublayer(gradient)
+        viewController.view.addSubview(gradientView)
+        
+        bag += gradientView.didLayoutSignal.onValue { _ in
+            gradient.frame = gradientView.frame
+            
+            gradientView.snp.makeConstraints { make in
+                make.height.equalTo(navigationBar).offset(gradientView.safeAreaInsets.top)
+                make.trailing.leading.equalToSuperview()
+            }
+        }
+        
+        viewController.view.addSubview(navigationBar)
+
+        navigationBar.snp.makeConstraints { make in
+            make.top.equalTo(viewController.view.safeAreaLayoutGuide.snp.top)
+            make.trailing.equalTo(viewController.view.safeAreaLayoutGuide.snp.trailing)
+            make.leading.equalTo(viewController.view.safeAreaLayoutGuide.snp.leading)
+        }
+
+        return (bag, navigationBar)
+    }
 
     class KeyGearItemViewController: UIViewController {
         override var preferredStatusBarStyle: UIStatusBarStyle {
             return .lightContent
         }
-
-        enum PreservedNavigationBarAttributes {
-            case backgroundImage(compact: UIImage?, defaultMetric: UIImage?)
-            case barTintColor(color: UIColor?)
-            case isTranslucent(value: Bool)
-            case shadowImage(image: UIImage?)
-            case tintColor(color: UIColor)
-            case titleTextAttributes(attributes: [NSAttributedString.Key: Any]?)
-            case barStyle(style: UIBarStyle)
-        }
-
-        var preservedNavigationBarAttributes: [PreservedNavigationBarAttributes] = []
 
         init() {
             super.init(nibName: nil, bundle: nil)
@@ -41,78 +92,13 @@ struct KeyGearItem {
             fatalError("init(coder:) has not been implemented")
         }
 
-        override func viewWillAppear(_: Bool) {
-            let navigationBar = navigationController!.navigationBar
-
-            preservedNavigationBarAttributes.append(.backgroundImage(compact: navigationBar.backgroundImage(for: .compact), defaultMetric: navigationBar.backgroundImage(for: .default)))
-            preservedNavigationBarAttributes.append(.barTintColor(color: navigationBar.barTintColor))
-            preservedNavigationBarAttributes.append(.isTranslucent(value: navigationBar.isTranslucent))
-            preservedNavigationBarAttributes.append(.shadowImage(image: navigationBar.shadowImage))
-            preservedNavigationBarAttributes.append(.tintColor(color: navigationBar.tintColor))
-            preservedNavigationBarAttributes.append(.titleTextAttributes(attributes: navigationBar.titleTextAttributes))
-            preservedNavigationBarAttributes.append(.barStyle(style: navigationBar.barStyle))
-
-            navigationBar.tintColor = UIColor.white
-            navigationBar.backIndicatorImage = Asset.backButtonWhite.image
-            navigationBar.barTintColor = UIColor.transparent
-            navigationBar.isTranslucent = true
-            navigationBar.shadowImage = UIImage()
-            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-            navigationBar.barStyle = .black
-
-            let gradient = CAGradientLayer()
-            var bounds = navigationBar.bounds
-            bounds.size.height += UIApplication.shared.statusBarFrame.size.height
-            gradient.frame = bounds
-            gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
-            gradient.startPoint = CGPoint(x: 0, y: 0)
-            gradient.endPoint = CGPoint(x: 0, y: 1)
-
-            if let image = getGradientImage(gradientLayer: gradient) {
-                navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
-                navigationBar.setBackgroundImage(image, for: .compact)
-            }
+        override func viewWillAppear(_ animated: Bool) {
+            navigationController?.setNavigationBarHidden(true, animated: animated)
+            navigationController?.interactivePopGestureRecognizer?.delegate = nil
         }
 
-        func getGradientImage(gradientLayer: CAGradientLayer) -> UIImage? {
-            var gradientImage: UIImage?
-            UIGraphicsBeginImageContext(gradientLayer.frame.size)
-
-            if let context = UIGraphicsGetCurrentContext() {
-                gradientLayer.render(in: context)
-                gradientImage = UIGraphicsGetImageFromCurrentImageContext()?.resizableImage(withCapInsets: UIEdgeInsets.zero, resizingMode: .stretch)
-            }
-
-            UIGraphicsEndImageContext()
-
-            return gradientImage
-        }
-
-        override func viewWillDisappear(_: Bool) {
-            let navigationBar = navigationController!.navigationBar
-
-            UIView.transition(with: navigationBar, duration: 0.35, options: [], animations: {
-                self.preservedNavigationBarAttributes.forEach { attribute in
-                    switch attribute {
-                    case let .backgroundImage(compact, defaultMetric):
-                        navigationBar.setBackgroundImage(defaultMetric, for: .default)
-                        navigationBar.setBackgroundImage(compact, for: .compact)
-                    case let .barTintColor(color):
-                        navigationBar.barTintColor = color
-                    case let .isTranslucent(value):
-                        navigationBar.isTranslucent = value
-                    case let .shadowImage(image):
-                        navigationBar.shadowImage = image
-                    case let .tintColor(color):
-                        navigationBar.tintColor = color
-                    case let .titleTextAttributes(attributes):
-                        navigationBar.titleTextAttributes = attributes
-                    case let .barStyle(style):
-                        navigationBar.barStyle = style
-                    }
-                }
-                self.preservedNavigationBarAttributes = []
-            }, completion: nil)
+        override func viewWillDisappear(_ animated: Bool) {
+            navigationController?.setNavigationBarHidden(false, animated: animated)
         }
     }
 }
@@ -127,7 +113,17 @@ extension KeyGearItem: Presentable {
         optionsButton.image = Asset.menuIcon.image
 
         viewController.navigationItem.rightBarButtonItem = optionsButton
+        
+        let backButton = UIButton(type: .custom)
+        backButton.setImage(Asset.backButtonWhite.image, for: .normal)
+        backButton.tintColor = .white
 
+        viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
+        
+        let view = UIView()
+        view.backgroundColor = .primaryBackground
+        viewController.view = view
+        
         let dataSignal = client.watch(query: KeyGearItemQuery(id: id)).compactMap { $0.data?.keyGearItem }
 
         bag += dataSignal.onValue { data in
@@ -135,7 +131,12 @@ extension KeyGearItem: Presentable {
         }
 
         let scrollView = UIScrollView()
+        view.addSubview(scrollView)
         scrollView.backgroundColor = .primaryBackground
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
 
         bag += scrollView.scrollToRevealFirstResponder { view -> UIEdgeInsets in
             let rowInsets = alignToRow(view)
@@ -157,7 +158,7 @@ extension KeyGearItem: Presentable {
             }
         }
 
-        bag += viewController.install(form, options: [], scrollView: scrollView)
+        scrollView.embedView(form, scrollAxis: .vertical)
 
         let imagesSignal = dataSignal.map { $0.photos.compactMap { $0.file.preSignedUrl } }.compactMap { $0.compactMap { URL(string: $0) } }.readable(initial: [])
 
@@ -220,6 +221,12 @@ extension KeyGearItem: Presentable {
         bag += nameSection.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
             print("was saved")
         }
+        
+        let (navigationBarBag, navigationBar) = addNavigationBar(
+            scrollView: scrollView,
+            viewController: viewController
+        )
+        bag += navigationBarBag
 
         return (viewController, Future { completion in
             bag += optionsButton.onValue {
@@ -232,8 +239,12 @@ extension KeyGearItem: Presentable {
                     }),
                 ]), style: .sheet())
             }
+            
+            bag += backButton.onValue { _ in
+                completion(.success)
+            }
 
-            return bag
+            return DelayedDisposer(bag, delay: 2.0)
         })
     }
 }
