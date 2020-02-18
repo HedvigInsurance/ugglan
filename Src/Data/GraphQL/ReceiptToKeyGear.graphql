@@ -1,0 +1,8 @@
+mutation ReceiptToKeyGear($key: String!, $bucket: String!) {
+    addReceiptToKeyGearItem(input: {
+        file: {
+            key: $key
+            bucket: $bucket
+        }
+    })
+}
