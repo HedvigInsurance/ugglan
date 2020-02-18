@@ -46,6 +46,7 @@ struct DirectDebitSetup {
     }
 }
 
+
 extension DirectDebitSetup: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
@@ -67,12 +68,20 @@ extension DirectDebitSetup: Presentable {
 
         let dismissButton = makeDismissButton()
 
+        
+        let userContentController = WKUserContentController()
+
         let webViewConfiguration = WKWebViewConfiguration()
+        webViewConfiguration.userContentController = userContentController
+        webViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
 
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
         webView.backgroundColor = .offWhite
         webView.isOpaque = false
+        
+        let userController = WKUserContentController()
+        userController.add(TrustlyWKScriptOpenURLScheme(webView: webView), name: TrustlyWKScriptOpenURLScheme.NAME)
 
         viewController.view = webView
 
@@ -159,6 +168,8 @@ extension DirectDebitSetup: Presentable {
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                         data.directDebitStatus = .pending
                     })
+                    
+                    AnalyticsCoordinator().logAddPaymentInfo()
 
                     ClearDirectDebitStatus.clear()
                 case .failure:

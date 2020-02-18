@@ -11,6 +11,10 @@ import Presentation
 import UIKit
 import UserNotifications
 
+enum PushNotificationsRegisterError: Error {
+    case canceled
+}
+
 struct PushNotificationsRegister: Presentable {
     let title: String
     let message: String
@@ -36,13 +40,13 @@ struct PushNotificationsRegister: Presentable {
                 Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_OK), action: {
                     UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
                 }),
-                Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW), action: {
-                    ()
+                Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW), style: .cancel, action: {
+                    throw PushNotificationsRegisterError.canceled
                 }),
             ]
         )
 
         let (viewController, future) = alert.materialize()
-        return (viewController, future)
+        return (viewController, future.flatMap { $0 })
     }
 }
