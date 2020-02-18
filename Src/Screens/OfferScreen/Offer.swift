@@ -205,9 +205,9 @@ extension Offer: Presentable {
 
         bag += stackView.addArranged(OfferCoverageTerms(insuredAtOtherCompanySignal: insuredAtOtherCompanySignal))
 
-        bag += stackView.addArranged(WhenEnabled(insuredAtOtherCompanySignal) {
+        bag += stackView.addArranged(WhenEnabled(insuredAtOtherCompanySignal, {
             OfferCoverageSwitcher()
-        })
+        }))
 
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
 
