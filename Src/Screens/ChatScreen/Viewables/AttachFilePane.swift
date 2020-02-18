@@ -30,6 +30,31 @@ struct FileUpload {
     let data: Data
     let mimeType: String
     let fileName: String
+
+    func upload() -> Future<(key: String, bucket: String)> {
+        let client: ApolloClient = Dependencies.shared.resolve()
+
+        let file = GraphQLFile(
+            fieldName: "file",
+            originalName: fileName,
+            mimeType: mimeType,
+            data: data
+        )
+
+        return Future { completion in
+            client.upload(
+                operation: UploadFileMutation(file: "image"),
+                files: [file],
+                queue: DispatchQueue.global(qos: .background)
+            ).onValue { result in
+                guard let key = result.data?.uploadFile.key else {
+                    return
+                }
+
+                completion(.success((key, "hedvig-app-uploads-staging")))
+            }.disposable
+        }
+    }
 }
 
 extension AttachFilePane: Viewable {
@@ -66,38 +91,23 @@ extension AttachFilePane: Viewable {
             return CGSize(width: height, height: height)
         }
 
-        func uploadFile(_ fileUpload: FileUpload) -> Signal<Bool> {
-            let file = GraphQLFile(
-                fieldName: "file",
-                originalName: fileUpload.fileName,
-                mimeType: fileUpload.mimeType,
-                data: fileUpload.data
-            )
+        func uploadFile(_ fileUpload: FileUpload) -> Future<(key: String, bucket: String)> {
+            let future = fileUpload.upload()
 
-            return Signal<Bool> { callbacker in
-                self.client.upload(
-                    operation: UploadFileMutation(file: "image"),
-                    files: [file],
-                    queue: DispatchQueue.global(qos: .background)
-                ).onValue { result in
-                    guard let key = result.data?.uploadFile.key else {
-                        return
-                    }
-
-                    self.chatState.sendChatFileResponseMutation(
-                        key: key,
-                        mimeType: fileUpload.mimeType
-                    )
-
-                    callbacker(true)
-                    self.isOpenSignal.value = false
-                }.disposable
+            future.onValue { key, _ in
+                self.chatState.sendChatFileResponseMutation(
+                    key: key,
+                    mimeType: fileUpload.mimeType
+                )
+                self.isOpenSignal.value = false
             }
+
+            return future
         }
 
         let header = FilePickerHeader()
 
-        bag += header.uploadFileDelegate.set { fileUpload -> Signal<Bool> in
+        bag += header.uploadFileDelegate.set { fileUpload -> Future<(key: String, bucket: String)> in
             uploadFile(fileUpload)
         }
 
@@ -116,15 +126,15 @@ extension AttachFilePane: Viewable {
         }
 
         bag += view.didMoveToWindowSignal.onValue { _ in
-            view.snp.remakeConstraints({ make in
+            view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalTo(300)
-            })
+            }
         }
 
         bag += collectionKit.onValueDisposePrevious { table in
-            return DisposeBag(table.map { asset -> Disposable in
-                asset.uploadFileDelegate.set { data -> Signal<Bool> in
+            DisposeBag(table.map { asset -> Disposable in
+                asset.uploadFileDelegate.set { data -> Future<(key: String, bucket: String)> in
                     uploadFile(data)
                 }
             })

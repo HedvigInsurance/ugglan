@@ -46,4 +46,3 @@ extension LanguageRow: Previewable {
         return (LanguageSwitcher(), [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }
-

@@ -64,7 +64,7 @@ extension ReferralsReceiverConsent: Presentable {
                 view.snp.makeConstraints { make in
                     make.top.bottom.trailing.leading.equalToSuperview()
                 }
-            }.onValue({ result in
+            }.onValue { result in
                 switch result {
                 case .accept:
                     self.client.perform(mutation: RedeemCodeMutation(code: self.referralCode))
@@ -84,7 +84,7 @@ extension ReferralsReceiverConsent: Presentable {
                 case .decline:
                     completion(.success(.decline))
                 }
-            })
+            }
 
             return DelayedDisposer(bag, delay: 2)
         })

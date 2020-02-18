@@ -62,11 +62,11 @@ extension ApolloClient {
         Dependencies.shared.add(module: Module { () -> ApolloStore in
             store
         })
-        
+
         Dependencies.shared.add(module: Module { () -> ApolloEnvironmentConfig in
             environment
         })
-        
+
         return (store, client)
     }
 
@@ -114,7 +114,7 @@ extension ApolloClient {
                     self.saveToken(token: token)
                 }
 
-                let _ = self.createClient(
+                _ = self.createClient(
                     token: result.data?.createSession
                 )
 
@@ -141,7 +141,7 @@ extension ApolloClient {
                     }
                 }
             } else {
-                let _ = self.createClient(token: tokenData!.token)
+                _ = self.createClient(token: tokenData!.token)
                 completion(.success)
             }
 

@@ -75,15 +75,15 @@ extension RemoteVectorIcon: Viewable {
             let image = renderer.image(actions: { context in
                 render(context.cgContext)
             })
-            
+
             DispatchQueue.main.async {
                 imageView.image = image
             }
-            
+
             finishedLoadingCallback.callAll()
         }
 
-        bag += imageView.didLayoutSignal.map { return imageView.bounds.size }.filter { $0.width != 0 && $0.height != 0 }.distinct()
+        bag += imageView.didLayoutSignal.map { imageView.bounds.size }.filter { $0.width != 0 && $0.height != 0 }.distinct()
             .withLatestFrom(pdfDocumentSignal.atOnce().plain().compactMap { $0 })
             .onValue { _, pdfDocument in
                 renderPdfDocument(pdfDocument: pdfDocument)

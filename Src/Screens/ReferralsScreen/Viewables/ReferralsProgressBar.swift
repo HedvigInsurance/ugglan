@@ -459,7 +459,7 @@ extension ReferralsProgressBar: Viewable {
         let bag = DisposeBag()
 
         let scene = SCNScene()
-        
+
         bag += view.traitCollectionSignal.atOnce().onValue { _ in
             scene.background.contents = UIColor.primaryBackground
         }

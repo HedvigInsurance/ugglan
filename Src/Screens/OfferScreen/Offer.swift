@@ -27,7 +27,7 @@ extension Offer {
             viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
         }
     }
-    
+
     static var primaryAccentColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .primaryBackground : .midnight500
@@ -121,9 +121,9 @@ extension Offer {
             .fetch(query: OfferQuery())
             .valueSignal
             .compactMap { $0.data?.insurance }
-            .atValue({ insurance in
+            .atValue { insurance in
                 addressLabel.text = insurance.address
-            })
+            }
             .animated(style: AnimationStyle.easeOut(duration: 0.25, delay: 0.65)) { _ in
                 navigationBar.alpha = 1
                 navigationBar.transform = CGAffineTransform.identity
@@ -177,10 +177,10 @@ extension Offer: Presentable {
 
         bag += insuranceSignal
             .bindTo(offerBubbles.insuranceSignal)
-        
+
         let startDateButton = OfferStartDateButton(containerScrollView: scrollView, presentingViewController: viewController)
         bag += stackView.addArranged(startDateButton)
-        
+
         bag += stackView.addArranged(Spacing(height: 16))
 
         let offerDiscount = OfferDiscount(containerScrollView: scrollView, presentingViewController: viewController)
@@ -205,9 +205,9 @@ extension Offer: Presentable {
 
         bag += stackView.addArranged(OfferCoverageTerms(insuredAtOtherCompanySignal: insuredAtOtherCompanySignal))
 
-        bag += stackView.addArranged(WhenEnabled(insuredAtOtherCompanySignal, {
+        bag += stackView.addArranged(WhenEnabled(insuredAtOtherCompanySignal) {
             OfferCoverageSwitcher()
-        }))
+        })
 
         bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
 
@@ -241,7 +241,7 @@ extension Offer: Presentable {
         }
 
         bag += view.add(button) { buttonView in
-            bag += buttonView.applyShadow({ _ in
+            bag += buttonView.applyShadow { _ in
                 UIView.ShadowProperties(
                     opacity: 0.1,
                     offset: CGSize(width: 0, height: 2),
@@ -249,12 +249,12 @@ extension Offer: Presentable {
                     color: UIColor.primaryShadowColor,
                     path: nil
                 )
-            })
+            }
 
-            buttonView.snp.makeConstraints({ make in
+            buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).priority(.high)
                 make.bottom.lessThanOrEqualTo(-20).priority(.required)
-            })
+            }
 
             buttonView.transform = CGAffineTransform(
                 translationX: 0,
@@ -273,10 +273,10 @@ extension Offer: Presentable {
             }
         }
 
-        scrollView.snp.makeConstraints({ make in
+        scrollView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom)
             make.trailing.leading.bottom.equalToSuperview()
-        })
+        }
 
         return (viewController, bag)
     }

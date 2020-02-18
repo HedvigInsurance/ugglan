@@ -31,6 +31,16 @@ extension UIColor {
         })
     }
 
+    static var primaryTextNeg: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .black : .white
+        })
+    }
+
+    static let primaryTextMuted: UIColor = UIColor(dynamic: { trait -> UIColor in
+        trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+    })
+
     static var secondaryText: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .white : .offBlack
@@ -40,6 +50,18 @@ extension UIColor {
     static var tertiaryText: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+        })
+    }
+
+    static var tertiaryBackground: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+        })
+    }
+
+    static var regularBody: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .lightGray : .darkerGray
         })
     }
 
@@ -73,8 +95,19 @@ extension UIColor {
         })
     }
 
+    static var regularCaution: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .coral500 : .coral500
+        })
+    }
+
+    static let linksRegular = UIColor.primaryTintColor
+
+    static let violet100 = UIColor(red: 239.0 / 255.0, green: 232.0 / 255.0, blue: 1.0, alpha: 1.0)
     static let violet200 = UIColor(red: 193.0 / 255.0, green: 165.0 / 255.0, blue: 1.0, alpha: 1.0)
+    static let violet500 = UIColor(red: 101.0 / 255.0, green: 30.0 / 255.0, blue: 162.0, alpha: 1.0)
     static let coral700 = UIColor(red: 0.80, green: 0.43, blue: 0.40, alpha: 1.0)
+    static let coral500 = UIColor(red: 255.0 / 255.0, green: 138.0 / 255.0, blue: 128.0 / 255.0, alpha: 1.0)
     static let midnight700 = UIColor(red: 12.0 / 255.0, green: 0.0, blue: 97.0 / 255.0, alpha: 1.0)
     static let midnight500 = UIColor(red: 15.0 / 255.0, green: 0.0, blue: 122.0 / 255.0, alpha: 1.0)
     static let transparent = UIColor.white.withAlphaComponent(0)
@@ -85,6 +118,7 @@ extension UIColor {
     static let purple = UIColor(red: 0.40, green: 0.12, blue: 1.00, alpha: 1.0)
     static let blackPurple = UIColor(red: 0.03, green: 0.02, blue: 0.27, alpha: 1.0)
     static let darkPurple = UIColor(red: 0.06, green: 0.00, blue: 0.48, alpha: 1.0)
+    static let darkerGray = UIColor(red: 0.34, green: 0.34, blue: 0.34, alpha: 1.0)
     static let darkGray = UIColor(red: 0.61, green: 0.61, blue: 0.67, alpha: 1.0)
     static let lightGray = UIColor(red: 0.91, green: 0.93, blue: 0.94, alpha: 1.0)
     static let offLightGray = UIColor(red: 0.89, green: 0.90, blue: 0.92, alpha: 1.0)
@@ -103,6 +137,12 @@ extension UIColor {
     static var primaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .violet300 : .purple
+        })
+    }
+
+    static var secondaryTintColor: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .violet200 : .violet100
         })
     }
 

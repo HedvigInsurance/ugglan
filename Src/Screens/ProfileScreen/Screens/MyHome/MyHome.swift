@@ -29,9 +29,9 @@ extension MyHome: Presentable {
 
         let addressCircle = AddressCircle()
         bag += form.prepend(addressCircle)
-        
+
         let rowTitle = UILabel(value: String(key: .MY_HOME_SECTION_TITLE), style: .rowTitle)
-        
+
         bag += form.append(InsuranceSummarySection(headerView: rowTitle))
 
         bag += form.append(Spacing(height: 20))

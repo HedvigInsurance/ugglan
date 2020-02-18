@@ -31,6 +31,6 @@ extension String {
             UIColor.yellow,
         ]
 
-        return colors[abs(self.deterministicHash) % colors.count]
+        return colors[abs(deterministicHash) % colors.count]
     }
 }

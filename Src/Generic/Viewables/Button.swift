@@ -325,7 +325,7 @@ extension Button: Viewable {
         let iconImageView = UIImageView()
         button.addSubview(iconImageView)
 
-        bag += type.atOnce().onValue({ type in
+        bag += type.atOnce().onValue { type in
             if let icon = type.icon {
                 iconImageView.isHidden = false
                 iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
@@ -372,7 +372,7 @@ extension Button: Viewable {
             } else {
                 iconImageView.isHidden = true
             }
-        })
+        }
 
         bag += title.atOnce().withLatestFrom(type).onValueDisposePrevious { title, type in
             let innerBag = DisposeBag()
@@ -394,9 +394,9 @@ extension Button: Viewable {
 
         bag += button.signal(for: .touchDown).filter { self.animate }
             .withLatestFrom(highlightedStyleSignal.atOnce().plain())
-            .map({ _, highlightedStyleSignalValue -> ButtonStyle in
+            .map { _, highlightedStyleSignalValue -> ButtonStyle in
                 highlightedStyleSignalValue
-            }).bindTo(
+            }.bindTo(
                 transition: button,
                 style: TransitionStyle.crossDissolve(duration: 0.25),
                 button,
@@ -423,7 +423,9 @@ extension Button: Viewable {
 
         bag += touchUpInside.withLatestFrom(title.atOnce().plain()).onValue { _, title in
             if let localizationKey = title.localizationKey?.description {
-                Analytics.logEvent("tap_\(localizationKey)", parameters: nil)
+                Analytics.logEvent(localizationKey, parameters: [
+                    "context": "Button",
+                ])
             }
         }
 

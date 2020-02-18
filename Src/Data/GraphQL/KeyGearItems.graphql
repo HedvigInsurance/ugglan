@@ -1,0 +1,24 @@
+query KeyGearItems {
+    keyGearItemsSimple(where: { deleted: false }) {
+        id
+        deleted
+        physicalReferenceHash
+        photos {
+            id
+            file {
+                preSignedUrl
+            }
+        }
+        category
+        receipts {
+            id
+            file {
+                preSignedUrl
+            }
+        }
+        purchasePrice {
+            ...MonetaryAmountFragment
+        }
+        timeOfPurchase
+    }
+}

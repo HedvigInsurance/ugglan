@@ -9,8 +9,8 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import SafariServices
+import UIKit
 
 struct OfferTermsLinks {
     @Inject var client: ApolloClient

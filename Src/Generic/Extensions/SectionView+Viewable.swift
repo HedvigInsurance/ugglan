@@ -13,7 +13,7 @@ import Foundation
 extension SectionView {
     func append<V: Viewable>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == RowView,
         V.Result == Disposable,
@@ -43,7 +43,7 @@ extension SectionView {
 
     func append<V: Viewable>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == RowView,
         V.Result == Disposable,
@@ -91,9 +91,33 @@ extension SectionView {
         }
     }
 
+    func append<V: Viewable, View: UIView, SignalValue>(
+        _ viewable: V,
+        onCreate: @escaping (_ row: SubviewOrderable) -> Void = { _ in }
+    ) -> V.Result where
+        V.Matter == View,
+        V.Result == Signal<SignalValue>,
+        V.Events == ViewableEvents {
+        let (matter, result, disposable) = materializeViewable(
+            viewable: viewable
+        )
+
+        let subviewOrderable = append(matter)
+
+        let bag = DisposeBag()
+
+        onCreate(subviewOrderable)
+
+        return result.hold(Disposer {
+            subviewOrderable.removeFromSuperview()
+            bag.dispose()
+            disposable.dispose()
+        })
+    }
+
     func append<V: Viewable, Matter: Viewable>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == Matter,
         Matter.Matter == RowView,
