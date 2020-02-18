@@ -51,9 +51,8 @@ struct KeyGearItem {
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 
         let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
-        gradient.startPoint = CGPoint(x: 0, y: 0)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+        gradient.locations = [0, 1]
 
         let gradientView = UIView()
         gradientView.layer.addSublayer(gradient)
@@ -103,7 +102,7 @@ extension KeyGearItem: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         let viewController = KeyGearItemViewController()
-        
+
         viewController.navigationItem.title = "TODO"
 
         let optionsButton = UIBarButtonItem()
@@ -225,7 +224,7 @@ extension KeyGearItem: Presentable {
             viewController: viewController
         )
         bag += navigationBarBag
-        
+
         bag += navigationBar.didLayoutSignal.onValue { _ in
             scrollView.scrollIndicatorInsets = UIEdgeInsets(
                 top: navigationBar.frame.height,

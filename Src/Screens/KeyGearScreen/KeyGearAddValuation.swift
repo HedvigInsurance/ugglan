@@ -75,7 +75,7 @@ struct DatePicker: Viewable {
 }
 
 extension KeyGearAddValuation: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.title = String(key: .KEY_GEAR_ADD_PURCHASE_INFO_PAGE_TITLE)
@@ -102,13 +102,27 @@ extension KeyGearAddValuation: Presentable {
 
         bag += form.append(Spacing(height: 40))
 
-        let button = LoadableButton(button: Button(title: "Spara", type: .standard(backgroundColor: .primaryTintColor, textColor: .white)))
-        bag += form.append(button)
+        let button = LoadableButton(
+            button:
+            Button(
+                title: String(key: .KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BUTTON),
+                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            )
+        )
 
-        bag += button.onTapSignal.onValue { _ in
-            viewController.present(KeyGearValuation())
+        bag += form.append(button.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
+            stackView.axis = .vertical
+            stackView.alignment = .center
         }
 
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            bag += button.onTapSignal.onValue { _ in
+                viewController.present(KeyGearValuation(), options: [.defaults]).onValue { _ in
+                    completion(.success)
+                }
+            }
+
+            return DelayedDisposer(bag, delay: 2.0)
+        })
     }
 }

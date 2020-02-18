@@ -58,7 +58,9 @@ struct ValuationBox: Viewable {
         row.append(stackView)
 
         bag += events.onSelect.onValue { _ in
-            self.presentingViewController.present(KeyGearAddValuation(), style: .modal)
+            self.presentingViewController.present(KeyGearAddValuation(), style: .modal, options: [
+                .defaults, .allowSwipeDismissAlways,
+            ])
         }
 
         return (row, bag)
