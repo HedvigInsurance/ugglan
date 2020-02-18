@@ -96,10 +96,6 @@ struct KeyGearItem {
             navigationController?.setNavigationBarHidden(true, animated: animated)
             navigationController?.interactivePopGestureRecognizer?.delegate = nil
         }
-
-        override func viewWillDisappear(_ animated: Bool) {
-            navigationController?.setNavigationBarHidden(false, animated: animated)
-        }
     }
 }
 
@@ -107,6 +103,8 @@ extension KeyGearItem: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         let viewController = KeyGearItemViewController()
+        
+        viewController.navigationItem.title = "TODO"
 
         let optionsButton = UIBarButtonItem()
         optionsButton.tintColor = .white
@@ -227,6 +225,15 @@ extension KeyGearItem: Presentable {
             viewController: viewController
         )
         bag += navigationBarBag
+        
+        bag += navigationBar.didLayoutSignal.onValue { _ in
+            scrollView.scrollIndicatorInsets = UIEdgeInsets(
+                top: navigationBar.frame.height,
+                left: 0,
+                bottom: 0,
+                right: 0
+            )
+        }
 
         return (viewController, Future { completion in
             bag += optionsButton.onValue {

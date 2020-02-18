@@ -52,9 +52,16 @@ struct KeyGearOverview {
 }
 
 extension KeyGearOverview: Presentable {
+    
+    class KeyGearOverviewViewController: UIViewController {
+        override func viewWillAppear(_ animated: Bool) {
+            navigationController?.setNavigationBarHidden(false, animated: animated)
+        }
+    }
+    
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
-        let viewController = UIViewController()
+        let viewController = KeyGearOverviewViewController()
         viewController.title = String(key: .KEY_GEAR_TAB_TITLE)
 
         autoAddDevices()
