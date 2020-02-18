@@ -83,14 +83,13 @@ extension KeyGearAddReceiptRow: Viewable {
                             log.error("couldn't process image")
                             return
                         }
-                        
                         let fileUpload = FileUpload(data: jpegData, mimeType: "image/jpeg", fileName: "image.jpeg")
                         let file = GraphQLFile(fieldName: "file", originalName: fileUpload.fileName, data: fileUpload.data)
-                        print("!!!!!!!!FILE: \(file)")
                         
                         self.client.upload(operation: UploadFileMutation(file: "file"), files: [file]).onValue { value in
+                            
                             if let key = value.data?.uploadFile.key, let bucket = value.data?.uploadFile.bucket {
-                                print("KEY: \(key) BUCKET: \(bucket)")
+//                                self.client.perform(mutation: ReceiptToKeyGearMutation(id:  ,key: key, bucket: bucket))
                             }
                         }
                     }

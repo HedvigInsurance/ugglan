@@ -66,14 +66,6 @@ extension KeyGearOverview: Presentable {
             title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
             description: String(key: .KEY_GEAR_START_EMPTY_BODY)
         ))
-        
-        let button = Button(title: "PressTest", type: .standard(backgroundColor: .transparent, textColor: .purple))
-        bag += formView.append(button)
-        
-        bag += button.onTapSignal.onValue({ _ in
-            let presentable = PlaceholderVC().withCloseButton
-            viewController.present(presentable, style: .modal)
-        })
 
         bag += formView.append(KeyGearListCollection()).onValue { result in
             switch result {

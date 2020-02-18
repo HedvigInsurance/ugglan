@@ -1,8 +1,31 @@
-mutation ReceiptToKeyGear($key: String!, $bucket: String!) {
+mutation ReceiptToKeyGear($id: ID!,$key: String!, $bucket: String!) {
     addReceiptToKeyGearItem(input: {
-        file: {
-            key: $key
-            bucket: $bucket
-        }
-    })
+      file:{
+        key: $key, bucket: $bucket },
+      itemId: $id})
+  {
+    id
+    deleted
+    physicalReferenceHash
+    photos {
+      id
+      file {
+        preSignedUrl
+      }
+      markedAsDeleted
+    }
+    category
+    receipts {
+      id
+      file {
+        preSignedUrl
+      }
+      markedAsDeleted
+    }
+    purchasePrice {
+      amount
+      currency
+    }
+    timeOfPurchase
+  }
 }
