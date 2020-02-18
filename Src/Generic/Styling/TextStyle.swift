@@ -39,14 +39,14 @@ extension TextStyle {
         style.color = .primaryText
         style.lineSpacing = 4
     }
-    
+
     static let bodyButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(14)
         style.color = .primaryText
         style.lineSpacing = 4
         style.lineHeight = 20
     }
-    
+
     static let bodyBoldButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.color = .primaryText

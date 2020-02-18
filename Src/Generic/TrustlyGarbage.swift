@@ -16,12 +16,11 @@ public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
         self.webView = webView
     }
 
-    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-
+    public func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
         if let parsed = getParsedJSON(object: message.body as AnyObject),
-        let callback: String = parsed.object(forKey: "callback") as? String,
-        let urlscheme: String = parsed.object(forKey: "urlscheme") as? String,
-        let appUrl: URL = NSURL(string: urlscheme) as URL? {
+            let callback: String = parsed.object(forKey: "callback") as? String,
+            let urlscheme: String = parsed.object(forKey: "urlscheme") as? String,
+            let appUrl: URL = NSURL(string: urlscheme) as URL? {
             let canOpenApplicationUrl = UIApplication.shared.canOpenURL(appUrl)
             if canOpenApplicationUrl {
                 if #available(iOS 10.0, *) {
