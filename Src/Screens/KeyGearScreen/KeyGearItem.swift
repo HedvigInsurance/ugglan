@@ -15,7 +15,7 @@ import UIKit
 struct KeyGearItem {
     let id: String
     @Inject var client: ApolloClient
-    
+
     func getGradientImage(gradientLayer: CAGradientLayer) -> UIImage? {
         var gradientImage: UIImage?
         UIGraphicsBeginImageContext(gradientLayer.frame.size)
@@ -29,9 +29,9 @@ struct KeyGearItem {
 
         return gradientImage
     }
-    
+
     func addNavigationBar(
-        scrollView: UIScrollView,
+        scrollView _: UIScrollView,
         viewController: UIViewController
     ) -> (Disposable, UINavigationBar) {
         let bag = DisposeBag()
@@ -39,7 +39,7 @@ struct KeyGearItem {
         let navigationBar = UINavigationBar()
 
         navigationBar.items = [viewController.navigationItem]
-        
+
         navigationBar.tintColor = UIColor.clear
         navigationBar.barTintColor = UIColor.clear
         navigationBar.backIndicatorImage = Asset.backButtonWhite.image
@@ -50,24 +50,24 @@ struct KeyGearItem {
         navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 
-       let gradient = CAGradientLayer()
-       gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
-       gradient.startPoint = CGPoint(x: 0, y: 0)
-       gradient.endPoint = CGPoint(x: 0, y: 1)
-        
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+        gradient.startPoint = CGPoint(x: 0, y: 0)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+
         let gradientView = UIView()
         gradientView.layer.addSublayer(gradient)
         viewController.view.addSubview(gradientView)
-        
+
         bag += gradientView.didLayoutSignal.onValue { _ in
             gradient.frame = gradientView.frame
-            
+
             gradientView.snp.makeConstraints { make in
                 make.height.equalTo(navigationBar).offset(gradientView.safeAreaInsets.top)
                 make.trailing.leading.equalToSuperview()
             }
         }
-        
+
         viewController.view.addSubview(navigationBar)
 
         navigationBar.snp.makeConstraints { make in
@@ -113,17 +113,17 @@ extension KeyGearItem: Presentable {
         optionsButton.image = Asset.menuIcon.image
 
         viewController.navigationItem.rightBarButtonItem = optionsButton
-        
+
         let backButton = UIButton(type: .custom)
         backButton.setImage(Asset.backButtonWhite.image, for: .normal)
         backButton.tintColor = .white
 
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
-        
+
         let view = UIView()
         view.backgroundColor = .primaryBackground
         viewController.view = view
-        
+
         let dataSignal = client.watch(query: KeyGearItemQuery(id: id)).compactMap { $0.data?.keyGearItem }
 
         bag += dataSignal.onValue { data in
@@ -133,7 +133,7 @@ extension KeyGearItem: Presentable {
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.backgroundColor = .primaryBackground
-        
+
         scrollView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
@@ -221,7 +221,7 @@ extension KeyGearItem: Presentable {
         bag += nameSection.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
             print("was saved")
         }
-        
+
         let (navigationBarBag, navigationBar) = addNavigationBar(
             scrollView: scrollView,
             viewController: viewController
@@ -239,7 +239,7 @@ extension KeyGearItem: Presentable {
                     }),
                 ]), style: .sheet())
             }
-            
+
             bag += backButton.onValue { _ in
                 completion(.success)
             }
