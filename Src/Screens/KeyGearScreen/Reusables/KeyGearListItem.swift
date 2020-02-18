@@ -24,6 +24,30 @@ extension KeyGearListItem: SignalProvider {
 }
 
 extension KeyGearListItem: Reusable {
+    static var addedAutomaticallyTag: UIView {
+        let addedAutomaticallyBlurView = UIVisualEffectView()
+        addedAutomaticallyBlurView.layer.cornerRadius = 8
+        addedAutomaticallyBlurView.layer.masksToBounds = true
+        addedAutomaticallyBlurView.effect = UIBlurEffect(style: .prominent)
+
+        let addedAutomaticallyStackView = UIStackView()
+        addedAutomaticallyStackView.layoutMargins = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+        addedAutomaticallyStackView.isLayoutMarginsRelativeArrangement = true
+        addedAutomaticallyBlurView.contentView.addSubview(addedAutomaticallyStackView)
+
+        addedAutomaticallyStackView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
+        let addedAutomaticallyLabel = UILabel(
+            value: String(key: .KEY_GEAR_ADDED_AUTOMATICALLY_TAG),
+            style: .bodySmallSmallLeft
+        )
+        addedAutomaticallyStackView.addArrangedSubview(addedAutomaticallyLabel)
+
+        return addedAutomaticallyBlurView
+    }
+
     static func makeAndConfigure() -> (make: UIControl, configure: (KeyGearListItem) -> Disposable) {
         let view = UIControl()
         view.layer.cornerRadius = 8
@@ -37,6 +61,14 @@ extension KeyGearListItem: Reusable {
 
         imageView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
+        }
+
+        let addedAutomaticallyTag = self.addedAutomaticallyTag
+        view.addSubview(addedAutomaticallyTag)
+
+        addedAutomaticallyTag.snp.makeConstraints { make in
+            make.top.equalTo(10)
+            make.leading.equalTo(10)
         }
 
         let label = UILabel(value: "TODO", style: .headlineSmallNegSmallNegCenter)
@@ -55,6 +87,8 @@ extension KeyGearListItem: Reusable {
             bag += view.applyBorderColor { _ -> UIColor in
                 UIColor.primaryBorder
             }
+
+            addedAutomaticallyTag.isHidden = !self.wasAddedAutomatically
 
             let touchUpInsideSignal = view.trackedTouchUpInsideSignal
 
