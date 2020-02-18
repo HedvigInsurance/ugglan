@@ -40,6 +40,16 @@ extension KeyGearListItem: Reusable {
         imageView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
+                
+        let label = UILabel(value: "TODO", style: .headlineSmallNegSmallNegCenter)
+        view.addSubview(label)
+        
+        label.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.bottom.equalToSuperview().inset(10)
+        }
+        
+        label.sizeToFit()
         
         return (view, { `self` in
             let bag = DisposeBag()

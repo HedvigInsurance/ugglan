@@ -14,6 +14,7 @@ import UIKit
 
 struct LoggedIn {
     @Inject var client: ApolloClient
+    @Inject var remoteConfig: RemoteConfigContainer
     let didSign: Bool
 
     init(didSign: Bool = false) {
@@ -84,14 +85,25 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
+        
+        if remoteConfig.keyGearEnabled {
+            bag += tabBarController.presentTabs(
+                dashboardPresentation,
+                keyGearPresentation,
+                claimsPresentation,
+                referralsPresentation,
+                profilePresentation
+            )
+        } else {
+            bag += tabBarController.presentTabs(
+                dashboardPresentation,
+                claimsPresentation,
+                referralsPresentation,
+                profilePresentation
+            )
+        }
 
-        bag += tabBarController.presentTabs(
-            dashboardPresentation,
-            keyGearPresentation,
-            claimsPresentation,
-            referralsPresentation,
-            profilePresentation
-        )
+        
 
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()

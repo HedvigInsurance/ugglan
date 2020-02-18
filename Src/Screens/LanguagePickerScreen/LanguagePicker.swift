@@ -56,7 +56,6 @@ extension LanguagePicker: Presentable {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.distribution = .fillProportionally
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
         mainView.addSubview(stackView)
         
@@ -94,6 +93,8 @@ extension LanguagePicker: Presentable {
         let textContainer = UIStackView()
         textContainer.axis = .vertical
         textContainer.spacing = 5
+        textContainer.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)
+        textContainer.isLayoutMarginsRelativeArrangement = true
         middleContent.addArrangedSubview(textContainer)
         
         textContainer.snp.makeConstraints { make in

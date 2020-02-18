@@ -468,14 +468,14 @@ extension TextStyle {
         style.color = .primaryText
     }
     
-    static let headlineSmallNegSmalNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
+    static let headlineSmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryTextNeg
         style.alignment = .center
     }
     
-    static let headlineSmallNegSmalNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
+    static let headlineSmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBold!.withSize(14)
         style.lineHeight = 20
         style.color = .primaryTextNeg
