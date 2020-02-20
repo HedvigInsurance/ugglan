@@ -201,16 +201,23 @@ extension KeyGearItem: Presentable {
         let coveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE))
         coveragesSection.dynamicStyle = .sectionPlain
 
-        bag += coveragesSection.append(KeyGearCoverage())
+        bag += coveragesSection.append(KeyGearCoverage(type: .included))
 
         bag += innerForm.append(Spacing(height: 15))
 
         let nonCoveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE))
         nonCoveragesSection.dynamicStyle = .sectionPlain
 
-        bag += nonCoveragesSection.append(KeyGearCoverage())
+        bag += nonCoveragesSection.append(KeyGearCoverage(type: .excluded))
 
         bag += innerForm.append(Spacing(height: 30))
+
+        let receiptSection = innerForm.appendSection()
+        receiptSection.dynamicStyle = .sectionPlain
+
+        bag += receiptSection.append(KeyGearAddReceiptRow(itemId: id))
+
+        bag += innerForm.append(Spacing(height: 15))
 
         let nameSection = innerForm.appendSection()
         nameSection.dynamicStyle = .sectionPlain

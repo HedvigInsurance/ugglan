@@ -48,16 +48,25 @@ extension AddPhotoButton: Viewable {
             imageView.layer.cornerRadius = 8
             imageView.clipsToBounds = true
             imageView.contentMode = .scaleAspectFill
+            imageView.alpha = 0
 
             view.addSubview(imageView)
 
             imageView.snp.makeConstraints { make in
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
-
-            return Disposer {
-                imageView.removeFromSuperview()
+            
+            let innerBag = DisposeBag()
+            
+            innerBag += imageView.didLayoutSignal.take(first: 1).animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in
+                imageView.alpha = 1
             }
+            
+            innerBag += DelayedDisposer(Disposer {
+                imageView.removeFromSuperview()
+            }, delay: 2.0)
+
+            return innerBag
         }
 
         bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in

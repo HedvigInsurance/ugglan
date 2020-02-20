@@ -48,7 +48,7 @@ extension KeyGearListCollection: Viewable {
             CGSize(width: collectionKit.view.frame.width / 2 - 5, height: 120)
         }
 
-        bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItemsSimple }.onValue { items in
+        bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItems }.onValue { items in
             guard let items = items, !items.isEmpty else {
                 collectionKit.table = Table(rows: [.make(addButton)])
                 return

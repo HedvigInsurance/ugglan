@@ -96,31 +96,58 @@ extension VNCoreMLModel {
         let bag = DisposeBag()
 
         return Future { completion in
+            let cacheFileName = "key-gear-classifier.mlmodelc"
+            
+            func createModel(_ url: URL) {
+                guard let model = try? MLModel(contentsOf: url) else {
+                    completion(.failure(KeyGearClassifierError.convertModel))
+                    return
+                }
+
+                guard let vnModel = try? VNCoreMLModel(for: model) else {
+                    completion(.failure(KeyGearClassifierError.createVNModel))
+                    return
+                }
+
+                completion(.success(vnModel))
+            }
+
             func downloadModel(_ url: URL) {
                 let task = URLSession.shared.downloadTask(with: url) { location, _, _ in
                     guard let location = location else {
                         completion(.failure(KeyGearClassifierError.downloadModel))
                         return
                     }
+                    
                     guard let compiledUrl = try? MLModel.compileModel(at: location) else {
-                        completion(.failure(KeyGearClassifierError.compileModel))
-                        return
+                       completion(.failure(KeyGearClassifierError.compileModel))
+                       return
                     }
-
-                    guard let model = try? MLModel(contentsOf: compiledUrl) else {
-                        completion(.failure(KeyGearClassifierError.convertModel))
-                        return
+                    
+                    if let cacheUrl = try? Disk.url(for: cacheFileName, in: .caches) {
+                        try? Disk.move(compiledUrl, to: cacheUrl)
+                        createModel(cacheUrl)
+                    } else {
+                        createModel(compiledUrl)
                     }
-
-                    guard let vnModel = try? VNCoreMLModel(for: model) else {
-                        completion(.failure(KeyGearClassifierError.createVNModel))
-                        return
-                    }
-
-                    completion(.success(vnModel))
                 }
 
                 task.resume()
+            }
+            
+            func getCacheURL() -> URL? {
+               let isCached = Disk.exists(cacheFileName, in: .caches)
+                                
+               if !isCached {
+                   return nil
+               }
+                                
+                return try? Disk.url(for: cacheFileName, in: .caches)
+            }
+            
+            if let cachedUrl = getCacheURL() {
+                createModel(cachedUrl)
+                return bag
             }
 
             bag += client.fetch(query: KeyGearClassifierQuery()).map { result in result.data?.coreMlModels.first??.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in

@@ -47,11 +47,11 @@ struct FileUpload {
                 files: [file],
                 queue: DispatchQueue.global(qos: .background)
             ).onValue { result in
-                guard let key = result.data?.uploadFile.key else {
+                guard let key = result.data?.uploadFile.key, let bucket = result.data?.uploadFile.bucket else {
                     return
                 }
 
-                completion(.success((key, "hedvig-app-uploads-staging")))
+                completion(.success((key, bucket)))
             }.disposable
         }
     }

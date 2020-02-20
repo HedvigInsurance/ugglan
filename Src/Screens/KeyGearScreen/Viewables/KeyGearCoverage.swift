@@ -9,16 +9,22 @@ import Flow
 import Form
 import Foundation
 
-struct KeyGearCoverage {}
+struct KeyGearCoverage {
+    let type: CoverageType
+
+    enum CoverageType {
+        case included, excluded
+    }
+}
 
 extension KeyGearCoverage: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let row = RowView()
         let bag = DisposeBag()
 
-        let icon = Icon(icon: Asset.houseVermin, iconWidth: 40)
+        let icon = Icon(icon: type == .included ? Asset.greenCircularCheckmark : Asset.pinkCircularCross, iconWidth: 15)
         icon.snp.makeConstraints { make in
-            make.width.equalTo(40)
+            make.width.equalTo(30)
         }
         row.prepend(icon)
 
