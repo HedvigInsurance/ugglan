@@ -33,7 +33,7 @@ extension LoadableButton: Viewable {
 
         let spinner = UIActivityIndicatorView()
         buttonView.addSubview(spinner)
-        
+
         bag += button.type.onValue { buttonType in
             if buttonType.backgroundColor.isContrasting(with: .white) {
                 spinner.style = .white

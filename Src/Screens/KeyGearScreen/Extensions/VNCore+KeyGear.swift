@@ -97,7 +97,7 @@ extension VNCoreMLModel {
 
         return Future { completion in
             let cacheFileName = "key-gear-classifier.mlmodelc"
-            
+
             func createModel(_ url: URL) {
                 guard let model = try? MLModel(contentsOf: url) else {
                     completion(.failure(KeyGearClassifierError.convertModel))
@@ -118,12 +118,12 @@ extension VNCoreMLModel {
                         completion(.failure(KeyGearClassifierError.downloadModel))
                         return
                     }
-                    
+
                     guard let compiledUrl = try? MLModel.compileModel(at: location) else {
-                       completion(.failure(KeyGearClassifierError.compileModel))
-                       return
+                        completion(.failure(KeyGearClassifierError.compileModel))
+                        return
                     }
-                    
+
                     if let cacheUrl = try? Disk.url(for: cacheFileName, in: .caches) {
                         try? Disk.move(compiledUrl, to: cacheUrl)
                         createModel(cacheUrl)
@@ -134,17 +134,17 @@ extension VNCoreMLModel {
 
                 task.resume()
             }
-            
+
             func getCacheURL() -> URL? {
-               let isCached = Disk.exists(cacheFileName, in: .caches)
-                                
-               if !isCached {
-                   return nil
-               }
-                                
+                let isCached = Disk.exists(cacheFileName, in: .caches)
+
+                if !isCached {
+                    return nil
+                }
+
                 return try? Disk.url(for: cacheFileName, in: .caches)
             }
-            
+
             if let cachedUrl = getCacheURL() {
                 createModel(cachedUrl)
                 return bag

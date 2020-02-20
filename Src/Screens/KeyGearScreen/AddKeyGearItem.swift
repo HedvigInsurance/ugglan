@@ -75,7 +75,7 @@ extension AddKeyGearItem: Presentable {
         let saveButtonContainer = UIStackView()
         saveButtonContainer.axis = .vertical
         saveButtonContainer.alignment = .center
-        
+
         bag += form.append(saveButton.wrappedIn(UIStackView()).wrappedIn(saveButtonContainer))
 
         return (viewController, Future { completion in
@@ -130,10 +130,10 @@ extension AddKeyGearItem: Presentable {
 
                 self.classifyImage(image).onValue { category in
                     bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in
-                       categoryPickerSection.alpha = 1
+                        categoryPickerSection.alpha = 1
                         categoryPickerSection.isUserInteractionEnabled = true
                     }
-                    
+
                     guard let category = category else {
                         return
                     }
@@ -143,7 +143,10 @@ extension AddKeyGearItem: Presentable {
             }
 
             bag += addPhotoButtonSignal.onValue {
-                viewController.present(ImagePicker(sourceType: .camera, mediaTypes: [.photo])).onValue { result in
+                viewController.present(
+                    KeyGearImagePicker(presentingViewController: viewController, allowedTypes: [.camera, .photoLibrary]),
+                    style: .sheet()
+                ).flatMap { $0.left! }.onValue { result in
                     if let image = result.right {
                         handleImage(image: image)
                     } else if let asset = result.left {

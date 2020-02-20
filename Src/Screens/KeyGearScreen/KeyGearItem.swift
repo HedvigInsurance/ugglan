@@ -121,7 +121,7 @@ extension KeyGearItem: Presentable {
         view.backgroundColor = .primaryBackground
         viewController.view = view
 
-        let dataSignal = client.watch(query: KeyGearItemQuery(id: id)).compactMap { $0.data?.keyGearItem }
+        let dataSignal = client.watch(query: KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code)).compactMap { $0.data?.keyGearItem }
 
         bag += dataSignal.onValue { data in
             print(data)
@@ -201,14 +201,30 @@ extension KeyGearItem: Presentable {
         let coveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE))
         coveragesSection.dynamicStyle = .sectionPlain
 
-        bag += coveragesSection.append(KeyGearCoverage(type: .included))
+        bag += dataSignal.map { $0.covered }.onValueDisposePrevious { covered -> Disposable? in
+            let bag = DisposeBag()
+            
+            bag += covered.map { coveredItem in
+                coveragesSection.append(KeyGearCoverage(type: .included, title: coveredItem.title?.translations?.first?.text ?? ""))
+            }
+            
+            return bag
+        }
 
         bag += innerForm.append(Spacing(height: 15))
 
         let nonCoveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE))
         nonCoveragesSection.dynamicStyle = .sectionPlain
 
-        bag += nonCoveragesSection.append(KeyGearCoverage(type: .excluded))
+        bag += dataSignal.map { $0.exceptions }.onValueDisposePrevious { exceptions -> Disposable? in
+            let bag = DisposeBag()
+            
+            bag += exceptions.map { exceptionItem in
+                nonCoveragesSection.append(KeyGearCoverage(type: .excluded, title: exceptionItem.title?.translations?.first?.text ?? ""))
+            }
+            
+            return bag
+        }
 
         bag += innerForm.append(Spacing(height: 30))
 

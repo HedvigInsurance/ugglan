@@ -11,6 +11,7 @@ import Foundation
 
 struct KeyGearCoverage {
     let type: CoverageType
+    let title: String
 
     enum CoverageType {
         case included, excluded
@@ -28,7 +29,7 @@ extension KeyGearCoverage: Viewable {
         }
         row.prepend(icon)
 
-        row.append(UILabel(value: "Om du slarvar bort den", style: .bodyRegularRegularLeft))
+        bag += row.append(MultilineLabel(value: title, style: .bodySmallSmallLeft))
 
         return (row, bag)
     }

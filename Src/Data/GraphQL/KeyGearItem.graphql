@@ -1,5 +1,6 @@
-query KeyGearItem($id: ID!) {
+query KeyGearItem($id: ID!, $languageCode: String!) {
     keyGearItem(id: $id) {
+      name
       photos {
         file {
           preSignedUrl
@@ -10,5 +11,19 @@ query KeyGearItem($id: ID!) {
           preSignedUrl
         }
       }
+      covered {
+         title {
+           translations(where: { language: { code: $languageCode }, project: IOS }) {
+             text
+           }
+         }
+       }
+       exceptions {
+         title {
+           translations(where: { language: { code: $languageCode }, project: IOS }) {
+             text
+           }
+         }
+       }
     }
 }

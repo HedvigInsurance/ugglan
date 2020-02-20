@@ -55,13 +55,13 @@ extension AddPhotoButton: Viewable {
             imageView.snp.makeConstraints { make in
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
-            
+
             let innerBag = DisposeBag()
-            
+
             innerBag += imageView.didLayoutSignal.take(first: 1).animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in
                 imageView.alpha = 1
             }
-            
+
             innerBag += DelayedDisposer(Disposer {
                 imageView.removeFromSuperview()
             }, delay: 2.0)

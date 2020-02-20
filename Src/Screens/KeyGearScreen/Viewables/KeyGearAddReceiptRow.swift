@@ -18,83 +18,6 @@ struct KeyGearAddReceiptRow {
     let itemId: String
 }
 
-struct KeyGearImagePicker: Presentable {
-    let presentingViewController: UIViewController
-
-    private enum PickType {
-        case camera, photoLibrary, document
-    }
-    
-    func materialize() -> (UIViewController, Future<Either<Future<Either<PHAsset, UIImage>>, Future<[URL]>>>) {
-        let (viewController, alertResult) = Alert<PickType>(actions: [
-            Alert.Action(title: "Camera", style: .default, action: { _ in
-                .camera
-            }),
-            Alert.Action(title: "Photo Library", style: .default, action: { _ in
-                .photoLibrary
-            }),
-            Alert.Action(title: "Document", style: .default, action: { _ in
-                .document
-            }),
-            Alert.Action(title: "Cancel", style: .cancel, action: { _ in
-                throw GenericError.cancelled
-            }),
-        ]).materialize()
-
-        return (viewController, Future { completion in
-            alertResult.onValue { result in
-                switch result {
-                case .camera:
-                    completion(.success(.left(self.presentingViewController.present(
-                        ImagePicker(
-                            sourceType: .camera,
-                            mediaTypes: [.photo]
-                        ),
-                        style: .default
-                    ))))
-                case .photoLibrary:
-                    completion(.success(.left(self.presentingViewController.present(
-                        ImagePicker(
-                            sourceType: .photoLibrary,
-                            mediaTypes: [.photo]
-                        ),
-                        style: .default
-                    ))))
-                case .document:
-                    completion(.success(.right(self.presentingViewController.present(
-                        DocumentPicker(),
-                        style: .default
-                    ))))
-                }
-            }.onError { error in
-                completion(.failure(error))
-            }
-
-            return NilDisposer()
-        })
-    }
-}
-
-extension UIImage {
-    
-    private enum FileUploadError: Error {
-        case couldntProcess
-    }
-    
-    var fileUpload: Future<FileUpload> {
-        Future { completion in
-            guard let jpegData = self.jpegData(compressionQuality: 0.9) else {
-                completion(.failure(FileUploadError.couldntProcess))
-                                                   return NilDisposer()
-                                               }
-                                               let fileUpload = FileUpload(data: jpegData, mimeType: "image/jpeg", fileName: "image.jpeg")
-            completion(.success(fileUpload))
-            
-            return NilDisposer()
-        }
-    }
-}
-
 extension KeyGearAddReceiptRow: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
@@ -135,8 +58,9 @@ extension KeyGearAddReceiptRow: Viewable {
             stackView.alignment = .center
             stackView.axis = .vertical
         }
-
-        let receiptsSignal = client.watch(query: KeyGearItemQuery(id: itemId)).compactMap { $0.data?.keyGearItem?.receipts }.readable(initial: [])
+        
+        let keyGearItemQuery = KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)
+        let receiptsSignal = client.watch(query: keyGearItemQuery).compactMap { $0.data?.keyGearItem?.receipts }.readable(initial: [])
 
         bag += receiptsSignal.map { receipts in
             !receipts.isEmpty
@@ -148,28 +72,28 @@ extension KeyGearAddReceiptRow: Viewable {
             if !receipts.isEmpty {
                 return
             }
-            
+
             func handleDocuments(_ documents: [URL]) {
                 button.isLoadingSignal.value = true
-                
+
                 guard
                     let fileUrl = documents.first,
                     let file = GraphQLFile(fieldName: "file", originalName: "upload.\(fileUrl.pathExtension)", fileURL: fileUrl) else {
-                        button.isLoadingSignal.value = false
+                    button.isLoadingSignal.value = false
                     return
                 }
-                                
+
                 self.client.upload(operation: UploadFileMutation(file: "file"), files: [file]).onValue { value in
                     if let key = value.data?.uploadFile.key, let bucket = value.data?.uploadFile.bucket {
-                        self.client.perform(mutation: AddReceiptMutation(id: self.itemId, file: S3FileInput(bucket: bucket, key: key))).onValue { result in
-                            self.client.fetch(query: KeyGearItemQuery(id: self.itemId), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                        self.client.perform(mutation: AddReceiptMutation(id: self.itemId, file: S3FileInput(bucket: bucket, key: key))).onValue { _ in
+                            self.client.fetch(query: keyGearItemQuery, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                                 button.isLoadingSignal.value = false
                             }
                         }
                     }
                 }
             }
-            
+
             func handleImage(_ image: Either<PHAsset, UIImage>) {
                 button.isLoadingSignal.value = true
 
@@ -181,14 +105,14 @@ extension KeyGearAddReceiptRow: Viewable {
                         return image.fileUpload
                     }
                 }
-                
+
                 getFileUpload().onValue { fileUpload in
                     let file = GraphQLFile(fieldName: "file", originalName: fileUpload.fileName, data: fileUpload.data)
-                    
+
                     self.client.upload(operation: UploadFileMutation(file: "file"), files: [file]).onValue { value in
                         if let key = value.data?.uploadFile.key, let bucket = value.data?.uploadFile.bucket {
-                            self.client.perform(mutation: AddReceiptMutation(id: self.itemId, file: S3FileInput(bucket: bucket, key: key))).onValue { result in
-                                self.client.fetch(query: KeyGearItemQuery(id: self.itemId), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                            self.client.perform(mutation: AddReceiptMutation(id: self.itemId, file: S3FileInput(bucket: bucket, key: key))).onValue { _ in
+                                self.client.fetch(query: keyGearItemQuery, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                                     button.isLoadingSignal.value = false
                                 }
                             }
@@ -197,8 +121,8 @@ extension KeyGearAddReceiptRow: Viewable {
                 }
             }
 
-           row.viewController?.present(
-                KeyGearImagePicker(presentingViewController: row.viewController!),
+            row.viewController?.present(
+                KeyGearImagePicker(presentingViewController: row.viewController!, allowedTypes: [.camera, .photoLibrary, .document]),
                 style: .sheet()
             ).onValue { either in
                 switch either {
