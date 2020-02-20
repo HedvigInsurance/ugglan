@@ -1,6 +1,7 @@
 query KeyGearItems {
     keyGearItems(where: { deleted: false }) {
         id
+        name
         deleted
         physicalReferenceHash
         photos {

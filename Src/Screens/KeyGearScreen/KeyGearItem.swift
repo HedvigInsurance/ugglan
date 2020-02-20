@@ -51,7 +51,7 @@ struct KeyGearItem {
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 
         let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+        gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
         gradient.locations = [0, 1]
 
         let gradientView = UIView()
@@ -103,8 +103,6 @@ extension KeyGearItem: Presentable {
         let bag = DisposeBag()
         let viewController = KeyGearItemViewController()
 
-        viewController.navigationItem.title = "TODO"
-
         let optionsButton = UIBarButtonItem()
         optionsButton.tintColor = .white
         optionsButton.image = Asset.menuIcon.image
@@ -121,10 +119,13 @@ extension KeyGearItem: Presentable {
         view.backgroundColor = .primaryBackground
         viewController.view = view
 
-        let dataSignal = client.watch(query: KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code)).compactMap { $0.data?.keyGearItem }
+        let dataSignal = client.watch(
+            query: KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
+            cachePolicy: .returnCacheDataAndFetch
+        ).compactMap { $0.data?.keyGearItem }
 
         bag += dataSignal.onValue { data in
-            print(data)
+            viewController.navigationItem.title = data.name
         }
 
         let scrollView = UIScrollView()
@@ -237,9 +238,16 @@ extension KeyGearItem: Presentable {
 
         let nameSection = innerForm.appendSection()
         nameSection.dynamicStyle = .sectionPlain
-
-        bag += nameSection.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
-            print("was saved")
+        
+        let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "").writable(setValue: { _ in })
+        let nameRow = EditableRow(
+            valueSignal: nameValueSignal,
+            placeholderSignal: .static(String(key: .KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE))
+        )
+        
+        bag += nameSection.append(nameRow).onValue { name in
+            viewController.navigationItem.title = name
+            self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
         }
 
         let (navigationBarBag, navigationBar) = addNavigationBar(
@@ -260,17 +268,21 @@ extension KeyGearItem: Presentable {
         return (viewController, Future { completion in
             bag += optionsButton.onValue {
                 viewController.present(Alert(actions: [
-                    Alert.Action(title: "Delete", style: .destructive, action: { _ in
+                    Alert.Action(title: String(key: .KEY_GEAR_ITEM_DELETE), style: .destructive, action: { _ in
                         completion(.success)
                     }),
-                    Alert.Action(title: "Cancel", style: .cancel, action: { _ in
-
+                    Alert.Action(title: String(key: .KEY_GEAR_ITEM_OPTIONS_CANCEL), style: .cancel, action: { _ in
+                        throw GenericError.cancelled
                     }),
                 ]), style: .sheet())
             }
 
             bag += backButton.onValue { _ in
-                completion(.success)
+                self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
+                    self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                        completion(.success)
+                    }
+                }
             }
 
             return DelayedDisposer(bag, delay: 2.0)
