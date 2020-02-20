@@ -229,7 +229,10 @@ extension KeyGearItem: Presentable {
 
         bag += innerForm.append(Spacing(height: 30))
 
-        let receiptSection = innerForm.appendSection()
+        let receiptFooter = UIStackView()
+        bag += receiptFooter.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER), style: .sectionHeader))
+        
+        let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
         receiptSection.dynamicStyle = .sectionPlain
 
         bag += receiptSection.append(KeyGearAddReceiptRow(itemId: id))
