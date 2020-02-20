@@ -26,6 +26,7 @@ extension KeyGearListItem: SignalProvider {
 extension KeyGearListItem: Reusable {
     static var addedAutomaticallyTag: UIView {
         let addedAutomaticallyBlurView = UIVisualEffectView()
+        addedAutomaticallyBlurView.isUserInteractionEnabled = false
         addedAutomaticallyBlurView.layer.cornerRadius = 8
         addedAutomaticallyBlurView.layer.masksToBounds = true
         addedAutomaticallyBlurView.effect = UIBlurEffect(style: .prominent)

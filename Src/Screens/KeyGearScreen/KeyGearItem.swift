@@ -204,11 +204,11 @@ extension KeyGearItem: Presentable {
 
         bag += dataSignal.map { $0.covered }.onValueDisposePrevious { covered -> Disposable? in
             let bag = DisposeBag()
-            
+
             bag += covered.map { coveredItem in
                 coveragesSection.append(KeyGearCoverage(type: .included, title: coveredItem.title?.translations?.first?.text ?? ""))
             }
-            
+
             return bag
         }
 
@@ -219,11 +219,11 @@ extension KeyGearItem: Presentable {
 
         bag += dataSignal.map { $0.exceptions }.onValueDisposePrevious { exceptions -> Disposable? in
             let bag = DisposeBag()
-            
+
             bag += exceptions.map { exceptionItem in
                 nonCoveragesSection.append(KeyGearCoverage(type: .excluded, title: exceptionItem.title?.translations?.first?.text ?? ""))
             }
-            
+
             return bag
         }
 
@@ -231,7 +231,7 @@ extension KeyGearItem: Presentable {
 
         let receiptFooter = UIStackView()
         bag += receiptFooter.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER), style: .sectionHeader))
-        
+
         let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
         receiptSection.dynamicStyle = .sectionPlain
 
@@ -241,13 +241,13 @@ extension KeyGearItem: Presentable {
 
         let nameSection = innerForm.appendSection()
         nameSection.dynamicStyle = .sectionPlain
-        
+
         let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "").writable(setValue: { _ in })
         let nameRow = EditableRow(
             valueSignal: nameValueSignal,
             placeholderSignal: .static(String(key: .KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE))
         )
-        
+
         bag += nameSection.append(nameRow).onValue { name in
             viewController.navigationItem.title = name
             self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }

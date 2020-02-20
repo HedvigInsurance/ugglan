@@ -5,11 +5,11 @@
 //  Created by Sam Pettersson on 2020-02-20.
 //
 
-import Foundation
-import Presentation
 import Flow
-import UIKit
+import Foundation
 import Photos
+import Presentation
+import UIKit
 
 struct KeyGearImagePicker: Presentable {
     let presentingViewController: UIViewController
@@ -18,7 +18,7 @@ struct KeyGearImagePicker: Presentable {
     enum PickType {
         case camera, photoLibrary, document
     }
-    
+
     private var actions: [Alert<PickType>.Action] {
         let actions = allowedTypes.map { pickType -> Alert<PickType>.Action in
             switch pickType {
@@ -31,20 +31,20 @@ struct KeyGearImagePicker: Presentable {
                     .photoLibrary
                 })
             case .document:
-                
+
                 return Alert.Action(title: String(key: .KEY_GEAR_IMAGE_PICKER_DOCUMENT), style: .default, action: { _ in
                     .document
                 })
             }
         }
-        
+
         return [
             actions,
             [
                 Alert.Action(title: String(key: .KEY_GEAR_IMAGE_PICKER_CANCEL), style: .cancel, action: { _ in
                     throw GenericError.cancelled
-                })
-            ]
+                }),
+            ],
         ].flatMap { $0 }
     }
 

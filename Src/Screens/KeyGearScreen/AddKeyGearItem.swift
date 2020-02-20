@@ -76,6 +76,10 @@ extension AddKeyGearItem: Presentable {
         saveButtonContainer.axis = .vertical
         saveButtonContainer.alignment = .center
 
+        bag += state.isValidSignal
+            .atOnce()
+            .bindTo(saveButtonContainer, \.isUserInteractionEnabled)
+
         bag += form.append(saveButton.wrappedIn(UIStackView()).wrappedIn(saveButtonContainer))
 
         return (viewController, Future { completion in

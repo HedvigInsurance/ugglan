@@ -58,7 +58,7 @@ extension KeyGearAddReceiptRow: Viewable {
             stackView.alignment = .center
             stackView.axis = .vertical
         }
-        
+
         let keyGearItemQuery = KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)
         let receiptsSignal = client.watch(query: keyGearItemQuery).compactMap { $0.data?.keyGearItem?.receipts }.readable(initial: [])
 
