@@ -43,7 +43,7 @@ extension AddKeyGearItem {
 
                             switch category {
                             case .smartWatch:
-                                completion(.success(KeyGearItemCategory.jewelry))
+                                completion(.success(KeyGearItemCategory.smartWatch))
                             case .watch:
                                 completion(.success(KeyGearItemCategory.jewelry))
                             case .appliance:
@@ -53,7 +53,7 @@ extension AddKeyGearItem {
                             case .phone:
                                 completion(.success(KeyGearItemCategory.phone))
                             case .bicycle:
-                                completion(.success(nil))
+                                completion(.success(KeyGearItemCategory.bike))
                             case .computer:
                                 completion(.success(KeyGearItemCategory.computer))
                             case .jewelry:

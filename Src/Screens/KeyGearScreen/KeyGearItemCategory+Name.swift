@@ -18,8 +18,12 @@ extension KeyGearItemCategory {
             return String(key: .ITEM_TYPE_TV)
         case .jewelry:
             return String(key: .ITEM_TYPE_JEWELRY)
-        case .soundSystem:
-            return ""
+        case .bike:
+            return String(key: .ITEM_TYPE_BIKE)
+        case .watch:
+            return String(key: .ITEM_TYPE_WATCH)
+        case .smartWatch:
+            return "TODO smart watch"
         case .__unknown:
             return ""
         }

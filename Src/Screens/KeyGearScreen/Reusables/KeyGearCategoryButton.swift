@@ -97,7 +97,7 @@ extension KeyGearCategoryButton: Reusable {
             }
 
             control.accessibilityLabel = self.category.rawValue
-            label.value = self.category.rawValue
+            label.value = self.category.name
             return bag
         })
     }
