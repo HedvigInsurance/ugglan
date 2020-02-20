@@ -70,7 +70,11 @@ extension AddKeyGearItem: Presentable {
         )
         bag += state.isValidSignal
             .atOnce()
-            .map { valid in valid ? ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white) : ButtonType.standard(backgroundColor: .gray, textColor: .white) }.bindTo(saveButton.button.type)
+            .map { valid in
+                valid ?
+                    ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white) :
+                    ButtonType.standard(backgroundColor: .gray, textColor: .white)
+        }.bindTo(saveButton.button.type)
 
         let saveButtonContainer = UIStackView()
         saveButtonContainer.axis = .vertical
