@@ -14,6 +14,7 @@ struct KeyGearListItem {
     let imageUrl: URL?
     let name: String
     let wasAddedAutomatically: Bool
+    let category: KeyGearItemCategory
 
     private let callbacker = Callbacker<Void>()
 }
@@ -105,12 +106,16 @@ extension KeyGearListItem: Reusable {
             bag += view.delayedTouchCancel(delay: 0.1).animated(style: AnimationStyle.easeOut(duration: 0.35)) {
                 view.transform = CGAffineTransform.identity
             }
-
-            imageView.kf.setImage(with: self.imageUrl, options: [
-                .preloadAllAnimationData,
-                .transition(.fade(1)),
-            ])
-
+            
+            if let imageUrl = self.imageUrl {
+                imageView.kf.setImage(with: imageUrl, options: [
+                   .preloadAllAnimationData,
+                   .transition(.fade(1)),
+               ])
+            } else {
+                imageView.image = self.category.image
+            }
+            
             bag += view.signal(for: .touchUpInside).onValue { _ in
                 self.callbacker.callAll()
             }

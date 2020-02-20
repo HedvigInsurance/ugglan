@@ -60,7 +60,8 @@ extension KeyGearListCollection: Viewable {
                     id: item.id,
                     imageUrl: URL(string: photo?.file.preSignedUrl),
                     name: item.name ?? "",
-                    wasAddedAutomatically: item.physicalReferenceHash != nil
+                    wasAddedAutomatically: item.physicalReferenceHash != nil,
+                    category: item.category
                 ))
             }
 

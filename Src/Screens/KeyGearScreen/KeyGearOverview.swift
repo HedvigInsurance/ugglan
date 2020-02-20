@@ -72,6 +72,8 @@ extension KeyGearOverview: Presentable {
             title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
             description: String(key: .KEY_GEAR_START_EMPTY_BODY)
         ))
+        
+        bag += formView.append(Spacing(height: 20))
 
         bag += formView.append(KeyGearListCollection()).onValue { result in
             switch result {

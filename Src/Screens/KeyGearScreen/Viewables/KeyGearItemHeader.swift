@@ -63,9 +63,8 @@ struct ValuationBox: Viewable {
 
         let dataSignal = client.fetch(query: KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)).valueSignal
 
-        bag += events.onSelect.withLatestFrom(dataSignal.plain()).onValue { a in
-
-            self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: a.1.data!.keyGearItem!.category), style: .modal, options: [
+        bag += events.onSelect.withLatestFrom(dataSignal.plain()).compactMap { (_, result) in result.data?.keyGearItem?.category }.onValue { category in
+            self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: category), style: .modal, options: [
                 .defaults, .allowSwipeDismissAlways,
             ])
         }
