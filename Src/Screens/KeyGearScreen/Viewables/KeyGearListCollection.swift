@@ -49,7 +49,6 @@ extension KeyGearListCollection: Viewable {
         }
 
         bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItems }.onValue { items in
-            print(items)
             guard let items = items, !items.isEmpty else {
                 collectionKit.table = Table(rows: [.make(addButton)])
                 return
@@ -60,6 +59,7 @@ extension KeyGearListCollection: Viewable {
                 return .make(KeyGearListItem(
                     id: item.id,
                     imageUrl: URL(string: photo?.file.preSignedUrl),
+                    name: item.name ?? "",
                     wasAddedAutomatically: item.physicalReferenceHash != nil
                 ))
             }

@@ -10,7 +10,10 @@ import Form
 import Foundation
 import Presentation
 
-struct KeyGearAddValuation {}
+struct KeyGearAddValuation {
+    let id: String
+    let category: KeyGearItemCategory
+}
 
 struct PurchasePrice: Viewable {
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
@@ -83,7 +86,10 @@ extension KeyGearAddValuation: Presentable {
 
         bag += viewController.install(form)
 
-        let descriptionLabel = MultilineLabel(value: String(key: .KEY_GEAR_ADD_PURCHASE_INFO_BODY(itemType: "TODO")), style: .bodyRegularRegularCenter)
+        let descriptionLabel = MultilineLabel(
+            value: String(key: .KEY_GEAR_ADD_PURCHASE_INFO_BODY(itemType: category.name.localizedLowercase)),
+            style: .bodyRegularRegularCenter
+        )
         bag += form.append(descriptionLabel)
 
         bag += form.append(Spacing(height: 40))
@@ -117,7 +123,7 @@ extension KeyGearAddValuation: Presentable {
 
         return (viewController, Future { completion in
             bag += button.onTapSignal.onValue { _ in
-                viewController.present(KeyGearValuation(), options: [.defaults]).onValue { _ in
+                viewController.present(KeyGearValuation(itemId: self.id), options: [.defaults]).onValue { _ in
                     completion(.success)
                 }
             }

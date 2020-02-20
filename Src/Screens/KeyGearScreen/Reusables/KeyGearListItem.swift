@@ -12,6 +12,7 @@ import Foundation
 struct KeyGearListItem {
     let id: String
     let imageUrl: URL?
+    let name: String
     let wasAddedAutomatically: Bool
 
     private let callbacker = Callbacker<Void>()
@@ -53,7 +54,7 @@ extension KeyGearListItem: Reusable {
         let view = UIControl()
         view.layer.cornerRadius = 8
         view.clipsToBounds = true
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .midnight500
 
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = false
@@ -72,7 +73,7 @@ extension KeyGearListItem: Reusable {
             make.leading.equalTo(10)
         }
 
-        let label = UILabel(value: "TODO", style: .headlineSmallNegSmallNegCenter)
+        let label = UILabel(value: "", style: .headlineSmallNegSmallNegCenter)
         view.addSubview(label)
 
         label.snp.makeConstraints { make in
@@ -88,6 +89,8 @@ extension KeyGearListItem: Reusable {
             bag += view.applyBorderColor { _ -> UIColor in
                 UIColor.primaryBorder
             }
+
+            label.value = self.name
 
             addedAutomaticallyTag.isHidden = !self.wasAddedAutomatically
 

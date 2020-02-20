@@ -5,6 +5,7 @@
 //  Created by Sam Pettersson on 2020-02-14.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
@@ -12,6 +13,7 @@ import UIKit
 
 struct KeyGearItemHeader {
     let presentingViewController: UIViewController
+    let itemId: String
 }
 
 struct DeductibleBox: Viewable {
@@ -43,6 +45,8 @@ struct DeductibleBox: Viewable {
 
 struct ValuationBox: Viewable {
     let presentingViewController: UIViewController
+    let itemId: String
+    @Inject var client: ApolloClient
 
     func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
@@ -57,8 +61,11 @@ struct ValuationBox: Viewable {
 
         row.append(stackView)
 
-        bag += events.onSelect.onValue { _ in
-            self.presentingViewController.present(KeyGearAddValuation(), style: .modal, options: [
+        let dataSignal = client.fetch(query: KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)).valueSignal
+
+        bag += events.onSelect.withLatestFrom(dataSignal.plain()).onValue { a in
+
+            self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: a.1.data!.keyGearItem!.category), style: .modal, options: [
                 .defaults, .allowSwipeDismissAlways,
             ])
         }
@@ -77,7 +84,7 @@ extension KeyGearItemHeader: Viewable {
         let valuationBox = SectionView()
         valuationBox.dynamicStyle = .sectionPlain
 
-        bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController))
+        bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController, itemId: itemId))
 
         stackView.addArrangedSubview(valuationBox)
 

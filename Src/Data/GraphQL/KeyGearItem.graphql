@@ -1,6 +1,7 @@
 query KeyGearItem($id: ID!, $languageCode: String!) {
     keyGearItem(id: $id) {
       name
+      category
       photos {
         file {
           preSignedUrl

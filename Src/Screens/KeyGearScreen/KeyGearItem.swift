@@ -195,7 +195,7 @@ extension KeyGearItem: Presentable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
-        bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController))
+        bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController, itemId: id))
 
         bag += innerForm.append(Spacing(height: 10))
 

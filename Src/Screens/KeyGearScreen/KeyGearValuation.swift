@@ -5,13 +5,17 @@
 //  Created by Sam Pettersson on 2020-02-17.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import Presentation
 import UIKit
 
-struct KeyGearValuation {}
+struct KeyGearValuation {
+    let itemId: String
+    @Inject var client: ApolloClient
+}
 
 extension KeyGearValuation: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
@@ -40,17 +44,21 @@ extension KeyGearValuation: Presentable {
         bag += form.append(Spacing(height: 30))
 
         let descriptionLabel = MarkdownText(
-            text: String(
+            textSignal: .static(""),
+            style: .bodySmallSmallCenter
+        )
+        bag += form.append(descriptionLabel)
+
+        bag += client.watch(query: KeyGearItemQuery(id: itemId), cachePolicy: .returnCacheDataAndFetch).map { $0.data?.keyGearItem?.category.name }.onValue { name in
+            descriptionLabel.textSignal.value = String(
                 key: .KEY_GEAR_ITEM_VIEW_VALUATION_BODY(
-                    itemType: "TODO",
+                    itemType: name?.localizedLowercase ?? "",
                     purchasePrice: "TODO",
                     valuationPercentage: "TODO",
                     valuationPrice: "TODO"
                 )
-            ),
-            style: .bodySmallSmallCenter
-        )
-        bag += form.append(descriptionLabel)
+            )
+        }
 
         return (viewController, Future { completion in
             let closeButton = CloseButton()
