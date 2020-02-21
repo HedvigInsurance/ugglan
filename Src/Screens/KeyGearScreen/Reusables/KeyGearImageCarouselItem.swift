@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import Kingfisher
 
 struct KeyGearImageCarouselItem {
     let imageUrl: URL
@@ -22,8 +23,12 @@ extension KeyGearImageCarouselItem: Reusable {
             let bag = DisposeBag()
 
             imageView.kf.setImage(with: self.imageUrl, options: [
-                .preloadAllAnimationData,
-                .transition(.fade(1)),
+                .keepCurrentImageWhileLoading,
+                .cacheOriginalImage,
+                .processor(DownsamplingImageProcessor(size: imageView.frame.size)),
+                .scaleFactor(UIScreen.main.scale),
+                .backgroundDecode,
+                .transition(.fade(0.25)),
             ])
             imageView.contentMode = .scaleAspectFill
 

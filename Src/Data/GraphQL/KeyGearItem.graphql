@@ -2,6 +2,18 @@ query KeyGearItem($id: ID!, $languageCode: String!) {
     keyGearItem(id: $id) {
       name
       category
+      valuation {
+        ... on KeyGearItemValuationFixed {
+            ratio
+            valuation {
+                amount
+                currency
+            }
+        }
+        ... on KeyGearItemValuationMarketValue {
+            ratio
+        }
+      }
       photos {
         file {
           preSignedUrl

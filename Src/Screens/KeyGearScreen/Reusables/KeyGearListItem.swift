@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import Kingfisher
 
 struct KeyGearListItem {
     let id: String
@@ -109,8 +110,9 @@ extension KeyGearListItem: Reusable {
             
             if let imageUrl = self.imageUrl {
                 imageView.kf.setImage(with: imageUrl, options: [
-                   .preloadAllAnimationData,
-                   .transition(.fade(1)),
+                   .cacheOriginalImage,
+                   .backgroundDecode,
+                   .transition(.fade(0.25)),
                ])
             } else {
                 imageView.image = self.category.image

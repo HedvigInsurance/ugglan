@@ -57,11 +57,21 @@ struct ValuationBox: Viewable {
         stackView.spacing = 5
 
         stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodySmallSmallLeft))
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight))
+        
+        let emptyValuationLabel = UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight)
+        emptyValuationLabel.isHidden = true
+        stackView.addArrangedSubview(emptyValuationLabel)
 
         row.append(stackView)
 
         let dataSignal = client.fetch(query: KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)).valueSignal
+        
+        bag += dataSignal.map { $0.data?.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
+            if valuation == nil {
+                emptyValuationLabel.isHidden = false
+                emptyValuationLabel.layoutIfNeeded()
+            }
+        })
 
         bag += events.onSelect.withLatestFrom(dataSignal.plain()).compactMap { (_, result) in result.data?.keyGearItem?.category }.onValue { category in
             self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: category), style: .modal, options: [
