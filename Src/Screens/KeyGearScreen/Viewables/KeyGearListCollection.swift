@@ -26,7 +26,7 @@ extension KeyGearListCollection: Viewable {
         let bag = DisposeBag()
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 15, bottom: 20, right: 15)
         layout.headerReferenceSize = CGSize(width: 100, height: 300)
 
         let addButton = ReusableSignalViewable(viewable: KeyGearAddButton())
