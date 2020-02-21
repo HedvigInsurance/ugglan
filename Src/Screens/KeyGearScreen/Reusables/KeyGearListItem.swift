@@ -82,6 +82,7 @@ extension KeyGearListItem: Reusable {
         gradient.locations = [0, 1]
 
         let gradientView = UIView()
+        gradientView.isUserInteractionEnabled = false
         gradientView.layer.addSublayer(gradient)
         view.addSubview(gradientView)
 

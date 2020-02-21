@@ -2,6 +2,9 @@ query KeyGearItem($id: ID!, $languageCode: String!) {
     keyGearItem(id: $id) {
       name
       category
+      deductible {
+        ...MonetaryAmountFragment
+      }
       valuation {
         ... on KeyGearItemValuationFixed {
             ratio

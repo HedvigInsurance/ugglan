@@ -248,16 +248,17 @@ extension KeyGearItem: Presentable {
             placeholderSignal: .static(String(key: .KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE))
         )
 
-        bag += nameSection.append(nameRow).onValue { name in
-            viewController.navigationItem.title = name
-            self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
-        }
-
         let (navigationBarBag, navigationBar) = addNavigationBar(
             scrollView: scrollView,
             viewController: viewController
         )
         bag += navigationBarBag
+        
+        bag += nameSection.append(nameRow).onValue { name in
+            viewController.navigationItem.title = name
+            navigationBar.items = [viewController.navigationItem]
+            self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
+        }
 
         bag += navigationBar.didLayoutSignal.onValue { _ in
             scrollView.scrollIndicatorInsets = UIEdgeInsets(

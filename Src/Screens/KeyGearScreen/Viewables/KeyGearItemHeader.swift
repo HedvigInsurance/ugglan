@@ -17,7 +17,11 @@ struct KeyGearItemHeader {
 }
 
 struct DeductibleBox: Viewable {
+    let itemId: String
+    @Inject var client: ApolloClient
+    
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
+        let bag = DisposeBag()
         let row = RowView()
 
         let stackView = UIStackView()
@@ -34,12 +38,18 @@ struct DeductibleBox: Viewable {
         let deductibleValueContainer = UIStackView()
         deductibleValueContainerContainer.addArrangedSubview(deductibleValueContainer)
 
-        deductibleValueContainer.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_VALUE), style: .headlineLargeLargeLeft))
+        let deductibleLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
+        
+        deductibleValueContainer.addArrangedSubview(deductibleLabel)
         deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .bodySmallSmallLeft))
-
+        
+        bag += client.watch(query: KeyGearItemQuery(id: itemId))
+            .map { $0.data?.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
+            .bindTo(deductibleLabel, \.text)
+        
         row.append(stackView)
 
-        return (row, NilDisposer())
+        return (row, bag)
     }
 }
 
@@ -100,7 +110,7 @@ extension KeyGearItemHeader: Viewable {
         let deductibleBox = SectionView()
         deductibleBox.dynamicStyle = .sectionPlain
 
-        bag += deductibleBox.append(DeductibleBox())
+        bag += deductibleBox.append(DeductibleBox(itemId: itemId))
 
         stackView.addArrangedSubview(deductibleBox)
 

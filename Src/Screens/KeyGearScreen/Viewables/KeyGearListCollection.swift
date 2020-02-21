@@ -27,7 +27,7 @@ extension KeyGearListCollection: Viewable {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 15, bottom: 20, right: 15)
-        layout.headerReferenceSize = CGSize(width: 100, height: 300)
+        layout.headerReferenceSize = CGSize(width: 100, height: 350)
 
         let addButton = ReusableSignalViewable(viewable: KeyGearAddButton())
 
@@ -48,7 +48,7 @@ extension KeyGearListCollection: Viewable {
         ) { _ in
             header
         }
-
+        
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(width: collectionKit.view.frame.width / 2 - 20, height: 120)
         }
@@ -82,15 +82,15 @@ extension KeyGearListCollection: Viewable {
 
             bag += collectionKit.onValueDisposePrevious { table -> Disposable? in
                 let bag = DisposeBag()
-
-                bag += table.signal().onValue { value in
+                
+                bag += table.map { value -> Disposable in
                     switch value {
                     case let .left(row):
-                        bag += row.onValue { _ in
+                        return row.onValue { _ in
                             callback(.row(id: row.id))
                         }
                     case .right:
-                        break
+                        return NilDisposer()
                     }
                 }
 

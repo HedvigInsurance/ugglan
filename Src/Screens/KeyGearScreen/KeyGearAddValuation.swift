@@ -9,14 +9,22 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import Apollo
 
 struct KeyGearAddValuation {
     let id: String
     let category: KeyGearItemCategory
+    let state = State()
+    @Inject var client: ApolloClient
+    
+    struct State {
+        let purchasePriceSignal = ReadWriteSignal<Int>(0)
+        let purchaseDateSignal = ReadWriteSignal(Date())
+    }
 }
 
 struct PurchasePrice: Viewable {
-    func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (RowView, Signal<Int>) {
         let bag = DisposeBag()
         let row = RowView()
 
@@ -29,12 +37,12 @@ struct PurchasePrice: Viewable {
 
         row.append(textField)
 
-        return (row, bag)
+        return (row, textField.providedSignal.hold(bag).compactMap { Int($0) })
     }
 }
 
 struct DatePicker: Viewable {
-    func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
+    func materialize(events: SelectableViewableEvents) -> (RowView, ReadWriteSignal<Date>) {
         let bag = DisposeBag()
         let row = RowView()
 
@@ -73,7 +81,7 @@ struct DatePicker: Viewable {
             picker.alpha = picker.isHidden ? 0 : 1
         })
 
-        return (row, bag)
+        return (row, picker.providedSignal.hold(bag))
     }
 }
 
@@ -97,14 +105,14 @@ extension KeyGearAddValuation: Presentable {
         let priceSection = form.appendSection()
         priceSection.dynamicStyle = .sectionPlain
 
-        bag += priceSection.append(PurchasePrice())
+        bag += priceSection.append(PurchasePrice()).bindTo(state.purchasePriceSignal)
 
         bag += form.append(Spacing(height: 20))
 
         let dateSection = form.appendSection()
         dateSection.dynamicStyle = .sectionPlain
 
-        bag += dateSection.append(DatePicker())
+        bag += dateSection.append(DatePicker()).bindTo(state.purchaseDateSignal)
 
         bag += form.append(Spacing(height: 40))
 
@@ -123,8 +131,18 @@ extension KeyGearAddValuation: Presentable {
 
         return (viewController, Future { completion in
             bag += button.onTapSignal.onValue { _ in
-                viewController.present(KeyGearValuation(itemId: self.id), options: [.defaults]).onValue { _ in
-                    completion(.success)
+                button.isLoadingSignal.value = true
+                
+                self.client.perform(
+                    mutation: UpdateKeyGearValuationMutation(
+                        itemId: self.id,
+                        purchasePrice: MonetaryAmountV2Input(amount: self.state.purchasePriceSignal.value.description, currency: "SEK"),
+                        purchaseDate: self.state.purchaseDateSignal.value.localDateString ?? ""
+                    )
+                ).onValue { _ in
+                    viewController.present(KeyGearValuation(itemId: self.id), options: [.defaults]).onValue { _ in
+                        completion(.success)
+                    }
                 }
             }
 
