@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 struct KeyGearImageCarousel {
-    let imagesSignal: ReadSignal<[URL]>
+    let imagesSignal: ReadSignal<[Either<URL, KeyGearItemCategory>]>
 }
 
 extension KeyGearImageCarousel: Viewable {
@@ -24,7 +24,7 @@ extension KeyGearImageCarousel: Viewable {
         let bag = DisposeBag()
 
         bag += imagesSignal.atOnce().onValue { images in
-            collectionKit.table = Table(rows: images.map { KeyGearImageCarouselItem(imageUrl: $0) })
+            collectionKit.table = Table(rows: images.map { KeyGearImageCarouselItem(resource: $0) })
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in

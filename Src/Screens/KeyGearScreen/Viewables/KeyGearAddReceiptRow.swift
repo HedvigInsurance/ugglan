@@ -15,6 +15,7 @@ import UIKit
 
 struct KeyGearAddReceiptRow {
     @Inject var client: ApolloClient
+    let presentingViewController: UIViewController
     let itemId: String
 }
 
@@ -69,7 +70,8 @@ extension KeyGearAddReceiptRow: Viewable {
         }
 
         bag += button.onTapSignal.withLatestFrom(receiptsSignal.atOnce().plain()).onValue { _, receipts in
-            if !receipts.isEmpty {
+            if let receiptUrlString = receipts.first?.file.preSignedUrl, let receiptUrl = URL(string: receiptUrlString) {
+                self.presentingViewController.present(KeyGearReceipt(receipt: receiptUrl))
                 return
             }
 

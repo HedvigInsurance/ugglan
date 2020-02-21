@@ -13,6 +13,8 @@ extension KeyGearItemCategory {
         switch self {
         case .phone:
             return Asset.keyGearPhonePlaceholder.image
+        case .smartWatch, .watch:
+            return Asset.keyGearWatchPlacholder.image
         case .__unknown:
             return nil
         default:

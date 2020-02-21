@@ -80,9 +80,7 @@ extension KeyGearListCollection: Viewable {
                 callback(.add)
             }
 
-            bag += collectionKit.onValueDisposePrevious { table -> Disposable? in
-                let bag = DisposeBag()
-                
+            bag += collectionKit.onValue { table in
                 bag += table.map { value -> Disposable in
                     switch value {
                     case let .left(row):
@@ -93,8 +91,6 @@ extension KeyGearListCollection: Viewable {
                         return NilDisposer()
                     }
                 }
-
-                return bag
             }
 
             return bag

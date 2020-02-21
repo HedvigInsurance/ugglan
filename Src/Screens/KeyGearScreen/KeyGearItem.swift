@@ -158,10 +158,15 @@ extension KeyGearItem: Presentable {
 
         scrollView.embedView(form, scrollAxis: .vertical)
 
-        let imagesSignal = dataSignal.map { $0.photos.compactMap { $0.file.preSignedUrl } }.compactMap { $0.compactMap { URL(string: $0) } }.readable(initial: [])
+        let imagesSignal = dataSignal.map { (images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category) }.compactMap { data -> [Either<URL, KeyGearItemCategory>] in
+            if data.images.isEmpty {
+                return [.right(data.category)]
+            }
+            
+            return data.images.compactMap { URL(string: $0) }.map { .left($0) }
+        }.readable(initial: [])
 
         bag += form.prepend(KeyGearImageCarousel(imagesSignal: imagesSignal)) { imageCarouselView in
-
             bag += scrollView.contentOffsetSignal.onValue { offset in
                 let realOffset = offset.y + scrollView.safeAreaInsets.top
 
@@ -235,7 +240,7 @@ extension KeyGearItem: Presentable {
         let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
         receiptSection.dynamicStyle = .sectionPlain
 
-        bag += receiptSection.append(KeyGearAddReceiptRow(itemId: id))
+        bag += receiptSection.append(KeyGearAddReceiptRow(presentingViewController: viewController, itemId: id))
 
         bag += innerForm.append(Spacing(height: 15))
 
@@ -278,15 +283,17 @@ extension KeyGearItem: Presentable {
                     Alert.Action(title: String(key: .KEY_GEAR_ITEM_OPTIONS_CANCEL), style: .cancel, action: { _ in
                         throw GenericError.cancelled
                     }),
-                ]), style: .sheet())
+                ]), style: .sheet()).onValue { _ in
+                    self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { result in
+                       self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                           completion(.success)
+                       }
+                   }
+                }
             }
 
             bag += backButton.onValue { _ in
-                self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
-                    self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
-                        completion(.success)
-                    }
-                }
+                completion(.success)
             }
 
             return DelayedDisposer(bag, delay: 2.0)

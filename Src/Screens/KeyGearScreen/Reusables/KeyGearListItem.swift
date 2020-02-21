@@ -121,7 +121,7 @@ extension KeyGearListItem: Reusable {
             }
 
             label.value = self.name ?? self.category.name
-
+            
             addedAutomaticallyTag.isHidden = !self.wasAddedAutomatically
 
             let touchUpInsideSignal = view.trackedTouchUpInsideSignal
@@ -142,8 +142,18 @@ extension KeyGearListItem: Reusable {
                    .backgroundDecode,
                    .transition(.fade(0.25)),
                ])
+                imageView.contentMode = .scaleAspectFill
+                
+                imageView.snp.updateConstraints { make in
+                    make.top.bottom.leading.trailing.equalToSuperview()
+                }
             } else {
                 imageView.image = self.category.image
+                imageView.contentMode = .scaleAspectFit
+                
+                imageView.snp.updateConstraints { make in
+                    make.top.bottom.equalToSuperview().inset(25)
+                }
             }
             
             bag += view.signal(for: .touchUpInside).onValue { _ in
