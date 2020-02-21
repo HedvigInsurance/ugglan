@@ -45,6 +45,7 @@ extension ReferralsCode: Viewable {
         bag += touchUpInsideSignal.feedback(type: .success)
 
         bag += touchUpInsideSignal.withLatestFrom(codeSignal).onValueDisposePrevious { _, code in
+            view.isUserInteractionEnabled = false
             let register = PushNotificationsRegister(
                 title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
                 message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
@@ -55,7 +56,9 @@ extension ReferralsCode: Viewable {
                 UIApplication.shared.appDelegate.displayToast(Toast(
                     symbol: .character("🎉"),
                     body: String(key: .COPIED)
-                )).onValue { _ in }
+                )).onResult { _ in
+                    view.isUserInteractionEnabled = true
+                }
             }.disposable
         }
 
