@@ -64,7 +64,7 @@ extension KeyGearListCollection: Viewable {
                 return .make(KeyGearListItem(
                     id: item.id,
                     imageUrl: URL(string: photo?.file.preSignedUrl),
-                    name: item.name ?? "",
+                    name: item.name,
                     wasAddedAutomatically: item.physicalReferenceHash != nil,
                     category: item.category
                 ))

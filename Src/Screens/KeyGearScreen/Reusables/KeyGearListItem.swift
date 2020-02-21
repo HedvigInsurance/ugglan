@@ -13,7 +13,7 @@ import Kingfisher
 struct KeyGearListItem {
     let id: String
     let imageUrl: URL?
-    let name: String
+    let name: String?
     let wasAddedAutomatically: Bool
     let category: KeyGearItemCategory
 
@@ -76,6 +76,14 @@ extension KeyGearListItem: Reusable {
         imageView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
+        
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.25).cgColor]
+        gradient.locations = [0, 1]
+
+        let gradientView = UIView()
+        gradientView.layer.addSublayer(gradient)
+        view.addSubview(gradientView)
 
         let addedAutomaticallyTag = self.addedAutomaticallyTag
         view.addSubview(addedAutomaticallyTag)
@@ -94,15 +102,24 @@ extension KeyGearListItem: Reusable {
         }
 
         label.sizeToFit()
+        
 
         return (view, { `self` in
             let bag = DisposeBag()
+            
+            bag += gradientView.didLayoutSignal.onValue { _ in
+                     gradient.frame = gradientView.frame
+
+                     gradientView.snp.makeConstraints { make in
+                        make.top.bottom.trailing.leading.equalToSuperview()
+                     }
+                 }
 
             bag += view.applyBorderColor { _ -> UIColor in
                 UIColor.primaryBorder
             }
 
-            label.value = self.name
+            label.value = self.name ?? self.category.name
 
             addedAutomaticallyTag.isHidden = !self.wasAddedAutomatically
 
