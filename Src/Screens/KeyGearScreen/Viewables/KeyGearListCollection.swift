@@ -55,7 +55,7 @@ extension KeyGearListCollection: Viewable {
 
         bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItems }.onValue { items in
             guard let items = items, !items.isEmpty else {
-                collectionKit.table = Table(rows: [.make(addButton)])
+                collectionKit.set(Table(rows: [.make(addButton)]))
                 return
             }
 
@@ -72,7 +72,7 @@ extension KeyGearListCollection: Viewable {
 
             rows.insert(.make(addButton), at: 0)
 
-            collectionKit.table = Table(rows: rows)
+            collectionKit.set(Table(rows: rows))
         }
 
         return (collectionKit.view, Signal { callback in

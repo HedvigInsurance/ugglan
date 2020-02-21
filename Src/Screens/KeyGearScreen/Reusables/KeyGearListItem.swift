@@ -20,6 +20,16 @@ struct KeyGearListItem {
     private let callbacker = Callbacker<Void>()
 }
 
+extension KeyGearListItem: Hashable {
+    static func == (lhs: KeyGearListItem, rhs: KeyGearListItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
 extension KeyGearListItem: SignalProvider {
     var providedSignal: Signal<Void> {
         return callbacker.providedSignal
