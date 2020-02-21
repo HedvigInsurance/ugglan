@@ -64,18 +64,14 @@ extension KeyGearOverview: Presentable {
         viewController.title = String(key: .KEY_GEAR_TAB_TITLE)
 
         autoAddDevices()
-
-        let formView = FormView()
-
-        bag += formView.prepend(TabHeader(
-            image: Asset.keyGearOverviewHeader.image,
-            title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
-            description: String(key: .KEY_GEAR_START_EMPTY_BODY)
-        ))
         
-        bag += formView.append(Spacing(height: 20))
-
-        bag += formView.append(KeyGearListCollection()).onValue { result in
+        bag += viewController.install(KeyGearListCollection()) { collectionView in
+            let refreshControl = UIRefreshControl()
+                   bag += client.refetchOnRefresh(query: KeyGearItemsQuery(), refreshControl: refreshControl)
+            
+            collectionView.refreshControl = refreshControl
+            
+        }.onValue { result in
             switch result {
             case .add:
                 viewController.present(AddKeyGearItem(), style: .modally()).onValue { id in
@@ -84,13 +80,6 @@ extension KeyGearOverview: Presentable {
             case let .row(id):
                 viewController.present(KeyGearItem(id: id), style: .default, options: [.largeTitleDisplayMode(.never), .autoPop])
             }
-        }
-
-        let refreshControl = UIRefreshControl()
-        bag += client.refetchOnRefresh(query: KeyGearItemsQuery(), refreshControl: refreshControl)
-
-        bag += viewController.install(formView) { scrollView in
-            scrollView.refreshControl = refreshControl
         }
 
         return (viewController, bag)

@@ -26,7 +26,8 @@ extension KeyGearListCollection: Viewable {
         let bag = DisposeBag()
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
+        layout.sectionInset = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        layout.headerReferenceSize = CGSize(width: 100, height: 300)
 
         let addButton = ReusableSignalViewable(viewable: KeyGearAddButton())
 
@@ -34,18 +35,22 @@ extension KeyGearListCollection: Viewable {
             table: Table(rows: []),
             layout: layout
         )
-        collectionKit.view.backgroundColor = .transparent
+        collectionKit.view.backgroundColor = .primaryBackground
 
-        bag += collectionKit.view.didLayoutSignal.onValue { _ in
-            collectionKit.view.snp.updateConstraints { make in
-                make.height.equalTo(
-                    collectionKit.view.collectionViewLayout.collectionViewContentSize.height
-                )
-            }
+        let header = TabHeader(
+            image: Asset.keyGearOverviewHeader.image,
+            title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
+            description: String(key: .KEY_GEAR_START_EMPTY_BODY)
+        )
+        
+        bag += collectionKit.registerViewForSupplementaryElement(
+            kind: UICollectionView.elementKindSectionHeader
+        ) { _ in
+            header
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: collectionKit.view.frame.width / 2 - 5, height: 120)
+            CGSize(width: collectionKit.view.frame.width / 2 - 20, height: 120)
         }
 
         bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItems }.onValue { items in
