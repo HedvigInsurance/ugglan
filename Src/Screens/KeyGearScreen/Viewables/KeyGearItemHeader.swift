@@ -84,7 +84,7 @@ struct ValuationBox: Viewable {
         })
 
         bag += events.onSelect.withLatestFrom(dataSignal.plain()).compactMap { (_, result) in result.data?.keyGearItem?.category }.onValue { category in
-            self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: category), style: .modal, options: [
+            self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: category).withCloseButton, style: .modal, options: [
                 .defaults, .allowSwipeDismissAlways,
             ])
         }

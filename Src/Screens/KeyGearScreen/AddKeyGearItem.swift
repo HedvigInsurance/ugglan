@@ -150,10 +150,10 @@ extension AddKeyGearItem: Presentable {
                 }
             }
 
-            bag += addPhotoButtonSignal.onValue {
+            bag += addPhotoButtonSignal.onValue { view in
                 viewController.present(
                     KeyGearImagePicker(presentingViewController: viewController, allowedTypes: [.camera, .photoLibrary]),
-                    style: .sheet()
+                    style: .sheet(from: view, rect: nil)
                 ).flatMap { $0.left! }.onValue { result in
                     if let image = result.right {
                         handleImage(image: image)

@@ -15,7 +15,7 @@ struct AddPhotoButton {
 }
 
 extension AddPhotoButton: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
+    func materialize(events _: ViewableEvents) -> (UIControl, Signal<UIControl>) {
         let bag = DisposeBag()
         let view = UIControl()
         view.backgroundColor = .secondaryTintColor
@@ -78,6 +78,6 @@ extension AddPhotoButton: Viewable {
             view.backgroundColor = .secondaryTintColor
         }
 
-        return (view, view.trackedTouchUpInsideSignal.hold(bag))
+        return (view, view.trackedTouchUpInsideSignal.hold(bag).map { _ -> UIControl in view })
     }
 }

@@ -83,7 +83,7 @@ extension KeyGearValuation: Presentable {
             }
 
             let item = UIBarButtonItem(viewable: closeButton)
-            viewController.navigationItem.leftBarButtonItem = item
+            viewController.navigationItem.rightBarButtonItem = item
 
             return DelayedDisposer(bag, delay: 2.0)
         })
