@@ -24,9 +24,9 @@ extension CampaignBubble: Viewable {
         let containerView = UIView()
         containerView.backgroundColor = .pink
 
-        bag += containerView.applyShadow({ _ in
+        bag += containerView.applyShadow { _ in
             OfferBubble.shadow
-        })
+        }
 
         containerView.snp.makeConstraints { make in
             make.width.height.equalTo(100)

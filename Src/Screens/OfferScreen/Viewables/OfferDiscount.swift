@@ -39,7 +39,7 @@ extension OfferDiscount: Viewable {
         bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
             view.transform = CGAffineTransform(
                 translationX: 0,
-                y: (contentOffset.y / 5)
+                y: contentOffset.y / 5
             )
         }
 
@@ -85,7 +85,7 @@ extension OfferDiscount: Viewable {
 
         bag += view.add(redeemButton) { buttonView in
             handleButtonState(buttonView) { redeemedCampaigns -> Bool in
-                return redeemedCampaigns.isEmpty
+                redeemedCampaigns.isEmpty
             }
         }
 
@@ -95,7 +95,7 @@ extension OfferDiscount: Viewable {
         )
         bag += view.add(removeButton) { buttonView in
             handleButtonState(buttonView) { redeemedCampaigns -> Bool in
-                return !redeemedCampaigns.isEmpty
+                !redeemedCampaigns.isEmpty
             }
         }
 
@@ -128,14 +128,14 @@ extension OfferDiscount: Viewable {
                 actions: [
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_CANCEL)) {},
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_REMOVE), style: .destructive) {
-                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue({ result in
+                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue { result in
                             self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
                                 data.redeemedCampaigns = result.campaigns.compactMap {
                                     try? OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
                                 }
                                 data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
                             }
-                        })
+                        }
                     },
                 ]
             )

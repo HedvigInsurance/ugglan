@@ -1,0 +1,14 @@
+mutation AddReceipt($id: ID!, $file: S3FileInput!) {
+    addReceiptToKeyGearItem(
+        input: {
+            itemId: $id,
+            file: $file
+        }
+    ) {
+        receipts {
+            file {
+                preSignedUrl
+            }
+        }
+    }
+}

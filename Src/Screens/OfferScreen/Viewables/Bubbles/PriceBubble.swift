@@ -29,7 +29,7 @@ extension PriceBubble: Viewable {
         bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
             containerView.transform = CGAffineTransform(
                 translationX: 0,
-                y: (contentOffset.y / 5)
+                y: contentOffset.y / 5
             )
         }
 
@@ -54,9 +54,9 @@ extension PriceBubble: Viewable {
 
         let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
 
-        bubbleView.snp.makeConstraints({ make in
+        bubbleView.snp.makeConstraints { make in
             make.width.height.equalTo(180)
-        })
+        }
         bubbleView.layer.cornerRadius = 180 / 2
 
         let ease: Ease<CGFloat> = Ease(0, minimumStep: 1)
@@ -85,7 +85,7 @@ extension PriceBubble: Viewable {
             .compactMap { $0 }
             .buffer()
 
-        bag += monthlyNetPriceSignal.onValue({ values in
+        bag += monthlyNetPriceSignal.onValue { values in
             guard let value = values.last else { return }
 
             if values.count == 1 {
@@ -93,7 +93,7 @@ extension PriceBubble: Viewable {
             }
 
             ease.targetValue = CGFloat(value)
-        })
+        }
 
         bag += ease.addSpring(tension: 300, damping: 100, mass: 2) { number in
             if number != 0 {
@@ -120,7 +120,7 @@ extension PriceBubble: Viewable {
             if let freeMonths = incentiveFragment?.asFreeMonths {
                 return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
             }
-            
+
             if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
                 return CampaignBubble.CampaignType.percentageDiscount(
                     value: percentageDiscount.percentageDiscount,

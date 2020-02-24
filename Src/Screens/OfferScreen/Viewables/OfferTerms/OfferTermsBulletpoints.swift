@@ -18,7 +18,7 @@ struct OfferTermsBulletPoints {
 extension OfferTermsBulletPoints {
     func bullets(for type: InsuranceType) -> [BulletPoint] {
         var bulletList: [BulletPoint] = []
-        
+
         if type.isApartment {
             bulletList.append(BulletPoint(title: String(key: .OFFER_TERMS_NO_BINDING_PERIOD)))
 
@@ -47,7 +47,7 @@ extension OfferTermsBulletPoints {
                     )
                 )
             }
-            
+
             bulletList.append(
                 BulletPoint(
                     title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE))
@@ -59,7 +59,7 @@ extension OfferTermsBulletPoints {
                     title: String(key: .OFFER_HOUSE_TRUST_HOUSE)
                 )
             )
-            
+
             bulletList.append(
                 BulletPoint(
                     title: String(
@@ -69,21 +69,21 @@ extension OfferTermsBulletPoints {
                     )
                 )
             )
-            
+
             bulletList.append(
                 BulletPoint(
                     title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE)),
                     message: String(key: .OFFER_TRUST_INCREASED_DEDUCTIBLE)
                 )
             )
-            
+
             bulletList.append(
                 BulletPoint(
                     title: String(key: .OFFER_HOUSE_TRUST_HDI)
                 )
             )
         }
-        
+
         return bulletList
     }
 }
@@ -92,7 +92,7 @@ extension OfferTermsBulletPoints {
     struct BulletPoint: Viewable {
         let title: String
         let message: String?
-        
+
         init(title: String, message: String? = nil) {
             self.title = title
             self.message = message
@@ -102,26 +102,26 @@ extension OfferTermsBulletPoints {
             let bag = DisposeBag()
             let stackView = UIStackView()
             stackView.spacing = 15
-            
+
             let checkMark = Icon(icon: Asset.greenCircularCheckmark, iconWidth: 20)
             stackView.addArrangedSubview(checkMark)
 
             checkMark.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
-            
+
             let textStackView = UIStackView()
             textStackView.axis = .vertical
             textStackView.spacing = 5
-            
+
             stackView.addArrangedSubview(textStackView)
 
             let titleLabel = MultilineLabel(value: title, style: .rowSubtitle)
             bag += textStackView.addArranged(titleLabel)
-            
+
             if let message = message {
                 stackView.alignment = .top
-                
+
                 let messageLabel = MultilineLabel(value: message, style: .rowTertitle)
                 bag += textStackView.addArranged(messageLabel)
             }
@@ -151,9 +151,9 @@ extension OfferTermsBulletPoints: Viewable {
             .onValueDisposePrevious { insuranceType in
                 let innerBag = DisposeBag()
 
-                innerBag += self.bullets(for: insuranceType).map({ bulletPoint in
+                innerBag += self.bullets(for: insuranceType).map { bulletPoint in
                     stackView.addArranged(bulletPoint)
-                })
+                }
 
                 return innerBag
             }

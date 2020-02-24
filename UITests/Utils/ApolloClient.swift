@@ -18,14 +18,12 @@ struct ApolloEnvironmentConfig {
     let assetsEndpointURL: URL
 }
 
-
 extension ApolloClient {
     static let initialRecords: RecordSet = [:]
 
     static var networkTransport: MockNetworkTransport {
         return MockNetworkTransport(body: [
             "data": [
-               
             ],
         ])
     }
@@ -39,7 +37,7 @@ extension ApolloClient {
     static func createClientFromNewSession() -> Future<ApolloClient> {
         return initClient()
     }
-    
+
     static func initClient() -> Future<ApolloClient> {
         let cache = InMemoryNormalizedCache(records: initialRecords)
         let store = ApolloStore(cache: cache)
@@ -53,15 +51,15 @@ extension ApolloClient {
         )
 
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-        
+
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             client
         })
-        
+
         Dependencies.shared.add(module: Module { () -> ApolloStore in
             store
         })
-        
+
         return Future(client)
     }
 }

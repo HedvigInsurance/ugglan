@@ -44,7 +44,7 @@ extension OfferReadyToSign: Viewable {
         let descriptionLabel = MultilineLabel(value: String(key: .OFFER_GET_HEDVIG_BODY), style: TextStyle.bodyWhite.centerAligned)
         bag += stackView.addArranged(descriptionLabel)
 
-        bag += containerScrollView.contentOffsetSignal.onValue({ point in
+        bag += containerScrollView.contentOffsetSignal.onValue { point in
             let viewPoint = self.containerScrollView.convert(CGPoint.zero, from: view)
 
             let correctViewPointY = viewPoint.y - self.containerScrollView.frame.height + bottomPadding + 50
@@ -55,7 +55,7 @@ extension OfferReadyToSign: Viewable {
             } else {
                 view.alpha = 0
             }
-        })
+        }
 
         return (view, bag)
     }

@@ -65,14 +65,14 @@ extension ChatTextView: Viewable {
         }
 
         bag += view.add(SendButton()) { buttonView in
-            buttonView.snp.makeConstraints({ make in
+            buttonView.snp.makeConstraints { make in
                 make.bottom.equalToSuperview().inset(5)
                 make.right.equalToSuperview().inset(5)
-            })
-        }.withLatestFrom(value.plain()).onValue({ _, textFieldValue in
+            }
+        }.withLatestFrom(value.plain()).onValue { _, textFieldValue in
             value.value = ""
             bag += self.chatState.sendChatFreeTextResponse(text: textFieldValue).onValue { _ in }
-        })
+        }
 
         return (view, bag)
     }

@@ -5,11 +5,11 @@
 //  Created by Sam Pettersson on 2019-10-17.
 //
 
-import Foundation
+import Apollo
 import Flow
 import Form
+import Foundation
 import Presentation
-import Apollo
 
 extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
@@ -40,20 +40,20 @@ extension UIApplication {
                 reloadLabels(in: view)
             }
         }
-        
+
         func reloadViewControllers(in base: UIViewController) {
             if let key = base.title?.localizationKey {
                 base.title = String(key: key)
             }
-            
+
             if let presentedViewController = base.presentedViewController {
                 reloadViewControllers(in: presentedViewController)
             }
-            
+
             if let inputAccessoryView = base.inputAccessoryView {
                 reloadLabels(in: inputAccessoryView)
             }
-            
+
             if let tabBarController = base as? UITabBarController {
                 tabBarController.viewControllers?.forEach { viewController in
                     reloadViewControllers(in: viewController)
@@ -66,12 +66,12 @@ extension UIApplication {
                 reloadLabels(in: base.view)
             }
         }
-        
+
         windows.forEach { window in
             guard let rootViewController = window.rootViewController else {
                 return
             }
-            
+
             UIView.transition(with: window, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 reloadViewControllers(in: rootViewController)
             }, completion: nil)
@@ -88,36 +88,36 @@ extension LanguageSwitcher: Presentable {
         let viewController = UIViewController()
         viewController.title = "Språk/Language"
         let bag = DisposeBag()
-        
+
         let form = FormView(sections: [], style: .defaultGrouped)
         bag += viewController.install(form)
-        
+
         let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
-        
+
         func reloadAllLabels() {
             UIApplication.shared.reloadAllLabels()
         }
-        
+
         let englishRowImageView = UIImageView()
         englishRowImageView.snp.makeConstraints { make in
             make.width.equalTo(20)
             make.height.equalTo(20)
         }
-        
+
         if Localization.Locale.currentLocale == .en_SE {
             englishRowImageView.image = Asset.greenCircularCheckmark.image
         }
-        
+
         let swedishRowImageView = UIImageView()
         swedishRowImageView.snp.makeConstraints { make in
             make.width.equalTo(20)
             make.height.equalTo(20)
         }
-        
+
         if Localization.Locale.currentLocale == .sv_SE {
             swedishRowImageView.image = Asset.greenCircularCheckmark.image
         }
-        
+
         func pickLanguage(locale: Localization.Locale) {
             ApplicationState.setPreferredLocale(locale)
             Localization.Locale.currentLocale = locale
@@ -127,25 +127,25 @@ extension LanguageSwitcher: Presentable {
                     NotificationCenter.default.post(Notification(name: .localeSwitched))
                 }
             }
-            bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+            bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
         }
-        
+
         let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
         bag += section.append(englishRow).onValue { _ in
             pickLanguage(locale: .en_SE)
-                        
+
             UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 englishRowImageView.image = Asset.greenCircularCheckmark.image
             }, completion: nil)
-            
+
             UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 swedishRowImageView.image = nil
             }, completion: nil)
         }
-        
+
         englishRow.prepend(Asset.flagGB.image)
         englishRow.append(englishRowImageView)
-        
+
         let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
         bag += section.append(swedishRow).onValue { _ in
             pickLanguage(locale: .sv_SE)
@@ -153,15 +153,15 @@ extension LanguageSwitcher: Presentable {
             UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 englishRowImageView.image = nil
             }, completion: nil)
-            
+
             UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
                 swedishRowImageView.image = Asset.greenCircularCheckmark.image
             }, completion: nil)
         }
-        
+
         swedishRow.prepend(Asset.flagSE.image)
         swedishRow.append(swedishRowImageView)
-        
+
         return (viewController, bag)
     }
 }

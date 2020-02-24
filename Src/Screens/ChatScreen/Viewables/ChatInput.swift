@@ -115,10 +115,10 @@ extension ChatInput: Viewable {
                 stackView.animationSafeIsHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
-        }.onValue({ _ in
+        }.onValue { _ in
             attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
-        })
+        }
 
         let attachGIFButton = AttachGIFButton(
             isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()
@@ -156,10 +156,10 @@ extension ChatInput: Viewable {
                 stackView.animationSafeIsHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
-        }.onValue({ _ in
+        }.onValue { _ in
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
-        })
+        }
 
         let textView = ChatTextView(chatState: chatState)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
@@ -173,10 +173,10 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: padding
             )
-            
+
             bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { attachGifPaneIsOpen in
                 var isHidden: Bool
-                
+
                 if attachGifPaneIsOpen {
                     isHidden = true
                 } else {
@@ -280,7 +280,7 @@ extension ChatInput: Viewable {
         bag += containerView.addArranged(
             AttachGIFPane(
                 isOpenSignal: attachGIFPaneIsOpenSignal,
-                chatState: self.chatState
+                chatState: chatState
             )
         )
 

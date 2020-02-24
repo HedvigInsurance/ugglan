@@ -8,9 +8,9 @@
 
 import Flow
 import Foundation
+import Lottie
 import Presentation
 import UIKit
-import Lottie
 
 struct Launch {
     let hasLoadedSignal: Signal<Void>

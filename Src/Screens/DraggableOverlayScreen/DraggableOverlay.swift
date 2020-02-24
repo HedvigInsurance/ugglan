@@ -129,14 +129,14 @@ extension DraggableOverlay: Presentable {
         }
 
         let overlayContainer = UIView()
-        
+
         bag += merge(
-        NotificationCenter.default
-        .signal(forName: UIApplication.willEnterForegroundNotification),
-        NotificationCenter.default
-            .signal(forName: UIApplication.didEnterBackgroundNotification)
+            NotificationCenter.default
+                .signal(forName: UIApplication.willEnterForegroundNotification),
+            NotificationCenter.default
+                .signal(forName: UIApplication.didEnterBackgroundNotification)
         )
-            .onValue { _ in
+        .onValue { _ in
             overlay.center.y = overlayCenter
             ease.value = overlay.center.y
             ease.targetValue = overlay.center.y

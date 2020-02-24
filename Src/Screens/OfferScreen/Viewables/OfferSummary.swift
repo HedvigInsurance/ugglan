@@ -17,11 +17,11 @@ extension OfferSummary: Viewable {
         let bag = DisposeBag()
         let outerView = UIStackView()
         outerView.axis = .vertical
-        
-        let backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
+
+        let backgroundColor = UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? UIColor.black.lighter(amount: 0.1) : .midnight700
         })
-        
+
         bag += outerView.addArranged(Blob(color: backgroundColor, position: .top))
 
         let containerView = UIView()

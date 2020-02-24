@@ -59,7 +59,7 @@ extension PerilInformation: Presentable {
 
         containerView.addArrangedSubview(titleLabel)
 
-        let body = MarkdownText(text: description, style: .bodyOffBlack)
+        let body = MarkdownText(textSignal: .static(description), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
         bag += containerStackView.applyPreferredContentSize(on: viewController)

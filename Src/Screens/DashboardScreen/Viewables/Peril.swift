@@ -79,10 +79,13 @@ extension Peril: Reusable {
                 view.removeFromSuperview()
             }
 
+            perilView.accessibilityLabel = peril.title
+            perilView.accessibilityIdentifier = peril.id
+
             let bag = DisposeBag()
 
             let perilIcon = Icon(icon: Peril.iconAsset(for: peril.id), iconWidth: 40)
-            
+
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in
                 make.centerX.top.equalToSuperview()
@@ -103,7 +106,9 @@ extension Peril: Reusable {
                 titleLabel.sizeToFit()
             }
 
-            bag += perilView.signal(for: .touchUpInside).feedback(type: .impactLight)
+            let touchUpInsideSignal = perilView.trackedTouchUpInsideSignal
+
+            bag += touchUpInsideSignal.feedback(type: .impactLight)
 
             bag += perilView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 perilView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
@@ -113,7 +118,7 @@ extension Peril: Reusable {
                 perilView.transform = CGAffineTransform.identity
             }
 
-            bag += perilView.signal(for: .touchUpInside).onValue { _ in
+            bag += touchUpInsideSignal.onValue { _ in
                 let title = peril.title.replacingOccurrences(of: "-\n", with: "")
 
                 peril.presentingViewController.present(

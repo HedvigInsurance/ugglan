@@ -121,18 +121,20 @@ extension BankIDLogin: Presentable {
                 completion(.failure(BankIdSignError.failed))
             }
 
-            bag += statusSignal.distinct().onValue({ authState in
+            bag += statusSignal.distinct().onValue { authState in
                 if authState == .success {
                     let appDelegate = UIApplication.shared.appDelegate
-                    
+
                     if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
                         appDelegate.registerFCMToken(fcmToken)
                     }
-                                        
+
+                    AnalyticsCoordinator().setUserId()
+
                     let window = appDelegate.window
                     bag += window.present(LoggedIn(), animated: true)
                 }
-            })
+            }
 
             return bag
         })

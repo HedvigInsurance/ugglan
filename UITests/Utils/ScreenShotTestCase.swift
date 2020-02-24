@@ -21,13 +21,13 @@ class SnapShotTestCase: XCTestCase {
 
         FontLoader.loadFonts()
         DefaultStyling.installCustom()
-        
-        let _ = ApolloClient.initClient()
-        
+
+        _ = ApolloClient.initClient()
+
         Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
             AnalyticsCoordinator()
         })
-        
+
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             RemoteConfigContainer()
         })
@@ -44,7 +44,7 @@ class SnapShotTestCase: XCTestCase {
     func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
         let waitForQuery = expectation(description: "wait for query")
         let client: ApolloClient = Dependencies.shared.resolve()
-        
+
         bag += client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).delay(by: 0.2).onValue { _ in
             onFetched()
             waitForQuery.fulfill()

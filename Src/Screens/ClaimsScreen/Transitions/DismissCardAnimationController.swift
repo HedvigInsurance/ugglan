@@ -76,7 +76,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
             }
         }
 
-        if let bulletPoints = self.commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
+        if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
             let bulletPointTable = BulletPointTable(
                 bulletPoints: bulletPoints
             )

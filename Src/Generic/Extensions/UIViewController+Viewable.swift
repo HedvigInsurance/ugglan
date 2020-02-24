@@ -26,6 +26,25 @@ extension UIViewController {
 
         return result
     }
+    
+    func install<V: Viewable, View: UIView, SignalKind, SignalValue>(
+        _ viewable: V,
+        onInstall: (_ view: View) -> Void = { _ in }
+    ) -> V.Result where V.Matter == View, V.Result == CoreSignal<SignalKind, SignalValue>, V.Events == ViewableEvents {
+        let wasAddedCallbacker = Callbacker<Void>()
+        let viewableEvents = ViewableEvents(
+            wasAddedCallbacker: wasAddedCallbacker
+        )
+        let (matter, result) = viewable.materialize(events: viewableEvents)
+        
+        view = matter
+        
+        onInstall(matter)
+
+        wasAddedCallbacker.callAll()
+
+        return result
+    }
 
     func install<V: Viewable, View: UIView, FutureResult: Any>(
         _ viewable: V

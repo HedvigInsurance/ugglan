@@ -39,9 +39,9 @@ struct Blob: Viewable {
         bag += merge(
             containerView.didLayoutSignal,
             containerView.traitCollectionSignal.toVoid().plain()
-        ).map { (view.layer.frame.width, self.color.cgColor) }.distinct({ (a, b) -> Bool in
+        ).map { (view.layer.frame.width, self.color.cgColor) }.distinct { (a, b) -> Bool in
             a.0 != b.0 && a.1 != b.1
-        }).onValue { width, color in
+        }.onValue { width, color in
             shapeLayer.fillColor = color
 
             containerView.snp.remakeConstraints { make in
@@ -49,10 +49,10 @@ struct Blob: Viewable {
                 make.width.equalToSuperview()
             }
 
-            view.snp.remakeConstraints({ make in
+            view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalTo(44)
-            })
+            }
 
             let shape: UIBezierPath
 
@@ -81,7 +81,6 @@ struct Blob: Viewable {
                     controlPoint2: CGPoint(x: 0.23 * width, y: 65.51)
                 )
                 shape.close()
-                break
             case .bottom:
                 shape = UIBezierPath()
                 shape.move(to: CGPoint(x: 0.5 * width, y: 39.07))
@@ -106,7 +105,6 @@ struct Blob: Viewable {
                     controlPoint2: CGPoint(x: 0.23 * width, y: 21.51)
                 )
                 shape.close()
-                break
             }
 
             shapeLayer.path = shape.cgPath

@@ -113,7 +113,7 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(secondDot)
         typingView.addArrangedSubview(thirdDot)
 
-        bag += bubble.didLayoutSignal.onValue({ _ in
+        bag += bubble.didLayoutSignal.onValue { _ in
             let halfWidthCornerRadius = bubble.frame.height / 2
 
             if self.hasPreviousMessage {
@@ -121,7 +121,7 @@ extension TypingIndicator: Viewable {
             } else {
                 bubble.layer.cornerRadius = halfWidthCornerRadius
             }
-        })
+        }
 
         bag += Signal(every: 2, delay: 0).animated(style: AnimationStyle.easeOut(duration: 0.2), animations: { _ in
             firstDot.transform = CGAffineTransform(translationX: 0, y: -10)
