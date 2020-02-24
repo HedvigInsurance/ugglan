@@ -101,7 +101,7 @@ struct Message: Equatable, Hashable {
                 return false
             }
         }
-        
+
         var isGIFType: Bool {
             switch self {
             case .gif:
@@ -119,7 +119,7 @@ struct Message: Equatable, Hashable {
     }
 
     var shouldShowEditButton: Bool {
-        return cachedComputedProperties?.compute("shouldShowEditButton", { () -> Bool in
+        return cachedComputedProperties?.compute("shouldShowEditButton") { () -> Bool in
             if self.richTextCompatible {
                 return false
             }
@@ -150,11 +150,11 @@ struct Message: Equatable, Hashable {
             }
 
             return myIndex <= indexOfFirstMyself
-        }) ?? false
+        } ?? false
     }
 
     var hasTypingIndicatorNext: Bool {
-        return cachedComputedProperties?.compute("hasTypingIndicatorNext", { () -> Bool in
+        return cachedComputedProperties?.compute("hasTypingIndicatorNext") { () -> Bool in
             guard let list = self.listSignal?.value else {
                 return false
             }
@@ -169,11 +169,11 @@ struct Message: Equatable, Hashable {
             }
 
             return list[nextIndex].right != nil
-        }) ?? false
+        } ?? false
     }
 
     var next: Message? {
-        return cachedComputedProperties?.compute("next", { () -> Message? in
+        return cachedComputedProperties?.compute("next") { () -> Message? in
             guard let list = self.listSignal?.value else {
                 return nil
             }
@@ -188,11 +188,11 @@ struct Message: Equatable, Hashable {
             }
 
             return list[nextIndex].left
-        }) ?? nil
+        } ?? nil
     }
 
     var previous: Message? {
-        return cachedComputedProperties?.compute("previous", { () -> Message? in
+        return cachedComputedProperties?.compute("previous") { () -> Message? in
             guard let list = self.listSignal?.value else {
                 return nil
             }
@@ -207,7 +207,7 @@ struct Message: Equatable, Hashable {
             }
 
             return list[previousIndex].left
-        }) ?? nil
+        } ?? nil
     }
 
     enum Radius {

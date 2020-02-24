@@ -15,8 +15,8 @@ struct BubbleLoading {
     let originatingView: UIView
     let dismissSignal: Signal<Void>
 
-    init(originatingView: UIView, dismissSignal: Signal<Void>) {
-        self.originatingView = originatingView
+    init(originatingView: UIView?, dismissSignal: Signal<Void>) {
+        self.originatingView = originatingView ?? UIView()
         self.dismissSignal = dismissSignal
     }
 }

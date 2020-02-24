@@ -44,9 +44,9 @@ extension AudioPlayer: Viewable {
         }
 
         control.backgroundColor = .primaryTintColor
-        bag += control.didLayoutSignal.onValue({ _ in
+        bag += control.didLayoutSignal.onValue { _ in
             control.layer.cornerRadius = control.frame.height / 2
-        })
+        }
 
         let playIconImageView = UIImageView()
         playIconImageView.image = Asset.play.image
@@ -104,7 +104,7 @@ extension AudioPlayer: Viewable {
 
         bag += control
             .signal(for: .touchUpInside)
-            .onValue({ _ in
+            .onValue { _ in
 
                 guard let audioPlayer = self.audioPlayerSignal.value else {
                     return
@@ -128,7 +128,7 @@ extension AudioPlayer: Viewable {
                 timerBag += Signal(every: 1).onValue { _ in
                     updateTimeStamp(audioPlayer: audioPlayer)
                 }
-            })
+            }
 
         bag += audioPlayerSignal.atOnce().compactMap { $0 }.onValue { audioPlayer in
             updateTimeStamp(audioPlayer: audioPlayer)

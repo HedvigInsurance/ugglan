@@ -48,32 +48,31 @@ extension Dashboard: Presentable {
         bag += containerStackView.addArranged(myProtectionSection)
 
         bag += viewController.install(containerStackView)
-        
+
         let dataBag = bag.innerBag()
-        
+
         func fetch() {
             dataBag.dispose()
-            
-            let dashboardInsuranceQuery = client
-               .watch(query: DashboardQuery())
-               .loader(after: 2, view: viewController.view)
-               .compactMap { $0.data?.insurance }
 
-           dataBag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
-           dataBag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
-           dataBag += dashboardInsuranceQuery.bindTo(renewalsSection.dataSignal)
+            let dashboardInsuranceQuery = client
+                .watch(query: DashboardQuery())
+                .loader(after: 2, view: viewController.view)
+                .compactMap { $0.data?.insurance }
+
+            dataBag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
+            dataBag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
+            dataBag += dashboardInsuranceQuery.bindTo(renewalsSection.dataSignal)
         }
-        
+
         fetch()
-        
-        bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue({ _ in
+
+        bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
             fetch()
-        })
+        }
 
         bag += client.watch(query: MyPaymentQuery())
-        .compactMap { $0.data }
-        .bindTo(paymentNeedsSetupSection.dataSignal)
-       
+            .compactMap { $0.data }
+            .bindTo(paymentNeedsSetupSection.dataSignal)
 
         return (viewController, bag)
     }

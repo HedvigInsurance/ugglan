@@ -14,7 +14,7 @@ import UIKit
 
 struct PostOnboarding {
     @Inject var client: ApolloClient
-    typealias Content = ReusableViewable<ImageTextAction<TableAction>, TableAction>
+    typealias Content = ReusableSignalViewable<ImageTextAction<TableAction>, TableAction>
 
     enum TableAction {
         case payment, push, pushSkip
@@ -75,8 +75,8 @@ struct PostOnboarding {
         )
 
         let table = Table(rows: [
-            ReusableViewable(viewable: payment),
-            ReusableViewable(viewable: pushNotifications),
+            ReusableSignalViewable(viewable: payment),
+            ReusableSignalViewable(viewable: pushNotifications),
         ])
 
         return (table, bag)
@@ -87,7 +87,7 @@ extension PostOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        
+
         ApplicationState.preserveState(.loggedIn)
 
         let layout = UICollectionViewFlowLayout()

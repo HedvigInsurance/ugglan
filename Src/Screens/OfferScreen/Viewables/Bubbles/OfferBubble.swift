@@ -36,19 +36,19 @@ extension OfferBubble: Viewable {
         let bag = DisposeBag()
         let view = UIView()
 
-        bag += view.applyShadow({ _ in
+        bag += view.applyShadow { _ in
             OfferBubble.shadow
-        })
+        }
 
         bag += backgroundColorSignal.atOnce().bindTo(view, \.backgroundColor)
 
         bag += combineLatest(widthSignal.atOnce(), heightSignal.atOnce()).onValue { width, height in
             view.layer.cornerRadius = width / 2
 
-            view.snp.remakeConstraints({ make in
+            view.snp.remakeConstraints { make in
                 make.width.equalTo(width)
                 make.height.equalTo(height)
-            })
+            }
         }
 
         view.addSubview(content)

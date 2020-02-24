@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-05-14.
 //
 
+import Apollo
 import Foundation
 import UIKit
-import Apollo
 
 private struct LogMessage: Encodable {
     let text: String
@@ -18,7 +18,7 @@ struct Logger {
 
     private static func log(input: LoggingInput) {
         #if DEBUG
-            // don't send anything when debugging
+        // don't send anything when debugging
         #else
             let client: ApolloClient = Dependencies.shared.resolve()
             client.perform(mutation: LogMutation(input: input), queue: queue).onValue { _ in }

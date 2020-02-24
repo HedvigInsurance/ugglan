@@ -92,12 +92,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if toast != previousToast {
                     self.toastSignal.value = toast
                 }
-                
+
                 self.bag += self.toastSignal.take(first: 1).onValue { _ in
                     completion(.success)
                 }
             }
-            
+
             return NilDisposer()
         }
     }
@@ -128,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }
-            
+
             let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
             UNUserNotificationCenter.current().requestAuthorization(
                 options: authOptions,
@@ -148,7 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) {
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
-            guard let rootViewController = self.window.rootViewController else { return }
+            guard let rootViewController = window.rootViewController else { return }
 
             bag += rootViewController.present(
                 DirectDebitSetup(setupType: .initial),
@@ -163,7 +163,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
 
         guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
-        guard let rootViewController = self.window.rootViewController else { return }
+        guard let rootViewController = window.rootViewController else { return }
         let innerBag = bag.innerBag()
 
         innerBag += rootViewController.present(
@@ -198,18 +198,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return application(app, open: url,
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
-    }
-    
-    func setFirebaseUserId() {
-        let client: ApolloClient = Dependencies.shared.resolve()
-        
-        client.fetch(query: MemberIdQuery()).map { $0.data?.member.id }.onValue { id in
-            guard let id = id else {
-                return
-            }
-            
-            Analytics.setUserID(id)
-        }
     }
 
     func application(
@@ -259,23 +247,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             remoteConfigContainer
         })
-        
+
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
             remoteConfigContainer.fetched.plain(),
             TranslationsRepo.fetch().valueSignal.plain()
-        ).atValue({ _ in
+        ).atValue { _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
                 AnalyticsCoordinator()
             })
-            
-            self.setFirebaseUserId()
-            
+
+            AnalyticsCoordinator().setUserId()
+
             self.bag += ApplicationState.presentRootViewController(self.window)
-            
+
             if
-                !(ApplicationState.currentState?.isOneOf([.languagePicker]) ?? false) &&
-                !ApplicationState.hasPreferredLocale &&
+                !(ApplicationState.currentState?.isOneOf([.languagePicker]) ?? false),
+                !ApplicationState.hasPreferredLocale,
                 Localization.Locale.currentLocale == .en_SE {
                 self.window.rootViewController?.present(
                     LanguagePicker(),
@@ -287,17 +275,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if ApplicationState.hasOverridenTargetEnvironment {
                 self.displayToast(Toast(
                     symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment.")
+                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
+                )
                 ).onValue { _ in }
             }
-        }).delay(by: 0.1).onValue { _ in
+        }.delay(by: 0.1).onValue { _ in
             self.hasFinishedLoading.value = true
         }
 
-        bag += launchFuture.onValue({ _ in
+        bag += launchFuture.onValue { _ in
             self.window.makeKeyAndVisible()
             self.launchWindow = nil
-        })
+        }
 
         return true
     }

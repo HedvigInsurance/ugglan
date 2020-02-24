@@ -11,10 +11,10 @@ import UIKit
 extension UIViewController {
     func updateTabBarItemBadge(value: String?, backgroundColor: UIColor = .attentionTintColor) {
         let topMostViewController: UIViewController = navigationController != nil ? navigationController! : self
-        guard let index = self.tabBarController?.viewControllers?.firstIndex(of: topMostViewController) else {
+        guard let index = tabBarController?.viewControllers?.firstIndex(of: topMostViewController) else {
             return log.warning("Can't update badge, not a part of a tabBarController")
         }
-        guard let tabBarItem = self.tabBarController?.tabBar.items?[index] else {
+        guard let tabBarItem = tabBarController?.tabBar.items?[index] else {
             return log.warning("Can't update badge, coudn't find tabBarItem")
         }
         tabBarItem.badgeColor = backgroundColor

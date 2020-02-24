@@ -24,7 +24,7 @@ extension OfferChat: Presentable {
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
         restartButton.tintColor = .darkGray
-        
+
         bag += restartButton.onValue { _ in
             let alert = Alert(
                 title: String(key: .CHAT_RESTART_ALERT_TITLE),
@@ -38,9 +38,10 @@ extension OfferChat: Presentable {
                                 duration: 0.25,
                                 options: .transitionCrossDissolve,
                                 animations: {
-                                ApplicationState.preserveState(.onboardingChat)
-                                UIApplication.shared.appDelegate.logout()
-                            }, completion: nil)
+                                    ApplicationState.preserveState(.onboardingChat)
+                                    UIApplication.shared.appDelegate.logout()
+                                }, completion: nil
+                            )
                         }
                     ),
                     Alert.Action(
@@ -65,11 +66,11 @@ extension OfferChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += client.perform(mutation: OfferClosedMutation()).onValue({ _ in
+        bag += client.perform(mutation: OfferClosedMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                 chat.chatState.subscribe()
             }
-        })
+        }
 
         return (viewController, Future { completion in
             bag += future.onResult { result in

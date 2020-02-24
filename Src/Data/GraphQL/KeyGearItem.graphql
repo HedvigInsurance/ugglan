@@ -1,0 +1,47 @@
+query KeyGearItem($id: ID!, $languageCode: String!) {
+    keyGearItem(id: $id) {
+      name
+      category
+      purchasePrice {
+        ...MonetaryAmountFragment
+      }
+      deductible {
+        ...MonetaryAmountFragment
+      }
+      valuation {
+        ... on KeyGearItemValuationFixed {
+            ratio
+            valuation {
+                ...MonetaryAmountFragment
+            }
+        }
+        ... on KeyGearItemValuationMarketValue {
+            ratio
+        }
+      }
+      photos {
+        file {
+          preSignedUrl
+        }
+      }
+      receipts {
+        file {
+          preSignedUrl
+        }
+      }
+      covered {
+         title {
+           translations(where: { language: { code: $languageCode }, project: IOS }) {
+             text
+           }
+         }
+       }
+       exceptions {
+         title {
+           translations(where: { language: { code: $languageCode }, project: IOS }) {
+             text
+           }
+         }
+       }
+    }
+}

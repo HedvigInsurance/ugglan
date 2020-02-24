@@ -14,7 +14,7 @@ struct VideoPlayer {
     let player: AVPlayer
 }
 
-fileprivate final class VideoPlayerViewController: AVPlayerViewController {
+private final class VideoPlayerViewController: AVPlayerViewController {
     private let viewDidDisappearCallbacker = Callbacker<Void>()
 
     var viewDidDisappearSignal: Signal<Void> {

@@ -19,8 +19,8 @@ extension BorderStyle {
     )
 
     static let standardRounded = BorderStyle(
-        width: 0,
-        color: .clear,
+        width: 1 / UIScreen.main.scale,
+        color: .primaryBorder,
         cornerRadius: 5,
         borderEdges: [UIRectEdge.top, UIRectEdge.bottom, UIRectEdge.left, UIRectEdge.right]
     )
@@ -257,9 +257,9 @@ extension HeaderFooterStyle {
         backgroundImage: nil,
         insets: UIEdgeInsets(
             top: 15,
-            left: 20,
+            left: 5,
             bottom: 10,
-            right: 20
+            right: 5
         ),
         emptyHeight: 0
     )
@@ -268,9 +268,9 @@ extension HeaderFooterStyle {
 extension SectionStyle {
     static let sectionPlainRowInsets = UIEdgeInsets(
         top: 15,
-        left: 20,
+        left: 15,
         bottom: 15,
-        right: 20
+        right: 15
     )
 
     static let sectionPlainItemSpacing: CGFloat = 10
@@ -357,20 +357,22 @@ extension SectionStyle {
     )
 }
 
+extension DynamicFormStyle {
+    static let `default` = DynamicFormStyle { _ -> FormStyle in
+        FormStyle(insets: UIEdgeInsets(horizontalInset: 20, verticalInset: 15))
+    }
+}
+
 extension DynamicSectionStyle {
     static let sectionPlainRounded = DynamicSectionStyle { trait -> SectionStyle in
         trait.userInterfaceStyle == .dark ? .sectionPlainDarkRoundedBorder : .sectionPlainLightRoundedBorder
     }
-    
+
     static let sectionPlain = DynamicSectionStyle { trait -> SectionStyle in
-        if trait.isPad {
-            return Self.sectionPlainRounded.styleGenerator(trait)
-        }
-        
-        return trait.userInterfaceStyle == .dark ? .sectionPlainDark : .sectionPlainLight
+        Self.sectionPlainRounded.styleGenerator(trait)
     }
 
     static let sectionPlainLargeIcons = DynamicSectionStyle { trait -> SectionStyle in
-        trait.userInterfaceStyle == .dark ? .sectionPlainLargeIconsDark : .sectionPlainLargeIconsLight
+        trait.userInterfaceStyle == .dark ? .sectionPlainDarkLargeIconsRoundedBorder : .sectionPlainLightLargeIconsRoundedBorder
     }
 }
