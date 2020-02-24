@@ -50,7 +50,7 @@ extension KeyGearAddReceiptRow: Viewable {
                 title: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON),
                 type: .outline(
                     borderColor: .transparent,
-                    textColor: .purple
+                    textColor: .primaryTintColor
                 )
             )
         )

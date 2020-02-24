@@ -30,7 +30,7 @@ extension KeyGearValuation: Presentable {
         let headerStackView = UIStackView()
         headerStackView.axis = .vertical
         headerStackView.spacing = 8
-        
+
         let totalPercentageLabel = UILabel(value: "", style: TextStyle.headlineLargeLargeCenter.resized(to: 48))
         headerStackView.addArrangedSubview(totalPercentageLabel)
 
@@ -59,7 +59,7 @@ extension KeyGearValuation: Presentable {
                         valuationPrice: fixed.valuation.fragments.monetaryAmountFragment.formattedAmount
                     )
                 )
-                
+
                 totalPercentageLabel.value = "\(fixed.ratio)%"
                 totalPercentageDescriptionLabel.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL)
             } else if let marketValue = item?.valuation?.asKeyGearItemValuationMarketValue {
@@ -69,7 +69,7 @@ extension KeyGearValuation: Presentable {
                         valuationPercentage: marketValue.ratio
                     )
                 )
-                
+
                 totalPercentageDescriptionLabel.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_DESCRIPTION)
                 totalPercentageLabel.value = "\(marketValue.ratio)%"
             }

@@ -158,7 +158,7 @@ extension KeyGearItem: Presentable {
             if data.images.isEmpty {
                 return [.right(data.category)]
             }
-            
+
             return data.images.compactMap { URL(string: $0) }.map { .left($0) }
         }.readable(initial: [])
 
@@ -199,28 +199,28 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController, itemId: id))
 
         bag += innerForm.append(Spacing(height: 10))
-        
+
         let claimsSection = innerForm.appendSection()
         claimsSection.dynamicStyle = .sectionPlain
-        
+
         let claimsRow = RowView(title: String(key: .KEY_GEAR_REPORT_CLAIM_ROW), style: .rowTitle)
         claimsRow.append(Asset.chevronRight.image)
-        
+
         bag += claimsSection.append(claimsRow).onValue { _ in
-             viewController.present(
-                 DraggableOverlay(
-                     presentable: HonestyPledge(),
-                     presentationOptions: [
-                         .defaults,
-                         .prefersLargeTitles(false),
-                         .largeTitleDisplayMode(.never),
-                         .prefersNavigationBarHidden(true),
-                     ],
-                     adjustsToKeyboard: false
-                 )
-             )
+            viewController.present(
+                DraggableOverlay(
+                    presentable: HonestyPledge(),
+                    presentationOptions: [
+                        .defaults,
+                        .prefersLargeTitles(false),
+                        .largeTitleDisplayMode(.never),
+                        .prefersNavigationBarHidden(true),
+                    ],
+                    adjustsToKeyboard: false
+                )
+            )
         }
-        
+
         bag += innerForm.append(Spacing(height: 10))
 
         let coveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE))
@@ -277,13 +277,13 @@ extension KeyGearItem: Presentable {
             viewController: viewController
         )
         bag += navigationBarBag
-        
+
         bag += nameSection.append(nameRow).onValue { name in
             viewController.navigationItem.title = name
             navigationBar.items = [viewController.navigationItem]
             self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
         }
-        
+
         bag += dataSignal.onValue { data in
             viewController.navigationItem.title = data.name
             navigationBar.items = [viewController.navigationItem]
@@ -308,11 +308,11 @@ extension KeyGearItem: Presentable {
                         throw GenericError.cancelled
                     }),
                 ]), style: .sheet(from: optionsButton.view, rect: nil)).onValue { _ in
-                    self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { result in
-                       self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
-                           completion(.success)
-                       }
-                   }
+                    self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
+                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                            completion(.success)
+                        }
+                    }
                 }
             }
 

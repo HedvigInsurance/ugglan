@@ -5,18 +5,18 @@
 //  Created by Pavel Barros Quintanilla on 2020-02-03.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import Presentation
-import Apollo
 
 struct KeyGearAddValuation {
     let id: String
     let category: KeyGearItemCategory
     let state = State()
     @Inject var client: ApolloClient
-    
+
     struct State {
         let purchasePriceSignal = ReadWriteSignal<Int>(0)
         let purchaseDateSignal = ReadWriteSignal(Date())
@@ -132,7 +132,7 @@ extension KeyGearAddValuation: Presentable {
         return (viewController, Future { completion in
             bag += button.onTapSignal.onValue { _ in
                 button.isLoadingSignal.value = true
-                
+
                 self.client.perform(
                     mutation: UpdateKeyGearValuationMutation(
                         itemId: self.id,

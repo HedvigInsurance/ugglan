@@ -40,7 +40,7 @@ extension SectionView {
             disposable.dispose()
         }
     }
-    
+
     func append<V: Viewable, View: RowView, SignalKind, SignalValue>(
         _ viewable: V,
         onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
@@ -48,7 +48,7 @@ extension SectionView {
         V.Matter == View,
         V.Result == CoreSignal<SignalKind, SignalValue>,
         V.Events == SelectableViewableEvents {
-       let onSelectCallbacker = Callbacker<Void>()
+        let onSelectCallbacker = Callbacker<Void>()
 
         let (matter, result, disposable) = materializeViewable(
             viewable: viewable,
@@ -63,10 +63,10 @@ extension SectionView {
 
         onCreate(rowAndProvider)
 
-            return result.hold( Disposer {
-                       self.remove(rowAndProvider)
-                       bag.dispose()
-                       disposable.dispose()
+        return result.hold(Disposer {
+            self.remove(rowAndProvider)
+            bag.dispose()
+            disposable.dispose()
                    })
     }
 

@@ -26,7 +26,7 @@ extension UIViewController {
 
         return result
     }
-    
+
     func install<V: Viewable, View: UIView, SignalKind, SignalValue>(
         _ viewable: V,
         onInstall: (_ view: View) -> Void = { _ in }
@@ -36,9 +36,9 @@ extension UIViewController {
             wasAddedCallbacker: wasAddedCallbacker
         )
         let (matter, result) = viewable.materialize(events: viewableEvents)
-        
+
         view = matter
-        
+
         onInstall(matter)
 
         wasAddedCallbacker.callAll()

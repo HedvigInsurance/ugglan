@@ -56,10 +56,10 @@ struct ReusableSignalViewable<View: Viewable, SignalValue>: Reusable, SignalProv
 }
 
 extension ReusableSignalViewable: Hashable {
-    static func == (lhs: ReusableSignalViewable<View, SignalValue>, rhs: ReusableSignalViewable<View, SignalValue>) -> Bool {
+    static func == (_: ReusableSignalViewable<View, SignalValue>, _: ReusableSignalViewable<View, SignalValue>) -> Bool {
         return true
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(true)
     }

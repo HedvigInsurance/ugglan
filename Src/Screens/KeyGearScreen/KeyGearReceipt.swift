@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2020-02-21.
 //
 
+import Flow
 import Foundation
 import Presentation
 import UIKit
-import Flow
 import WebKit
 
 struct KeyGearReceipt {
@@ -21,11 +21,11 @@ extension KeyGearReceipt: Presentable {
             navigationController?.setNavigationBarHidden(false, animated: animated)
         }
     }
-    
+
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = KeyGearReceiptViewController()
-        
+
         let activityButton = UIBarButtonItem(system: .action)
 
         bag += viewController.navigationItem.addItem(
@@ -48,20 +48,20 @@ extension KeyGearReceipt: Presentable {
 
             return viewController.present(activityViewPresentation).disposable
         }
-        
+
         if receipt.pathExtension == "pdf" {
             let pdfViewer = PDFViewer()
             bag += viewController.install(pdfViewer)
-            
+
             pdfViewer.url.value = receipt
         } else {
             let webView = WKWebView()
             webView.backgroundColor = .primaryBackground
             webView.load(URLRequest(url: receipt))
-            
+
             viewController.view = webView
         }
-        
+
         return (viewController, bag)
     }
 }

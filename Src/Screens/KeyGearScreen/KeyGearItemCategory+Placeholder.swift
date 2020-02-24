@@ -19,7 +19,6 @@ extension KeyGearItemCategory {
             return nil
         default:
             return nil
-        
         }
     }
 }

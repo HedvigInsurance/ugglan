@@ -19,7 +19,7 @@ struct KeyGearItemHeader {
 struct DeductibleBox: Viewable {
     let itemId: String
     @Inject var client: ApolloClient
-    
+
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
         let row = RowView()
@@ -39,14 +39,14 @@ struct DeductibleBox: Viewable {
         deductibleValueContainerContainer.addArrangedSubview(deductibleValueContainer)
 
         let deductibleLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
-        
+
         deductibleValueContainer.addArrangedSubview(deductibleLabel)
         deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .bodySmallSmallLeft))
-        
+
         bag += client.watch(query: KeyGearItemQuery(id: itemId))
             .map { $0.data?.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
             .bindTo(deductibleLabel, \.text)
-        
+
         row.append(stackView)
 
         return (row, bag)
@@ -67,7 +67,7 @@ struct ValuationBox: Viewable {
         stackView.spacing = 5
 
         stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodySmallSmallLeft))
-        
+
         let emptyValuationLabel = UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight)
         emptyValuationLabel.isHidden = true
         stackView.addArrangedSubview(emptyValuationLabel)
@@ -75,7 +75,7 @@ struct ValuationBox: Viewable {
         row.append(stackView)
 
         let dataSignal = client.fetch(query: KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)).valueSignal
-        
+
         bag += dataSignal.map { $0.data?.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
             if valuation == nil {
                 emptyValuationLabel.isHidden = false
@@ -83,7 +83,7 @@ struct ValuationBox: Viewable {
             }
         })
 
-        bag += events.onSelect.withLatestFrom(dataSignal.plain()).compactMap { (_, result) in result.data?.keyGearItem?.category }.onValue { category in
+        bag += events.onSelect.withLatestFrom(dataSignal.plain()).compactMap { _, result in result.data?.keyGearItem?.category }.onValue { category in
             self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: category).withCloseButton, style: .modal, options: [
                 .defaults, .allowSwipeDismissAlways,
             ])

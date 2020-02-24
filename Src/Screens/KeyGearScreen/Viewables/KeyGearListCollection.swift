@@ -42,13 +42,13 @@ extension KeyGearListCollection: Viewable {
             title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
             description: String(key: .KEY_GEAR_START_EMPTY_BODY)
         )
-        
+
         bag += collectionKit.registerViewForSupplementaryElement(
             kind: UICollectionView.elementKindSectionHeader
         ) { _ in
             header
         }
-        
+
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(width: collectionKit.view.frame.width / 2 - 20, height: 120)
         }
