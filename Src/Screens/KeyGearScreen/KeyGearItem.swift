@@ -124,10 +124,6 @@ extension KeyGearItem: Presentable {
             cachePolicy: .returnCacheDataAndFetch
         ).compactMap { $0.data?.keyGearItem }
 
-        bag += dataSignal.onValue { data in
-            viewController.navigationItem.title = data.name
-        }
-
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.backgroundColor = .primaryBackground
@@ -263,6 +259,11 @@ extension KeyGearItem: Presentable {
             viewController.navigationItem.title = name
             navigationBar.items = [viewController.navigationItem]
             self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
+        }
+        
+        bag += dataSignal.onValue { data in
+            viewController.navigationItem.title = data.name
+            navigationBar.items = [viewController.navigationItem]
         }
 
         bag += navigationBar.didLayoutSignal.onValue { _ in

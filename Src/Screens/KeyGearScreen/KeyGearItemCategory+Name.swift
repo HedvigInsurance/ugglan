@@ -23,7 +23,7 @@ extension KeyGearItemCategory {
         case .watch:
             return String(key: .ITEM_TYPE_WATCH)
         case .smartWatch:
-            return "TODO smart watch"
+            return String(key: .ITEM_TYPE_SMART_WATCH)
         case .__unknown:
             return ""
         }
