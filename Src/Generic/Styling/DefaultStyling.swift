@@ -43,9 +43,9 @@ extension DefaultStyling {
 
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).shadowImage = UIColor.grayBorder.as1ptImage()
+            ).shadowImage = UIColor.transparent.as1ptImage()
         } else {
-            UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+            UINavigationBar.appearance().shadowImage = UIColor.transparent.as1ptImage()
         }
 
         UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
@@ -101,11 +101,11 @@ extension DefaultStyling {
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
-            ).shadowImage = UIColor.darkGrayBorder.as1ptImage()
+            ).shadowImage = UIColor.almostBlack.as1ptImage()
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).shadowImage = UIColor.grayBorder.as1ptImage()
+            ).shadowImage = UIColor.offWhite.as1ptImage()
 
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)

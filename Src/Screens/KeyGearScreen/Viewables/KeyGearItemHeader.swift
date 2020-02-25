@@ -71,22 +71,59 @@ struct ValuationBox: Viewable {
         let emptyValuationLabel = UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight)
         emptyValuationLabel.isHidden = true
         stackView.addArrangedSubview(emptyValuationLabel)
+        
+        let valuationValueContainer = UIStackView()
+        valuationValueContainer.axis = .vertical
+        valuationValueContainer.spacing = 2.5
+        
+        let valuationValueLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
+        valuationValueContainer.addArrangedSubview(valuationValueLabel)
+        
+        let valuationValueDescription = UILabel(value: "", style: .linksSmallSmallRight)
+        valuationValueDescription.adjustsFontSizeToFitWidth = true
+        valuationValueContainer.addArrangedSubview(valuationValueDescription)
+        
+        stackView.addArrangedSubview(valuationValueContainer)
 
         row.append(stackView)
 
-        let dataSignal = client.fetch(query: KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)).valueSignal
+        let dataSignal = client.watch(query: KeyGearItemQuery(id: itemId))
 
         bag += dataSignal.map { $0.data?.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
             if valuation == nil {
                 emptyValuationLabel.isHidden = false
+                valuationValueContainer.isHidden = true
+                valuationValueContainer.layoutIfNeeded()
                 emptyValuationLabel.layoutIfNeeded()
+            } else {
+                valuationValueContainer.isHidden = false
+                emptyValuationLabel.isHidden = true
+                valuationValueContainer.layoutIfNeeded()
+                emptyValuationLabel.layoutIfNeeded()
+                
+                if let fixedValuation = valuation?.asKeyGearItemValuationFixed {
+                    valuationValueLabel.value = "\(fixedValuation.ratio)%"
+                    valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL)
+                } else if let marketValuation = valuation?.asKeyGearItemValuationMarketValue {
+                    valuationValueLabel.value = "\(marketValuation.ratio)%"
+                    valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_DESCRIPTION)
+                }
             }
         })
 
-        bag += events.onSelect.withLatestFrom(dataSignal.plain()).compactMap { _, result in result.data?.keyGearItem?.category }.onValue { category in
-            self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: category).withCloseButton, style: .modal, options: [
-                .defaults, .allowSwipeDismissAlways,
-            ])
+        bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, result in result.data?.keyGearItem }.onValue { item in
+            
+            if item.valuation != nil {
+                self.presentingViewController.present(KeyGearValuation(itemId: self.itemId).withCloseButton, style: .modal, options: [
+                    .defaults, .allowSwipeDismissAlways,
+                ])
+            } else {
+                self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: item.category).withCloseButton, style: .modal, options: [
+                    .defaults, .allowSwipeDismissAlways,
+                ])
+            }
+            
+            
         }
 
         return (row, bag)
