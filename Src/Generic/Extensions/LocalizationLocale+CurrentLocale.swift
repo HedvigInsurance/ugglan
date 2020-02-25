@@ -15,6 +15,10 @@ extension Localization.Locale {
             return "sv-SE"
         case .en_SE:
             return "en-SE"
+        case .en_NO:
+            return "en-NO"
+        case .nb_NO:
+            return "nb-NO"
         }
     }
 
@@ -24,6 +28,10 @@ extension Localization.Locale {
             return "sv_SE"
         case .en_SE:
             return "en_SE"
+        case .en_NO:
+            return "en_NO"
+        case .nb_NO:
+            return "nb_NO"
         }
     }
 
@@ -32,6 +40,10 @@ extension Localization.Locale {
         case .sv_SE:
             return .svSe
         case .en_SE:
+            return .enSe
+        case .nb_NO:
+            return .enSe
+        case .en_NO:
             return .enSe
         }
     }
