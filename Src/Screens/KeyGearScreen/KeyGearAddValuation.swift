@@ -61,6 +61,7 @@ struct DatePicker: Viewable {
         mainRowContainerView.addArrangedSubview(value)
 
         let picker = UIDatePicker()
+        picker.maximumDate = Date()
         picker.calendar = Calendar.current
         picker.datePickerMode = .date
         picker.isHidden = true
