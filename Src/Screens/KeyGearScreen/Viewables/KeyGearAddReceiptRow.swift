@@ -54,8 +54,10 @@ extension KeyGearAddReceiptRow: Viewable {
                 )
             )
         )
+        
+        let buttonContainer = UIStackView()
 
-        bag += row.append(button.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
+        bag += row.append(button.wrappedIn(UIStackView()).wrappedIn(buttonContainer)) { stackView in
             stackView.alignment = .center
             stackView.axis = .vertical
         }
@@ -125,7 +127,7 @@ extension KeyGearAddReceiptRow: Viewable {
 
             row.viewController?.present(
                 KeyGearImagePicker(presentingViewController: row.viewController!, allowedTypes: [.camera, .photoLibrary, .document]),
-                style: .sheet()
+                style: .sheet(from: buttonContainer, rect: nil)
             ).onValue { either in
                 switch either {
                 case let .left(imageFuture):

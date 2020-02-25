@@ -208,16 +208,9 @@ extension KeyGearItem: Presentable {
 
         bag += claimsSection.append(claimsRow).onValue { _ in
             viewController.present(
-                DraggableOverlay(
-                    presentable: HonestyPledge(),
-                    presentationOptions: [
-                        .defaults,
-                        .prefersLargeTitles(false),
-                        .largeTitleDisplayMode(.never),
-                        .prefersNavigationBarHidden(true),
-                    ],
-                    adjustsToKeyboard: false
-                )
+                HonestyPledge(),
+                style: .modally(),
+                options: [.defaults]
             )
         }
 
@@ -296,6 +289,16 @@ extension KeyGearItem: Presentable {
                 bottom: 0,
                 right: 0
             )
+        }
+        
+        bag += navigationBar.traitCollectionSignal.atOnce().onValue { trait in
+            if trait.userInterfaceIdiom == .pad {
+                viewController.navigationItem.leftBarButtonItem = nil
+            } else {
+                viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
+            }
+            
+            navigationBar.items = [viewController.navigationItem]
         }
 
         return (viewController, Future { completion in

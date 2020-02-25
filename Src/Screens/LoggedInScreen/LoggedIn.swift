@@ -65,7 +65,7 @@ extension LoggedIn: Presentable {
         let keyGearPresentation = Presentation(
             keyGear,
             style: .default,
-            options: [.defaults, .prefersLargeTitles(true)]
+            options: [.prefersLargeTitles(true)]
         )
 
         let claimsPresentation = Presentation(
