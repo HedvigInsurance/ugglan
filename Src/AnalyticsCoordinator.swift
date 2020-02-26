@@ -13,6 +13,7 @@ import Foundation
 
 struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient
+    @Inject private var remoteConfig: RemoteConfigContainer
 
     func setUserId() {
         client.fetch(
@@ -24,6 +25,7 @@ struct AnalyticsCoordinator {
             }
 
             Analytics.setUserID(id)
+            self.remoteConfig.fetch(true)
         }
     }
 
