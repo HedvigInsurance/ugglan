@@ -21,18 +21,18 @@ struct LatePaymentHeaderSection {
 extension LatePaymentHeaderSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
-        let view = UIStackView()
+        let stackView = UIStackView()
         let childView = UIView()
 
-        view.addSubview(childView)
+        stackView.addSubview(childView)
 
         childView.layer.cornerRadius = 5
         childView.backgroundColor = .coral200
 
         childView.snp.makeConstraints { make in
-            make.left.top.equalTo(view).offset(20)
-            make.right.equalTo(view).offset(-20)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.left.top.equalTo(stackView)
+            make.right.equalTo(stackView)
+            make.bottom.equalTo(stackView.safeAreaLayoutGuide)
         }
 
         let containerView = UIStackView()
@@ -62,6 +62,6 @@ extension LatePaymentHeaderSection: Viewable {
 
         bag += containerView.addArranged(infoLabel)
 
-        return (view, bag)
+        return (stackView, bag)
     }
 }

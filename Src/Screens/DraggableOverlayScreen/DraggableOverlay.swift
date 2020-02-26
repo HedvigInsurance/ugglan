@@ -56,7 +56,10 @@ extension DraggableOverlay: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        viewController.view = view
+        viewController.view.addSubview(view)
+        view.snp.remakeConstraints { make in
+            make.top.left.right.bottom.equalToSuperview()
+        }
 
         let dimmingView = UIView()
         dimmingView.backgroundColor = UIColor.black
@@ -89,7 +92,7 @@ extension DraggableOverlay: Presentable {
         overlay.snp.makeConstraints { make in
             make.width.equalToSuperview()
             make.height.equalTo(0)
-            make.center.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
 
         let overshoot = UIView()
@@ -100,7 +103,7 @@ extension DraggableOverlay: Presentable {
         bag += view.didLayoutSignal.onValue { _ in
             overshoot.snp.remakeConstraints { make in
                 make.height.equalTo(view.snp.height)
-                make.top.equalTo(overlay.snp.bottom).inset(20)
+                make.top.equalTo(overlay.snp.bottom)
                 make.width.equalToSuperview()
             }
         }
@@ -334,9 +337,7 @@ extension DraggableOverlay: Presentable {
         embeddedChildScreen.didMove(toParent: viewController)
 
         embeddedChildScreen.view.snp.makeConstraints { make in
-            make.width.equalTo(overlay.snp.width)
-            make.height.equalTo(overlay.snp.height)
-            make.center.equalTo(overlay.snp.center)
+            make.top.left.right.bottom.equalTo(overlay)
         }
 
         if let navigationController = embeddedChildScreen as? UINavigationController {

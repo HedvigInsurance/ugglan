@@ -47,6 +47,9 @@ extension MyPayment: Presentable {
         updatingMessageSectionSpacing.isHiddenSignal.value = true
 
         bag += form.append(updatingMessageSectionSpacing)
+        
+        let latePaymentSpacing = Spacing(height: 20)
+        bag += form.prepend(latePaymentSpacing)
 
         let updatingMessageSection = SectionView(style: .sectionPlain)
         updatingMessageSection.isHidden = true
