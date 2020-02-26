@@ -91,13 +91,13 @@ struct ValuationBox: Viewable {
 
         bag += dataSignal.map { $0.data?.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
             if valuation == nil {
-                emptyValuationLabel.isHidden = false
-                valuationValueContainer.isHidden = true
+                emptyValuationLabel.animationSafeIsHidden = false
+                valuationValueContainer.animationSafeIsHidden = true
                 valuationValueContainer.layoutIfNeeded()
                 emptyValuationLabel.layoutIfNeeded()
             } else {
-                valuationValueContainer.isHidden = false
-                emptyValuationLabel.isHidden = true
+                valuationValueContainer.animationSafeIsHidden = false
+                emptyValuationLabel.animationSafeIsHidden = true
                 valuationValueContainer.layoutIfNeeded()
                 emptyValuationLabel.layoutIfNeeded()
                 

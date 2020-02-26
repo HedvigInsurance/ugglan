@@ -16,7 +16,7 @@ import WatchConnectivity
 struct KeyGearOverview {
     @Inject var client: ApolloClient
 
-    func autoAddDevices() {
+    func autoAddDevices(viewController: UIViewController) {
         if WCSession.isSupported() {
             let bag = DisposeBag()
             let session = WCSession.default
@@ -67,8 +67,13 @@ struct KeyGearOverview {
         }
 
         let bag = DisposeBag()
+        
+        let category: KeyGearItemCategory = viewController.traitCollection.userInterfaceIdiom == .pad ? .tablet : .phone
 
-        bag += client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [], category: .phone, physicalReferenceHash: deviceId))).valueSignal.compactMap { $0.data?.createKeyGearItem.id }
+        bag += client.perform(mutation: CreateKeyGearItemMutation(
+            input: CreateKeyGearItemInput(photos: [], category: category, physicalReferenceHash: deviceId))
+        ).valueSignal
+            .compactMap { $0.data?.createKeyGearItem.id }
             .onValue { itemId in
                 self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: itemId, name: UIDevice.current.name)).onValue { _ in
                     self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
@@ -93,6 +98,7 @@ extension KeyGearOverview: Presentable {
             split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .allVisible : .automatic
         }
         
+        split.view.backgroundColor = .primaryBackground
         split.extendedLayoutIncludesOpaqueBars = true
         
         let viewController = KeyGearOverviewViewController()
@@ -100,7 +106,7 @@ extension KeyGearOverview: Presentable {
         
         bag += split.present(viewController, options: [.defaults, .showInMaster, .prefersLargeTitles(true)])
 
-        autoAddDevices()
+        autoAddDevices(viewController: split)
         
         let detailBag = DisposeBag()
         bag += detailBag

@@ -24,6 +24,8 @@ extension KeyGearItemCategory {
             return String(key: .ITEM_TYPE_WATCH)
         case .smartWatch:
             return String(key: .ITEM_TYPE_SMART_WATCH)
+        case .tablet:
+            return String(key: .ITEM_TYPE_TABLET)
         case .__unknown:
             return ""
         }

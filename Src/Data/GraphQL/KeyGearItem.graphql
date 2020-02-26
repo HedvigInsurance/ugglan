@@ -8,6 +8,9 @@ query KeyGearItem($id: ID!, $languageCode: String!) {
       deductible {
         ...MonetaryAmountFragment
       }
+      maxInsurableAmount {
+        ...MonetaryAmountFragment
+      }
       valuation {
         ... on KeyGearItemValuationFixed {
             ratio

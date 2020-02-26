@@ -24,9 +24,25 @@ struct KeyGearAddValuation {
 }
 
 struct PurchasePrice: Viewable {
-    func materialize(events _: ViewableEvents) -> (RowView, Signal<Int>) {
+    let id: String
+    let category: KeyGearItemCategory
+    @Inject var client: ApolloClient
+    
+    func materialize(events _: ViewableEvents) -> (SectionView, Signal<Int>) {
         let bag = DisposeBag()
+        
+        let footerView = MultilineLabel(value: String(key: .KEY_GEAR_NOT_COVERED(itemType: category.name.localizedLowercase)), style: .sectionHeader)
+        
+        let footerViewContainer = UIStackView()
+        footerViewContainer.isHidden = false
+        footerViewContainer.axis = .vertical
+        bag += footerViewContainer.addArranged(footerView)
+        
+        let section = SectionView(headerView: nil, footerView: footerViewContainer)
+        section.dynamicStyle = .sectionPlain
+        
         let row = RowView()
+        section.append(row)
 
         row.prepend(UILabel(value: String(key: .KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE), style: .headlineMediumMediumLeft))
 
@@ -34,10 +50,25 @@ struct PurchasePrice: Viewable {
         textField.keyboardType = .numeric
 
         bag += textField.addDoneToolbar()
+        
+        let amountSignal = client
+            .watch(query: KeyGearItemQuery(id: id))
+            .compactMap { $0.data?.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
+            .readable(initial: "0")
+        
+        bag += combineLatest(textField, amountSignal).animated(style: SpringAnimationStyle.lightBounce()) { value, amount in
+            if let amount = Float(amount), let value = Float(value), value > amount {
+                footerViewContainer.animationSafeIsHidden = false
+            } else {
+                footerViewContainer.animationSafeIsHidden = true
+            }
+            footerViewContainer.layoutIfNeeded()
+            section.layoutIfNeeded()
+        }
 
         row.append(textField)
-
-        return (row, textField.providedSignal.hold(bag).compactMap { Int($0) })
+        
+        return (section, textField.providedSignal.hold(bag).compactMap { Int($0) })
     }
 }
 
@@ -103,10 +134,7 @@ extension KeyGearAddValuation: Presentable {
 
         bag += form.append(Spacing(height: 40))
 
-        let priceSection = form.appendSection()
-        priceSection.dynamicStyle = .sectionPlain
-
-        bag += priceSection.append(PurchasePrice()).bindTo(state.purchasePriceSignal)
+        bag += form.append(PurchasePrice(id: id, category: category)).bindTo(state.purchasePriceSignal)
 
         bag += form.append(Spacing(height: 20))
 
