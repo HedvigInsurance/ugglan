@@ -220,7 +220,7 @@ extension DraggableOverlay: Presentable {
         let embeddedChildScreen = childScreen.embededInNavigationController(presentationOptions)
 
         // initial entry animation
-        bag += overlayHeightSignal.filter(predicate: { $0 != 0 }).wait(until: view.hasWindowSignal).take(first: 1).onValue { overlayHeight in
+        bag += overlayHeightSignal.filter(predicate: { $0 != 0 }).wait(until: view.hasWindowSignal).onValue { overlayHeight in
             let originalCenterY = view.frame.height + overlayHeight
             overlay.center.y = originalCenterY
             ease.value = originalCenterY
