@@ -41,14 +41,16 @@ extension EmbarkNumberAction: Viewable {
         let boxStack = UIStackView()
         boxStack.axis = .vertical
         boxStack.edgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        boxStack.spacing = 10
                         
-        let textView = TextView(placeholder: data.numberActionData.placeholder)
-        let (textInputView, textSignal) = textView.materialize(events: events)
+        let textField = EmbarkInput(placeholder: data.numberActionData.placeholder)
+        textField.keyboardTypeSignal.value = .numberPad
+        let (textInputView, textSignal) = textField.materialize(events: events)
         boxStack.addArrangedSubview(textInputView)
         
-        let unitLabel = MultilineLabel(value: data.numberActionData.unit ?? "", style: .bodyOffBlack)
-        bag += boxStack.addArranged(unitLabel)
+        if let unit = data.numberActionData.unit {
+            let unitLabel = MultilineLabel(value: unit, style: .centeredBodyOffBlack)
+            bag += boxStack.addArranged(unitLabel)
+        }
         
         box.addSubview(boxStack)
         boxStack.snp.makeConstraints { make in
@@ -66,11 +68,10 @@ extension EmbarkNumberAction: Viewable {
         
         return (view, Signal { callback in
             
-            bag += textSignal.onValue({ _ in
-                
-            })
-            
-            bag += button.onTapSignal.onValue { _ in
+            bag += button.onTapSignal.withLatestFrom(textSignal.plain()).onValue { _, textValue in
+                let key = self.data.numberActionData.key
+                self.store.setValue(key: key, value: textValue)
+                //self.store.setValue(key: (self.passageName ?? result.key) + "Result", value: result.textValue)
                 callback(self.data.numberActionData.link.fragments.embarkLinkFragment)
             }
                         

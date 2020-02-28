@@ -100,7 +100,7 @@ class EmbarkStore {
         return false
     }
     
-    func passes(expression: EmbarkStoryQuery.Data.EmbarkStory.Passage.Message.Expression) -> Bool {
+    func passes(expression: MessageFragment.Expression) -> Bool {
         if let multiple = expression.fragments.expressionFragment.asEmbarkExpressionMultiple {
             switch multiple.expressionMultipleType {
             case .and:

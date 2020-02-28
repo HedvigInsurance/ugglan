@@ -12,6 +12,7 @@ import UIKit
 struct Action {
     let store: EmbarkStore
     let dataSignal: ReadSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage.Action?>
+    let passageName: ReadSignal<String?>
 }
 
 struct ActionResponse {
@@ -22,6 +23,7 @@ struct ActionResponse {
 struct ActionResponseData {
     let key: String
     let value: String
+    let textValue: String
 }
 
 extension Action: Viewable {
@@ -30,13 +32,14 @@ extension Action: Viewable {
         let bag = DisposeBag()
         
         return (view, Signal { callback in
-            bag += self.dataSignal.onValueDisposePrevious { data in
+            bag += combineLatest(self.dataSignal, self.passageName).onValueDisposePrevious { data, passageName in
                 let innerBag = DisposeBag()
                                 
                 if let selectAction = data?.asEmbarkSelectAction {
                     innerBag += view.addArranged(EmbarkSelectAction(
                         store: self.store,
-                        data: selectAction
+                        data: selectAction,
+                        passageName: passageName
                     )).onValue(callback)
                 } else if let textAction = data?.asEmbarkTextAction {
                     innerBag += view.addArranged(EmbarkTextAction(

@@ -15,6 +15,7 @@ typealias EmbarkSelectActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Act
 struct EmbarkSelectAction {
     let store: EmbarkStore
     let data: EmbarkSelectActionData
+    let passageName: String?
 }
 
 extension EmbarkSelectAction: Viewable {
@@ -40,6 +41,7 @@ extension EmbarkSelectAction: Viewable {
                 bag += optionsSlice.map { option in
                     return stack.addArranged(EmbarkSelectActionOption(data: option)).onValue { result in
                         self.store.setValue(key: result.key, value: result.value)
+                        self.store.setValue(key: (self.passageName ?? result.key) + "Result", value: result.textValue)
                         callback(option.link.fragments.embarkLinkFragment)
                     }
                 }

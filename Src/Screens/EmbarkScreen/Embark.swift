@@ -26,12 +26,19 @@ extension Embark: Presentable {
         view.backgroundColor = .darkPurple
         viewController.view = view
         
-        /*let imageBackground = UIImageView(image: Asset.embarkBackground.image)
+        let imageBackground = UIImageView(image: Asset.embarkBackground.image)
         imageBackground.contentMode = .scaleAspectFill
         view.addSubview(imageBackground)
         imageBackground.snp.makeConstraints { make in
             make.height.width.equalToSuperview()
-        }*/
+        }
+        
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        view.addSubview(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.height.width.equalToSuperview()
+        }
         
         viewController.installChatButton()
         

@@ -15,6 +15,9 @@ extension Localization.Locale {
             return "sv-SE"
         case .en_SE:
             return "en-SE"
+        default:
+            // Temp
+            return "sv-SE"
         }
     }
     
@@ -24,6 +27,9 @@ extension Localization.Locale {
            return "sv_SE"
        case .en_SE:
            return "en_SE"
+       default:
+            // Temp
+            return "sv-SE"
        }
    }
 
@@ -33,6 +39,9 @@ extension Localization.Locale {
             return .svSe
         case .en_SE:
             return .enSe
+        default:
+            // Temp
+            return .svSe
         }
     }
 }

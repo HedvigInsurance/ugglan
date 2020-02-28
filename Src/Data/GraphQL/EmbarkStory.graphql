@@ -3,6 +3,13 @@ fragment EmbarkLinkFragment on EmbarkLink {
     label
 }
 
+fragment MessageFragment on EmbarkMessage {
+    text
+    expressions {
+        ...ExpressionFragment
+    }
+}
+
 fragment BasicExpressionFragment on EmbarkExpression {
     ... on EmbarkExpressionUnary {
         expressionUnaryType: type
@@ -27,6 +34,21 @@ fragment ExpressionFragment on EmbarkExpression {
     }
 }
 
+fragment ResponseFragment on EmbarkResponse {
+    ... on EmbarkMessage {
+        ...MessageFragment
+    }
+    ... on EmbarkGroupedResponse {
+        component
+        items {
+            ...MessageFragment
+        }
+        title {
+            ...MessageFragment
+        }
+    }
+}
+
 query EmbarkStory($name: String!) {
     embarkStory(name: $name) {
         id
@@ -35,11 +57,11 @@ query EmbarkStory($name: String!) {
         passages {
             id
             name
+            response {
+                ...ResponseFragment
+            }
             messages {
-                text
-                expressions {
-                    ...ExpressionFragment
-                }
+                ...MessageFragment
             }
             action {
                 ... on EmbarkActionCore {
@@ -58,6 +80,7 @@ query EmbarkStory($name: String!) {
                 ... on EmbarkNumberAction {
                     component
                     numberActionData: data {
+                        key
                         placeholder
                         unit
                         maxValue

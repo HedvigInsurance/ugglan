@@ -60,7 +60,8 @@ extension EmbarkSelectActionOption: Viewable {
             bag += control.signal(for: .touchUpInside).onValue { _ in
                 let key = self.data.key ?? "\(self.data.link.fragments.embarkLinkFragment.name)Result"
                 let value = self.data.value ?? self.data.link.fragments.embarkLinkFragment.label
-                callback(ActionResponseData(key: key, value: value))
+                let textValue = self.data.link.fragments.embarkLinkFragment.label
+                callback(ActionResponseData(key: key, value: value, textValue: textValue))
             }
             
             return bag
