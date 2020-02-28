@@ -89,8 +89,10 @@ extension DirectDebitSetup: Presentable {
             return nil
         }
 
-        let userController = WKUserContentController()
-        userController.add(TrustlyWKScriptOpenURLScheme(webView: webView), name: TrustlyWKScriptOpenURLScheme.NAME)
+        userContentController.add(
+            TrustlyWKScriptOpenURLScheme(webView: webView),
+            name: TrustlyWKScriptOpenURLScheme.NAME
+        )
 
         viewController.view = webView
 
