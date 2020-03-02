@@ -25,34 +25,44 @@ extension Profile: Presentable {
         viewController.installChatButton()
 
         let form = FormView()
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
 
         let profileSection = ProfileSection(
             presentingViewController: viewController
         )
-
-        bag += form.append(profileSection)
-
-        bag += form.append(Spacing(height: 20))
+        
+        bag += stackView.addArranged(profileSection)
+        
+        bag += stackView.addArranged(Spacing(height: 20))
 
         let otherSection = OtherSection(
             presentingViewController: viewController
         )
-
-        bag += form.append(otherSection)
-
-        bag += form.append(Spacing(height: 20))
+        
+        bag += stackView.addArranged(otherSection)
+        
+        bag += stackView.addArranged(Spacing(height: 20))
 
         let logoutSection = LogoutSection(
             presentingViewController: viewController
         )
-
-        bag += form.append(logoutSection)
+        
+        bag += stackView.addArranged(logoutSection)
 
         let query = ProfileQuery()
 
         bag += client.watch(query: query)
             .compactMap { $0.data }
             .bindTo(profileSection.dataSignal)
+        
+        form.append(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalTo(form.safeAreaLayoutGuide)
+        }
 
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()

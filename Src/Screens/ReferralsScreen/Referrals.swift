@@ -50,13 +50,21 @@ extension Referrals: Presentable {
 
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .primaryBackground
+        
+        let stackView = UIStackView()
 
         let formView = FormView()
         formView.spacing = 20
         bag += viewController.install(
-            formView,
+            stackView,
             scrollView: scrollView
         )
+        
+        stackView.addSubview(formView)
+        
+        formView.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalTo(stackView.safeAreaLayoutGuide)
+        }
 
         let query = ReferralsScreenQuery()
 

@@ -25,14 +25,23 @@ extension MyPayment: Presentable {
 
         let viewController = UIViewController()
         viewController.title = String(key: .MY_PAYMENT_TITLE)
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
 
         let form = FormView()
-        bag += viewController.install(form)
+        bag += viewController.install(stackView)
+        
+        stackView.addSubview(form)
+        
+        form.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalTo(stackView.safeAreaLayoutGuide)
+        }
 
         bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious { failedCharges, nextPayment in
             let innerbag = DisposeBag()
             if let failedCharges = failedCharges, let nextPayment = nextPayment {
-                if failedCharges > 0 {
+                if failedCharges == 0 {
                     let latePaymentHeaderCard = LatePaymentHeaderSection(failedCharges: failedCharges, lastDate: nextPayment)
                     innerbag += form.prepend(latePaymentHeaderCard)
                 }

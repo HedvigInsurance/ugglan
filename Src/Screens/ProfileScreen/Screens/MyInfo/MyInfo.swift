@@ -24,6 +24,15 @@ extension MyInfo: Presentable {
         bag += state.loadData()
 
         let form = FormView()
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        
+        form.append(stackView)
+        stackView.snp.makeConstraints { make in
+            make.left.right.bottom.equalTo(form.safeAreaLayoutGuide)
+        }
 
         let saveButton = ActivityBarButton(
             item: UIBarButtonItem(title: String(key: .MY_INFO_SAVE_BUTTON), style: .navigationBarButtonPrimary),
@@ -38,12 +47,14 @@ extension MyInfo: Presentable {
         }
 
         let nameCircle = NameCircle()
-        bag += form.prepend(nameCircle)
+        bag += stackView.addArranged(nameCircle)
+        
+        bag += stackView.addArranged(Spacing(height: 10))
 
         let contactDetailsSection = ContactDetailsSection(
             state: state
         )
-        bag += form.append(contactDetailsSection)
+        bag += stackView.addArranged(contactDetailsSection)
 
         let cancelButton = UIBarButtonItem(
             title: String(key: .MY_INFO_CANCEL_BUTTON),

@@ -34,6 +34,15 @@ extension About: Presentable {
         let bag = DisposeBag()
 
         let form = FormView()
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        
+        stackView.addSubview(form)
+        
+        form.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalTo(stackView.safeAreaLayoutGuide)
+        }
 
         if state == .onboarding {
             let loginSection = form.appendSection(
@@ -167,7 +176,7 @@ extension About: Presentable {
 
         form.append(footerView)
 
-        bag += viewController.install(form)
+        bag += viewController.install(stackView)
 
         return (viewController, bag)
     }

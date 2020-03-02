@@ -7,6 +7,7 @@
 
 import Apollo
 import Flow
+import Form
 import Foundation
 import Presentation
 import UIKit

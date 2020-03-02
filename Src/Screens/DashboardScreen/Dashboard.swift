@@ -25,12 +25,12 @@ extension Dashboard: Presentable {
         let viewController = UIViewController()
         viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
         viewController.installChatButton()
-
+        
+        let form = FormView()
+        
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.spacing = 15
-        containerStackView.isLayoutMarginsRelativeArrangement = true
-        containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
 
         let chatPreview = ChatPreview(presentingViewController: viewController)
         bag += containerStackView.addArranged(chatPreview)
@@ -47,7 +47,11 @@ extension Dashboard: Presentable {
         let myProtectionSection = MyProtectionSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(myProtectionSection)
 
-        bag += viewController.install(containerStackView)
+        form.append(containerStackView)
+        
+        containerStackView.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalTo(form.safeAreaLayoutGuide)
+        }
 
         let dataBag = bag.innerBag()
 
@@ -74,6 +78,8 @@ extension Dashboard: Presentable {
             .compactMap { $0.data }
             .bindTo(paymentNeedsSetupSection.dataSignal)
 
+        bag += viewController.install(form)
+        
         return (viewController, bag)
     }
 }

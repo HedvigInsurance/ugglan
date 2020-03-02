@@ -88,9 +88,18 @@ extension LanguageSwitcher: Presentable {
         let viewController = UIViewController()
         viewController.title = "Språk/Language"
         let bag = DisposeBag()
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 10)
 
         let form = FormView(sections: [], style: .defaultGrouped)
-        bag += viewController.install(form)
+        bag += viewController.install(stackView)
+        
+        stackView.addSubview(form)
+        form.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalTo(stackView.safeAreaLayoutGuide)
+        }
 
         let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
 
