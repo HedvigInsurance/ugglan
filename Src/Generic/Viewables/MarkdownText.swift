@@ -12,7 +12,7 @@ import MarkdownKit
 import UIKit
 
 struct MarkdownText {
-    let text: String
+    let textSignal: ReadWriteSignal<String>
     let style: TextStyle
 }
 
@@ -25,16 +25,21 @@ extension MarkdownText: Viewable {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = style.lineSpacing
 
-        let attributedString = markdownParser.parse(text)
-
-        let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
-        mutableAttributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, mutableAttributedString.length - 1))
-
         let markdownText = UILabel()
         markdownText.numberOfLines = 0
         markdownText.lineBreakMode = .byWordWrapping
         markdownText.baselineAdjustment = .none
-        markdownText.attributedText = mutableAttributedString
+
+        bag += textSignal.atOnce().onValue { text in
+            let attributedString = markdownParser.parse(text)
+
+            if !text.isEmpty {
+                let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
+                mutableAttributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, mutableAttributedString.length - 1))
+
+                markdownText.attributedText = mutableAttributedString
+            }
+        }
 
         bag += markdownText.didLayoutSignal.onValue { _ in
             markdownText.preferredMaxLayoutWidth = markdownText.frame.size.width

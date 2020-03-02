@@ -11,6 +11,7 @@ import Flow
 import Foundation
 import Presentation
 import WebKit
+import SafariServices
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
@@ -77,9 +78,21 @@ extension DirectDebitSetup: Presentable {
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
         webView.backgroundColor = .offWhite
         webView.isOpaque = false
+        
+        bag += webView.createWebViewWith.set { (webView, _, navigationAction, _) -> WKWebView? in
+            if navigationAction.targetFrame == nil {
+                if let url = navigationAction.request.url {
+                    viewController.present(SFSafariViewController(url: url), animated: true, completion: nil)
+                }
+            }
+            
+            return nil
+        }
 
-        let userController = WKUserContentController()
-        userController.add(TrustlyWKScriptOpenURLScheme(webView: webView), name: TrustlyWKScriptOpenURLScheme.NAME)
+        userContentController.add(
+            TrustlyWKScriptOpenURLScheme(webView: webView),
+            name: TrustlyWKScriptOpenURLScheme.NAME
+        )
 
         viewController.view = webView
 
@@ -205,7 +218,7 @@ extension DirectDebitSetup: Presentable {
 
                 return .allow
             }
-
+            
             // if user is closing app in the middle of process make sure to inform backend
             bag += self.applicationWillTerminateSignal.onValue {
                 self.client.perform(mutation: CancelDirectDebitRequestMutation()).onValue { _ in }

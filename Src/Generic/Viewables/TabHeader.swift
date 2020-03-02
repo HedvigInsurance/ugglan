@@ -21,6 +21,24 @@ struct TabHeader {
     }
 }
 
+extension TabHeader: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (TabHeader) -> Disposable) {
+        let view = UIView()
+
+        return (view, { `self` in
+            let bag = DisposeBag()
+
+            bag += view.add(self) { buttonView in
+                buttonView.snp.makeConstraints { make in
+                    make.width.height.equalToSuperview()
+                }
+            }
+
+            return bag
+        })
+    }
+}
+
 extension TabHeader.Text: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let view = UIStackView()

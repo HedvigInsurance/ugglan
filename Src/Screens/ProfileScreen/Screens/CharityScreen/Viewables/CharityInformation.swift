@@ -34,7 +34,7 @@ extension CharityInformation: Presentable {
         let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .draggableOverlayTitle)
         bag += containerView.addArranged(titleLabel)
 
-        let body = MarkdownText(text: String(key: .PROFILE_MY_CHARITY_INFO_BODY), style: .bodyOffBlack)
+        let body = MarkdownText(textSignal: .static(String(key: .PROFILE_MY_CHARITY_INFO_BODY)), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
         bag += containerStackView.applyPreferredContentSize(on: viewController)

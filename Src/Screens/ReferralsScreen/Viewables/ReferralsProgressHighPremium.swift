@@ -24,7 +24,9 @@ extension ReferralsProgressHighPremium: Viewable {
         view.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 10, right: 16)
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = .turquoise
+        backgroundView.backgroundColor = UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .grass700 : .turquoise
+        })
         backgroundView.layer.cornerRadius = 10
 
         let contentView = UIStackView()

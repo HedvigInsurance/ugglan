@@ -16,22 +16,72 @@ struct KeyGearItem {
     let id: String
     @Inject var client: ApolloClient
 
+    func getGradientImage(gradientLayer: CAGradientLayer) -> UIImage? {
+        var gradientImage: UIImage?
+        UIGraphicsBeginImageContext(gradientLayer.frame.size)
+
+        if let context = UIGraphicsGetCurrentContext() {
+            gradientLayer.render(in: context)
+            gradientImage = UIGraphicsGetImageFromCurrentImageContext()?.resizableImage(withCapInsets: UIEdgeInsets.zero, resizingMode: .stretch)
+        }
+
+        UIGraphicsEndImageContext()
+
+        return gradientImage
+    }
+
+    func addNavigationBar(
+        scrollView _: UIScrollView,
+        viewController: UIViewController
+    ) -> (Disposable, UINavigationBar) {
+        let bag = DisposeBag()
+
+        let navigationBar = UINavigationBar()
+
+        navigationBar.items = [viewController.navigationItem]
+
+        navigationBar.tintColor = UIColor.clear
+        navigationBar.barTintColor = UIColor.clear
+        navigationBar.backIndicatorImage = Asset.backButtonWhite.image
+        navigationBar.isTranslucent = true
+        navigationBar.shadowImage = UIImage()
+        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBar.barStyle = .blackTranslucent
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.setBackgroundImage(UIImage(), for: .compact)
+
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+        gradient.locations = [0, 1]
+
+        let gradientView = UIView()
+        gradientView.layer.addSublayer(gradient)
+        viewController.view.addSubview(gradientView)
+
+        bag += gradientView.didLayoutSignal.onValue { _ in
+            gradient.frame = gradientView.frame
+
+            gradientView.snp.makeConstraints { make in
+                make.height.equalTo(navigationBar).offset(gradientView.safeAreaInsets.top)
+                make.trailing.leading.equalToSuperview()
+            }
+        }
+
+        viewController.view.addSubview(navigationBar)
+
+        navigationBar.snp.makeConstraints { make in
+            make.top.equalTo(viewController.view.safeAreaLayoutGuide.snp.top)
+            make.trailing.equalTo(viewController.view.safeAreaLayoutGuide.snp.trailing)
+            make.leading.equalTo(viewController.view.safeAreaLayoutGuide.snp.leading)
+        }
+
+        return (bag, navigationBar)
+    }
+
     class KeyGearItemViewController: UIViewController {
         override var preferredStatusBarStyle: UIStatusBarStyle {
             return .lightContent
         }
-
-        enum PreservedNavigationBarAttributes {
-            case backgroundImage(compact: UIImage?, defaultMetric: UIImage?)
-            case barTintColor(color: UIColor?)
-            case isTranslucent(value: Bool)
-            case shadowImage(image: UIImage?)
-            case tintColor(color: UIColor)
-            case titleTextAttributes(attributes: [NSAttributedString.Key: Any]?)
-            case barStyle(style: UIBarStyle)
-        }
-
-        var preservedNavigationBarAttributes: [PreservedNavigationBarAttributes] = []
 
         init() {
             super.init(nibName: nil, bundle: nil)
@@ -41,78 +91,9 @@ struct KeyGearItem {
             fatalError("init(coder:) has not been implemented")
         }
 
-        override func viewWillAppear(_: Bool) {
-            let navigationBar = navigationController!.navigationBar
-
-            preservedNavigationBarAttributes.append(.backgroundImage(compact: navigationBar.backgroundImage(for: .compact), defaultMetric: navigationBar.backgroundImage(for: .default)))
-            preservedNavigationBarAttributes.append(.barTintColor(color: navigationBar.barTintColor))
-            preservedNavigationBarAttributes.append(.isTranslucent(value: navigationBar.isTranslucent))
-            preservedNavigationBarAttributes.append(.shadowImage(image: navigationBar.shadowImage))
-            preservedNavigationBarAttributes.append(.tintColor(color: navigationBar.tintColor))
-            preservedNavigationBarAttributes.append(.titleTextAttributes(attributes: navigationBar.titleTextAttributes))
-            preservedNavigationBarAttributes.append(.barStyle(style: navigationBar.barStyle))
-
-            navigationBar.tintColor = UIColor.white
-            navigationBar.backIndicatorImage = Asset.backButtonWhite.image
-            navigationBar.barTintColor = UIColor.transparent
-            navigationBar.isTranslucent = true
-            navigationBar.shadowImage = UIImage()
-            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-            navigationBar.barStyle = .black
-
-            let gradient = CAGradientLayer()
-            var bounds = navigationBar.bounds
-            bounds.size.height += UIApplication.shared.statusBarFrame.size.height
-            gradient.frame = bounds
-            gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
-            gradient.startPoint = CGPoint(x: 0, y: 0)
-            gradient.endPoint = CGPoint(x: 0, y: 1)
-
-            if let image = getGradientImage(gradientLayer: gradient) {
-                navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
-                navigationBar.setBackgroundImage(image, for: .compact)
-            }
-        }
-
-        func getGradientImage(gradientLayer: CAGradientLayer) -> UIImage? {
-            var gradientImage: UIImage?
-            UIGraphicsBeginImageContext(gradientLayer.frame.size)
-
-            if let context = UIGraphicsGetCurrentContext() {
-                gradientLayer.render(in: context)
-                gradientImage = UIGraphicsGetImageFromCurrentImageContext()?.resizableImage(withCapInsets: UIEdgeInsets.zero, resizingMode: .stretch)
-            }
-
-            UIGraphicsEndImageContext()
-
-            return gradientImage
-        }
-
-        override func viewWillDisappear(_: Bool) {
-            let navigationBar = navigationController!.navigationBar
-
-            UIView.transition(with: navigationBar, duration: 0.35, options: [], animations: {
-                self.preservedNavigationBarAttributes.forEach { attribute in
-                    switch attribute {
-                    case let .backgroundImage(compact, defaultMetric):
-                        navigationBar.setBackgroundImage(defaultMetric, for: .default)
-                        navigationBar.setBackgroundImage(compact, for: .compact)
-                    case let .barTintColor(color):
-                        navigationBar.barTintColor = color
-                    case let .isTranslucent(value):
-                        navigationBar.isTranslucent = value
-                    case let .shadowImage(image):
-                        navigationBar.shadowImage = image
-                    case let .tintColor(color):
-                        navigationBar.tintColor = color
-                    case let .titleTextAttributes(attributes):
-                        navigationBar.titleTextAttributes = attributes
-                    case let .barStyle(style):
-                        navigationBar.barStyle = style
-                    }
-                }
-                self.preservedNavigationBarAttributes = []
-            }, completion: nil)
+        override func viewWillAppear(_ animated: Bool) {
+            navigationController?.setNavigationBarHidden(true, animated: animated)
+            navigationController?.interactivePopGestureRecognizer?.delegate = nil
         }
     }
 }
@@ -128,14 +109,28 @@ extension KeyGearItem: Presentable {
 
         viewController.navigationItem.rightBarButtonItem = optionsButton
 
-        let dataSignal = client.watch(query: KeyGearItemQuery(id: id)).compactMap { $0.data?.keyGearItem }
+        let backButton = UIButton(type: .custom)
+        backButton.setImage(Asset.backButtonWhite.image, for: .normal)
+        backButton.tintColor = .white
 
-        bag += dataSignal.onValue { data in
-            print(data)
-        }
+        viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
+
+        let view = UIView()
+        view.backgroundColor = .primaryBackground
+        viewController.view = view
+
+        let dataSignal = client.watch(
+            query: KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
+            cachePolicy: .returnCacheDataAndFetch
+        ).compactMap { $0.data?.keyGearItem }
 
         let scrollView = UIScrollView()
+        view.addSubview(scrollView)
         scrollView.backgroundColor = .primaryBackground
+
+        scrollView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
 
         bag += scrollView.scrollToRevealFirstResponder { view -> UIEdgeInsets in
             let rowInsets = alignToRow(view)
@@ -157,12 +152,17 @@ extension KeyGearItem: Presentable {
             }
         }
 
-        bag += viewController.install(form, options: [], scrollView: scrollView)
+        scrollView.embedView(form, scrollAxis: .vertical)
 
-        let imagesSignal = dataSignal.map { $0.photos.compactMap { $0.file.preSignedUrl } }.compactMap { $0.compactMap { URL(string: $0) } }.readable(initial: [])
+        let imagesSignal = dataSignal.map { (images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category) }.compactMap { data -> [Either<URL, KeyGearItemCategory>] in
+            if data.images.isEmpty {
+                return [.right(data.category)]
+            }
+
+            return data.images.compactMap { URL(string: $0) }.map { .left($0) }
+        }.readable(initial: [])
 
         bag += form.prepend(KeyGearImageCarousel(imagesSignal: imagesSignal)) { imageCarouselView in
-
             bag += scrollView.contentOffsetSignal.onValue { offset in
                 let realOffset = offset.y + scrollView.safeAreaInsets.top
 
@@ -196,44 +196,134 @@ extension KeyGearItem: Presentable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
-        bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController))
+        bag += innerForm.append(KeyGearItemHeader(presentingViewController: viewController, itemId: id))
+
+        bag += innerForm.append(Spacing(height: 10))
+
+        let claimsSection = innerForm.appendSection()
+        claimsSection.dynamicStyle = .sectionPlain
+
+        let claimsRow = RowView(title: String(key: .KEY_GEAR_REPORT_CLAIM_ROW), style: .rowTitle)
+        claimsRow.append(Asset.chevronRight.image)
+
+        bag += claimsSection.append(claimsRow).onValue { _ in
+            viewController.present(
+                HonestyPledge(),
+                style: .modally(),
+                options: [.defaults]
+            )
+        }
 
         bag += innerForm.append(Spacing(height: 10))
 
         let coveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE))
         coveragesSection.dynamicStyle = .sectionPlain
 
-        bag += coveragesSection.append(KeyGearCoverage())
+        bag += dataSignal.map { $0.covered }.onValueDisposePrevious { covered -> Disposable? in
+            let bag = DisposeBag()
+
+            bag += covered.map { coveredItem in
+                coveragesSection.append(KeyGearCoverage(type: .included, title: coveredItem.title?.translations?.first?.text ?? ""))
+            }
+
+            return bag
+        }
 
         bag += innerForm.append(Spacing(height: 15))
 
         let nonCoveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE))
         nonCoveragesSection.dynamicStyle = .sectionPlain
 
-        bag += nonCoveragesSection.append(KeyGearCoverage())
+        bag += dataSignal.map { $0.exceptions }.onValueDisposePrevious { exceptions -> Disposable? in
+            let bag = DisposeBag()
+
+            bag += exceptions.map { exceptionItem in
+                nonCoveragesSection.append(KeyGearCoverage(type: .excluded, title: exceptionItem.title?.translations?.first?.text ?? ""))
+            }
+
+            return bag
+        }
 
         bag += innerForm.append(Spacing(height: 30))
+
+        let receiptFooter = UIStackView()
+        bag += receiptFooter.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER), style: .sectionHeader))
+
+        let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
+        receiptSection.dynamicStyle = .sectionPlain
+
+        bag += receiptSection.append(KeyGearAddReceiptRow(presentingViewController: viewController, itemId: id))
+
+        bag += innerForm.append(Spacing(height: 15))
 
         let nameSection = innerForm.appendSection()
         nameSection.dynamicStyle = .sectionPlain
 
-        bag += nameSection.append(EditableRow(valueSignal: .static("Namn"), placeholderSignal: .static("Namn"))).onValue { _ in
-            print("was saved")
+        let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "").writable(setValue: { _ in })
+        let nameRow = EditableRow(
+            valueSignal: nameValueSignal,
+            placeholderSignal: .static(String(key: .KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE))
+        )
+
+        let (navigationBarBag, navigationBar) = addNavigationBar(
+            scrollView: scrollView,
+            viewController: viewController
+        )
+        bag += navigationBarBag
+
+        bag += nameSection.append(nameRow).onValue { name in
+            viewController.navigationItem.title = name
+            navigationBar.items = [viewController.navigationItem]
+            self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
+        }
+
+        bag += dataSignal.onValue { data in
+            viewController.navigationItem.title = data.name
+            navigationBar.items = [viewController.navigationItem]
+        }
+
+        bag += navigationBar.didLayoutSignal.onValue { _ in
+            scrollView.scrollIndicatorInsets = UIEdgeInsets(
+                top: navigationBar.frame.height,
+                left: 0,
+                bottom: 0,
+                right: 0
+            )
+        }
+        
+        bag += navigationBar.traitCollectionSignal.atOnce().onValue { trait in
+            if trait.userInterfaceIdiom == .pad {
+                viewController.navigationItem.leftBarButtonItem = nil
+            } else {
+                viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
+            }
+            
+            navigationBar.items = [viewController.navigationItem]
         }
 
         return (viewController, Future { completion in
             bag += optionsButton.onValue {
                 viewController.present(Alert(actions: [
-                    Alert.Action(title: "Delete", style: .destructive, action: { _ in
+                    Alert.Action(title: String(key: .KEY_GEAR_ITEM_DELETE), style: .destructive, action: { _ in
                         completion(.success)
                     }),
-                    Alert.Action(title: "Cancel", style: .cancel, action: { _ in
-
+                    Alert.Action(title: String(key: .KEY_GEAR_ITEM_OPTIONS_CANCEL), style: .cancel, action: { _ in
+                        throw GenericError.cancelled
                     }),
-                ]), style: .sheet())
+                ]), style: .sheet(from: optionsButton.view, rect: nil)).onValue { _ in
+                    self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
+                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                            completion(.success)
+                        }
+                    }
+                }
             }
 
-            return bag
+            bag += backButton.onValue { _ in
+                completion(.success)
+            }
+
+            return DelayedDisposer(bag, delay: 2.0)
         })
     }
 }

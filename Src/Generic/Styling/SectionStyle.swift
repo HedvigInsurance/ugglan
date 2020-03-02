@@ -19,8 +19,8 @@ extension BorderStyle {
     )
 
     static let standardRounded = BorderStyle(
-        width: 1 / UIScreen.main.scale,
-        color: .primaryBorder,
+        width: 0,
+        color: .transparent,
         cornerRadius: 5,
         borderEdges: [UIRectEdge.top, UIRectEdge.bottom, UIRectEdge.left, UIRectEdge.right]
     )

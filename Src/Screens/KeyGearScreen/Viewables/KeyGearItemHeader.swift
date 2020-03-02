@@ -5,6 +5,7 @@
 //  Created by Sam Pettersson on 2020-02-14.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
@@ -12,10 +13,15 @@ import UIKit
 
 struct KeyGearItemHeader {
     let presentingViewController: UIViewController
+    let itemId: String
 }
 
 struct DeductibleBox: Viewable {
+    let itemId: String
+    @Inject var client: ApolloClient
+
     func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
+        let bag = DisposeBag()
         let row = RowView()
 
         let stackView = UIStackView()
@@ -32,17 +38,25 @@ struct DeductibleBox: Viewable {
         let deductibleValueContainer = UIStackView()
         deductibleValueContainerContainer.addArrangedSubview(deductibleValueContainer)
 
-        deductibleValueContainer.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_VALUE), style: .headlineLargeLargeLeft))
+        let deductibleLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
+
+        deductibleValueContainer.addArrangedSubview(deductibleLabel)
         deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .bodySmallSmallLeft))
+
+        bag += client.watch(query: KeyGearItemQuery(id: itemId))
+            .map { $0.data?.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
+            .bindTo(deductibleLabel, \.text)
 
         row.append(stackView)
 
-        return (row, NilDisposer())
+        return (row, bag)
     }
 }
 
 struct ValuationBox: Viewable {
     let presentingViewController: UIViewController
+    let itemId: String
+    @Inject var client: ApolloClient
 
     func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
@@ -53,12 +67,63 @@ struct ValuationBox: Viewable {
         stackView.spacing = 5
 
         stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodySmallSmallLeft))
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight))
+
+        let emptyValuationLabel = UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight)
+        emptyValuationLabel.isHidden = true
+        stackView.addArrangedSubview(emptyValuationLabel)
+        
+        let valuationValueContainer = UIStackView()
+        valuationValueContainer.axis = .vertical
+        valuationValueContainer.spacing = 2.5
+        
+        let valuationValueLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
+        valuationValueContainer.addArrangedSubview(valuationValueLabel)
+        
+        let valuationValueDescription = UILabel(value: "", style: .linksSmallSmallRight)
+        valuationValueDescription.adjustsFontSizeToFitWidth = true
+        valuationValueContainer.addArrangedSubview(valuationValueDescription)
+        
+        stackView.addArrangedSubview(valuationValueContainer)
 
         row.append(stackView)
 
-        bag += events.onSelect.onValue { _ in
-            self.presentingViewController.present(KeyGearAddValuation(), style: .modal)
+        let dataSignal = client.watch(query: KeyGearItemQuery(id: itemId))
+
+        bag += dataSignal.map { $0.data?.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
+            if valuation == nil {
+                emptyValuationLabel.animationSafeIsHidden = false
+                valuationValueContainer.animationSafeIsHidden = true
+                valuationValueContainer.layoutIfNeeded()
+                emptyValuationLabel.layoutIfNeeded()
+            } else {
+                valuationValueContainer.animationSafeIsHidden = false
+                emptyValuationLabel.animationSafeIsHidden = true
+                valuationValueContainer.layoutIfNeeded()
+                emptyValuationLabel.layoutIfNeeded()
+                
+                if let fixedValuation = valuation?.asKeyGearItemValuationFixed {
+                    valuationValueLabel.value = "\(fixedValuation.ratio)%"
+                    valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL)
+                } else if let marketValuation = valuation?.asKeyGearItemValuationMarketValue {
+                    valuationValueLabel.value = "\(marketValuation.ratio)%"
+                    valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_DESCRIPTION)
+                }
+            }
+        })
+
+        bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, result in result.data?.keyGearItem }.onValue { item in
+            
+            if item.valuation != nil {
+                self.presentingViewController.present(KeyGearValuation(itemId: self.itemId).withCloseButton, style: .modal, options: [
+                    .defaults, .allowSwipeDismissAlways,
+                ])
+            } else {
+                self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: item.category).withCloseButton, style: .modal, options: [
+                    .defaults, .allowSwipeDismissAlways,
+                ])
+            }
+            
+            
         }
 
         return (row, bag)
@@ -75,14 +140,14 @@ extension KeyGearItemHeader: Viewable {
         let valuationBox = SectionView()
         valuationBox.dynamicStyle = .sectionPlain
 
-        bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController))
+        bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController, itemId: itemId))
 
         stackView.addArrangedSubview(valuationBox)
 
         let deductibleBox = SectionView()
         deductibleBox.dynamicStyle = .sectionPlain
 
-        bag += deductibleBox.append(DeductibleBox())
+        bag += deductibleBox.append(DeductibleBox(itemId: itemId))
 
         stackView.addArrangedSubview(deductibleBox)
 

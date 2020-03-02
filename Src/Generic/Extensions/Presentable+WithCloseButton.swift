@@ -21,7 +21,7 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
                 let closeButton = CloseButton()
                 let closeButtonItem = UIBarButtonItem(viewable: closeButton)
 
-                viewController.navigationItem.leftBarButtonItem = closeButtonItem
+                viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
                 bag += closeButton.onTapSignal.onValue { _ in
                     completion(.success)
@@ -46,7 +46,7 @@ extension Presentable where Matter: UIViewController, Result == Future<Void> {
                 let closeButton = CloseButton()
                 let closeButtonItem = UIBarButtonItem(viewable: closeButton)
 
-                viewController.navigationItem.leftBarButtonItem = closeButtonItem
+                viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
                 bag += closeButton.onTapSignal.onValue { _ in
                     completion(.success)

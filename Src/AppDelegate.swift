@@ -250,7 +250,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
-            remoteConfigContainer.fetched.plain(),
+            remoteConfigContainer.fetched.take(first: 1).plain(),
             TranslationsRepo.fetch().valueSignal.plain()
         ).atValue { _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in

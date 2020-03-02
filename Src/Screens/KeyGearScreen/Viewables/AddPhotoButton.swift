@@ -15,7 +15,7 @@ struct AddPhotoButton {
 }
 
 extension AddPhotoButton: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
+    func materialize(events _: ViewableEvents) -> (UIControl, Signal<UIControl>) {
         let bag = DisposeBag()
         let view = UIControl()
         view.backgroundColor = .secondaryTintColor
@@ -31,6 +31,7 @@ extension AddPhotoButton: Viewable {
         contentContainer.spacing = 8
         contentContainer.axis = .vertical
         contentContainer.alignment = .center
+        contentContainer.isUserInteractionEnabled = false
 
         contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto, iconWidth: 40))
         bag += contentContainer.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON), style: TextStyle.body.colored(.primaryTintColor)))
@@ -48,6 +49,7 @@ extension AddPhotoButton: Viewable {
             imageView.layer.cornerRadius = 8
             imageView.clipsToBounds = true
             imageView.contentMode = .scaleAspectFill
+            imageView.alpha = 0
 
             view.addSubview(imageView)
 
@@ -55,9 +57,17 @@ extension AddPhotoButton: Viewable {
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
 
-            return Disposer {
-                imageView.removeFromSuperview()
+            let innerBag = DisposeBag()
+
+            innerBag += imageView.didLayoutSignal.take(first: 1).animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in
+                imageView.alpha = 1
             }
+
+            innerBag += DelayedDisposer(Disposer {
+                imageView.removeFromSuperview()
+            }, delay: 2.0)
+
+            return innerBag
         }
 
         bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
@@ -68,6 +78,6 @@ extension AddPhotoButton: Viewable {
             view.backgroundColor = .secondaryTintColor
         }
 
-        return (view, view.trackedTouchUpInsideSignal.hold(bag))
+        return (view, view.trackedTouchUpInsideSignal.hold(bag).map { _ -> UIControl in view })
     }
 }

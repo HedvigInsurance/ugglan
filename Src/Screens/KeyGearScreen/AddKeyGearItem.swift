@@ -49,6 +49,8 @@ extension AddKeyGearItem: Presentable {
         bag += form.append(Spacing(height: 10))
 
         let categoryPickerSection = form.appendSection(header: String(key: .KEY_GEAR_ADD_ITEM_TYPE_HEADLINE))
+        categoryPickerSection.alpha = 0.5
+        categoryPickerSection.isUserInteractionEnabled = false
         categoryPickerSection.dynamicStyle = .sectionPlain
         bag += categoryPickerSection.append(
             CategoryPicker(
@@ -68,10 +70,21 @@ extension AddKeyGearItem: Presentable {
         )
         bag += state.isValidSignal
             .atOnce()
-            .map { valid in valid ? ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white) : ButtonType.standard(backgroundColor: .gray, textColor: .white) }.bindTo(saveButton.button.type)
+            .map { valid in
+                valid ?
+                    ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white) :
+                    ButtonType.standard(backgroundColor: .gray, textColor: .white)
+            }.bindTo(saveButton.button.type)
 
-        let saveButtonPointer = ViewPointer()
-        bag += form.append(saveButton.wrappedIn(UIStackView()), onCreate: saveButtonPointer.handler)
+        let saveButtonContainer = UIStackView()
+        saveButtonContainer.axis = .vertical
+        saveButtonContainer.alignment = .center
+
+        bag += state.isValidSignal
+            .atOnce()
+            .bindTo(saveButtonContainer, \.isUserInteractionEnabled)
+
+        bag += form.append(saveButton.wrappedIn(UIStackView()).wrappedIn(saveButtonContainer))
 
         return (viewController, Future { completion in
             bag += cancelButton.onValue {
@@ -96,11 +109,9 @@ extension AddKeyGearItem: Presentable {
                     self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
                         S3FileInput(bucket: bucket, key: key),
                     ], category: .computer))).onValue { result in
-                        print("added item", result)
-
                         self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                             let bubbleLoading = BubbleLoading(
-                                originatingView: saveButtonPointer.current,
+                                originatingView: saveButtonContainer,
                                 dismissSignal: Signal(after: 2)
                             )
 
@@ -126,6 +137,11 @@ extension AddKeyGearItem: Presentable {
                 self.state.imageSignal.value = image
 
                 self.classifyImage(image).onValue { category in
+                    bag += Signal(after: 0).animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in
+                        categoryPickerSection.alpha = 1
+                        categoryPickerSection.isUserInteractionEnabled = true
+                    }
+
                     guard let category = category else {
                         return
                     }
@@ -134,8 +150,11 @@ extension AddKeyGearItem: Presentable {
                 }
             }
 
-            bag += addPhotoButtonSignal.onValue {
-                viewController.present(ImagePicker(sourceType: .camera, mediaTypes: [.photo])).onValue { result in
+            bag += addPhotoButtonSignal.onValue { view in
+                viewController.present(
+                    KeyGearImagePicker(presentingViewController: viewController, allowedTypes: [.camera, .photoLibrary]),
+                    style: .sheet(from: view, rect: nil)
+                ).flatMap { $0.left! }.onValue { result in
                     if let image = result.right {
                         handleImage(image: image)
                     } else if let asset = result.left {

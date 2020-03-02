@@ -8,13 +8,26 @@
 import Flow
 import Form
 import Foundation
+import Kingfisher
 
 struct KeyGearListItem {
     let id: String
     let imageUrl: URL?
+    let name: String?
     let wasAddedAutomatically: Bool
+    let category: KeyGearItemCategory
 
     private let callbacker = Callbacker<Void>()
+}
+
+extension KeyGearListItem: Hashable {
+    static func == (lhs: KeyGearListItem, rhs: KeyGearListItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 extension KeyGearListItem: SignalProvider {
@@ -24,11 +37,36 @@ extension KeyGearListItem: SignalProvider {
 }
 
 extension KeyGearListItem: Reusable {
+    static var addedAutomaticallyTag: UIView {
+        let addedAutomaticallyBlurView = UIVisualEffectView()
+        addedAutomaticallyBlurView.isUserInteractionEnabled = false
+        addedAutomaticallyBlurView.layer.cornerRadius = 8
+        addedAutomaticallyBlurView.layer.masksToBounds = true
+        addedAutomaticallyBlurView.effect = UIBlurEffect(style: .prominent)
+
+        let addedAutomaticallyStackView = UIStackView()
+        addedAutomaticallyStackView.layoutMargins = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+        addedAutomaticallyStackView.isLayoutMarginsRelativeArrangement = true
+        addedAutomaticallyBlurView.contentView.addSubview(addedAutomaticallyStackView)
+
+        addedAutomaticallyStackView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
+        let addedAutomaticallyLabel = UILabel(
+            value: String(key: .KEY_GEAR_ADDED_AUTOMATICALLY_TAG),
+            style: .bodySmallSmallLeft
+        )
+        addedAutomaticallyStackView.addArrangedSubview(addedAutomaticallyLabel)
+
+        return addedAutomaticallyBlurView
+    }
+
     static func makeAndConfigure() -> (make: UIControl, configure: (KeyGearListItem) -> Disposable) {
         let view = UIControl()
         view.layer.cornerRadius = 8
         view.clipsToBounds = true
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .midnight500
 
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = false
@@ -39,7 +77,24 @@ extension KeyGearListItem: Reusable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let label = UILabel(value: "TODO", style: .headlineSmallNegSmallNegCenter)
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.25).cgColor]
+        gradient.locations = [0, 1]
+
+        let gradientView = UIView()
+        gradientView.isUserInteractionEnabled = false
+        gradientView.layer.addSublayer(gradient)
+        view.addSubview(gradientView)
+
+        let addedAutomaticallyTag = self.addedAutomaticallyTag
+        view.addSubview(addedAutomaticallyTag)
+
+        addedAutomaticallyTag.snp.makeConstraints { make in
+            make.top.equalTo(10)
+            make.leading.equalTo(10)
+        }
+
+        let label = UILabel(value: "", style: TextStyle.headlineSmallNegSmallNegCenter.colored(.white))
         view.addSubview(label)
 
         label.snp.makeConstraints { make in
@@ -52,9 +107,21 @@ extension KeyGearListItem: Reusable {
         return (view, { `self` in
             let bag = DisposeBag()
 
+            bag += gradientView.didLayoutSignal.onValue { _ in
+                gradient.frame = gradientView.frame
+
+                gradientView.snp.makeConstraints { make in
+                    make.top.bottom.trailing.leading.equalToSuperview()
+                }
+            }
+
             bag += view.applyBorderColor { _ -> UIColor in
                 UIColor.primaryBorder
             }
+
+            label.value = self.name ?? self.category.name
+
+            addedAutomaticallyTag.isHidden = !self.wasAddedAutomatically
 
             let touchUpInsideSignal = view.trackedTouchUpInsideSignal
 
@@ -68,10 +135,25 @@ extension KeyGearListItem: Reusable {
                 view.transform = CGAffineTransform.identity
             }
 
-            imageView.kf.setImage(with: self.imageUrl, options: [
-                .preloadAllAnimationData,
-                .transition(.fade(1)),
-            ])
+            if let imageUrl = self.imageUrl {
+                imageView.kf.setImage(with: imageUrl, options: [
+                    .cacheOriginalImage,
+                    .backgroundDecode,
+                    .transition(.fade(0.25)),
+                ])
+                imageView.contentMode = .scaleAspectFill
+
+                imageView.snp.updateConstraints { make in
+                    make.top.bottom.leading.trailing.equalToSuperview()
+                }
+            } else {
+                imageView.image = self.category.image
+                imageView.contentMode = .scaleAspectFit
+
+                imageView.snp.updateConstraints { make in
+                    make.top.bottom.equalToSuperview().inset(25)
+                }
+            }
 
             bag += view.signal(for: .touchUpInside).onValue { _ in
                 self.callbacker.callAll()

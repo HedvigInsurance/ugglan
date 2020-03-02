@@ -26,7 +26,8 @@ extension KeyGearListCollection: Viewable {
         let bag = DisposeBag()
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 15, bottom: 20, right: 15)
+        layout.headerReferenceSize = CGSize(width: 100, height: 350)
 
         let addButton = ReusableSignalViewable(viewable: KeyGearAddButton())
 
@@ -34,34 +35,44 @@ extension KeyGearListCollection: Viewable {
             table: Table(rows: []),
             layout: layout
         )
-        collectionKit.view.backgroundColor = .transparent
+        collectionKit.view.backgroundColor = .primaryBackground
 
-        bag += collectionKit.view.didLayoutSignal.onValue { _ in
-            collectionKit.view.snp.updateConstraints { make in
-                make.height.equalTo(
-                    collectionKit.view.collectionViewLayout.collectionViewContentSize.height
-                )
-            }
+        let header = TabHeader(
+            image: Asset.keyGearOverviewHeader.image,
+            title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
+            description: String(key: .KEY_GEAR_START_EMPTY_BODY)
+        )
+
+        bag += collectionKit.registerViewForSupplementaryElement(
+            kind: UICollectionView.elementKindSectionHeader
+        ) { _ in
+            header
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: collectionKit.view.frame.width / 2 - 5, height: 120)
+            CGSize(width: collectionKit.view.frame.width / 2 - 20, height: 120)
         }
 
-        bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItemsSimple }.onValue { items in
+        bag += client.watch(query: KeyGearItemsQuery()).map { $0.data?.keyGearItems }.onValue { items in
             guard let items = items, !items.isEmpty else {
-                collectionKit.table = Table(rows: [.make(addButton)])
+                collectionKit.set(Table(rows: [.make(addButton)]))
                 return
             }
 
             var rows: [KeyGearListCollectionRow] = items.compactMap { $0 }.map { item in
                 let photo = item.photos.first
-                return .make(KeyGearListItem(id: item.id, imageUrl: URL(string: photo?.file.preSignedUrl), wasAddedAutomatically: true))
+                return .make(KeyGearListItem(
+                    id: item.id,
+                    imageUrl: URL(string: photo?.file.preSignedUrl),
+                    name: item.name,
+                    wasAddedAutomatically: item.physicalReferenceHash != nil,
+                    category: item.category
+                ))
             }
 
             rows.insert(.make(addButton), at: 0)
 
-            collectionKit.table = Table(rows: rows)
+            collectionKit.set(Table(rows: rows))
         }
 
         return (collectionKit.view, Signal { callback in
@@ -69,21 +80,17 @@ extension KeyGearListCollection: Viewable {
                 callback(.add)
             }
 
-            bag += collectionKit.onValueDisposePrevious { table -> Disposable? in
-                let bag = DisposeBag()
-
-                bag += table.signal().onValue { value in
+            bag += collectionKit.onValue { table in
+                bag += table.map { value -> Disposable in
                     switch value {
                     case let .left(row):
-                        bag += row.onValue { _ in
+                        return row.onValue { _ in
                             callback(.row(id: row.id))
                         }
                     case .right:
-                        break
+                        return NilDisposer()
                     }
                 }
-
-                return bag
             }
 
             return bag
