@@ -85,22 +85,24 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-
-        if remoteConfig.keyGearEnabled {
-            bag += tabBarController.presentTabs(
-                dashboardPresentation,
-                keyGearPresentation,
-                claimsPresentation,
-                referralsPresentation,
-                profilePresentation
-            )
-        } else {
-            bag += tabBarController.presentTabs(
-                dashboardPresentation,
-                claimsPresentation,
-                referralsPresentation,
-                profilePresentation
-            )
+        
+        bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
+            if features.contains(.keyGear) {
+                bag += tabBarController.presentTabs(
+                    dashboardPresentation,
+                    keyGearPresentation,
+                    claimsPresentation,
+                    referralsPresentation,
+                    profilePresentation
+                )
+            } else {
+                bag += tabBarController.presentTabs(
+                    dashboardPresentation,
+                    claimsPresentation,
+                    referralsPresentation,
+                    profilePresentation
+                )
+            }
         }
 
         let appVersion = Bundle.main.appVersion
