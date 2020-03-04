@@ -26,38 +26,43 @@ struct ApplyDiscount {
 extension ApplyDiscount: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.preferredContentSize = CGSize(width: 0, height: 0)
 
         let bag = DisposeBag()
 
         let containerView = UIStackView()
+        containerView.axis = .vertical
         bag += containerView.applySafeAreaBottomLayoutMargin()
+        
+        let headerStackView = UIStackView()
+        headerStackView.axis = .vertical
+        headerStackView.layoutMargins = UIEdgeInsets(top: 24, left: 15, bottom: 0, right: 15)
+        headerStackView.isLayoutMarginsRelativeArrangement = true
+        headerStackView.alignment = .leading
+        containerView.addArrangedSubview(headerStackView)
+        
+        let stackView = UIStackView()
+        stackView.spacing = 5
+        stackView.axis = .vertical
+        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 24, right: 15)
+        stackView.isLayoutMarginsRelativeArrangement = true
 
-        viewController.view = containerView
-
-        let view = UIStackView()
-        view.spacing = 5
-        view.axis = .vertical
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
-        view.isLayoutMarginsRelativeArrangement = true
-        view.isUserInteractionEnabled = true
-
-        containerView.addArrangedSubview(view)
+        containerView.addArrangedSubview(stackView)
 
         let titleLabel = MultilineLabel(
             value: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
             style: .draggableOverlayTitle
         )
-        bag += view.addArranged(titleLabel)
+        bag += headerStackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: String(key: .REFERRAL_ADDCOUPON_BODY),
             style: .bodyOffBlack
         )
-        bag += view.addArranged(descriptionLabel)
+        bag += headerStackView.addArranged(descriptionLabel)
 
         let textField = TextField(value: "", placeholder: String(key: .REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
-        bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
-            stackView.isUserInteractionEnabled = true
+        bag += stackView.addArranged(textField.wrappedIn(UIStackView())) { stackView in
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
         }
@@ -70,23 +75,17 @@ extension ApplyDiscount: Presentable {
         let loadableSubmitButton = LoadableButton(button: submitButton)
         bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
 
-        bag += view.addArranged(loadableSubmitButton.wrappedIn(UIStackView())) { stackView in
+        bag += stackView.addArranged(loadableSubmitButton.wrappedIn(UIStackView())) { stackView in
             stackView.axis = .vertical
             stackView.alignment = .center
         }
 
         let terms = DiscountTerms()
-        bag += view.addArranged(terms)
-
-        bag += view.didLayoutSignal.map { _ in
-            view.systemLayoutSizeFitting(CGSize.zero)
-        }.onValue { size in
-            view.snp.remakeConstraints { make in
-                make.height.equalTo(size.height)
-            }
-        }
+        bag += stackView.addArranged(terms)
 
         bag += containerView.applyPreferredContentSize(on: viewController)
+        
+        viewController.view = containerView
 
         let shouldSubmitCallbacker = Callbacker<Void>()
         bag += loadableSubmitButton.onTapSignal.onValue { _ in

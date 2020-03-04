@@ -31,25 +31,26 @@ extension PerilInformation: Presentable {
         viewController.preferredContentSize = CGSize(width: 0, height: 0)
 
         let containerStackView = UIStackView()
+        containerStackView.axis = .vertical
         bag += containerStackView.applySafeAreaBottomLayoutMargin()
-
+        
+        let headerStackView = UIStackView()
+        headerStackView.layoutMargins = UIEdgeInsets(top: 24, left: 15, bottom: 0, right: 15)
+        headerStackView.isLayoutMarginsRelativeArrangement = true
+        headerStackView.axis = .vertical
+        headerStackView.alignment = .leading
+        containerStackView.addArrangedSubview(headerStackView)
+        
         let containerView = UIStackView()
         containerView.spacing = 15
-        containerView.backgroundColor = UIColor.white
         containerView.axis = .vertical
-        containerView.alignment = .top
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
+        containerView.layoutMargins = UIEdgeInsets(top: 15, left: 15, bottom: 24, right: 15)
         containerView.isLayoutMarginsRelativeArrangement = true
 
         containerStackView.addArrangedSubview(containerView)
 
         let icon = Icon(icon: self.icon, iconWidth: 60)
-        containerView.addArrangedSubview(icon)
-
-        icon.snp.makeConstraints { make in
-            make.width.equalTo(60)
-            make.height.equalTo(60)
-        }
+        headerStackView.addArrangedSubview(icon)
 
         let titleLabel = UILabel()
         titleLabel.style = .draggableOverlayTitle
