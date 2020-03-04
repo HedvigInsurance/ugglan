@@ -56,7 +56,10 @@ extension DraggableOverlay: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        viewController.view = view
+        viewController.view.addSubview(view)
+        view.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalToSuperview()
+        }
 
         let dimmingView = UIView()
         dimmingView.backgroundColor = UIColor.black

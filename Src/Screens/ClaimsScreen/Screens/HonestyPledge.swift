@@ -37,10 +37,8 @@ struct HonestyPledge {
             showLogo: false
         )
 
-        return PresentableViewable(viewable: pushNotificationsAction) {
-            let viewController = UIViewController()
+        return PresentableViewable(viewable: pushNotificationsAction) { viewController in
             viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
-            return viewController
         }
     }
 }
