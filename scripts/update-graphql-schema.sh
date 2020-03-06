@@ -1,2 +1,2 @@
 #!/bin/bash
-apollo schema:download Src/Data/schema.json --endpoint=https://graphql.dev.hedvigit.com/graphql
+apollo schema:download Sources/DataKit/schema.json --endpoint=https://graphql.dev.hedvigit.com/graphql

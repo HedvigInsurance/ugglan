@@ -11,16 +11,37 @@ import ApolloWebSocket
 import Disk
 import Flow
 import Foundation
+import Data
+import Common
 
-struct ApolloEnvironmentConfig {
-    let endpointURL: URL
-    let wsEndpointURL: URL
-    let assetsEndpointURL: URL
+public struct ApolloEnvironmentConfig {
+    public let endpointURL: URL
+    public let wsEndpointURL: URL
+    public let assetsEndpointURL: URL
 }
 
-extension ApolloClient {
+public extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
-        ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        switch ApplicationState.getTargetEnvironment() {
+        case .staging:
+            return ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+            )
+        case .production:
+            return ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+            )
+        case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
+            return ApolloEnvironmentConfig(
+                endpointURL: endpointURL,
+                wsEndpointURL: wsEndpointURL,
+                assetsEndpointURL: assetsEndpointURL
+            )
+        }
     }
 
     static func createClient(token: String?) -> (ApolloStore, ApolloClient) {

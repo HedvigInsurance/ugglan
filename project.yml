@@ -16,6 +16,25 @@ configurations:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
 targets:
+  Common:
+    sources: Sources/Common
+    platform: ios
+    type: ":framework"
+    configuration:
+      INFOPLIST_FILE: Sources/Common/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER:
+      IPHONEOS_DEPLOYMENT_TARGET: '12.0'
+  Data:
+    sources: Sources/Data
+    platform: ios
+    type: ":framework"
+    configuration:
+      INFOPLIST_FILE: Sources/Data/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER:
+      IPHONEOS_DEPLOYMENT_TARGET: '12.0'
+    references:
+      - Common
+      - location: Carthage/Build/iOS/Apollo.framework
   UITests:
     sources:
       - UITests
@@ -175,6 +194,8 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSDKCoreKit.framework
     references:
+      - Data
+      - Common
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
       - sdkroot:AdSupport.framework

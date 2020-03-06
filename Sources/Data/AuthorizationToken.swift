@@ -8,10 +8,10 @@
 
 import Foundation
 
-struct AuthorizationToken: Codable {
+public struct AuthorizationToken: Codable {
     var token: String
 
-    init(token: String) {
+    public init(token: String) {
         self.token = token
     }
 }

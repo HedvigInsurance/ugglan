@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension MonetaryAmountFragment {
+public extension MonetaryAmountFragment {
     /// returns the amount formatted for displaying it to users, for example 100 kr.
     var formattedAmount: String {
         switch currency {

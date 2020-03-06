@@ -43,7 +43,7 @@ extension ApolloClient {
                         return
                     }
 
-                    log.error(error.localizedDescription)
+                    // TODO log.error(error.localizedDescription)
 
                     let retryHandler = { [unowned self] () -> Void in
                         self.fetch(
@@ -107,7 +107,7 @@ extension ApolloClient {
                             return
                         }
 
-                        log.error(error.localizedDescription)
+                        // TODO log.error(error.localizedDescription)
 
                         let retryHandler = { [unowned self] () -> Void in
                             self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
@@ -156,7 +156,7 @@ extension ApolloClient {
                         return
                     }
 
-                    log.error(error.localizedDescription)
+                    // TODO log.error(error.localizedDescription)
 
                     let retryHandler = { [unowned self] in
                         bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: numberOfRetries + 1).onValue { result in
@@ -205,7 +205,7 @@ extension ApolloClient {
                         return
                     }
 
-                    log.error(error.localizedDescription)
+                    // TODO log.error(error.localizedDescription)
 
                     let retryHandler = { [unowned self] () -> Void in
                         bag += self.upload(operation: operation, files: files, queue: queue).onValue { result in
@@ -238,7 +238,7 @@ extension ApolloClient {
                     callbacker(result)
                 case let .failure(error):
                     if !error.isIgnorable {
-                        log.error(error.localizedDescription)
+                        // TODO log.error(error.localizedDescription)
                     }
                 }
             })
