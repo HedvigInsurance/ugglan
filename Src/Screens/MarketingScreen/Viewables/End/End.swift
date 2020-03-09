@@ -29,12 +29,6 @@ extension End: Viewable {
 
         let bag = DisposeBag()
 
-        let happyAvatar = HappyAvatar()
-        bag += stackView.addArranged(happyAvatar)
-
-        let sayHello = SayHello()
-        bag += stackView.addArranged(sayHello)
-
         bag += stackView.didLayoutSignal.take(first: 1).onValue { _ in
             let marketingScreenButton = SharedElement.retreive(
                 for: SharedElementIdentities.newMemberButtonMarketingScreen
