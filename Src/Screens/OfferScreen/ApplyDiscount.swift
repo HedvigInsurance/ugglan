@@ -26,7 +26,6 @@ struct ApplyDiscount {
 extension ApplyDiscount: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        viewController.preferredContentSize = CGSize(width: 0, height: 0)
 
         let bag = DisposeBag()
 
