@@ -20,7 +20,6 @@ struct CardWithImageTextAndAction {
     let title: ReadWriteSignal<String>
     let description: ReadWriteSignal<String>
     let actionButtonTitle: ReadWriteSignal<String>
-    let presentingViewController: UIViewController
 }
 
 extension CardWithImageTextAndAction: Viewable {
