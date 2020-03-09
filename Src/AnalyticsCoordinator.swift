@@ -10,6 +10,8 @@ import FBSDKCoreKit
 import Firebase
 import Flow
 import Foundation
+import Common
+import Space
 
 struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient

@@ -9,6 +9,8 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
+import Common
+import Space
 
 struct AddressCircle {
     @Inject var client: ApolloClient

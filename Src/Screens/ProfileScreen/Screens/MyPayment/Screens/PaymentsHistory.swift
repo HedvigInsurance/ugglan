@@ -11,7 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Data
+import Space
+import Common
 
 struct PaymentsHistory {
     @Inject var client: ApolloClient

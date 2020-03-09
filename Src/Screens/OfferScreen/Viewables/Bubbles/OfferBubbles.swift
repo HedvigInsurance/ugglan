@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import Space
 
 struct OfferBubbles {
     let containerScrollView: UIScrollView

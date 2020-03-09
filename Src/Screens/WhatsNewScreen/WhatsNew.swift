@@ -11,6 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Common
+import Space
 
 struct WhatsNew {
     let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?>
@@ -117,7 +119,7 @@ extension WhatsNew: Presentable {
                 closeButton.onTapSignal,
                 scrolledToEndCallbacker.providedSignal
             ).onValue {
-                ApplicationState.setLastNewsSeen()
+                ApplicationState.setLastNewsSeen(appVersion: Bundle.main.appVersion)
                 completion(.success)
             }
 

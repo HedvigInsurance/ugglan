@@ -8,7 +8,7 @@
 import Apollo
 import Foundation
 
-extension ApolloStore {
+public extension ApolloStore {
     func update<Query: GraphQLQuery>(query: Query, updater: @escaping (inout Query.Data) -> Void) {
         _ = withinReadWriteTransaction { transaction in
             try transaction.update(query: query, updater)

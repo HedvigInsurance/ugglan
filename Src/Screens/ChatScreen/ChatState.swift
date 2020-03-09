@@ -9,6 +9,8 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Common
+import Space
 
 class ChatState {
     private let bag = DisposeBag()

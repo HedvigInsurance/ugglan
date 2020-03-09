@@ -7,6 +7,7 @@
 
 import Foundation
 import Common
+import Space
 
 extension ApplicationState {
     private static let preferredLocaleKey = "preferredLocale"

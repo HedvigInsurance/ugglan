@@ -11,7 +11,7 @@ import ApolloWebSocket
 import Disk
 import Flow
 import Foundation
-import Data
+import Space
 import Common
 
 public struct ApolloEnvironmentConfig {
@@ -116,7 +116,7 @@ public extension ApolloClient {
     }
 
     static func createClientFromNewSession() -> Future<Void> {
-        ApplicationState.setLastNewsSeen()
+        ApplicationState.setLastNewsSeen(appVersion: Bundle.main.appVersion)
 
         let campaign = CampaignInput(
             source: nil,

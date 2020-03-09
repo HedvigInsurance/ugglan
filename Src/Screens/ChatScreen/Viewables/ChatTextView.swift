@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
+import Common
 
 struct ChatTextView {
     @Inject var client: ApolloClient

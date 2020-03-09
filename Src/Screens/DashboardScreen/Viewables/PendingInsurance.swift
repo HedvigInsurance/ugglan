@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import Space
 
 struct PendingInsurance {
     let dataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance?> = ReadWriteSignal(nil)

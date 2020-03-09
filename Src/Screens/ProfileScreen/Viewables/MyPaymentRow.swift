@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import Common
 
 struct MyPaymentRow {
     let monthlyCostSignal = ReadWriteSignal<Int?>(nil)

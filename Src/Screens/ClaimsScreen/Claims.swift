@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Common
 
 struct Claims {
     @Inject var client: ApolloClient

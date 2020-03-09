@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Common
 
 struct ReferralsCode {
     @Inject var client: ApolloClient

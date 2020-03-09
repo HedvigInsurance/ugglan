@@ -18,7 +18,7 @@ private extension Error {
     }
 }
 
-extension ApolloClient {
+public extension ApolloClient {
     func fetch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,

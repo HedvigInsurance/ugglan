@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import Space
 
 struct WelcomePagerProceedButton {
     let button: Button

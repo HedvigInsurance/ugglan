@@ -8,6 +8,8 @@
 import Apollo
 import Foundation
 import UIKit
+import Common
+import Space
 
 private struct LogMessage: Encodable {
     let text: String

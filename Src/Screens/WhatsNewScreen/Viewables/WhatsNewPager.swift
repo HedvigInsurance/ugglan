@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Space
 
 struct WhatsNewPager {
     let dataSignal = ReadWriteSignal<WhatsNewQuery.Data?>(nil)

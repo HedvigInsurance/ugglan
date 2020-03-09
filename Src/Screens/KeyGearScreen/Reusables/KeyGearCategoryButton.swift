@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Space
 
 extension CGSize {
     func append(inset: UIEdgeInsets) -> CGSize {

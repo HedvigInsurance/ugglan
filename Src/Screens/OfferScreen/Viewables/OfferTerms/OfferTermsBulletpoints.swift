@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Common
+import Space
 
 struct OfferTermsBulletPoints {
     @Inject var client: ApolloClient

@@ -11,15 +11,15 @@ import Flow
 import Foundation
 import Common
 
-struct TranslationsRepo {
+public struct TranslationsRepo {
     private static var translations: [String: String] = [:]
 
-    static func clear() -> Future<Void> {
+    public static func clear() -> Future<Void> {
         translations = [:]
         return fetch()
     }
 
-    static func fetch() -> Future<Void> {
+    public static func fetch() -> Future<Void> {
         let localeCode = String(describing: Localization.Locale.currentLocale)
         let client: ApolloClient = Dependencies.shared.resolve()
 

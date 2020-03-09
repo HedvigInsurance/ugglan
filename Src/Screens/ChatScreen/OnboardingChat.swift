@@ -11,6 +11,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import Common
 
 struct OnboardingChat {
     @Inject var client: ApolloClient

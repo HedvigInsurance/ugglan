@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Space
 
 struct TypingIndicator: Hashable, Equatable {
     static func == (lhs: TypingIndicator, rhs: TypingIndicator) -> Bool {

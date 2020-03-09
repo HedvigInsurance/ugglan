@@ -11,7 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Data
+import Space
+import Common
 
 struct PastPaymentsSection {
     @Inject var client: ApolloClient
@@ -49,7 +50,7 @@ extension PastPaymentsSection: Viewable {
 
                     row.keySignal.value = dateDisplayFormatter.string(from: date)
                 }
-
+                
                 row.valueSignal.value = chargeHistory.amount.fragments.monetaryAmountFragment.formattedAmount
 
                 return section.append(row)

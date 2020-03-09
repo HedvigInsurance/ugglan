@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Apollo
 
 public extension MonetaryAmountFragment {
     /// returns the amount formatted for displaying it to users, for example 100 kr.

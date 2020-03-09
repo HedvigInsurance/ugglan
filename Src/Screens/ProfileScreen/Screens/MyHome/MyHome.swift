@@ -9,12 +9,10 @@ import Apollo
 import Flow
 import Form
 import Presentation
+import Common
 
 struct MyHome {
     @Inject var client: ApolloClient
-
-    init(
-    ) {}
 }
 
 extension MyHome: Presentable {

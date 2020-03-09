@@ -11,6 +11,8 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Common
+import Space
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -109,7 +111,7 @@ extension LoggedIn: Presentable {
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
 
         if didSign {
-            ApplicationState.setLastNewsSeen()
+            ApplicationState.setLastNewsSeen(appVersion: Bundle.main.appVersion)
 
             bag += client
                 .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))

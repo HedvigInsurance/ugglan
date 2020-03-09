@@ -24,12 +24,12 @@ targets:
       INFOPLIST_FILE: Sources/Common/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER:
       IPHONEOS_DEPLOYMENT_TARGET: '12.0'
-  Data:
-    sources: Sources/Data
+  Space:
+    sources: Sources/Space
     platform: ios
     type: ":framework"
     configuration:
-      INFOPLIST_FILE: Sources/Data/Info.plist
+      INFOPLIST_FILE: Sources/Space/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER:
       IPHONEOS_DEPLOYMENT_TARGET: '12.0'
     references:
@@ -194,7 +194,7 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSDKCoreKit.framework
     references:
-      - Data
+      - Space
       - Common
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework

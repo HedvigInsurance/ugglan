@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Space
 
 extension URL {
     init?(key: Localization.Key) {

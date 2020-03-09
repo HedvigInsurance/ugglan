@@ -9,7 +9,7 @@
 import Foundation
 
 public struct AuthorizationToken: Codable {
-    var token: String
+    public var token: String
 
     public init(token: String) {
         self.token = token

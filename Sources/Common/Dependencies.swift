@@ -14,7 +14,7 @@ public class Dependencies {
     private init() {}
     deinit { modules.removeAll() }
 
-    func add(module: Module) {
+    public func add(module: Module) {
         modules[module.name] = module
     }
 

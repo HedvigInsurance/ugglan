@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
+import Space
 
 struct Message: Equatable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {

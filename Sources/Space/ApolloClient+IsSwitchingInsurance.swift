@@ -9,7 +9,7 @@ import Apollo
 import Flow
 import Foundation
 
-extension ApolloClient {
+public extension ApolloClient {
     var isSwitchingInsurance: Future<Bool> {
         fetch(query: SwitchingQuery()).map { result -> Bool in
             guard let data = result.data else { return false }

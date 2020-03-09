@@ -9,6 +9,7 @@ import Firebase
 import Flow
 import Foundation
 import UIKit
+import Common
 
 extension UIControl {
     /// Triggers on touchUpInside and uses accessibilityLabel to trigger an analytics event

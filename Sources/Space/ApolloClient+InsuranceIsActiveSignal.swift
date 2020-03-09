@@ -9,7 +9,7 @@ import Apollo
 import Flow
 import Foundation
 
-extension InsuranceStatus {
+public extension InsuranceStatus {
     var isInactive: Bool {
         switch self {
         case .inactive:
@@ -22,7 +22,7 @@ extension InsuranceStatus {
     }
 }
 
-extension ApolloClient {
+public extension ApolloClient {
     func insuranceIsActiveSignal() -> Signal<Bool> {
         return watch(
             query: InsuranceStatusQuery(),

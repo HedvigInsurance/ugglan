@@ -12,6 +12,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Common
 
 struct ButtonRow {
     let text: ReadWriteSignal<String>

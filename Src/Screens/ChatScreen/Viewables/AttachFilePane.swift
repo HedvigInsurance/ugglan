@@ -11,6 +11,8 @@ import Form
 import Foundation
 import Photos
 import UIKit
+import Common
+import Space
 
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>

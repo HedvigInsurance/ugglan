@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Space
 
 struct BulletPointTable {
     let bulletPoints: [CommonClaimsQuery.Data.CommonClaim.Layout.AsTitleAndBulletPoints.BulletPoint]

@@ -12,6 +12,7 @@ import Foundation
 import Presentation
 import StoreKit
 import UIKit
+import Space
 
 struct Welcome {
     let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>

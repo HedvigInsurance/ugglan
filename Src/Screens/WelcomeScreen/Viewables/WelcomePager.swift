@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Space
 
 struct WelcomePager {
     let dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(nil)

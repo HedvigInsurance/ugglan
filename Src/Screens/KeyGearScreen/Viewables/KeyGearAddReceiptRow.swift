@@ -12,6 +12,8 @@ import Foundation
 import Photos
 import Presentation
 import UIKit
+import Common
+import Space
 
 struct KeyGearAddReceiptRow {
     @Inject var client: ApolloClient

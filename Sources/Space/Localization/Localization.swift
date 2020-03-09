@@ -4,35 +4,35 @@ import Foundation
 
 // swiftlint:disable identifier_name type_body_length type_name line_length nesting file_length
 
-protocol LocalizationStringConvertible {
+public protocol LocalizationStringConvertible {
     var localizationDescription: String { get }
 }
 
 extension String: LocalizationStringConvertible {
-    var localizationDescription: String {
+    public var localizationDescription: String {
         return self
     }
 }
 
 extension Int: LocalizationStringConvertible {
-    var localizationDescription: String {
+    public var localizationDescription: String {
         return String(self)
     }
 }
 
 extension Double: LocalizationStringConvertible {
-    var localizationDescription: String {
+    public var localizationDescription: String {
         return String(self)
     }
 }
 
 extension Float: LocalizationStringConvertible {
-    var localizationDescription: String {
+    public var localizationDescription: String {
         return String(self)
     }
 }
 
-extension String {
+public extension String {
     static var localizationKey: UInt8 = 0
 
     var localizationKey: Localization.Key? {
@@ -69,15 +69,15 @@ extension String {
 }
 
 public struct Localization {
-    enum Locale: String, CaseIterable {
-        static var currentLocale: Locale = .sv_SE
+    public enum Locale: String, CaseIterable {
+        public static var currentLocale: Locale = .sv_SE
         case sv_SE
         case en_SE
         case en_NO
         case nb_NO
     }
 
-    enum Key {
+    public enum Key {
         case OFFER_TITLE
         case OFFER_BUBBLES_BINDING_PERIOD_TITLE
         case OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE
