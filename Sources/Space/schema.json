@@ -855,6 +855,18 @@
             "deprecationReason": null
           },
           {
+            "name": "insuranceCost",
+            "description": "Returns the aggregated insurance cost of a member's PENDING, ACTIVE or ACTIVE_IN_FUTURE current agreements",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "InsuranceCost",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "balance",
             "description": "",
             "args": [],
@@ -2967,6 +2979,12 @@
           },
           {
             "name": "Underwriter",
+            "description": "",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MemberService",
             "description": "",
             "isDeprecated": false,
             "deprecationReason": null

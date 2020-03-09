@@ -42,7 +42,7 @@
 
    2. put this into that file:
 
-   `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="swiftTranslationsCodegen --projects '[App, IOS]' --destination 'Src/Assets/Localization/Localization.swift'" alias assets="swiftgen"`
+   `alias graphql="sh scripts/generate-apollo-files.sh" alias graphqlSchema="sh scripts/update-graphql-schema.sh" alias translations="swiftTranslationsCodegen --projects '[App, IOS]' --destination 'Sources/Space/Localization/Localization.swift'" alias assets="swiftgen"`
 
 10. Install Apollo CLI
 
