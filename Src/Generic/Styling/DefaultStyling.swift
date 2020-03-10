@@ -10,9 +10,12 @@ import Form
 import Foundation
 import StoreKit
 import UIKit
+import ComponentKit
 
 extension DefaultStyling {
     static func installCustom() {
+        Button.font = HedvigFonts.circularStdBook!
+        
         ListTableView.appearance().backgroundColor = .primaryBackground
 
         for view in [FormScrollView.self, FormTableView.self] {

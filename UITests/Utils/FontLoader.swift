@@ -11,7 +11,7 @@ import UIKit
 struct FontLoader {
     static func loadFonts() {
         let fileManager = FileManager.default
-        let bundleURL = Bundle(for: AppDelegate.self).bundleURL
+        let bundleURL = Bundle(for: SnapShotTestCase.self).bundleURL
 
         do {
             let contents = try fileManager.contentsOfDirectory(at: bundleURL, includingPropertiesForKeys: [], options: .skipsHiddenFiles)

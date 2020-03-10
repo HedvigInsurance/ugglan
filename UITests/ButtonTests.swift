@@ -8,6 +8,7 @@
 import SnapshotTesting
 import UIKit
 import XCTest
+import ComponentKit
 
 class ButtonTests: SnapShotTestCase {
     func testStandard() {
@@ -42,7 +43,7 @@ class ButtonTests: SnapShotTestCase {
         let button = Button(
             title: "Lorem ipsum",
             type: .standard(
-                backgroundColor: .turquoise,
+                backgroundColor: .blue,
                 textColor: .black
             )
         )
@@ -78,14 +79,6 @@ class ButtonTests: SnapShotTestCase {
         )
 
         materializeViewable(loadableButton) { view in
-            assertSnapshot(matching: view, as: .image)
-        }
-    }
-
-    func testChatButton() {
-        let chatButton = ChatButton(presentingViewController: UIViewController())
-
-        materializeViewable(chatButton) { view in
             assertSnapshot(matching: view, as: .image)
         }
     }

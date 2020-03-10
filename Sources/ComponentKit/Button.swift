@@ -227,17 +227,8 @@ public enum ButtonType {
     }
 }
 
-public protocol ButtonTextStylable {
-    var textStyle: TextStyle { get }
-}
-
-extension Button: ButtonTextStylable {
-    public var textStyle: TextStyle {
-        .init(font: .systemFont(ofSize: 20), color: .white)
-    }
-}
-
 public struct Button {
+    public static var font = UIFont.systemFont(ofSize: 0)
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     private let id = UUID()
@@ -284,7 +275,7 @@ extension Button: Viewable {
                             )
                         ),
                         text: TextStyle(
-                            font: self.textStyle.font.withSize(buttonType.fontSize),
+                            font: Button.font.withSize(buttonType.fontSize),
                             color: buttonType.textColor
                         )
                     ),
@@ -309,7 +300,7 @@ extension Button: Viewable {
                             )
                         ),
                         text: TextStyle(
-                            font: self.textStyle.font.withSize(buttonType.fontSize),
+                            font: Button.font.withSize(buttonType.fontSize),
                             color: buttonType.textColor
                         )
                     ),
