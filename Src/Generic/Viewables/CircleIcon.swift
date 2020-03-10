@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct CircleIcon {
     let iconAsset: ImageAsset
@@ -30,7 +31,7 @@ extension CircleIcon: Viewable {
             circleView.layer.cornerRadius = circleView.frame.width / 2
         }
 
-        let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
+        let icon = Icon(frame: .zero, icon: iconAsset.image, iconWidth: iconWidth)
         circleView.addSubview(icon)
 
         circleView.layer.shadowOpacity = 0.2
@@ -52,7 +53,7 @@ extension CircleIcon: Viewable {
             make.center.equalToSuperview()
         }
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        view.snp.makeConstraints { make in
             make.height.equalTo(self.iconWidth + self.spacing)
         }
 

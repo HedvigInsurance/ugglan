@@ -11,6 +11,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import ComponentKit
 
 struct Licenses {}
 
@@ -21,7 +22,7 @@ extension Acknow: Reusable {
 
         row.append(titleLabel)
 
-        let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
+        let arrow = Icon(frame: .zero, icon: Asset.chevronRight.image, iconWidth: 20)
         row.append(arrow)
 
         arrow.snp.makeConstraints { make in

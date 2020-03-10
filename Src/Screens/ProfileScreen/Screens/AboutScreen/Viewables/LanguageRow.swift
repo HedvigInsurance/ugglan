@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import ComponentKit
 
 struct LanguageRow {
     let presentingViewController: UIViewController
@@ -21,7 +22,7 @@ extension LanguageRow: Viewable {
         let row = RowView()
         row.append(UILabel(value: "Language/Språk", style: .rowTitle))
 
-        let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
+        let arrow = Icon(frame: .zero, icon: Asset.chevronRight.image, iconWidth: 20)
 
         row.append(arrow)
 

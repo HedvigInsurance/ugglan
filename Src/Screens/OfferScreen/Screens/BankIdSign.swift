@@ -11,6 +11,9 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Common
+import Space
+import ComponentKit
 
 struct BankIdSign {
     @Inject var client: ApolloClient

@@ -11,6 +11,8 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import Common
+import ComponentKit
 
 struct AudioRecorder {
     @Inject var client: ApolloClient

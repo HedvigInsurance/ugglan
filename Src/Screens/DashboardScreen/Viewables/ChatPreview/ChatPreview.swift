@@ -9,6 +9,9 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
+import Common
+import Space
+import ComponentKit
 
 struct ChatPreview {
     @Inject var client: ApolloClient
@@ -48,7 +51,7 @@ extension ChatPreview: Viewable {
         symbolIconContainer.isLayoutMarginsRelativeArrangement = true
         symbolIconContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
 
-        let symbolIcon = Icon(icon: Asset.symbol, iconWidth: 20)
+        let symbolIcon = Icon(icon: Asset.symbol.image, iconWidth: 20)
         symbolIconContainer.addArrangedSubview(symbolIcon)
 
         containerView.addArrangedSubview(symbolIconContainer)

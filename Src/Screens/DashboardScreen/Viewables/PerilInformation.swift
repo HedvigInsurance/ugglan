@@ -10,6 +10,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import ComponentKit
 
 struct PerilInformation {
     let description: String
@@ -43,7 +44,7 @@ extension PerilInformation: Presentable {
 
         containerStackView.addArrangedSubview(containerView)
 
-        let icon = Icon(icon: self.icon, iconWidth: 60)
+        let icon = Icon(icon: self.icon.image, iconWidth: 60)
         containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in

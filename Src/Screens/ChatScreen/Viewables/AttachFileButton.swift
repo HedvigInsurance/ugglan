@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import ComponentKit
 
 struct AttachFileButton {
     let isOpenSignal: ReadSignal<Bool>
@@ -24,7 +25,7 @@ extension AttachFileButton: Viewable {
             make.width.height.equalTo(40)
         }
 
-        let icon = Icon(icon: Asset.attachFile, iconWidth: 15)
+        let icon = Icon(icon: Asset.attachFile.image, iconWidth: 15)
 
         bag += isOpenSignal.atOnce().animated(style: SpringAnimationStyle.heavyBounce()) { isOpen in
             icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(isOpen ? 45 : 0)))

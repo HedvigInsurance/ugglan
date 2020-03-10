@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import Kingfisher
+import Space
 
 struct KeyGearImageCarouselItem {
     let resource: Either<URL, KeyGearItemCategory>

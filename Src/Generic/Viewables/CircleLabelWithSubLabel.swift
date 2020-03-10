@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct CircleLabelWithSubLabel {
     let labelText: DynamicString
@@ -93,11 +94,13 @@ extension CircleLabelWithSubLabel: Viewable {
             circleView.layer.cornerRadius = circleView.frame.height * 0.5
         }
 
-        circleView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalTo(circleView.snp.height)
-            make.height.equalToSuperview()
-            make.center.equalToSuperview()
-        }
+        bag += circleView.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+            circleView.snp.makeConstraints { make in
+                make.width.equalTo(circleView.snp.height)
+                make.height.equalToSuperview()
+                make.center.equalToSuperview()
+            }
+        })
 
         return (circleView, bag)
     }

@@ -9,6 +9,7 @@
 import Flow
 import Form
 import Foundation
+import ComponentKit
 
 enum DirectDebitResultType {
     case success(setupType: DirectDebitSetup.SetupType), failure(setupType: DirectDebitSetup.SetupType)
@@ -111,7 +112,7 @@ extension DirectDebitResult: Viewable {
 
         let bag = DisposeBag()
 
-        let icon = Icon(frame: .zero, icon: type.icon, iconWidth: 40)
+        let icon = Icon(frame: .zero, icon: type.icon.image, iconWidth: 40)
         stackView.addArrangedSubview(icon)
 
         let heading = MultilineLabel(

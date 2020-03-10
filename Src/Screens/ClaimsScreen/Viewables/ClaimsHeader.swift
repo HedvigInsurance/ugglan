@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Common
+import ComponentKit
 
 struct ClaimsHeader {
     let presentingViewController: UIViewController
@@ -38,7 +40,7 @@ extension ClaimsHeader.Title: Viewable {
 
         let label = MultilineLabel(
             value: String(key: .CLAIMS_HEADER_TITLE),
-            style: TextStyle.standaloneLargeTitle.centered()
+            style: TextStyle.standaloneLargeTitle.centerAligned
         )
 
         bag += view.addArranged(label) { view in
@@ -62,7 +64,7 @@ extension ClaimsHeader.Description: Viewable {
 
         let label = MultilineLabel(
             value: String(key: .CLAIMS_HEADER_SUBTITLE),
-            style: TextStyle.body.centered()
+            style: TextStyle.body.centerAligned
         )
 
         bag += view.addArranged(label) { view in
@@ -108,7 +110,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
 
         let label = MultilineLabel(
             value: String(key: .CLAIMS_INACTIVE_MESSAGE),
-            style: TextStyle.bodyOffBlack.centered()
+            style: TextStyle.bodyOffBlack.centerAligned
         )
 
         bag += cardContent.addArranged(label) { view in

@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct ReferralsInvitationMemberIcon {}
 
@@ -41,7 +42,7 @@ extension ReferralsInvitationMemberIcon: Viewable {
         let amountLabel = UILabel(value: "-10kr", style: TextStyle.bodyOffBlack.lineHeight(1.7))
         contentView.addArrangedSubview(amountLabel)
 
-        let checkmarkIcon = Icon(icon: Asset.greenCircularCheckmark, iconWidth: 16)
+        let checkmarkIcon = Icon(icon: Asset.greenCircularCheckmark.image, iconWidth: 16)
         contentView.addArrangedSubview(checkmarkIcon)
 
         checkmarkIcon.snp.makeConstraints { make in

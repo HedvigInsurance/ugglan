@@ -9,6 +9,7 @@
 import Flow
 import Foundation
 import UIKit
+import ComponentKit
 
 struct MonthlyPaymentCircle {
     let monthlyCostSignal = ReadWriteSignal<Int?>(nil)
@@ -36,7 +37,7 @@ extension MonthlyPaymentCircle: Viewable {
         let deductibleCircle = DeductibleCircle()
         bag += containerView.add(deductibleCircle)
 
-        containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        containerView.snp.makeConstraints { make in
             make.height.equalTo(200)
         }
 

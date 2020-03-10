@@ -11,6 +11,9 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Space
+import Common
+import ComponentKit
 
 struct PastPaymentsSection {
     @Inject var client: ApolloClient
@@ -48,7 +51,7 @@ extension PastPaymentsSection: Viewable {
 
                     row.keySignal.value = dateDisplayFormatter.string(from: date)
                 }
-
+                
                 row.valueSignal.value = chargeHistory.amount.fragments.monetaryAmountFragment.formattedAmount
 
                 return section.append(row)
@@ -57,7 +60,7 @@ extension PastPaymentsSection: Viewable {
             let moreRow = RowView()
             moreRow.append(UILabel(value: String(key: .PAYMENTS_BTN_HISTORY), style: .rowTitle))
 
-            let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
+            let arrow = Icon(frame: .zero, icon: Asset.chevronRight.image, iconWidth: 20)
 
             moreRow.append(arrow)
 

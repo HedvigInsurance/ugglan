@@ -9,6 +9,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Space
+import ComponentKit
 
 struct PaymentNeedsSetupSection {
     let dataSignal: ReadWriteSignal<MyPaymentQuery.Data?> = ReadWriteSignal(nil)
@@ -40,7 +42,7 @@ extension PaymentNeedsSetupSection: Viewable {
             make.height.width.centerX.centerY.equalToSuperview()
         }
 
-        let infoLabel = MultilineLabel(value: String(key: .DASHBOARD_PAYMENT_SETUP_INFO), style: TextStyle.bodyOffBlack.centered())
+        let infoLabel = MultilineLabel(value: String(key: .DASHBOARD_PAYMENT_SETUP_INFO), style: TextStyle.bodyOffBlack.centerAligned)
         bag += containerStackView.addArranged(infoLabel)
 
         let buttonContainer = UIView()

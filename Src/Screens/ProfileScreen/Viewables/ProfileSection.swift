@@ -9,6 +9,8 @@
 import Flow
 import Form
 import Foundation
+import Space
+import ComponentKit
 
 struct ProfileSection {
     let dataSignal: ReadWriteSignal<ProfileQuery.Data?> = ReadWriteSignal(nil)

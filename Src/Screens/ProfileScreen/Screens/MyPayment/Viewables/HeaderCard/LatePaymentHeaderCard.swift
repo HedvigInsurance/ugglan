@@ -11,6 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Common
+import ComponentKit
 
 struct LatePaymentHeaderSection {
     @Inject var client: ApolloClient
@@ -47,7 +49,7 @@ extension LatePaymentHeaderSection: Viewable {
             make.bottom.equalTo(childView).offset(-15)
         }
 
-        let icon = Icon(icon: Asset.pinkCircularExclamationPoint, iconWidth: 15)
+        let icon = Icon(icon: Asset.pinkCircularExclamationPoint.image, iconWidth: 15)
         containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in

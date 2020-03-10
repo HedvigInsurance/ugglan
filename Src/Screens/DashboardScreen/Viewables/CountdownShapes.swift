@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct CountdownShapes {}
 
@@ -42,7 +43,7 @@ extension CountdownShapes: Viewable {
 
         view.addArrangedSubview(circle)
 
-        let cogwheel = Icon(icon: Asset.cogwheel, iconWidth: 32)
+        let cogwheel = Icon(icon: Asset.cogwheel.image, iconWidth: 32)
         view.addArrangedSubview(cogwheel)
 
         let barStack = UIStackView()

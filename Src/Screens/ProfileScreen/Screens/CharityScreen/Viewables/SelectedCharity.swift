@@ -10,6 +10,9 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Common
+import Space
+import ComponentKit
 
 struct SelectedCharity {
     @Inject var client: ApolloClient
@@ -120,12 +123,12 @@ extension SelectedCharity: Viewable {
             }
         }
 
-        stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.trailing.equalToSuperview()
-            make.leading.equalToSuperview()
-            make.width.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
+        stackView.snp.makeConstraints { make in
+           make.trailing.equalToSuperview()
+           make.leading.equalToSuperview()
+           make.width.equalToSuperview()
+           make.top.equalToSuperview()
+           make.bottom.equalToSuperview()
         }
 
         return (scrollView, bag)

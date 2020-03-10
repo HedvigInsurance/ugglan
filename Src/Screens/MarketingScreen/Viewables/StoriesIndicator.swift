@@ -12,6 +12,7 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
+import ComponentKit
 
 struct StoriesIndicator {
     let scrollToSignal: Signal<ScrollTo>
@@ -200,17 +201,19 @@ extension StoriesIndicator: Viewable {
             marketingStoryIndicatorsCallbacker.callAll(with: marketingStoryIndicators)
         }
 
-        bag += collectionKit.view.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
-            if Device.hasRoundedCorners {
-                make.top.equalTo(safeArea.layoutGuide)
-            } else {
-                make.top.equalTo(20)
-            }
+        bag += collectionKit.view.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+            collectionKit.view.snp.makeConstraints { make in
+                if Device.hasRoundedCorners {
+                    make.top.equalTo(collectionKit.view.safeAreaLayoutGuide.snp.top)
+               } else {
+                   make.top.equalTo(20)
+               }
 
-            make.width.equalToSuperview()
-            make.height.equalTo(2.5)
-            make.centerX.equalToSuperview().inset(2.5)
-        }
+               make.width.equalToSuperview()
+               make.height.equalTo(2.5)
+               make.centerX.equalToSuperview().inset(2.5)
+            }
+        })
 
         return (collectionKit.view, bag)
     }

@@ -12,6 +12,9 @@ import Foundation
 import Photos
 import Presentation
 import UIKit
+import Common
+import Space
+import ComponentKit
 
 struct KeyGearAddReceiptRow {
     @Inject var client: ApolloClient
@@ -31,7 +34,7 @@ extension KeyGearAddReceiptRow: Viewable {
         stackView.distribution = .fill
         stackView.alignment = .leading
 
-        let icon = Icon(icon: Asset.receipt, iconWidth: 40)
+        let icon = Icon(icon: Asset.receipt.image, iconWidth: 40)
 
         let receiptText = MultilineLabel(value: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE), style: .smallTitle)
 

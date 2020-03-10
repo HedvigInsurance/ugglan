@@ -10,9 +10,12 @@ import Form
 import Foundation
 import StoreKit
 import UIKit
+import ComponentKit
 
 extension DefaultStyling {
     static func installCustom() {
+        Button.font = HedvigFonts.circularStdBook!
+        
         ListTableView.appearance().backgroundColor = .primaryBackground
 
         for view in [FormScrollView.self, FormTableView.self] {
@@ -126,7 +129,7 @@ extension DefaultStyling {
             UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
             UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
         }
-
+                
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ], for: .normal)
