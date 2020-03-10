@@ -171,7 +171,6 @@ targets:
     configuration:
       INFOPLIST_FILE: UITests/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
-      TEST_TARGET_NAME: Ugglan
       SWIFT_VERSION: "5.0"
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC -weak_framework SwiftUI -weak_framework Combine"
