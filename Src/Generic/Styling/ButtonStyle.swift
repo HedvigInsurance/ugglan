@@ -8,6 +8,13 @@
 
 import Form
 import Foundation
+import ComponentKit
+
+extension Button: ButtonTextStylable {
+    var textStyle: TextStyle {
+        .init(font: .systemFont(ofSize: 20), color: .white)
+    }
+}
 
 extension ButtonStyle {
     static let invisible = ButtonStyle.default.restyled { (style: inout ButtonStyle) in

@@ -13,6 +13,7 @@ import SafariServices
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct OfferTermsLinks {
     @Inject var client: ApolloClient
@@ -54,7 +55,7 @@ extension OfferTermsLinks {
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
 
-            let iconView = Icon(icon: icon, iconWidth: 37)
+            let iconView = Icon(icon: icon.image, iconWidth: 37)
             stackView.addArrangedSubview(iconView)
 
             let label = MultilineLabel(value: text, style: TextStyle.perilTitle.centerAligned)

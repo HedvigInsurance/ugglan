@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import ComponentKit
 
 struct ReferralsContent {
     let codeSignal: Signal<String>

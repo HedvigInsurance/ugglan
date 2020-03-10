@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import Kingfisher
+import ComponentKit
 
 struct AttachGIFImage {
     let url: URL

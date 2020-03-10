@@ -12,6 +12,8 @@ import Foundation
 import Presentation
 import UIKit
 import Common
+import ComponentKit
+import Analytics
 
 struct ReferralsCode {
     @Inject var client: ApolloClient

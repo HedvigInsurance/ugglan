@@ -15,6 +15,7 @@ import SafariServices
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct InsuranceCertificate {
     @Inject var client: ApolloClient

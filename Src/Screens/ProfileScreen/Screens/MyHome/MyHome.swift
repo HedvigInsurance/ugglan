@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import Presentation
+import ComponentKit
 import Common
 
 struct MyHome {

@@ -11,6 +11,7 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
+import ComponentKit
 
 struct LoadingIndicator {
     let showAfter: TimeInterval
@@ -33,14 +34,16 @@ extension LoadingIndicator: Viewable {
         let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
         loadingIndicator.alpha = 0
         loadingIndicator.color = color
-
-        loadingIndicator.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalTo(self.size)
-            make.height.equalTo(self.size)
-            make.center.equalToSuperview()
-        }
-
+        
         let bag = DisposeBag()
+
+        bag += loadingIndicator.didMoveToWindowSignal.take(first: 1).onValue { _ in
+            loadingIndicator.snp.makeConstraints { make in
+                make.width.equalTo(self.size)
+                make.height.equalTo(self.size)
+                make.center.equalToSuperview()
+            }
+        }
 
         bag += Signal(after: showAfter).animated(style: AnimationStyle.easeOut(duration: 0.5), animations: {
             loadingIndicator.alpha = 1

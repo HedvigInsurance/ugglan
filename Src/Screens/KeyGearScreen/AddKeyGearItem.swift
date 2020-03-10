@@ -13,6 +13,7 @@ import Presentation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct AddKeyGearItem {
     @Inject var client: ApolloClient

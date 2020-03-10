@@ -14,6 +14,7 @@ import SwiftUI
 import UIKit
 import Space
 import Common
+import ComponentKit
 
 struct About {
     @Inject var client: ApolloClient

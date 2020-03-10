@@ -12,6 +12,7 @@ import Foundation
 import Presentation
 import Common
 import Space
+import ComponentKit
 
 struct KeyGearAddValuation {
     let id: String

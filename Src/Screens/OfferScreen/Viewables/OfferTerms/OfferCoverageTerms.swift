@@ -11,6 +11,7 @@ import Form
 import Foundation
 import UIKit
 import Common
+import ComponentKit
 
 struct OfferCoverageTerms {
     @Inject var client: ApolloClient

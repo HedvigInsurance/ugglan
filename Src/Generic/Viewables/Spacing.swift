@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct Spacing {
     let height: Float
@@ -21,7 +22,7 @@ extension Spacing: Viewable {
         let bag = DisposeBag()
         let view = UIView()
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        view.snp.makeConstraints { make in
             make.height.equalTo(self.height)
         }
 

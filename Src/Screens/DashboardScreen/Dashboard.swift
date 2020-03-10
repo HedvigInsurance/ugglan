@@ -14,6 +14,8 @@ import Presentation
 import UIKit
 import Common
 import Space
+import Analytics
+import ComponentKit
 
 struct Dashboard {
     @Inject var client: ApolloClient

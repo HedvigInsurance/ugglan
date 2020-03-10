@@ -126,7 +126,7 @@ extension DefaultStyling {
             UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
             UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
         }
-
+                
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ], for: .normal)

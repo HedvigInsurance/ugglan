@@ -13,6 +13,7 @@ import Photos
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>

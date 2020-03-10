@@ -13,6 +13,7 @@ import Presentation
 import UIKit
 import Common
 import Space
+import Analytics
 
 struct LoggedIn {
     @Inject var client: ApolloClient

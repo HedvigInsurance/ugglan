@@ -14,6 +14,7 @@ import Presentation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct MyCoinsured {
     @Inject var client: ApolloClient

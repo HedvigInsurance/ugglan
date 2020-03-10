@@ -10,6 +10,7 @@ import Form
 import Foundation
 import UIKit
 import Space
+import ComponentKit
 
 struct ExtraBuildingRow {
     let data: ReadWriteSignal<MyHomeQuery.Data.Insurance.ExtraBuilding>

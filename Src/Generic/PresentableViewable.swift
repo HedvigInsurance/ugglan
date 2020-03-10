@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import ComponentKit
 
 struct PresentableViewable<View: Viewable, SignalValue>: Presentable where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<SignalValue> {
     let viewable: View

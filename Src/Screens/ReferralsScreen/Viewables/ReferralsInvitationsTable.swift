@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import ComponentKit
 
 typealias InvitationsListRow = Either<ReferralsInvitation, ReferralsInvitationAnonymous>
 

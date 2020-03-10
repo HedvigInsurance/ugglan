@@ -12,6 +12,7 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
+import ComponentKit
 
 struct MemberActionButtons {
     let resultCallbacker: Callbacker<MarketingResult>
@@ -53,16 +54,18 @@ extension MemberActionButtons: Viewable {
             stackView.transform = CGAffineTransform.identity
         }
 
-        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, safeArea in
-            make.width.equalToSuperview().inset(10)
-            make.centerX.equalToSuperview()
+        bag += stackView.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+            stackView.snp.makeConstraints { make in
+                make.width.equalToSuperview().inset(10)
+                make.centerX.equalToSuperview()
 
-            if Device.hasRoundedCorners {
-                make.bottom.equalTo(safeArea.layoutGuide)
-            } else {
-                make.bottom.equalTo(-15)
+                if Device.hasRoundedCorners {
+                    make.bottom.equalTo(stackView.safeAreaLayoutGuide.snp.bottom)
+                } else {
+                    make.bottom.equalTo(-15)
+                }
             }
-        }
+        })
 
         return (stackView, bag)
     }

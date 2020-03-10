@@ -13,6 +13,7 @@ import SnapKit
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct Marketing {
     @Inject var client: ApolloClient

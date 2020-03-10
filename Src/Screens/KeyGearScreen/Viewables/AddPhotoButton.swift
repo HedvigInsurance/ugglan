@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct AddPhotoButton {
     let pickedPhotoSignal = ReadWriteSignal<UIImage?>(nil)
@@ -33,7 +34,7 @@ extension AddPhotoButton: Viewable {
         contentContainer.alignment = .center
         contentContainer.isUserInteractionEnabled = false
 
-        contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto, iconWidth: 40))
+        contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto.image, iconWidth: 40))
         bag += contentContainer.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON), style: TextStyle.body.colored(.primaryTintColor)))
 
         view.addSubview(contentContainer)

@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct TabHeader {
     let image: UIImage
@@ -50,13 +51,13 @@ extension TabHeader.Text: Viewable {
 
         let titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.standaloneLargeTitle.centered()
+            style: TextStyle.standaloneLargeTitle.centerAligned
         )
         bag += view.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: description,
-            style: TextStyle.body.centered()
+            style: TextStyle.body.centerAligned
         )
         bag += view.addArranged(descriptionLabel)
 

@@ -10,6 +10,7 @@ import DeviceKit
 import Flow
 import Foundation
 import UIKit
+import ComponentKit
 
 struct End {
     let dismissSignal: Signal<Void>
@@ -74,17 +75,19 @@ extension End: Viewable {
             stackView.alpha = 1
         }
 
-        bag += stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview()
         }
 
-        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-        }
+        bag += view.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+            view.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+            }
+        })
 
         return (view, Future { completion in
             let newMemberButton = NewMemberButton(style: .endScreen) {
@@ -105,19 +108,19 @@ extension End: Viewable {
 
             view.addSubview(existingMemberButtonContainerView)
 
-            bag += existingMemberButtonContainerView.makeConstraints(
-                wasAdded: events.wasAdded
-            ).onValue { make, safeArea in
-                if Device.hasRoundedCorners {
-                    make.bottom.equalTo(safeArea.layoutGuide)
-                } else {
-                    make.bottom.equalTo(-15)
-                }
+            bag += existingMemberButtonContainerView.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+                existingMemberButtonContainerView.snp.makeConstraints { make in
+                    if Device.hasRoundedCorners {
+                        make.bottom.equalTo(existingMemberButtonContainerView.safeAreaLayoutGuide.snp.bottom)
+                    } else {
+                        make.bottom.equalTo(-15)
+                    }
 
-                make.centerX.equalToSuperview()
-                make.width.equalToSuperview()
-                make.height.equalTo(30)
-            }
+                    make.centerX.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalTo(30)
+                }
+            })
 
             bag += events.removeAfter.set { _ -> TimeInterval in
                 2

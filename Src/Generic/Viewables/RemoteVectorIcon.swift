@@ -12,6 +12,7 @@ import Foundation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct RemoteVectorIcon {
     let iconSignal = ReadWriteSignal<IconFragment?>(nil)

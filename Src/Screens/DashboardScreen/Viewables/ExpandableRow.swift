@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct ExpandableRow<Content: Viewable, ExpandableContent: Viewable> where
     Content.Matter == UIView,

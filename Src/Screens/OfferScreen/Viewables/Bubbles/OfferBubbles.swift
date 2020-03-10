@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import UIKit
 import Space
+import ComponentKit
 
 struct OfferBubbles {
     let containerScrollView: UIScrollView

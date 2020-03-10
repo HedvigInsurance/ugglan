@@ -9,6 +9,7 @@
 import Flow
 import Foundation
 import UIKit
+import ComponentKit
 
 struct DeductibleCircle {}
 
@@ -30,10 +31,12 @@ extension DeductibleCircle: Viewable {
 
         bag += containerView.add(deductibleCircle)
 
-        containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(80)
-            make.centerX.equalToSuperview().offset(80)
-            make.bottom.equalTo(0)
+        bag += containerView.didLayoutSignal.take(first: 1).onValue { _ in
+            containerView.snp.makeConstraints { make in
+                make.height.equalTo(80)
+                make.centerX.equalToSuperview().offset(80)
+                make.bottom.equalTo(0)
+            }
         }
 
         return (containerView, bag)

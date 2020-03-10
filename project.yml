@@ -35,13 +35,55 @@ targets:
     references:
       - Common
       - location: Carthage/Build/iOS/Apollo.framework
+  Analytics:
+     sources: Sources/Analytics
+     platform: ios
+     type: ":framework"
+     configuration:
+       INFOPLIST_FILE: Sources/Analytics/Info.plist
+       PRODUCT_BUNDLE_IDENTIFIER:
+       IPHONEOS_DEPLOYMENT_TARGET: '12.0'
+       OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
+     references:
+        - Common
+        - Space
+        - location: Carthage/Build/iOS/FirebaseCore.framework
+        - location: Carthage/Build/iOS/FirebaseAnalytics.framework
+        - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
+        - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
+        - location: Carthage/Build/iOS/FirebaseInstanceID.framework
+        - location: Carthage/Build/iOS/FirebaseABTesting.framework
+        - location: Carthage/Build/iOS/FirebaseFirestore.framework
+        - location: Carthage/Build/iOS/FirebaseMessaging.framework
+        - location: Carthage/Build/iOS/gRPC-C++.framework
+        - location: Carthage/Build/iOS/gRPC-Core.framework
+        - location: Carthage/Build/iOS/leveldb-library.framework
+        - location: Carthage/Build/iOS/BoringSSL-GRPC.framework
+        - location: Carthage/Build/iOS/Protobuf.framework
+        - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
+        - location: Carthage/Build/iOS/GoogleUtilities.framework
+        - location: Carthage/Build/iOS/Fabric.framework
+        - location: Carthage/Build/iOS/Crashlytics.framework
+        - location: Carthage/Build/iOS/nanopb.framework
+        - location: Carthage/Build/iOS/abseil.framework
+  ComponentKit:
+    sources: Sources/ComponentKit
+    platform: ios
+    type: ":framework"
+    configuration:
+      INFOPLIST_FILE: Sources/ComponentKit/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER:
+      IPHONEOS_DEPLOYMENT_TARGET: '12.0'
+    references:
+      - Analytics
   UITests:
     sources:
       - UITests
-      - Src
       - Resources
     references:
-      - Ugglan
+      - Space
+      - Data
+      - ComponentKit
       - sdkroot:UIKit.framework
       - sdkroot:AdSupport.framework
       - sdkroot:SceneKit.framework
@@ -53,21 +95,6 @@ targets:
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
       - location: Carthage/Build/iOS/abseil.framework
-      - location: Carthage/Build/iOS/FirebaseCore.framework
-      - location: Carthage/Build/iOS/FirebaseAnalytics.framework
-      - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
-      - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
-      - location: Carthage/Build/iOS/FirebaseInstanceID.framework
-      - location: Carthage/Build/iOS/FirebaseABTesting.framework
-      - location: Carthage/Build/iOS/FirebaseFirestore.framework
-      - location: Carthage/Build/iOS/FirebaseMessaging.framework
-      - location: Carthage/Build/iOS/gRPC-C++.framework
-      - location: Carthage/Build/iOS/gRPC-Core.framework
-      - location: Carthage/Build/iOS/leveldb-library.framework
-      - location: Carthage/Build/iOS/BoringSSL-GRPC.framework
-      - location: Carthage/Build/iOS/Protobuf.framework
-      - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
-      - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
       - location: Carthage/Build/iOS/SnapKit.framework
@@ -81,8 +108,6 @@ targets:
       - location: Carthage/Build/iOS/MarkdownKit.framework
       - location: Carthage/Build/iOS/Ease.framework
       - location: Carthage/Build/iOS/Kingfisher.framework
-      - location: Carthage/Build/iOS/Fabric.framework
-      - location: Carthage/Build/iOS/Crashlytics.framework
       - location: Carthage/Build/iOS/FBSDKCoreKit.framework
     platform: ios
     type: ":bundle.ui-testing"
@@ -196,6 +221,7 @@ targets:
     references:
       - Space
       - Common
+      - ComponentKit
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
       - sdkroot:AdSupport.framework
@@ -204,22 +230,6 @@ targets:
       - location: Carthage/Build/iOS/ApolloWebSocket.framework
       - location: Carthage/Build/iOS/Flow.framework
       - location: Carthage/Build/iOS/Form.framework
-      - location: Carthage/Build/iOS/abseil.framework
-      - location: Carthage/Build/iOS/FirebaseCore.framework
-      - location: Carthage/Build/iOS/FirebaseAnalytics.framework
-      - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
-      - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
-      - location: Carthage/Build/iOS/FirebaseInstanceID.framework
-      - location: Carthage/Build/iOS/FirebaseABTesting.framework
-      - location: Carthage/Build/iOS/FirebaseFirestore.framework
-      - location: Carthage/Build/iOS/FirebaseMessaging.framework
-      - location: Carthage/Build/iOS/gRPC-C++.framework
-      - location: Carthage/Build/iOS/gRPC-Core.framework
-      - location: Carthage/Build/iOS/leveldb-library.framework
-      - location: Carthage/Build/iOS/BoringSSL-GRPC.framework
-      - location: Carthage/Build/iOS/Protobuf.framework
-      - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
-      - location: Carthage/Build/iOS/GoogleUtilities.framework
       - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
       - location: Carthage/Build/iOS/SnapKit.framework

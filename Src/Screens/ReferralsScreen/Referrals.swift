@@ -17,6 +17,8 @@ import Presentation
 import UIKit
 import Common
 import Space
+import ComponentKit
+import Analytics
 
 enum ReferralsFailure: LocalizedError {
     case failedToCreateLink

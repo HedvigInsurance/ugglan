@@ -14,6 +14,7 @@ import UIKit
 import WatchConnectivity
 import Common
 import Space
+import ComponentKit
 
 struct KeyGearOverview {
     @Inject var client: ApolloClient

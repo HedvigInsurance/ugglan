@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import Lottie
 import UIKit
+import ComponentKit
 
 struct HappyAvatar {}
 
@@ -24,14 +25,14 @@ extension HappyAvatar: Viewable {
 
         containerView.addSubview(animationView)
 
-        animationView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        animationView.snp.makeConstraints { make in
             make.width.equalTo(200)
             make.height.equalTo(200)
             make.centerY.equalToSuperview()
             make.left.equalToSuperview().inset(22)
         }
 
-        containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        containerView.snp.makeConstraints { make in
             make.height.equalTo(50)
             make.width.equalTo(100)
         }

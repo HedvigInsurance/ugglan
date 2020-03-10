@@ -12,6 +12,7 @@ import Presentation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 enum ReferralsReceiverConsentResult {
     case accept, decline

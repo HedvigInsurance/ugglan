@@ -12,6 +12,7 @@ import Foundation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct OfferCoverageSwitcher {
     @Inject var client: ApolloClient

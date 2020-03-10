@@ -9,6 +9,7 @@
 import Flow
 import Form
 import Foundation
+import ComponentKit
 
 struct EmailRow {
     let state: MyInfoState

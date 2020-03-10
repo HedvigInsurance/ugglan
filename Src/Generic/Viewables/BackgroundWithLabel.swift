@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct BackgroundWithLabel {
     let labelText: DynamicString
@@ -80,11 +81,13 @@ extension BackgroundWithLabel: Viewable {
             make.center.equalToSuperview()
         }
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-            make.center.equalToSuperview()
-        }
+        bag += view.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+            view.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+                make.center.equalToSuperview()
+            }
+        })
 
         return (view, bag)
     }

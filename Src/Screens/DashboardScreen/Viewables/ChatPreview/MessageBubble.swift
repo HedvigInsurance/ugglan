@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct MessageBubble {
     let textSignal: ReadWriteSignal<String>

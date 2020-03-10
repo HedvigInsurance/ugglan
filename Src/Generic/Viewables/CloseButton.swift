@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import ComponentKit
 
 struct CloseButton {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
@@ -49,8 +50,8 @@ extension CloseButton: Viewable {
             \.alpha
         )
 
-        let icon = Icon(icon: Asset.close, iconWidth: 15)
-        icon.image.tintColor = .navigationItemMutedTintColor
+        let icon = Icon(icon: Asset.close.image, iconWidth: 15)
+        icon.tintColor = .navigationItemMutedTintColor
         button.addSubview(icon)
 
         icon.snp.makeConstraints { make in

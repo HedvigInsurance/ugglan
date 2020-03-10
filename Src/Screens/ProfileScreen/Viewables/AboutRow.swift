@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import ComponentKit
 
 struct AboutRow {
     let presentingViewController: UIViewController
@@ -22,7 +23,7 @@ extension AboutRow: Viewable {
         let row = RowView()
         row.append(UILabel(value: String(key: .PROFILE_ABOUT_ROW), style: .rowTitle))
 
-        let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
+        let arrow = Icon(frame: .zero, icon: Asset.chevronRight.image, iconWidth: 20)
 
         row.append(arrow)
 

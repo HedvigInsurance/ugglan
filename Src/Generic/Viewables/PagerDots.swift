@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct PagerDots {
     let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)

@@ -12,6 +12,7 @@ import Foundation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct NameCircle {
     @Inject var client: ApolloClient
@@ -42,7 +43,7 @@ extension NameCircle: Viewable {
 
         bag += containerView.add(nameCircle)
 
-        containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+        containerView.snp.makeConstraints { make in
             make.height.equalTo(200)
         }
 

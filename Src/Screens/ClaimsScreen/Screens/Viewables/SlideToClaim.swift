@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import ComponentKit
 
 struct SlideToClaim: SignalProvider {
     var providedSignal: CoreSignal<Finite, Void> {
@@ -57,7 +58,7 @@ extension SlideToClaim: Viewable {
         let handle = UIView()
         handle.backgroundColor = .primaryTintColor
 
-        let continueIcon = Icon(icon: Asset.continue, iconWidth: 20)
+        let continueIcon = Icon(icon: Asset.continue.image, iconWidth: 20)
         handle.addSubview(continueIcon)
 
         continueIcon.snp.makeConstraints { make in

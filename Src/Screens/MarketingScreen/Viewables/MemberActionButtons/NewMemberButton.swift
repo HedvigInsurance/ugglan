@@ -11,6 +11,7 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
+import ComponentKit
 
 enum NewMemberButtonStyle {
     case marketingScreen, endScreen
@@ -66,10 +67,12 @@ extension NewMemberButton: Viewable {
             self.onTap()
         }
 
-        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(button.type.value.height)
-            make.width.equalToSuperview()
-        }
+        bag += view.didMoveToWindowSignal.take(first: 1).onValue({ _ in
+            view.snp.makeConstraints { make in
+                make.height.equalTo(button.type.value.height)
+                make.width.equalToSuperview()
+            }
+        })
 
         return (view, bag)
     }
