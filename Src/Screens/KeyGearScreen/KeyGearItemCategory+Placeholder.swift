@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Space
+import ComponentKit
 
 extension KeyGearItemCategory {
     var image: UIImage? {

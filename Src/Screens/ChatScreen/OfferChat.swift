@@ -12,6 +12,7 @@ import Presentation
 import UIKit
 import Common
 import Space
+import ComponentKit
 
 struct OfferChat {
     @Inject var client: ApolloClient

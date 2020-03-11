@@ -22,7 +22,7 @@ targets:
     type: ":framework"
     configuration:
       INFOPLIST_FILE: Sources/Common/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.common
+      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.Common
       EXPANDED_CODE_SIGN_IDENTITY: ''
       CODE_SIGNING_REQUIRED: "NO"
       CODE_SIGNING_ALLOWED: "NO"
@@ -35,7 +35,7 @@ targets:
     type: ":framework"
     configuration:
       INFOPLIST_FILE: Sources/Space/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.space
+      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.Space
       IPHONEOS_DEPLOYMENT_TARGET: '12.0'
       EXPANDED_CODE_SIGN_IDENTITY: ''
       CODE_SIGNING_REQUIRED: "NO"
@@ -51,7 +51,7 @@ targets:
      type: ":framework"
      configuration:
        INFOPLIST_FILE: Sources/Analytics/Info.plist
-       PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.analytics
+       PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.Analytics
        IPHONEOS_DEPLOYMENT_TARGET: '12.0'
        OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC"
        EXPANDED_CODE_SIGN_IDENTITY: ''
@@ -87,7 +87,7 @@ targets:
     type: ":framework"
     configuration:
       INFOPLIST_FILE: Sources/ComponentKit/Info.plist
-      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.componentkit
+      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.ComponentKit
       IPHONEOS_DEPLOYMENT_TARGET: '12.0'
       EXPANDED_CODE_SIGN_IDENTITY: ''
       CODE_SIGNING_REQUIRED: "NO"
@@ -96,10 +96,22 @@ targets:
       DYLIB_INSTALL_NAME_BASE: "@rpath"
     references:
       - Analytics
+  FeatureContracts:
+    sources: Sources/Features/Contracts
+    platform: ios
+    type: ":framework"
+    configuration:
+      INFOPLIST_FILE: Sources/Features/Contracts/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: com.ugglan.FeatureContracts
+      EXPANDED_CODE_SIGN_IDENTITY: ''
+      CODE_SIGNING_REQUIRED: "NO"
+      CODE_SIGNING_ALLOWED: "NO"
+      IPHONEOS_DEPLOYMENT_TARGET: '12.0'
+      SKIP_INSTALL: "YES"
+      DYLIB_INSTALL_NAME_BASE: "@rpath"
   UITests:
     sources:
       - UITests
-      - Resources
     references:
       - target: Space
         copy: true
