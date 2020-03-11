@@ -47,21 +47,21 @@ extension Countdown: Viewable {
         view.addArrangedSubview(m)
 
         let dayLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
-        dayLabel.textColor = UIColor.darkPurple
+        dayLabel.textColor = UIColor.hedvig(.darkPurple)
         view.addArrangedSubview(dayLabel)
 
         let d = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_DAYS))
         view.addArrangedSubview(d)
 
         let hourLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
-        hourLabel.textColor = UIColor.purple
+        hourLabel.textColor = UIColor.hedvig(.purple)
         view.addArrangedSubview(hourLabel)
 
         let h = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_HOURS))
         view.addArrangedSubview(h)
 
         let minLabel = UILabel(styledText: StyledText(text: "0", style: .countdownNumber))
-        minLabel.textColor = UIColor.turquoise
+        minLabel.textColor = UIColor.hedvig(.turquoise)
         view.addArrangedSubview(minLabel)
 
         let mi = descriptiveLabel(text: String(key: .DASHBOARD_PENDING_MINUTES))

@@ -152,7 +152,7 @@ extension KeyGearAddValuation: Presentable {
             button:
             Button(
                 title: String(key: .KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BUTTON),
-                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
             )
         )
 

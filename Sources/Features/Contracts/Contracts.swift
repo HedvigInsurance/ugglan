@@ -9,19 +9,24 @@ import Foundation
 import Presentation
 import UIKit
 import Flow
+import ComponentKit
 
-struct Contracts {}
+public struct Contracts {
+    public init() {}
+}
 
 extension Contracts: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        viewController.title = String(key: .TAB_DASHBOARD_TITLE)
+        bag += viewController.install(List())
         return (viewController, bag)
     }
 }
 
 extension Contracts: Tabable {
-    func tabBarItem() -> UITabBarItem {
+    public func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
             title: String(key: .TAB_DASHBOARD_TITLE),
             image: Asset.dashboardTab.image,

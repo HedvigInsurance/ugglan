@@ -26,7 +26,7 @@ extension PaymentNeedsSetupSection: Viewable {
         wrapper.isLayoutMarginsRelativeArrangement = true
 
         let containerView = UIView()
-        containerView.backgroundColor = .secondaryBackground
+        containerView.backgroundColor = .hedvig(.secondaryBackground)
         containerView.layer.cornerRadius = 8
 
         let containerStackView = UIStackView()
@@ -48,7 +48,7 @@ extension PaymentNeedsSetupSection: Viewable {
         let buttonContainer = UIView()
         let connectButton = Button(
             title: String(key: .DASHBOARD_PAYMENT_SETUP_BUTTON),
-            type: .outline(borderColor: .primaryTintColor, textColor: .primaryTintColor)
+            type: .outline(borderColor: .hedvig(.primaryTintColor), textColor: .hedvig(.primaryTintColor))
         )
         bag += buttonContainer.add(connectButton) { buttonView in
             buttonView.snp.makeConstraints { make in

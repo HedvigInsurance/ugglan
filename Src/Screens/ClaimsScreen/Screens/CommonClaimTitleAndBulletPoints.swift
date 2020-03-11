@@ -24,7 +24,7 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
 
         let view = UIStackView()
         view.axis = .vertical
-        view.backgroundColor = .offWhite
+        view.backgroundColor = .hedvig(.offWhite)
 
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0

@@ -27,7 +27,7 @@ extension CountdownShapes: Viewable {
         contentView.addSubview(view)
 
         let square = UIView()
-        square.backgroundColor = .darkPurple
+        square.backgroundColor = .hedvig(.darkPurple)
         square.snp.makeConstraints { make in
             make.height.width.equalTo(32)
         }
@@ -35,7 +35,7 @@ extension CountdownShapes: Viewable {
         view.addArrangedSubview(square)
 
         let circle = UIView()
-        circle.backgroundColor = .pink
+        circle.backgroundColor = .hedvig(.pink)
         circle.layer.cornerRadius = 32 / 2
         circle.snp.makeConstraints { make in
             make.height.width.equalTo(32)
@@ -51,7 +51,7 @@ extension CountdownShapes: Viewable {
         barStack.alignment = .bottom
 
         let firstBar = UIView()
-        firstBar.backgroundColor = .turquoise
+        firstBar.backgroundColor = .hedvig(.turquoise)
         firstBar.snp.makeConstraints { make in
             make.width.equalTo(9)
             make.height.equalTo(32)
@@ -59,7 +59,7 @@ extension CountdownShapes: Viewable {
         barStack.addArrangedSubview(firstBar)
 
         let secondBar = UIView()
-        secondBar.backgroundColor = .turquoise
+        secondBar.backgroundColor = .hedvig(.turquoise)
         secondBar.snp.makeConstraints { make in
             make.width.equalTo(9)
             make.height.equalTo(12)

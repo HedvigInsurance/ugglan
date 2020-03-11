@@ -35,7 +35,7 @@ extension BindingPeriodBubble: Viewable {
             content: content,
             width: 135,
             height: 135,
-            backgroundColor: .pink
+            backgroundColor: .hedvig(.pink)
         )
 
         return (offerBubble, bag)

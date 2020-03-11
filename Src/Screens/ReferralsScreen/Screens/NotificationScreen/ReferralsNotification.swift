@@ -30,18 +30,18 @@ extension ReferralsNotification: Presentable {
         let viewController = LightContentViewController()
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .hedvig(.primaryBackground)
 
         viewController.view = view
 
         let openReferralsButton = Button(
             title: String(key: .REFERRAL_SUCCESS_BTN_CTA),
-            type: .standard(backgroundColor: .purple, textColor: .white)
+            type: .standard(backgroundColor: .hedvig(.purple), textColor: .hedvig(.white))
         )
 
         let closeButton = Button(
             title: String(key: .REFERRAL_SUCCESS_BTN_CLOSE),
-            type: .pillSemiTransparent(backgroundColor: .blackPurple, textColor: .white)
+            type: .pillSemiTransparent(backgroundColor: .hedvig(.blackPurple), textColor: .hedvig(.white))
         )
 
         let content = ImageTextAction<ReferralsNotificationResult>(

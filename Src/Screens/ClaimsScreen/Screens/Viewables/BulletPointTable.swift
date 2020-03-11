@@ -57,7 +57,7 @@ extension BulletPointTable: Viewable {
         }
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .primaryBackground
+        tableKit.view.backgroundColor = .hedvig(.primaryBackground)
 
         return (tableKit.view, bag)
     }

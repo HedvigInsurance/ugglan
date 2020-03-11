@@ -39,7 +39,7 @@ extension StartDateBubble: Viewable {
             content: content,
             width: 130,
             height: 130,
-            backgroundColor: .turquoise
+            backgroundColor: .hedvig(.turquoise)
         )
 
         return (offerBubble, bag)

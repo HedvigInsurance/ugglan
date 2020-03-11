@@ -52,8 +52,8 @@ extension KeyGearAddReceiptRow: Viewable {
             button: Button(
                 title: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON),
                 type: .outline(
-                    borderColor: .transparent,
-                    textColor: .primaryTintColor
+                    borderColor: .hedvig(.transparent),
+                    textColor: .hedvig(.primaryTintColor)
                 )
             )
         )

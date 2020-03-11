@@ -49,13 +49,13 @@ struct KeyGearItem {
         navigationBar.backIndicatorImage = Asset.backButtonWhite.image
         navigationBar.isTranslucent = true
         navigationBar.shadowImage = UIImage()
-        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.hedvig(.white)]
         navigationBar.barStyle = .blackTranslucent
         navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 
         let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor]
+        gradient.colors = [UIColor.hedvig(.black).withAlphaComponent(0.7).cgColor, UIColor.hedvig(.black).withAlphaComponent(0).cgColor]
         gradient.locations = [0, 1]
 
         let gradientView = UIView()
@@ -108,19 +108,19 @@ extension KeyGearItem: Presentable {
         let viewController = KeyGearItemViewController()
 
         let optionsButton = UIBarButtonItem()
-        optionsButton.tintColor = .white
+        optionsButton.tintColor = .hedvig(.white)
         optionsButton.image = Asset.menuIcon.image
 
         viewController.navigationItem.rightBarButtonItem = optionsButton
 
         let backButton = UIButton(type: .custom)
         backButton.setImage(Asset.backButtonWhite.image, for: .normal)
-        backButton.tintColor = .white
+        backButton.tintColor = .hedvig(.white)
 
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .hedvig(.primaryBackground)
         viewController.view = view
 
         let dataSignal = client.watch(
@@ -130,7 +130,7 @@ extension KeyGearItem: Presentable {
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.backgroundColor = .primaryBackground
+        scrollView.backgroundColor = .hedvig(.primaryBackground)
 
         scrollView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
@@ -190,7 +190,7 @@ extension KeyGearItem: Presentable {
         }
 
         let formContainer = UIView()
-        formContainer.backgroundColor = .primaryBackground
+        formContainer.backgroundColor = .hedvig(.primaryBackground)
         form.append(formContainer)
 
         let innerForm = FormView()

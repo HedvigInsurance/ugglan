@@ -213,7 +213,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
 
         launchWindow?.isOpaque = false
-        launchWindow?.backgroundColor = UIColor.transparent
+        launchWindow?.backgroundColor = UIColor.hedvig(.transparent)
 
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in

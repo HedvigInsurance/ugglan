@@ -20,7 +20,7 @@ struct OfferBubble {
         opacity: 0.2,
         offset: CGSize(width: 0, height: 2),
         radius: nil,
-        color: UIColor.primaryShadowColor,
+        color: UIColor.hedvig(.primaryShadowColor),
         path: nil
     )
 

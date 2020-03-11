@@ -36,7 +36,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.white,
+                    color: UIColor.hedvig(.white),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -46,7 +46,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.black
+                    color: UIColor.hedvig(.black)
                 )
             ),
         ]
@@ -57,7 +57,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.white.darkened(amount: 0.1),
+                    color: UIColor.hedvig(.white).darkened(amount: 0.1),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -67,7 +67,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.black
+                    color: UIColor.hedvig(.black)
                 )
             ),
         ]
@@ -78,7 +78,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.purple,
+                    color: UIColor.hedvig(.purple),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -88,7 +88,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]
@@ -99,7 +99,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.purple.darkened(amount: 0.1),
+                    color: UIColor.hedvig(.purple).darkened(amount: 0.1),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -109,7 +109,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]
@@ -120,7 +120,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.blackPurple,
+                    color: UIColor.hedvig(.blackPurple),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -130,7 +130,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]
@@ -141,7 +141,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.black.withAlphaComponent(0.3),
+                    color: UIColor.hedvig(.black).withAlphaComponent(0.3),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -151,7 +151,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]
@@ -162,7 +162,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.black.withAlphaComponent(0.6),
+                    color: UIColor.hedvig(.black).withAlphaComponent(0.6),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -172,7 +172,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(15),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]
@@ -183,7 +183,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.darkGray.withAlphaComponent(0.6),
+                    color: UIColor.hedvig(.darkGray).withAlphaComponent(0.6),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -193,7 +193,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(12),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]
@@ -204,7 +204,7 @@ extension ButtonStyle {
         style.states = [
             .normal: ButtonStateStyle(
                 background: BackgroundStyle(
-                    color: UIColor.darkGray.withAlphaComponent(0.8),
+                    color: UIColor.hedvig(.darkGray).withAlphaComponent(0.8),
                     border: BorderStyle(
                         width: 0,
                         color: UIColor.clear,
@@ -214,7 +214,7 @@ extension ButtonStyle {
                 ),
                 text: TextStyle(
                     font: HedvigFonts.circularStdBook!.withSize(12),
-                    color: UIColor.white
+                    color: UIColor.hedvig(.white)
                 )
             ),
         ]

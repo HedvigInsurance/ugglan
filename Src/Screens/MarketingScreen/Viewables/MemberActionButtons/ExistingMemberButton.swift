@@ -25,7 +25,7 @@ extension ExistingMemberButton: Viewable {
 
         let button = Button(
             title: String(key: .MARKETING_LOGIN),
-            type: .pillSemiTransparent(backgroundColor: .darkGray, textColor: .white)
+            type: .pillSemiTransparent(backgroundColor: .hedvig(.darkGray), textColor: .hedvig(.white))
         )
 
         bag += button.onTapSignal.onValue {

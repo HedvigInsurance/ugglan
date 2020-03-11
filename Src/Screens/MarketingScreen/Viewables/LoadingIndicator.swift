@@ -19,7 +19,7 @@ struct LoadingIndicator {
     let size: CGFloat
 
     private static let defaultLoaderColor = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? .white : .primaryTintColor
+        trait.userInterfaceStyle == .dark ? .hedvig(.white) : .hedvig(.primaryTintColor)
     })
 
     init(showAfter: TimeInterval, color: UIColor = LoadingIndicator.defaultLoaderColor, size: CGFloat = 100) {

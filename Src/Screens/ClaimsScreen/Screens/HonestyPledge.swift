@@ -19,12 +19,12 @@ struct HonestyPledge {
     func pushNotificationsPresentable() -> PresentableViewable<ImageTextAction<PushNotificationsAction>, PushNotificationsAction> {
         let pushNotificationsDoButton = Button(
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
         )
 
         let pushNotificationsSkipButton = Button(
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS),
-            type: .transparent(textColor: .pink)
+            type: .transparent(textColor: .hedvig(.pink))
         )
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
@@ -85,7 +85,7 @@ extension HonestyPledge: Presentable {
         bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .hedvig(.secondaryBackground)
         viewController.view = view
         
         view.addSubview(containerStackView)

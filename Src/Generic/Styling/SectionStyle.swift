@@ -14,14 +14,14 @@ import DynamicColor
 extension BorderStyle {
     static let standard = BorderStyle(
         width: 1 / UIScreen.main.scale,
-        color: .primaryBorder,
+        color: .hedvig(.primaryBorder),
         cornerRadius: 0,
         borderEdges: [UIRectEdge.bottom, UIRectEdge.top]
     )
 
     static let standardRounded = BorderStyle(
         width: 0,
-        color: .transparent,
+        color: .hedvig(.transparent),
         cornerRadius: 5,
         borderEdges: [UIRectEdge.top, UIRectEdge.bottom, UIRectEdge.left, UIRectEdge.right]
     )
@@ -29,57 +29,57 @@ extension BorderStyle {
 
 extension BackgroundStyle {
     static let primaryDark = BackgroundStyle(
-        color: UIColor.secondaryBackground.resolvedColorOrFallback(
+        color: UIColor.hedvig(.secondaryBackground).resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .dark)
         ),
         border: .standard
     )
 
     static let primaryLight = BackgroundStyle(
-        color: UIColor.secondaryBackground.resolvedColorOrFallback(
+        color: UIColor.hedvig(.secondaryBackground).resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .light)
         ),
         border: .standard
     )
 
-    static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
+    static let turquoise = BackgroundStyle(color: .hedvig(.turquoise), border: .standard)
 
     static let primaryDarkRoundedBorder = BackgroundStyle(
-        color: UIColor.secondaryBackground.resolvedColorOrFallback(
+        color: UIColor.hedvig(.secondaryBackground).resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .dark)
         ),
         border: .standardRounded
     )
 
     static let primaryLightRoundedBorder = BackgroundStyle(
-        color: UIColor.secondaryBackground.resolvedColorOrFallback(
+        color: UIColor.hedvig(.secondaryBackground).resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .light)
         ),
         border: .standardRounded
     )
 
     static let purple = BackgroundStyle(
-        color: UIColor.purple,
+        color: UIColor.hedvig(.purple),
         border: .standard
     )
 
     static let purpleOpaque = BackgroundStyle(
-        color: UIColor.purple.withAlphaComponent(0.2),
+        color: UIColor.hedvig(.purple).withAlphaComponent(0.2),
         border: .standard
     )
 
     static let purpleOpaqueRoundedBorder = BackgroundStyle(
-        color: UIColor.purple.withAlphaComponent(0.2),
+        color: UIColor.hedvig(.purple).withAlphaComponent(0.2),
         border: .standardRounded
     )
 
     static let pink = BackgroundStyle(
-        color: UIColor.pink.withAlphaComponent(0.2),
+        color: UIColor.hedvig(.pink).withAlphaComponent(0.2),
         border: .standard
     )
 
     static let pinkRoundedBorder = BackgroundStyle(
-        color: UIColor.pink.withAlphaComponent(0.2),
+        color: UIColor.hedvig(.pink).withAlphaComponent(0.2),
         border: .standardRounded
     )
 
@@ -90,7 +90,7 @@ extension BackgroundStyle {
 }
 
 extension SeparatorStyle {
-    static let darkGray = SeparatorStyle(width: 0.25, color: .primaryBorder)
+    static let darkGray = SeparatorStyle(width: 0.25, color: .hedvig(.primaryBorder))
 }
 
 extension InsettedStyle where Style == SeparatorStyle {

@@ -59,9 +59,9 @@ struct Toast: Equatable {
         symbol: ToastSymbol,
         body: String,
         subtitle: String? = nil,
-        textColor: UIColor = UIColor.primaryText,
-        subtitleColor: UIColor = .primaryTintColor,
-        backgroundColor: UIColor = UIColor.secondaryBackground,
+        textColor: UIColor = UIColor.hedvig(.primaryText),
+        subtitleColor: UIColor = .hedvig(.primaryTintColor),
+        backgroundColor: UIColor = UIColor.hedvig(.secondaryBackground),
         duration: TimeInterval = 5.0
     ) {
         self.symbol = symbol
@@ -125,7 +125,7 @@ extension Toast: Viewable {
                 opacity: trait.userInterfaceStyle == .dark ? 0 : 0.25,
                 offset: CGSize(width: 0, height: 0),
                 radius: 10,
-                color: UIColor.darkGray,
+                color: UIColor.hedvig(.darkGray),
                 path: nil
             )
         }

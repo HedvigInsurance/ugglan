@@ -11,11 +11,11 @@ import Foundation
 import Presentation
 import UIKit
 
-protocol Tabable {
+public protocol Tabable {
     func tabBarItem() -> UITabBarItem
 }
 
-extension UITabBarController {
+public extension UITabBarController {
     private func materializeTab<
         P: Presentable & Tabable,
         Matter: UIViewController

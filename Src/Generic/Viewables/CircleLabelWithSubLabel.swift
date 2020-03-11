@@ -57,28 +57,28 @@ extension CircleLabelWithSubLabel: Viewable {
                 opacity: 0.2,
                 offset: CGSize(width: 10, height: 10),
                 radius: 16,
-                color: .primaryShadowColor,
+                color: .hedvig(.primaryShadowColor),
                 path: nil
             )
         }
 
         switch appearance {
         case .turquoise:
-            circleView.backgroundColor = .turquoise
-            titleLabel.textColor = .blackPurple
-            subLabel.textColor = .blackPurple
+            circleView.backgroundColor = .hedvig(.turquoise)
+            titleLabel.textColor = .hedvig(.blackPurple)
+            subLabel.textColor = .hedvig(.blackPurple)
         case .purple:
-            circleView.backgroundColor = .purple
-            titleLabel.textColor = .white
-            subLabel.textColor = .white
+            circleView.backgroundColor = .hedvig(.purple)
+            titleLabel.textColor = .hedvig(.white)
+            subLabel.textColor = .hedvig(.white)
         case .white:
-            circleView.backgroundColor = .white
-            titleLabel.textColor = .offBlack
-            subLabel.textColor = .offBlack
+            circleView.backgroundColor = .hedvig(.white)
+            titleLabel.textColor = .hedvig(.offBlack)
+            subLabel.textColor = .hedvig(.offBlack)
         case .secondaryBackground:
-            circleView.backgroundColor = .secondaryBackground
-            titleLabel.textColor = .white
-            subLabel.textColor = .offWhite
+            circleView.backgroundColor = .hedvig(.secondaryBackground)
+            titleLabel.textColor = .hedvig(.white)
+            subLabel.textColor = .hedvig(.offWhite)
         }
 
         labelsContainer.addArrangedSubview(titleLabel)

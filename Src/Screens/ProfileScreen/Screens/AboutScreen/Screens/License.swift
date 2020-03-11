@@ -25,7 +25,7 @@ extension License: Presentable {
         viewController.preferredContentSize = CGSize(width: 0, height: 500)
 
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .primaryBackground
+        scrollView.backgroundColor = .hedvig(.primaryBackground)
         scrollView.alwaysBounceVertical = true
 
         let textLabel = UILabel(

@@ -36,7 +36,7 @@ class ActivityBarButton: SignalProvider {
         navigationItem?.setRightBarButtonItems([indicatorItem], animated: true)
 
         activityIndicator.startAnimating()
-        activityIndicator.color = .purple
+        activityIndicator.color = .hedvig(.purple)
         activityIndicator.sizeToFit()
     }
 

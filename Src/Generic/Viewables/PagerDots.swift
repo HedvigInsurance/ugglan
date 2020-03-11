@@ -42,7 +42,7 @@ extension PagerDots: Viewable {
 
             for i in 0 ... pageAmount - 1 {
                 let indicator = UIView()
-                indicator.backgroundColor = i == 0 ? .purple : .gray
+                indicator.backgroundColor = i == 0 ? .hedvig(.purple) : .gray
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
                 indicator.layer.cornerRadius = 2
 
@@ -58,7 +58,7 @@ extension PagerDots: Viewable {
             for (index, indicator) in stackView.subviews.enumerated() {
                 let indicatorIsActive = index == pageIndex
 
-                indicator.backgroundColor = indicatorIsActive ? .purple : .gray
+                indicator.backgroundColor = indicatorIsActive ? .hedvig(.purple) : .gray
                 indicator.transform = indicatorIsActive ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
             }
         }

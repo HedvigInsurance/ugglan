@@ -40,8 +40,8 @@ extension NewMemberButton: Viewable {
         let button = Button(
             title: String(key: .MARKETING_GET_HEDVIG),
             type: .standard(
-                backgroundColor: style == .endScreen ? .primaryTintColor : .white,
-                textColor: style == .endScreen ? .white : .black
+                backgroundColor: style == .endScreen ? .hedvig(.primaryTintColor) : .hedvig(.white),
+                textColor: style == .endScreen ? .hedvig(.white) : .hedvig(.black)
             )
         )
 

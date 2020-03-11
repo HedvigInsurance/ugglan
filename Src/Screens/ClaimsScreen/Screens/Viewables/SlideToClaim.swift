@@ -33,7 +33,7 @@ extension SlideToClaim: Viewable {
         }
 
         let track = UIView()
-        track.backgroundColor = .primaryBackground
+        track.backgroundColor = .hedvig(.primaryBackground)
 
         view.addSubview(track)
 
@@ -56,7 +56,7 @@ extension SlideToClaim: Viewable {
         }
 
         let handle = UIView()
-        handle.backgroundColor = .primaryTintColor
+        handle.backgroundColor = .hedvig(.primaryTintColor)
 
         let continueIcon = Icon(icon: Asset.continue.image, iconWidth: 20)
         handle.addSubview(continueIcon)

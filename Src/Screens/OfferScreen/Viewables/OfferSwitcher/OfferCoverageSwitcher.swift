@@ -25,12 +25,12 @@ extension OfferCoverageSwitcher: Viewable {
         let outerView = UIStackView()
         outerView.axis = .vertical
 
-        bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .top)) { blobView in
-            blobView.backgroundColor = .primaryBackground
+        bag += outerView.addArranged(Blob(color: .hedvig(.secondaryBackground), position: .top)) { blobView in
+            blobView.backgroundColor = .hedvig(.primaryBackground)
         }
 
         let containerView = UIView()
-        containerView.backgroundColor = .secondaryBackground
+        containerView.backgroundColor = .hedvig(.secondaryBackground)
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -78,7 +78,7 @@ extension OfferCoverageSwitcher: Viewable {
         bag += stackView.addArranged(OfferSwitcherBulletList())
 
         bag += outerView.addArranged(Blob(color: Offer.primaryAccentColor, position: .top)) { blobView in
-            blobView.backgroundColor = .secondaryBackground
+            blobView.backgroundColor = .hedvig(.secondaryBackground)
         }
 
         return (outerView, bag)

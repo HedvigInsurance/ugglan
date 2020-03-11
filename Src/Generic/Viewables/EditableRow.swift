@@ -35,7 +35,7 @@ extension EditableRow: Viewable {
 
         let button = Button(
             title: String(key: .EDITABLE_ROW_EDIT),
-            type: .outline(borderColor: .transparent, textColor: .primaryTintColor)
+            type: .outline(borderColor: .hedvig(.transparent), textColor: .hedvig(.primaryTintColor))
         )
 
         bag += textField.signal(for: .editingDidBegin)

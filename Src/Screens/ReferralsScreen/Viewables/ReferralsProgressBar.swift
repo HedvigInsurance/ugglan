@@ -107,8 +107,8 @@ extension ReferralsProgressBar {
     func fullPriceLabel(grossPremium: Int, amountOfBlocks: Int, blockHeight: CGFloat, dividerHeight: CGFloat) -> SCNNode {
         let node = createLabel(
             text: "\(grossPremium)kr",
-            textColor: UIColor.white,
-            backgroundColor: UIColor.offBlack,
+            textColor: UIColor.hedvig(.white),
+            backgroundColor: UIColor.hedvig(.offBlack),
             chevronDirection: .right,
             size: .small
         )
@@ -125,8 +125,8 @@ extension ReferralsProgressBar {
     func freeLabel(blockHeight: CGFloat, dividerHeight: CGFloat) -> SCNNode {
         let node = createLabel(
             text: String(key: .REFERRALS_FREE_LABEL),
-            textColor: UIColor.white,
-            backgroundColor: UIColor.offBlack,
+            textColor: UIColor.hedvig(.white),
+            backgroundColor: UIColor.hedvig(.offBlack),
             chevronDirection: .right,
             size: .small
         )
@@ -151,8 +151,8 @@ extension ReferralsProgressBar {
 
         let node = createLabel(
             text: hasDiscount ? "-\(String(discount))kr" : String(key: .REFERRALS_INVITE_LABEL),
-            textColor: hasDiscount ? UIColor.offBlack : UIColor.white,
-            backgroundColor: hasDiscount ? UIColor.turquoise : UIColor.purple,
+            textColor: hasDiscount ? UIColor.hedvig(.offBlack) : UIColor.hedvig(.white),
+            backgroundColor: hasDiscount ? UIColor.hedvig(.turquoise) : UIColor.hedvig(.purple),
             chevronDirection: .left,
             size: .large
         )
@@ -188,7 +188,7 @@ extension ReferralsProgressBar {
             let boxGeometry = SCNBox(width: 10.0, height: blockHeight, length: 10.0, chamferRadius: 0)
 
             if i > amountOfBlocks - amountOfCompletedBlocks, amountOfCompletedBlocks != 0 {
-                let boxColor = UIColor.turquoise
+                let boxColor = UIColor.hedvig(.turquoise)
 
                 boxGeometry.materials = [
                     boxColor,
@@ -203,7 +203,7 @@ extension ReferralsProgressBar {
                     return material
                 }
             } else {
-                boxGeometry.firstMaterial?.diffuse.contents = UIColor.purple
+                boxGeometry.firstMaterial?.diffuse.contents = UIColor.hedvig(.purple)
             }
 
             let boxNode = SCNNode(geometry: boxGeometry)
@@ -214,7 +214,7 @@ extension ReferralsProgressBar {
 
             if i != amountOfBlocks {
                 let dividerGeometry = SCNBox(width: 10.0, height: dividerHeight, length: 10.0, chamferRadius: 0)
-                dividerGeometry.firstMaterial?.diffuse.contents = i > amountOfBlocks - amountOfCompletedBlocks - 1 ? UIColor.turquoise.lighter(amount: 0.1) : UIColor.purple.lighter(amount: 0.1)
+                dividerGeometry.firstMaterial?.diffuse.contents = i > amountOfBlocks - amountOfCompletedBlocks - 1 ? UIColor.hedvig(.turquoise).lighter(amount: 0.1) : UIColor.hedvig(.purple).lighter(amount: 0.1)
 
                 let dividerNode = SCNNode(geometry: dividerGeometry)
                 dividerNode.position = SCNVector3Make(
@@ -290,14 +290,14 @@ extension ReferralsProgressBar {
                         let percentage = progress / CGFloat(duration)
 
                         blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                            from: UIColor.purple,
-                            to: UIColor.turquoise,
+                            from: UIColor.hedvig(.purple),
+                            to: UIColor.hedvig(.turquoise),
                             percentage: percentage
                         )
                         if i > 0 {
                             blocks[i - 1].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                                from: UIColor.purple.lighter(amount: 0.1),
-                                to: UIColor.turquoise.lighter(amount: 0.1),
+                                from: UIColor.hedvig(.purple).lighter(amount: 0.1),
+                                to: UIColor.hedvig(.turquoise).lighter(amount: 0.1),
                                 percentage: percentage
                             )
                         }
@@ -314,14 +314,14 @@ extension ReferralsProgressBar {
                     for i in stride(from: blocks.count - 1, to: -1, by: -2) {
                         let percentage = progress / CGFloat(duration)
                         blocks[i].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                            from: UIColor.turquoise,
-                            to: UIColor.purple,
+                            from: UIColor.hedvig(.turquoise),
+                            to: UIColor.hedvig(.purple),
                             percentage: percentage
                         )
                         if i > 0 {
                             blocks[i - 1].geometry?.firstMaterial?.diffuse.contents = transitionColor(
-                                from: UIColor.turquoise.lighter(amount: 0.1),
-                                to: UIColor.purple.lighter(amount: 0.1),
+                                from: UIColor.hedvig(.turquoise).lighter(amount: 0.1),
+                                to: UIColor.hedvig(.purple).lighter(amount: 0.1),
                                 percentage: percentage
                             )
                         }
@@ -395,7 +395,7 @@ extension ReferralsProgressBar {
         let ambientLightNode = SCNNode()
         let ambientLight = SCNLight()
         ambientLight.type = .ambient
-        ambientLight.color = UIColor.white
+        ambientLight.color = UIColor.hedvig(.white)
         ambientLight.temperature = lightTemperature
         ambientLight.intensity = 800
 
@@ -406,7 +406,7 @@ extension ReferralsProgressBar {
         let sideLightNode = SCNNode()
         let sideLight = SCNLight()
         sideLight.type = .directional
-        sideLight.color = UIColor.white
+        sideLight.color = UIColor.hedvig(.white)
         sideLight.temperature = lightTemperature
         sideLight.intensity = 200
         sideLight.spotOuterAngle = 55
@@ -419,7 +419,7 @@ extension ReferralsProgressBar {
         let topLightNode = SCNNode()
         let topLight = SCNLight()
         topLight.type = .directional
-        topLight.color = UIColor.white
+        topLight.color = UIColor.hedvig(.white)
         topLight.temperature = lightTemperature
         topLight.intensity = 250
         topLight.spotOuterAngle = 55
@@ -462,7 +462,7 @@ extension ReferralsProgressBar: Viewable {
         let scene = SCNScene()
 
         bag += view.traitCollectionSignal.atOnce().onValue { _ in
-            scene.background.contents = UIColor.primaryBackground
+            scene.background.contents = UIColor.hedvig(.primaryBackground)
         }
 
         let containerNode = SCNNode()

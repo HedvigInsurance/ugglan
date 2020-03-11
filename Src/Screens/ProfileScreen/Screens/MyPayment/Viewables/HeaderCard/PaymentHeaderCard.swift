@@ -25,7 +25,7 @@ extension PaymentHeaderCard: Viewable {
         let bag = DisposeBag()
 
         let topView = UIView()
-        topView.backgroundColor = .grass500
+        topView.backgroundColor = .hedvig(.grass500)
 
         bag += topView.didLayoutSignal.onValue { _ in
             topView.applyRadiusMaskFor(topLeft: 10, bottomLeft: 0, bottomRight: 0, topRight: 10)
@@ -42,7 +42,7 @@ extension PaymentHeaderCard: Viewable {
 
         let leftTopViewStack = UIStackView()
         leftTopViewStack.axis = .vertical
-        leftTopViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_TITLE), style: TextStyle.blockRowTitle.colored(.white)))
+        leftTopViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_TITLE), style: TextStyle.blockRowTitle.colored(.hedvig(.white))))
 
         let dataSignal = client.fetch(query: MyPaymentQuery()).valueSignal
 
@@ -87,11 +87,11 @@ extension PaymentHeaderCard: Viewable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 radius: 8,
-                color: UIColor.primaryShadowColor,
+                color: UIColor.hedvig(.primaryShadowColor),
                 path: nil
             )
         }
-        bottomView.backgroundColor = .secondaryBackground
+        bottomView.backgroundColor = .hedvig(.secondaryBackground)
 
         bag += bottomView.didLayoutSignal.onValue { _ in
             bottomView.applyRadiusMaskFor(topLeft: 0, bottomLeft: 10, bottomRight: 10, topRight: 0)

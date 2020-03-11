@@ -36,7 +36,7 @@ extension MessageBubble: Viewable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 radius: 8,
-                color: UIColor.primaryShadowColor,
+                color: UIColor.hedvig(.primaryShadowColor),
                 path: nil
             )
         }
@@ -74,7 +74,7 @@ extension MessageBubble: Viewable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = .secondaryBackground
+        stylingView.backgroundColor = .hedvig(.secondaryBackground)
         stylingView.layer.cornerRadius = 30
 
         bag += merge(stylingView.didMoveToWindowSignal, stylingView.didLayoutSignal).onValue { _ in

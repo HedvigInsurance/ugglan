@@ -20,9 +20,9 @@ struct BackgroundWithLabel {
 
     init(
         labelText: DynamicString,
-        backgroundColor: UIColor? = .purple,
+        backgroundColor: UIColor? = .hedvig(.purple),
         backgroundImage: UIImage? = nil,
-        textColor: UIColor? = .white
+        textColor: UIColor? = .hedvig(.white)
     ) {
         self.labelText = labelText
         self.backgroundColor = backgroundColor

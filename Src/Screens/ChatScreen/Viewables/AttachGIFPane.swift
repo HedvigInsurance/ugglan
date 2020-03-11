@@ -97,7 +97,7 @@ extension AttachGIFPane: Viewable {
 
         bag += view.add(infoText) { labelView in
             labelView.snp.makeConstraints { make in
-                labelView.textColor = .darkGray
+                labelView.textColor = .hedvig(.darkGray)
                 make.top.equalTo(searchBarView.snp.bottom).offset(10)
                 make.left.equalTo(view).offset(10)
                 make.right.bottom.equalTo(view).offset(-10)

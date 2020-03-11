@@ -38,7 +38,7 @@ extension BubbleLoading: Presentable {
         let viewController = LightContentViewController()
 
         let bubbleView = UIView()
-        bubbleView.backgroundColor = .primaryTintColor
+        bubbleView.backgroundColor = .hedvig(.primaryTintColor)
 
         let containerView = UIView()
         containerView.addSubview(bubbleView)

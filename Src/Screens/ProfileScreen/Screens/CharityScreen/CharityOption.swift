@@ -66,7 +66,7 @@ extension CharityOption: Reusable {
             )
             contentView.isLayoutMarginsRelativeArrangement = true
 
-            containerView.backgroundColor = .secondaryBackground
+            containerView.backgroundColor = .hedvig(.secondaryBackground)
 
             let titleLabel = UILabel(
                 value: charityOption.name,
@@ -89,8 +89,8 @@ extension CharityOption: Reusable {
             let button = Button(
                 title: String(key: .CHARTITY_PICK_OPTION),
                 type: .standard(
-                    backgroundColor: .primaryTintColor,
-                    textColor: .white
+                    backgroundColor: .hedvig(.primaryTintColor),
+                    textColor: .hedvig(.white)
                 )
             )
 
@@ -127,7 +127,7 @@ extension CharityOption: Reusable {
                         opacity: 0.08,
                         offset: CGSize(width: 0, height: 10),
                         radius: 8,
-                        color: UIColor.primaryShadowColor,
+                        color: UIColor.hedvig(.primaryShadowColor),
                         path: shadowPath.cgPath
                     )
                 }

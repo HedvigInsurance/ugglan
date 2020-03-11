@@ -87,7 +87,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
         let bag = DisposeBag()
 
         let card = UIView()
-        card.backgroundColor = .secondaryBackground
+        card.backgroundColor = .hedvig(.secondaryBackground)
         card.layer.cornerRadius = 10
 
         view.addArrangedSubview(card)
@@ -165,7 +165,7 @@ extension ClaimsHeader: Viewable {
         let description = Description()
         bag += view.addArranged(description)
 
-        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
+        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white)))
 
         bag += button.onTapSignal.onValue {
             self.presentingViewController.present(

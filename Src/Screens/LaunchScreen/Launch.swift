@@ -23,7 +23,7 @@ extension Launch: Presentable {
 
         let viewController = UIViewController()
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .hedvig(.primaryBackground)
         viewController.view = containerView
 
         let animationName = viewController.traitCollection.userInterfaceStyle == .dark ? "WordmarkAnimationLight" : "WordmarkAnimation"

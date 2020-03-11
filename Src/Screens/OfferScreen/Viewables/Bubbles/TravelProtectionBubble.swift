@@ -31,7 +31,7 @@ extension TravelProtectionBubble: Viewable {
             content: content,
             width: 135,
             height: 135,
-            backgroundColor: .purple
+            backgroundColor: .hedvig(.purple)
         )
 
         return (offerBubble, bag)

@@ -33,7 +33,7 @@ extension CommonClaimsCollection: Viewable {
             holdIn: bag
         )
         collectionKit.view.clipsToBounds = false
-        collectionKit.view.backgroundColor = .primaryBackground
+        collectionKit.view.backgroundColor = .hedvig(.primaryBackground)
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(

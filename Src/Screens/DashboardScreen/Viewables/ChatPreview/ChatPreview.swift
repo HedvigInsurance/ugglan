@@ -63,7 +63,7 @@ extension ChatPreview: Viewable {
 
         let openChatButton = Button(
             title: String(key: .CHAT_PREVIEW_OPEN_CHAT),
-            type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standardSmall(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
         )
 
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
@@ -73,7 +73,7 @@ extension ChatPreview: Viewable {
 
         bag += containerView.addArranged(Spacing(height: 10))
 
-        bag += containerView.addArranged(Divider(backgroundColor: .primaryBorder))
+        bag += containerView.addArranged(Divider(backgroundColor: .hedvig(.primaryBorder)))
 
         let messagesBubbleBag = DisposeBag()
         var handledMessageGlobalIds: [GraphQLID] = []

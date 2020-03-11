@@ -48,10 +48,10 @@ extension PaymentHeaderNextCharge: Viewable {
                     label.value = dateDisplayFormatter.string(from: date)
                 }
 
-                view.backgroundColor = .primaryBackground
+                view.backgroundColor = .hedvig(.primaryBackground)
             } else {
                 label.value = String(key: .PAYMENTS_CARD_NO_STARTDATE)
-                view.backgroundColor = .sunflower300
+                view.backgroundColor = .hedvig(.sunflower300)
             }
         }
 

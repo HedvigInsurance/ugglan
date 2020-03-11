@@ -22,7 +22,7 @@ extension BulletPointCard: Reusable {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .secondaryBackground
+        cardContainer.backgroundColor = .hedvig(.secondaryBackground)
         cardContainer.layer.cornerRadius = 8
 
         view.addArrangedSubview(cardContainer)
@@ -56,7 +56,7 @@ extension BulletPointCard: Reusable {
                     opacity: 0.05,
                     offset: CGSize(width: 0, height: 16),
                     radius: 30,
-                    color: .primaryShadowColor,
+                    color: .hedvig(.primaryShadowColor),
                     path: nil
                 )
             }

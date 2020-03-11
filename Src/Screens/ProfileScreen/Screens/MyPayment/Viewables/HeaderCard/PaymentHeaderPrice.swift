@@ -37,13 +37,13 @@ extension PaymentHeaderPrice: Viewable {
 
         bag += combineLatest(discountSignal, grossPriceSignal)
             .animated(style: SpringAnimationStyle.mediumBounce(), animations: { monthlyDiscount, monthlyGross in
-                grossPriceLabel.styledText = StyledText(text: "\(monthlyGross) kr", style: TextStyle.priceBubbleGrossTitle.colored(.white))
+                grossPriceLabel.styledText = StyledText(text: "\(monthlyGross) kr", style: TextStyle.priceBubbleGrossTitle.colored(.hedvig(.white)))
                 grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
                 grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
             })
 
         bag += monthlyNetPriceSignal.onValue { amount in
-            priceLabel.styledText = StyledText(text: "\(String(Int(amount))) kr", style: TextStyle.largePriceBubbleTitle.colored(.white))
+            priceLabel.styledText = StyledText(text: "\(String(Int(amount))) kr", style: TextStyle.largePriceBubbleTitle.colored(.hedvig(.white)))
             priceLabel.layoutIfNeeded()
         }
 

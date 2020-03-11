@@ -31,7 +31,7 @@ struct AttachFileAsset: Reusable {
 
     static func makeAndConfigure() -> (make: UIView, configure: (AttachFileAsset) -> Disposable) {
         let view = UIControl()
-        view.backgroundColor = .transparent
+        view.backgroundColor = .hedvig(.transparent)
 
         return (view, { `self` in
             let bag = DisposeBag()
@@ -60,7 +60,7 @@ struct AttachFileAsset: Reusable {
                     make.width.height.centerX.centerY.equalToSuperview()
                 }
 
-                let button = Button(title: String(key: .CHAT_UPLOAD_PRESEND), type: .standard(backgroundColor: .turquoise, textColor: .white))
+                let button = Button(title: String(key: .CHAT_UPLOAD_PRESEND), type: .standard(backgroundColor: .hedvig(.turquoise), textColor: .hedvig(.white)))
                 let loadableButton = LoadableButton(button: button, initialLoadingState: false)
 
                 sendOverlayBag += loadableButton.onTapSignal.onValue { _ in

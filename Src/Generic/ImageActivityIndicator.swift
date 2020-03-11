@@ -20,7 +20,7 @@ struct ImageActivityIndicator: Indicator {
 
     init() {
         indicatorView.color = UIColor(dynamic: { traits -> UIColor in
-            traits.userInterfaceStyle == .dark ? .white : .black
+            traits.userInterfaceStyle == .dark ? .hedvig(.white) : .hedvig(.black)
         })
     }
 }

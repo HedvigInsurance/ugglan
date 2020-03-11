@@ -52,7 +52,7 @@ extension KeyGearCategoryButton: Equatable {
 extension KeyGearCategoryButton: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (KeyGearCategoryButton) -> Disposable) {
         let control = UIControl()
-        control.backgroundColor = .primaryBackground
+        control.backgroundColor = .hedvig(.primaryBackground)
         control.layer.cornerRadius = 8
 
         let contentContainer = UIStackView()
@@ -72,11 +72,11 @@ extension KeyGearCategoryButton: Reusable {
             let bag = DisposeBag()
 
             bag += control.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-                control.backgroundColor = UIColor.primaryTintColor.withAlphaComponent(0.2)
+                control.backgroundColor = UIColor.hedvig(.primaryTintColor).withAlphaComponent(0.2)
             }
 
             bag += control.delayedTouchCancel().animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-                control.backgroundColor = UIColor.primaryBackground
+                control.backgroundColor = UIColor.hedvig(.primaryBackground)
             }
 
             bag += control.signal(for: .touchDown).feedback(type: .selection)
@@ -89,9 +89,9 @@ extension KeyGearCategoryButton: Reusable {
 
             bag += self.selectedSignal.atOnce().animated(style: AnimationStyle.easeOut(duration: 0.25)) { selected in
                 if selected {
-                    control.layer.borderColor = UIColor.primaryTintColor.cgColor
+                    control.layer.borderColor = UIColor.hedvig(.primaryTintColor).cgColor
                     control.layer.borderWidth = 1
-                    label.style = TextStyle.bodySmallSmallCenter.colored(.primaryTintColor)
+                    label.style = TextStyle.bodySmallSmallCenter.colored(.hedvig(.primaryTintColor))
                 } else {
                     control.layer.borderWidth = 0
                     label.style = TextStyle.bodySmallSmallCenter

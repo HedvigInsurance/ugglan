@@ -26,7 +26,7 @@ extension ReferralsProgressHighPremium: Viewable {
 
         let backgroundView = UIView()
         backgroundView.backgroundColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .grass700 : .turquoise
+            trait.userInterfaceStyle == .dark ? .hedvig(.grass700) : .hedvig(.turquoise)
         })
         backgroundView.layer.cornerRadius = 10
 

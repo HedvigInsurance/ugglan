@@ -26,7 +26,7 @@ extension Charity: Presentable {
         viewController.title = String(key: .MY_CHARITY_SCREEN_TITLE)
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .hedvig(.primaryBackground)
 
         bag += client.watch(query: SelectedCharityQuery())
             .map { $0.data?.cashback }

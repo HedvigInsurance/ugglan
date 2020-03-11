@@ -36,7 +36,7 @@ extension AddressCircle: Viewable {
         let circleLabel = CircleLabel(
             labelText: circleText,
             backgroundColor: UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .secondaryBackground : .darkPink
+                trait.userInterfaceStyle == .dark ? .hedvig(.secondaryBackground) : .hedvig(.darkPink)
             })
         )
 

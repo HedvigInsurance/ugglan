@@ -28,11 +28,11 @@ extension ChatButton: Viewable {
         let bag = DisposeBag()
 
         let chatButtonView = UIControl()
-        chatButtonView.backgroundColor = .secondaryBackground
+        chatButtonView.backgroundColor = .hedvig(.secondaryBackground)
         chatButtonView.layer.cornerRadius = 20
 
         bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-            chatButtonView.backgroundColor = UIColor.secondaryBackground.darkened(amount: 0.05)
+            chatButtonView.backgroundColor = UIColor.hedvig(.secondaryBackground).darkened(amount: 0.05)
         }
 
         bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
@@ -42,7 +42,7 @@ extension ChatButton: Viewable {
             chatButtonView.signal(for: .touchUpOutside),
             chatButtonView.signal(for: .touchCancel)
         ).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-            chatButtonView.backgroundColor = .secondaryBackground
+            chatButtonView.backgroundColor = .hedvig(.secondaryBackground)
         }
 
         bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in
@@ -59,7 +59,7 @@ extension ChatButton: Viewable {
         let chatIcon = UIImageView()
         chatIcon.image = Asset.chat.image
         chatIcon.contentMode = .scaleAspectFit
-        chatIcon.tintColor = .primaryText
+        chatIcon.tintColor = .hedvig(.primaryText)
 
         chatButtonView.addSubview(chatIcon)
 
