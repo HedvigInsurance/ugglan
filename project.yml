@@ -185,11 +185,14 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.hedvig.UITests
       SWIFT_VERSION: "5.0"
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
-      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC -weak_framework SwiftUI -weak_framework Combine"
+      OTHER_LDFLAGS: "$(OTHER_LDFLAGS) -ObjC -weak_framework SwiftUI -weak_framework Combine -weak_framework XCTEST -weak-lXCTestSwiftSupport"
       LD_RUNPATH_SEARCH_PATHS:
         - $(inherited)
         - "@executable_path/Frameworks"
         - "@loader_path/Frameworks"
+      LIBRARY_SEARCH_PATHS:
+        - $(inherited)
+        - $(PLATFORM_DIR)/Developer/usr/lib
       FRAMEWORK_SEARCH_PATHS:
         - $(inherited)
         - $(PROJECT_DIR)/Carthage/Build/iOS
@@ -303,7 +306,7 @@ variants:
       sources: Config/Production
       configuration:
         INFOPLIST_FILE: Config/Production/Info.plist
-        CODE_SIGN_ENTITLEMENTS:  Config/Production/Entitlements.entitlements
+        CODE_SIGN_ENTITLEMENTS: Config/Production/Entitlements.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: "com.hedvig.app"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_VARIANT_PRODUCTION
 schemes:
