@@ -11,7 +11,6 @@ import Foundation
 import Lottie
 import Presentation
 import UIKit
-import ComponentKit
 
 struct Launch {
     let hasLoadedSignal: Signal<Void>

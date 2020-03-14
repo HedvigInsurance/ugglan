@@ -9,7 +9,6 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 struct Divider {
     let backgroundColor: UIColor
@@ -23,7 +22,7 @@ extension Divider: Viewable {
 
         divider.backgroundColor = backgroundColor
 
-        divider.snp.makeConstraints { make in
+        divider.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(1)
         }
 

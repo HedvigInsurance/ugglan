@@ -8,8 +8,6 @@
 import Flow
 import Form
 import Foundation
-import Space
-import ComponentKit
 
 struct CategoryPicker {
     let onSelectCategorySignal: Signal<KeyGearItemCategory>

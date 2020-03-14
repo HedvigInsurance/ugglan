@@ -11,7 +11,6 @@ import Form
 import Foundation
 import Kingfisher
 import UIKit
-import ComponentKit
 
 private let fiveMinutes: TimeInterval = 60 * 5
 

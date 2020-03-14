@@ -10,8 +10,6 @@ import Flow
 import Form
 import Presentation
 import UIKit
-import Common
-import Space
 
 struct FreeTextChat {
     @Inject var client: ApolloClient

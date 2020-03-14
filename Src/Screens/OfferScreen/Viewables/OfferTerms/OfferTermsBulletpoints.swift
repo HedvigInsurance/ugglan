@@ -10,9 +10,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Common
-import Space
-import ComponentKit
 
 struct OfferTermsBulletPoints {
     @Inject var client: ApolloClient
@@ -106,7 +103,7 @@ extension OfferTermsBulletPoints {
             let stackView = UIStackView()
             stackView.spacing = 15
 
-            let checkMark = Icon(icon: Asset.greenCircularCheckmark.image, iconWidth: 20)
+            let checkMark = Icon(icon: Asset.greenCircularCheckmark, iconWidth: 20)
             stackView.addArrangedSubview(checkMark)
 
             checkMark.snp.makeConstraints { make in

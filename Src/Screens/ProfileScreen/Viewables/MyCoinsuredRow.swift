@@ -9,7 +9,6 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import ComponentKit
 
 struct MyCoinsuredRow {
     let amountOfCoinsuredSignal = ReadWriteSignal<Int?>(nil)

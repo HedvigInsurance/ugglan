@@ -8,7 +8,6 @@
 import Apollo
 import Foundation
 import UIKit
-import Space
 
 extension UITextContentType {
     static func from(_ textContentType: TextContentType?) -> UITextContentType? {

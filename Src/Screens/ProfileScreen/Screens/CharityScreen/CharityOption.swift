@@ -10,7 +10,6 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import ComponentKit
 
 struct CharityOption {
     let id: GraphQLID

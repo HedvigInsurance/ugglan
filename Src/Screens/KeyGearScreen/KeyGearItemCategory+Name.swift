@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Space
 
 extension KeyGearItemCategory {
     var name: String {

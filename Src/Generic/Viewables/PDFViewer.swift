@@ -11,7 +11,6 @@ import Form
 import Foundation
 import PDFKit
 import UIKit
-import ComponentKit
 
 struct PDFViewer {
     let url = ReadWriteSignal<URL?>(nil)

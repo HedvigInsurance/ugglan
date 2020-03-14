@@ -11,7 +11,6 @@ import Disk
 import FirebaseRemoteConfig
 import Flow
 import Foundation
-import Common
 
 struct ApolloEnvironmentConfig {
     let endpointURL: URL

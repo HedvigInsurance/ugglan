@@ -6,10 +6,10 @@
 build/
 DerivedData/
 Src/Assets/Assets.swift
-Sources/Space/Localization/Localization.json
-Sources/Space/Localization/Localization.swift
-Sources/Space/schema.json
-Sources/Space/API.swift
+Src/Assets/Localization/Localization.json
+Src/Assets/Localization/Localization.swift
+Src/Data/schema.json
+Src/Data/API.swift
 Carthage
 test.xcodeproj
 production.xcodeproj

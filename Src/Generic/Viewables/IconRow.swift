@@ -10,7 +10,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct IconRow {
     enum Options {
@@ -44,8 +43,8 @@ extension IconRow: Viewable {
         let bag = DisposeBag()
 
         let rowView = RowView()
-        let icon = Icon(frame: .zero, icon: iconAsset.image, iconWidth: iconWidth)
-        let arrow = Icon(frame: .zero, icon: Asset.chevronRight.image, iconWidth: 20)
+        let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
+        let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 
         let labelsContainer = UIStackView()
         labelsContainer.axis = .vertical
@@ -91,7 +90,7 @@ extension IconRow: Viewable {
                     text: subtitleLabel.text ?? "",
                     style: .rowSubtitlePrimary
                 )
-                arrow.icon = Asset.chevronRightWhite.image
+                arrow.icon = Asset.chevronRightWhite
             } else {
                 titleLabel.styledText = StyledText(
                     text: titleLabel.text ?? "",
@@ -101,7 +100,7 @@ extension IconRow: Viewable {
                     text: subtitleLabel.text ?? "",
                     style: .rowSubtitle
                 )
-                arrow.icon = Asset.chevronRight.image
+                arrow.icon = Asset.chevronRight
             }
         }
 

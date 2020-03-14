@@ -12,8 +12,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Common
-import ComponentKit
 
 struct ButtonRow {
     let text: ReadWriteSignal<String>
@@ -57,7 +55,7 @@ extension ButtonRow: Viewable {
         }.bindTo(label, \.styledText)
         bag += text.atOnce().bindTo(label, \.text)
 
-        label.snp.makeConstraints { make in
+        bag += label.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(20)
         }
 

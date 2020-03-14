@@ -9,7 +9,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct ReferralsInvitationAnonymous: Reusable {
     let count: Int?
@@ -20,7 +19,7 @@ struct ReferralsInvitationAnonymous: Reusable {
 
         let ghostIconContainer = UIView()
 
-        let ghostIcon = Icon(icon: Asset.ghost.image, iconWidth: 24)
+        let ghostIcon = Icon(icon: Asset.ghost, iconWidth: 24)
         ghostIconContainer.addSubview(ghostIcon)
 
         ghostIcon.snp.makeConstraints { make in

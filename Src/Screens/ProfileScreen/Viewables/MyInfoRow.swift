@@ -10,7 +10,6 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import ComponentKit
 
 struct MyInfoRow {
     let nameSignal = ReadWriteSignal<(firstName: String, lastName: String)?>(nil)

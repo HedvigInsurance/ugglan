@@ -9,7 +9,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import ComponentKit
 
 extension Presentable where Matter: UIViewController, Result == Disposable {
     var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {

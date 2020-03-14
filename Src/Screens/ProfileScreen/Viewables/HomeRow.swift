@@ -10,7 +10,6 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import ComponentKit
 
 struct HomeRow {
     let address: ReadWriteSignal<String> = ReadWriteSignal("")

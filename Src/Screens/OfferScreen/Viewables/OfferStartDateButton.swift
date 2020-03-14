@@ -10,9 +10,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import Common
-import Space
-import ComponentKit
 
 struct OfferStartDateButton {
     let containerScrollView: UIScrollView
@@ -83,7 +80,7 @@ extension OfferStartDateButton: Viewable {
         valueLabel.textColor = .white
         stackView.addArrangedSubview(valueLabel)
 
-        let iconView = Icon(icon: Asset.chevronRightWhite.image, iconWidth: 20)
+        let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)
         iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
         stackView.addArrangedSubview(iconView)
 

@@ -8,7 +8,6 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 struct WhenEnabled<V: Viewable>: Viewable where V.Events == ViewableEvents, V.Matter: UIView, V.Result == Disposable {
     let getViewable: () -> V

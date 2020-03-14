@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import Common
 
 @available(iOS 13, *)
 struct Debug: View {

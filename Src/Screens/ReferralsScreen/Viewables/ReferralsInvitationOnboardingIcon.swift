@@ -8,13 +8,12 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 struct ReferralsInvitationOnboardingIcon {}
 
 extension ReferralsInvitationOnboardingIcon: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let view = Icon(icon: Asset.clock.image, iconWidth: 16)
+        let view = Icon(icon: Asset.clock, iconWidth: 16)
         return (view, NilDisposer())
     }
 }

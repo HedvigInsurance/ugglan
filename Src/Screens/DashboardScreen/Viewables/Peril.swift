@@ -10,7 +10,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct Peril {
     let title: String
@@ -85,7 +84,7 @@ extension Peril: Reusable {
 
             let bag = DisposeBag()
 
-            let perilIcon = Icon(icon: Peril.iconAsset(for: peril.id).image, iconWidth: 40)
+            let perilIcon = Icon(icon: Peril.iconAsset(for: peril.id), iconWidth: 40)
 
             perilView.addSubview(perilIcon)
             perilIcon.snp.makeConstraints { make in

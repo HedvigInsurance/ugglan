@@ -9,7 +9,6 @@
 import Flow
 import Form
 import Foundation
-import ComponentKit
 
 struct MultilineLabel {
     let styledTextSignal: ReadWriteSignal<StyledText>

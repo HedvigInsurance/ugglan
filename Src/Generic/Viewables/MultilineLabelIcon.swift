@@ -9,7 +9,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct MultilineLabelIcon {
     let styledTextSignal: ReadWriteSignal<StyledText>
@@ -41,7 +40,7 @@ extension MultilineLabelIcon: Viewable {
         }
 
         let icon = Icon(
-            icon: iconAsset.image,
+            icon: iconAsset,
             iconWidth: iconWidth
         )
         iconContainer.addSubview(icon)

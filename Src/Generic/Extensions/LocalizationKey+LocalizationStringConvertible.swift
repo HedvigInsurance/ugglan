@@ -6,10 +6,9 @@
 //
 
 import Foundation
-import Space
 
 extension Localization.Key: LocalizationStringConvertible {
-    public var localizationDescription: String {
+    var localizationDescription: String {
         return String(key: self)
     }
 }

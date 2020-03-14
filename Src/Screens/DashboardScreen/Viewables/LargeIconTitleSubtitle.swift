@@ -9,7 +9,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct LargeIconTitleSubtitle {
     let isOpenSignal: ReadWriteSignal<Bool>
@@ -52,12 +51,12 @@ extension LargeIconTitleSubtitle: Viewable {
         containerStackView.isUserInteractionEnabled = false
 
         // Large icon
-        let icon = Icon(icon: Asset.homePlain.image, iconWidth: iconWidth)
+        let icon = Icon(icon: Asset.homePlain, iconWidth: iconWidth)
         icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(icon)
 
         bag += imageSignal.atOnce()
-            .compactMap { $0?.image }
+            .compactMap { $0 }
             .bindTo(icon, \.icon)
 
         // Title+subtitle
@@ -83,7 +82,7 @@ extension LargeIconTitleSubtitle: Viewable {
 
         containerStackView.addArrangedSubview(titlesView)
 
-        let chevronDown = Icon(icon: Asset.chevronRight.image, iconWidth: 25)
+        let chevronDown = Icon(icon: Asset.chevronRight, iconWidth: 25)
         chevronDown.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         containerStackView.addArrangedSubview(chevronDown)
 

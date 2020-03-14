@@ -1,6 +1,6 @@
 xcassets:
   inputs:
-    - Resources/Assets.xcassets
+    - Src/Assets/Assets.xcassets
   outputs:
     - templateName: swift4
       output: Src/Assets/Assets.swift

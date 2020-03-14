@@ -8,7 +8,6 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 struct DraggableOverlayHeader {
     let title: String
@@ -45,12 +44,10 @@ extension DraggableOverlayHeader: Viewable {
             make.height.equalToSuperview()
         }
 
-        bag += view.didMoveToWindowSignal.take(first: 1).onValue({ _ in
-            view.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.height.equalTo(56)
-            }
-        })
+        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+            make.width.equalToSuperview()
+            make.height.equalTo(56)
+        }
 
         return (view, bag)
     }

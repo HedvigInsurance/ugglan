@@ -8,7 +8,6 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 struct CharityLogo {
     let url: URL

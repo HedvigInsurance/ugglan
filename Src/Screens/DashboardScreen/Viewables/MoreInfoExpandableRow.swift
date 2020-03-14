@@ -8,7 +8,6 @@
 import Flow
 import Form
 import Foundation
-import ComponentKit
 
 struct MoreInfoExpandableRow {}
 

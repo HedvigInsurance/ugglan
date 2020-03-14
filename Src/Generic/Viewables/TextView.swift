@@ -9,7 +9,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct TextView {
     let placeholder: ReadWriteSignal<String>

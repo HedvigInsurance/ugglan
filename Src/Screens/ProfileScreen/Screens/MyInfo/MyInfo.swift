@@ -10,7 +10,6 @@ import Flow
 import Form
 import Presentation
 import UIKit
-import ComponentKit
 
 struct MyInfo {}
 

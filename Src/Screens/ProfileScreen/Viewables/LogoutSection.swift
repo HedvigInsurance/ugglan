@@ -10,8 +10,6 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import Common
-import ComponentKit
 
 struct LogoutSection {
     let presentingViewController: UIViewController

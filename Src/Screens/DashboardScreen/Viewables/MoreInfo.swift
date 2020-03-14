@@ -10,9 +10,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Common
-import Space
-import ComponentKit
 
 struct MoreInfo {
     @Inject private var client: ApolloClient

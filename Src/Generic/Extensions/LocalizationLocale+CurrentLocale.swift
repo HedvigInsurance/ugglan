@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Space
 
 extension Localization.Locale {
     var acceptLanguageHeader: String {
@@ -36,7 +35,7 @@ extension Localization.Locale {
         }
     }
 
-    func asGraphQLLocale() -> Space.Locale {
+    func asGraphQLLocale() -> Locale {
         switch self {
         case .sv_SE:
             return .svSe

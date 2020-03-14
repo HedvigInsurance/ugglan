@@ -9,7 +9,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import ComponentKit
 
 enum ReferralsNotificationResult {
     case cancel, openReferrals

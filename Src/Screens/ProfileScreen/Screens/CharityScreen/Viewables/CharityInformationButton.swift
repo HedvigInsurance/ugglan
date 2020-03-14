@@ -9,7 +9,6 @@ import Flow
 import Foundation
 import SnapKit
 import UIKit
-import ComponentKit
 
 struct CharityInformationButton {
     let presentingViewController: UIViewController
@@ -45,7 +44,7 @@ extension CharityInformationButton: Viewable {
             )
         }
 
-        view.snp.makeConstraints { make in
+        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(button.type.value.height)
         }
 

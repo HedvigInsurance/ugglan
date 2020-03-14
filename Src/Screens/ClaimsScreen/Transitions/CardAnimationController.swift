@@ -8,7 +8,6 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     private let originView: UIView

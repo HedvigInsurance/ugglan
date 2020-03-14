@@ -8,7 +8,6 @@
 import Apollo
 import Foundation
 import UIKit
-import Space
 
 extension UIKeyboardType {
     static func from(_ keyboardType: KeyboardType?) -> UIKeyboardType? {

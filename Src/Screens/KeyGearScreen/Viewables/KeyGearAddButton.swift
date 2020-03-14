@@ -9,7 +9,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import ComponentKit
 
 struct KeyGearAddButton {}
 
@@ -35,7 +34,7 @@ extension KeyGearAddButton: Viewable {
             make.centerY.equalToSuperview()
         }
 
-        let icon = Icon(icon: Asset.addButton.image, iconWidth: 32)
+        let icon = Icon(icon: Asset.addButton, iconWidth: 32)
         contentContainer.addArrangedSubview(icon)
 
         let label = MultilineLabel(value: String(key: .KEY_GEAR_ADD_BUTTON), style: TextStyle.body.colored(.primaryTintColor))

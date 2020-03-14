@@ -9,7 +9,6 @@
 import Form
 import Foundation
 import UIKit
-import DynamicColor
 
 extension BorderStyle {
     static let standard = BorderStyle(
@@ -364,7 +363,7 @@ extension DynamicFormStyle {
     }
 }
 
-public extension DynamicSectionStyle {
+extension DynamicSectionStyle {
     static let sectionPlainRounded = DynamicSectionStyle { trait -> SectionStyle in
         trait.userInterfaceStyle == .dark ? .sectionPlainDarkRoundedBorder : .sectionPlainLightRoundedBorder
     }

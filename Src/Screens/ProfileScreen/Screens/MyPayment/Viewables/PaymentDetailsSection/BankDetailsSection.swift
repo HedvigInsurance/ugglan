@@ -10,9 +10,6 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Common
-import Space
-import ComponentKit
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient

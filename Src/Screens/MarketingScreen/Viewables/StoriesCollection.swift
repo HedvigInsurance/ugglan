@@ -11,7 +11,6 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
-import ComponentKit
 
 struct StoriesCollection {
     let scrollToSignal: Signal<ScrollTo>

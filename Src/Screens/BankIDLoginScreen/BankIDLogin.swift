@@ -11,10 +11,6 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Common
-import Space
-import ComponentKit
-import Analytics
 
 struct BankIDLogin {
     @Inject var client: ApolloClient

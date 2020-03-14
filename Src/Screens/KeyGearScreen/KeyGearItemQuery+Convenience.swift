@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Space
 
 extension KeyGearItemQuery {
     convenience init(id: String) {

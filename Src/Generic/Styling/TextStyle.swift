@@ -9,7 +9,13 @@
 import Form
 import Foundation
 
-public extension TextStyle {
+extension TextStyle {
+    func centered() -> TextStyle {
+        return restyled { (style: inout TextStyle) in
+            style.alignment = .center
+        }
+    }
+
     static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(15)
         style.color = .primaryText

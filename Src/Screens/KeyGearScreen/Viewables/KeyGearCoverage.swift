@@ -8,7 +8,6 @@
 import Flow
 import Form
 import Foundation
-import ComponentKit
 
 struct KeyGearCoverage {
     let type: CoverageType
@@ -24,7 +23,7 @@ extension KeyGearCoverage: Viewable {
         let row = RowView()
         let bag = DisposeBag()
 
-        let icon = Icon(icon: type == .included ? Asset.greenCircularCheckmark.image : Asset.pinkCircularCross.image, iconWidth: 15)
+        let icon = Icon(icon: type == .included ? Asset.greenCircularCheckmark : Asset.pinkCircularCross, iconWidth: 15)
         icon.snp.makeConstraints { make in
             make.width.equalTo(30)
         }

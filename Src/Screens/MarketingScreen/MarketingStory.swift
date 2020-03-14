@@ -13,7 +13,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Space
 
 enum AssetType {
     case video, image, unknown

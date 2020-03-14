@@ -11,7 +11,6 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
-import ComponentKit
 
 struct Stories {
     let marketingStories: ReadSignal<[MarketingStory]>
@@ -72,13 +71,11 @@ extension Stories: Viewable {
         )
         bag += view.add(logo)
 
-        bag += view.didMoveToWindowSignal.take(first: 1).onValue { _ in
-            view.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.top.equalToSuperview()
-                make.center.equalToSuperview()
-                make.height.equalToSuperview()
-            }
+        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
+            make.width.equalToSuperview()
+            make.top.equalToSuperview()
+            make.center.equalToSuperview()
+            make.height.equalToSuperview()
         }
 
         return (view, bag)

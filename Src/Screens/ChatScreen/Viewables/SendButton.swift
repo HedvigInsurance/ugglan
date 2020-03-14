@@ -8,7 +8,6 @@
 import Flow
 import Foundation
 import UIKit
-import ComponentKit
 
 struct SendButton {}
 
@@ -23,7 +22,7 @@ extension SendButton: Viewable {
             make.width.height.equalTo(30)
         }
 
-        let icon = Icon(icon: Asset.arrowUp.image, iconWidth: 15)
+        let icon = Icon(icon: Asset.arrowUp, iconWidth: 15)
         control.addSubview(icon)
 
         icon.snp.makeConstraints { make in

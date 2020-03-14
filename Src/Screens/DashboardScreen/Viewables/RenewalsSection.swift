@@ -9,8 +9,6 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Space
-import ComponentKit
 
 struct RenewalsSection {
     let dataSignal: ReadWriteSignal<DashboardQuery.Data.Insurance?> = ReadWriteSignal(nil)
@@ -42,10 +40,10 @@ extension RenewalsSection: Viewable {
             make.height.width.centerX.centerY.equalToSuperview()
         }
 
-        let titleLabel = MultilineLabel(value: String(key: .DASHBOARD_RENEWAL_PROMPTER_TITLE), style: TextStyle.rowTitleBold.centerAligned)
+        let titleLabel = MultilineLabel(value: String(key: .DASHBOARD_RENEWAL_PROMPTER_TITLE), style: TextStyle.rowTitleBold.centered())
         bag += containerStackView.addArranged(titleLabel)
 
-        let infoLabel = MultilineLabel(value: "", style: TextStyle.bodyOffBlack.centerAligned)
+        let infoLabel = MultilineLabel(value: "", style: TextStyle.bodyOffBlack.centered())
         bag += containerStackView.addArranged(infoLabel)
 
         let buttonContainer = UIView()
@@ -88,7 +86,7 @@ extension RenewalsSection: Viewable {
 
             infoLabel.styledTextSignal.value = StyledText(
                 text: String(key: .DASHBOARD_RENEWAL_PROMPTER_BODY(daysUntilRenewal: "\(components.day ?? 0)")),
-                style: TextStyle.bodyOffBlack.centerAligned
+                style: TextStyle.bodyOffBlack.centered()
             )
         }
 

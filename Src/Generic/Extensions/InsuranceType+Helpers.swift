@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Space
 
 extension InsuranceType {
     var isStudent: Bool {

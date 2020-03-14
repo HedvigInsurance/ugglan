@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import Space
 
 extension KeyGearItemCategory {
     var image: UIImage? {

@@ -11,7 +11,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import ComponentKit
 
 struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult: Any> where P.Matter == PMatter, P.Result == Future<FutureResult> {
     let presentable: P

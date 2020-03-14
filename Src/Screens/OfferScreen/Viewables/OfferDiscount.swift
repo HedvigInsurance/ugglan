@@ -10,9 +10,6 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import Common
-import Space
-import ComponentKit
 
 struct OfferDiscount {
     let containerScrollView: UIScrollView

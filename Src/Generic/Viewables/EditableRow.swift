@@ -8,7 +8,6 @@
 import Flow
 import Form
 import Foundation
-import ComponentKit
 
 /// A row that the user can edit
 /// Signal emits everytime save is clicked

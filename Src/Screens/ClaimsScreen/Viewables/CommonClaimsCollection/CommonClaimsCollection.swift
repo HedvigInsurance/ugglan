@@ -11,13 +11,16 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Common
-import Space
-import ComponentKit
 
 struct CommonClaimsCollection {
     @Inject var client: ApolloClient
     let presentingViewController: UIViewController
+
+    init(
+        presentingViewController: UIViewController
+    ) {
+        self.presentingViewController = presentingViewController
+    }
 }
 
 extension CommonClaimsCollection: Viewable {

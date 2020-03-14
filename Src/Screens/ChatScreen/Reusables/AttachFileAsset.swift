@@ -10,7 +10,6 @@ import Form
 import Foundation
 import Kingfisher
 import Photos
-import ComponentKit
 
 struct AttachFileAsset: Reusable {
     let asset: PHAsset

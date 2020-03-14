@@ -11,8 +11,6 @@ import Disk
 import Flow
 import Foundation
 import Vision
-import Common
-import Space
 
 extension AddKeyGearItem {
     private enum Category: String {

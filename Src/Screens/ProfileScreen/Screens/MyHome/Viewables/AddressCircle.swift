@@ -9,9 +9,6 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
-import Common
-import Space
-import ComponentKit
 
 struct AddressCircle {
     @Inject var client: ApolloClient
@@ -42,7 +39,7 @@ extension AddressCircle: Viewable {
 
         bag += containerView.add(circleLabel)
 
-        containerView.snp.makeConstraints { make in
+        containerView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.height.equalTo(200)
         }
 
