@@ -52,7 +52,7 @@ extension LanguagePicker: Presentable {
         ApplicationState.preserveState(.languagePicker)
 
         let mainView = UIView()
-        mainView.backgroundColor = .hedvig(.primaryBackground)
+        mainView.backgroundColor = .primaryBackground
         viewController.view = mainView
 
         let stackView = UIStackView()

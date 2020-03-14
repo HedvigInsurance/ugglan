@@ -21,7 +21,7 @@ extension OfferSummary: Viewable {
         outerView.axis = .vertical
 
         let backgroundColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? UIColor.hedvig(.black).lighter(amount: 0.1) : .hedvig(.midnight700)
+            trait.userInterfaceStyle == .dark ? UIColor.black.lighter(amount: 0.1) : .midnight700
         })
 
         bag += outerView.addArranged(Blob(color: backgroundColor, position: .top))
@@ -49,7 +49,7 @@ extension OfferSummary: Viewable {
 
         let descriptionLabel = MultilineLabel(
             value: String(key: .OFFER_HOUSE_SUMMARY_DESC),
-            style: TextStyle.body.colored(.hedvig(.white)).centerAligned
+            style: TextStyle.body.colored(.white).centerAligned
         )
         bag += stackView.addArranged(descriptionLabel)
 
@@ -57,7 +57,7 @@ extension OfferSummary: Viewable {
 
         bag += stackView.addArranged(ExpandableContent(content: InsuranceSummarySection(), isExpanded: .static(false)))
 
-        bag += outerView.addArranged(Blob(color: .hedvig(.secondaryBackground), position: .top)) { blobView in
+        bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .top)) { blobView in
             blobView.backgroundColor = backgroundColor
         }
 

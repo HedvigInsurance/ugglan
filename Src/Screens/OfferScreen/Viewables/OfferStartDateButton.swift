@@ -33,7 +33,7 @@ extension OfferStartDateButton: Viewable {
         button.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(CGAffineTransform(translationX: 0, y: -30))
         button.alpha = 0
         bag += button.applyBorderColor { _ -> UIColor in
-            .hedvig(.white)
+            .white
         }
 
         bag += button.applyCornerRadius { _ -> CGFloat in
@@ -77,10 +77,10 @@ extension OfferStartDateButton: Viewable {
 
         let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .bodyButtonText)
         stackView.addArrangedSubview(keyLabel)
-        keyLabel.textColor = .hedvig(.white)
+        keyLabel.textColor = .white
 
         let valueLabel = UILabel(value: "", style: .bodyBoldButtonText)
-        valueLabel.textColor = .hedvig(.white)
+        valueLabel.textColor = .white
         stackView.addArrangedSubview(valueLabel)
 
         let iconView = Icon(icon: Asset.chevronRightWhite.image, iconWidth: 20)
@@ -89,7 +89,7 @@ extension OfferStartDateButton: Viewable {
 
         let alert = Alert<Void>(title: String(key: .ALERT_TITLE_STARTDATE),
                                 message: String(key: .ALERT_DESCRIPTION_STARTDATE),
-                                tintColor: .hedvig(.black),
+                                tintColor: .black,
                                 actions: [Alert.Action(title: String(key: .ALERT_CANCEL), action: {}),
                                           Alert.Action(title: String(key: .ALERT_CONTINUE), action: {
                                               bag += self.presentingViewController.present(

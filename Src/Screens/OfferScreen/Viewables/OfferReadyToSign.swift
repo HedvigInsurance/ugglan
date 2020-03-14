@@ -39,7 +39,7 @@ extension OfferReadyToSign: Viewable {
             make.trailing.leading.top.bottom.equalToSuperview()
         }
 
-        let titleLabel = MultilineLabel(value: String(key: .OFFER_GET_HEDVIG_TITLE), style: TextStyle.standaloneLargeTitle.colored(.hedvig(.white)).centerAligned)
+        let titleLabel = MultilineLabel(value: String(key: .OFFER_GET_HEDVIG_TITLE), style: TextStyle.standaloneLargeTitle.colored(.white).centerAligned)
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(value: String(key: .OFFER_GET_HEDVIG_BODY), style: TextStyle.bodyWhite.centerAligned)

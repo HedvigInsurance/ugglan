@@ -35,7 +35,7 @@ extension TerminatedInsurance: Presentable {
 
         let button = Button(
             title: String(key: .INSURANCE_STATUS_TERMINATED_ALERT_CTA),
-            type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
         )
         bag += view.addArranged(button)
 
@@ -45,7 +45,7 @@ extension TerminatedInsurance: Presentable {
         }
 
         bag += viewController.install(view) { scrollView in
-            scrollView.backgroundColor = .hedvig(.offWhite)
+            scrollView.backgroundColor = .offWhite
         }
 
         return (viewController, bag)

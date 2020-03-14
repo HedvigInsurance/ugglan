@@ -24,7 +24,7 @@ extension ReferralsMoreInfo: Presentable {
 
         let containerView = UIStackView()
         containerView.spacing = 15
-        containerView.backgroundColor = UIColor.hedvig(.white)
+        containerView.backgroundColor = UIColor.white
         containerView.axis = .vertical
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
         containerView.isLayoutMarginsRelativeArrangement = true
@@ -37,7 +37,7 @@ extension ReferralsMoreInfo: Presentable {
         let body = MarkdownText(textSignal: .static(String(key: .REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH(referralValue: "10"))), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
-        let button = Button(title: String(key: .REFERRAL_PROGRESS_MORE_INFO_CTA), type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .hedvig(.offBlack)))
+        let button = Button(title: String(key: .REFERRAL_PROGRESS_MORE_INFO_CTA), type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack))
         bag += containerView.addArranged(button.wrappedIn(UIStackView())) { stackView in
             stackView.alignment = .center
             stackView.axis = .vertical

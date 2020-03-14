@@ -56,7 +56,7 @@ extension KeyGearReceipt: Presentable {
             pdfViewer.url.value = receipt
         } else {
             let webView = WKWebView()
-            webView.backgroundColor = .hedvig(.primaryBackground)
+            webView.backgroundColor = .primaryBackground
             webView.load(URLRequest(url: receipt))
 
             viewController.view = webView

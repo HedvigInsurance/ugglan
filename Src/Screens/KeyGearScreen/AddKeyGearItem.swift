@@ -68,15 +68,15 @@ extension AddKeyGearItem: Presentable {
         let saveButton = LoadableButton(
             button: Button(
                 title: String(key: .KEY_GEAR_ADD_ITEM_SAVE_BUTTON),
-                type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
             )
         )
         bag += state.isValidSignal
             .atOnce()
             .map { valid in
                 valid ?
-                    ButtonType.standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white)) :
-                    ButtonType.standard(backgroundColor: .gray, textColor: .hedvig(.white))
+                    ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white) :
+                    ButtonType.standard(backgroundColor: .gray, textColor: .white)
             }.bindTo(saveButton.button.type)
 
         let saveButtonContainer = UIStackView()

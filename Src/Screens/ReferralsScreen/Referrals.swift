@@ -53,7 +53,7 @@ extension Referrals: Presentable {
         viewController.navigationItem.rightBarButtonItem = moreInfoBarButton
 
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .hedvig(.primaryBackground)
+        scrollView.backgroundColor = .primaryBackground
 
         let formView = FormView()
         formView.spacing = 20
@@ -177,7 +177,7 @@ extension Referrals: Presentable {
         let button = LoadableButton(
             button: Button(
                 title: String(key: .REFERRALS_SHARE_BUTTON),
-                type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
             ),
             initialLoadingState: true
         )
@@ -197,7 +197,7 @@ extension Referrals: Presentable {
                     opacity: 0.5,
                     offset: CGSize(width: 0, height: 6),
                     radius: 8,
-                    color: UIColor.hedvig(.primaryShadowColor),
+                    color: UIColor.primaryShadowColor,
                     path: nil
                 )
             }

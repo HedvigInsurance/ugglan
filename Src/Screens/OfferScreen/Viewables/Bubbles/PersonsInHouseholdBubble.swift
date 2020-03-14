@@ -39,7 +39,7 @@ extension PersonsInHouseholdBubble: Viewable {
             content: content,
             width: 110,
             height: 110,
-            backgroundColor: .hedvig(.purple)
+            backgroundColor: .purple
         )
 
         return (offerBubble, bag)

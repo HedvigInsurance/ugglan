@@ -136,7 +136,7 @@ extension AudioRecorder: Viewable {
 
             let redoButton = Button(
                 title: "Gör om",
-                type: .standardSmall(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white)
             )
 
             bag += redoButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -151,7 +151,7 @@ extension AudioRecorder: Viewable {
                 stackView.alignment = .trailing
             }
 
-            let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white)))
+            let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
             let loadableSendButton = LoadableButton(button: sendButton)
 
             bag += loadableSendButton.onTapSignal.onValue { _ in

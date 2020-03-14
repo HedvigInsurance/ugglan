@@ -61,14 +61,14 @@ extension SelectedCharity: Viewable {
             }
 
             let infoContainer = UIView()
-            infoContainer.backgroundColor = .hedvig(.secondaryBackground)
+            infoContainer.backgroundColor = .secondaryBackground
             infoContainer.layer.cornerRadius = 8
             bag += infoContainer.applyShadow { _ in
                 UIView.ShadowProperties(
                     opacity: 0.2,
                     offset: CGSize(width: 0, height: 10),
                     radius: 8,
-                    color: UIColor.hedvig(.primaryShadowColor),
+                    color: UIColor.primaryShadowColor,
                     path: nil
                 )
             }

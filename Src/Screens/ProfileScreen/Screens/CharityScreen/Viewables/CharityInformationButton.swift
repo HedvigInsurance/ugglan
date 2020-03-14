@@ -27,7 +27,7 @@ extension CharityInformationButton: Viewable {
 
         let button = Button(
             title: String(key: .PROFILE_MY_CHARITY_INFO_BUTTON),
-            type: .iconTransparent(textColor: .hedvig(.primaryTintColor), icon: .left(image: Asset.infoPurple.image, width: 20))
+            type: .iconTransparent(textColor: .primaryTintColor, icon: .left(image: Asset.infoPurple.image, width: 20))
         )
 
         bag += view.add(button) { buttonView in

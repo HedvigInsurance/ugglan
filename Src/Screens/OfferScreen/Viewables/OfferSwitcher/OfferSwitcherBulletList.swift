@@ -31,7 +31,7 @@ extension OfferSwitcherBulletList {
             stackView.alignment = .center
 
             let circle = UIView()
-            circle.backgroundColor = .hedvig(.purple)
+            circle.backgroundColor = .purple
 
             bag += circle.didLayoutSignal.onValue {
                 circle.layer.cornerRadius = circle.frame.height / 2

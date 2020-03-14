@@ -86,7 +86,7 @@ struct ReferralsInvitation: Reusable {
 
             let textStyle = TextStyle(
                 font: HedvigFonts.circularStdBold!,
-                color: UIColor.hedvig(.white)
+                color: UIColor.white
             ).resized(to: 16).lineHeight(20).centerAligned
 
             if let name = invitation.name {

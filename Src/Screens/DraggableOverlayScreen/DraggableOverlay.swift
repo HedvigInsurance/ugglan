@@ -22,7 +22,7 @@ struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult:
     init(
         presentable: P,
         presentationOptions: PresentationOptions = .defaults,
-        backgroundColor: UIColor = .hedvig(.secondaryBackground),
+        backgroundColor: UIColor = .secondaryBackground,
         adjustsToKeyboard: Bool = true
     ) {
         self.presentable = presentable
@@ -63,7 +63,7 @@ extension DraggableOverlay: Presentable {
         }
 
         let dimmingView = UIView()
-        dimmingView.backgroundColor = UIColor.hedvig(.black)
+        dimmingView.backgroundColor = UIColor.black
         dimmingView.alpha = 0
 
         let dimmingViewTap = UITapGestureRecognizer()
@@ -300,7 +300,7 @@ extension DraggableOverlay: Presentable {
         }
 
         let handleView = UIView()
-        handleView.backgroundColor = .hedvig(.transparent)
+        handleView.backgroundColor = .transparent
         handleView.translatesAutoresizingMaskIntoConstraints = true
 
         overlay.addSubview(handleView)

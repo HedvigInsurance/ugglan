@@ -84,7 +84,7 @@ extension TypingIndicator: Viewable {
         let bag = DisposeBag()
 
         let bubble = UIView()
-        bubble.backgroundColor = .hedvig(.secondaryBackground)
+        bubble.backgroundColor = .secondaryBackground
 
         let typingView = UIStackView()
         typingView.spacing = 5

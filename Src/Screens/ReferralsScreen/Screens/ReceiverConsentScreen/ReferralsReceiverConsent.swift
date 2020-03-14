@@ -33,16 +33,16 @@ extension ReferralsReceiverConsent: Presentable {
         let viewController = UIViewController()
 
         let view = UIView()
-        view.backgroundColor = .hedvig(.secondaryBackground)
+        view.backgroundColor = .secondaryBackground
 
         let acceptDiscountButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
-            type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
         )
 
         let declineButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
-            type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .hedvig(.offBlack))
+            type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack)
         )
 
         let content = ImageTextAction<ReferralsReceiverConsentResult>(

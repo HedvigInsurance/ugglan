@@ -31,7 +31,7 @@ extension OfferCoverageMe: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .hedvig(.secondaryBackground)
+        containerView.backgroundColor = .secondaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -60,7 +60,7 @@ extension OfferCoverageMe: Viewable {
         let titleLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_TITLE), style: .rowTitleBold)
         bag += stackView.addArranged(titleLabel)
 
-        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.hedvig(.tertiaryText)))
+        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_PERSONAL_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.tertiaryText))
         bag += stackView.addArranged(descriptionLabel)
 
         let perilCollection = PerilCollection(
@@ -70,8 +70,8 @@ extension OfferCoverageMe: Viewable {
         bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.arrangedPerilCategories.me?.fragments.perilCategoryFragment }.bindTo(perilCollection.perilsDataSignal)
         bag += stackView.addArranged(perilCollection)
 
-        bag += outerView.addArranged(Blob(color: .hedvig(.primaryBackground), position: .top)) { blobView in
-            blobView.backgroundColor = .hedvig(.secondaryBackground)
+        bag += outerView.addArranged(Blob(color: .primaryBackground, position: .top)) { blobView in
+            blobView.backgroundColor = .secondaryBackground
         }
 
         return (outerView, bag)

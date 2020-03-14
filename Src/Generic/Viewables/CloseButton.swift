@@ -51,7 +51,7 @@ extension CloseButton: Viewable {
         )
 
         let icon = Icon(icon: Asset.close.image, iconWidth: 15)
-        icon.tintColor = .hedvig(.navigationItemMutedTintColor)
+        icon.tintColor = .navigationItemMutedTintColor
         button.addSubview(icon)
 
         icon.snp.makeConstraints { make in

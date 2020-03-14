@@ -131,13 +131,13 @@ extension CommonClaimCard: Viewable {
                 return getColor(color: color)
             }
 
-            return UIColor.hedvig(.primaryTintColor)
+            return UIColor.primaryTintColor
         }
 
         let contentView = UIControl()
         bag += controlIsEnabledSignal.atOnce().bindTo(contentView, \.isEnabled)
         bag += backgroundStateSignal.atOnce().map {
-            $0 == .normal ? UIColor.hedvig(.secondaryBackground) : backgroundColorFromData()
+            $0 == .normal ? UIColor.secondaryBackground : backgroundColorFromData()
         }.bindTo(contentView, \.backgroundColor)
         bag += cornerRadiusSignal.atOnce().bindTo(contentView, \.layer.cornerRadius)
 
@@ -148,7 +148,7 @@ extension CommonClaimCard: Viewable {
                 opacity: self.shadowOpacitySignal.value,
                 offset: CGSize(width: 0, height: 16),
                 radius: 30,
-                color: .hedvig(.primaryShadowColor),
+                color: .primaryShadowColor,
                 path: nil
             )
         }
@@ -161,7 +161,7 @@ extension CommonClaimCard: Viewable {
 
         let expandedHeaderView = UIView()
         bag += backgroundStateSignal.atOnce().map {
-            $0 == .normal ? UIColor.hedvig(.white) : backgroundColorFromData()
+            $0 == .normal ? UIColor.white : backgroundColorFromData()
         }.bindTo(expandedHeaderView, \.backgroundColor)
         expandedHeaderView.alpha = 0
 
@@ -331,7 +331,7 @@ extension CommonClaimCard: Viewable {
         if includeButton {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-                type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
             )
 
             bag += claimButton.onTapSignal.onValue {

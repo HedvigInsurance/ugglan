@@ -34,9 +34,9 @@ extension ReferralsCode: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = .hedvig(.secondaryBackground)
+        view.backgroundColor = .secondaryBackground
         bag += view.applyBorderColor { _ in
-            .hedvig(.primaryBorder)
+            .primaryBorder
         }
         view.layer.borderWidth = 1
 
@@ -70,7 +70,7 @@ extension ReferralsCode: Viewable {
 
         let codeTextStyle = TextStyle(
             font: HedvigFonts.circularStdBold!,
-            color: UIColor.hedvig(.primaryTintColor)
+            color: UIColor.primaryTintColor
         ).centerAligned.lineHeight(2.4).resized(to: 16)
 
         let codeLabelWrapper = UIView()

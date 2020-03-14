@@ -34,7 +34,7 @@ extension Offer {
 
     static var primaryAccentColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .hedvig(.primaryBackground) : .hedvig(.midnight500)
+            trait.userInterfaceStyle == .dark ? .primaryBackground : .midnight500
         })
     }
 }
@@ -57,7 +57,7 @@ extension Offer {
 
         let chatButton = UIBarButtonItem()
         chatButton.image = Asset.chat.image
-        chatButton.tintColor = .hedvig(.white)
+        chatButton.tintColor = .white
 
         bag += chatButton.onValue { _ in
             bag += viewController.present(
@@ -75,8 +75,8 @@ extension Offer {
         let signButton = Button(
             title: String(key: .OFFER_BANKID_SIGN_BUTTON),
             type: .tinyIcon(
-                backgroundColor: .hedvig(.white),
-                textColor: .hedvig(.black),
+                backgroundColor: .white,
+                textColor: .black,
                 icon: .right(image: Asset.bankIdLogo.image, width: 13)
             )
         )
@@ -237,8 +237,8 @@ extension Offer: Presentable {
         let button = Button(
             title: String(key: .OFFER_SIGN_BUTTON),
             type: .standardIcon(
-                backgroundColor: .hedvig(.white),
-                textColor: .hedvig(.offBlack),
+                backgroundColor: .white,
+                textColor: .offBlack,
                 icon: .right(image: Asset.bankIdLogo.image, width: 20)
             )
         )
@@ -253,7 +253,7 @@ extension Offer: Presentable {
                     opacity: 0.1,
                     offset: CGSize(width: 0, height: 2),
                     radius: 5,
-                    color: UIColor.hedvig(.primaryShadowColor),
+                    color: UIColor.primaryShadowColor,
                     path: nil
                 )
             }

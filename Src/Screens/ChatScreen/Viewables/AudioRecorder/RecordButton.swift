@@ -28,12 +28,12 @@ extension RecordButton: Viewable {
         control.layer.borderWidth = 3
 
         bag += control.applyBorderColor { _ -> UIColor in
-            UIColor.hedvig(.primaryBorder)
+            UIColor.primaryBorder
         }
 
         let recordIcon = UIView()
         recordIcon.isUserInteractionEnabled = false
-        recordIcon.backgroundColor = .hedvig(.pink)
+        recordIcon.backgroundColor = .pink
         control.addSubview(recordIcon)
 
         let touchUpInside = control.signal(for: .touchUpInside)

@@ -26,7 +26,7 @@ extension OfferChat: Presentable {
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
-        restartButton.tintColor = .hedvig(.darkGray)
+        restartButton.tintColor = .darkGray
 
         bag += restartButton.onValue { _ in
             let alert = Alert(

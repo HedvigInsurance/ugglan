@@ -16,45 +16,45 @@ extension DefaultStyling {
     static func installCustom() {
         Button.font = HedvigFonts.circularStdBook!
         
-        ListTableView.appearance().backgroundColor = .hedvig(.primaryBackground)
+        ListTableView.appearance().backgroundColor = .primaryBackground
 
         for view in [FormScrollView.self, FormTableView.self] {
             view.appearance(
                 for: UITraitCollection(userInterfaceIdiom: .pad)
-            ).backgroundColor = .hedvig(.primaryBackground)
-            view.appearance().backgroundColor = .hedvig(.primaryBackground)
+            ).backgroundColor = .primaryBackground
+            view.appearance().backgroundColor = .primaryBackground
         }
 
         UIRefreshControl.appearance().tintColor = UIColor(dynamic: { trait in
-            trait.userInterfaceStyle == .dark ? .hedvig(.white) : .hedvig(.primaryTintColor)
+            trait.userInterfaceStyle == .dark ? .white : .primaryTintColor
         })
 
-        UINavigationBar.appearance().tintColor = .hedvig(.primaryTintColor)
+        UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.hedvig(.primaryText),
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
         ]
         UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.hedvig(.primaryText),
+            NSAttributedString.Key.foregroundColor: UIColor.primaryText,
             NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
         ]
 
         if #available(iOS 13.0, *) {
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
-            ).shadowImage = UIColor.hedvig(.transparent).as1ptImage()
+            ).shadowImage = UIColor.transparent.as1ptImage()
 
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).shadowImage = UIColor.hedvig(.transparent).as1ptImage()
+            ).shadowImage = UIColor.transparent.as1ptImage()
         } else {
-            UINavigationBar.appearance().shadowImage = UIColor.hedvig(.transparent).as1ptImage()
+            UINavigationBar.appearance().shadowImage = UIColor.transparent.as1ptImage()
         }
 
-        UINavigationBar.appearance().barTintColor = UIColor.hedvig(.primaryBackground)
+        UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
 
-        UITabBar.appearance().unselectedItemTintColor = .hedvig(.disabledTintColor)
-        UITabBar.appearance().tintColor = .hedvig(.primaryTintColor)
+        UITabBar.appearance().unselectedItemTintColor = .disabledTintColor
+        UITabBar.appearance().tintColor = .primaryTintColor
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
@@ -69,7 +69,7 @@ extension DefaultStyling {
             for: .selected
         )
 
-        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .hedvig(.primaryTintColor)
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .primaryTintColor
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
@@ -85,30 +85,30 @@ extension DefaultStyling {
             for: .highlighted
         )
 
-        UIBarButtonItem.appearance().tintColor = .hedvig(.primaryTintColor)
+        UIBarButtonItem.appearance().tintColor = .primaryTintColor
 
         let barButtonItemAppearance = UIBarButtonItem.appearance()
         barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .normal)
         barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .highlighted)
 
-        UITabBar.appearance().barTintColor = UIColor.hedvig(.primaryBackground)
+        UITabBar.appearance().barTintColor = UIColor.primaryBackground
 
         if #available(iOS 13.0, *) {
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
-            ).backgroundImage = UIColor.hedvig(.almostBlack).as1ptImage()
+            ).backgroundImage = UIColor.almostBlack.as1ptImage()
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).backgroundImage = UIColor.hedvig(.offWhite).as1ptImage()
+            ).backgroundImage = UIColor.offWhite.as1ptImage()
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
-            ).shadowImage = UIColor.hedvig(.almostBlack).as1ptImage()
+            ).shadowImage = UIColor.almostBlack.as1ptImage()
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).shadowImage = UIColor.hedvig(.offWhite).as1ptImage()
+            ).shadowImage = UIColor.offWhite.as1ptImage()
 
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
@@ -124,8 +124,8 @@ extension DefaultStyling {
                 for: UITraitCollection(userInterfaceStyle: .dark)
             ).backIndicatorTransitionMaskImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
         } else {
-            UITabBar.appearance().backgroundImage = UIColor.hedvig(.primaryBackground).as1ptImage()
-            UITabBar.appearance().shadowImage = UIColor.hedvig(.primaryBorder).as1ptImage()
+            UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
+            UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
             UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
             UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
         }
@@ -146,7 +146,7 @@ extension DefaultStyling {
             text: .default,
             placeholder: .default,
             disabled: .default,
-            cursorColor: .hedvig(.turquoise)
+            cursorColor: .turquoise
         ),
         detailText: .default,
         titleSubtitle: .default,

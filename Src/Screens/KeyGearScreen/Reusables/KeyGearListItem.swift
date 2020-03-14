@@ -68,7 +68,7 @@ extension KeyGearListItem: Reusable {
         let view = UIControl()
         view.layer.cornerRadius = 8
         view.clipsToBounds = true
-        view.backgroundColor = .hedvig(.midnight500)
+        view.backgroundColor = .midnight500
 
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = false
@@ -80,7 +80,7 @@ extension KeyGearListItem: Reusable {
         }
 
         let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.hedvig(.black).withAlphaComponent(0).cgColor, UIColor.hedvig(.black).withAlphaComponent(0.25).cgColor]
+        gradient.colors = [UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.25).cgColor]
         gradient.locations = [0, 1]
 
         let gradientView = UIView()
@@ -96,7 +96,7 @@ extension KeyGearListItem: Reusable {
             make.leading.equalTo(10)
         }
 
-        let label = UILabel(value: "", style: TextStyle.headlineSmallNegSmallNegCenter.colored(.hedvig(.white)))
+        let label = UILabel(value: "", style: TextStyle.headlineSmallNegSmallNegCenter.colored(.white))
         view.addSubview(label)
 
         label.snp.makeConstraints { make in
@@ -118,7 +118,7 @@ extension KeyGearListItem: Reusable {
             }
 
             bag += view.applyBorderColor { _ -> UIColor in
-                UIColor.hedvig(.primaryBorder)
+                UIColor.primaryBorder
             }
 
             label.value = self.name ?? self.category.name

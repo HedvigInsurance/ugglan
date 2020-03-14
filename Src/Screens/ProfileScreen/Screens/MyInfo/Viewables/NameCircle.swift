@@ -37,7 +37,7 @@ extension NameCircle: Viewable {
         let nameCircle = CircleLabel(
             labelText: nameCircleText,
             backgroundColor: UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .hedvig(.secondaryBackground) : .hedvig(.purple)
+                trait.userInterfaceStyle == .dark ? .secondaryBackground : .purple
             })
         )
 

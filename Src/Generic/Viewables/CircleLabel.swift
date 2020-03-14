@@ -17,7 +17,7 @@ struct CircleLabel {
     let backgroundColor: UIColor?
     let textColor: UIColor?
 
-    init(labelText: DynamicString, backgroundColor: UIColor? = .lightGray, textColor: UIColor? = .hedvig(.white)) {
+    init(labelText: DynamicString, backgroundColor: UIColor? = .lightGray, textColor: UIColor? = .white) {
         self.labelText = labelText
         self.backgroundColor = backgroundColor
         self.textColor = textColor
@@ -48,7 +48,7 @@ extension CircleLabel: Viewable {
                 opacity: 0.2,
                 offset: CGSize(width: 10, height: 10),
                 radius: 16,
-                color: UIColor.hedvig(.primaryShadowColor),
+                color: UIColor.primaryShadowColor,
                 path: nil
             )
         }

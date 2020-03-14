@@ -31,7 +31,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .hedvig(.secondaryBackground)
+        cardContainer.backgroundColor = .secondaryBackground
         cardContainer.layer.cornerRadius = 8
 
         view.addArrangedSubview(cardContainer)
@@ -63,7 +63,7 @@ struct EmergencyAction: Reusable, SignalProvider {
                     opacity: 0.05,
                     offset: CGSize(width: 0, height: 16),
                     radius: 30,
-                    color: .hedvig(.primaryShadowColor),
+                    color: .primaryShadowColor,
                     path: nil
                 )
             }
@@ -73,7 +73,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             let descriptionLabel = MultilineLabel(value: action.description, style: .blockRowDescription)
             bag += contentView.addArranged(descriptionLabel)
 
-            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white)))
+            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical
@@ -184,7 +184,7 @@ extension EmergencyActions: Viewable {
         ]
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .hedvig(.primaryBackground)
+        tableKit.view.backgroundColor = .primaryBackground
 
         return (tableKit.view, bag)
     }

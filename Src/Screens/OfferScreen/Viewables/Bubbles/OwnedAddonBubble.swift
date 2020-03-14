@@ -29,7 +29,7 @@ extension OwnedAddonBubble: Viewable {
             content: content,
             width: 135,
             height: 135,
-            backgroundColor: .hedvig(.purple)
+            backgroundColor: .purple
         )
 
         return (offerBubble, bag)

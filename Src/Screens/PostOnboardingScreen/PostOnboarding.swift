@@ -30,7 +30,7 @@ struct PostOnboarding {
 
         let paymentButton = Button(
             title: String(key: .ONBOARDING_CONNECT_DD_CTA),
-            type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
         )
 
         bag += paymentButton.onTapSignal.onValue { _ in
@@ -49,12 +49,12 @@ struct PostOnboarding {
 
         let pushNotificationsDoButton = Button(
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
         )
 
         let pushNotificationsSkipButton = Button(
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
-            type: .transparent(textColor: .hedvig(.pink))
+            type: .transparent(textColor: .pink)
         )
 
         bag += pushNotificationsDoButton.onTapSignal.onValue { _ in

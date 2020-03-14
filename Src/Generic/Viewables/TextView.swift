@@ -70,15 +70,15 @@ extension TextView: Viewable {
 
         bag += view.traitCollectionSignal.atOnce().onValue { trait in
             if trait.userInterfaceStyle == .dark {
-                view.backgroundColor = UIColor.hedvig(.secondaryBackground)
+                view.backgroundColor = UIColor.secondaryBackground
             } else {
-                view.backgroundColor = UIColor.hedvig(.darkGray).lighter(amount: 0.3)
+                view.backgroundColor = UIColor.darkGray.lighter(amount: 0.3)
             }
         }
 
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
-            trait.userInterfaceStyle == .dark ? .hedvig(.offBlack) : .lightGray
+            trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
         }
 
         bag += view.didLayoutSignal.onValue { _ in
@@ -97,7 +97,7 @@ extension TextView: Viewable {
         }
 
         let textView = UITextView()
-        textView.tintColor = .hedvig(.primaryTintColor)
+        textView.tintColor = .primaryTintColor
         textView.font = HedvigFonts.circularStdBook?.withSize(14)
         textView.backgroundColor = .clear
 
@@ -144,7 +144,7 @@ extension TextView: Viewable {
 
         paddingView.addArrangedSubview(textView)
 
-        let placeholderLabel = UILabel(value: placeholder.value, style: TextStyle.body.colored(.hedvig(.darkGray)).resized(to: 14))
+        let placeholderLabel = UILabel(value: placeholder.value, style: TextStyle.body.colored(.darkGray).resized(to: 14))
         paddingView.addSubview(placeholderLabel)
 
         bag += placeholder.map { Optional($0) }.bindTo(

@@ -19,7 +19,7 @@ extension AddPhotoButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<UIControl>) {
         let bag = DisposeBag()
         let view = UIControl()
-        view.backgroundColor = .hedvig(.secondaryTintColor)
+        view.backgroundColor = .secondaryTintColor
         view.accessibilityLabel = String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON)
 
         view.layer.cornerRadius = 8
@@ -35,7 +35,7 @@ extension AddPhotoButton: Viewable {
         contentContainer.isUserInteractionEnabled = false
 
         contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto.image, iconWidth: 40))
-        bag += contentContainer.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON), style: TextStyle.body.colored(.hedvig(.primaryTintColor))))
+        bag += contentContainer.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON), style: TextStyle.body.colored(.primaryTintColor)))
 
         view.addSubview(contentContainer)
 
@@ -72,11 +72,11 @@ extension AddPhotoButton: Viewable {
         }
 
         bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-            view.backgroundColor = UIColor.hedvig(.secondaryTintColor).darkened(amount: 0.05)
+            view.backgroundColor = UIColor.secondaryTintColor.darkened(amount: 0.05)
         }
 
         bag += view.delayedTouchCancel(delay: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-            view.backgroundColor = .hedvig(.secondaryTintColor)
+            view.backgroundColor = .secondaryTintColor
         }
 
         return (view, view.trackedTouchUpInsideSignal.hold(bag).map { _ -> UIControl in view })

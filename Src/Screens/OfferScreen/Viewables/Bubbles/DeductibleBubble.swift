@@ -35,7 +35,7 @@ extension DeductibleBubble: Viewable {
             content: content,
             width: 90,
             height: 90,
-            backgroundColor: .hedvig(.turquoise)
+            backgroundColor: .turquoise
         )
 
         return (offerBubble, bag)

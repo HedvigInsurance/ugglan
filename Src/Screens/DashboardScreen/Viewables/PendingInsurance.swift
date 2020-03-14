@@ -69,8 +69,8 @@ extension PendingInsurance: Viewable {
             bag += stackView.addArranged(view)
 
             let buttonContainer = UIView()
-            let openButton = Button(title: String(key: .DASHBOARD_PENDING_MORE_INFO), type: .standardSmall(backgroundColor: .lightGray, textColor: .hedvig(.offBlack)))
-            let closeButton = Button(title: String(key: .DASHBOARD_PENDING_LESS_INFO), type: .standardSmall(backgroundColor: .lightGray, textColor: .hedvig(.offBlack)))
+            let openButton = Button(title: String(key: .DASHBOARD_PENDING_MORE_INFO), type: .standardSmall(backgroundColor: .lightGray, textColor: .offBlack))
+            let closeButton = Button(title: String(key: .DASHBOARD_PENDING_LESS_INFO), type: .standardSmall(backgroundColor: .lightGray, textColor: .offBlack))
 
             let isOpenSignal = view.isOpenSignal.atOnce()
 

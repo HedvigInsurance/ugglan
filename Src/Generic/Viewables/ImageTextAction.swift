@@ -23,7 +23,7 @@ extension ImageTextAction: Viewable {
     func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .hedvig(.primaryBackground)
+        scrollView.backgroundColor = .primaryBackground
 
         let containerView = UIStackView()
         containerView.axis = .horizontal
@@ -96,8 +96,8 @@ extension ImageTextAction: Viewable {
 
         func setGradientColors() {
             gradient.colors = [
-                UIColor.hedvig(.primaryBackground).withAlphaComponent(0.2).cgColor,
-                UIColor.hedvig(.primaryBackground).cgColor,
+                UIColor.primaryBackground.withAlphaComponent(0.2).cgColor,
+                UIColor.primaryBackground.cgColor,
             ]
         }
 

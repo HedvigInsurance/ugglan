@@ -30,7 +30,7 @@ extension OfferCoverageTerms: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .hedvig(.primaryBackground)
+        containerView.backgroundColor = .primaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -51,7 +51,7 @@ extension OfferCoverageTerms: Viewable {
         let image = UIImageView(image: Asset.offerTerms.image)
         image.contentMode = .scaleAspectFit
         image.tintColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .hedvig(.white) : .hedvig(.black)
+            trait.userInterfaceStyle == .dark ? .white : .black
         })
 
         image.snp.makeConstraints { make in
@@ -69,7 +69,7 @@ extension OfferCoverageTerms: Viewable {
         let notInsuredAtOtherCompanyBlob = WhenEnabled(insuredAtOtherCompanySignal.map { !$0 }, {
             Blob(color: Offer.primaryAccentColor, position: .top)
         }) { view in
-            view.backgroundColor = .hedvig(.primaryBackground)
+            view.backgroundColor = .primaryBackground
         }
 
         bag += outerView.addArranged(notInsuredAtOtherCompanyBlob)

@@ -32,7 +32,7 @@ extension OnboardingChat: Presentable {
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
-        settingsButton.tintColor = .hedvig(.navigationItemMutedTintColor)
+        settingsButton.tintColor = .navigationItemMutedTintColor
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
@@ -50,7 +50,7 @@ extension OnboardingChat: Presentable {
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
-        restartButton.tintColor = .hedvig(.navigationItemMutedTintColor)
+        restartButton.tintColor = .navigationItemMutedTintColor
 
         bag += restartButton.onValue { _ in
             let alert = Alert(

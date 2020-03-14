@@ -22,13 +22,13 @@ extension String {
     // gives a color for the current string value
     var hedvigColor: UIColor {
         let colors = [
-            UIColor.hedvig(.purple),
-            UIColor.hedvig(.darkPurple),
-            UIColor.hedvig(.turquoise),
-            UIColor.hedvig(.darkGreen),
-            UIColor.hedvig(.pink),
-            UIColor.hedvig(.darkPink),
-            UIColor.hedvig(.yellow),
+            UIColor.purple,
+            UIColor.darkPurple,
+            UIColor.turquoise,
+            UIColor.darkGreen,
+            UIColor.pink,
+            UIColor.darkPink,
+            UIColor.yellow,
         ]
 
         return colors[abs(deterministicHash) % colors.count]

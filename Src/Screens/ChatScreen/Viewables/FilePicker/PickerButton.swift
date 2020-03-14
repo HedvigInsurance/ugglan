@@ -16,16 +16,16 @@ struct PickerButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<Void>) {
         let bag = DisposeBag()
         let button = UIControl()
-        button.backgroundColor = .hedvig(.secondaryBackground)
+        button.backgroundColor = .secondaryBackground
         bag += button.applyBorderColor { _ in
-            .hedvig(.primaryBorder)
+            .primaryBorder
         }
         button.layer.borderWidth = UIScreen.main.hairlineWidth
         button.layer.cornerRadius = 5
 
         let imageView = UIImageView()
         imageView.image = icon
-        imageView.tintColor = .hedvig(.primaryText)
+        imageView.tintColor = .primaryText
 
         button.addSubview(imageView)
 

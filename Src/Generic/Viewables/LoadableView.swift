@@ -31,7 +31,7 @@ extension LoadableView: Viewable {
 
         let loadingIndicator = UIActivityIndicatorView(style: .white)
         loadingIndicator.alpha = 0
-        loadingIndicator.color = .hedvig(.purple)
+        loadingIndicator.color = .purple
 
         containerView.addSubview(loadingIndicator)
 

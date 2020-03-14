@@ -36,8 +36,8 @@ extension WelcomePagerProceedButton: Viewable {
 
         func setButtonStyle(isMorePages: Bool) {
             button.type.value = isMorePages ? ButtonType.standard(backgroundColor: UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .hedvig(.primaryTintColor) : .hedvig(.blackPurple)
-            }), textColor: .hedvig(.white)) : ButtonType.standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                trait.userInterfaceStyle == .dark ? .primaryTintColor : .blackPurple
+            }), textColor: .white) : ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white)
         }
 
         func setButtonTitle(isMorePages: Bool) {

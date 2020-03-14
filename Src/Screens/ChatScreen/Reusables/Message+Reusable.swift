@@ -143,7 +143,7 @@ extension Message: Reusable {
         spacingContainer.addArrangedSubview(bubbleContainer)
 
         let bubble = UIView()
-        bubble.backgroundColor = .hedvig(.primaryTintColor)
+        bubble.backgroundColor = .primaryTintColor
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
@@ -166,7 +166,7 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = .hedvig(.primaryTintColor)
+        editButton.backgroundColor = .primaryTintColor
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
@@ -271,13 +271,13 @@ extension Message: Reusable {
 
                 spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                let messageTextColor: UIColor = message.fromMyself ? .hedvig(.white) : .hedvig(.primaryText)
+                let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
 
                 switch message.type {
                 case .image(_), .video:
-                    bubble.backgroundColor = .hedvig(.transparent)
+                    bubble.backgroundColor = .transparent
                 default:
-                    bubble.backgroundColor = message.fromMyself ? .hedvig(.primaryTintColor) : .hedvig(.secondaryBackground)
+                    bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
                 }
 
                 switch message.type {
@@ -341,7 +341,7 @@ extension Message: Reusable {
                     }
 
                 case let .gif(url):
-                    bubble.backgroundColor = .hedvig(.transparent)
+                    bubble.backgroundColor = .transparent
                     let imageViewContainer = UIView()
 
                     let imageView = UIImageView()

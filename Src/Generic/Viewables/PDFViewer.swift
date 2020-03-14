@@ -37,7 +37,7 @@ extension PDFViewer: Viewable {
         bag += dataFetchSignal.bindTo(dataReadWriteSignal)
 
         let pdfView = PDFView()
-        pdfView.backgroundColor = .hedvig(.primaryBackground)
+        pdfView.backgroundColor = .primaryBackground
         pdfView.maxScaleFactor = 3
         pdfView.autoScales = true
 
@@ -52,7 +52,7 @@ extension PDFViewer: Viewable {
 
         let loadingView = UIView()
         loadingView.alpha = 1
-        loadingView.backgroundColor = .hedvig(.primaryBackground)
+        loadingView.backgroundColor = .primaryBackground
         pdfView.addSubview(loadingView)
 
         loadingView.snp.makeConstraints { make in
@@ -63,7 +63,7 @@ extension PDFViewer: Viewable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
-        activityIndicator.tintColor = .hedvig(.primaryTintColor)
+        activityIndicator.tintColor = .primaryTintColor
 
         loadingView.addSubview(activityIndicator)
 

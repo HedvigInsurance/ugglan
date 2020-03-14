@@ -20,13 +20,13 @@ extension OfferCoverageHeader: Viewable {
 
         let bag = DisposeBag()
 
-        bag += stackView.addArranged(Blob(color: .hedvig(.secondaryBackground), position: .top)) { view in
+        bag += stackView.addArranged(Blob(color: .secondaryBackground, position: .top)) { view in
             bag += view.applyShadow { _ in
                 UIView.ShadowProperties(
                     opacity: 0.1,
                     offset: CGSize(width: 0, height: 0),
                     radius: 20,
-                    color: .hedvig(.primaryShadowColor),
+                    color: .primaryShadowColor,
                     path: nil
                 )
             }
@@ -34,7 +34,7 @@ extension OfferCoverageHeader: Viewable {
 
         let labelContainer = UIView()
         stackView.addArrangedSubview(labelContainer)
-        labelContainer.backgroundColor = .hedvig(.secondaryBackground)
+        labelContainer.backgroundColor = .secondaryBackground
 
         let labelStackView = UIStackView()
         labelStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 10)

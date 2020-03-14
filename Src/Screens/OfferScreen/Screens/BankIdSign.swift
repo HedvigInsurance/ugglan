@@ -66,7 +66,7 @@ extension BankIdSign: Presentable {
 
         let imageView = UIImageView()
         imageView.image = Asset.bankIdLogo.image
-        imageView.tintColor = .hedvig(.primaryText)
+        imageView.tintColor = .primaryText
 
         iconContainerView.addSubview(imageView)
 
@@ -85,7 +85,7 @@ extension BankIdSign: Presentable {
         closeButtonContainer.animationSafeIsHidden = true
         containerView.addArrangedSubview(closeButtonContainer)
 
-        let closeButton = Button(title: "Stäng", type: .standard(backgroundColor: .hedvig(.purple), textColor: .hedvig(.white)))
+        let closeButton = Button(title: "Stäng", type: .standard(backgroundColor: .purple, textColor: .white))
         bag += closeButtonContainer.addArranged(closeButton)
 
         let statusSignal = client.subscribe(

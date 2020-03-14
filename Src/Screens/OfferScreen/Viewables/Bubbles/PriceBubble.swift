@@ -37,7 +37,7 @@ extension PriceBubble: Viewable {
 
         let bubbleView = UIView()
         containerView.addArrangedSubview(bubbleView)
-        bubbleView.backgroundColor = .hedvig(.secondaryBackground)
+        bubbleView.backgroundColor = .secondaryBackground
 
         let stackView = CenterAllStackView()
         stackView.axis = .vertical
@@ -100,7 +100,7 @@ extension PriceBubble: Viewable {
         bag += ease.addSpring(tension: 300, damping: 100, mass: 2) { number in
             if number != 0 {
                 let textStyle = discountSignal.value > 0 ?
-                    TextStyle.largePriceBubbleTitle.colored(.hedvig(.pink)) :
+                    TextStyle.largePriceBubbleTitle.colored(.pink) :
                     TextStyle.largePriceBubbleTitle
                 priceLabel.styledText = StyledText(
                     text: String(Int(number)),

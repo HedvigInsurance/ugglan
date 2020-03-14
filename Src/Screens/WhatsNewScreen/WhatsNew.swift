@@ -43,7 +43,7 @@ extension WhatsNew: Presentable {
         viewController.displayableTitle = String(key: .FEATURE_PROMO_TITLE)
 
         let view = UIView()
-        view.backgroundColor = .hedvig(.primaryBackground)
+        view.backgroundColor = .primaryBackground
 
         let containerView = UIStackView()
         containerView.axis = .vertical
@@ -96,7 +96,7 @@ extension WhatsNew: Presentable {
         }
 
         let proceedButton = ProceedButton(
-            button: Button(title: "", type: .standard(backgroundColor: .hedvig(.blackPurple), textColor: .hedvig(.white)))
+            button: Button(title: "", type: .standard(backgroundColor: .blackPurple, textColor: .white))
         )
 
         bag += controlsWrapper.addArranged(proceedButton)

@@ -19,7 +19,7 @@ extension SignalProvider {
         overlayView.isLayoutMarginsRelativeArrangement = true
         overlayView.backgroundColor = view.backgroundColor
 
-        let loader = LoadingIndicator(showAfter: after, color: .hedvig(.purple))
+        let loader = LoadingIndicator(showAfter: after, color: .purple)
         bag += overlayView.addArranged(loader)
 
         view.addSubview(overlayView)

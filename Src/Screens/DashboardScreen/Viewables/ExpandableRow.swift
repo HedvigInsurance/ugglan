@@ -46,19 +46,19 @@ extension ExpandableRow: Viewable {
         let containerView = UIView()
 
         if !transparent {
-            containerView.backgroundColor = .hedvig(.secondaryBackground)
+            containerView.backgroundColor = .secondaryBackground
             containerView.layer.cornerRadius = 15
             bag += containerView.applyShadow { _ -> UIView.ShadowProperties in
                 UIView.ShadowProperties(
                     opacity: 0.15,
                     offset: CGSize(width: 0, height: 6),
                     radius: 8,
-                    color: UIColor.hedvig(.primaryShadowColor),
+                    color: UIColor.primaryShadowColor,
                     path: nil
                 )
             }
         } else {
-            containerView.backgroundColor = .hedvig(.transparent)
+            containerView.backgroundColor = .transparent
         }
 
         let clippingView = UIView()
@@ -78,7 +78,7 @@ extension ExpandableRow: Viewable {
         expandableStackView.addArrangedSubview(contentWrapperView)
 
         if showDivider {
-            let divider = Divider(backgroundColor: .hedvig(.primaryBorder))
+            let divider = Divider(backgroundColor: .primaryBorder)
             bag += expandableStackView.addArranged(divider) { dividerView in
                 dividerView.alpha = isOpenSignal.value ? 1 : 0
 

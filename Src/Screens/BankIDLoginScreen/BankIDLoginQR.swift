@@ -22,7 +22,7 @@ extension BankIDLoginQR: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .hedvig(.secondaryBackground)
+        view.backgroundColor = .secondaryBackground
 
         viewController.view = view
         viewController.title = String(key: .BANKID_MISSING_TITLE)
@@ -34,7 +34,7 @@ extension BankIDLoginQR: Presentable {
             target: nil,
             action: nil
         )
-        moreBarButtonItem.tintColor = .hedvig(.navigationItemMutedTintColor)
+        moreBarButtonItem.tintColor = .navigationItemMutedTintColor
 
         bag += moreBarButtonItem.onValue { _ in
             let alert = Alert<Void>(actions: [
@@ -136,8 +136,8 @@ extension BankIDLoginQR: Presentable {
             guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else { return }
             let processedImage = UIImage(cgImage: cgImage)
 
-            imageView.tintColor = .hedvig(.primaryText)
-            imageView.backgroundColor = UIColor.hedvig(.secondaryBackground)
+            imageView.tintColor = .primaryText
+            imageView.backgroundColor = UIColor.secondaryBackground
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
 

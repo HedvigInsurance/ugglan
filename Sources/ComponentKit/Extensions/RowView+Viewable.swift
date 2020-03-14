@@ -10,10 +10,6 @@ import Form
 import Foundation
 import UIKit
 
-struct Fish {
-    let color: UIColor
-}
-
 public extension RowView {
     func append<V: Viewable, View: UIView>(
         _ viewable: V,

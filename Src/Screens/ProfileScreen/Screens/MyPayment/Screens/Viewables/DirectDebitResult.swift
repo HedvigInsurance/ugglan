@@ -163,7 +163,7 @@ extension DirectDebitResult: Viewable {
             if self.type.isSuccess {
                 let continueButton = Button(
                     title: self.type.mainButtonText,
-                    type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                    type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
                 )
 
                 bag += continueButton.onTapSignal.onValue { _ in
@@ -177,7 +177,7 @@ extension DirectDebitResult: Viewable {
             } else {
                 let retryButton = Button(
                     title: self.type.mainButtonText,
-                    type: .standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white))
+                    type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
                 )
 
                 bag += retryButton.onTapSignal.onValue { _ in
@@ -197,7 +197,7 @@ extension DirectDebitResult: Viewable {
 
                 let skipButton = Button(
                     title: String(key: .ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER),
-                    type: .transparent(textColor: .hedvig(.pink))
+                    type: .transparent(textColor: .pink)
                 )
 
                 bag += skipButton.onTapSignal.onValue { _ in

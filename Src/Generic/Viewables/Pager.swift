@@ -65,7 +65,7 @@ extension Pager: Viewable {
             holdIn: bag
         )
 
-        collectionKit.view.backgroundColor = .hedvig(.transparent)
+        collectionKit.view.backgroundColor = .transparent
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.bounces = true
         collectionKit.view.showsHorizontalScrollIndicator = false

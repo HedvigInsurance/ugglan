@@ -31,7 +31,7 @@ extension OfferCoverageHome: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .hedvig(.secondaryBackground)
+        containerView.backgroundColor = .secondaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -66,7 +66,7 @@ extension OfferCoverageHome: Viewable {
             .map { StyledText(text: $0, style: .rowTitleBold) }
             .bindTo(titleLabel, \.styledTextSignal.value)
 
-        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_APARTMENT_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.hedvig(.tertiaryText)))
+        let descriptionLabel = MultilineLabel(value: String(key: .OFFER_APARTMENT_PROTECTION_DESCRIPTION), style: TextStyle.body.colored(.tertiaryText))
         bag += stackView.addArranged(descriptionLabel)
 
         let perilCollection = PerilCollection(

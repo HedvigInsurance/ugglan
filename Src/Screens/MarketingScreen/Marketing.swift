@@ -30,7 +30,7 @@ extension Marketing: Presentable {
         let bag = DisposeBag()
 
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.hedvig(.white)
+        containerView.backgroundColor = UIColor.white
         viewController.view = containerView
 
         ApplicationState.preserveState(.marketing)

@@ -14,7 +14,6 @@ import UIKit
 import Common
 import Space
 import Analytics
-import FeatureContracts
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -54,14 +53,14 @@ extension LoggedIn: Presentable {
 
         let bag = DisposeBag()
 
-        let contracts = Contracts()
+        let dashboard = Dashboard()
         let keyGear = KeyGearOverview()
         let claims = Claims()
         let referrals = Referrals()
         let profile = Profile()
 
-        let contractsPresentation = Presentation(
-            contracts,
+        let dashboardPresentation = Presentation(
+            dashboard,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
@@ -93,7 +92,7 @@ extension LoggedIn: Presentable {
         bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
             if features.contains(.keyGear) {
                 bag += tabBarController.presentTabs(
-                    contractsPresentation,
+                    dashboardPresentation,
                     keyGearPresentation,
                     claimsPresentation,
                     referralsPresentation,
@@ -101,7 +100,7 @@ extension LoggedIn: Presentable {
                 )
             } else {
                 bag += tabBarController.presentTabs(
-                    contractsPresentation,
+                    dashboardPresentation,
                     claimsPresentation,
                     referralsPresentation,
                     profilePresentation

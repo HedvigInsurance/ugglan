@@ -36,7 +36,7 @@ extension PerilInformation: Presentable {
 
         let containerView = UIStackView()
         containerView.spacing = 15
-        containerView.backgroundColor = UIColor.hedvig(.white)
+        containerView.backgroundColor = UIColor.white
         containerView.axis = .vertical
         containerView.alignment = .top
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)

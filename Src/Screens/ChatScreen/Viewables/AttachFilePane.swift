@@ -73,7 +73,7 @@ extension AttachFilePane: Viewable {
             view.layoutSuperviewsIfNeeded()
         })
 
-        view.backgroundColor = .hedvig(.purple)
+        view.backgroundColor = .purple
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -120,7 +120,7 @@ extension AttachFilePane: Viewable {
             header
         }
 
-        collectionKit.view.backgroundColor = .hedvig(.transparent)
+        collectionKit.view.backgroundColor = .transparent
 
         view.addArrangedSubview(collectionKit.view)
 

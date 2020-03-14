@@ -23,7 +23,7 @@ extension CampaignBubble: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let containerView = UIView()
-        containerView.backgroundColor = .hedvig(.pink)
+        containerView.backgroundColor = .pink
 
         bag += containerView.applyShadow { _ in
             OfferBubble.shadow
@@ -49,10 +49,10 @@ extension CampaignBubble: Viewable {
             containerView.layer.cornerRadius = view.frame.width / 2
         }
 
-        let titleLabel = UILabel(value: "", style: TextStyle.body.centerAligned.colored(.hedvig(.white)))
+        let titleLabel = UILabel(value: "", style: TextStyle.body.centerAligned.colored(.white))
         view.addArrangedSubview(titleLabel)
 
-        let subtitlelabel = UILabel(value: "", style: TextStyle.bodyBold.centerAligned.colored(.hedvig(.white)))
+        let subtitlelabel = UILabel(value: "", style: TextStyle.bodyBold.centerAligned.colored(.white))
         subtitlelabel.numberOfLines = 0
 
         bag += subtitlelabel.didLayoutSignal.onValue { _ in

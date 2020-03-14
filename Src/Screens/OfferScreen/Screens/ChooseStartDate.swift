@@ -95,14 +95,14 @@ extension ChooseStartDate: Presentable {
         }
 
         let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
-                                      type: .standard(backgroundColor: .hedvig(.primaryTintColor),
-                                                      textColor: .hedvig(.white)))
+                                      type: .standard(backgroundColor: .primaryTintColor,
+                                                      textColor: .white))
 
         let loadableChooseDateButton = LoadableButton(button: chooseDateButton,
                                                       initialLoadingState: false)
 
         let activateNowButton = Button(title: "",
-                                       type: .transparent(textColor: .hedvig(.primaryTintColor)))
+                                       type: .transparent(textColor: .primaryTintColor))
 
         let loadableActivateButton = LoadableButton(button: activateNowButton,
                                                     initialLoadingState: false)

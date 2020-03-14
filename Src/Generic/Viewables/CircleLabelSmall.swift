@@ -46,13 +46,13 @@ extension CircleLabelSmall: Viewable {
                 opacity: 0.2,
                 offset: CGSize(width: 10, height: 10),
                 radius: 16,
-                color: UIColor.hedvig(.primaryShadowColor),
+                color: UIColor.primaryShadowColor,
                 path: nil
             )
         }
 
         circleView.backgroundColor = backgroundColor
-        titleLabel.textColor = .hedvig(.primaryText)
+        titleLabel.textColor = .primaryText
 
         labelsContainer.addArrangedSubview(titleLabel)
 
