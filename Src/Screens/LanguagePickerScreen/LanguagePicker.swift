@@ -13,7 +13,6 @@ import Presentation
 import UIKit
 import Space
 import Common
-import ComponentKit
 
 extension UIView {
     var isPossiblyVisible: Signal<Bool> {

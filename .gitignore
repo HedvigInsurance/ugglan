@@ -5,7 +5,7 @@
 ## Build generated
 build/
 DerivedData/
-Sources/ComponentKit/Assets.swift
+Src/Assets/Assets.swift
 Sources/Space/Localization/Localization.json
 Sources/Space/Localization/Localization.swift
 Sources/Space/schema.json

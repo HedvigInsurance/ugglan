@@ -12,7 +12,6 @@ import Presentation
 import UIKit
 import Common
 import Space
-import ComponentKit
 
 struct ClaimsChat {
     @Inject var client: ApolloClient

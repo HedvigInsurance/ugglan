@@ -40,9 +40,7 @@ extension Logo: Viewable {
         bag += view.didMoveToWindowSignal.take(first: 1).onValue { _ in
             view.snp.makeConstraints { make in
                 if Device.hasRoundedCorners {
-                    if let superview = view.superview {
-                        make.top.equalTo(superview.safeAreaLayoutGuide.snp.topMargin).offset(5)
-                    }
+                    make.top.equalTo(view.safeAreaLayoutGuide).offset(5)
                 } else {
                     make.top.equalTo(25)
                 }

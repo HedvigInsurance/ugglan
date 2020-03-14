@@ -60,9 +60,7 @@ extension MemberActionButtons: Viewable {
                 make.centerX.equalToSuperview()
 
                 if Device.hasRoundedCorners {
-                    if let superview = stackView.superview {
-                        make.bottom.equalTo(superview.safeAreaLayoutGuide.snp.bottomMargin)
-                    }
+                    make.bottom.equalTo(stackView.safeAreaLayoutGuide.snp.bottom)
                 } else {
                     make.bottom.equalTo(-15)
                 }

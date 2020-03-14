@@ -204,9 +204,7 @@ extension StoriesIndicator: Viewable {
         bag += collectionKit.view.didMoveToWindowSignal.take(first: 1).onValue({ _ in
             collectionKit.view.snp.makeConstraints { make in
                 if Device.hasRoundedCorners {
-                    if let superview = collectionKit.view.superview {
-                        make.top.equalTo(superview.safeAreaLayoutGuide.snp.topMargin)
-                    }
+                    make.top.equalTo(collectionKit.view.safeAreaLayoutGuide.snp.top)
                } else {
                    make.top.equalTo(20)
                }

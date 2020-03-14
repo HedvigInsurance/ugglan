@@ -105,7 +105,7 @@ extension End: Viewable {
             bag += existingMemberButtonContainerView.didMoveToWindowSignal.take(first: 1).onValue({ _ in
                 existingMemberButtonContainerView.snp.makeConstraints { make in
                     if Device.hasRoundedCorners {
-                        make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+                        make.bottom.equalTo(existingMemberButtonContainerView.safeAreaLayoutGuide.snp.bottom)
                     } else {
                         make.bottom.equalTo(-15)
                     }

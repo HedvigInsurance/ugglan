@@ -12,7 +12,6 @@ import Foundation
 import Presentation
 import Common
 import Space
-import ComponentKit
 
 extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
