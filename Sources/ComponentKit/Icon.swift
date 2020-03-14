@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 public class Icon: UIView {
-    public let image = UIImageView()
+    let image = UIImageView()
     public var icon: UIImage {
         didSet {
             setup()

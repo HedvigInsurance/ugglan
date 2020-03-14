@@ -17,7 +17,7 @@ struct CircleLabel {
     let backgroundColor: UIColor?
     let textColor: UIColor?
 
-    init(labelText: DynamicString, backgroundColor: UIColor? = .hedvig(.lightGray), textColor: UIColor? = .hedvig(.white)) {
+    init(labelText: DynamicString, backgroundColor: UIColor? = .lightGray, textColor: UIColor? = .hedvig(.white)) {
         self.labelText = labelText
         self.backgroundColor = backgroundColor
         self.textColor = textColor

@@ -52,7 +52,7 @@ extension ImportantMessagesSection {
             let titleLabel = MultilineLabel(value: title, style: TextStyle.rowTitleBold.centerAligned)
             bag += containerStackView.addArranged(titleLabel)
 
-            let infoLabel = MarkdownText(textSignal: .static(message), style: TextStyle.body.centerAligned)
+            let infoLabel = MarkdownText(textSignal: .static(message), style: TextStyle.bodyOffBlack.centerAligned)
             bag += containerStackView.addArranged(infoLabel)
 
             let buttonContainer = UIView()

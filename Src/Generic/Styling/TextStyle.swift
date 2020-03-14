@@ -176,7 +176,7 @@ public extension TextStyle {
 
     static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.circularStdBook!.withSize(17)
-        style.color = .hedvig(.gray)
+        style.color = .gray
     }
 
     static let rowValueLink = TextStyle.default.restyled { (style: inout TextStyle) in

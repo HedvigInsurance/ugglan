@@ -35,7 +35,7 @@ extension TextField: Viewable {
 
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
-            trait.userInterfaceStyle == .dark ? .hedvig(.offBlack) : .hedvig(.lightGray)
+            trait.userInterfaceStyle == .dark ? .hedvig(.offBlack) : .lightGray
         }
 
         bag += view.didLayoutSignal.onValue { _ in

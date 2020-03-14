@@ -42,7 +42,7 @@ extension WelcomePagerDots: Viewable {
 
             for i in 0 ... pageAmount - 2 {
                 let indicator = UIView()
-                indicator.backgroundColor = i == 0 ? .hedvig(.primaryTintColor) : .hedvig(.gray)
+                indicator.backgroundColor = i == 0 ? .hedvig(.primaryTintColor) : .gray
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
                 indicator.layer.cornerRadius = 2
 
@@ -56,7 +56,7 @@ extension WelcomePagerDots: Viewable {
             let hedvigSymbol = UIImageView()
             hedvigSymbol.image = Asset.symbol.image.withRenderingMode(.alwaysTemplate)
             hedvigSymbol.contentMode = .scaleAspectFit
-            hedvigSymbol.tintColor = .hedvig(.gray)
+            hedvigSymbol.tintColor = .gray
             hedvigSymbol.snp.makeConstraints { make in
                 make.width.height.equalTo(12)
             }
@@ -69,9 +69,9 @@ extension WelcomePagerDots: Viewable {
                 let indicatorIsActive = index == pageIndex
 
                 if indicator is UIImageView {
-                    indicator.tintColor = indicatorIsActive ? .hedvig(.primaryTintColor) : .hedvig(.gray)
+                    indicator.tintColor = indicatorIsActive ? .hedvig(.primaryTintColor) : .gray
                 } else {
-                    indicator.backgroundColor = indicatorIsActive ? .hedvig(.primaryTintColor) : .hedvig(.gray)
+                    indicator.backgroundColor = indicatorIsActive ? .hedvig(.primaryTintColor) : .gray
                 }
 
                 indicator.transform = indicatorIsActive ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
