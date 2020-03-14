@@ -78,7 +78,7 @@ extension TextView: Viewable {
 
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
-            trait.userInterfaceStyle == .dark ? .hedvig(.offBlack) : .lightGray
+            trait.userInterfaceStyle == .dark ? .hedvig(.offBlack) : .hedvig(.lightGray)
         }
 
         bag += view.didLayoutSignal.onValue { _ in

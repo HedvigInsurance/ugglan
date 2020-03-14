@@ -76,7 +76,7 @@ extension AddKeyGearItem: Presentable {
             .map { valid in
                 valid ?
                     ButtonType.standard(backgroundColor: .hedvig(.primaryTintColor), textColor: .hedvig(.white)) :
-                    ButtonType.standard(backgroundColor: .gray, textColor: .hedvig(.white))
+                    ButtonType.standard(backgroundColor: .hedvig(.gray), textColor: .hedvig(.white))
             }.bindTo(saveButton.button.type)
 
         let saveButtonContainer = UIStackView()

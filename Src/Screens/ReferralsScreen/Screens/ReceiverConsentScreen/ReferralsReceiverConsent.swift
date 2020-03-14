@@ -42,7 +42,7 @@ extension ReferralsReceiverConsent: Presentable {
 
         let declineButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
-            type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .hedvig(.offBlack))
+            type: .pillSemiTransparent(backgroundColor: .hedvig(.lightGray), textColor: .hedvig(.offBlack))
         )
 
         let content = ImageTextAction<ReferralsReceiverConsentResult>(
