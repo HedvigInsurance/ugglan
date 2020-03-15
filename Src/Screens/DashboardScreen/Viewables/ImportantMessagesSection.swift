@@ -9,10 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Space
-import ComponentKit
 import Apollo
-import Common
 import SafariServices
 
 struct ImportantMessagesSection {
@@ -33,7 +30,7 @@ extension ImportantMessagesSection {
             
             let containerView = UIView()
             containerView.backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? UIColor.hedvig(.yellow).darkened(amount: 0.25) : .hedvig(.yellow)
+                trait.userInterfaceStyle == .dark ? UIColor.yellow.darkened(amount: 0.25) : .yellow
             })
             containerView.layer.cornerRadius = 8
 
@@ -58,7 +55,7 @@ extension ImportantMessagesSection {
             let buttonContainer = UIView()
             let button = Button(
                 title: buttonText,
-                type: .outline(borderColor: .hedvig(.primaryText), textColor: .hedvig(.primaryText))
+                type: .outline(borderColor: .primaryText, textColor: .primaryText)
             )
             bag += buttonContainer.add(button) { buttonView in
                 buttonView.snp.makeConstraints { make in
