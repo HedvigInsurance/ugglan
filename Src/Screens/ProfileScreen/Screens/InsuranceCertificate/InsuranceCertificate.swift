@@ -16,15 +16,7 @@ import UIKit
 
 struct InsuranceCertificate {
     @Inject var client: ApolloClient
-    let type: CertificateType
-
-    enum CertificateType {
-        case current, renewal
-    }
-
-    init(type: CertificateType) {
-        self.type = type
-    }
+    let url: URL
 }
 
 extension InsuranceCertificate: Presentable {
@@ -37,20 +29,7 @@ extension InsuranceCertificate: Presentable {
         let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)
 
-        bag += client.fetch(
-            query: InsuranceCertificateQuery(),
-            cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.compactMap { result -> String? in
-            switch self.type {
-            case .current:
-                return result.data?.insurance.certificateUrl
-            case .renewal:
-                return result.data?.insurance.renewal?.certificateUrl
-            }
-        }.map { certificateUrl -> URL? in
-            guard let url = URL(string: certificateUrl) else { return nil }
-            return url
-        }.bindTo(pdfViewer.url)
+        pdfViewer.url.value = url
 
         let activityButton = UIBarButtonItem(system: .action)
 

@@ -1,0 +1,59 @@
+query Contracts {
+    contracts {
+        displayName
+        upcomingRenewal {
+            renewalDate
+            draftCertificateUrl
+        }
+        currentAgreement {
+            ... on SwedishApartmentAgreement {
+                activeFrom
+                activeTo
+                status
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+                squareMeters
+                type
+                premium {
+                    ...MonetaryAmountFragment
+                }
+            }
+            ... on SwedishHouseAgreement {
+                activeFrom
+                activeTo
+                status
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+            }
+            ... on NorwegianHomeContentAgreement {
+                activeFrom
+                activeTo
+                status
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+            }
+            ... on NorwegianTravelAgreement {
+                activeFrom
+                activeTo
+                status
+                certificateUrl
+                numberCoInsured
+            }
+        }
+    }
+}
