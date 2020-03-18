@@ -261,17 +261,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             self.bag += ApplicationState.presentRootViewController(self.window)
 
-            if
-                !(ApplicationState.currentState?.isOneOf([.languagePicker]) ?? false),
-                !ApplicationState.hasPreferredLocale,
-                Localization.Locale.currentLocale == .en_SE {
-                self.window.rootViewController?.present(
-                    LanguagePicker(),
-                    style: .modally(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)]
-                )
-            }
-
             if ApplicationState.hasOverridenTargetEnvironment {
                 self.displayToast(Toast(
                     symbol: .character("🧙‍♂️"),
