@@ -85,7 +85,7 @@ extension WebOnboarding: Presentable {
             var localePath: String {
                 switch Localization.Locale.currentLocale {
                 case .en_NO:
-                    return "no/en"
+                    return "no-en/"
                 case .nb_NO:
                     return "no/"
                 default:
