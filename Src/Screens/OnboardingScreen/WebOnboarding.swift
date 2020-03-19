@@ -81,9 +81,20 @@ extension WebOnboarding: Presentable {
             guard let token = ApolloClient.retreiveToken() else {
                 return
             }
+            
+            var localePath: String {
+                switch Localization.Locale.currentLocale {
+                case .en_NO:
+                    return "no/en"
+                case .nb_NO:
+                    return "no/"
+                default:
+                    return ""
+                }
+            }
                         
             func loadStaging() {
-                guard let url = URL(string: "https://www.dev.hedvigit.com/new-member?variation=ios&locale=\(Localization.Locale.currentLocale.code)#token=\(token.token)") else {
+                guard let url = URL(string: "https://www.dev.hedvigit.com/\(localePath)new-member?variation=ios#token=\(token.token)") else {
                     return
                 }
                 
@@ -92,7 +103,7 @@ extension WebOnboarding: Presentable {
             
             switch ApplicationState.getTargetEnvironment() {
             case .production:
-                guard let url = URL(string: "https://www.hedvig.com/new-member?variation=ios&locale=\(Localization.Locale.currentLocale.code)#token=\(token.token)") else {
+                guard let url = URL(string: "https://www.hedvig.com/\(localePath)new-member?variation=ios#token=\(token.token)") else {
                     return
                 }
                 webView.load(URLRequest(url: url))
