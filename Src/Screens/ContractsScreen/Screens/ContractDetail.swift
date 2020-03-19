@@ -80,6 +80,91 @@ extension ContractDetail: Presentable {
         return nil
     }
     
+    func swedishHouse() -> (DisposeBag, [Either<SectionView, Spacing>])? {
+        if let swedishHouse = contract.currentAgreement.asSwedishHouseAgreement {
+            let bag = DisposeBag()
+            
+            let apartmentInfoSection = SectionView()
+            apartmentInfoSection.dynamicStyle = .sectionPlain
+            
+            let livingSpaceRow = KeyValueRow()
+            livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
+            livingSpaceRow.valueSignal.value = String(key: .MY_HOME_ROW_SIZE_VALUE(
+                livingSpace: swedishHouse.squareMeters
+            ))
+            livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(livingSpaceRow)
+
+            let ancillaryAreaRow = KeyValueRow()
+            ancillaryAreaRow.keySignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_KEY)
+            ancillaryAreaRow.valueSignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_VALUE(
+                area: swedishHouse.ancillaryArea
+            ))
+            ancillaryAreaRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(ancillaryAreaRow)
+
+            let yearOfConstructionRow = KeyValueRow()
+            yearOfConstructionRow.keySignal.value = String(key: .MY_HOME_ROW_CONSTRUCTION_YEAR_KEY)
+            yearOfConstructionRow.valueSignal.value = String(swedishHouse.yearOfConstruction)
+            yearOfConstructionRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(yearOfConstructionRow)
+
+            let numberOfBathroomsRow = KeyValueRow()
+            numberOfBathroomsRow.keySignal.value = String(key: .MY_HOME_ROW_BATHROOMS_KEY)
+            numberOfBathroomsRow.valueSignal.value = String(swedishHouse.numberOfBathrooms)
+            numberOfBathroomsRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(numberOfBathroomsRow)
+
+            let isSubletedRow = KeyValueRow()
+            isSubletedRow.keySignal.value = String(key: .MY_HOME_ROW_SUBLETED_KEY)
+            isSubletedRow.valueSignal.value = swedishHouse.isSubleted ?
+                String(key: .MY_HOME_ROW_SUBLETED_VALUE_YES) :
+                String(key: .MY_HOME_ROW_SUBLETED_VALUE_NO)
+            isSubletedRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(isSubletedRow)
+
+            let adressRow = KeyValueRow()
+            adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
+            adressRow.valueSignal.value = swedishHouse.address.street
+            adressRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(adressRow)
+
+            let postalCodeRow = KeyValueRow()
+            postalCodeRow.keySignal.value = String(key: .MY_HOME_ROW_POSTAL_CODE_KEY)
+            postalCodeRow.valueSignal.value = swedishHouse.address.postalCode
+            postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += apartmentInfoSection.append(postalCodeRow)
+
+            let apartmentTypeRow = KeyValueRow()
+            apartmentTypeRow.keySignal.value = String(key: .MY_HOME_ROW_TYPE_KEY)
+            apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
+            apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_HOUSE_VALUE)
+            bag += apartmentInfoSection.append(apartmentTypeRow)
+
+            if !swedishHouse.extraBuildings.isEmpty {
+                let extraBuildingsSection = SectionView(
+                    headerView: UILabel(value: String(key: .MY_HOME_EXTRABUILDING_TITLE), style: .rowTitle),
+                    footerView: nil
+                )
+                extraBuildingsSection.dynamicStyle = .sectionPlain
+
+                extraBuildingsSection.append(ExtraBuildingRow(data: .static(extraBuilding)))
+                
+                return (bag, [
+                    .make(apartmentInfoSection),
+                    .make(Spacing(height: 10)),
+                    .make(extraBuildingsSection)
+                ])
+            } else {
+                return (bag, [
+                    .make(apartmentInfoSection)
+                ])
+            }
+        }
+        
+        return nil
+    }
+    
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = String(key: .CONTRACT_DETAIL_MAIN_TITLE)
@@ -90,6 +175,18 @@ extension ContractDetail: Presentable {
         if let (swedishApartmentBag, swedishApartmentContent) = swedishApartment() {
             bag += swedishApartmentBag
             swedishApartmentContent.forEach { content in
+                switch content {
+                case let .left(section):
+                    form.append(section)
+                case let .right(spacing):
+                    bag += form.append(spacing)
+                }
+            }
+        }
+        
+        if let (swedishHouseBag, swedishHouseContent) = swedishApartment() {
+            bag += swedishHouseBag
+            swedishHouseContent.forEach { content in
                 switch content {
                 case let .left(section):
                     form.append(section)

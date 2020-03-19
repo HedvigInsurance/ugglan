@@ -34,6 +34,18 @@ query Contracts {
                     postalCode
                     city
                 }
+                squareMeters
+                yearOfConstruction
+                ancillaryArea
+                isSubleted
+                numberOfBathrooms
+                extraBuildings {
+                    ... on ExtraBuildingCore {
+                        displayName
+                        area
+                        hasWaterConnected
+                    }
+                }
             }
             ... on NorwegianHomeContentAgreement {
                 activeFrom
