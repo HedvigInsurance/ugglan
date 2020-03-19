@@ -270,11 +270,11 @@ extension Button: Viewable {
                             border: BorderStyle(
                                 width: buttonType.borderWidth,
                                 color: buttonType.borderColor,
-                                cornerRadius: buttonType.height / 2
+                                cornerRadius: 6
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
+                            font: HedvigFonts.favoritStdBook!.withSize(buttonType.fontSize),
                             color: buttonType.textColor
                         )
                     ),
@@ -296,11 +296,11 @@ extension Button: Viewable {
                             border: BorderStyle(
                                 width: buttonType.borderWidth,
                                 color: buttonType.borderColor,
-                                cornerRadius: buttonType.height / 2
+                                cornerRadius: 6
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
+                            font: HedvigFonts.favoritStdBook!.withSize(buttonType.fontSize),
                             color: textColor
                         )
                     ),

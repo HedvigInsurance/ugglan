@@ -16,7 +16,7 @@ extension SendButton: Viewable {
         let bag = DisposeBag()
         let control = UIControl()
         control.backgroundColor = .primaryTintColor
-        control.layer.cornerRadius = 15
+        control.layer.cornerRadius = 6
 
         control.snp.makeConstraints { make in
             make.width.height.equalTo(30)

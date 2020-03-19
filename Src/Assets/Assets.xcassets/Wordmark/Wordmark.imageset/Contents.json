@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Page 1.png",
+      "filename" : "hedvig_wordmark_black.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "hedvig-wordmark-solid.png",
+      "filename" : "hedvig_wordmark_white.png",
       "appearances" : [
         {
           "appearance" : "luminosity",
@@ -18,12 +18,12 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "Page 1@2x.png",
+      "filename" : "hedvig_wordmark_black@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "hedvig-wordmark-solid@2x.png",
+      "filename" : "hedvig_wordmark_white@2x.png",
       "appearances" : [
         {
           "appearance" : "luminosity",
@@ -34,12 +34,12 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "Page 1@3x.png",
+      "filename" : "hedvig_wordmark_black@3x.png",
       "scale" : "3x"
     },
     {
       "idiom" : "universal",
-      "filename" : "hedvig-wordmark-solid@3x.png",
+      "filename" : "hedvig_wordmark_white@3x.png",
       "appearances" : [
         {
           "appearance" : "luminosity",

@@ -66,6 +66,7 @@ extension TextView: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
+        view.layer.cornerRadius = 6
 
         bag += view.traitCollectionSignal.atOnce().onValue { trait in
             if trait.userInterfaceStyle == .dark {
@@ -78,10 +79,6 @@ extension TextView: Viewable {
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
             trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
-        }
-
-        bag += view.didLayoutSignal.onValue { _ in
-            view.layer.cornerRadius = min(view.frame.height / 2, 20)
         }
 
         let paddingView = UIStackView()
@@ -97,7 +94,7 @@ extension TextView: Viewable {
 
         let textView = UITextView()
         textView.tintColor = .primaryTintColor
-        textView.font = HedvigFonts.circularStdBook?.withSize(14)
+        textView.font = HedvigFonts.favoritStdBook?.withSize(14)
         textView.backgroundColor = .clear
 
         bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo { (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in

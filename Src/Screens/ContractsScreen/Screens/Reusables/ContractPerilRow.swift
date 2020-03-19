@@ -46,7 +46,7 @@ extension ContractPerilRow: Reusable {
             let bag = DisposeBag()
 
             bag += view.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25), animations: { _ in
-                view.backgroundColor = UIColor.purple.withAlphaComponent(0.2)
+                view.backgroundColor = UIColor.primaryTintColor.withAlphaComponent(0.2)
             })
 
             bag += view.delayedTouchCancel().animated(style: .easeOut(duration: 0.25), animations: { _ in

@@ -136,7 +136,7 @@ extension UIColor {
 
     static var primaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .violet300 : .purple
+            trait.userInterfaceStyle == .dark ? .white : .black
         })
     }
 
