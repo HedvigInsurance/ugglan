@@ -361,7 +361,7 @@ extension DynamicFormStyle {
     static let `default` = DynamicFormStyle { _ -> FormStyle in
         FormStyle(insets: UIEdgeInsets(horizontalInset: 20, verticalInset: 15))
     }
-    
+
     static let noInsets = DynamicFormStyle { _ -> FormStyle in
         FormStyle(insets: .zero)
     }

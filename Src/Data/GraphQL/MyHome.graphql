@@ -8,11 +8,7 @@ query MyHome {
         yearOfConstruction
         numberOfBathrooms
         extraBuildings {
-            ... on ExtraBuildingCore {
-                displayName
-                area
-                hasWaterConnected
-            }
+            ...ExtraBuildingFragment
         }
         isSubleted
     }

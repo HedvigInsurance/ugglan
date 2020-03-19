@@ -85,7 +85,7 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
             if features.contains(.keyGear) {
                 bag += tabBarController.presentTabs(

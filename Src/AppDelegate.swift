@@ -247,7 +247,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             remoteConfigContainer
         })
-        
+
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
             remoteConfigContainer.fetched.take(first: 1).plain(),

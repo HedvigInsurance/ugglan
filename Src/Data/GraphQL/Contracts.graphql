@@ -40,11 +40,7 @@ query Contracts {
                 isSubleted
                 numberOfBathrooms
                 extraBuildings {
-                    ... on ExtraBuildingCore {
-                        displayName
-                        area
-                        hasWaterConnected
-                    }
+                    ...ExtraBuildingFragment
                 }
             }
             ... on NorwegianHomeContentAgreement {
@@ -58,6 +54,7 @@ query Contracts {
                     postalCode
                     city
                 }
+                squareMeters
             }
             ... on NorwegianTravelAgreement {
                 activeFrom

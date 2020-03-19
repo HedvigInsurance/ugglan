@@ -5,8 +5,8 @@
 //  Created by Sam Pettersson on 2020-03-16.
 //
 
-import Foundation
 import Flow
+import Foundation
 import Presentation
 import UIKit
 
@@ -17,9 +17,9 @@ extension Contracts: Presentable {
         let viewController = UIViewController()
         viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
         viewController.installChatButton()
-        
+
         let bag = DisposeBag()
-        
+
         bag += viewController.install(ContractCollection())
 
         return (viewController, bag)
