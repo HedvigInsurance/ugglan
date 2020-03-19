@@ -5,12 +5,12 @@
 //  Created by Sam Pettersson on 2020-03-14.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
-import Apollo
 import SafariServices
+import UIKit
 
 struct ImportantMessagesSection {
     let presentingViewController: UIViewController
@@ -24,12 +24,12 @@ extension ImportantMessagesSection {
         let message: String
         let buttonText: String
         let link: String
-        
-        func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+
+        func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
             let bag = DisposeBag()
-            
+
             let containerView = UIView()
-            containerView.backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
+            containerView.backgroundColor = UIColor(dynamic: { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? UIColor.yellow.darkened(amount: 0.25) : .yellow
             })
             containerView.layer.cornerRadius = 8
@@ -82,7 +82,7 @@ extension ImportantMessagesSection {
                     make.bottom.equalToSuperview()
                 }
             }
-            
+
             return (containerView, bag)
         }
     }
@@ -100,7 +100,7 @@ extension ImportantMessagesSection: Viewable {
             $0.data?.importantMessages.compactMap { $0 }
         }.onValueDisposePrevious { messages in
             let innerBag = DisposeBag()
-            
+
             innerBag += messages.map { message in
                 wrapper.addArranged(Message(
                     presentingViewController: self.presentingViewController,
@@ -110,11 +110,11 @@ extension ImportantMessagesSection: Viewable {
                     link: message.link ?? ""
                 ))
             }
-            
+
             innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 wrapper.animationSafeIsHidden = false
             }
-            
+
             return innerBag
         }
 

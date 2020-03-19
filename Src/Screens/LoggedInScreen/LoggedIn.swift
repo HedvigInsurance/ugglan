@@ -50,14 +50,14 @@ extension LoggedIn: Presentable {
 
         let bag = DisposeBag()
 
-        let dashboard = Dashboard()
+        let contracts = Contracts()
         let keyGear = KeyGearOverview()
         let claims = Claims()
         let referrals = Referrals()
         let profile = Profile()
 
-        let dashboardPresentation = Presentation(
-            dashboard,
+        let contractsPresentation = Presentation(
+            contracts,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
@@ -85,11 +85,11 @@ extension LoggedIn: Presentable {
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
         )
-        
+
         bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
             if features.contains(.keyGear) {
                 bag += tabBarController.presentTabs(
-                    dashboardPresentation,
+                    contractsPresentation,
                     keyGearPresentation,
                     claimsPresentation,
                     referralsPresentation,
@@ -97,7 +97,7 @@ extension LoggedIn: Presentable {
                 )
             } else {
                 bag += tabBarController.presentTabs(
-                    dashboardPresentation,
+                    contractsPresentation,
                     claimsPresentation,
                     referralsPresentation,
                     profilePresentation

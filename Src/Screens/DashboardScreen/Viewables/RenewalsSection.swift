@@ -58,7 +58,7 @@ extension RenewalsSection: Viewable {
         }
 
         bag += connectButton.onTapSignal.onValue { _ in
-            self.presentingViewController.present(InsuranceCertificate(type: .renewal), options: [.autoPop, .largeTitleDisplayMode(.never)])
+            // self.presentingViewController.present(InsuranceCertificate(type: .renewal), options: [.autoPop, .largeTitleDisplayMode(.never)])
         }
 
         containerStackView.addArrangedSubview(buttonContainer)

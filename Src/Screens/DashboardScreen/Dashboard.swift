@@ -31,10 +31,10 @@ extension Dashboard: Presentable {
         containerStackView.spacing = 15
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
-        
+
         let chatPreview = ChatPreview(presentingViewController: viewController)
         bag += containerStackView.addArranged(chatPreview)
-        
+
         let importantMessagesSection = ImportantMessagesSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(importantMessagesSection)
 

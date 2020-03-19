@@ -67,7 +67,7 @@ struct KeyGearOverview {
         }
 
         let bag = DisposeBag()
-        
+
         let category: KeyGearItemCategory = viewController.traitCollection.userInterfaceIdiom == .pad ? .tablet : .phone
 
         bag += client.perform(mutation: CreateKeyGearItemMutation(
@@ -92,41 +92,39 @@ extension KeyGearOverview: Presentable {
 
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
-        
+
         let split = UISplitViewController()
         bag += split.view.traitCollectionSignal.atOnce().onValue { trait in
             split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .allVisible : .automatic
         }
-        
+
         split.view.backgroundColor = .primaryBackground
         split.extendedLayoutIncludesOpaqueBars = true
-        
+
         let viewController = KeyGearOverviewViewController()
         viewController.title = String(key: .KEY_GEAR_TAB_TITLE)
-        
+
         bag += split.present(viewController, options: [.defaults, .showInMaster, .prefersLargeTitles(true)])
 
         autoAddDevices(viewController: split)
-        
+
         let detailBag = DisposeBag()
         bag += detailBag
-        
+
         if split.traitCollection.userInterfaceIdiom == .pad {
-           let placeholder = UIViewController()
-           placeholder.view.backgroundColor = .primaryBackground
+            let placeholder = UIViewController()
+            placeholder.view.backgroundColor = .primaryBackground
             detailBag += split.present(placeholder, options: [.defaults])
         }
-                
+
         func presentDetail(id: String) {
             detailBag.dispose()
-            
+
             if split.traitCollection.userInterfaceIdiom == .pad {
                 detailBag += viewController.present(KeyGearItem(id: id), style: .default, options: [.defaults, .largeTitleDisplayMode(.never), .autoPop, .unanimated])
             } else {
                 detailBag += viewController.present(KeyGearItem(id: id), style: .default, options: [.defaults, .largeTitleDisplayMode(.never), .autoPop])
             }
-            
-            
         }
 
         bag += viewController.install(KeyGearListCollection()) { collectionView in

@@ -40,20 +40,6 @@ extension ProfileSection: Viewable {
             .map { (firstName: $0.firstName!, lastName: $0.lastName!) }
             .bindTo(myInfoRow.nameSignal)
 
-        let homeRow = HomeRow(
-            presentingViewController: presentingViewController
-        )
-        bag += section.append(homeRow) { row in
-            bag += self.presentingViewController.registerForPreviewing(
-                sourceView: row.viewRepresentation,
-                previewable: homeRow
-            )
-        }
-
-        bag += dataSignal.atOnce()
-            .compactMap { $0?.insurance.address }
-            .bindTo(homeRow.address)
-
         let myCharityRow = MyCharityRow(
             presentingViewController: presentingViewController
         )
@@ -68,22 +54,6 @@ extension ProfileSection: Viewable {
             .atOnce()
             .map { $0?.cashback?.name }
             .bindTo(myCharityRow.charityNameSignal)
-
-        let insuranceCertificateRow = InsuranceCertificateRow(
-            presentingViewController: presentingViewController
-        )
-
-        bag += section.append(insuranceCertificateRow) { row in
-            bag += self.presentingViewController.registerForPreviewing(
-                sourceView: row.viewRepresentation,
-                previewable: insuranceCertificateRow
-            )
-        }
-
-        bag += dataSignal
-            .atOnce()
-            .map { $0?.insurance.certificateUrl }
-            .bindTo(insuranceCertificateRow.certificateUrlSignal)
 
         let myPaymentRow = MyPaymentRow(
             presentingViewController: presentingViewController
@@ -101,21 +71,6 @@ extension ProfileSection: Viewable {
             .debug()
             .toInt()
             .bindTo(myPaymentRow.monthlyCostSignal)
-
-        let myCoinsuredRow = MyCoinsuredRow(
-            presentingViewController: presentingViewController
-        )
-        bag += section.append(myCoinsuredRow) { row in
-            bag += self.presentingViewController.registerForPreviewing(
-                sourceView: row.viewRepresentation,
-                previewable: myCoinsuredRow
-            )
-        }
-
-        bag += dataSignal
-            .atOnce()
-            .map { $0?.insurance.personsInHousehold }
-            .bindTo(myCoinsuredRow.amountOfCoinsuredSignal)
 
         return (section, bag)
     }

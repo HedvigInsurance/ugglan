@@ -54,7 +54,7 @@ extension KeyGearAddReceiptRow: Viewable {
                 )
             )
         )
-        
+
         let buttonContainer = UIStackView()
 
         bag += row.append(button.wrappedIn(UIStackView()).wrappedIn(buttonContainer)) { stackView in

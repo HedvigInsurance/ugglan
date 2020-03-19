@@ -17,13 +17,16 @@ struct Spacing {
 }
 
 extension Spacing: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
+
         let view = UIView()
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(self.height)
+        view.snp.makeConstraints { make in
+            make.height.equalTo(self.height).priority(.required)
         }
+
+        view.layoutIfNeeded()
 
         bag += isHiddenSignal.bindTo(view, \.isHidden)
 

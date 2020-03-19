@@ -48,7 +48,7 @@ extension HonestyPledge: Presentable {
         let viewController = UIViewController()
 
         let bag = DisposeBag()
-        
+
         let containerStackView = UIStackView()
         containerStackView.alignment = .leading
         bag += containerStackView.applySafeAreaBottomLayoutMargin()
@@ -86,13 +86,13 @@ extension HonestyPledge: Presentable {
         let view = UIView()
         view.backgroundColor = .secondaryBackground
         viewController.view = view
-        
+
         view.addSubview(containerStackView)
-        
+
         containerStackView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
-        
+
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
                 func presentClaimsChat() {
