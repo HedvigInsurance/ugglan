@@ -83,7 +83,7 @@ extension WebOnboarding: Presentable {
             }
                         
             func loadStaging() {
-                guard let url = URL(string: "https://www.dev.hedvigit.com/new-member?variation=ios#token=\(token.token)") else {
+                guard let url = URL(string: "https://www.dev.hedvigit.com/new-member?variation=ios&locale=\(Localization.Locale.currentLocale.code)#token=\(token.token)") else {
                     return
                 }
                 
@@ -92,7 +92,7 @@ extension WebOnboarding: Presentable {
             
             switch ApplicationState.getTargetEnvironment() {
             case .production:
-                guard let url = URL(string: "https://www.hedvig.com/new-member?variation=ios#token=\(token.token)") else {
+                guard let url = URL(string: "https://www.hedvig.com/new-member?variation=ios&locale=\(Localization.Locale.currentLocale.code)#token=\(token.token)") else {
                     return
                 }
                 webView.load(URLRequest(url: url))
