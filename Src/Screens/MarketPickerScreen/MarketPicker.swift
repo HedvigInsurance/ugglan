@@ -41,7 +41,7 @@ extension MarketPicker {
         var icon: UIImage {
             switch self {
             case .norway:
-                return Asset.flagGB.image
+                return Asset.flagNO.image
             case .sweden:
                 return Asset.flagSE.image
             }
