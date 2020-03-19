@@ -49,7 +49,7 @@ extension About: Presentable {
             bag += loginSection.append(loginRow)
 
             bag += loginRow.onSelect.onValue { _ in
-                viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.defaults]))
+                viewController.present(BankIDLogin(), style: .modally())
             }
 
             bag += form.append(Spacing(height: 20))

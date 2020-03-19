@@ -9,6 +9,24 @@
 import Foundation
 
 extension Localization.Locale {
+    enum Market {
+        case no
+        case se
+    }
+    
+    var market: Market {
+        switch self {
+        case .sv_SE:
+            return .se
+        case .en_SE:
+            return .se
+        case .en_NO:
+            return .no
+        case .nb_NO:
+            return .no
+        }
+    }
+    
     var acceptLanguageHeader: String {
         switch self {
         case .sv_SE:

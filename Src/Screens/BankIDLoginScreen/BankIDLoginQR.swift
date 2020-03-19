@@ -17,11 +17,10 @@ struct BankIDLoginQR {
 extension BankIDLoginQR: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.preferredContentSize = CGSize(width: 0, height: 350)
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .primaryBackground
 
         viewController.view = view
         viewController.title = String(key: .BANKID_MISSING_TITLE)
@@ -73,13 +72,10 @@ extension BankIDLoginQR: Presentable {
         containerStackView.axis = .vertical
         containerStackView.alignment = .center
 
-        bag += containerStackView.applySafeAreaBottomLayoutMargin()
-        bag += containerStackView.applyPreferredContentSize(on: viewController)
-
         view.addSubview(containerStackView)
 
         containerStackView.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalToSuperview()
+            make.leading.trailing.top.equalToSuperview()
         }
 
         let containerView = UIStackView()
