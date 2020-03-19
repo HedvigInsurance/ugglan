@@ -142,7 +142,7 @@ extension MarketingEnd: Presentable {
             )
 
             bag += containerView.add(end).onValue { _ in
-                bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
+                bag += viewController.present(Onboarding(), options: [.prefersNavigationBarHidden(false)])
             }
 
             bag += dismissSignal.onValue { _ in

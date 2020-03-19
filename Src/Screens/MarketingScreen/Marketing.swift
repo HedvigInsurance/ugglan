@@ -41,7 +41,7 @@ extension Marketing: Presentable {
 
                 switch marketingResult {
                 case .onboard:
-                    bag += viewController.present(OnboardingChat(), options: [.prefersNavigationBarHidden(false)])
+                    bag += viewController.present(Onboarding(), options: [.prefersNavigationBarHidden(false)])
                 case .login:
                     bag += viewController.present(
                         BankIDLogin(),

@@ -237,7 +237,7 @@ struct ApplicationState {
                 animated: false
             ).disposable
         case .onboardingChat:
-            return window.present(OnboardingChat(), options: [.defaults], animated: false)
+            return window.present(Onboarding(), options: [.defaults], animated: false)
         case .offer:
             return window.present(
                 Offer(),
