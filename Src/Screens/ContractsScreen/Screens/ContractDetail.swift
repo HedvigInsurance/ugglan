@@ -214,27 +214,27 @@ extension ContractDetail: Presentable {
 
         return nil
     }
-    
+
     func norwegianTravel() -> (DisposeBag, [Either<SectionView, Spacing>])? {
         if let norwegianTravel = contract.currentAgreement.asNorwegianTravelAgreement {
             let bag = DisposeBag()
-            
-            let coinsuredSection = SectionView()
-           coinsuredSection.dynamicStyle = .sectionPlain
 
-           let coinsuredRow = KeyValueRow()
-           coinsuredRow.keySignal.value = String(key: .CONTRACT_DETAIL_COINSURED_TITLE)
-           coinsuredRow.valueSignal.value = String(
-               key: .CONTRACT_DETAIL_COINSURED_NUMBER_INPUT(coinsured: norwegianTravel.numberCoInsured)
-           )
-           coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
-           bag += coinsuredSection.append(coinsuredRow)
-            
+            let coinsuredSection = SectionView()
+            coinsuredSection.dynamicStyle = .sectionPlain
+
+            let coinsuredRow = KeyValueRow()
+            coinsuredRow.keySignal.value = String(key: .CONTRACT_DETAIL_COINSURED_TITLE)
+            coinsuredRow.valueSignal.value = String(
+                key: .CONTRACT_DETAIL_COINSURED_NUMBER_INPUT(coinsured: norwegianTravel.numberCoInsured)
+            )
+            coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
+            bag += coinsuredSection.append(coinsuredRow)
+
             return (bag, [
                 .make(coinsuredSection),
             ])
         }
-        
+
         return nil
     }
 
@@ -268,10 +268,22 @@ extension ContractDetail: Presentable {
                 }
             }
         }
-        
+
         if let (norwegianHomeContentsBag, norwegianHomeContents) = norwegianHomeContents() {
             bag += norwegianHomeContentsBag
             norwegianHomeContents.forEach { content in
+                switch content {
+                case let .left(section):
+                    form.append(section)
+                case let .right(spacing):
+                    bag += form.append(spacing)
+                }
+            }
+        }
+
+        if let (norwegianTravelBag, norwegianTravelContent) = norwegianTravel() {
+            bag += norwegianTravelBag
+            norwegianTravelContent.forEach { content in
                 switch content {
                 case let .left(section):
                     form.append(section)
