@@ -51,7 +51,7 @@ extension Offer {
 
         let chatButton = UIBarButtonItem()
         chatButton.image = Asset.chat.image
-        chatButton.tintColor = .white
+        chatButton.tintColor = .primaryText
 
         bag += chatButton.onValue { _ in
             bag += viewController.present(

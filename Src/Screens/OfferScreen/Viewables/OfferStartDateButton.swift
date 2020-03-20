@@ -27,14 +27,11 @@ extension OfferStartDateButton: Viewable {
 
         let button = UIControl()
         button.layer.borderWidth = 1
+        button.layer.cornerRadius = 6
         button.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(CGAffineTransform(translationX: 0, y: -30))
         button.alpha = 0
         bag += button.applyBorderColor { _ -> UIColor in
-            .white
-        }
-
-        bag += button.applyCornerRadius { _ -> CGFloat in
-            button.layer.frame.height / 2
+            .primaryText
         }
 
         containerStackView.addArrangedSubview(button)
@@ -74,10 +71,8 @@ extension OfferStartDateButton: Viewable {
 
         let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .bodyButtonText)
         stackView.addArrangedSubview(keyLabel)
-        keyLabel.textColor = .white
 
         let valueLabel = UILabel(value: "", style: .bodyBoldButtonText)
-        valueLabel.textColor = .white
         stackView.addArrangedSubview(valueLabel)
 
         let iconView = Icon(icon: Asset.chevronRightWhite, iconWidth: 20)

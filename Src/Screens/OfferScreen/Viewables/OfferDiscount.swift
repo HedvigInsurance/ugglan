@@ -43,7 +43,7 @@ extension OfferDiscount: Viewable {
             )
         }
 
-        let redeemButton = Button(title: String(key: .OFFER_ADD_DISCOUNT_BUTTON), type: .outline(borderColor: .white, textColor: .white))
+        let redeemButton = Button(title: String(key: .OFFER_ADD_DISCOUNT_BUTTON), type: .outline(borderColor: .primaryText, textColor: .primaryText))
 
         view.snp.makeConstraints { make in
             make.height.equalTo(redeemButton.type.value.height + view.layoutMargins.top + view.layoutMargins.bottom)

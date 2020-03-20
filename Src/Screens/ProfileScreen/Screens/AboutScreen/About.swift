@@ -49,7 +49,11 @@ extension About: Presentable {
             bag += loginSection.append(loginRow)
 
             bag += loginRow.onSelect.onValue { _ in
-                viewController.present(BankIDLogin(), style: .modally())
+                viewController.present(
+                    BankIDLogin(),
+                    style: .modally(),
+                    options: [.allowSwipeDismissAlways, .defaults]
+                )
             }
 
             bag += form.append(Spacing(height: 20))

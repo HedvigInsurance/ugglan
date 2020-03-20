@@ -114,10 +114,10 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(thirdDot)
 
         bag += bubble.didLayoutSignal.onValue { _ in
-            let halfWidthCornerRadius = bubble.frame.height / 2
+            let halfWidthCornerRadius: CGFloat = 6
 
             if self.hasPreviousMessage {
-                bubble.applyRadiusMaskFor(topLeft: 5, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
+                bubble.applyRadiusMaskFor(topLeft: 3, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
             } else {
                 bubble.layer.cornerRadius = halfWidthCornerRadius
             }
