@@ -35,7 +35,9 @@ extension PriceBubble: Viewable {
 
         let bubbleView = UIView()
         containerView.addArrangedSubview(bubbleView)
-        bubbleView.backgroundColor = .secondaryBackground
+        bubbleView.backgroundColor = UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .white : .black
+        })
 
         let stackView = CenterAllStackView()
         stackView.axis = .vertical
@@ -111,7 +113,7 @@ extension PriceBubble: Viewable {
 
         bag += stackView.addArranged(MultilineLabel(
             value: String(key: .OFFER_PRICE_BUBBLE_MONTH),
-            style: TextStyle.rowSubtitle.centerAligned
+            style: TextStyle.rowSubtitle.centerAligned.colored(.primaryTextNeg)
         ))
 
         let campaignTypeSignal = dataSignal.map { $0?.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in

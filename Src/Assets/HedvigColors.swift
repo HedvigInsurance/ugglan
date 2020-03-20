@@ -18,6 +18,12 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .almostBlack : .offWhite
         })
     }
+    
+    static var primaryBackgroundNeg: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .offWhite : .almostBlack
+        })
+    }
 
     static var secondaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in

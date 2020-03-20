@@ -1,5 +1,4 @@
 github "dennisweissmann/DeviceKit" ~> 2.0
-github "airbnb/lottie-ios" "lottie/objectiveC"
 github "yannickl/DynamicColor" >= 4.0.3
 github "apollographql/apollo-ios" == 0.15.1
 github "saoudrizwan/Disk" == 0.6.3

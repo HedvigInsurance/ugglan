@@ -15,7 +15,7 @@ extension TextStyle {
             style.alignment = .center
         }
     }
-
+    
     static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(15)
         style.color = .primaryText
@@ -37,20 +37,20 @@ extension TextStyle {
     static let body = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
-        style.lineSpacing = 4
+        style.lineSpacing = 6
     }
 
     static let bodyButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
-        style.lineSpacing = 4
+        style.lineSpacing = 6
         style.lineHeight = 20
     }
 
     static let bodyBoldButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
         style.color = .primaryText
-        style.lineSpacing = 4
+        style.lineSpacing = 6
         style.lineHeight = 20
     }
 
@@ -75,13 +75,13 @@ extension TextStyle {
     static let bodyBold = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
         style.color = .primaryText
-        style.lineSpacing = 4
+        style.lineSpacing = 6
     }
 
-    static let navigationSubtitleWhite = TextStyle.body.restyled { (style: inout TextStyle) in
+    static let navigationSubtitle = TextStyle.body.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(13)
-        style.lineSpacing = 4
-        style.color = .white
+        style.lineSpacing = 6
+        style.color = .primaryText
     }
 
     static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in
@@ -109,13 +109,13 @@ extension TextStyle {
 
     static let offerBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(16)
-        style.color = .white
+        style.color = .primaryTextNeg
         style.alignment = .center
     }
 
     static let offerBubbleSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(16)
-        style.color = .white
+        style.color = .primaryTextNeg
         style.alignment = .center
     }
 
@@ -145,14 +145,14 @@ extension TextStyle {
 
     static let priceBubbleGrossTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.color = .darkGray
+        style.color = .primaryTextNeg
         style.alignment = .center
         style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
     }
 
     static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(60)
-        style.color = .primaryText
+        style.color = .primaryTextNeg
         style.alignment = .center
     }
 

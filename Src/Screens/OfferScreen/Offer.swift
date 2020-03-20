@@ -18,20 +18,18 @@ struct Offer {
 
 extension Offer {
     func startSignProcess(_ viewController: UIViewController) {
-        let overlay = DraggableOverlay(
-            presentable: BankIdSign(),
-            presentationOptions: [.prefersNavigationBarHidden(true)]
-        )
-        viewController.present(overlay).onValue { _ in
+        viewController.present(
+            BankIdSign(),
+            style: .modally(),
+            options: [.prefersNavigationBarHidden(true)]
+        ).onValue { _ in
             self.analyticsCoordinator.logEcommercePurchase()
             viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
         }
     }
 
     static var primaryAccentColor: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .primaryBackground : .midnight500
-        })
+        .primaryBackground
     }
 }
 
@@ -71,8 +69,8 @@ extension Offer {
         let signButton = Button(
             title: String(key: .OFFER_BANKID_SIGN_BUTTON),
             type: .tinyIcon(
-                backgroundColor: .white,
-                textColor: .black,
+                backgroundColor: .primaryTintColor,
+                textColor: .white,
                 icon: .right(image: Asset.bankIdLogo.image, width: 13)
             )
         )
@@ -104,9 +102,9 @@ extension Offer {
         titleView.alignment = .center
         titleView.distribution = .fillProportionally
 
-        titleView.addArrangedSubview(UILabel(value: String(key: .OFFER_TITLE), style: .bodyWhite))
+        titleView.addArrangedSubview(UILabel(value: String(key: .OFFER_TITLE), style: .body))
 
-        let addressLabel = UILabel(value: " ", style: .navigationSubtitleWhite)
+        let addressLabel = UILabel(value: " ", style: .navigationSubtitle)
         titleView.addArrangedSubview(addressLabel)
 
         titleViewContainer.addArrangedSubview(titleView)
@@ -147,7 +145,7 @@ extension Offer {
 
 extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
-        let viewController = LightContentViewController()
+        let viewController = UIViewController()
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 80)
 
         ApplicationState.preserveState(.offer)

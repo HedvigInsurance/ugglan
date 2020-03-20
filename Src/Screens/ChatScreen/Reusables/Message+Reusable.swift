@@ -140,9 +140,11 @@ extension Message: Reusable {
         bubbleContainer.alignment = .fill
         bubbleContainer.spacing = 5
         spacingContainer.addArrangedSubview(bubbleContainer)
+        
+        let fromMyselfBubbleColor = UIColor.primaryBackgroundNeg
 
         let bubble = UIView()
-        bubble.backgroundColor = .primaryTintColor
+        bubble.backgroundColor = fromMyselfBubbleColor
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
@@ -165,7 +167,7 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = .primaryTintColor
+        editButton.backgroundColor = fromMyselfBubbleColor
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
@@ -276,7 +278,7 @@ extension Message: Reusable {
                 case .image(_), .video:
                     bubble.backgroundColor = .transparent
                 default:
-                    bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
+                    bubble.backgroundColor = message.fromMyself ? fromMyselfBubbleColor : .secondaryBackground
                 }
 
                 switch message.type {

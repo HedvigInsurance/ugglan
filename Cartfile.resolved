@@ -5,7 +5,6 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json" "6.13.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" "6.13.0"
 github "SnapKit/SnapKit" "5.0.1"
-github "airbnb/lottie-ios" "a7de66519254e02baf395fbe90d1d811ee6e0409"
 github "apollographql/apollo-ios" "0.15.1"
 github "daltoniam/Starscream" "3.1.0"
 github "dennisweissmann/DeviceKit" "2.3.0"
