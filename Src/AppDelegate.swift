@@ -204,18 +204,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
-        let familyNames = UIFont.familyNames
-
-        for family in familyNames {
-            print("Family name " + family)
-            let fontNames = UIFont.fontNames(forFamilyName: family)
-            
-            for font in fontNames {
-                print("    Font name: " + font)
-            }
-        }
-        
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
         FirebaseApp.configure()

@@ -96,10 +96,8 @@ extension OfferDiscount: Viewable {
                 }
 
                 bag += self.presentingViewController.present(
-                    DraggableOverlay(
-                        presentable: applyDiscount,
-                        presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
-                    )
+                    applyDiscount.withCloseButton,
+                    style: .modally()
                 ).disposable
             }
 

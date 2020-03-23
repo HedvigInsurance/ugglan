@@ -122,8 +122,8 @@ extension PriceBubble: Viewable {
         let campaignBubble = CampaignBubble(campaignTypeSignal: campaignTypeSignal)
         bag += bubbleView.add(campaignBubble) { campaignBubbleView in
             campaignBubbleView.snp.makeConstraints { make in
-                make.right.equalTo(60)
-                make.top.equalTo(0)
+                make.right.equalTo(120)
+                make.top.equalTo(-10)
             }
         }
 

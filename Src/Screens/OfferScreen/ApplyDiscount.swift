@@ -29,19 +29,21 @@ extension ApplyDiscount: Presentable {
 
         let bag = DisposeBag()
 
-        let containerView = UIStackView()
-        bag += containerView.applySafeAreaBottomLayoutMargin()
-
+        let containerView = UIView()
+        containerView.backgroundColor = .primaryBackground
         viewController.view = containerView
 
         let view = UIStackView()
         view.spacing = 5
-        view.axis = .vertical
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
+        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
         view.isLayoutMarginsRelativeArrangement = true
-        view.isUserInteractionEnabled = true
+        view.axis = .vertical
 
-        containerView.addArrangedSubview(view)
+        containerView.addSubview(view)
+        
+        view.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
 
         let titleLabel = MultilineLabel(
             value: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
@@ -77,16 +79,6 @@ extension ApplyDiscount: Presentable {
 
         let terms = DiscountTerms()
         bag += view.addArranged(terms)
-
-        bag += view.didLayoutSignal.map { _ in
-            view.systemLayoutSizeFitting(CGSize.zero)
-        }.onValue { size in
-            view.snp.remakeConstraints { make in
-                make.height.equalTo(size.height)
-            }
-        }
-
-        bag += containerView.applyPreferredContentSize(on: viewController)
 
         let shouldSubmitCallbacker = Callbacker<Void>()
         bag += loadableSubmitButton.onTapSignal.onValue { _ in
