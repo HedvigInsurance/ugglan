@@ -80,11 +80,9 @@ extension OfferStartDateButton: Viewable {
                                 tintColor: .black,
                                 actions: [Alert.Action(title: String(key: .ALERT_CANCEL), action: {}),
                                           Alert.Action(title: String(key: .ALERT_CONTINUE), action: {
-                                              bag += self.presentingViewController.present(
-                                                  DraggableOverlay(
-                                                      presentable: chooseStartDate,
-                                                      presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
-                                                  )
+                                              self.presentingViewController.present(
+                                                chooseStartDate.withCloseButton,
+                                                  style: .modally()
                                               )
                                       })])
 
@@ -93,12 +91,10 @@ extension OfferStartDateButton: Viewable {
                 if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                     self.presentingViewController.present(alert)
                 } else {
-                    bag += self.presentingViewController.present(
-                        DraggableOverlay(
-                            presentable: chooseStartDate,
-                            presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
-                        )
-                    ).disposable
+                    self.presentingViewController.present(
+                        chooseStartDate.withCloseButton,
+                        style: .modally()
+                    )
                 }
             }
         }
