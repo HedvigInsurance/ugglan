@@ -142,14 +142,14 @@ extension TextStyle {
 
     static let priceBubbleGrossTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.color = .primaryTextNeg
+        style.color = .primaryText
         style.alignment = .center
         style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
     }
 
     static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(60)
-        style.color = .primaryTextNeg
+        style.color = .primaryText
         style.alignment = .center
     }
 

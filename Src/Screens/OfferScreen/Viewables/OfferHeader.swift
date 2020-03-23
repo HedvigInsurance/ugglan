@@ -14,6 +14,12 @@ struct OfferHeader {
     let containerScrollView: UIScrollView
     let presentingViewController: UIViewController
     @Inject var client: ApolloClient
+    
+    private let signCallbacker = Callbacker<Void>()
+    
+    var onSignTapSignal: Signal<Void> {
+        signCallbacker.providedSignal
+    }
 }
 
 extension OfferHeader: Viewable {
@@ -53,8 +59,12 @@ extension OfferHeader: Viewable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
         
+        bag += stackView.addArranged(Spacing(height: 10))
+        
         let priceBubble = PriceBubble()
         bag += stackView.addArranged(priceBubble)
+        
+        bag += stackView.addArranged(Spacing(height: 15))
                 
         let startDateButton = OfferStartDateButton(
             presentingViewController: presentingViewController
@@ -69,6 +79,10 @@ extension OfferHeader: Viewable {
                icon: .left(image: Asset.bankIdLogo.image, width: 20)
            )
         )
+        
+        bag += signButton.onTapSignal.onValue { _ in
+            self.signCallbacker.callAll()
+        }
         
         bag += stackView.addArranged(signButton)
         

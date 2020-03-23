@@ -141,6 +141,11 @@ extension Offer: Presentable {
             containerScrollView: scrollView,
             presentingViewController: viewController
         )
+        
+        bag += offerHeader.onSignTapSignal.onValue { _ in
+            self.startSignProcess(viewController)
+        }
+        
         bag += stackView.addArranged(offerHeader.wrappedIn(UIStackView())) { stackView in
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 25, verticalInset: 35)
             stackView.isLayoutMarginsRelativeArrangement = true
