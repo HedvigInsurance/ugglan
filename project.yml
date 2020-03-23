@@ -49,7 +49,6 @@ targets:
       - location: Carthage/Build/iOS/Protobuf.framework
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
-      - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
       - location: Carthage/Build/iOS/SnapKit.framework
       - location: Carthage/Build/iOS/Starscream.framework
@@ -78,7 +77,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
           - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
-          - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
           - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
           - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
@@ -98,7 +96,6 @@ targets:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
-          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
@@ -142,7 +139,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
           - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
-          - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
           - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
           - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
@@ -161,7 +157,6 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
@@ -199,7 +194,6 @@ targets:
       - location: Carthage/Build/iOS/Protobuf.framework
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
-      - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
       - location: Carthage/Build/iOS/SnapKit.framework
       - location: Carthage/Build/iOS/Starscream.framework
