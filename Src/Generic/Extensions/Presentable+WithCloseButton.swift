@@ -10,6 +10,10 @@ import Foundation
 import Presentation
 import UIKit
 
+enum CloseButtonError: Error {
+    case cancelled
+}
+
 extension Presentable where Matter: UIViewController, Result == Disposable {
     var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
         AnyPresentable { () -> (Self.Matter, Future<Void>) in
@@ -24,7 +28,7 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
                 viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
                 bag += closeButton.onTapSignal.onValue { _ in
-                    completion(.success)
+                    completion(.failure(CloseButtonError.cancelled))
                 }
 
                 bag += disposable
@@ -49,7 +53,7 @@ extension Presentable where Matter: UIViewController, Result == Future<Void> {
                 viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
                 bag += closeButton.onTapSignal.onValue { _ in
-                    completion(.success)
+                    completion(.failure(CloseButtonError.cancelled))
                 }
 
                 bag += future.onResult(completion)

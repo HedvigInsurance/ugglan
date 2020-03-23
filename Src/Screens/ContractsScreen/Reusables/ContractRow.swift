@@ -85,7 +85,7 @@ extension ContractRow: Reusable {
 
         switch state {
         case .active:
-            imageView.image = Asset.greenCircularCheckmark.image
+            imageView.image = Asset.circularCheckmark.image
             label.value = "Aktiv"
         case .cancelled:
             imageView.image = Asset.pinkCircularExclamationPoint.image

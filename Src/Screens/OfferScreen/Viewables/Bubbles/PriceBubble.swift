@@ -12,7 +12,6 @@ import Foundation
 import UIKit
 
 struct PriceBubble {
-    let containerScrollView: UIScrollView
     let dataSignal = ReadWriteSignal<OfferQuery.Data?>(nil)
 }
 
@@ -23,15 +22,6 @@ extension PriceBubble: Viewable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.alignment = .center
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
-        containerView.isLayoutMarginsRelativeArrangement = true
-
-        bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
-            containerView.transform = CGAffineTransform(
-                translationX: 0,
-                y: contentOffset.y / 5
-            )
-        }
 
         let bubbleView = UIView()
         containerView.addArrangedSubview(bubbleView)

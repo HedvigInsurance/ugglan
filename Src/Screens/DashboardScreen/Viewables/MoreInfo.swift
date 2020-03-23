@@ -42,7 +42,7 @@ extension MoreInfo: Viewable {
                         text: String(key: .DASHBOARD_INFO_DEDUCTIBLE),
                         style: .bodyOffBlack
                     ),
-                    icon: Asset.greenCircularCheckmark,
+                    icon: Asset.circularCheckmark,
                     iconWidth: 15
                 )
                 innerBag += moreInfoStackView.addArranged(deductibleCheckmark)
@@ -53,7 +53,7 @@ extension MoreInfo: Viewable {
                             text: String(key: .DASHBOARD_INFO_INSURANCE_STUFF_AMOUNT(maxCompensation: Localization.Key.MAX_COMPENSATION_STUDENT)),
                             style: .bodyOffBlack
                         ),
-                        icon: Asset.greenCircularCheckmark,
+                        icon: Asset.circularCheckmark,
                         iconWidth: 15
                     )
                     innerBag += moreInfoStackView.addArranged(totalAmountCheckmark)
@@ -63,7 +63,7 @@ extension MoreInfo: Viewable {
                             text: String(key: .DASHBOARD_INFO_INSURANCE_STUFF_AMOUNT(maxCompensation: Localization.Key.MAX_COMPENSATION)),
                             style: .bodyOffBlack
                         ),
-                        icon: Asset.greenCircularCheckmark,
+                        icon: Asset.circularCheckmark,
                         iconWidth: 15
                     )
                     innerBag += moreInfoStackView.addArranged(totalAmountCheckmark)
@@ -74,7 +74,7 @@ extension MoreInfo: Viewable {
                         text: String(key: .DASHBOARD_INFO_HOUSE_VALUE),
                         style: .bodyOffBlack
                     ),
-                    icon: Asset.greenCircularCheckmark,
+                    icon: Asset.circularCheckmark,
                     iconWidth: 15
                 )
                 innerBag += moreInfoStackView.addArranged(insuredValueCheckmark)
@@ -87,7 +87,7 @@ extension MoreInfo: Viewable {
                         ),
                         style: .bodyOffBlack
                     ),
-                    icon: Asset.greenCircularCheckmark,
+                    icon: Asset.circularCheckmark,
                     iconWidth: 15
                 )
                 innerBag += moreInfoStackView.addArranged(deductibleCheckmark)
@@ -98,7 +98,7 @@ extension MoreInfo: Viewable {
                     text: String(key: .DASHBOARD_INFO_TRAVEL),
                     style: .bodyOffBlack
                 ),
-                icon: Asset.greenCircularCheckmark,
+                icon: Asset.circularCheckmark,
                 iconWidth: 15
             )
             innerBag += moreInfoStackView.addArranged(travelValidCheckmark)

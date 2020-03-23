@@ -17,11 +17,9 @@ extension OfferSummary: Viewable {
         let bag = DisposeBag()
         let outerView = UIStackView()
         outerView.axis = .vertical
-
-        let backgroundColor = UIColor.black.lighter(amount: 0.1)
-
+        
         let containerView = UIView()
-        containerView.backgroundColor = backgroundColor
+        containerView.backgroundColor = .primaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -37,13 +35,13 @@ extension OfferSummary: Viewable {
         }
 
         let titleLabel = ApolloMultilineLabel(query: OfferQuery()) {
-            StyledText(text: $0.insurance.address ?? "", style: TextStyle.standaloneLargeTitle.colored(.white).aligned(to: .center))
+            StyledText(text: $0.insurance.address ?? "", style: TextStyle.standaloneLargeTitle.aligned(to: .center))
         }
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: String(key: .OFFER_HOUSE_SUMMARY_DESC),
-            style: TextStyle.body.colored(.white).centerAligned
+            style: TextStyle.body.centerAligned
         )
         bag += stackView.addArranged(descriptionLabel)
 

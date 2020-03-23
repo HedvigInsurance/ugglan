@@ -73,7 +73,7 @@ extension MarketPicker {
                 let imageView = UIImageView()
                 
                 if market == suggestedMarket {
-                    imageView.image = Asset.greenCircularCheckmark.image
+                    imageView.image = Asset.circularCheckmark.image
                 }
                 
                 row.append(imageView)
@@ -81,7 +81,7 @@ extension MarketPicker {
             }.map { row, market, imageView in
                 let bag = DisposeBag()
                 bag += section.append(row).onValue { _ in
-                    imageView.image = Asset.greenCircularCheckmark.image
+                    imageView.image = Asset.circularCheckmark.image
                     pickedMarketCallbacker.callAll(with: market)
                 }
                 

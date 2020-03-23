@@ -16,7 +16,7 @@ enum DirectDebitResultType {
     var icon: ImageAsset {
         switch self {
         case .success:
-            return Asset.greenCircularCheckmark
+            return Asset.circularCheckmark
         case .failure:
             return Asset.pinkCircularExclamationPoint
         }

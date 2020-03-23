@@ -19,6 +19,7 @@ extension TextStyle {
     static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(15)
         style.color = .primaryText
+        style.lineSpacing = 5
     }
 
     static let chatBodyUnderlined = TextStyle.chatBody.restyled { (style: inout TextStyle) in
@@ -43,15 +44,11 @@ extension TextStyle {
     static let bodyButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
-        style.lineSpacing = 6
-        style.lineHeight = 20
     }
 
     static let bodyBoldButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
         style.color = .primaryText
-        style.lineSpacing = 6
-        style.lineHeight = 20
     }
 
     static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
@@ -191,6 +188,7 @@ extension TextStyle {
 
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
+        style.lineSpacing = 5
         style.color = .secondaryText
     }
 

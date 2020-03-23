@@ -36,7 +36,7 @@ extension MyProtectionSection: Viewable {
                 text: String(key: .DASHBOARD_INSURANCE_STATUS),
                 style: .rowSubtitle
             ),
-            icon: Asset.greenCircularCheckmark,
+            icon: Asset.circularCheckmark,
             iconWidth: 15
         )
 
