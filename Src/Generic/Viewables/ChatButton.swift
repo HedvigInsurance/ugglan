@@ -27,8 +27,6 @@ extension ChatButton: Viewable {
         let bag = DisposeBag()
 
         let chatButtonView = UIControl()
-        chatButtonView.backgroundColor = .secondaryBackground
-        chatButtonView.layer.cornerRadius = 20
 
         bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
             chatButtonView.backgroundColor = UIColor.secondaryBackground.darkened(amount: 0.05)
