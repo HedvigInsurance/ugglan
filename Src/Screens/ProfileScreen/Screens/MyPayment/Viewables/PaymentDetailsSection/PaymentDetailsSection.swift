@@ -110,7 +110,7 @@ extension PaymentDetailsSection: Viewable {
                 self.presentingViewController.present(alert)
             }
 
-            self.presentingViewController.present(applyDiscount, style: .modally(), options: [.defaults, .prefersNavigationBarHidden(true)])
+            self.presentingViewController.present(applyDiscount.withCloseButton, style: .modally(), options: [.defaults, .prefersNavigationBarHidden(true)])
         }
 
         bag += section.append(applyDiscountButtonRow)
