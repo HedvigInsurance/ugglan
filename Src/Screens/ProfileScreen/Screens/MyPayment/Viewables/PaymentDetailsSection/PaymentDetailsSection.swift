@@ -92,10 +92,6 @@ extension PaymentDetailsSection: Viewable {
 
         bag += applyDiscountButtonRow.onSelect.onValue { _ in
             let applyDiscount = ApplyDiscount()
-            let overlay = DraggableOverlay(
-                presentable: applyDiscount,
-                presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
-            )
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
                 self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
@@ -114,7 +110,7 @@ extension PaymentDetailsSection: Viewable {
                 self.presentingViewController.present(alert)
             }
 
-            self.presentingViewController.present(overlay)
+            self.presentingViewController.present(applyDiscount, style: .modally(), options: [.defaults, .prefersNavigationBarHidden(true)])
         }
 
         bag += section.append(applyDiscountButtonRow)
