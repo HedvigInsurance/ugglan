@@ -11,7 +11,7 @@ import Form
 import Foundation
 
 enum DirectDebitResultType {
-    case success(setupType: DirectDebitSetup.SetupType), failure(setupType: DirectDebitSetup.SetupType)
+    case success(setupType: PaymentSetup.SetupType), failure(setupType: PaymentSetup.SetupType)
 
     var icon: ImageAsset {
         switch self {

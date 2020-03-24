@@ -16,12 +16,8 @@ import WebKit
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    let setupType: SetupType
+    let setupType: PaymentSetup.SetupType
     let applicationWillTerminateSignal: Signal<Void>
-
-    enum SetupType {
-        case initial, replacement, postOnboarding
-    }
 
     private func makeDismissButton() -> UIBarButtonItem {
         switch setupType {
@@ -39,7 +35,7 @@ struct DirectDebitSetup {
     }
 
     init(
-        setupType: SetupType = .initial,
+        setupType: PaymentSetup.SetupType = .initial,
         applicationWillTerminateSignal: Signal<Void> = UIApplication.shared.appDelegate.applicationWillTerminateSignal
     ) {
         self.setupType = setupType

@@ -84,13 +84,10 @@ extension MyPayment: Presentable {
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
 
             innerBag += buttonSection.onSelect.onValue {
-                let setup = PaymentSetup()
+                let setup = PaymentSetup(
+                    setupType: hasAlreadyConnected ? .replacement : .initial
+                )
                 viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
-
-                // let directDebitSetup = DirectDebitSetup(
-                //    setupType: hasAlreadyConnected ? .replacement : .initial
-                // )
-                // viewController.present(directDebitSetup, options: [.autoPop])
             }
 
             if result.data?.directDebitStatus == .pending {

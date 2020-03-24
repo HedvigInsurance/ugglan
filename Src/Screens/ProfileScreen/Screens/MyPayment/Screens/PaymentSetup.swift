@@ -10,7 +10,13 @@ import Foundation
 import Presentation
 import UIKit
 
-struct PaymentSetup {}
+struct PaymentSetup {
+    let setupType: SetupType
+    
+    enum SetupType {
+        case initial, replacement, postOnboarding
+    }
+}
 
 extension PaymentSetup: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {

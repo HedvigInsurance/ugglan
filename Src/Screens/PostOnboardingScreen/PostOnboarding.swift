@@ -120,7 +120,7 @@ extension PostOnboarding: Presentable {
                 switch action {
                 case .payment:
                     viewController.present(
-                        DirectDebitSetup(setupType: .postOnboarding),
+                        PaymentSetup(setupType: .postOnboarding),
                         style: .modally(
                             presentationStyle: .formSheet,
                             transitionStyle: nil,
