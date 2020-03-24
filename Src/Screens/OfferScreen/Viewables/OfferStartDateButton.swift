@@ -66,22 +66,22 @@ extension OfferStartDateButton: Viewable {
 
         let valueLabel = UILabel(value: "", style: .bodyBoldButtonText)
         stackView.addArrangedSubview(valueLabel)
-        
-         let iconView = Icon(icon: Asset.chevronRight, iconWidth: 20)
-         iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
+
+        let iconView = Icon(icon: Asset.chevronRight, iconWidth: 20)
+        iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
         stackView.addArrangedSubview(iconView)
-        
+
         iconView.snp.makeConstraints { make in
             make.width.equalTo(20)
         }
-        
+
         let alert = Alert<Void>(title: String(key: .ALERT_TITLE_STARTDATE),
                                 message: String(key: .ALERT_DESCRIPTION_STARTDATE),
                                 tintColor: .black,
                                 actions: [Alert.Action(title: String(key: .ALERT_CANCEL), action: {}),
                                           Alert.Action(title: String(key: .ALERT_CONTINUE), action: {
                                               self.presentingViewController.present(
-                                                chooseStartDate.withCloseButton,
+                                                  chooseStartDate.withCloseButton,
                                                   style: .modally()
                                               )
                                       })])

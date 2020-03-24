@@ -40,7 +40,7 @@ extension ApplyDiscount: Presentable {
         view.axis = .vertical
 
         containerView.addSubview(view)
-        
+
         view.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
         }

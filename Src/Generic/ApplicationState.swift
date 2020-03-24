@@ -210,7 +210,7 @@ struct ApplicationState {
     static func presentRootViewController(_ window: UIWindow) -> Disposable {
         guard let applicationState = currentState
         else {
-           return window.present(
+            return window.present(
                 MarketPicker(),
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false

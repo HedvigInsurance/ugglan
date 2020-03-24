@@ -36,7 +36,7 @@ extension Offer {
 extension Offer {
     func addNavigationBar(
         _ view: UIView,
-        scrollView: UIScrollView,
+        scrollView _: UIScrollView,
         viewController: UIViewController
     ) -> (Disposable, UINavigationBar) {
         let bag = DisposeBag()
@@ -130,7 +130,7 @@ extension Offer: Presentable {
 
         ApplicationState.preserveState(.offer)
         analyticsCoordinator.logAddToCart()
-        
+
         let bag = DisposeBag()
 
         let stackView = UIStackView()
@@ -147,11 +147,11 @@ extension Offer: Presentable {
             containerScrollView: scrollView,
             presentingViewController: viewController
         )
-        
+
         bag += offerHeader.onSignTapSignal.onValue { _ in
             self.startSignProcess(viewController)
         }
-        
+
         bag += stackView.addArranged(offerHeader.wrappedIn(UIStackView())) { stackView in
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 25, verticalInset: 35)
             stackView.isLayoutMarginsRelativeArrangement = true
@@ -197,7 +197,7 @@ extension Offer: Presentable {
         view.addSubview(scrollView)
 
         let offerSignButton = OfferSignButton()
-        
+
         bag += offerSignButton.onTapSignal.onValue { _ in
             self.startSignProcess(viewController)
         }
@@ -207,14 +207,14 @@ extension Offer: Presentable {
                 make.bottom.equalToSuperview()
                 make.trailing.leading.equalToSuperview()
             }
-            
+
             let spacerView = UIView()
             stackView.addArrangedSubview(spacerView)
-            
+
             spacerView.snp.makeConstraints { make in
                 make.height.equalTo(buttonView.snp.height)
             }
-            
+
             bag += spacerView.didLayoutSignal.onValue { _ in
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(
                     top: 0,

@@ -6,6 +6,8 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Adyen
+import AdyenDropIn
 import Apollo
 import Flow
 import Form
@@ -82,10 +84,13 @@ extension MyPayment: Presentable {
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
 
             innerBag += buttonSection.onSelect.onValue {
-                let directDebitSetup = DirectDebitSetup(
-                    setupType: hasAlreadyConnected ? .replacement : .initial
-                )
-                viewController.present(directDebitSetup, options: [.autoPop])
+                let setup = PaymentSetup()
+                viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
+
+                // let directDebitSetup = DirectDebitSetup(
+                //    setupType: hasAlreadyConnected ? .replacement : .initial
+                // )
+                // viewController.present(directDebitSetup, options: [.autoPop])
             }
 
             if result.data?.directDebitStatus == .pending {

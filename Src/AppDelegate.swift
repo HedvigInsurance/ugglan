@@ -205,6 +205,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        UserDefaults.standard.set(Localization.Locale.currentLocale.lprojCode, forKey: "AppleLanguage")
+        Bundle.swizzleLocalization()
 
         FirebaseApp.configure()
 

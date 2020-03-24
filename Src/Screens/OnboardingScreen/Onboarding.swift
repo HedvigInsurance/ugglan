@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2020-03-19.
 //
 
+import Flow
 import Foundation
 import Presentation
 import UIKit
-import Flow
 
 struct Onboarding {}
 

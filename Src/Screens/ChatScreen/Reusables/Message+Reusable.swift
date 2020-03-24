@@ -140,7 +140,7 @@ extension Message: Reusable {
         bubbleContainer.alignment = .fill
         bubbleContainer.spacing = 5
         spacingContainer.addArrangedSubview(bubbleContainer)
-        
+
         let fromMyselfBubbleColor = UIColor.primaryBackgroundNeg
 
         let bubble = UIView()

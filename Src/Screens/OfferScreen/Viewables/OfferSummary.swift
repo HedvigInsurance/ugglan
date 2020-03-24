@@ -17,7 +17,7 @@ extension OfferSummary: Viewable {
         let bag = DisposeBag()
         let outerView = UIStackView()
         outerView.axis = .vertical
-        
+
         let containerView = UIView()
         containerView.backgroundColor = .primaryBackground
         outerView.addArrangedSubview(containerView)
@@ -48,7 +48,7 @@ extension OfferSummary: Viewable {
         bag += stackView.addArranged(Spacing(height: 10))
 
         bag += stackView.addArranged(ExpandableContent(content: InsuranceSummarySection(), isExpanded: .static(false)))
-        
+
         return (outerView, bag)
     }
 }

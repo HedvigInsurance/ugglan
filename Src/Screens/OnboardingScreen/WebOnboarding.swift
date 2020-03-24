@@ -5,12 +5,12 @@
 //  Created by Sam Pettersson on 2020-03-19.
 //
 
+import Apollo
+import Flow
 import Foundation
 import Presentation
 import UIKit
-import Flow
 import WebKit
-import Apollo
 
 struct WebOnboarding {}
 
@@ -18,7 +18,7 @@ extension WebOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
         settingsButton.tintColor = .navigationItemMutedTintColor
@@ -52,22 +52,24 @@ extension WebOnboarding: Presentable {
         titleHedvigLogo.snp.makeConstraints { make in
             make.width.equalTo(80)
         }
-        
+
         ApplicationState.preserveState(.onboardingChat)
-        
+
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .primaryBackground
-        
+
         viewController.view = webView
-        
+
         bag += webView.didReceiveAuthenticationChallenge.set { (_, _) -> (URLSession.AuthChallengeDisposition, URLCredential?) in
-            let credentials = URLCredential.init(user: "hedvig", password: "hedvig1234", persistence: .forSession)
+            let credentials = URLCredential(user: "hedvig", password: "hedvig1234", persistence: .forSession)
             return (.useCredential, credentials)
         }
-        
+
         bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
             guard let url = navigationAction.request.url else { return .allow }
             let urlString = String(describing: url)
+
+            print(navigationAction)
 
             if urlString.contains("connect-payment") {
                 viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
@@ -76,12 +78,12 @@ extension WebOnboarding: Presentable {
 
             return .allow
         }
-        
+
         func loadWebOnboarding() {
-            guard let token = ApolloClient.retreiveToken() else {
+            guard let token = ApolloClient.retreiveToken(), let tokenString = token.token.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
                 return
             }
-            
+
             var localePath: String {
                 switch Localization.Locale.currentLocale {
                 case .en_NO:
@@ -92,15 +94,19 @@ extension WebOnboarding: Presentable {
                     return ""
                 }
             }
-                        
+
             func loadStaging() {
-                guard let url = URL(string: "https://www.dev.hedvigit.com/\(localePath)new-member?variation=ios#token=\(token.token)") else {
+                var components = URLComponents(string: "https://www.dev.hedvigit.com/new-member")
+                components?.fragment = "token=\(tokenString)"
+                components?.queryItems = [URLQueryItem(name: "variation", value: "ios")]
+
+                guard let url = components?.url else {
                     return
                 }
-                
+
                 webView.load(URLRequest(url: url))
             }
-            
+
             switch ApplicationState.getTargetEnvironment() {
             case .production:
                 guard let url = URL(string: "https://www.hedvig.com/\(localePath)new-member?variation=ios#token=\(token.token)") else {
@@ -112,33 +118,31 @@ extension WebOnboarding: Presentable {
             case .custom(endpointURL: _, wsEndpointURL: _, assetsEndpointURL: _):
                 loadStaging()
             }
-            
         }
-        
-        bag += restartButton.onValue { _ in
-           let alert = Alert(
-               title: String(key: .CHAT_RESTART_ALERT_TITLE),
-               message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
-               actions: [
-                   Alert.Action(
-                       title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
-                       action: {
-                           loadWebOnboarding()
-                       }
-                   ),
-                   Alert.Action(
-                       title: String(key: .CHAT_RESTART_ALERT_CANCEL),
-                       action: {}
-                   ),
-               ]
-           )
 
-           viewController.present(alert)
-       }
-        
+        bag += restartButton.onValue { _ in
+            let alert = Alert(
+                title: String(key: .CHAT_RESTART_ALERT_TITLE),
+                message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
+                actions: [
+                    Alert.Action(
+                        title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
+                        action: {
+                            loadWebOnboarding()
+                        }
+                    ),
+                    Alert.Action(
+                        title: String(key: .CHAT_RESTART_ALERT_CANCEL),
+                        action: {}
+                    ),
+                ]
+            )
+
+            viewController.present(alert)
+        }
+
         loadWebOnboarding()
-        
+
         return (viewController, bag)
     }
 }
-

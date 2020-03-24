@@ -13,7 +13,7 @@ extension Localization.Locale {
         case no
         case se
     }
-    
+
     var market: Market {
         switch self {
         case .sv_SE:
@@ -26,7 +26,7 @@ extension Localization.Locale {
             return .no
         }
     }
-    
+
     var acceptLanguageHeader: String {
         switch self {
         case .sv_SE:
@@ -50,6 +50,19 @@ extension Localization.Locale {
             return "en_NO"
         case .nb_NO:
             return "nb_NO"
+        }
+    }
+
+    var lprojCode: String {
+        switch self {
+        case .sv_SE:
+            return "sv"
+        case .en_SE:
+            return "en"
+        case .en_NO:
+            return "en"
+        case .nb_NO:
+            return "nb-NO"
         }
     }
 

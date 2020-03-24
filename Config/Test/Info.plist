@@ -14,6 +14,7 @@
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
 	<array>
+		<string>no</string>
 		<string>en</string>
 		<string>sv</string>
 	</array>

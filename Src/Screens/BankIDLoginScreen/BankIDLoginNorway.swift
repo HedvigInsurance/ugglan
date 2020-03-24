@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2020-03-19.
 //
 
+import Apollo
+import Flow
 import Foundation
 import Presentation
-import Flow
-import Apollo
 import UIKit
 import WebKit
 
@@ -20,12 +20,12 @@ extension BankIDLoginNorway: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .primaryBackground
-        
+
         viewController.view = webView
-        
+
         bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
             guard let url = navigationAction.request.url else { return .allow }
             let urlString = String(describing: url)
@@ -41,7 +41,7 @@ extension BankIDLoginNorway: Presentable {
 
                 let window = appDelegate.window
                 bag += window.present(LoggedIn(), animated: true)
-                
+
                 return .cancel
             } else if urlString.contains("fail") {
                 loadBankID()
@@ -50,7 +50,7 @@ extension BankIDLoginNorway: Presentable {
 
             return .allow
         }
-        
+
         func loadBankID() {
             bag += client.perform(
                 mutation: BankIdNorwayAuthMutation()
@@ -58,15 +58,15 @@ extension BankIDLoginNorway: Presentable {
                 guard let url = URL(string: urlString) else {
                     return
                 }
-                
+
                 webView.load(URLRequest(url: url))
             }
         }
-        
+
         loadBankID()
-        
-        return (viewController, Future { callback in
-            return bag
+
+        return (viewController, Future { _ in
+            bag
         })
     }
 }

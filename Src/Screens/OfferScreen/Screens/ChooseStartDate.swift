@@ -21,23 +21,23 @@ extension ChooseStartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let view = UIView()
         view.backgroundColor = .secondaryBackground
-        
+
         viewController.view = view
 
         let containerView = UIStackView()
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.axis = .vertical
-        
+
         view.addSubview(containerView)
-        
+
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
         }
-        
+
         let textStackView = UIStackView()
         textStackView.spacing = 8
         textStackView.axis = .vertical

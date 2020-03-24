@@ -1,5 +1,5 @@
 github "dennisweissmann/DeviceKit" ~> 2.0
-github "yannickl/DynamicColor" >= 4.0.3
+github "yannickl/DynamicColor" == 4.2.1
 github "apollographql/apollo-ios" == 0.15.1
 github "saoudrizwan/Disk" == 0.6.3
 github "hedviginsurance/flow" "master"
@@ -10,11 +10,12 @@ github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
 github "vtourraine/AcknowList" "1.7"
 github "daltoniam/Starscream" "3.1.0"
-github "ivanbruel/MarkdownKit" "master"
+github "ivanbruel/MarkdownKit" "bdd03bb07179b23a741fb83f9b1bbe325604a690"
 github "hedviginsurance/ease" "master"
 github "pointfreeco/swift-snapshot-testing" ~> 1.6
 github "facebook/facebook-ios-sdk" == 5.13.0
 github "https://github.com/onevcat/Kingfisher" == 5.13.1
+github "adyen/adyen-ios" "3.3.0"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" == 6.5.0
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
