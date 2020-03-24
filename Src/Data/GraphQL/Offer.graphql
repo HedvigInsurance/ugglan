@@ -1,4 +1,4 @@
-query Offer {
+query Offer($locale: Locale!) {
     redeemedCampaigns {
         ...CampaignFragment
     }
@@ -31,6 +31,13 @@ query Offer {
         ... on CompleteQuote {
             startDate
             id
+            perils(locale: $locale) {
+                title
+                description
+                icon {
+                    ...IconFragment
+                }
+            }
         }
     }
 }

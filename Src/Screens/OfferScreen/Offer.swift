@@ -117,6 +117,12 @@ extension Offer {
     }
 }
 
+extension OfferQuery {
+    convenience init() {
+        self.init(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+    }
+}
+
 extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -124,7 +130,7 @@ extension Offer: Presentable {
 
         ApplicationState.preserveState(.offer)
         analyticsCoordinator.logAddToCart()
-
+        
         let bag = DisposeBag()
 
         let stackView = UIStackView()

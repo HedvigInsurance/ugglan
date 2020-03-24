@@ -60,9 +60,9 @@ extension Localization.Locale {
         case .en_SE:
             return .enSe
         case .nb_NO:
-            return .enSe
+            return .nbNo
         case .en_NO:
-            return .enSe
+            return .enNo
         }
     }
 }
