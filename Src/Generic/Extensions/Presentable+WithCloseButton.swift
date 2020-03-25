@@ -14,6 +14,29 @@ enum CloseButtonError: Error {
     case cancelled
 }
 
+extension PresentationStyle {
+    static let modallyWithCloseButton = PresentationStyle(name: "ModallyWithCloseButton") { (viewController, from, options) -> PresentationStyle.Result in
+        let bag = DisposeBag()
+        let closeButton = CloseButton()
+        let closeButtonItem = UIBarButtonItem(viewable: closeButton)
+
+        viewController.navigationItem.rightBarButtonItem = closeButtonItem
+
+        let result = PresentationStyle.modally(
+            presentationStyle: .formSheet,
+            transitionStyle: nil,
+            capturesStatusBarAppearance: true
+        ).present(viewController, from: from, options: options)
+
+        bag += closeButton.onTapSignal.onValue { _ in
+            bag.dispose()
+            result.dismisser().onValue { _ in }
+        }
+
+        return result
+    }
+}
+
 extension Presentable where Matter: UIViewController, Result == Disposable {
     var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
         AnyPresentable { () -> (Self.Matter, Future<Void>) in

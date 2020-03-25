@@ -15,28 +15,16 @@ query Offer($locale: Locale!) {
         cost {
             ...CostFragment
         }
-        arrangedPerilCategories {
-            stuff {
-                ...PerilCategoryFragment
-            }
-            home {
-                ...PerilCategoryFragment
-            }
-            me {
-                ...PerilCategoryFragment
-            }
-        }
     }
     lastQuoteOfMember {
         ... on CompleteQuote {
             startDate
             id
             perils(locale: $locale) {
-                title
-                description
-                icon {
-                    ...IconFragment
-                }
+                ...PerilFragment
+            }
+            insurableLimits(locale: $locale) {
+                ...InsurableLimitFragment
             }
         }
     }

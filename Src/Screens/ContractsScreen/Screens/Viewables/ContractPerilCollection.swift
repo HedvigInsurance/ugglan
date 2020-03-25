@@ -8,9 +8,13 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 
-struct ContractPerilCollection {}
+struct ContractPerilCollection {
+    let presentDetailStyle: PresentationStyle
+    let perilFragmentsSignal: ReadSignal<[PerilFragment]>
+}
 
 extension ContractPerilCollection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -18,17 +22,22 @@ extension ContractPerilCollection: Viewable {
         let collectionKit = CollectionKit<EmptySection, ContractPerilRow>(layout: layout)
         collectionKit.view.backgroundColor = .transparent
 
-        collectionKit.table = Table(rows: Array(repeating: .init(), count: 12))
-
         let bag = DisposeBag()
+
+        bag += perilFragmentsSignal.atOnce().onValue { perilFragments in
+
+            collectionKit.set(Table(rows: perilFragments.map { fragment -> ContractPerilRow in
+                .init(presentDetailStyle: self.presentDetailStyle, fragment: fragment)
+                       }))
+        }
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(width: collectionKit.view.frame.size.width / 2 - 5, height: 50)
         }
 
-        bag += collectionKit.view.didLayoutSignal.onValue { _ in
-            collectionKit.view.snp.makeConstraints { make in
-                make.height.equalTo(collectionKit.view.contentSize.height)
+        bag += collectionKit.view.signal(for: \.contentSize).onValue { size in
+            collectionKit.view.snp.updateConstraints { make in
+                make.height.equalTo(size.height)
             }
         }
 

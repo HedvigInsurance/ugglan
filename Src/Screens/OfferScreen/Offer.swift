@@ -167,6 +167,8 @@ extension Offer: Presentable {
 
         bag += stackView.addArranged(OfferSummary())
 
+        bag += stackView.addArranged(OfferCoverage())
+
         let insuredAtOtherCompanySignal = insuranceSignal
             .map { $0.previousInsurer != nil }
             .readable(initial: false)

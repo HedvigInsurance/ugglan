@@ -12,7 +12,7 @@ import UIKit
 
 struct PaymentSetup {
     let setupType: SetupType
-    
+
     enum SetupType {
         case initial, replacement, postOnboarding
     }

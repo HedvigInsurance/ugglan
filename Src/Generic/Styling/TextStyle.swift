@@ -333,7 +333,7 @@ extension TextStyle {
 
     static let headlineMediumMediumLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(16)
-        style.lineHeight = 24
+        style.lineHeight = 15
         style.color = .primaryText
     }
 

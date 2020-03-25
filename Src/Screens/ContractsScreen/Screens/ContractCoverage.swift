@@ -22,7 +22,7 @@ extension ContractCoverage: Presentable {
         let form = FormView()
         form.backgroundColor = .secondaryBackground
 
-        bag += form.append(ContractPerilCollection())
+        bag += form.append(ContractPerilCollection(presentDetailStyle: .default, perilFragmentsSignal: ReadWriteSignal([]).readOnly()))
 
         bag += form.append(Spacing(height: 20))
 
