@@ -1,5 +1,7 @@
 mutation AdyenTokenizePaymentDetails($paymentsRequest: PaymentsRequest!) {
     tokenizePaymentDetails(req: { paymentsRequest: $paymentsRequest }) {
-      paymentsResponse
+      ... on TokenizationResponseFinished {
+        resultCode
+      }
     }
 }
