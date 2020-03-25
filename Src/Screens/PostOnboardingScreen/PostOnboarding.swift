@@ -87,6 +87,7 @@ extension PostOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        viewController.navigationItem.hidesBackButton = true
 
         ApplicationState.preserveState(.loggedIn)
 

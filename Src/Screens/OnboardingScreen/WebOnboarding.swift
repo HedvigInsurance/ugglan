@@ -64,26 +64,22 @@ extension WebOnboarding: Presentable {
             let credentials = URLCredential(user: "hedvig", password: "hedvig1234", persistence: .forSession)
             return (.useCredential, credentials)
         }
+        
+        bag += webView.signal(for: \.url).onValue { url in
+           let urlString = String(describing: url)
 
-        bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
-            guard let url = navigationAction.request.url else { return .allow }
-            let urlString = String(describing: url)
-
-            print(navigationAction)
-
-            if urlString.contains("connect-payment") {
-                viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
-                return .cancel
-            }
-
-            return .allow
+           if urlString.contains("connect-payment") {
+               viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
+           }
         }
 
         func loadWebOnboarding() {
-            guard let token = ApolloClient.retreiveToken(), let tokenString = token.token.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
+            guard let token = ApolloClient.retreiveToken() else {
                 return
             }
-
+            
+            let tokenString = token.token.replacingOccurrences(of: "=", with: "%3D")
+            
             var localePath: String {
                 switch Localization.Locale.currentLocale {
                 case .en_NO:
@@ -96,11 +92,7 @@ extension WebOnboarding: Presentable {
             }
 
             func loadStaging() {
-                var components = URLComponents(string: "https://www.dev.hedvigit.com/new-member")
-                components?.fragment = "token=\(tokenString)"
-                components?.queryItems = [URLQueryItem(name: "variation", value: "ios")]
-
-                guard let url = components?.url else {
+                guard let url = URL(string: "https://www.dev.hedvigit.com/\(localePath)new-member?variation=ios#token=\(tokenString)") else {
                     return
                 }
 

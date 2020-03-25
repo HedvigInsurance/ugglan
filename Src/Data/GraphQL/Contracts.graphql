@@ -1,9 +1,15 @@
-query Contracts {
+query Contracts($locale: Locale!) {
     contracts {
         displayName
         upcomingRenewal {
             renewalDate
             draftCertificateUrl
+        }
+        perils(locale: $locale) {
+            ...PerilFragment
+        }
+        insurableLimits(locale: $locale) {
+            ...InsurableLimitFragment
         }
         currentAgreement {
             ... on SwedishApartmentAgreement {
