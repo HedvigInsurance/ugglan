@@ -40,7 +40,7 @@ extension BankIDLoginNorway: Presentable {
                 AnalyticsCoordinator().setUserId()
 
                 let window = appDelegate.window
-                bag += window.present(LoggedIn(), animated: true)
+                appDelegate.bag += window.present(LoggedIn(), animated: true)
 
                 return .cancel
             } else if urlString.contains("fail") {
