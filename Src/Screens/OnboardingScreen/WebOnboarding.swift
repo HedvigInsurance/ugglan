@@ -14,6 +14,12 @@ import WebKit
 
 struct WebOnboarding {}
 
+final class WebOnboardingWebView: WKWebView, UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return nil
+    }
+}
+
 extension WebOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -55,8 +61,9 @@ extension WebOnboarding: Presentable {
 
         ApplicationState.preserveState(.onboardingChat)
 
-        let webView = WKWebView(frame: .zero)
+        let webView = WebOnboardingWebView(frame: .zero)
         webView.backgroundColor = .primaryBackground
+        webView.scrollView.delegate = webView
 
         viewController.view = webView
 
