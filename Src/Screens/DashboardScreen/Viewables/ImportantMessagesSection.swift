@@ -36,7 +36,8 @@ extension ImportantMessagesSection {
             containerStackView.axis = .vertical
             containerStackView.spacing = 12
             containerStackView.alignment = .fill
-            containerStackView.edgeInsets = UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)
+            containerStackView.layoutMargins = UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)
+            containerStackView.isLayoutMarginsRelativeArrangement = true
 
             containerView.addSubview(containerStackView)
 
@@ -73,14 +74,6 @@ extension ImportantMessagesSection {
 
             containerStackView.addArrangedSubview(buttonContainer)
 
-            bag += containerView.didLayoutSignal.take(first: 1).onValue { _ in
-                containerView.snp.makeConstraints { make in
-                    make.trailing.leading.equalToSuperview().inset(16)
-                    make.top.equalToSuperview()
-                    make.bottom.equalToSuperview()
-                }
-            }
-
             return (containerView, bag)
         }
     }
@@ -91,6 +84,8 @@ extension ImportantMessagesSection: Viewable {
         let bag = DisposeBag()
 
         let wrapper = UIStackView()
+        wrapper.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
+        wrapper.isLayoutMarginsRelativeArrangement = true
         wrapper.isHidden = true
 
         bag += client.fetch(query: ImportantMessagesQuery(languageCode: Localization.Locale.currentLocale.code)).valueSignal.compactMap {
