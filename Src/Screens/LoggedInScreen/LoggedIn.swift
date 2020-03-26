@@ -45,6 +45,9 @@ extension LoggedIn {
 extension LoggedIn: Presentable {
     func materialize() -> (UITabBarController, Disposable) {
         let tabBarController = UITabBarController()
+        let loadingViewController = UIViewController()
+        loadingViewController.view.backgroundColor = .primaryBackground
+        tabBarController.viewControllers = [loadingViewController]
 
         ApplicationState.preserveState(.loggedIn)
 
@@ -88,20 +91,37 @@ extension LoggedIn: Presentable {
 
         bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
             if features.contains(.keyGear) {
-                bag += tabBarController.presentTabs(
-                    contractsPresentation,
-                    keyGearPresentation,
-                    claimsPresentation,
-                    referralsPresentation,
-                    profilePresentation
-                )
+                if features.contains(.referrals) {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        keyGearPresentation,
+                        claimsPresentation,
+                        referralsPresentation,
+                        profilePresentation
+                    )
+                } else {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        keyGearPresentation,
+                        claimsPresentation,
+                        profilePresentation
+                    )
+                }
             } else {
-                bag += tabBarController.presentTabs(
-                    contractsPresentation,
-                    claimsPresentation,
-                    referralsPresentation,
-                    profilePresentation
-                )
+                if features.contains(.referrals) {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        claimsPresentation,
+                        referralsPresentation,
+                        profilePresentation
+                    )
+                } else {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        claimsPresentation,
+                        profilePresentation
+                    )
+                }
             }
         }
 
