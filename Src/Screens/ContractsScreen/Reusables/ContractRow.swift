@@ -158,7 +158,7 @@ extension ContractRow: Reusable {
                 return
             }
             section.viewController?.present(
-                InsuranceCertificate(url: url).withCloseButton,
+                InsuranceDocument(url: url, title: "").withCloseButton,
                 style: .modally()
             )
         }
@@ -191,7 +191,7 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: "Min information", style: .headlineSmallSmallLeft)
+            UILabel(value: String(key: .DASHBOARD_MY_INFO_TITLE), style: .headlineSmallSmallLeft)
         )
         textContainer.addArrangedSubview(
             UILabel(value: contract.currentAgreement.summary ?? "", style: .bodySmallSmallLeft)
@@ -236,10 +236,10 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: "Mitt skydd", style: .headlineSmallSmallLeft)
+            UILabel(value: String(key: .DASHBOARD_MY_COVERAGE_TITLE), style: .headlineSmallSmallLeft)
         )
         textContainer.addArrangedSubview(
-            UILabel(value: "Tryck för att läsa", style: .bodySmallSmallLeft)
+            UILabel(value: String(key: .DASHBOARD_MY_COVERAGE_SUBTITLE), style: .bodySmallSmallLeft)
         )
 
         row.append(textContainer)
@@ -247,7 +247,11 @@ extension ContractRow: Reusable {
         row.append(makeInfoIcon())
 
         bag += section.append(row).onValue { _ in
-            section.viewController?.present(ContractCoverage().withCloseButton, style: .modally())
+            let contractCoverage = ContractCoverage(
+                perilFragments: self.contract.perils.compactMap { $0.fragments.perilFragment },
+                insurableLimitFragments: self.contract.insurableLimits.compactMap { $0.fragments.insurableLimitFragment }
+            )
+            section.viewController?.present(contractCoverage.withCloseButton, style: .modally())
         }
 
         return (bag, [
@@ -278,10 +282,10 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: "Mina dokument", style: .headlineSmallSmallLeft)
+            UILabel(value: String(key: .DASHBOARD_MY_DOCUMENTS_TITLE), style: .headlineSmallSmallLeft)
         )
         textContainer.addArrangedSubview(
-            UILabel(value: "Försäkringsbrev", style: .bodySmallSmallLeft)
+            UILabel(value: String(key: .DASHBOARD_MY_DOCUMENTS_SUBTITLE), style: .bodySmallSmallLeft)
         )
 
         row.append(textContainer)

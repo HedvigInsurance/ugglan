@@ -11,7 +11,14 @@ query Contracts($locale: Locale!) {
         insurableLimits(locale: $locale) {
             ...InsurableLimitFragment
         }
+        termsAndConditions(locale: $locale) {
+            displayName
+            url
+        }
         currentAgreement {
+            ... on AgreementCore {
+                certificateUrl
+            }
             ... on SwedishApartmentAgreement {
                 activeFrom
                 activeTo

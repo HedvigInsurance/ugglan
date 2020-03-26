@@ -59,7 +59,7 @@ extension ContractPerilRow: Reusable {
                 }
             }
 
-            let title = UILabel(value: self.fragment.title, style: .headlineMediumMediumLeft)
+            let title = UILabel(value: self.fragment.title, style: .headlineSmallSmallLeft)
             contentContainer.addArrangedSubview(title)
 
             bag += {

@@ -26,7 +26,7 @@ extension ContractDetail: Presentable {
             livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
             livingSpaceRow.valueSignal.value = String(key: .MY_HOME_ROW_SIZE_VALUE(
                 livingSpace: swedishApartment.squareMeters
-           ))
+            ))
             livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(livingSpaceRow)
 

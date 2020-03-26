@@ -14,17 +14,18 @@ import Presentation
 import SafariServices
 import UIKit
 
-struct InsuranceCertificate {
+struct InsuranceDocument {
     @Inject var client: ApolloClient
     let url: URL
+    let title: String
 }
 
-extension InsuranceCertificate: Presentable {
+extension InsuranceDocument: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(key: .MY_INSURANCE_CERTIFICATE_TITLE)
+        viewController.title = title
 
         let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)

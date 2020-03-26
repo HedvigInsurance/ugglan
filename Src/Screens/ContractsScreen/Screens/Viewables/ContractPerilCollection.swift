@@ -25,10 +25,11 @@ extension ContractPerilCollection: Viewable {
         let bag = DisposeBag()
 
         bag += perilFragmentsSignal.atOnce().onValue { perilFragments in
-
-            collectionKit.set(Table(rows: perilFragments.map { fragment -> ContractPerilRow in
-                .init(presentDetailStyle: self.presentDetailStyle, fragment: fragment)
-                       }))
+            collectionKit.set(
+                Table(rows: perilFragments.map { fragment -> ContractPerilRow in
+                    .init(presentDetailStyle: self.presentDetailStyle, fragment: fragment)
+                })
+            )
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in

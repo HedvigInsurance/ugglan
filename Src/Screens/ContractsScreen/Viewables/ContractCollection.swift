@@ -12,6 +12,7 @@ import Foundation
 
 struct ContractCollection {
     @Inject var client: ApolloClient
+    let presentingViewController: UIViewController
 }
 
 extension ContractsQuery.Data.Contract.CurrentAgreement {
@@ -87,25 +88,15 @@ extension ContractsQuery.Data.Contract.CurrentAgreement {
         fatalError("Unrecognised agreement provided")
     }
 
-    var certificateUrl: URL? {
-        if let norwegianHomeContents = asNorwegianHomeContentAgreement {
-            return URL(string: norwegianHomeContents.certificateUrl)
-        } else if let norwegianTravel = asNorwegianTravelAgreement {
-            return URL(string: norwegianTravel.certificateUrl)
-        } else if let swedishApartment = asSwedishApartmentAgreement {
-            return URL(string: swedishApartment.certificateUrl)
-        } else if let swedishHouse = asSwedishHouseAgreement {
-            return URL(string: swedishHouse.certificateUrl)
-        }
-
-        return nil
-    }
-
     var summary: String? {
         if let norwegianHomeContents = asNorwegianHomeContentAgreement {
             return norwegianHomeContents.address.street
         } else if let norwegianTravel = asNorwegianTravelAgreement {
-            return String(norwegianTravel.numberCoInsured)
+            if norwegianTravel.numberCoInsured > 0 {
+                return String(key: .DASHBOARD_MY_INFO_COINSURED(coinsuredPeople: norwegianTravel.numberCoInsured))
+            }
+            
+            return String(key: .DASHBOARD_MY_INFO_NO_COINSURED)
         } else if let swedishApartment = asSwedishApartmentAgreement {
             return swedishApartment.address.street
         } else if let swedishHouse = asSwedishHouseAgreement {
@@ -144,6 +135,9 @@ extension ContractCollection: Viewable {
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .noInsets)
 
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
+        
+        let importantMessagesSection = ImportantMessagesSection(presentingViewController: presentingViewController)
+        bag += tableKit.view.addTableHeaderView(importantMessagesSection)
 
         tableKit.view.backgroundColor = .primaryBackground
         tableKit.view.alwaysBounceVertical = true

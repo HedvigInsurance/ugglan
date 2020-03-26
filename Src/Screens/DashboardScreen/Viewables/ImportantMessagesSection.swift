@@ -29,10 +29,8 @@ extension ImportantMessagesSection {
             let bag = DisposeBag()
 
             let containerView = UIView()
-            containerView.backgroundColor = UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? UIColor.yellow.darkened(amount: 0.25) : .yellow
-            })
-            containerView.layer.cornerRadius = 8
+            containerView.backgroundColor = .secondaryBackground
+            containerView.layer.cornerRadius = 6
 
             let containerStackView = UIStackView()
             containerStackView.axis = .vertical
@@ -94,7 +92,6 @@ extension ImportantMessagesSection: Viewable {
 
         let wrapper = UIStackView()
         wrapper.isHidden = true
-        wrapper.isLayoutMarginsRelativeArrangement = true
 
         bag += client.fetch(query: ImportantMessagesQuery(languageCode: Localization.Locale.currentLocale.code)).valueSignal.compactMap {
             $0.data?.importantMessages.compactMap { $0 }
