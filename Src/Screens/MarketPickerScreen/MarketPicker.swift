@@ -14,6 +14,11 @@ import UIKit
 
 struct MarketPicker {
     @Inject var client: ApolloClient
+    var didFinish: () -> Void
+    
+    init(didFinish: @escaping () -> Void = {}) {
+        self.didFinish = didFinish
+    }
 }
 
 extension MarketPicker {
@@ -102,6 +107,7 @@ extension MarketPicker {
         let pickedMarketSignal: Signal<Market>
         let presentingViewController: UIViewController
         @Inject var client: ApolloClient
+        var didFinish: () -> Void
 
         func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
             let bag = DisposeBag()
@@ -124,6 +130,7 @@ extension MarketPicker {
                 ApolloClient.initClient().always {}
                 bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in
                     self.presentingViewController.present(Marketing())
+                    self.didFinish()
                 }
             }
 
@@ -222,7 +229,7 @@ extension MarketPicker: Presentable {
                 pickedMarketSignal.value = market
             }
             bag += form.append(Spacing(height: 20))
-            bag += form.append(LanguageSection(pickedMarketSignal: pickedMarketSignal.atOnce().compactMap { $0 }, presentingViewController: viewController))
+            bag += form.append(LanguageSection(pickedMarketSignal: pickedMarketSignal.atOnce().compactMap { $0 }, presentingViewController: viewController, didFinish: self.didFinish))
 
             form.transform = CGAffineTransform(translationX: 0, y: 100)
             form.alpha = 0

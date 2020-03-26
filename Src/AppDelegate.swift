@@ -151,7 +151,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             guard let rootViewController = window.rootViewController else { return }
 
             bag += rootViewController.present(
-                DirectDebitSetup(setupType: .initial),
+                PaymentSetup(setupType: .initial),
                 style: .modal,
                 options: [.defaults]
             )
@@ -162,26 +162,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
 
-        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
+        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return }
         guard let rootViewController = window.rootViewController else { return }
         let innerBag = bag.innerBag()
-
-        innerBag += rootViewController.present(
-            ReferralsReceiverConsent(referralCode: referralCode),
-            style: .modal,
-            options: [
-                .prefersNavigationBarHidden(true),
-            ]
-        ).onValue { result in
-            if result == .accept {
-                if ApplicationState.currentState?.isOneOf([.marketing]) == true {
-                    self.bag += rootViewController.present(
-                        OnboardingChat(),
-                        options: [.prefersNavigationBarHidden(false)]
-                    )
+        
+        func presentReferralsAccept() {
+            innerBag += rootViewController.present(
+                ReferralsReceiverConsent(referralCode: referralCode),
+                style: .modal,
+                options: [
+                    .prefersNavigationBarHidden(true),
+                    .allowSwipeDismissAlways
+                ]
+            ).onValue { result in
+                if result == .accept {
+                    if ApplicationState.currentState?.isOneOf([.marketing]) == true {
+                        self.bag += rootViewController.present(
+                            OnboardingChat(),
+                            options: [.prefersNavigationBarHidden(false)]
+                        )
+                    }
                 }
+                innerBag.dispose()
             }
-            innerBag.dispose()
+        }
+        
+        if ApplicationState.hasPreferredLocale {
+            presentReferralsAccept()
+        } else {
+            bag += rootViewController.present(MarketPicker {
+                presentReferralsAccept()
+            })
         }
     }
 
@@ -359,7 +370,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        DirectDebitSetup(),
+                        PaymentSetup(setupType: .initial),
                         style: .modal,
                         options: [.defaults]
                     )
@@ -367,7 +378,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        DirectDebitSetup(),
+                        PaymentSetup(setupType: .replacement),
                         style: .modal,
                         options: [.defaults]
                     )
