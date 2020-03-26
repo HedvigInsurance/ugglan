@@ -135,6 +135,7 @@ extension ContractRow: Reusable {
 
         let textContainer = UIStackView()
         textContainer.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
+        textContainer.spacing = 5
         textContainer.isLayoutMarginsRelativeArrangement = true
         textContainer.axis = .vertical
 
@@ -187,6 +188,7 @@ extension ContractRow: Reusable {
 
         let textContainer = UIStackView()
         textContainer.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
+        textContainer.spacing = 5
         textContainer.isLayoutMarginsRelativeArrangement = true
         textContainer.axis = .vertical
 
@@ -232,6 +234,7 @@ extension ContractRow: Reusable {
 
         let textContainer = UIStackView()
         textContainer.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
+        textContainer.spacing = 5
         textContainer.isLayoutMarginsRelativeArrangement = true
         textContainer.axis = .vertical
 
@@ -278,6 +281,7 @@ extension ContractRow: Reusable {
 
         let textContainer = UIStackView()
         textContainer.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
+        textContainer.spacing = 5
         textContainer.isLayoutMarginsRelativeArrangement = true
         textContainer.axis = .vertical
 

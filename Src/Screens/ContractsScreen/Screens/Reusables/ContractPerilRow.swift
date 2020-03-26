@@ -55,16 +55,12 @@ extension ContractPerilRow: Reusable {
             let remoteVectorIcon = RemoteVectorIcon(self.fragment.icon.fragments.iconFragment)
             bag += contentContainer.addArranged(remoteVectorIcon) { iconView in
                 iconView.snp.makeConstraints { make in
-                    make.width.equalTo(35)
+                    make.width.equalTo(32.5)
                 }
             }
 
-            let title = UILabel(value: self.fragment.title, style: .headlineSmallSmallLeft)
-            contentContainer.addArrangedSubview(title)
-
-            bag += {
-                title.removeFromSuperview()
-            }
+            let title = MultilineLabel(value: self.fragment.title, style: TextStyle.headlineSmallSmallLeft)
+            bag += contentContainer.addArranged(title)
 
             bag += view.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25), animations: { _ in
                 view.backgroundColor = UIColor.primaryTintColor.withAlphaComponent(0.2)

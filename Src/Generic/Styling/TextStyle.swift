@@ -165,36 +165,42 @@ extension TextStyle {
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(17)
+        style.lineHeight = 20
         style.color = .primaryText
     }
 
     static let rowTitleBold = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(17)
+        style.lineHeight = 15
     }
 
     static let rowTitleSecondary = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
         style.color = .secondaryText
+        style.lineHeight = 15
     }
 
     static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(17)
         style.color = .gray
+        style.lineHeight = 15
     }
 
     static let rowValueLink = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(17)
         style.color = .primaryTintColor
+        style.lineHeight = 15
     }
 
     static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineSpacing = 5
+        style.lineHeight = 15
         style.color = .secondaryText
     }
 
     static let rowTertitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(12)
         style.color = .secondaryText
+        style.lineHeight = 15
     }
 
     static let rowSubtitlePrimary = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
@@ -476,26 +482,26 @@ extension TextStyle {
 
     static let headlineSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryText
     }
 
     static let headlineSmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryTextNeg
         style.alignment = .center
     }
 
     static let headlineSmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryTextNeg
     }
 
     static let bodySmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryTextNeg
         style.letterSpacing = 0.2
         style.alignment = .right
@@ -503,7 +509,7 @@ extension TextStyle {
 
     static let linksSmallCautionSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularCaution
         style.letterSpacing = 0.2
         style.alignment = .center
@@ -511,7 +517,7 @@ extension TextStyle {
 
     static let bodySmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularBody
         style.letterSpacing = 0.2
         style.alignment = .right
@@ -519,7 +525,7 @@ extension TextStyle {
 
     static let linksSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .linksRegular
         style.letterSpacing = 0.2
         style.alignment = .center
@@ -527,21 +533,21 @@ extension TextStyle {
 
     static let bodySmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryTextNeg
         style.letterSpacing = 0.2
     }
 
     static let linksSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .linksRegular
         style.letterSpacing = 0.2
     }
 
     static let bodySmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularBody
         style.letterSpacing = 0.2
         style.alignment = .center
@@ -549,14 +555,14 @@ extension TextStyle {
 
     static let bodySmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularBody
         style.letterSpacing = 0.2
     }
 
     static let bodySmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryTextNeg
         style.letterSpacing = 0.2
         style.alignment = .center
@@ -564,14 +570,14 @@ extension TextStyle {
 
     static let linksSmallCautionSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularCaution
         style.letterSpacing = 0.2
     }
 
     static let linksSmallCautionSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularCaution
         style.letterSpacing = 0.2
         style.alignment = .right
@@ -579,7 +585,7 @@ extension TextStyle {
 
     static let linksSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .linksRegular
         style.letterSpacing = 0.2
     }
