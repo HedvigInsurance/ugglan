@@ -30,6 +30,14 @@ extension MyPayment: Presentable {
 
         let form = FormView()
         bag += viewController.install(form)
+        
+        form.alpha = 0
+        form.transform = CGAffineTransform(translationX: 0, y: 100)
+
+        bag += dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            form.alpha = 1
+            form.transform = CGAffineTransform.identity
+        }
 
         bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious { failedCharges, nextPayment in
             let innerbag = DisposeBag()
