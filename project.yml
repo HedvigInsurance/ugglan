@@ -42,6 +42,8 @@ targets:
       - location: Carthage/Build/iOS/FirebaseABTesting.framework
       - location: Carthage/Build/iOS/FirebaseFirestore.framework
       - location: Carthage/Build/iOS/FirebaseMessaging.framework
+      - location: Carthage/Build/iOS/FirebaseInstallations.framework
+      - location: Carthage/Build/iOS/PromisesObjC.framework
       - location: Carthage/Build/iOS/gRPC-C++.framework
       - location: Carthage/Build/iOS/gRPC-Core.framework
       - location: Carthage/Build/iOS/leveldb-library.framework
@@ -192,6 +194,8 @@ targets:
       - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
       - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
       - location: Carthage/Build/iOS/FirebaseInstanceID.framework
+      - location: Carthage/Build/iOS/FirebaseInstallations.framework
+      - location: Carthage/Build/iOS/PromisesObjC.framework
       - location: Carthage/Build/iOS/FirebaseABTesting.framework
       - location: Carthage/Build/iOS/FirebaseFirestore.framework
       - location: Carthage/Build/iOS/FirebaseMessaging.framework
