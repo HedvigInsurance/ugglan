@@ -9,9 +9,10 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Apollo
 
 struct PaymentNeedsSetupSection {
-    let dataSignal: ReadWriteSignal<MyPaymentQuery.Data?> = ReadWriteSignal(nil)
+    @Inject var client: ApolloClient
     var presentingViewController: UIViewController
 }
 
@@ -55,7 +56,7 @@ extension PaymentNeedsSetupSection: Viewable {
         }
 
         bag += connectButton.onTapSignal.onValue { _ in
-            self.presentingViewController.present(DirectDebitSetup(), options: [.autoPop, .largeTitleDisplayMode(.never)])
+            self.presentingViewController.present(PaymentSetup(setupType: .initial), options: [.autoPop, .largeTitleDisplayMode(.never)])
         }
 
         containerStackView.addArrangedSubview(buttonContainer)
@@ -66,10 +67,13 @@ extension PaymentNeedsSetupSection: Viewable {
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
+       
+        let dataSignal = client.watch(query: MyPaymentQuery())
+                   .compactMap { $0.data }
 
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { data in
-            switch data?.directDebitStatus {
-            case .active?, .pending?:
+            switch data.directDebitStatus {
+            case .active, .pending:
                 wrapper.animationSafeIsHidden = true
                 containerStackView.alpha = 0
             default:

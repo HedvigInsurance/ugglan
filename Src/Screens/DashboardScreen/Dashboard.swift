@@ -32,14 +32,8 @@ extension Dashboard: Presentable {
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
 
-        let chatPreview = ChatPreview(presentingViewController: viewController)
-        bag += containerStackView.addArranged(chatPreview)
-
         let importantMessagesSection = ImportantMessagesSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(importantMessagesSection)
-
-        let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
-        bag += containerStackView.addArranged(paymentNeedsSetupSection)
 
         let pendingInsurance = PendingInsurance()
         bag += containerStackView.addArranged(pendingInsurance)
@@ -64,10 +58,6 @@ extension Dashboard: Presentable {
         bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
             fetch()
         }
-
-        bag += client.watch(query: MyPaymentQuery())
-            .compactMap { $0.data }
-            .bindTo(paymentNeedsSetupSection.dataSignal)
 
         return (viewController, bag)
     }

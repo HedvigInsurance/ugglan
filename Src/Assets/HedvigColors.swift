@@ -145,6 +145,12 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .white : .black
         })
     }
+    
+    static var primaryButtonBackgroundColor: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.15) : .black
+        })
+    }
 
     static var secondaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in

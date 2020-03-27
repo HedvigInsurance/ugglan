@@ -46,10 +46,14 @@ extension ChatPreview: Viewable {
         symbolIconContainer.axis = .vertical
         symbolIconContainer.alignment = .leading
         symbolIconContainer.isLayoutMarginsRelativeArrangement = true
-        symbolIconContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        symbolIconContainer.edgeInsets = UIEdgeInsets(horizontalInset: 10, verticalInset: 0)
 
         let symbolIcon = Icon(icon: Asset.symbol, iconWidth: 20)
         symbolIconContainer.addArrangedSubview(symbolIcon)
+        
+        symbolIcon.snp.makeConstraints { make in
+            make.width.height.equalTo(20)
+        }
 
         containerView.addArrangedSubview(symbolIconContainer)
 

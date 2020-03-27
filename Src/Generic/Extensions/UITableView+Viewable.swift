@@ -10,6 +10,30 @@ import Flow
 import Foundation
 import UIKit
 
+extension UIView {
+    var anyDescendantDidLayoutSignal: Signal<Void> {
+        if subviews.isEmpty {
+            return didLayoutSignal
+        }
+        
+        let callbacker = Callbacker<Void>()
+        let bag = DisposeBag()
+        
+        bag += subviews.map { subview in
+            return subview.anyDescendantDidLayoutSignal.onValue { _ in
+                callbacker.callAll()
+            }
+        }
+        
+        bag += didLayoutSignal.onValue { _ in
+            callbacker.callAll()
+        }
+        
+        return callbacker.providedSignal.hold(bag)
+    }
+}
+
+
 extension UITableView {
     func addTableHeaderView<V: Viewable, VMatter: UIView>(
         _ viewable: V
@@ -29,7 +53,7 @@ extension UITableView {
         
         let bag = DisposeBag()
             
-        bag += matter.allDescendantsSignal.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+        bag += matter.anyDescendantDidLayoutSignal.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
             self.tableHeaderView = matter
             matter.layoutIfNeeded()
             self.layoutIfNeeded()

@@ -28,7 +28,7 @@ struct PostOnboarding {
 
         let paymentButton = Button(
             title: String(key: .ONBOARDING_CONNECT_DD_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
         )
 
         bag += paymentButton.onTapSignal.onValue { _ in
@@ -47,7 +47,7 @@ struct PostOnboarding {
 
         let pushNotificationsDoButton = Button(
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
         )
 
         let pushNotificationsSkipButton = Button(

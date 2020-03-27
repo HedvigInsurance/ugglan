@@ -72,7 +72,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             let descriptionLabel = MultilineLabel(value: action.description, style: .blockRowDescription)
             bag += contentView.addArranged(descriptionLabel)
 
-            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
+            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white))
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical
@@ -94,9 +94,9 @@ extension EmergencyActions: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 5,
-                left: 20,
+                left: 0,
                 bottom: 5,
-                right: 20
+                right: 0
             ),
             itemSpacing: 0,
             minRowHeight: 10,

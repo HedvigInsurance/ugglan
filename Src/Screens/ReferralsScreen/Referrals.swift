@@ -173,7 +173,7 @@ extension Referrals: Presentable {
         let button = LoadableButton(
             button: Button(
                 title: String(key: .REFERRALS_SHARE_BUTTON),
-                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
             ),
             initialLoadingState: true
         )
