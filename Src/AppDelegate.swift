@@ -18,6 +18,7 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import Adyen
 
 let log = Logger.self
 
@@ -206,6 +207,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        RedirectComponent.applicationDidOpen(from: url)
+        
         return application(app, open: url,
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
@@ -218,7 +221,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         UserDefaults.standard.set(Localization.Locale.currentLocale.lprojCode, forKey: "AppleLanguage")
         Bundle.swizzleLocalization()
-
+        
         FirebaseApp.configure()
 
         launchWindow?.isOpaque = false

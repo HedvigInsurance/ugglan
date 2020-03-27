@@ -22,7 +22,7 @@ extension PaymentHeaderCard: Viewable {
         let bag = DisposeBag()
 
         let topView = UIView()
-        topView.backgroundColor = .grass500
+        topView.backgroundColor = .black
 
         bag += topView.didLayoutSignal.onValue { _ in
             topView.applyRadiusMaskFor(topLeft: 10, bottomLeft: 0, bottomRight: 0, topRight: 10)

@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "personal_info_plain.pdf"
+      "filename" : "personal_info_plain-4.pdf"
     },
     {
       "idiom" : "universal",
-      "filename" : "personal_info_plain-1.pdf",
+      "filename" : "personal_info_plain-3.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",

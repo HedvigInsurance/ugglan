@@ -80,19 +80,43 @@ extension AdyenSetup: Presentable {
                             let json = String(data: jsonData, encoding: .utf8) else {
                             return
                         }
+                        
+                        let urlScheme = Bundle.main.urlScheme ?? ""
 
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
-                                paymentsRequest: "{\"paymentMethod\": \(json)}"
+                                paymentsRequest: "{\"paymentMethod\": \(json), \"returnUrl\": \"\(urlScheme)://\"}"
                             )
-                        ).onValue { _ in
-                            component.stopLoading(withSuccess: false, completion: nil)
-                            self.completion(.success)
+                        ).onValue { result in
+                            if result.data?.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
+                                component.stopLoading(withSuccess: true, completion: nil)
+                                self.completion(.success)
+                            } else if let data = result.data?.tokenizePaymentDetails?.asTokenizationResponseAction {
+                                guard let jsonData = data.action.data(using: .utf8) else {
+                                    return
+                                }
+                                guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
+                                    return
+                                }
+                                
+                                component.handle(action)
+                            }
                         }
                     }
 
-                    func didProvide(_ data: ActionComponentData, from _: DropInComponent) {
-                        print(data)
+                    func didProvide(_ data: ActionComponentData, from component: DropInComponent) {
+                        guard
+                            let detailsJsonData = try? JSONSerialization.data(withJSONObject: data.details.dictionaryRepresentation),
+                            let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
+                            return
+                        }
+                        
+                        self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \(data.paymentData)}")).onValue { result in
+                            if result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
+                                component.stopLoading(withSuccess: true, completion: nil)
+                                self.completion(.success)
+                            }
+                        }
                     }
 
                     func didFail(with error: Error, from _: DropInComponent) {

@@ -15,6 +15,12 @@ extension TextStyle {
             style.alignment = .center
         }
     }
+    
+    var zeroedLineSpacing: TextStyle {
+        self.restyled { (style: inout TextStyle) in
+            style.lineSpacing = 0
+        }
+    }
 
     static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(15)

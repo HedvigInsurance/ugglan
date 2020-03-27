@@ -145,7 +145,6 @@ extension ContractCollection: Viewable {
         bag += client.fetch(
             query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
         ).valueSignal.compactMap { $0.data?.contracts }.onValue { contracts in
-
             let table = Table(rows: contracts.map { contract -> ContractRow in
                 ContractRow(
                     contract: contract,

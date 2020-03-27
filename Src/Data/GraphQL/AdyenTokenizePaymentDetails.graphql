@@ -3,5 +3,8 @@ mutation AdyenTokenizePaymentDetails($paymentsRequest: PaymentsRequest!) {
       ... on TokenizationResponseFinished {
         resultCode
       }
+      ... on TokenizationResponseAction {
+        action
+      }
     }
 }
