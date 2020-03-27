@@ -23,9 +23,20 @@ extension UITableView {
 
         matter.snp.makeConstraints { make in
             make.width.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview()
         }
+        
+        let bag = DisposeBag()
+            
+        bag += matter.allDescendantsSignal.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+            self.tableHeaderView = matter
+            matter.layoutIfNeeded()
+            self.layoutIfNeeded()
+        })
 
         return Disposer {
+            bag.dispose()
             result.dispose()
             disposable.dispose()
         }

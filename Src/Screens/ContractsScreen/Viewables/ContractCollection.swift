@@ -135,9 +135,7 @@ extension ContractCollection: Viewable {
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .noInsets)
 
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
-        
-        let importantMessagesSection = ImportantMessagesSection(presentingViewController: presentingViewController)
-        bag += tableKit.view.addTableHeaderView(importantMessagesSection)
+        bag += tableKit.view.addTableHeaderView(ContractTableHeader(presentingViewController: presentingViewController))
 
         tableKit.view.backgroundColor = .primaryBackground
         tableKit.view.alwaysBounceVertical = true
