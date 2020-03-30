@@ -454,15 +454,13 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let style = message.fromMyself ? TextStyle.bodyRegularRegularLeft : TextStyle.bodyRegularNegRegularNegLeft
+                    let style = message.fromMyself ? TextStyle.bodyRegularRegularLeft.colored(.black) : TextStyle.bodyRegularNegRegularNegLeft
                     
                     let label = MultilineLabel(
                         value: message.body,
                         style: style
                     )
-                    bag += contentContainer.addArranged(label) { textView in
-                        textView.textColor = .black
-                    }
+                    bag += contentContainer.addArranged(label)
                 }
 
                 if !message.type.isRichType {
