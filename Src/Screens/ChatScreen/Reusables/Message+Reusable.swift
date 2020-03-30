@@ -456,11 +456,9 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let style = message.fromMyself ? TextStyle.bodyRegularRegularLeft.colored(.black) : TextStyle.bodyRegularNegRegularNegLeft.colored(.primaryText)
-                    
                     let label = MultilineLabel(
                         value: message.body,
-                        style: style
+                        style: .chatBody
                     )
                     bag += contentContainer.addArranged(label)
                 }
