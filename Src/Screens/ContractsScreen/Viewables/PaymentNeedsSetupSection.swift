@@ -56,7 +56,11 @@ extension PaymentNeedsSetupSection: Viewable {
         }
 
         bag += connectButton.onTapSignal.onValue { _ in
-            self.presentingViewController.present(PaymentSetup(setupType: .initial), options: [.autoPop, .largeTitleDisplayMode(.never)])
+            self.presentingViewController.present(
+                PaymentSetup(setupType: .initial),
+                style: .modally(),
+                options: [.defaults, .allowSwipeDismissAlways]
+            )
         }
 
         containerStackView.addArrangedSubview(buttonContainer)

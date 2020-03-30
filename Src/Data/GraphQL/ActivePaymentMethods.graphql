@@ -1,0 +1,9 @@
+query ActivePaymentMethods {
+    activePaymentMethods {
+        storedPaymentMethodsDetails {
+            lastFourDigits
+            holderName
+            brand
+        }
+    }
+}

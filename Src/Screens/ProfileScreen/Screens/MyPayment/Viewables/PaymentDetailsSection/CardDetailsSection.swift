@@ -1,9 +1,8 @@
 //
-//  PaymentDetailsSection.swift
-//  Hedvig
+//  CardDetailsSection.swift
+//  test
 //
-//  Created by Isaac Sennerholt on 2019-01-15.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
+//  Created by Sam Pettersson on 2020-03-30.
 //
 
 import Apollo
@@ -11,11 +10,11 @@ import Flow
 import Form
 import Foundation
 
-struct BankDetailsSection {
+struct CardDetailsSection {
     @Inject var client: ApolloClient
 }
 
-extension BankDetailsSection: Viewable {
+extension CardDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
@@ -24,28 +23,28 @@ extension BankDetailsSection: Viewable {
             footer: nil,
             style: .sectionPlain
         )
+        section.isHidden = true
+
         let row = KeyValueRow()
         row.valueStyleSignal.value = .rowTitleDisabled
 
         bag += section.append(row)
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery())
-        let noBankAccountSignal = dataValueSignal.filter {
-            $0.data?.bankAccount == nil
-        }
-
-        bag += noBankAccountSignal.map {
-            _ in String(key: .MY_PAYMENT_NOT_CONNECTED)
-        }.bindTo(row.keySignal)
-
+        let dataValueSignal = client.watch(query: ActivePaymentMethodsQuery())
         let dataSignal = dataValueSignal.compactMap { $0.data }
+        
+        bag += dataSignal.map { $0.activePaymentMethods == nil }.bindTo(
+            animate: SpringAnimationStyle.lightBounce(),
+            section,
+            \.animationSafeIsHidden
+        )
 
         bag += dataSignal.compactMap {
-            $0.bankAccount?.bankName
+            $0.activePaymentMethods?.storedPaymentMethodsDetails.brand
         }.bindTo(row.keySignal)
 
         bag += dataSignal.compactMap {
-            $0.bankAccount?.descriptor
+            $0.activePaymentMethods?.storedPaymentMethodsDetails.brand
         }.bindTo(row.valueSignal)
 
         return (section, bag)

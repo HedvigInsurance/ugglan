@@ -71,9 +71,17 @@ extension MyPayment: Presentable {
 
         let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
-
-        let bankDetailsSection = BankDetailsSection()
-        bag += form.append(bankDetailsSection)
+                
+        switch Localization.Locale.currentLocale.market {
+        case .se:
+            let bankDetailsSection = BankDetailsSection()
+            bag += form.append(bankDetailsSection)
+            break
+        case .no:
+            let cardDetailsSection = CardDetailsSection()
+            bag += form.append(cardDetailsSection)
+            break
+        }
 
         bag += form.append(Spacing(height: 20))
 
@@ -102,12 +110,10 @@ extension MyPayment: Presentable {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true
-                bankDetailsSection.isHiddenSignal.value = true
             } else {
                 updatingMessageSectionSpacing.isHiddenSignal.value = true
                 updatingMessageSection.isHidden = true
                 buttonSection.isHiddenSignal.value = false
-                bankDetailsSection.isHiddenSignal.value = false
             }
 
             return innerBag

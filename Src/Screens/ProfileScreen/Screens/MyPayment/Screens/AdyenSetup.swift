@@ -125,6 +125,17 @@ extension AdyenSetup: Presentable {
                 }
 
                 let delegate = Coordinator { result in
+                    switch result {
+                    case .success:
+                        self.client.fetch(
+                            query: MyPaymentQuery(),
+                            cachePolicy: .fetchIgnoringCacheData
+                        ).onValue { _ in }
+                        break
+                    case .failure:
+                        break
+                    }
+                    
                     completion(result)
                 }
                 bag.hold(delegate)
@@ -147,7 +158,10 @@ extension AdyenSetup: Presentable {
 
                 dropInComponent.viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
-                viewController.present(dropInComponent.viewController, options: [.allowSwipeDismissAlways, .unanimated]).onValue { _ in
+                viewController.present(dropInComponent.viewController, options: [
+                    .allowSwipeDismissAlways,
+                    .unanimated
+                ]).onValue { _ in
                     completion(.success)
                 }
             }
