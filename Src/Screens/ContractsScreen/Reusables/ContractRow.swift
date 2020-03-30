@@ -20,15 +20,8 @@ struct ContractRow: Hashable {
 
     let contract: ContractsQuery.Data.Contract
     let displayName: String
-    let state: State
     let type: ContractType
-
-    enum State {
-        case active
-        case cancelled(from: Date)
-        case coming
-    }
-
+    
     enum ContractType {
         case swedishApartment
         case swedishHouse
@@ -65,6 +58,17 @@ struct ContractRow: Hashable {
     }
 }
 
+extension Date: LocalizationStringConvertible {
+    public var localizationDescription: String {
+         let dateFormatter = DateFormatter()
+         dateFormatter.locale = Foundation.Locale(identifier: Localization.Locale.currentLocale.rawValue)
+         dateFormatter.dateStyle = .long
+         let dateString = dateFormatter.string(from: self)
+        
+        return dateString
+    }
+}
+
 extension ContractRow: Reusable {
     func makeStateIndicator() -> UIStackView {
         let stackView = UIStackView()
@@ -82,17 +86,35 @@ extension ContractRow: Reusable {
 
         let label = UILabel(value: "", style: .bodySmallSmallLeft)
         stackView.addArrangedSubview(label)
-
-        switch state {
-        case .active:
-            imageView.image = Asset.circularCheckmark.image
-            label.value = "Aktiv"
-        case .cancelled:
-            imageView.image = Asset.pinkCircularExclamationPoint.image
-            label.value = "Uppsagd"
-        case .coming:
+        
+        if let _ = contract.status.asPendingStatus {
             imageView.image = Asset.clock.image
-            label.value = "Aktiveras snart"
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
+        } else if let status = contract.status.asActiveInFutureStatus {
+            imageView.image = Asset.clock.image
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE(
+                activationDate: status.futureInception?.localDateToDate ?? "")
+            )
+        } else if let _ = contract.status.asActiveStatus {
+            imageView.image = Asset.circularCheckmark.image
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_ACTIVE)
+        } else if let status = contract.status.asActiveInFutureAndTerminatedInFutureStatus {
+            imageView.image = Asset.clock.image
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE(
+                activationDate: status.futureInception?.localDateToDate ?? "",
+                terminationDate: status.futureTermination?.localDateToDate ?? ""
+            ))
+        } else if let status = contract.status.asTerminatedInFutureStatus {
+            imageView.image = Asset.redClock.image
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE(
+                terminationDate: status.futureTermination?.localDateToDate ?? ""
+            ))
+        } else if let _ = contract.status.asTerminatedTodayStatus {
+            imageView.image = Asset.redClock.image
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
+        } else if let _ = contract.status.asTerminatedStatus {
+            imageView.image = Asset.redCross.image
+            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_TERMINATED)
         }
 
         return stackView

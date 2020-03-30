@@ -15,6 +15,30 @@ query Contracts($locale: Locale!) {
             displayName
             url
         }
+        status {
+            ... on PendingStatus {
+                pendingSince
+            }
+            ... on ActiveInFutureStatus {
+                futureInception
+            }
+            ... on ActiveStatus {
+                pastInception
+            }
+            ... on ActiveInFutureAndTerminatedInFutureStatus {
+                futureInception
+                futureTermination
+            }
+            ... on TerminatedInFutureStatus {
+                futureTermination
+            }
+            ... on TerminatedTodayStatus {
+                today
+            }
+            ... on TerminatedStatus {
+                termination
+            }
+        }
         currentAgreement {
             ... on AgreementCore {
                 certificateUrl
@@ -22,7 +46,6 @@ query Contracts($locale: Locale!) {
             ... on SwedishApartmentAgreement {
                 activeFrom
                 activeTo
-                status
                 certificateUrl
                 numberCoInsured
                 address {
@@ -39,7 +62,6 @@ query Contracts($locale: Locale!) {
             ... on SwedishHouseAgreement {
                 activeFrom
                 activeTo
-                status
                 certificateUrl
                 numberCoInsured
                 address {
@@ -59,7 +81,6 @@ query Contracts($locale: Locale!) {
             ... on NorwegianHomeContentAgreement {
                 activeFrom
                 activeTo
-                status
                 certificateUrl
                 numberCoInsured
                 address {
@@ -72,7 +93,6 @@ query Contracts($locale: Locale!) {
             ... on NorwegianTravelAgreement {
                 activeFrom
                 activeTo
-                status
                 certificateUrl
                 numberCoInsured
             }

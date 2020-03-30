@@ -16,64 +16,6 @@ struct ContractCollection {
 }
 
 extension ContractsQuery.Data.Contract.CurrentAgreement {
-    var state: ContractRow.State {
-        if let norwegianHomeContents = asNorwegianHomeContentAgreement {
-            switch norwegianHomeContents.status {
-            case .active:
-                return .active
-            case .activeInFuture:
-                return .coming
-            case .terminated:
-                return .cancelled(from: norwegianHomeContents.activeTo?.localDateToDate ?? Date())
-            case .pending:
-                return .coming
-            case .__unknown:
-                return .coming
-            }
-        } else if let norwegianTravel = asNorwegianTravelAgreement {
-            switch norwegianTravel.status {
-            case .active:
-                return .active
-            case .activeInFuture:
-                return .coming
-            case .terminated:
-                return .cancelled(from: norwegianTravel.activeTo?.localDateToDate ?? Date())
-            case .pending:
-                return .coming
-            case .__unknown:
-                return .coming
-            }
-        } else if let swedishApartment = asSwedishApartmentAgreement {
-            switch swedishApartment.status {
-            case .active:
-                return .active
-            case .activeInFuture:
-                return .coming
-            case .terminated:
-                return .cancelled(from: swedishApartment.activeTo?.localDateToDate ?? Date())
-            case .pending:
-                return .coming
-            case .__unknown:
-                return .coming
-            }
-        } else if let swedishHouse = asSwedishHouseAgreement {
-            switch swedishHouse.status {
-            case .active:
-                return .active
-            case .activeInFuture:
-                return .coming
-            case .terminated:
-                return .cancelled(from: swedishHouse.activeTo?.localDateToDate ?? Date())
-            case .pending:
-                return .coming
-            case .__unknown:
-                return .coming
-            }
-        }
-
-        return .coming
-    }
-
     var type: ContractRow.ContractType {
         if let _ = asNorwegianHomeContentAgreement {
             return .norwegianHome
@@ -147,7 +89,6 @@ extension ContractCollection: Viewable {
                 ContractRow(
                     contract: contract,
                     displayName: contract.displayName,
-                    state: contract.currentAgreement.state,
                     type: contract.currentAgreement.type
                 )
             })
