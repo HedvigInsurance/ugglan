@@ -242,7 +242,13 @@ extension ContractRow: Reusable {
 
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = Asset.insuranceInfo.image
+        
+        if let _ = contract.currentAgreement.asNorwegianTravelAgreement {
+            imageView.image = Asset.insuranceInfo.image
+        } else {
+            imageView.image = Asset.apartment.image
+        }
+        
         row.append(imageView)
 
         imageView.snp.makeConstraints { make in
