@@ -144,7 +144,8 @@ extension Message: Reusable {
         let fromMyselfBubbleColor = UIColor.primaryBackgroundNeg
 
         let bubble = UIView()
-        bubble.backgroundColor = fromMyselfBubbleColor
+        bubble.backgroundColor = .primaryTintColor
+        bubble.layer.cornerRadius = 9
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
@@ -227,15 +228,6 @@ extension Message: Reusable {
                     message.onEditCallbacker.callAll()
                 }
 
-                func applyRounding() {
-                    bubble.applyRadiusMaskFor(
-                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
-                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
-                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
-                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
-                    )
-                }
-
                 func applySpacing() {
                     if message.type.isVideoOrImageType {
                         contentContainer.layoutMargins = UIEdgeInsets.zero
@@ -265,7 +257,6 @@ extension Message: Reusable {
                     editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
 
                     applySpacing()
-                    applyRounding()
 
                     spacingContainer.layoutSuperviewsIfNeeded()
                 }
@@ -482,10 +473,6 @@ extension Message: Reusable {
                     bag += bubble.copySignal.onValue { _ in
                         UIPasteboard.general.value = message.body
                     }
-                }
-
-                bag += bubble.didLayoutSignal.onValue { _ in
-                    applyRounding()
                 }
 
                 applySpacing()
