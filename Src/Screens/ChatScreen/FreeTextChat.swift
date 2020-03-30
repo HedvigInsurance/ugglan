@@ -21,16 +21,9 @@ extension FreeTextChat: Presentable {
         let chat = Chat()
         let (viewController, future) = chat.materialize()
 
-        let titleHedvigLogo = UIImageView()
-        titleHedvigLogo.image = Asset.wordmark.image
-        titleHedvigLogo.contentMode = .scaleAspectFit
-
-        viewController.navigationItem.titleView = titleHedvigLogo
-
-        titleHedvigLogo.snp.makeConstraints { make in
-            make.width.equalTo(80)
-        }
-
+        viewController.navigationItem.title = "Chat"
+        viewController.view.backgroundColor = .alternativeBackground
+        
         bag += client.perform(mutation: TriggerFreeTextChatMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                 chat.chatState.subscribe()

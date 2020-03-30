@@ -270,13 +270,13 @@ extension Message: Reusable {
 
                 spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
+                let messageTextColor: UIColor = message.fromMyself ? .black : .primaryText
 
                 switch message.type {
                 case .image(_), .video:
                     bubble.backgroundColor = .transparent
                 default:
-                    bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
+                    bubble.backgroundColor = message.fromMyself ? .boxSecondaryBackground : .boxPrimaryBackground
                 }
 
                 switch message.type {
@@ -458,11 +458,22 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let label = MultilineLabel(
-                        value: message.body,
-                        style: TextStyle.chatBody.colored(messageTextColor)
-                    )
-                    bag += contentContainer.addArranged(label)
+                    if !message.fromMyself {
+                        let label = MultilineLabel(
+                            value: message.body,
+                            style: TextStyle.bodyRegularRegularLeft
+                        )
+                        bag += contentContainer.addArranged(label)
+                    } else {
+                        let label = MultilineLabel(
+                            value: message.body,
+                            style: TextStyle.bodyRegularNegRegularNegLeft
+                        )
+                        bag += contentContainer.addArranged(label) { label in
+                            label.textColor = .black
+                        }
+                    }
+                    
                 }
 
                 if !message.type.isRichType {
