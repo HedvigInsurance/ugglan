@@ -22,7 +22,7 @@ extension FreeTextChat: Presentable {
         let (viewController, future) = chat.materialize()
 
         viewController.navigationItem.title = "Chat"
-        viewController.view.backgroundColor = .alternativeBackground
+        viewController.view.backgroundColor = .tertiarySecondaryBackground
         
         bag += client.perform(mutation: TriggerFreeTextChatMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {

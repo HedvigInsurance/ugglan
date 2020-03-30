@@ -119,7 +119,7 @@ extension UIColor {
         })
     }
     
-    static var alternativeBackground: UIColor {
+    static var tertiarySecondaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .lighterBlack : .offWhite
         })
