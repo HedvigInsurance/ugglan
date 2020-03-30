@@ -215,51 +215,19 @@ struct Message: Equatable, Hashable {
     }
 
     var bottomRightRadius: Radius {
-        if fromMyself {
-            if isRelatedToNextMessage {
-                return .fixed(value: 3)
-            } else {
-                return .fixed(value: 6)
-            }
-        }
-
-        return .fixed(value: 6)
+        return .fixed(value: 8)
     }
 
     var bottomLeftRadius: Radius {
-        if !fromMyself {
-            if isRelatedToNextMessage {
-                return .fixed(value: 3)
-            } else {
-                return .fixed(value: 6)
-            }
-        }
-
-        return .fixed(value: 6)
+        return .fixed(value: 8)
     }
 
     var topRightRadius: Radius {
-        if fromMyself {
-            if isRelatedToPreviousMessage {
-                return .fixed(value: 3)
-            } else {
-                return .fixed(value: 6)
-            }
-        }
-
-        return .fixed(value: 6)
+        return .fixed(value: 8)
     }
 
     var topLeftRadius: Radius {
-        if !fromMyself {
-            if isRelatedToPreviousMessage {
-                return .fixed(value: 3)
-            } else {
-                return .fixed(value: 6)
-            }
-        }
-
-        return .fixed(value: 6)
+        return .fixed(value: 8)
     }
 
     func absoluteRadiusValue(radius: Radius, view: UIView) -> CGFloat {

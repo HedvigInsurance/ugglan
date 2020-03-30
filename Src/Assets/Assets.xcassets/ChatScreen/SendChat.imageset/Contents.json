@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "AttachFile.pdf",
+      "filename" : "SendChat.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "AttachFileNeg.pdf",
+      "filename" : "SendChatNeg.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",

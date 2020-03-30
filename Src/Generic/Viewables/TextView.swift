@@ -70,13 +70,13 @@ extension TextView: Viewable {
 
         bag += view.traitCollectionSignal.atOnce().onValue { trait in
             if trait.userInterfaceStyle == .dark {
-                view.backgroundColor = UIColor.secondaryBackground
+                view.backgroundColor = UIColor.darkerGray
             } else {
-                view.backgroundColor = UIColor.darkGray.lighter(amount: 0.3)
+                view.backgroundColor = UIColor.white
             }
         }
 
-        view.layer.borderWidth = UIScreen.main.hairlineWidth
+        view.layer.borderWidth = 1
         bag += view.applyBorderColor { trait in
             trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
         }
