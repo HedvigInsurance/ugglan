@@ -119,6 +119,48 @@ extension ContractRow: Reusable {
 
         return stackView
     }
+    
+    func makeSwitcherRow() -> (Disposable, [ThreeEither<SectionView, UIView, Spacing>]) {
+        if contract.switchedFromInsuranceProvider == nil {
+            return (NilDisposer(), [])
+        }
+        
+        let bag = DisposeBag()
+
+        let section = SectionView()
+        section.dynamicStyle = .sectionPlain
+        
+        if let status = contract.status.asActiveInFutureStatus {
+            let row = RowView()
+            
+            bag += row.append(
+                MultilineLabel(
+                    value: String(key: .DASHBOARD_PENDING_HAS_DATE(date: status.futureInception?.localDateToDate ?? "")),
+                    style: .bodySmallSmallLeft
+                )
+            )
+            
+            section.append(row)
+        } else if let _ = contract.status.asPendingStatus {
+            let row = RowView()
+
+            bag += row.append(
+                MultilineLabel(
+                    value: String(key: .DASHBOARD_PENDING_NO_DATE),
+                    style: .bodySmallSmallLeft
+                )
+            )
+            
+            section.append(row)
+        } else {
+            return (NilDisposer(), [])
+        }
+        
+        return (bag, [
+            .make(section),
+            .make(Spacing(height: 10))
+        ])
+    }
 
     func makeInfoIcon() -> UIImageView {
         let imageView = UIImageView()
@@ -337,6 +379,9 @@ extension ContractRow: Reusable {
         header.spacing = 10
         header.addArrangedSubview(UILabel(value: displayName, style: .headlineMediumMediumLeft))
         header.addArrangedSubview(makeStateIndicator())
+        
+        let (switcherRowBag, switcherRowContent) = makeSwitcherRow()
+        bag += switcherRowBag
 
         let (renewalRowBag, renewalRowContent) = makeRenewalRow()
         bag += renewalRowBag
@@ -359,6 +404,7 @@ extension ContractRow: Reusable {
                 ],
                 contract.upcomingRenewal != nil ? renewalRowContent : nil,
                 contract.upcomingRenewal != nil ? [.make(Spacing(height: 10))] : nil,
+                switcherRowContent,
                 infoRowContent,
                 [.make(Spacing(height: 10))],
                 coverageRowContent,
