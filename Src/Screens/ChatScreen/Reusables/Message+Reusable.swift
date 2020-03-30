@@ -276,6 +276,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
 
                     let processor = DownsamplingImageProcessor(
                         size: CGSize(
@@ -336,7 +338,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
-                    imageView.layer.cornerRadius = 5
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
                     imageView.backgroundColor = .clear
                     imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                     imageView.kf.setImage(
@@ -401,6 +404,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
 
                     let processor = DownsamplingImageProcessor(
                         size: CGSize(
@@ -449,22 +454,15 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    if !message.fromMyself {
-                        let label = MultilineLabel(
-                            value: message.body,
-                            style: TextStyle.bodyRegularRegularLeft
-                        )
-                        bag += contentContainer.addArranged(label)
-                    } else {
-                        let label = MultilineLabel(
-                            value: message.body,
-                            style: TextStyle.bodyRegularNegRegularNegLeft
-                        )
-                        bag += contentContainer.addArranged(label) { label in
-                            label.textColor = .black
-                        }
-                    }
+                    let style = message.fromMyself ? TextStyle.bodyRegularRegularLeft : TextStyle.bodyRegularNegRegularNegLeft
                     
+                    let label = MultilineLabel(
+                        value: message.body,
+                        style: style
+                    )
+                    bag += contentContainer.addArranged(label) { textView in
+                        textView.textColor = .black
+                    }
                 }
 
                 if !message.type.isRichType {
