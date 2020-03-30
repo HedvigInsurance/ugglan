@@ -210,35 +210,6 @@ struct Message: Equatable, Hashable {
         } ?? nil
     }
 
-    enum Radius {
-        case halfHeight, fixed(value: CGFloat)
-    }
-
-    var bottomRightRadius: Radius {
-        return .fixed(value: 8)
-    }
-
-    var bottomLeftRadius: Radius {
-        return .fixed(value: 8)
-    }
-
-    var topRightRadius: Radius {
-        return .fixed(value: 8)
-    }
-
-    var topLeftRadius: Radius {
-        return .fixed(value: 8)
-    }
-
-    func absoluteRadiusValue(radius: Radius, view: UIView) -> CGFloat {
-        switch radius {
-        case let .fixed(value):
-            return value
-        case .halfHeight:
-            return min(view.frame.height / 2, 20)
-        }
-    }
-
     init(from message: Message) {
         body = message.body
         fromMyself = message.fromMyself
