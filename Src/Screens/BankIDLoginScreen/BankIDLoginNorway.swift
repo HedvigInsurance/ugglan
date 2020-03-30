@@ -31,17 +31,6 @@ extension BankIDLoginNorway: Presentable {
             let urlString = String(describing: url)
 
             if urlString.contains("success") {
-                let appDelegate = UIApplication.shared.appDelegate
-
-                if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                    appDelegate.registerFCMToken(fcmToken)
-                }
-
-                AnalyticsCoordinator().setUserId()
-
-                let window = appDelegate.window
-                appDelegate.bag += window.present(LoggedIn(), animated: true)
-
                 return .cancel
             } else if urlString.contains("fail") {
                 loadBankID()
@@ -50,6 +39,21 @@ extension BankIDLoginNorway: Presentable {
 
             return .allow
         }
+        
+        bag += client.subscribe(subscription: BankIdAuthSubscription()).compactMap { $0.data?.authStatus?.status }.filter(predicate: { status -> Bool in
+            status == .success
+        }).take(first: 1).onValue({ status in
+            let appDelegate = UIApplication.shared.appDelegate
+
+            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                appDelegate.registerFCMToken(fcmToken)
+            }
+
+            AnalyticsCoordinator().setUserId()
+
+            let window = appDelegate.window
+            appDelegate.bag += window.present(LoggedIn(), animated: true)
+        })
 
         func loadBankID() {
             bag += client.perform(
