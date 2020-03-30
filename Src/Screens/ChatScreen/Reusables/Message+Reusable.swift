@@ -456,7 +456,7 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let style = message.fromMyself ? TextStyle.bodyRegularRegularLeft.colored(.black) : TextStyle.bodyRegularNegRegularNegLeft
+                    let style = message.fromMyself ? TextStyle.bodyRegularRegularLeft.colored(.black) : TextStyle.bodyRegularNegRegularNegLeft.colored(.primaryText)
                     
                     let label = MultilineLabel(
                         value: message.body,
