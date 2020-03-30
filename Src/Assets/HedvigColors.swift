@@ -55,7 +55,7 @@ extension UIColor {
 
     static var tertiaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .lightGray : .darkGray
+            trait.userInterfaceStyle == .dark ? .lighterBlack : .offWhite
         })
     }
 
@@ -110,12 +110,6 @@ extension UIColor {
     static var boxPrimaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .darkerGray : .lighterGray
-        })
-    }
-    
-    static var tertiarySecondaryBackground: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .lighterBlack : .offWhite
         })
     }
 
