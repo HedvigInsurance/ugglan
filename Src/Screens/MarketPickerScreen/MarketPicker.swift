@@ -128,7 +128,7 @@ extension MarketPicker {
                     UIApplication.shared.reloadAllLabels()
                 }
                 ApolloClient.initClient().always {}
-                bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in
+                bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
                     self.presentingViewController.present(Marketing())
                     self.didFinish()
                 }

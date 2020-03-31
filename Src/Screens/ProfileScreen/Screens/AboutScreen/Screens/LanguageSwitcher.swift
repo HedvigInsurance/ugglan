@@ -107,7 +107,7 @@ extension LanguageSwitcher: Presentable {
                     NotificationCenter.default.post(Notification(name: .localeSwitched))
                 }
             }
-            bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+            bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
         }
 
         switch Localization.Locale.currentLocale.market {
