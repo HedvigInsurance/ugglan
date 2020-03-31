@@ -251,6 +251,15 @@ extension Message: Reusable {
                         )
                     }
                 }
+                
+                func applyRounding() {
+                    bubble.applyRadiusMaskFor(
+                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
+                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
+                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
+                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
+                    )
+                }
 
                 bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce()) { _ in
                     editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
@@ -467,6 +476,10 @@ extension Message: Reusable {
                     bag += bubble.copySignal.onValue { _ in
                         UIPasteboard.general.value = message.body
                     }
+                }
+                
+                bag += bubble.didLayoutSignal.onValue { _ in
+                    applyRounding()
                 }
 
                 applySpacing()
