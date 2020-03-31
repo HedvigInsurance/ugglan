@@ -245,6 +245,8 @@ extension ContractRow: Reusable {
         
         if let _ = contract.currentAgreement.asNorwegianTravelAgreement {
             imageView.image = Asset.insuranceInfo.image
+        } else if let _ = contract.currentAgreement.asSwedishHouseAgreement {
+            imageView.image = Asset.house.image
         } else {
             imageView.image = Asset.apartment.image
         }
