@@ -137,7 +137,7 @@ extension AdyenSetup: Presentable {
                     switch result {
                     case .success:
                         self.client.fetch(
-                            query: MyPaymentQuery(),
+                            query: ActivePaymentMethodsQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).onValue { _ in }
                         break
