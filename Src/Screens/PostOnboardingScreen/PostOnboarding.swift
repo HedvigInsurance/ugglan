@@ -28,7 +28,7 @@ struct PostOnboarding {
 
         let paymentButton = Button(
             title: String(key: .ONBOARDING_CONNECT_DD_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
         )
 
         bag += paymentButton.onTapSignal.onValue { _ in
@@ -47,7 +47,7 @@ struct PostOnboarding {
 
         let pushNotificationsDoButton = Button(
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
         )
 
         let pushNotificationsSkipButton = Button(
@@ -87,6 +87,7 @@ extension PostOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        viewController.navigationItem.hidesBackButton = true
 
         ApplicationState.preserveState(.loggedIn)
 
@@ -120,7 +121,7 @@ extension PostOnboarding: Presentable {
                 switch action {
                 case .payment:
                     viewController.present(
-                        DirectDebitSetup(setupType: .postOnboarding),
+                        PaymentSetup(setupType: .postOnboarding),
                         style: .modally(
                             presentationStyle: .formSheet,
                             transitionStyle: nil,

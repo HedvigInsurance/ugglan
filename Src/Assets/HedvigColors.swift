@@ -19,6 +19,12 @@ extension UIColor {
         })
     }
 
+    static var primaryBackgroundNeg: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .offWhite : .almostBlack
+        })
+    }
+
     static var secondaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.10) : .white
@@ -153,7 +159,13 @@ extension UIColor {
 
     static var primaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .violet300 : .purple
+            trait.userInterfaceStyle == .dark ? .white : .black
+        })
+    }
+    
+    static var primaryButtonBackgroundColor: UIColor {
+        UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.15) : .black
         })
     }
 

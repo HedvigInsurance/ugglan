@@ -26,19 +26,16 @@ extension BankIdSign: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
+        view.backgroundColor = .primaryBackground
         viewController.view = view
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.alignment = .center
-
-        bag += containerStackView.applySafeAreaBottomLayoutMargin()
-        bag += containerStackView.applyPreferredContentSize(on: viewController)
-
         view.addSubview(containerStackView)
 
         containerStackView.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalToSuperview()
+            make.leading.trailing.top.equalToSuperview()
         }
 
         let containerView = UIStackView()

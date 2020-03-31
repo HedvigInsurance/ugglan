@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2020-02-27.
 //
 
+import Flow
 import Foundation
 import WebKit
-import Flow
 
 extension WKWebView: WKUIDelegate {
     private static var _createWebViewWith: UInt8 = 0
@@ -38,12 +38,12 @@ extension WKWebView: WKUIDelegate {
 
         return delegate
     }
-    
+
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if let delegateWebView = createWebViewWith.call((webView, configuration, navigationAction, windowFeatures)) {
             return delegateWebView
         }
-        
+
         return nil
     }
 }

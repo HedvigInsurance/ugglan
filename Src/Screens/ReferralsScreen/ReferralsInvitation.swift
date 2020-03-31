@@ -84,7 +84,7 @@ struct ReferralsInvitation: Reusable {
             let bag = DisposeBag()
 
             let textStyle = TextStyle(
-                font: HedvigFonts.circularStdBold!,
+                font: HedvigFonts.favoritStdBold!,
                 color: UIColor.white
             ).resized(to: 16).lineHeight(20).centerAligned
 

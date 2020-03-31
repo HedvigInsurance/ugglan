@@ -163,7 +163,7 @@ extension ClaimsHeader: Viewable {
         let description = Description()
         bag += view.addArranged(description)
 
-        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
+        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white))
 
         bag += button.onTapSignal.onValue {
             self.presentingViewController.present(

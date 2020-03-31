@@ -31,24 +31,12 @@ extension Dashboard: Presentable {
         containerStackView.spacing = 15
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
-        
-        let chatPreview = ChatPreview(presentingViewController: viewController)
-        bag += containerStackView.addArranged(chatPreview)
-        
+
         let importantMessagesSection = ImportantMessagesSection(presentingViewController: viewController)
         bag += containerStackView.addArranged(importantMessagesSection)
 
-        let renewalsSection = RenewalsSection(presentingViewController: viewController)
-        bag += containerStackView.addArranged(renewalsSection)
-
-        let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: viewController)
-        bag += containerStackView.addArranged(paymentNeedsSetupSection)
-
         let pendingInsurance = PendingInsurance()
         bag += containerStackView.addArranged(pendingInsurance)
-
-        let myProtectionSection = MyProtectionSection(presentingViewController: viewController)
-        bag += containerStackView.addArranged(myProtectionSection)
 
         bag += viewController.install(containerStackView)
 
@@ -63,8 +51,6 @@ extension Dashboard: Presentable {
                 .compactMap { $0.data?.insurance }
 
             dataBag += dashboardInsuranceQuery.bindTo(pendingInsurance.dataSignal)
-            dataBag += dashboardInsuranceQuery.bindTo(myProtectionSection.dataSignal)
-            dataBag += dashboardInsuranceQuery.bindTo(renewalsSection.dataSignal)
         }
 
         fetch()
@@ -72,10 +58,6 @@ extension Dashboard: Presentable {
         bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
             fetch()
         }
-
-        bag += client.watch(query: MyPaymentQuery())
-            .compactMap { $0.data }
-            .bindTo(paymentNeedsSetupSection.dataSignal)
 
         return (viewController, bag)
     }

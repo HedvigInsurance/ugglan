@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 struct ExtraBuildingRow {
-    let data: ReadWriteSignal<MyHomeQuery.Data.Insurance.ExtraBuilding>
+    let data: ReadWriteSignal<ExtraBuildingFragment>
 }
 
 extension ExtraBuildingRow: Viewable {

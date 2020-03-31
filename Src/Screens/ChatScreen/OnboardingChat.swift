@@ -40,7 +40,7 @@ extension OnboardingChat: Presentable {
                 style: .modally(
                     presentationStyle: .formSheet,
                     transitionStyle: nil,
-                    capturesStatusBarAppearance: true
+                    capturesStatusBarAppearance: false
                 ),
                 options: [.allowSwipeDismissAlways, .defaults]
             )

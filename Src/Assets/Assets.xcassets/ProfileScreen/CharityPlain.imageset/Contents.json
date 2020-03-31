@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "charityPlain.pdf"
+      "filename" : "charity-light-2.pdf"
     },
     {
       "idiom" : "universal",
-      "filename" : "charityPlain-1.pdf",
+      "filename" : "charity-light-1.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",

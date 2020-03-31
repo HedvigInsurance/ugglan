@@ -18,20 +18,14 @@ extension OfferSummary: Viewable {
         let outerView = UIStackView()
         outerView.axis = .vertical
 
-        let backgroundColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? UIColor.black.lighter(amount: 0.1) : .midnight700
-        })
-
-        bag += outerView.addArranged(Blob(color: backgroundColor, position: .top))
-
         let containerView = UIView()
-        containerView.backgroundColor = backgroundColor
+        containerView.backgroundColor = .primaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 15
-        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 30, right: 20)
+        stackView.layoutMargins = UIEdgeInsets(top: 40, left: 20, bottom: 40, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
 
         containerView.addSubview(stackView)
@@ -41,23 +35,19 @@ extension OfferSummary: Viewable {
         }
 
         let titleLabel = ApolloMultilineLabel(query: OfferQuery()) {
-            StyledText(text: $0.insurance.address ?? "", style: TextStyle.offerSummaryTitle.centerAligned)
+            StyledText(text: $0.insurance.address ?? "", style: TextStyle.standaloneLargeTitle.aligned(to: .center))
         }
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: String(key: .OFFER_HOUSE_SUMMARY_DESC),
-            style: TextStyle.body.colored(.white).centerAligned
+            style: TextStyle.body.centerAligned
         )
         bag += stackView.addArranged(descriptionLabel)
 
         bag += stackView.addArranged(Spacing(height: 10))
 
         bag += stackView.addArranged(ExpandableContent(content: InsuranceSummarySection(), isExpanded: .static(false)))
-
-        bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .top)) { blobView in
-            blobView.backgroundColor = backgroundColor
-        }
 
         return (outerView, bag)
     }

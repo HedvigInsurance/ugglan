@@ -141,6 +141,8 @@ extension Message: Reusable {
         bubbleContainer.spacing = 5
         spacingContainer.addArrangedSubview(bubbleContainer)
 
+        let fromMyselfBubbleColor = UIColor.primaryBackgroundNeg
+
         let bubble = UIView()
         bubble.backgroundColor = .primaryTintColor
         bubble.layer.cornerRadius = 9
@@ -166,11 +168,11 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = .primaryTintColor
+        editButton.backgroundColor = fromMyselfBubbleColor
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
-        editButton.layer.cornerRadius = 10
+        editButton.layer.cornerRadius = 6
 
         let editButtonIcon = UIImageView(image: Asset.editIcon.image)
         editButtonIcon.contentMode = .scaleAspectFit

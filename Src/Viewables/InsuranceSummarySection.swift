@@ -147,7 +147,7 @@ extension InsuranceSummarySection: Viewable {
                     }
 
                     innerBag += extraBuildings.map { extraBuilding in
-                        ExtraBuildingRow(data: .static(extraBuilding))
+                        ExtraBuildingRow(data: .static(extraBuilding.fragments.extraBuildingFragment))
                     }.map { extraBuildingRow in
                         extraBuildingsSection.append(extraBuildingRow)
                     }

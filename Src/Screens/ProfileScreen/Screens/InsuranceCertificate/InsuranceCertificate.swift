@@ -14,43 +14,23 @@ import Presentation
 import SafariServices
 import UIKit
 
-struct InsuranceCertificate {
+struct InsuranceDocument {
     @Inject var client: ApolloClient
-    let type: CertificateType
-
-    enum CertificateType {
-        case current, renewal
-    }
-
-    init(type: CertificateType) {
-        self.type = type
-    }
+    let url: URL
+    let title: String
 }
 
-extension InsuranceCertificate: Presentable {
+extension InsuranceDocument: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(key: .MY_INSURANCE_CERTIFICATE_TITLE)
+        viewController.title = title
 
         let pdfViewer = PDFViewer()
         bag += viewController.install(pdfViewer)
 
-        bag += client.fetch(
-            query: InsuranceCertificateQuery(),
-            cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.compactMap { result -> String? in
-            switch self.type {
-            case .current:
-                return result.data?.insurance.certificateUrl
-            case .renewal:
-                return result.data?.insurance.renewal?.certificateUrl
-            }
-        }.map { certificateUrl -> URL? in
-            guard let url = URL(string: certificateUrl) else { return nil }
-            return url
-        }.bindTo(pdfViewer.url)
+        pdfViewer.url.value = url
 
         let activityButton = UIBarButtonItem(system: .action)
 

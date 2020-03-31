@@ -18,6 +18,7 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import Adyen
 
 let log = Logger.self
 
@@ -151,7 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             guard let rootViewController = window.rootViewController else { return }
 
             bag += rootViewController.present(
-                DirectDebitSetup(setupType: .initial),
+                PaymentSetup(setupType: .initial),
                 style: .modal,
                 options: [.defaults]
             )
@@ -162,26 +163,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
 
-        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
+        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return }
         guard let rootViewController = window.rootViewController else { return }
         let innerBag = bag.innerBag()
-
-        innerBag += rootViewController.present(
-            ReferralsReceiverConsent(referralCode: referralCode),
-            style: .modal,
-            options: [
-                .prefersNavigationBarHidden(true),
-            ]
-        ).onValue { result in
-            if result == .accept {
-                if ApplicationState.currentState?.isOneOf([.marketing]) == true {
-                    self.bag += rootViewController.present(
-                        OnboardingChat(),
-                        options: [.prefersNavigationBarHidden(false)]
-                    )
+        
+        func presentReferralsAccept() {
+            innerBag += rootViewController.present(
+                ReferralsReceiverConsent(referralCode: referralCode),
+                style: .modal,
+                options: [
+                    .prefersNavigationBarHidden(true),
+                    .allowSwipeDismissAlways
+                ]
+            ).onValue { result in
+                if result == .accept {
+                    if ApplicationState.currentState?.isOneOf([.marketing]) == true {
+                        self.bag += rootViewController.present(
+                            OnboardingChat(),
+                            options: [.prefersNavigationBarHidden(false)]
+                        )
+                    }
                 }
+                innerBag.dispose()
             }
-            innerBag.dispose()
+        }
+        
+        if ApplicationState.hasPreferredLocale {
+            presentReferralsAccept()
+        } else {
+            bag += rootViewController.present(MarketPicker {
+                presentReferralsAccept()
+            })
         }
     }
 
@@ -195,6 +207,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        RedirectComponent.applicationDidOpen(from: url)
+        
         return application(app, open: url,
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
@@ -205,7 +219,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-
+        UserDefaults.standard.set(Localization.Locale.currentLocale.lprojCode, forKey: "AppleLanguage")
+        Bundle.swizzleLocalization()
+        
         FirebaseApp.configure()
 
         launchWindow?.isOpaque = false
@@ -247,7 +263,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             remoteConfigContainer
         })
-        
+
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
             remoteConfigContainer.fetched.take(first: 1).plain(),
@@ -260,17 +276,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AnalyticsCoordinator().setUserId()
 
             self.bag += ApplicationState.presentRootViewController(self.window)
-
-            if
-                !(ApplicationState.currentState?.isOneOf([.languagePicker]) ?? false),
-                !ApplicationState.hasPreferredLocale,
-                Localization.Locale.currentLocale == .en_SE {
-                self.window.rootViewController?.present(
-                    LanguagePicker(),
-                    style: .modally(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)]
-                )
-            }
 
             if ApplicationState.hasOverridenTargetEnvironment {
                 self.displayToast(Toast(
@@ -368,7 +373,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        DirectDebitSetup(),
+                        PaymentSetup(setupType: .initial),
                         style: .modal,
                         options: [.defaults]
                     )
@@ -376,7 +381,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        DirectDebitSetup(),
+                        PaymentSetup(setupType: .replacement),
                         style: .modal,
                         options: [.defaults]
                     )

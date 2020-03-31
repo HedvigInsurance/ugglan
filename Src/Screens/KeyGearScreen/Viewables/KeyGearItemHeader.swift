@@ -71,18 +71,18 @@ struct ValuationBox: Viewable {
         let emptyValuationLabel = UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight)
         emptyValuationLabel.isHidden = true
         stackView.addArrangedSubview(emptyValuationLabel)
-        
+
         let valuationValueContainer = UIStackView()
         valuationValueContainer.axis = .vertical
         valuationValueContainer.spacing = 2.5
-        
+
         let valuationValueLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
         valuationValueContainer.addArrangedSubview(valuationValueLabel)
-        
+
         let valuationValueDescription = UILabel(value: "", style: .linksSmallSmallRight)
         valuationValueDescription.adjustsFontSizeToFitWidth = true
         valuationValueContainer.addArrangedSubview(valuationValueDescription)
-        
+
         stackView.addArrangedSubview(valuationValueContainer)
 
         row.append(stackView)
@@ -100,7 +100,7 @@ struct ValuationBox: Viewable {
                 emptyValuationLabel.animationSafeIsHidden = true
                 valuationValueContainer.layoutIfNeeded()
                 emptyValuationLabel.layoutIfNeeded()
-                
+
                 if let fixedValuation = valuation?.asKeyGearItemValuationFixed {
                     valuationValueLabel.value = "\(fixedValuation.ratio)%"
                     valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL)
@@ -112,7 +112,7 @@ struct ValuationBox: Viewable {
         })
 
         bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, result in result.data?.keyGearItem }.onValue { item in
-            
+
             if item.valuation != nil {
                 self.presentingViewController.present(KeyGearValuation(itemId: self.itemId).withCloseButton, style: .modal, options: [
                     .defaults, .allowSwipeDismissAlways,
@@ -122,8 +122,6 @@ struct ValuationBox: Viewable {
                     .defaults, .allowSwipeDismissAlways,
                 ])
             }
-            
-            
         }
 
         return (row, bag)

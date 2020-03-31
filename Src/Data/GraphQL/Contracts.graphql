@@ -1,0 +1,102 @@
+query Contracts($locale: Locale!) {
+    contracts {
+        displayName
+        switchedFromInsuranceProvider
+        upcomingRenewal {
+            renewalDate
+            draftCertificateUrl
+        }
+        perils(locale: $locale) {
+            ...PerilFragment
+        }
+        insurableLimits(locale: $locale) {
+            ...InsurableLimitFragment
+        }
+        termsAndConditions(locale: $locale) {
+            displayName
+            url
+        }
+        status {
+            ... on PendingStatus {
+                pendingSince
+            }
+            ... on ActiveInFutureStatus {
+                futureInception
+            }
+            ... on ActiveStatus {
+                pastInception
+            }
+            ... on ActiveInFutureAndTerminatedInFutureStatus {
+                futureInception
+                futureTermination
+            }
+            ... on TerminatedInFutureStatus {
+                futureTermination
+            }
+            ... on TerminatedTodayStatus {
+                today
+            }
+            ... on TerminatedStatus {
+                termination
+            }
+        }
+        currentAgreement {
+            ... on AgreementCore {
+                certificateUrl
+            }
+            ... on SwedishApartmentAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+                squareMeters
+                type
+                premium {
+                    ...MonetaryAmountFragment
+                }
+            }
+            ... on SwedishHouseAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+                squareMeters
+                yearOfConstruction
+                ancillaryArea
+                isSubleted
+                numberOfBathrooms
+                extraBuildings {
+                    ...ExtraBuildingFragment
+                }
+            }
+            ... on NorwegianHomeContentAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+                squareMeters
+            }
+            ... on NorwegianTravelAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+            }
+        }
+    }
+}

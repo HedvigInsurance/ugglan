@@ -79,7 +79,7 @@ extension Toast: Viewable {
         case let .character(character):
             let view = UILabel()
             view.text = String(character)
-            view.font = HedvigFonts.circularStdBook?.withSize(15)
+            view.font = HedvigFonts.favoritStdBook?.withSize(15)
             return view
         case let .icon(icon):
             let view = UIImageView()

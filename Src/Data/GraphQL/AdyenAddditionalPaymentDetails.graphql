@@ -1,0 +1,11 @@
+mutation AdyenAdditionalPaymentDetails($req: PaymentsDetailsRequest!) {
+    submitAdditionalPaymentDetails(
+        req: {
+            paymentsDetailsRequest: $req
+        }
+    ) {
+        ... on AdditionalPaymentsDetailsResponseFinished {
+            resultCode
+        }
+    }
+}

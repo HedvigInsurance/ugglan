@@ -34,7 +34,7 @@ extension ReferralsReceiverConsent: Presentable {
 
         let acceptDiscountButton = Button(
             title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
         )
 
         let declineButton = Button(

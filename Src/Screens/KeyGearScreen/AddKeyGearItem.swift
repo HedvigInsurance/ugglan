@@ -65,14 +65,14 @@ extension AddKeyGearItem: Presentable {
         let saveButton = LoadableButton(
             button: Button(
                 title: String(key: .KEY_GEAR_ADD_ITEM_SAVE_BUTTON),
-                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
             )
         )
         bag += state.isValidSignal
             .atOnce()
             .map { valid in
                 valid ?
-                    ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white) :
+                    ButtonType.standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white) :
                     ButtonType.standard(backgroundColor: .gray, textColor: .white)
             }.bindTo(saveButton.button.type)
 

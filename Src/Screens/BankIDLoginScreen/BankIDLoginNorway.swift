@@ -1,0 +1,76 @@
+//
+//  BankIDLoginNorway.swift
+//  test
+//
+//  Created by Sam Pettersson on 2020-03-19.
+//
+
+import Apollo
+import Flow
+import Foundation
+import Presentation
+import UIKit
+import WebKit
+
+struct BankIDLoginNorway {
+    @Inject var client: ApolloClient
+}
+
+extension BankIDLoginNorway: Presentable {
+    func materialize() -> (UIViewController, Future<Void>) {
+        let viewController = UIViewController()
+        let bag = DisposeBag()
+
+        let webView = WKWebView(frame: .zero)
+        webView.backgroundColor = .primaryBackground
+
+        viewController.view = webView
+
+        bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
+            guard let url = navigationAction.request.url else { return .allow }
+            let urlString = String(describing: url)
+
+            if urlString.contains("success") {
+                return .cancel
+            } else if urlString.contains("fail") {
+                loadBankID()
+                return .cancel
+            }
+
+            return .allow
+        }
+        
+        bag += client.subscribe(subscription: BankIdAuthSubscription()).compactMap { $0.data?.authStatus?.status }.filter(predicate: { status -> Bool in
+            status == .success
+        }).take(first: 1).onValue({ status in
+            let appDelegate = UIApplication.shared.appDelegate
+
+            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                appDelegate.registerFCMToken(fcmToken)
+            }
+
+            AnalyticsCoordinator().setUserId()
+
+            let window = appDelegate.window
+            appDelegate.bag += window.present(LoggedIn(), animated: true)
+        })
+
+        func loadBankID() {
+            bag += client.perform(
+                mutation: BankIdNorwayAuthMutation()
+            ).valueSignal.compactMap { $0.data?.norwegianBankIdAuth.redirectUrl }.onValue { urlString in
+                guard let url = URL(string: urlString) else {
+                    return
+                }
+
+                webView.load(URLRequest(url: url))
+            }
+        }
+
+        loadBankID()
+
+        return (viewController, Future { _ in
+            bag
+        })
+    }
+}

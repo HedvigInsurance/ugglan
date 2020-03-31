@@ -42,6 +42,8 @@ targets:
       - location: Carthage/Build/iOS/FirebaseABTesting.framework
       - location: Carthage/Build/iOS/FirebaseFirestore.framework
       - location: Carthage/Build/iOS/FirebaseMessaging.framework
+      - location: Carthage/Build/iOS/FirebaseInstallations.framework
+      - location: Carthage/Build/iOS/PromisesObjC.framework
       - location: Carthage/Build/iOS/gRPC-C++.framework
       - location: Carthage/Build/iOS/gRPC-Core.framework
       - location: Carthage/Build/iOS/leveldb-library.framework
@@ -49,7 +51,6 @@ targets:
       - location: Carthage/Build/iOS/Protobuf.framework
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
-      - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
       - location: Carthage/Build/iOS/SnapKit.framework
       - location: Carthage/Build/iOS/Starscream.framework
@@ -78,7 +79,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
           - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
-          - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
           - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
           - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
@@ -98,7 +98,6 @@ targets:
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
-          - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
           - $(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
@@ -142,7 +141,6 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/ApolloWebSocket.framework
           - $(SRCROOT)/Carthage/Build/iOS/Flow.framework
           - $(SRCROOT)/Carthage/Build/iOS/Form.framework
-          - $(SRCROOT)/Carthage/Build/iOS/Lottie.framework
           - $(SRCROOT)/Carthage/Build/iOS/Presentation.framework
           - $(SRCROOT)/Carthage/Build/iOS/SnapKit.framework
           - $(SRCROOT)/Carthage/Build/iOS/Starscream.framework
@@ -155,13 +153,16 @@ targets:
           - $(SRCROOT)/Carthage/Build/iOS/Ease.framework
           - $(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
           - $(SRCROOT)/Carthage/Build/iOS/FBSDKCoreKit.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Adyen.framework
+          - $(SRCROOT)/Carthage/Build/iOS/Adyen3DS2.framework
+          - $(SRCROOT)/Carthage/Build/iOS/AdyenCard.framework
+          - $(SRCROOT)/Carthage/Build/iOS/AdyenDropIn.framework
         outputs:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/DeviceKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Apollo.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ApolloWebSocket.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Flow.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Form.framework
-          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Lottie.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Presentation.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Starscream.framework
@@ -174,6 +175,10 @@ targets:
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Ease.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework
           - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FBSDKCoreKit.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Adyen.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Adyen3DS2.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AdyenCard.framework
+          - $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AdyenDropIn.framework
     references:
       - sdkroot:UIKit.framework
       - sdkroot:SceneKit.framework
@@ -189,6 +194,8 @@ targets:
       - location: Carthage/Build/iOS/FirebaseDynamicLinks.framework
       - location: Carthage/Build/iOS/FirebaseRemoteConfig.framework
       - location: Carthage/Build/iOS/FirebaseInstanceID.framework
+      - location: Carthage/Build/iOS/FirebaseInstallations.framework
+      - location: Carthage/Build/iOS/PromisesObjC.framework
       - location: Carthage/Build/iOS/FirebaseABTesting.framework
       - location: Carthage/Build/iOS/FirebaseFirestore.framework
       - location: Carthage/Build/iOS/FirebaseMessaging.framework
@@ -199,7 +206,6 @@ targets:
       - location: Carthage/Build/iOS/Protobuf.framework
       - location: Carthage/Build/iOS/GoogleAppMeasurement.framework
       - location: Carthage/Build/iOS/GoogleUtilities.framework
-      - location: Carthage/Build/iOS/Lottie.framework
       - location: Carthage/Build/iOS/Presentation.framework
       - location: Carthage/Build/iOS/SnapKit.framework
       - location: Carthage/Build/iOS/Starscream.framework
@@ -215,6 +221,10 @@ targets:
       - location: Carthage/Build/iOS/Fabric.framework
       - location: Carthage/Build/iOS/Crashlytics.framework
       - location: Carthage/Build/iOS/FBSDKCoreKit.framework
+      - location: Carthage/Build/iOS/Adyen.framework
+      - location: Carthage/Build/iOS/Adyen3DS2.framework
+      - location: Carthage/Build/iOS/AdyenCard.framework
+      - location: Carthage/Build/iOS/AdyenDropIn.framework
     configuration:
       IPHONEOS_DEPLOYMENT_TARGET: "12.0"
       SWIFT_VERSION: "5.0"

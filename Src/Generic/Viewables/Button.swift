@@ -256,8 +256,8 @@ extension Button: Viewable {
 
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
         let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
-
-        bag += type.atOnce().onValue { buttonType in
+        
+        func updateStyle(buttonType: ButtonType) {
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
@@ -270,19 +270,19 @@ extension Button: Viewable {
                             border: BorderStyle(
                                 width: buttonType.borderWidth,
                                 color: buttonType.borderColor,
-                                cornerRadius: buttonType.height / 2
+                                cornerRadius: 6
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
+                            font: HedvigFonts.favoritStdBook!.withSize(buttonType.fontSize),
                             color: buttonType.textColor
                         )
                     ),
                 ]
             }
         }
-
-        bag += type.atOnce().onValue { buttonType in
+        
+        func updateHighlightedStyle(buttonType: ButtonType) {
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
@@ -296,11 +296,11 @@ extension Button: Viewable {
                             border: BorderStyle(
                                 width: buttonType.borderWidth,
                                 color: buttonType.borderColor,
-                                cornerRadius: buttonType.height / 2
+                                cornerRadius: 6
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
+                            font: HedvigFonts.favoritStdBook!.withSize(buttonType.fontSize),
                             color: textColor
                         )
                     ),
@@ -308,7 +308,20 @@ extension Button: Viewable {
             }
         }
 
+        bag += type.atOnce().onValue { buttonType in
+            updateStyle(buttonType: buttonType)
+        }
+
+        bag += type.atOnce().onValue { buttonType in
+            updateHighlightedStyle(buttonType: buttonType)
+        }
+
         let button = UIButton(title: "", style: styleSignal.value)
+        
+        bag += button.traitCollectionSignal.onValue { _ in
+            updateStyle(buttonType: self.type.value)
+            updateHighlightedStyle(buttonType: self.type.value)
+        }
 
         bag += styleSignal
             .atOnce()
