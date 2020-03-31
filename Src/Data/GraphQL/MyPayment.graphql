@@ -1,8 +1,6 @@
 query MyPayment {
-    insurance {
-        cost {
-            ...CostFragment
-        }
+    insuranceCost {
+        ...CostFragment
     }
     bankAccount {
         bankName

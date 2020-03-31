@@ -41,7 +41,7 @@ extension PaymentDetailsSection: Viewable {
         grossPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_PRICE_LABEL)
         grossPriceRow.valueStyleSignal.value = .rowTitleDisabled
 
-        bag += dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyGross.amount }
+        bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -58,7 +58,7 @@ extension PaymentDetailsSection: Viewable {
         discountRow.keySignal.value = String(key: .PROFILE_PAYMENT_DISCOUNT_LABEL)
         discountRow.valueStyleSignal.value = .rowTitleDisabled
 
-        bag += dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount }
+        bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -75,7 +75,7 @@ extension PaymentDetailsSection: Viewable {
         netPriceRow.keySignal.value = String(key: .PROFILE_PAYMENT_FINAL_COST_LABEL)
         netPriceRow.valueStyleSignal.value = .rowTitleDisabled
 
-        bag += dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
+        bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -95,7 +95,7 @@ extension PaymentDetailsSection: Viewable {
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
                 self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-                    data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
+                    data.insuranceCost?.fragments.costFragment = result.cost.fragments.costFragment
                 })
 
                 self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
@@ -115,8 +115,8 @@ extension PaymentDetailsSection: Viewable {
 
         bag += section.append(applyDiscountButtonRow)
 
-        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map { $0 == 0 }
-        let hasFreeMonths = dataValueSignal.map { $0.data?.insurance.cost?.fragments.costFragment.freeUntil != nil }
+        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map { $0 == 0 }
+        let hasFreeMonths = dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.freeUntil != nil }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)
