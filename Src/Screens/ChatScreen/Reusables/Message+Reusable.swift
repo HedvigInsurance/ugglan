@@ -145,7 +145,6 @@ extension Message: Reusable {
 
         let bubble = UIView()
         bubble.backgroundColor = .primaryTintColor
-        bubble.layer.cornerRadius = 9
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
