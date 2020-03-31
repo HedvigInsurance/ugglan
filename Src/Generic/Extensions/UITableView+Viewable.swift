@@ -65,4 +65,41 @@ extension UITableView {
             disposable.dispose()
         }
     }
+    
+    func addTableFooterView<V: Viewable, VMatter: UIView>(
+           _ viewable: V
+       ) -> Disposable where
+           V.Events == ViewableEvents,
+           V.Matter == VMatter,
+           V.Result == Disposable {
+           let (matter, result, disposable) = materializeViewable(viewable: viewable)
+
+           tableFooterView = matter
+
+           matter.snp.makeConstraints { make in
+               make.width.equalToSuperview()
+               make.centerX.equalToSuperview()
+            make.top.equalToSuperview()
+           }
+                                   
+           let bag = DisposeBag()
+            
+            bag += self.contentSizeSignal.onValue({ size in
+                matter.snp.updateConstraints { make in
+                    make.top.equalToSuperview().offset(size.height - matter.frame.height)
+                }
+            })
+               
+           bag += matter.anyDescendantDidLayoutSignal.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
+               self.tableFooterView = matter
+               matter.layoutIfNeeded()
+               self.layoutIfNeeded()
+           })
+
+           return Disposer {
+               bag.dispose()
+               result.dispose()
+               disposable.dispose()
+           }
+       }
 }
