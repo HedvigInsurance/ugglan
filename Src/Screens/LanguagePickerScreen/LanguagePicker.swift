@@ -134,6 +134,7 @@ extension LanguagePicker: Presentable {
         return (viewController, Future { completion in
             func pickLanguage(locale: Localization.Locale) {
                 ApplicationState.setPreferredLocale(locale)
+                Bundle.setLanguage(locale.lprojCode)
                 Localization.Locale.currentLocale = locale
                 TranslationsRepo.clear().onValue { _ in
                     UIApplication.shared.reloadAllLabels()
