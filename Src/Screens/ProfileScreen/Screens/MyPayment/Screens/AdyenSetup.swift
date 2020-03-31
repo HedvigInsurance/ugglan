@@ -85,12 +85,9 @@ extension AdyenSetup: Presentable {
 
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
-                                request: TokenizationRequest(paymentMethodDetails: json, channel: .ios, returnUrl: urlScheme)
+                                request: TokenizationRequest(paymentMethodDetails: json, channel: .ios, returnUrl: "\(urlScheme)://adyen")
                             )
                         ).onValue { result in
-                            
-                            print(result)
-                            
                             if result.data?.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
@@ -114,10 +111,23 @@ extension AdyenSetup: Presentable {
                             return
                         }
                         
-                        self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \(data.paymentData)}")).onValue { result in
+                        print("details json", detailsJson)
+                                                
+                        self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { result in
+                            print("result", result)
+                            
                             if result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
+                            } else if let data = result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseAction {
+                                guard let jsonData = data.action.data(using: .utf8) else {
+                                    return
+                                }
+                                guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
+                                    return
+                                }
+                                
+                                component.handle(action)
                             }
                         }
                     }
