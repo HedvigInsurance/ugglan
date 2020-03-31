@@ -22,6 +22,7 @@ extension OfferTermsLinks: Viewable {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 15
+        stackView.edgeInsets = UIEdgeInsets(horizontalInset: 16, verticalInset: 0)
 
         func openUrl(_ url: URL) {
             stackView.viewController?.present(SFSafariViewController(url: url), animated: true, completion: nil)

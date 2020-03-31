@@ -17,7 +17,7 @@ extension AttachGIFButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        
+
         control.backgroundColor = .boxPrimaryBackground
         control.layer.cornerRadius = 8
 

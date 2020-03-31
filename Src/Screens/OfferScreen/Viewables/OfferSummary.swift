@@ -35,13 +35,13 @@ extension OfferSummary: Viewable {
         }
 
         let titleLabel = ApolloMultilineLabel(query: OfferQuery()) {
-            StyledText(text: $0.insurance.address ?? "", style: TextStyle.standaloneLargeTitle.aligned(to: .center))
+            StyledText(text: $0.insurance.address ?? "", style: TextStyle.headlineLargeLargeCenter.aligned(to: .center))
         }
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: String(key: .OFFER_HOUSE_SUMMARY_DESC),
-            style: TextStyle.body.centerAligned
+            style: TextStyle.bodySmallSmallCenter.centerAligned
         )
         bag += stackView.addArranged(descriptionLabel)
 
