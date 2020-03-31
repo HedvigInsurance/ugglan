@@ -110,12 +110,8 @@ extension AdyenSetup: Presentable {
                             let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
                             return
                         }
-                        
-                        print("details json", detailsJson)
-                                                
+                                                                        
                         self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { result in
-                            print("result", result)
-                            
                             if result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
