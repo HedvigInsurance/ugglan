@@ -85,9 +85,12 @@ extension AdyenSetup: Presentable {
 
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
-                                paymentsRequest: "{\"paymentMethod\": \(json), \"returnUrl\": \"\(urlScheme)://\"}"
+                                request: TokenizationRequest(paymentMethodDetails: json, channel: .ios, returnUrl: urlScheme)
                             )
                         ).onValue { result in
+                            
+                            print(result)
+                            
                             if result.data?.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
