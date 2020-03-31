@@ -78,6 +78,7 @@ extension ContractCollection: Viewable {
 
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
         bag += tableKit.view.addTableHeaderView(ContractTableHeader(presentingViewController: presentingViewController))
+        bag += tableKit.view.addTableFooterView(UpsellingFooter())
 
         tableKit.view.backgroundColor = .primaryBackground
         tableKit.view.alwaysBounceVertical = true

@@ -553,7 +553,7 @@ extension TextStyle {
 
     static let bodySmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 15
+        style.lineHeight = 20
         style.color = .regularBody
         style.letterSpacing = 0.2
         style.alignment = .center
