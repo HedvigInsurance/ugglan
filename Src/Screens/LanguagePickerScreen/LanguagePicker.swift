@@ -141,7 +141,7 @@ extension LanguagePicker: Presentable {
                 ApolloClient.initClient().always {
                     completion(.success)
                 }
-                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }
 
             let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)

@@ -85,7 +85,7 @@ extension AdyenSetup: Presentable {
 
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
-                                paymentsRequest: "{\"paymentMethod\": \(json), \"returnUrl\": \"\(urlScheme)://\"}"
+                                request: TokenizationRequest(paymentMethodDetails: json, channel: .ios, returnUrl: "\(urlScheme)://adyen")
                             )
                         ).onValue { result in
                             if result.data?.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
@@ -110,11 +110,20 @@ extension AdyenSetup: Presentable {
                             let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
                             return
                         }
-                        
-                        self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \(data.paymentData)}")).onValue { result in
+                                                                        
+                        self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { result in
                             if result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
+                            } else if let data = result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseAction {
+                                guard let jsonData = data.action.data(using: .utf8) else {
+                                    return
+                                }
+                                guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
+                                    return
+                                }
+                                
+                                component.handle(action)
                             }
                         }
                     }
@@ -128,7 +137,7 @@ extension AdyenSetup: Presentable {
                     switch result {
                     case .success:
                         self.client.fetch(
-                            query: MyPaymentQuery(),
+                            query: ActivePaymentMethodsQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).onValue { _ in }
                         break

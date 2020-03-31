@@ -19,7 +19,7 @@ extension CardDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String(key: .MY_PAYMENT_BANK_ROW_LABEL),
+            header: String(key: .MY_PAYMENT_CARD_ROW_LABEL),
             footer: nil,
             style: .sectionPlain
         )
@@ -40,12 +40,12 @@ extension CardDetailsSection: Viewable {
         )
 
         bag += dataSignal.compactMap {
-            $0.activePaymentMethods?.storedPaymentMethodsDetails.brand
+            $0.activePaymentMethods?.storedPaymentMethodsDetails.brand?.capitalized
         }.bindTo(row.keySignal)
 
         bag += dataSignal.compactMap {
-            $0.activePaymentMethods?.storedPaymentMethodsDetails.brand
-        }.bindTo(row.valueSignal)
+            $0.activePaymentMethods?.storedPaymentMethodsDetails.lastFourDigits
+        }.map { "**** \($0)" }.bindTo(row.valueSignal)
 
         return (section, bag)
     }

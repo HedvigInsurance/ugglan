@@ -110,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-
+    
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
             guard let dynamicLinkUrl = link?.url else { return }
             self.handleDeepLink(dynamicLinkUrl)
@@ -198,6 +198,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
+        
+        if adyenRedirect {
+            return adyenRedirect
+        }
+
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
             guard let dynamicLinkUrl = dynamicLink.url else { return false }
             handleDeepLink(dynamicLinkUrl)
@@ -207,8 +213,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        RedirectComponent.applicationDidOpen(from: url)
-        
         return application(app, open: url,
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
