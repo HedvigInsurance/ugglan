@@ -35,7 +35,7 @@ extension ChatInput: Viewable {
 
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
-        backgroundView.backgroundColor = UIColor.primaryBackground.withAlphaComponent(0.8)
+        backgroundView.backgroundColor = UIColor.tertiaryBackground.withAlphaComponent(0.8)
 
         let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)
@@ -46,16 +46,6 @@ extension ChatInput: Viewable {
 
         effectView.snp.makeConstraints { make in
             make.width.height.leading.trailing.equalToSuperview()
-        }
-
-        let topBorderView = UIView()
-        topBorderView.backgroundColor = .primaryBorder
-        backgroundView.addSubview(topBorderView)
-
-        topBorderView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalTo(1 / UIScreen.main.scale)
         }
 
         let containerView = UIStackView()

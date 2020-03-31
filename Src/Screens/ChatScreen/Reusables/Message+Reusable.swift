@@ -144,7 +144,7 @@ extension Message: Reusable {
         let fromMyselfBubbleColor = UIColor.primaryBackgroundNeg
 
         let bubble = UIView()
-        bubble.backgroundColor = fromMyselfBubbleColor
+        bubble.backgroundColor = .primaryTintColor
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
@@ -227,15 +227,6 @@ extension Message: Reusable {
                     message.onEditCallbacker.callAll()
                 }
 
-                func applyRounding() {
-                    bubble.applyRadiusMaskFor(
-                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
-                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
-                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
-                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
-                    )
-                }
-
                 func applySpacing() {
                     if message.type.isVideoOrImageType {
                         contentContainer.layoutMargins = UIEdgeInsets.zero
@@ -259,26 +250,34 @@ extension Message: Reusable {
                         )
                     }
                 }
+                
+                func applyRounding() {
+                    bubble.applyRadiusMaskFor(
+                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
+                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
+                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
+                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
+                    )
+                }
 
                 bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce()) { _ in
                     editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
                     editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
 
                     applySpacing()
-                    applyRounding()
 
                     spacingContainer.layoutSuperviewsIfNeeded()
                 }
 
                 spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
+                let messageTextColor: UIColor = message.fromMyself ? .black : .primaryText
 
                 switch message.type {
                 case .image(_), .video:
                     bubble.backgroundColor = .transparent
                 default:
-                    bubble.backgroundColor = message.fromMyself ? fromMyselfBubbleColor : .secondaryBackground
+                    bubble.backgroundColor = message.fromMyself ? .boxSecondaryBackground : .boxPrimaryBackground
                 }
 
                 switch message.type {
@@ -287,6 +286,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
 
                     let processor = DownsamplingImageProcessor(
                         size: CGSize(
@@ -347,7 +348,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
-                    imageView.layer.cornerRadius = 5
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
                     imageView.backgroundColor = .clear
                     imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                     imageView.kf.setImage(
@@ -412,6 +414,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
 
                     let processor = DownsamplingImageProcessor(
                         size: CGSize(
@@ -462,7 +466,7 @@ extension Message: Reusable {
                 case .text:
                     let label = MultilineLabel(
                         value: message.body,
-                        style: TextStyle.chatBody.colored(messageTextColor)
+                        style: .chatBody
                     )
                     bag += contentContainer.addArranged(label)
                 }
@@ -472,7 +476,7 @@ extension Message: Reusable {
                         UIPasteboard.general.value = message.body
                     }
                 }
-
+                
                 bag += bubble.didLayoutSignal.onValue { _ in
                     applyRounding()
                 }

@@ -73,6 +73,8 @@ extension UpsellingFooter: Viewable {
         stackView.spacing = 15
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.alpha = 0
+        stackView.transform = CGAffineTransform(translationX: 0, y: 100)
         let bag = DisposeBag()
                         
         bag += client.watch(query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
@@ -80,6 +82,11 @@ extension UpsellingFooter: Viewable {
             .delay(by: 0.5)
             .onValueDisposePrevious { contracts in
                 let innerBag = DisposeBag()
+                
+                innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                    stackView.alpha = 1
+                    stackView.transform = CGAffineTransform.identity
+                }
                 
                 switch Localization.Locale.currentLocale.market {
                 case .no:
