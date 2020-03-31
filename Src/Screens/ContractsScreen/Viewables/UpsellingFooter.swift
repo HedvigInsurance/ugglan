@@ -77,6 +77,7 @@ extension UpsellingFooter: Viewable {
                         
         bag += client.watch(query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
             .compactMap { $0.data?.contracts }
+            .delay(by: 0.5)
             .onValueDisposePrevious { contracts in
                 let innerBag = DisposeBag()
                 
