@@ -45,11 +45,11 @@ extension ChatButton: Viewable {
         chatIcon.image = Asset.chat.image
         chatIcon.contentMode = .scaleAspectFit
         chatIcon.tintColor = .primaryText
-        
+
         bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
             chatIcon.tintColor = UIColor.primaryText.lighter(amount: 0.25)
         })
-        
+
         bag += chatButtonView.delayedTouchCancel().animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
             chatIcon.tintColor = .primaryText
         }

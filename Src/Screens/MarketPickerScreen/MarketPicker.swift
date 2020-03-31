@@ -15,7 +15,7 @@ import UIKit
 struct MarketPicker {
     @Inject var client: ApolloClient
     var didFinish: () -> Void
-    
+
     init(didFinish: @escaping () -> Void = {}) {
         self.didFinish = didFinish
     }
@@ -175,7 +175,7 @@ extension MarketPicker {
                         pickLanguage(locale: .en_SE)
                     }
                     englishRow.append(Asset.chevronRight.image)
-                    
+
                     innerBag += Disposer {
                         section.remove(englishRow)
                         section.remove(swedishRow)

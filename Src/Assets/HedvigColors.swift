@@ -106,13 +106,13 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .coral500 : .coral500
         })
     }
-    
+
     static var boxSecondaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .lighterPurple : .darkerPurple
         })
     }
-    
+
     static var boxPrimaryBackground: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .darkerGray : .lighterGray
@@ -162,7 +162,7 @@ extension UIColor {
             trait.userInterfaceStyle == .dark ? .white : .black
         })
     }
-    
+
     static var primaryButtonBackgroundColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.15) : .black

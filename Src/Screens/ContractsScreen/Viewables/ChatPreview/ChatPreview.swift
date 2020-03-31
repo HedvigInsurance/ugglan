@@ -50,7 +50,7 @@ extension ChatPreview: Viewable {
 
         let symbolIcon = Icon(icon: Asset.symbol, iconWidth: 20)
         symbolIconContainer.addArrangedSubview(symbolIcon)
-        
+
         symbolIcon.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }

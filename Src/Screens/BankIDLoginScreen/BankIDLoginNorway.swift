@@ -39,10 +39,10 @@ extension BankIDLoginNorway: Presentable {
 
             return .allow
         }
-        
+
         bag += client.subscribe(subscription: BankIdAuthSubscription()).compactMap { $0.data?.authStatus?.status }.filter(predicate: { status -> Bool in
             status == .success
-        }).take(first: 1).onValue({ status in
+        }).take(first: 1).onValue { _ in
             let appDelegate = UIApplication.shared.appDelegate
 
             if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
@@ -53,7 +53,7 @@ extension BankIDLoginNorway: Presentable {
 
             let window = appDelegate.window
             appDelegate.bag += window.present(LoggedIn(), animated: true)
-        })
+        }
 
         func loadBankID() {
             bag += client.perform(

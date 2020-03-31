@@ -5,8 +5,8 @@
 //  Created by sam on 27.3.20.
 //
 
-import Foundation
 import Flow
+import Foundation
 import UIKit
 
 struct ContractTableHeader {
@@ -14,22 +14,22 @@ struct ContractTableHeader {
 }
 
 extension ContractTableHeader: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.spacing = 15
-        
+
         let bag = DisposeBag()
-        
+
         let chatPreview = ChatPreview(presentingViewController: presentingViewController)
         bag += containerView.addArranged(chatPreview)
 
         let paymentNeedsSetupSection = PaymentNeedsSetupSection(presentingViewController: presentingViewController)
         bag += containerView.addArranged(paymentNeedsSetupSection)
-        
+
         let importantMessagesSection = ImportantMessagesSection(presentingViewController: presentingViewController)
         bag += containerView.addArranged(importantMessagesSection)
-        
+
         return (containerView, bag)
     }
 }

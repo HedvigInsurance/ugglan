@@ -32,7 +32,7 @@ extension CardDetailsSection: Viewable {
 
         let dataValueSignal = client.watch(query: ActivePaymentMethodsQuery())
         let dataSignal = dataValueSignal.compactMap { $0.data }
-        
+
         bag += dataSignal.map { $0.activePaymentMethods == nil }.bindTo(
             animate: SpringAnimationStyle.lightBounce(),
             section,

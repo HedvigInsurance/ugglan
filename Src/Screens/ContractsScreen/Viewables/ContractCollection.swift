@@ -37,7 +37,7 @@ extension ContractsQuery.Data.Contract.CurrentAgreement {
             if norwegianTravel.numberCoInsured > 0 {
                 return String(key: .DASHBOARD_MY_INFO_COINSURED(coinsuredPeople: norwegianTravel.numberCoInsured))
             }
-            
+
             return String(key: .DASHBOARD_MY_INFO_NO_COINSURED)
         } else if let swedishApartment = asSwedishApartmentAgreement {
             return swedishApartment.address.street

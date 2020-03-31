@@ -248,7 +248,7 @@ extension Message: Reusable {
                         )
                     }
                 }
-                
+
                 func applyRounding() {
                     bubble.applyRadiusMaskFor(
                         topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
@@ -474,7 +474,7 @@ extension Message: Reusable {
                         UIPasteboard.general.value = message.body
                     }
                 }
-                
+
                 bag += bubble.didLayoutSignal.onValue { _ in
                     applyRounding()
                 }

@@ -40,21 +40,21 @@ extension ContractDocuments: Presentable {
                 options: [.defaults, .allowSwipeDismissAlways]
             )
         }
-        
+
         let insuranceTermsRow = ButtonRow(text: contract.termsAndConditions.displayName, style: .normalButton)
         bag += section.append(insuranceTermsRow)
-        
+
         bag += insuranceTermsRow.onSelect.onValue { _ in
             guard let url = URL(string: self.contract.termsAndConditions.url) else {
-               return
-           }
+                return
+            }
 
-           viewController.present(
-            InsuranceDocument(url: url, title: self.contract.termsAndConditions.displayName),
-               style: .default,
-               options: [.defaults, .allowSwipeDismissAlways]
-           )
-       }
+            viewController.present(
+                InsuranceDocument(url: url, title: self.contract.termsAndConditions.displayName),
+                style: .default,
+                options: [.defaults, .allowSwipeDismissAlways]
+            )
+        }
 
         bag += viewController.install(form)
 

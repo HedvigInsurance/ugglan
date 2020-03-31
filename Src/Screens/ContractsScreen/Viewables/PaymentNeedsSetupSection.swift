@@ -5,11 +5,11 @@
 //  Created by Axel Backlund on 2019-04-15.
 //
 
+import Apollo
 import Flow
 import Form
 import Foundation
 import UIKit
-import Apollo
 
 struct PaymentNeedsSetupSection {
     @Inject var client: ApolloClient
@@ -71,9 +71,9 @@ extension PaymentNeedsSetupSection: Viewable {
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
-       
+
         let dataSignal = client.watch(query: MyPaymentQuery())
-                   .compactMap { $0.data }
+            .compactMap { $0.data }
 
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { data in
             switch data.directDebitStatus {

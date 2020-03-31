@@ -32,11 +32,11 @@ extension ContractCoverage: Presentable {
         bag += form.append(Divider(backgroundColor: .lightGray))
 
         bag += form.append(Spacing(height: 20))
-        
+
         bag += form.append(MultilineLabel(value: String(key: .CONTRACT_COVERAGE_MORE_INFO), style: .headlineSmallSmallLeft))
-        
+
         bag += form.append(Spacing(height: 10))
-        
+
         bag += form.append(ContractInsurableLimits(insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()))
 
         bag += viewController.install(form)

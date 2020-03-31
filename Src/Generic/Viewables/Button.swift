@@ -256,7 +256,7 @@ extension Button: Viewable {
 
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
         let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
-        
+
         func updateStyle(buttonType: ButtonType) {
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
@@ -281,7 +281,7 @@ extension Button: Viewable {
                 ]
             }
         }
-        
+
         func updateHighlightedStyle(buttonType: ButtonType) {
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
@@ -317,7 +317,7 @@ extension Button: Viewable {
         }
 
         let button = UIButton(title: "", style: styleSignal.value)
-        
+
         bag += button.traitCollectionSignal.onValue { _ in
             updateStyle(buttonType: self.type.value)
             updateHighlightedStyle(buttonType: self.type.value)

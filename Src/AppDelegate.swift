@@ -6,6 +6,7 @@
 //  Copyright © 2018 Sam Pettersson. All rights reserved.
 //
 
+import Adyen
 import Apollo
 import Disk
 import Firebase
@@ -18,7 +19,6 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
-import Adyen
 
 let log = Logger.self
 
@@ -110,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-    
+
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
             guard let dynamicLinkUrl = link?.url else { return }
             self.handleDeepLink(dynamicLinkUrl)
@@ -166,14 +166,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return }
         guard let rootViewController = window.rootViewController else { return }
         let innerBag = bag.innerBag()
-        
+
         func presentReferralsAccept() {
             innerBag += rootViewController.present(
                 ReferralsReceiverConsent(referralCode: referralCode),
                 style: .modal,
                 options: [
                     .prefersNavigationBarHidden(true),
-                    .allowSwipeDismissAlways
+                    .allowSwipeDismissAlways,
                 ]
             ).onValue { result in
                 if result == .accept {
@@ -187,7 +187,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 innerBag.dispose()
             }
         }
-        
+
         if ApplicationState.hasPreferredLocale {
             presentReferralsAccept()
         } else {
@@ -199,7 +199,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
-        
+
         if adyenRedirect {
             return adyenRedirect
         }

@@ -15,9 +15,9 @@ extension TextStyle {
             style.alignment = .center
         }
     }
-    
+
     var zeroedLineSpacing: TextStyle {
-        self.restyled { (style: inout TextStyle) in
+        restyled { (style: inout TextStyle) in
             style.lineSpacing = 0
         }
     }

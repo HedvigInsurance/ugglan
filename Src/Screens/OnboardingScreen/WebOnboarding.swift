@@ -15,7 +15,7 @@ import WebKit
 struct WebOnboarding {}
 
 final class WebOnboardingWebView: WKWebView, UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in _: UIScrollView) -> UIView? {
         return nil
     }
 }
@@ -71,22 +71,22 @@ extension WebOnboarding: Presentable {
             let credentials = URLCredential(user: "hedvig", password: "hedvig1234", persistence: .forSession)
             return (.useCredential, credentials)
         }
-        
-        bag += webView.signal(for: \.url).onValue { url in
-           let urlString = String(describing: url)
 
-           if urlString.contains("connect-payment") {
-               viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
-           }
+        bag += webView.signal(for: \.url).onValue { url in
+            let urlString = String(describing: url)
+
+            if urlString.contains("connect-payment") {
+                viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
+            }
         }
 
         func loadWebOnboarding() {
             guard let token = ApolloClient.retreiveToken() else {
                 return
             }
-            
+
             let tokenString = token.token.replacingOccurrences(of: "=", with: "%3D")
-            
+
             var localePath: String {
                 switch Localization.Locale.currentLocale {
                 case .en_NO:

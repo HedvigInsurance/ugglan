@@ -81,7 +81,7 @@ extension AdyenSetup: Presentable {
                             let json = String(data: jsonData, encoding: .utf8) else {
                             return
                         }
-                        
+
                         let urlScheme = Bundle.main.urlScheme ?? ""
 
                         self.client.perform(
@@ -99,7 +99,7 @@ extension AdyenSetup: Presentable {
                                 guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
                                     return
                                 }
-                                
+
                                 component.handle(action)
                             }
                         }
@@ -111,7 +111,7 @@ extension AdyenSetup: Presentable {
                             let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
                             return
                         }
-                                                                        
+
                         self.client.perform(mutation: AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { result in
                             if result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
@@ -123,7 +123,7 @@ extension AdyenSetup: Presentable {
                                 guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
                                     return
                                 }
-                                
+
                                 component.handle(action)
                             }
                         }
@@ -141,11 +141,10 @@ extension AdyenSetup: Presentable {
                             query: ActivePaymentMethodsQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).onValue { _ in }
-                        break
                     case .failure:
                         break
                     }
-                    
+
                     completion(result)
                 }
                 bag.hold(delegate)
@@ -170,7 +169,7 @@ extension AdyenSetup: Presentable {
 
                 viewController.present(dropInComponent.viewController, options: [
                     .allowSwipeDismissAlways,
-                    .unanimated
+                    .unanimated,
                 ]).onValue { _ in
                     completion(.success)
                 }

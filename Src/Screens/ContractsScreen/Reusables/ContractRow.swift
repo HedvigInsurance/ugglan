@@ -21,7 +21,7 @@ struct ContractRow: Hashable {
     let contract: ContractsQuery.Data.Contract
     let displayName: String
     let type: ContractType
-    
+
     enum ContractType {
         case swedishApartment
         case swedishHouse
@@ -60,11 +60,11 @@ struct ContractRow: Hashable {
 
 extension Date: LocalizationStringConvertible {
     public var localizationDescription: String {
-         let dateFormatter = DateFormatter()
-         dateFormatter.locale = Foundation.Locale(identifier: Localization.Locale.currentLocale.rawValue)
-         dateFormatter.dateStyle = .long
-         let dateString = dateFormatter.string(from: self)
-        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Foundation.Locale(identifier: Localization.Locale.currentLocale.rawValue)
+        dateFormatter.dateStyle = .long
+        let dateString = dateFormatter.string(from: self)
+
         return dateString
     }
 }
@@ -86,7 +86,7 @@ extension ContractRow: Reusable {
 
         let label = UILabel(value: "", style: .bodySmallSmallLeft)
         stackView.addArrangedSubview(label)
-        
+
         if let _ = contract.status.asPendingStatus {
             imageView.image = Asset.clock.image
             label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
@@ -119,27 +119,27 @@ extension ContractRow: Reusable {
 
         return stackView
     }
-    
+
     func makeSwitcherRow() -> (Disposable, [ThreeEither<SectionView, UIView, Spacing>]) {
         if contract.switchedFromInsuranceProvider == nil {
             return (NilDisposer(), [])
         }
-        
+
         let bag = DisposeBag()
 
         let section = SectionView()
         section.dynamicStyle = .sectionPlain
-        
+
         if let status = contract.status.asActiveInFutureStatus {
             let row = RowView()
-            
+
             bag += row.append(
                 MultilineLabel(
                     value: String(key: .DASHBOARD_PENDING_HAS_DATE(date: status.futureInception?.localDateToDate ?? "")),
                     style: .bodySmallSmallLeft
                 )
             )
-            
+
             section.append(row)
         } else if let _ = contract.status.asPendingStatus {
             let row = RowView()
@@ -150,15 +150,15 @@ extension ContractRow: Reusable {
                     style: .bodySmallSmallLeft
                 )
             )
-            
+
             section.append(row)
         } else {
             return (NilDisposer(), [])
         }
-        
+
         return (bag, [
             .make(section),
-            .make(Spacing(height: 10))
+            .make(Spacing(height: 10)),
         ])
     }
 
@@ -242,7 +242,7 @@ extension ContractRow: Reusable {
 
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        
+
         if let _ = contract.currentAgreement.asNorwegianTravelAgreement {
             imageView.image = Asset.insuranceInfo.image
         } else if let _ = contract.currentAgreement.asSwedishHouseAgreement {
@@ -250,7 +250,7 @@ extension ContractRow: Reusable {
         } else {
             imageView.image = Asset.apartment.image
         }
-        
+
         row.append(imageView)
 
         imageView.snp.makeConstraints { make in
@@ -387,7 +387,7 @@ extension ContractRow: Reusable {
         header.spacing = 10
         header.addArrangedSubview(UILabel(value: displayName, style: .headlineMediumMediumLeft))
         header.addArrangedSubview(makeStateIndicator())
-        
+
         let (switcherRowBag, switcherRowContent) = makeSwitcherRow()
         bag += switcherRowBag
 

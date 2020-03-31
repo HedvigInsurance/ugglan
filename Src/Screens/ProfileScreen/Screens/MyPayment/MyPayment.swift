@@ -30,7 +30,7 @@ extension MyPayment: Presentable {
 
         let form = FormView()
         bag += viewController.install(form)
-        
+
         form.alpha = 0
         form.transform = CGAffineTransform(translationX: 0, y: 100)
 
@@ -71,16 +71,14 @@ extension MyPayment: Presentable {
 
         let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
-                
+
         switch Localization.Locale.currentLocale.market {
         case .se:
             let bankDetailsSection = BankDetailsSection()
             bag += form.append(bankDetailsSection)
-            break
         case .no:
             let cardDetailsSection = CardDetailsSection()
             bag += form.append(cardDetailsSection)
-            break
         }
 
         bag += form.append(Spacing(height: 20))
