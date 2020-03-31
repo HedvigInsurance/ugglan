@@ -2,4 +2,7 @@ query AdyenAvailableMethods {
     availablePaymentMethods {
         paymentMethodsResponse
     }
+    insuranceCost {
+        ...CostFragment
+    }
 }

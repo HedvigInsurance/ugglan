@@ -12,6 +12,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import PassKit
 
 struct AdyenSetup {
     @Inject var client: ApolloClient
@@ -32,15 +33,19 @@ extension AdyenSetup: Presentable {
         viewController.view = view
 
         return (viewController, Future { completion in
-            bag += self.client.fetch(query: AdyenAvailableMethodsQuery()).valueSignal.compactMap { $0.data?.availablePaymentMethods.paymentMethodsResponse }.onValue { paymentMethodsString in
+            bag += self.client.fetch(query: AdyenAvailableMethodsQuery()).valueSignal.compactMap { $0.data }.onValue { data in
                 let configuration = DropInComponent.PaymentMethodsConfiguration()
                 configuration.card.publicKey = """
                 10001|BFB6886F7661789B3C3F8403659755F6F87933B132F38D8F7FE55E4E66613AB7571E05B3CEE21137D51434217820DE14833E55026C9D00D7DDE7211DF6897DE23E7F7581B938BC1FD781BC24A80A549A49D881F9415E9BE4672D192B6089679E1C128A84BC0EE0E49C67E698FF49A7DAF49CD787309C0FF86BF8C4346E55772185F957B0BD0809B77666CACB1BB8B4011E4432F2D5B584259FD39D5A30BB4843E547832151C25E72286A84756E086DED742FBDE6A36FA7DB229EA3852D30346190F700269B95864F23BC7BB139C3882E4E9A163E2486C29A6444B1AF08AD283BD7622C4B6453287D16E95DF899579634DBDA91471126BBF78DF431AD2B2142CB
                 """
                 configuration.card.showsStorePaymentMethodField = false
                 configuration.localizationParameters = LocalizationParameters(tableName: "Adyen", keySeparator: ".")
-
-                let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: paymentMethodsString.data(using: .utf8)!)
+                configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
+                configuration.applePay.summaryItems = [
+                    PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: data.insuranceCost?.fragments.costFragment.monthlyNet.amount ?? ""), type: .pending),
+                ]
+                
+                let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8)!)
 
                 var style = DropInComponent.Style()
                 style.navigation.tintColor = .primaryTintColor
@@ -64,8 +69,15 @@ extension AdyenSetup: Presentable {
                     paymentMethodsConfiguration: configuration,
                     style: style
                 )
-
-                dropInComponent.environment = .test
+                
+                switch ApplicationState.getTargetEnvironment() {
+                case .staging:
+                    dropInComponent.environment = .test
+                case .production:
+                    dropInComponent.environment = .live
+                case .custom(_, _, _):
+                    dropInComponent.environment = .test
+                }
 
                 class Coordinator: NSObject, DropInComponentDelegate {
                     @Inject var client: ApolloClient
