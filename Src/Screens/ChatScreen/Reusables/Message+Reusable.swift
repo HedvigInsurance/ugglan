@@ -141,8 +141,6 @@ extension Message: Reusable {
         bubbleContainer.spacing = 5
         spacingContainer.addArrangedSubview(bubbleContainer)
 
-        let fromMyselfBubbleColor = UIColor.primaryBackgroundNeg
-
         let bubble = UIView()
         bubble.backgroundColor = .primaryTintColor
 
@@ -167,7 +165,7 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = fromMyselfBubbleColor
+        editButton.backgroundColor = .boxSecondaryBackground
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
