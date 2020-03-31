@@ -64,7 +64,7 @@ extension OfferStartDateButton: Viewable {
         let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .bodyButtonText)
         stackView.addArrangedSubview(keyLabel)
 
-        let valueLabel = UILabel(value: "", style: .bodyBoldButtonText)
+        let valueLabel = UILabel(value: "", style: .bodyBookButtonText)
         stackView.addArrangedSubview(valueLabel)
 
         let iconView = Icon(icon: Asset.chevronRight, iconWidth: 20)

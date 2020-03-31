@@ -52,8 +52,8 @@ extension TextStyle {
         style.color = .primaryText
     }
 
-    static let bodyBoldButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+    static let bodyBookButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
     }
 
@@ -154,7 +154,7 @@ extension TextStyle {
     }
 
     static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(60)
+        style.font = HedvigFonts.favoritStdBook!.withSize(60)
         style.color = .primaryText
         style.alignment = .center
     }
@@ -176,7 +176,7 @@ extension TextStyle {
     }
 
     static let rowTitleBold = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(17)
+        style.font = HedvigFonts.favoritStdBook!.withSize(17)
         style.lineHeight = 15
     }
 
@@ -298,7 +298,7 @@ extension TextStyle {
     }
 
     static let headlineLargeLargeLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryText
     }
@@ -310,7 +310,7 @@ extension TextStyle {
     }
 
     static let headlineLargeLargeCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryText
         style.alignment = .center
@@ -487,7 +487,7 @@ extension TextStyle {
     }
 
     static let headlineSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 15
         style.color = .primaryText
     }
@@ -555,7 +555,7 @@ extension TextStyle {
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 20
         style.color = .regularBody
-        style.letterSpacing = 0.2
+        style.letterSpacing = 0
         style.alignment = .center
     }
 

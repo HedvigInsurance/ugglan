@@ -55,7 +55,7 @@ extension ContractPerilRow: Reusable {
             let remoteVectorIcon = RemoteVectorIcon(self.fragment.icon.fragments.iconFragment)
             bag += contentContainer.addArranged(remoteVectorIcon) { iconView in
                 iconView.snp.makeConstraints { make in
-                    make.width.equalTo(32.5)
+                    make.width.height.equalTo(40)
                 }
             }
 
@@ -71,7 +71,7 @@ extension ContractPerilRow: Reusable {
             })
 
             bag += view.trackedTouchUpInsideSignal.onValue { _ in
-                let detail = PerilDetail(title: self.fragment.title, description: self.fragment.description)
+                let detail = PerilDetail(title: self.fragment.title, description: self.fragment.description, icon: remoteVectorIcon)
                 view.viewController?.present(detail, style: self.presentDetailStyle)
             }
 
