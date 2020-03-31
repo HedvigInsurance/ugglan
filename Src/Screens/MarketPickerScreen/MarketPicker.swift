@@ -115,7 +115,7 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = UILabel(value: String(key: .MARKET_PICKER_TITLE), style: .headlineSmallSmallLeft)
+            let titleLabel = UILabel(value: String(key: .MARKET_PICKER_LANGUAGE_TITLE), style: .headlineSmallSmallLeft)
             titleContainer.addArrangedSubview(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
@@ -174,7 +174,7 @@ extension MarketPicker {
                         pickLanguage(locale: .en_SE)
                     }
                     englishRow.append(Asset.chevronRight.image)
-
+                    
                     innerBag += Disposer {
                         section.remove(englishRow)
                         section.remove(swedishRow)
