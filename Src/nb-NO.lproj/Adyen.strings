@@ -6,7 +6,7 @@
   
 */
 "adyen.submitButton" = "Koble kort";
-"adyen.submitButton.formatted" = "Betal %@";
+"adyen.submitButton.formatted" = "Koble kort";
 "adyen.cancelButton" = "Avbryt";
 "adyen.dismissButton" = "Ok";
 "adyen.error.title" = "Feil";

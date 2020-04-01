@@ -42,11 +42,11 @@ extension AdyenSetup: Presentable {
                 configuration.localizationParameters = LocalizationParameters(tableName: "Adyen", keySeparator: ".")
                 configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
                 configuration.applePay.summaryItems = [
-                    PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: data.insuranceCost?.fragments.costFragment.monthlyNet.amount ?? ""), type: .pending),
+                    PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: "0"), type: .final),
                 ]
                 
                 let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8)!)
-
+                
                 var style = DropInComponent.Style()
                 style.navigation.tintColor = .primaryTintColor
                 style.formComponent.header.title.font = HedvigFonts.favoritStdBook!.withSize(30)
@@ -63,13 +63,17 @@ extension AdyenSetup: Presentable {
                 style.listComponent.backgroundColor = .primaryBackground
                 style.listComponent.listItem.backgroundColor = .white
                 style.navigation.backgroundColor = .primaryBackground
-
+                                
                 let dropInComponent = DropInComponent(
                     paymentMethods: paymentMethods,
                     paymentMethodsConfiguration: configuration,
                     style: style
                 )
-                
+                                
+                let payment = Payment(amount: Payment.Amount(value: 0, currencyCode: data.insuranceCost?.fragments.costFragment.monthlyNet.currency ?? ""), countryCode: Localization.Locale.currentLocale.market.rawValue)
+                                
+                dropInComponent.payment = payment
+                                
                 switch ApplicationState.getTargetEnvironment() {
                 case .staging:
                     dropInComponent.environment = .test

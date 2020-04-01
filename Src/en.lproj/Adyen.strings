@@ -6,7 +6,7 @@
   
 */
 "adyen.submitButton" = "Connect card";
-"adyen.submitButton.formatted" = "Pay %@";
+"adyen.submitButton.formatted" = "Connect card";
 "adyen.cancelButton" = "Cancel";
 "adyen.dismissButton" = "OK";
 "adyen.error.title" = "Error";

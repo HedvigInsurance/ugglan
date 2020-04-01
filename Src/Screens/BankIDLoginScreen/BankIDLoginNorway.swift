@@ -43,7 +43,7 @@ extension BankIDLoginNorway: Presentable {
           } else {
               activityIndicator.alpha = 0
           }
-      }
+        }
 
         viewController.view = webView
 

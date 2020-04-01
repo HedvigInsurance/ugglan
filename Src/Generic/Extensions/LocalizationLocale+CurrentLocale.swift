@@ -9,9 +9,9 @@
 import Foundation
 
 extension Localization.Locale {
-    enum Market {
-        case no
-        case se
+    enum Market: String {
+        case no = "NO"
+        case se = "SE"
     }
 
     var market: Market {
