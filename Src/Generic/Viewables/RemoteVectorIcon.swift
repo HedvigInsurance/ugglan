@@ -77,7 +77,13 @@ extension RemoteVectorIcon: Viewable {
             })
 
             DispatchQueue.main.async {
-                imageView.image = image
+                if self.threaded {
+                    UIView.transition(with: imageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                        imageView.image = image
+                    }, completion: nil)
+                } else {
+                    imageView.image = image
+                }
             }
 
             finishedLoadingCallback.callAll()

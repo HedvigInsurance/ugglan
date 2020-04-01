@@ -315,14 +315,16 @@ extension CommonClaimCard: Viewable {
 
             bag += view.add(claimButton) { claimButtonView in
                 claimButtonView.alpha = 0
+                
+                let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
-                bag += client.insuranceIsActiveSignal().bindTo(claimButtonView, \.isUserInteractionEnabled)
+                bag += isEligibleDataSignal.bindTo(claimButtonView, \.isUserInteractionEnabled)
 
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
-                bag += combineLatest(showClaimButtonSignal.atOnce().plain(), client.insuranceIsActiveSignal())
-                    .map { showButton, insuranceIsActive in
+                bag += combineLatest(showClaimButtonSignal.atOnce().plain(), isEligibleDataSignal)
+                    .map { showButton, isEligibleToCreateClaim in
                         if showButton {
-                            return insuranceIsActive ? 1 : 0.5
+                            return isEligibleToCreateClaim ? 1 : 0.5
                         }
 
                         return 0

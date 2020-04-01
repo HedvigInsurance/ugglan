@@ -117,8 +117,10 @@ extension ClaimsHeader.InactiveMessage: Viewable {
                 make.center.equalToSuperview()
             }
         }
+        
+        let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
-        bag += client.insuranceIsActiveSignal()
+        bag += isEligibleDataSignal
             .wait(until: view.hasWindowSignal)
             .filter { !$0 }
             .delay(by: 0.5)
@@ -181,8 +183,9 @@ extension ClaimsHeader: Viewable {
         }
 
         bag += view.addArranged(button.wrappedIn(UIStackView())) { stackView in
-            bag += client.insuranceIsActiveSignal().bindTo(stackView, \.isUserInteractionEnabled)
-            bag += client.insuranceIsActiveSignal()
+            let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
+            bag += isEligibleDataSignal.bindTo(stackView, \.isUserInteractionEnabled)
+            bag += isEligibleDataSignal
                 .map { $0 ? 1 : 0.5 }
                 .animated(style: AnimationStyle.easeOut(duration: 0.25)) { alpha in
                     stackView.alpha = alpha

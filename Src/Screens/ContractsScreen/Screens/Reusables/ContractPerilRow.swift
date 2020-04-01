@@ -52,7 +52,7 @@ extension ContractPerilRow: Reusable {
         return (view, { `self` in
             let bag = DisposeBag()
 
-            let remoteVectorIcon = RemoteVectorIcon(self.fragment.icon.fragments.iconFragment)
+            let remoteVectorIcon = RemoteVectorIcon(self.fragment.icon.fragments.iconFragment, threaded: true)
             bag += contentContainer.addArranged(remoteVectorIcon) { iconView in
                 iconView.snp.makeConstraints { make in
                     make.width.height.equalTo(40)

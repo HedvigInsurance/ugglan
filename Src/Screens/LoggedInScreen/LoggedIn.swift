@@ -23,18 +23,6 @@ struct LoggedIn {
 }
 
 extension LoggedIn {
-    func handleTerminatedInsurances(tabBarController: UITabBarController) -> Disposable {
-        return client
-            .fetch(query: InsuranceStatusQuery())
-            .valueSignal
-            .compactMap { $0.data?.insurance.status }
-            .filter { $0 == .terminated }
-            .toVoid()
-            .onValue {
-                tabBarController.present(TerminatedInsurance(), options: [.prefersNavigationBarHidden(true)])
-            }
-    }
-
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
         return NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
             tabBarController.selectedIndex = 2
@@ -150,7 +138,6 @@ extension LoggedIn: Presentable {
                 }
         }
 
-        bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
         return (tabBarController, bag)
