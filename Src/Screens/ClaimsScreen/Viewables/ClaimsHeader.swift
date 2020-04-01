@@ -147,15 +147,15 @@ extension ClaimsHeader: Viewable {
         bag += view.addArranged(inactiveMessage)
 
         let imageView = UIImageView()
+        imageView.tintColor = .primaryTintColor
         imageView.image = Asset.claimsHeader.image
         imageView.contentMode = .scaleAspectFit
 
-        imageView.snp.makeConstraints { make in
-            make.height.equalTo(imageView.image?.size.height ?? 0)
-            make.width.equalTo(imageView.image?.size.width ?? 0)
-        }
-
         view.addArrangedSubview(imageView)
+        
+        imageView.snp.makeConstraints { make in
+            make.height.equalTo(300)
+        }
 
         let title = Title()
         bag += view.addArranged(title)

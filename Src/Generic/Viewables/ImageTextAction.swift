@@ -61,6 +61,7 @@ extension ImageTextAction: Viewable {
         let headerImageView = UIImageView()
         headerImageView.image = image
         headerImageView.contentMode = .scaleAspectFit
+        headerImageView.tintColor = .primaryTintColor
 
         headerImageView.snp.makeConstraints { make in
             make.height.equalTo(270)
