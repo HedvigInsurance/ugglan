@@ -108,12 +108,8 @@ extension PostOnboarding: Presentable {
         bag += viewController.install(collectionKit)
 
         func presentLoggedIn() {
-            if let modalViewController = viewController.presentingViewController {
-                viewController.dismiss(animated: true, completion: nil)
-                modalViewController.present(LoggedIn(didSign: true), options: [])
-            } else {
-                viewController.present(LoggedIn(didSign: true), options: [])
-            }
+            let appDelegate = UIApplication.shared.appDelegate
+            appDelegate.bag += appDelegate.window.present(LoggedIn(didSign: true), animated: true)
         }
 
         bag += client.isSwitchingInsurance.onValue { isSwitching in
