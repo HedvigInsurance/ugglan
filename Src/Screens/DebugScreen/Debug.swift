@@ -97,7 +97,7 @@ struct Debug: View {
                     ))
                 }
 
-                ApplicationState.preserveState(.marketing)
+                ApplicationState.preserveState(.marketPicker)
                 UIApplication.shared.appDelegate.logout()
             }))
             .navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
