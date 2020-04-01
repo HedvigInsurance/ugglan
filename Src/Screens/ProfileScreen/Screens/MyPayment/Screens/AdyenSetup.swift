@@ -157,11 +157,30 @@ extension AdyenSetup: Presentable {
                             query: ActivePaymentMethodsQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).onValue { _ in }
-                    case .failure:
-                        break
-                    }
+                        
+                        let continueButton = Button(
+                            title: String(key: .PAYMENT_SETUP_DONE_CTA),
+                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                      )
 
-                    completion(result)
+                      let continueAction = ImageTextAction<Void>(
+                            image: Asset.paymentSetupIllustration.image,
+                            title: String(key: .PAYMENT_SETUP_DONE_TITLE),
+                            body:  String(key: .PAYMENT_SETUP_DONE_DESCRIPTION),
+                          actions: [
+                              ((), continueButton),
+                          ],
+                          showLogo: false
+                      )
+
+                        bag += dropInComponent.viewController.present(PresentableViewable(viewable: continueAction) { viewController in
+                            viewController.navigationItem.hidesBackButton = true
+                        }).onValue { _ in
+                            completion(.success)
+                        }
+                    case .failure:
+                        completion(result)
+                    }
                 }
                 bag.hold(delegate)
                 bag.hold(dropInComponent)
