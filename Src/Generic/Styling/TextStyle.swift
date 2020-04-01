@@ -171,7 +171,7 @@ extension TextStyle {
 
     static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(17)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryText
     }
 
