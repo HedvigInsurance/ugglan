@@ -280,7 +280,7 @@ extension TextStyle {
 
     static let draggableOverlayDescription = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .secondaryText
     }
 
@@ -467,21 +467,21 @@ extension TextStyle {
 
     static let headLineSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryText
         style.alignment = .center
     }
 
     static let headlineSmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryTextNeg
         style.alignment = .right
     }
 
     static let headlineSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBold!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .primaryText
         style.alignment = .right
     }
@@ -553,7 +553,7 @@ extension TextStyle {
 
     static let bodySmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
-        style.lineHeight = 20
+        style.lineHeight = 15
         style.color = .regularBody
         style.letterSpacing = 0
         style.alignment = .center
