@@ -88,14 +88,14 @@ extension Referrals: Presentable {
         let netPremiumSignal = ReadWriteSignal<Int?>(nil)
 
         bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
+            .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
             .bindTo(netPremiumSignal)
 
         let grossPremiumSignal = ReadWriteSignal<Int?>(nil)
 
         bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.monthlyGross.amount }
+            .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
             .bindTo(grossPremiumSignal)
 

@@ -99,7 +99,7 @@ extension PaymentDetailsSection: Viewable {
                 })
 
                 self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
-                    data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
+                    data.insuranceCost?.fragments.costFragment = result.cost.fragments.costFragment
                 })
 
                 let alert = Alert(
