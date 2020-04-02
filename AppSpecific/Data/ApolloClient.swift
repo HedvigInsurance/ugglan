@@ -22,12 +22,16 @@ extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
         ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
     }
+    
+    static var userAgent: String {
+        return "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
+    }
 
     static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         let httpAdditionalHeaders = [
             "Authorization": token ?? "",
             "Accept-Language": Localization.Locale.currentLocale.acceptLanguageHeader,
-            "User-Agent": "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))",
+            "User-Agent": userAgent,
         ]
 
         let configuration = URLSessionConfiguration.default
