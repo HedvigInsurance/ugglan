@@ -119,7 +119,7 @@ extension AdyenSetup: Presentable {
                             let json = String(data: jsonData, encoding: .utf8) else {
                             return
                         }
-                        
+                                                
                         let urlScheme = Bundle.main.urlScheme ?? ""
                         
                         self.client.perform(
@@ -263,7 +263,6 @@ extension AdyenSetup: Presentable {
 
                 viewController.present(dropInComponent.viewController, options: [
                     .allowSwipeDismissAlways,
-                    .unanimated,
                 ]).onValue { _ in
                     completion(.success)
                 }

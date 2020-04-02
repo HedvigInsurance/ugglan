@@ -41,7 +41,7 @@ struct AnalyticsCoordinator {
         let bag = DisposeBag()
         bag += client.fetch(query: InsurancePriceQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.monthlyGross }
+            .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross }
             .onValue { monthlyGross in
                 bag.dispose()
 
@@ -64,7 +64,7 @@ struct AnalyticsCoordinator {
         let bag = DisposeBag()
         bag += client.fetch(query: InsurancePriceQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.monthlyGross }
+            .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross }
             .onValue { monthlyGross in
                 bag.dispose()
 

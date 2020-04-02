@@ -61,9 +61,8 @@ extension WebOnboarding: Presentable {
 
         ApplicationState.preserveState(.onboardingChat)
 
-        let webView = WebOnboardingWebView(frame: .zero)
+        let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .primaryBackground
-        webView.scrollView.delegate = webView
         webView.customUserAgent = ApolloClient.userAgent
 
         viewController.view = webView
