@@ -78,9 +78,7 @@ extension UIColor {
     }
 
     static var disabledTintColor: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .darkGray : .offBlack
-        })
+        .darkGray
     }
 
     static var attentionTintColor: UIColor {
