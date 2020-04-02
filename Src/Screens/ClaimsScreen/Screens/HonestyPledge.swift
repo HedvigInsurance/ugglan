@@ -27,7 +27,7 @@ struct HonestyPledge {
         )
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
-            image: Asset.activatePushNotificationsIllustration.image,
+            image: .init(image: Asset.activatePushNotificationsIllustration.image),
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_HEADLINE),
             body: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
             actions: [

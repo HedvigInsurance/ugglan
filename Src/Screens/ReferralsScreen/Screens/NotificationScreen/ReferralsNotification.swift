@@ -44,7 +44,7 @@ extension ReferralsNotification: Presentable {
         )
 
         let content = ImageTextAction<ReferralsNotificationResult>(
-            image: Asset.inviteSuccess.image,
+            image: .init(image: Asset.inviteSuccess.image),
             title: String(key: .REFERRAL_SUCCESS_HEADLINE(user: name)),
             body: String(key: .REFERRAL_SUCCESS_BODY(referralValue: String(incentive))),
             actions: [

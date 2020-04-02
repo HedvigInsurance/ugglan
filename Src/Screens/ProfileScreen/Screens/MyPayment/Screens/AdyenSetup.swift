@@ -19,16 +19,30 @@ struct AdyenSetup {
 }
 
 enum AdyenError: Error {
-    case cancelled
+    case cancelled, tokenization, action
 }
 
 extension AdyenSetup: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
+        viewController.navigationItem.hidesBackButton = true
 
         let view = UIView()
         view.backgroundColor = .primaryBackground
+        
+        let activityIndicator = UIActivityIndicatorView()
+       activityIndicator.style = .whiteLarge
+       activityIndicator.color = .primaryTintColor
+
+       view.addSubview(activityIndicator)
+
+       activityIndicator.startAnimating()
+
+       activityIndicator.snp.makeConstraints { make in
+           make.edges.equalToSuperview()
+           make.size.equalToSuperview()
+       }
 
         viewController.view = view
 
@@ -117,6 +131,9 @@ extension AdyenSetup: Presentable {
                                 }
 
                                 component.handle(action)
+                            } else {
+                                component.stopLoading(withSuccess: false, completion: nil)
+                                component.delegate?.didFail(with: AdyenError.tokenization, from: component)
                             }
                         }
                     }
@@ -141,11 +158,14 @@ extension AdyenSetup: Presentable {
                                 }
 
                                 component.handle(action)
+                            } else {
+                                component.stopLoading(withSuccess: false, completion: nil)
+                                component.delegate?.didFail(with: AdyenError.action, from: component)
                             }
                         }
                     }
 
-                    func didFail(with error: Error, from _: DropInComponent) {
+                    func didFail(with error: Error, from dropInComponent: DropInComponent) {
                         self.completion(.failure(error))
                     }
                 }
@@ -160,11 +180,11 @@ extension AdyenSetup: Presentable {
                         
                         let continueButton = Button(
                             title: String(key: .PAYMENT_SETUP_DONE_CTA),
-                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
                       )
 
                       let continueAction = ImageTextAction<Void>(
-                            image: Asset.paymentSetupIllustration.image,
+                        image: .init(image: Asset.circularCheckmark.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
                             title: String(key: .PAYMENT_SETUP_DONE_TITLE),
                             body:  String(key: .PAYMENT_SETUP_DONE_DESCRIPTION),
                           actions: [
@@ -179,7 +199,38 @@ extension AdyenSetup: Presentable {
                             completion(.success)
                         }
                     case .failure:
-                        completion(result)
+                        let tryAgainButton = Button(
+                            title: String(key: .PAYMENT_SETUP_FAILED_RETRY_CTA),
+                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                      )
+                        
+                        let cancelButton = Button(
+                              title: String(key: .PAYMENT_SETUP_FAILED_CANCEL_CTA),
+                            type: .outline(borderColor: .transparent, textColor: .pink)
+                        )
+
+                          let didFailAction = ImageTextAction<Bool>(
+                            image: .init(image: Asset.redCross.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
+                                title: String(key: .PAYMENT_SETUP_FAILED_TITLE),
+                                body:  String(key: .PAYMENT_SETUP_FAILED_DESCRIPTION),
+                              actions: [
+                                  (true, tryAgainButton),
+                                  (false, cancelButton)
+                              ],
+                              showLogo: false
+                          )
+
+                        bag += dropInComponent.viewController.present(PresentableViewable(viewable: didFailAction) { viewController in
+                            viewController.navigationItem.hidesBackButton = true
+                        }).onValue { shouldRetry in
+                            if (shouldRetry) {
+                                dropInComponent.viewController.present(AdyenSetup()).onResult { result in
+                                    completion(result)
+                                }
+                            } else {
+                                completion(.failure(AdyenError.cancelled))
+                            }
+                        }
                     }
                 }
                 bag.hold(delegate)
@@ -210,7 +261,7 @@ extension AdyenSetup: Presentable {
                 }
             }
 
-            return bag
+            return DelayedDisposer(bag, delay: 2)
         })
     }
 }

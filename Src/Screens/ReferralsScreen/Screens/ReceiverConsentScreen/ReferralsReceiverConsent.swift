@@ -43,7 +43,7 @@ extension ReferralsReceiverConsent: Presentable {
         )
 
         let content = ImageTextAction<ReferralsReceiverConsentResult>(
-            image: Asset.inviteSuccess.image,
+            image: .init(image: Asset.inviteSuccess.image),
             title: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
             body: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
             actions: [

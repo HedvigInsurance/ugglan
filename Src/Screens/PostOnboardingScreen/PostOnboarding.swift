@@ -36,7 +36,7 @@ struct PostOnboarding {
         }
 
         let payment = ImageTextAction<TableAction>(
-            image: Asset.paymentSetupIllustration.image,
+            image: .init(image: Asset.paymentSetupIllustration.image),
             title: String(key: .ONBOARDING_CONNECT_DD_HEADLINE),
             body: isSwitching ?
                 String(key: .ONBOARDING_CONNECT_DD_BODY_SWITCHERS) :
@@ -64,7 +64,7 @@ struct PostOnboarding {
         }
 
         let pushNotifications = ImageTextAction<TableAction>(
-            image: Asset.activatePushNotificationsIllustration.image,
+            image: .init(image: Asset.activatePushNotificationsIllustration.image),
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_HEADLINE),
             body: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_BODY),
             actions: [
