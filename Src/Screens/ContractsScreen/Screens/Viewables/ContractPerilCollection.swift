@@ -23,6 +23,12 @@ extension ContractPerilCollection: Viewable {
         collectionKit.view.backgroundColor = .transparent
 
         let bag = DisposeBag()
+        
+        bag += collectionKit.view.traitCollectionSignal.atOnce().onValue { _ in
+            collectionKit.table.forEach { (row) in
+                collectionKit.updateCurrentRow()
+            }
+        }
 
         bag += perilFragmentsSignal.atOnce().onValue { perilFragments in
             collectionKit.set(

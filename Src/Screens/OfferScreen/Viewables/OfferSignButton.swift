@@ -26,7 +26,7 @@ extension OfferSignButton: Viewable {
 
         let contentContainer = UIStackView()
         contentContainer.isLayoutMarginsRelativeArrangement = true
-        contentContainer.layoutMargins = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+        contentContainer.layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
         view.addSubview(contentContainer)
 
         contentContainer.snp.makeConstraints { make in
