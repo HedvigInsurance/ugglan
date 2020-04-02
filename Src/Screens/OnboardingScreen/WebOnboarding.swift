@@ -62,11 +62,20 @@ extension WebOnboarding: Presentable {
         ApplicationState.preserveState(.onboardingChat)
 
         let webView = WKWebView(frame: .zero)
-        webView.backgroundColor = .primaryBackground
+        webView.backgroundColor = .transparent
+        webView.isOpaque = false
         webView.customUserAgent = ApolloClient.userAgent
+        
+        let view = UIView()
+        view.backgroundColor = UIColor(red:0.07, green:0.07, blue:0.07, alpha:1.00)
+        viewController.view = view
 
-        viewController.view = webView
-
+        view.addSubview(webView)
+        
+        webView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+        
         bag += webView.didReceiveAuthenticationChallenge.set { (_, _) -> (URLSession.AuthChallengeDisposition, URLCredential?) in
             let credentials = URLCredential(user: "hedvig", password: "hedvig1234", persistence: .forSession)
             return (.useCredential, credentials)
