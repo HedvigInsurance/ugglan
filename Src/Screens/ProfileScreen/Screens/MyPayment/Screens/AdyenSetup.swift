@@ -54,7 +54,6 @@ extension AdyenSetup: Presentable {
                 """
                 configuration.card.showsStorePaymentMethodField = false
                 configuration.localizationParameters = LocalizationParameters(tableName: "Adyen", keySeparator: ".")
-                configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
                 configuration.applePay.summaryItems = [
                     PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: "0"), type: .final),
                 ]
@@ -77,6 +76,15 @@ extension AdyenSetup: Presentable {
                 style.listComponent.backgroundColor = .primaryBackground
                 style.listComponent.listItem.backgroundColor = .white
                 style.navigation.backgroundColor = .primaryBackground
+                
+                switch ApplicationState.getTargetEnvironment() {
+                case .staging:
+                    configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
+                case .production:
+                    configuration.applePay.merchantIdentifier = "merchant.com.hedvig.app"
+                case .custom(_, _, _):
+                    configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
+                }
                                 
                 let dropInComponent = DropInComponent(
                     paymentMethods: paymentMethods,
@@ -111,9 +119,9 @@ extension AdyenSetup: Presentable {
                             let json = String(data: jsonData, encoding: .utf8) else {
                             return
                         }
-
+                        
                         let urlScheme = Bundle.main.urlScheme ?? ""
-
+                        
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
                                 request: TokenizationRequest(paymentMethodDetails: json, channel: .ios, returnUrl: "\(urlScheme)://adyen")
