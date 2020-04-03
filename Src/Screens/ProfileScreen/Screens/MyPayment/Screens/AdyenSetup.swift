@@ -53,7 +53,7 @@ extension AdyenSetup: Presentable {
                 configuration.card.showsStorePaymentMethodField = false
                 configuration.localizationParameters = LocalizationParameters(tableName: "Adyen", keySeparator: ".")
                 configuration.applePay.summaryItems = [
-                    PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: "0"), type: .final),
+                    PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: "0"), type: .pending),
                 ]
                 
                 let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8)!)
