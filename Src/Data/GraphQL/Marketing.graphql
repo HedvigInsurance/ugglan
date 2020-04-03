@@ -1,9 +1,8 @@
-query Marketing($languageCode: String!) {
-    appMarketingImages(
-        where: {
-            language: { code: $languageCode }
+query Marketing {
+    appMarketingImages {
+        language {
+            code
         }
-    ) {
         image {
             url
         }

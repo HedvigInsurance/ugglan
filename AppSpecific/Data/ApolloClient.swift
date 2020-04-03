@@ -26,6 +26,8 @@ extension ApolloClient {
     static var userAgent: String {
         return "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
+    
+    static var cache = InMemoryNormalizedCache()
 
     static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         let httpAdditionalHeaders = [
@@ -55,8 +57,7 @@ extension ApolloClient {
             webSocketNetworkTransport: websocketNetworkTransport
         )
 
-        let cache = InMemoryNormalizedCache()
-        let store = ApolloStore(cache: cache)
+        let store = ApolloStore(cache: ApolloClient.cache)
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in

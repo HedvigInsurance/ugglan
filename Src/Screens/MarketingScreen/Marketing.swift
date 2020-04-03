@@ -14,11 +14,12 @@ import UIKit
 
 struct Marketing {
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
 }
 
 extension Marketing {
     func prefetch() {
-        client.fetch(query: MarketingQuery(languageCode: Localization.Locale.currentLocale.code)).onValue { _ in }
+        client.fetch(query: MarketingQuery()).onValue { _ in }
     }
 }
 
@@ -53,19 +54,22 @@ extension Marketing: Presentable {
             make.height.equalTo(40)
         }
         
-        bag += client.fetch(query: MarketingQuery(languageCode: Localization.Locale.currentLocale.code), cachePolicy: .returnCacheDataElseFetch)
+        bag += client.fetch(query: MarketingQuery())
             .valueSignal
-            .compactMap { $0.data?.appMarketingImages.first }
+            .compactMap { $0.data?.appMarketingImages.filter({ $0?.language?.code == Localization.Locale.currentLocale.code }).first }
             .compactMap { $0 }
             .onValue { marketingImage in
                 guard let url = URL(string: marketingImage.image?.url ?? "") else {
                     return
                 }
+                                
+            let blurImage = UIImage(blurHash: marketingImage.blurhash ?? "", size: .init(width: 32, height: 32))
+            imageView.image = blurImage
                 
             imageView.contentMode = .scaleAspectFill
             imageView.kf.setImage(
                 with: url,
-                placeholder: UIImage(blurHash: marketingImage.blurhash ?? "", size: .init(width: 32, height: 32)),
+                placeholder: blurImage,
                 options: [
                     .transition(.fade(0.25))
                 ]

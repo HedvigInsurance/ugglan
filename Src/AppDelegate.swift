@@ -75,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
+        ApolloClient.cache = InMemoryNormalizedCache()
         bag += ApolloClient.createClientFromNewSession().onValue { _ in
             self.bag.dispose()
             self.bag += ApplicationState.presentRootViewController(self.window)
