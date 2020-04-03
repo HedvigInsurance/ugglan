@@ -94,7 +94,7 @@ extension MyPayment: Presentable {
         bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()
 
-            let hasAlreadyConnected = result.data?.bankAccount != nil
+            let hasAlreadyConnected = result.data?.payinMethodStatus != .needsSetup
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
 
             innerBag += buttonSection.onSelect.onValue {
