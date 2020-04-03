@@ -37,9 +37,9 @@ extension LoadingIndicator: Viewable {
         loadingIndicator.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
             make.width.equalTo(self.size)
             make.height.equalTo(self.size)
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
         }
-
+        
         let bag = DisposeBag()
 
         bag += Signal(after: showAfter).animated(style: AnimationStyle.easeOut(duration: 0.5), animations: {

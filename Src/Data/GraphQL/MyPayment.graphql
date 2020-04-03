@@ -7,7 +7,7 @@ query MyPayment {
         descriptor
     }
     nextChargeDate
-    directDebitStatus
+    payinMethodStatus
     redeemedCampaigns {
         ...CampaignFragment
     }

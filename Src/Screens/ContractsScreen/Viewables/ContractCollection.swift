@@ -82,6 +82,11 @@ extension ContractCollection: Viewable {
 
         tableKit.view.backgroundColor = .primaryBackground
         tableKit.view.alwaysBounceVertical = true
+        
+        let loadingIndicatorBag = DisposeBag()
+        
+        let loadingIndicator = LoadingIndicator(showAfter: 0.5, color: .primaryTintColor)
+        loadingIndicatorBag += tableKit.view.add(loadingIndicator)
 
         bag += client.fetch(
             query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
@@ -93,6 +98,8 @@ extension ContractCollection: Viewable {
                     type: contract.currentAgreement.type
                 )
             })
+            
+            loadingIndicatorBag.dispose()
 
             tableKit.set(table)
         }
