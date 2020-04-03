@@ -74,7 +74,7 @@ extension AdyenSetup: Presentable {
                 style.formComponent.footer.backgroundColor = .primaryBackground
                 style.formComponent.header.backgroundColor = .primaryBackground
                 style.listComponent.backgroundColor = .primaryBackground
-                style.listComponent.listItem.backgroundColor = .white
+                style.listComponent.listItem.backgroundColor = .secondaryBackground
                 style.navigation.backgroundColor = .primaryBackground
                 
                 switch ApplicationState.getTargetEnvironment() {
