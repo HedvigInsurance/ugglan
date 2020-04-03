@@ -39,6 +39,14 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
+	<key>FacebookAppID</key>
+	<string>170982226921693</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookDisplayName</key>
+	<string>Hedvig</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.finance</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -56,16 +64,14 @@
 	<string>Hedvig använder kameran för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Hedvig använder mikrofonen för att kunna spela in ljud.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>SoRay-ExtraBold.ttf</string>
-		<string>Merriweather-Light.ttf</string>
-		<string>CircularStd-Bold.ttf</string>
-		<string>CircularStd-Book.ttf</string>
+		<string>FavoritStd-Book.otf</string>
+		<string>FavoritStd-Bold.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -95,13 +101,5 @@
 	<array>
 		<dict/>
 	</array>
-	<key>FacebookAppID</key>
-	<string>170982226921693</string>
-	<key>FacebookDisplayName</key>
-	<string>Hedvig</string>
-	<key>FacebookAutoLogAppEventsEnabled</key>
-	<true/>
-	<key>FacebookAdvertiserIDCollectionEnabled</key>
-	<true/>
 </dict>
 </plist>
