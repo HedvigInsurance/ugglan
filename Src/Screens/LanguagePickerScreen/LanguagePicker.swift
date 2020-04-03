@@ -134,6 +134,7 @@ extension LanguagePicker: Presentable {
         return (viewController, Future { completion in
             func pickLanguage(locale: Localization.Locale) {
                 ApplicationState.setPreferredLocale(locale)
+                Bundle.setLanguage(locale.lprojCode)
                 Localization.Locale.currentLocale = locale
                 TranslationsRepo.clear().onValue { _ in
                     UIApplication.shared.reloadAllLabels()
@@ -141,7 +142,7 @@ extension LanguagePicker: Presentable {
                 ApolloClient.initClient().always {
                     completion(.success)
                 }
-                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }
 
             let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)

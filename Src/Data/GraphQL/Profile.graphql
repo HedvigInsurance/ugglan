@@ -3,13 +3,8 @@ query Profile {
         firstName
         lastName
     }
-    insurance {
-        address
-        certificateUrl
-        personsInHousehold
-        cost {
-            ...CostFragment
-        }
+    insuranceCost {
+         ...CostFragment
     }
     cashback {
         name

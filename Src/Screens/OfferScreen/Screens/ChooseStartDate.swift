@@ -22,13 +22,21 @@ extension ChooseStartDate: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
+        let view = UIView()
+        view.backgroundColor = .primaryBackground
+
+        viewController.view = view
+
         let containerView = UIStackView()
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        containerView.isLayoutMarginsRelativeArrangement = true
         containerView.axis = .vertical
 
-        bag += containerView.applySafeAreaBottomLayoutMargin()
-        bag += containerView.applyPreferredContentSize(on: viewController)
+        view.addSubview(containerView)
 
-        viewController.view = containerView
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
 
         let textStackView = UIStackView()
         textStackView.spacing = 8
@@ -92,7 +100,7 @@ extension ChooseStartDate: Presentable {
         }
 
         let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
-                                      type: .standard(backgroundColor: .primaryTintColor,
+                                      type: .standard(backgroundColor: .primaryButtonBackgroundColor,
                                                       textColor: .white))
 
         let loadableChooseDateButton = LoadableButton(button: chooseDateButton,

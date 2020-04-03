@@ -13,7 +13,6 @@ import Foundation
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient
-    let isHiddenSignal = ReadWriteSignal<Bool>(false)
 }
 
 extension BankDetailsSection: Viewable {
@@ -25,8 +24,6 @@ extension BankDetailsSection: Viewable {
             footer: nil,
             style: .sectionPlain
         )
-        bag += isHiddenSignal.bindTo(section, \.isHidden)
-
         let row = KeyValueRow()
         row.valueStyleSignal.value = .rowTitleDisabled
 

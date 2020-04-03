@@ -27,20 +27,20 @@ struct PurchasePrice: Viewable {
     let id: String
     let category: KeyGearItemCategory
     @Inject var client: ApolloClient
-    
+
     func materialize(events _: ViewableEvents) -> (SectionView, Signal<Int>) {
         let bag = DisposeBag()
-        
+
         let footerView = MultilineLabel(value: String(key: .KEY_GEAR_NOT_COVERED(itemType: category.name.localizedLowercase)), style: .sectionHeader)
-        
+
         let footerViewContainer = UIStackView()
         footerViewContainer.isHidden = false
         footerViewContainer.axis = .vertical
         bag += footerViewContainer.addArranged(footerView)
-        
+
         let section = SectionView(headerView: nil, footerView: footerViewContainer)
         section.dynamicStyle = .sectionPlain
-        
+
         let row = RowView()
         section.append(row)
 
@@ -50,12 +50,12 @@ struct PurchasePrice: Viewable {
         textField.keyboardType = .numeric
 
         bag += textField.addDoneToolbar()
-        
+
         let amountSignal = client
             .watch(query: KeyGearItemQuery(id: id))
             .compactMap { $0.data?.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
             .readable(initial: "0")
-        
+
         bag += combineLatest(textField, amountSignal).animated(style: SpringAnimationStyle.lightBounce()) { value, amount in
             if let amount = Float(amount), let value = Float(value), value > amount {
                 footerViewContainer.animationSafeIsHidden = false
@@ -67,7 +67,7 @@ struct PurchasePrice: Viewable {
         }
 
         row.append(textField)
-        
+
         return (section, textField.providedSignal.hold(bag).compactMap { Int($0) })
     }
 }
@@ -149,7 +149,7 @@ extension KeyGearAddValuation: Presentable {
             button:
             Button(
                 title: String(key: .KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BUTTON),
-                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
             )
         )
 

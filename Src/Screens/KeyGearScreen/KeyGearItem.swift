@@ -290,14 +290,14 @@ extension KeyGearItem: Presentable {
                 right: 0
             )
         }
-        
+
         bag += navigationBar.traitCollectionSignal.atOnce().onValue { trait in
             if trait.userInterfaceIdiom == .pad {
                 viewController.navigationItem.leftBarButtonItem = nil
             } else {
                 viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
             }
-            
+
             navigationBar.items = [viewController.navigationItem]
         }
 

@@ -28,7 +28,7 @@ extension OfferSwitcherBulletList {
             stackView.alignment = .center
 
             let circle = UIView()
-            circle.backgroundColor = .purple
+            circle.backgroundColor = .black
 
             bag += circle.didLayoutSignal.onValue {
                 circle.layer.cornerRadius = circle.frame.height / 2
@@ -45,7 +45,7 @@ extension OfferSwitcherBulletList {
 
             circleLabel.snp.makeConstraints { make in
                 make.height.width.centerX.equalToSuperview()
-                make.centerY.equalToSuperview().offset(1)
+                make.centerY.equalToSuperview().offset(3)
             }
 
             let textLabel = MultilineLabel(value: text, style: .rowSubtitle)

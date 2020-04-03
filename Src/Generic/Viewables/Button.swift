@@ -17,6 +17,7 @@ enum ButtonType {
     case standard(backgroundColor: UIColor, textColor: UIColor)
     case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
     case standardSmall(backgroundColor: UIColor, textColor: UIColor)
+    case standardOutline(borderColor: UIColor, textColor: UIColor)
     case tinyIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
     case outline(borderColor: UIColor, textColor: UIColor)
     case pillSemiTransparent(backgroundColor: UIColor, textColor: UIColor)
@@ -50,7 +51,7 @@ enum ButtonType {
         switch self {
         case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
-        case .outline, .transparent:
+        case .outline, .transparent, .standardOutline:
             return 0
         case .pillSemiTransparent:
             return 0.6
@@ -63,7 +64,7 @@ enum ButtonType {
         switch self {
         case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
-        case .outline:
+        case .outline, .standardOutline:
             return 0.05
         case .pillSemiTransparent:
             return 0.6
@@ -84,8 +85,10 @@ enum ButtonType {
             return backgroundColor
         case let .tinyIcon((backgroundColor, _, _)):
             return backgroundColor
-        case .outline((_, _)):
-            return .purple
+        case let .outline((borderColor, _)):
+            return borderColor
+        case let .standardOutline((borderColor, _)):
+            return borderColor
         case let .pillSemiTransparent((backgroundColor, _)):
             return backgroundColor
         case .iconTransparent((_, _)):
@@ -107,6 +110,8 @@ enum ButtonType {
             return textColor
         case let .outline((_, textColor)):
             return textColor
+        case let .standardOutline((_, textColor)):
+            return textColor
         case let .pillSemiTransparent((_, textColor)):
             return textColor
         case let .iconTransparent((textColor, _)):
@@ -118,7 +123,7 @@ enum ButtonType {
 
     var height: CGFloat {
         switch self {
-        case .standard, .standardIcon:
+        case .standard, .standardIcon, .standardOutline:
             return 50
         case .standardSmall:
             return 34
@@ -137,7 +142,7 @@ enum ButtonType {
 
     var fontSize: CGFloat {
         switch self {
-        case .standard, .standardSmall, .outline, .standardIcon:
+        case .standard, .standardSmall, .outline, .standardIcon, .standardOutline:
             return 15
         case .pillSemiTransparent:
             return 13
@@ -152,7 +157,7 @@ enum ButtonType {
 
     var extraWidthOffset: CGFloat {
         switch self {
-        case .standard, .standardIcon:
+        case .standard, .standardIcon, .standardOutline:
             return 50
         case .standardSmall:
             return 35
@@ -210,7 +215,7 @@ enum ButtonType {
 
     var borderWidth: CGFloat {
         switch self {
-        case .outline:
+        case .outline, .standardOutline:
             return 1
         default:
             return 0
@@ -220,6 +225,8 @@ enum ButtonType {
     var borderColor: UIColor {
         switch self {
         case let .outline((borderColor, _)):
+            return borderColor
+        case let .standardOutline((borderColor, _)):
             return borderColor
         default:
             return UIColor.clear
@@ -257,7 +264,7 @@ extension Button: Viewable {
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
         let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
 
-        bag += type.atOnce().onValue { buttonType in
+        func updateStyle(buttonType: ButtonType) {
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
@@ -270,11 +277,11 @@ extension Button: Viewable {
                             border: BorderStyle(
                                 width: buttonType.borderWidth,
                                 color: buttonType.borderColor,
-                                cornerRadius: buttonType.height / 2
+                                cornerRadius: 6
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
+                            font: HedvigFonts.favoritStdBook!.withSize(buttonType.fontSize),
                             color: buttonType.textColor
                         )
                     ),
@@ -282,7 +289,7 @@ extension Button: Viewable {
             }
         }
 
-        bag += type.atOnce().onValue { buttonType in
+        func updateHighlightedStyle(buttonType: ButtonType) {
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
@@ -296,11 +303,11 @@ extension Button: Viewable {
                             border: BorderStyle(
                                 width: buttonType.borderWidth,
                                 color: buttonType.borderColor,
-                                cornerRadius: buttonType.height / 2
+                                cornerRadius: 6
                             )
                         ),
                         text: TextStyle(
-                            font: HedvigFonts.circularStdBook!.withSize(buttonType.fontSize),
+                            font: HedvigFonts.favoritStdBook!.withSize(buttonType.fontSize),
                             color: textColor
                         )
                     ),
@@ -308,7 +315,20 @@ extension Button: Viewable {
             }
         }
 
+        bag += type.atOnce().onValue { buttonType in
+            updateStyle(buttonType: buttonType)
+        }
+
+        bag += type.atOnce().onValue { buttonType in
+            updateHighlightedStyle(buttonType: buttonType)
+        }
+
         let button = UIButton(title: "", style: styleSignal.value)
+
+        bag += button.traitCollectionSignal.onValue { _ in
+            updateStyle(buttonType: self.type.value)
+            updateHighlightedStyle(buttonType: self.type.value)
+        }
 
         bag += styleSignal
             .atOnce()
@@ -336,26 +356,7 @@ extension Button: Viewable {
 
                 iconImageView.contentMode = .scaleAspectFit
 
-                let iconDistance = type.iconDistance
-
                 button.addSubview(iconImageView)
-
-                switch icon {
-                case .left:
-                    button.titleEdgeInsets = UIEdgeInsets(
-                        top: 0,
-                        left: icon.width + iconDistance,
-                        bottom: 0,
-                        right: 0
-                    )
-                case .right:
-                    button.titleEdgeInsets = UIEdgeInsets(
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: icon.width + iconDistance
-                    )
-                }
 
                 iconImageView.snp.makeConstraints { make in
                     switch icon {

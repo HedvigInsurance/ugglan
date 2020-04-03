@@ -20,10 +20,10 @@ struct PresentableViewable<View: Viewable, SignalValue>: Presentable where View.
         customizeViewController(viewController)
         let containerView = UIView()
         viewController.view = containerView
-        
+
         let bag = DisposeBag()
-        
-        bag += containerView.traitCollectionSignal.onValue { trait in
+
+        bag += containerView.traitCollectionSignal.onValue { _ in
             self.customizeViewController(viewController)
         }
 

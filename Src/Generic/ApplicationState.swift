@@ -14,7 +14,7 @@ struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 
     enum Screen: String {
-        case marketing, onboardingChat, offer, loggedIn, languagePicker
+        case marketing, onboardingChat, offer, loggedIn, languagePicker, marketPicker
 
         func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
@@ -210,22 +210,20 @@ struct ApplicationState {
     static func presentRootViewController(_ window: UIWindow) -> Disposable {
         guard let applicationState = currentState
         else {
-            if Localization.Locale.currentLocale == .en_SE {
-                return window.present(
-                    PreMarketingLanguagePicker(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)],
-                    animated: false
-                )
-            } else {
-                return window.present(
-                    Marketing(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)],
-                    animated: false
-                ).disposable
-            }
+            return window.present(
+                MarketPicker(),
+                options: [.defaults, .prefersNavigationBarHidden(true)],
+                animated: false
+            )
         }
 
         switch applicationState {
+        case .marketPicker:
+            return window.present(
+                MarketPicker(),
+                options: [.defaults, .prefersNavigationBarHidden(true)],
+                animated: false
+            )
         case .languagePicker:
             return window.present(
                 PreMarketingLanguagePicker(),
@@ -237,9 +235,9 @@ struct ApplicationState {
                 Marketing(),
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false
-            ).disposable
+            )
         case .onboardingChat:
-            return window.present(OnboardingChat(), options: [.defaults], animated: false)
+            return window.present(Onboarding(), options: [.defaults], animated: false)
         case .offer:
             return window.present(
                 Offer(),

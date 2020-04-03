@@ -6,6 +6,8 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
+import Adyen
+import AdyenDropIn
 import Apollo
 import Flow
 import Form
@@ -28,6 +30,14 @@ extension MyPayment: Presentable {
 
         let form = FormView()
         bag += viewController.install(form)
+
+        form.alpha = 0
+        form.transform = CGAffineTransform(translationX: 0, y: 100)
+
+        bag += dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            form.alpha = 1
+            form.transform = CGAffineTransform.identity
+        }
 
         bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious { failedCharges, nextPayment in
             let innerbag = DisposeBag()
@@ -62,8 +72,14 @@ extension MyPayment: Presentable {
         let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
 
-        let bankDetailsSection = BankDetailsSection()
-        bag += form.append(bankDetailsSection)
+        switch Localization.Locale.currentLocale.market {
+        case .se:
+            let bankDetailsSection = BankDetailsSection()
+            bag += form.append(bankDetailsSection)
+        case .no:
+            let cardDetailsSection = CardDetailsSection()
+            bag += form.append(cardDetailsSection)
+        }
 
         bag += form.append(Spacing(height: 20))
 
@@ -78,26 +94,24 @@ extension MyPayment: Presentable {
         bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()
 
-            let hasAlreadyConnected = result.data?.bankAccount != nil
+            let hasAlreadyConnected = result.data?.payinMethodStatus != .needsSetup
             buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
 
             innerBag += buttonSection.onSelect.onValue {
-                let directDebitSetup = DirectDebitSetup(
+                let setup = PaymentSetup(
                     setupType: hasAlreadyConnected ? .replacement : .initial
                 )
-                viewController.present(directDebitSetup, options: [.autoPop])
+                viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
             }
 
-            if result.data?.directDebitStatus == .pending {
+            if result.data?.payinMethodStatus == .pending {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true
-                bankDetailsSection.isHiddenSignal.value = true
             } else {
                 updatingMessageSectionSpacing.isHiddenSignal.value = true
                 updatingMessageSection.isHidden = true
                 buttonSection.isHiddenSignal.value = false
-                bankDetailsSection.isHiddenSignal.value = false
             }
 
             return innerBag

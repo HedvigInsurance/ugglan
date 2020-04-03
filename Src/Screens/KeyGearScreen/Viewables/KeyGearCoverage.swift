@@ -23,7 +23,7 @@ extension KeyGearCoverage: Viewable {
         let row = RowView()
         let bag = DisposeBag()
 
-        let icon = Icon(icon: type == .included ? Asset.greenCircularCheckmark : Asset.pinkCircularCross, iconWidth: 15)
+        let icon = Icon(icon: type == .included ? Asset.circularCheckmark : Asset.pinkCircularCross, iconWidth: 15)
         icon.snp.makeConstraints { make in
             make.width.equalTo(30)
         }

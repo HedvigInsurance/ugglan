@@ -20,10 +20,8 @@
 	<string>1</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>SoRay-ExtraBold.ttf</string>
-		<string>Merriweather-Light.ttf</string>
-		<string>CircularStd-Bold.ttf</string>
-		<string>CircularStd-Book.ttf</string>
+		<string>FavoritStd-Bold.otf</string>
+		<string>FavoritStd-Book.otf</string>
 	</array>
 </dict>
 </plist>

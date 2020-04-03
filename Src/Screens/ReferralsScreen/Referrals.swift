@@ -88,14 +88,14 @@ extension Referrals: Presentable {
         let netPremiumSignal = ReadWriteSignal<Int?>(nil)
 
         bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.monthlyNet.amount }
+            .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
             .bindTo(netPremiumSignal)
 
         let grossPremiumSignal = ReadWriteSignal<Int?>(nil)
 
         bag += referralsScreenQuerySignal
-            .compactMap { $0.data?.insurance.cost?.fragments.costFragment.monthlyGross.amount }
+            .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
             .bindTo(grossPremiumSignal)
 
@@ -173,7 +173,7 @@ extension Referrals: Presentable {
         let button = LoadableButton(
             button: Button(
                 title: String(key: .REFERRALS_SHARE_BUTTON),
-                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
             ),
             initialLoadingState: true
         )

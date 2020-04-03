@@ -86,7 +86,7 @@ struct LanguageSwitcher {
 extension LanguageSwitcher: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = "Språk/Language"
+        viewController.title = String(key: .ABOUT_LANGUAGE_ROW)
         let bag = DisposeBag()
 
         let form = FormView(sections: [], style: .defaultGrouped)
@@ -98,69 +98,126 @@ extension LanguageSwitcher: Presentable {
             UIApplication.shared.reloadAllLabels()
         }
 
-        let englishRowImageView = UIImageView()
-        englishRowImageView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-            make.height.equalTo(20)
-        }
-
-        if Localization.Locale.currentLocale == .en_SE {
-            englishRowImageView.image = Asset.greenCircularCheckmark.image
-        }
-
-        let swedishRowImageView = UIImageView()
-        swedishRowImageView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-            make.height.equalTo(20)
-        }
-
-        if Localization.Locale.currentLocale == .sv_SE {
-            swedishRowImageView.image = Asset.greenCircularCheckmark.image
-        }
-
         func pickLanguage(locale: Localization.Locale) {
             ApplicationState.setPreferredLocale(locale)
             Localization.Locale.currentLocale = locale
+            Bundle.setLanguage(locale.lprojCode)
             ApolloClient.initClient().always {
                 TranslationsRepo.clear().onValue { _ in
                     reloadAllLabels()
                     NotificationCenter.default.post(Notification(name: .localeSwitched))
                 }
             }
-            bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code)).onValue { _ in }
+            bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
         }
 
-        let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
-        bag += section.append(englishRow).onValue { _ in
-            pickLanguage(locale: .en_SE)
+        switch Localization.Locale.currentLocale.market {
+        case .se:
+            let englishRowImageView = UIImageView()
+            englishRowImageView.snp.makeConstraints { make in
+                make.width.equalTo(20)
+                make.height.equalTo(20)
+            }
 
-            UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                englishRowImageView.image = Asset.greenCircularCheckmark.image
-            }, completion: nil)
+            if Localization.Locale.currentLocale == .en_SE {
+                englishRowImageView.image = Asset.circularCheckmark.image
+            }
 
-            UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                swedishRowImageView.image = nil
-            }, completion: nil)
+            let swedishRowImageView = UIImageView()
+            swedishRowImageView.snp.makeConstraints { make in
+                make.width.equalTo(20)
+                make.height.equalTo(20)
+            }
+
+            if Localization.Locale.currentLocale == .sv_SE {
+                swedishRowImageView.image = Asset.circularCheckmark.image
+            }
+
+            let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+            bag += section.append(englishRow).onValue { _ in
+                pickLanguage(locale: .en_SE)
+
+                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    englishRowImageView.image = Asset.circularCheckmark.image
+                       }, completion: nil)
+
+                UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    swedishRowImageView.image = nil
+                       }, completion: nil)
+            }
+
+            englishRow.prepend(Asset.flagGB.image)
+            englishRow.append(englishRowImageView)
+
+            let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
+            bag += section.append(swedishRow).onValue { _ in
+                pickLanguage(locale: .sv_SE)
+
+                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    englishRowImageView.image = nil
+                       }, completion: nil)
+
+                UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    swedishRowImageView.image = Asset.circularCheckmark.image
+                       }, completion: nil)
+            }
+
+            swedishRow.prepend(Asset.flagSE.image)
+            swedishRow.append(swedishRowImageView)
+        case .no:
+
+            let englishRowImageView = UIImageView()
+            englishRowImageView.snp.makeConstraints { make in
+                make.width.equalTo(20)
+                make.height.equalTo(20)
+            }
+
+            if Localization.Locale.currentLocale == .en_NO {
+                englishRowImageView.image = Asset.circularCheckmark.image
+            }
+
+            let norwegianRowImageView = UIImageView()
+            norwegianRowImageView.snp.makeConstraints { make in
+                make.width.equalTo(20)
+                make.height.equalTo(20)
+            }
+
+            if Localization.Locale.currentLocale == .nb_NO {
+                norwegianRowImageView.image = Asset.circularCheckmark.image
+            }
+
+            let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+            bag += section.append(englishRow).onValue { _ in
+                pickLanguage(locale: .en_NO)
+
+                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    englishRowImageView.image = Asset.circularCheckmark.image
+                       }, completion: nil)
+
+                UIView.transition(with: norwegianRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    norwegianRowImageView.image = nil
+                       }, completion: nil)
+            }
+
+            englishRow.prepend(Asset.flagGB.image)
+            englishRow.append(englishRowImageView)
+
+            let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .rowTitle, appendSpacer: false)
+            bag += section.append(norwegianRow).onValue { _ in
+                pickLanguage(locale: .nb_NO)
+
+                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    englishRowImageView.image = nil
+                       }, completion: nil)
+
+                UIView.transition(with: norwegianRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                    norwegianRowImageView.image = Asset.circularCheckmark.image
+                       }, completion: nil)
+            }
+
+            norwegianRow.prepend(Asset.flagNO.image)
+            norwegianRow.append(norwegianRowImageView)
         }
-
-        englishRow.prepend(Asset.flagGB.image)
-        englishRow.append(englishRowImageView)
-
-        let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
-        bag += section.append(swedishRow).onValue { _ in
-            pickLanguage(locale: .sv_SE)
-
-            UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                englishRowImageView.image = nil
-            }, completion: nil)
-
-            UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                swedishRowImageView.image = Asset.greenCircularCheckmark.image
-            }, completion: nil)
-        }
-
-        swedishRow.prepend(Asset.flagSE.image)
-        swedishRow.append(swedishRowImageView)
 
         return (viewController, bag)
     }

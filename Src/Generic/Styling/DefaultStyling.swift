@@ -29,11 +29,11 @@ extension DefaultStyling {
         UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ]
         UINavigationBar.appearance().largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBold!.withSize(30),
         ]
 
         if #available(iOS 13.0, *) {
@@ -55,13 +55,13 @@ extension DefaultStyling {
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(11),
             ],
             for: .normal
         )
         UITabBarItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(11),
             ],
             for: .selected
         )
@@ -70,14 +70,14 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
             ],
             for: .normal
         )
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
             ],
             for: .highlighted
         )
@@ -128,10 +128,10 @@ extension DefaultStyling {
         }
 
         UITabBarItem.appearance().setBadgeTextAttributes([
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ], for: .normal)
         UITabBarItem.appearance().setBadgeTextAttributes([
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ], for: .selected)
 
         current = .custom

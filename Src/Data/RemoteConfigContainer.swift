@@ -19,17 +19,17 @@ class RemoteConfigContainer {
 
         self.fetched = fetched
         self.remoteConfig = remoteConfig
-        
+
         fetch(false)
     }
-    
+
     func fetch(_ force: Bool) {
         #if DEBUG
             let fetchDuration: TimeInterval = 0
         #else
             let fetchDuration: TimeInterval = force ? 0 : 3600
         #endif
-       
+
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
             self.remoteConfig.activate(completionHandler: { _ in
                 self.fetched.value = true

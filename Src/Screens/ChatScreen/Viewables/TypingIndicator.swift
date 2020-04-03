@@ -82,7 +82,7 @@ extension TypingIndicator: Viewable {
         let bag = DisposeBag()
 
         let bubble = UIView()
-        bubble.backgroundColor = .secondaryBackground
+        bubble.backgroundColor = .boxPrimaryBackground
 
         let typingView = UIStackView()
         typingView.spacing = 5
@@ -114,10 +114,10 @@ extension TypingIndicator: Viewable {
         typingView.addArrangedSubview(thirdDot)
 
         bag += bubble.didLayoutSignal.onValue { _ in
-            let halfWidthCornerRadius = bubble.frame.height / 2
+            let halfWidthCornerRadius: CGFloat = 6
 
             if self.hasPreviousMessage {
-                bubble.applyRadiusMaskFor(topLeft: 5, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
+                bubble.applyRadiusMaskFor(topLeft: 3, bottomLeft: halfWidthCornerRadius, bottomRight: halfWidthCornerRadius, topRight: halfWidthCornerRadius)
             } else {
                 bubble.layer.cornerRadius = halfWidthCornerRadius
             }

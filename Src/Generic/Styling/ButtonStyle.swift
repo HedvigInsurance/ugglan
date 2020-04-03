@@ -44,7 +44,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.black
                 )
             ),
@@ -65,7 +65,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.black
                 )
             ),
@@ -86,7 +86,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.white
                 )
             ),
@@ -107,7 +107,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.white
                 )
             ),
@@ -128,7 +128,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.white
                 )
             ),
@@ -149,7 +149,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.white
                 )
             ),
@@ -170,7 +170,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(15),
+                    font: HedvigFonts.favoritStdBook!.withSize(15),
                     color: UIColor.white
                 )
             ),
@@ -191,7 +191,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(12),
+                    font: HedvigFonts.favoritStdBook!.withSize(12),
                     color: UIColor.white
                 )
             ),
@@ -212,7 +212,7 @@ extension ButtonStyle {
                     )
                 ),
                 text: TextStyle(
-                    font: HedvigFonts.circularStdBook!.withSize(12),
+                    font: HedvigFonts.favoritStdBook!.withSize(12),
                     color: UIColor.white
                 )
             ),

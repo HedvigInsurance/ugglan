@@ -1,12 +1,8 @@
 {
   "images" : [
     {
-      "idiom" : "iphone",
-      "filename" : "Claims iPhone Illustration.pdf"
-    },
-    {
-      "idiom" : "ipad",
-      "filename" : "Claims iPad Illustration.pdf"
+      "idiom" : "universal",
+      "filename" : "Claims.pdf"
     }
   ],
   "info" : {
@@ -14,6 +10,7 @@
     "author" : "xcode"
   },
   "properties" : {
+    "template-rendering-intent" : "template",
     "preserves-vector-representation" : true
   }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Apollo
 
 @available(iOS 13, *)
 struct Debug: View {
@@ -20,6 +21,7 @@ struct Debug: View {
     @State private var endpointURL: String = ""
     @State private var wsEndpointURL: String = ""
     @State private var assetsEndpointURL: String = ""
+    @State private var authorizationToken: String = ""
     @State private var showFaultyEndpointAlert = false
 
     static var environmentOptionFromTarget: EnvironmentOption {
@@ -46,6 +48,7 @@ struct Debug: View {
         }
 
         _pickedEnvironment = State(initialValue: Debug.environmentOptionFromTarget)
+        _authorizationToken = State(initialValue: ApolloClient.retreiveToken()?.token ?? "")
     }
 
     var body: some View {
@@ -65,6 +68,9 @@ struct Debug: View {
                         SwiftUI.TextField("WebSocket Endpoint URL", text: $wsEndpointURL)
                         SwiftUI.TextField("Assets Endpoint URL", text: $assetsEndpointURL)
                     }
+                }
+                Section {
+                    SwiftUI.TextField("Authorization token", text: $authorizationToken)
                 }
             }
             .alert(isPresented: $showFaultyEndpointAlert) {
@@ -96,9 +102,9 @@ struct Debug: View {
                         assetsEndpointURL: assetsEndpointURL
                     ))
                 }
-
-                ApplicationState.preserveState(.marketing)
-                UIApplication.shared.appDelegate.logout()
+                
+                ApplicationState.preserveState(.loggedIn)
+                ApolloClient.saveToken(token: self.authorizationToken)
             }))
             .navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
         }

@@ -41,7 +41,7 @@ extension WhatsNewPagerDots: Viewable {
 
             for i in 0 ... pageAmount - 2 {
                 let indicator = UIView()
-                indicator.backgroundColor = i == 0 ? .primaryTintColor : .gray
+                indicator.backgroundColor = i == 0 ? .primaryText : .gray
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
                 indicator.layer.cornerRadius = 2
 

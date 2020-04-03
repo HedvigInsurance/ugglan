@@ -11,9 +11,11 @@ import Foundation
 
 extension ApolloClient {
     var isSwitchingInsurance: Future<Bool> {
-        fetch(query: SwitchingQuery()).map { result -> Bool in
+        fetch(query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())).map { result -> Bool in
             guard let data = result.data else { return false }
-            return data.insurance.previousInsurer != nil && data.insurance.status.isInactive == true
+            return data.contracts.contains { contract -> Bool in
+                contract.switchedFromInsuranceProvider != nil
+            }
         }
     }
 }

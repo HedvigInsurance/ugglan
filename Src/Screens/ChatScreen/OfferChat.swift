@@ -54,7 +54,7 @@ extension OfferChat: Presentable {
             viewController.present(alert)
         }
 
-        viewController.navigationItem.rightBarButtonItem = restartButton
+        viewController.navigationItem.leftBarButtonItem = restartButton
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image

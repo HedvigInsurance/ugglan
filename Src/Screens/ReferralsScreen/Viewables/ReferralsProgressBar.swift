@@ -39,9 +39,9 @@ extension ReferralsProgressBar {
         let textGeometry = SCNText(string: text, extrusionDepth: 1)
 
         if size == .small {
-            textGeometry.font = HedvigFonts.circularStdBold?.withSize(175)
+            textGeometry.font = HedvigFonts.favoritStdBold?.withSize(175)
         } else {
-            textGeometry.font = HedvigFonts.circularStdBold?.withSize(225)
+            textGeometry.font = HedvigFonts.favoritStdBold?.withSize(225)
         }
 
         textGeometry.firstMaterial?.diffuse.contents = textColor

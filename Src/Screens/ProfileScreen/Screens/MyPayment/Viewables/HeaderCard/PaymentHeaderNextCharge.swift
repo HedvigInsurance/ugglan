@@ -27,7 +27,7 @@ extension PaymentHeaderNextCharge: Viewable {
         contentContainer.distribution = .equalSpacing
         view.addSubview(contentContainer)
 
-        let label = UILabel(value: "", style: .body)
+        let label = UILabel(value: "", style: TextStyle.body.zeroedLineSpacing)
         contentContainer.addArrangedSubview(label)
 
         contentContainer.snp.makeConstraints { make in

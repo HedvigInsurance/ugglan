@@ -33,9 +33,7 @@ extension WelcomePagerProceedButton: Viewable {
         let buttonTitleSignal = ReadWriteSignal<String>("")
 
         func setButtonStyle(isMorePages: Bool) {
-            button.type.value = isMorePages ? ButtonType.standard(backgroundColor: UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? .primaryTintColor : .blackPurple
-            }), textColor: .white) : ButtonType.standard(backgroundColor: .primaryTintColor, textColor: .white)
+            button.type.value = ButtonType.standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
         }
 
         func setButtonTitle(isMorePages: Bool) {
@@ -52,6 +50,7 @@ extension WelcomePagerProceedButton: Viewable {
 
                 buttonView.snp.remakeConstraints { make in
                     make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset)
+                    make.height.equalTo(self.button.type.value.height)
                 }
 
                 buttonView.layoutIfNeeded()
