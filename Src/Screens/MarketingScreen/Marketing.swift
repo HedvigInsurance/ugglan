@@ -75,7 +75,7 @@ extension Marketing: Presentable {
         let contentStackView = UIStackView()
         contentStackView.axis = .vertical
         contentStackView.spacing = 15
-        contentStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        contentStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
         contentStackView.isLayoutMarginsRelativeArrangement = true
         
         containerView.addSubview(contentStackView)
