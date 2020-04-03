@@ -149,7 +149,7 @@ extension AudioRecorder: Viewable {
                 stackView.alignment = .trailing
             }
 
-            let sendButton = Button(title: String(key: .AUDIO_RECORD_SEND), type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryText))
+            let sendButton = Button(title: String(key: .AUDIO_INPUT_SAVE), type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryText))
             let loadableSendButton = LoadableButton(button: sendButton)
 
             bag += loadableSendButton.onTapSignal.onValue { _ in
