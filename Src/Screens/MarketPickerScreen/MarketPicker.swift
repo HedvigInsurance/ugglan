@@ -62,8 +62,8 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = UILabel(value: String(key: .MARKET_PICKER_TITLE), style: .headlineLargeLargeLeft)
-            titleContainer.addArrangedSubview(titleLabel)
+            let titleLabel = MultilineLabel(value: String(key: .MARKET_PICKER_TITLE), style: .headlineLargeLargeLeft)
+            bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
             section.dynamicStyle = .sectionPlainRounded
@@ -115,8 +115,8 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = UILabel(value: String(key: .MARKET_PICKER_LANGUAGE_TITLE), style: .headlineSmallSmallLeft)
-            titleContainer.addArrangedSubview(titleLabel)
+            let titleLabel = MultilineLabel(value: String(key: .MARKET_PICKER_LANGUAGE_TITLE), style: .headlineSmallSmallLeft)
+            bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
             section.dynamicStyle = .sectionPlainRounded
