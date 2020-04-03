@@ -124,7 +124,7 @@ extension AdyenSetup: Presentable {
                         
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
-                                request: TokenizationRequest(paymentMethodDetails: json, channel: .ios, returnUrl: "\(urlScheme)://adyen")
+                                request: TokenizationRequest(paymentMethodDetails: json.replacingOccurrences(of: "applepay.token", with: "applepayToken"), channel: .ios, returnUrl: "\(urlScheme)://adyen")
                             )
                         ).onValue { result in
                             if result.data?.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
