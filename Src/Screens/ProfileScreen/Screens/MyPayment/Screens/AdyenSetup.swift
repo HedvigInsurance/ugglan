@@ -63,7 +63,7 @@ extension AdyenSetup: Presentable {
                 var style = DropInComponent.Style()
                 style.navigation.tintColor = .primaryTintColor
                 style.formComponent.header.title.font = HedvigFonts.favoritStdBook!.withSize(30)
-                style.formComponent.footer.button.backgroundColor = .primaryTintColor
+                style.formComponent.footer.button.backgroundColor = .primaryButtonBackgroundColor
                 style.formComponent.footer.button.title.font = HedvigFonts.favoritStdBook!.withSize(20)
                 style.formComponent.footer.button.cornerRadius = 6
                 style.formComponent.textField.title.font = HedvigFonts.favoritStdBook!.withSize(12)
