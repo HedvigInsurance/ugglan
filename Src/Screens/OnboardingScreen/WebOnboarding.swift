@@ -46,8 +46,10 @@ extension WebOnboarding: Presentable {
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
         restartButton.tintColor = .navigationItemMutedTintColor
+        
+        let chatButton = UIBarButtonItem(viewable: ChatButton(presentingViewController: viewController))
 
-        viewController.navigationItem.rightBarButtonItem = restartButton
+        viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image
