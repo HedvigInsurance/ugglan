@@ -23,7 +23,7 @@ extension ChooseStartDate: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .primaryBackground
 
         viewController.view = view
 
@@ -100,7 +100,7 @@ extension ChooseStartDate: Presentable {
         }
 
         let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
-                                      type: .standard(backgroundColor: .black,
+                                      type: .standard(backgroundColor: .primaryButtonBackgroundColor,
                                                       textColor: .white))
 
         let loadableChooseDateButton = LoadableButton(button: chooseDateButton,
