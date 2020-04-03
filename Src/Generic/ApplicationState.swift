@@ -235,7 +235,7 @@ struct ApplicationState {
                 Marketing(),
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false
-            ).disposable
+            )
         case .onboardingChat:
             return window.present(Onboarding(), options: [.defaults], animated: false)
         case .offer:

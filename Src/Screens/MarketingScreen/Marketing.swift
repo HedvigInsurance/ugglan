@@ -16,117 +16,90 @@ struct Marketing {
     @Inject var client: ApolloClient
 }
 
-enum MarketingResult {
-    case login, onboard
+extension Marketing {
+    func prefetch() {
+        client.fetch(query: MarketingQuery(languageCode: Localization.Locale.currentLocale.code)).onValue { _ in }
+    }
 }
 
 extension Marketing: Presentable {
-    func materialize() -> (UIViewController, Future<MarketingResult>) {
-        let viewController = UIViewController()
+    func materialize() -> (UIViewController, Disposable) {
+        let viewController = LightContentViewController()
 
         let bag = DisposeBag()
 
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.white
+        containerView.backgroundColor = UIColor.black
         viewController.view = containerView
 
         ApplicationState.preserveState(.marketing)
+        
+        let imageView = UIImageView()
 
-        return (viewController, Future { completion in
-            let resultCallbacker = Callbacker<MarketingResult>()
-            let pausedCallbacker = Callbacker<Bool>()
+        containerView.addSubview(imageView)
+                   
+       imageView.snp.makeConstraints { make in
+           make.top.bottom.leading.trailing.equalToSuperview()
+       }
 
-            bag += resultCallbacker.signal().onValue { marketingResult in
-                pausedCallbacker.callAll(with: true)
-
-                switch marketingResult {
-                case .onboard:
-                    bag += viewController.present(Onboarding(), options: [.prefersNavigationBarHidden(false)])
-                case .login:
-                    bag += viewController.present(
-                        BankIDLogin(),
-                        style: .modally(),
-                        options: [.allowSwipeDismissAlways, .defaults]
-                    ).onError { _ in
-                        pausedCallbacker.callAll(with: false)
-                    }
+        let wordmarkImageView = UIImageView()
+        wordmarkImageView.contentMode = .scaleAspectFill
+        wordmarkImageView.image = Asset.wordmarkWhite.image
+        containerView.addSubview(wordmarkImageView)
+        
+        wordmarkImageView.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            make.width.equalTo(150)
+            make.height.equalTo(40)
+        }
+        
+        bag += client.fetch(query: MarketingQuery(languageCode: Localization.Locale.currentLocale.code), cachePolicy: .returnCacheDataElseFetch)
+            .valueSignal
+            .compactMap { $0.data?.appMarketingImages.first }
+            .compactMap { $0 }
+            .onValue { marketingImage in
+                guard let url = URL(string: marketingImage.image?.url ?? "") else {
+                    return
                 }
-            }
-
-            let endScreenCallbacker = Callbacker<Void>()
-            let scrollToCallbacker = Callbacker<ScrollTo>()
-
-            bag += endScreenCallbacker.signal().onValue { _ in
-                pausedCallbacker.callAll(with: true)
-
-                let marketingEndDidResultCallbacker = Callbacker<MarketingResult>()
-
-                bag += marketingEndDidResultCallbacker.signal().onValue { marketingResult in
-                    completion(.success(marketingResult))
-                }
-
-                let marketingEnd = MarketingEnd(
-                    didResult: marketingEndDidResultCallbacker
-                )
-                let marketingEndPresentation = Presentation(
-                    marketingEnd,
-                    style: .modally(
-                        presentationStyle: .overCurrentContext,
-                        transitionStyle: .crossDissolve,
-                        capturesStatusBarAppearance: true
-                    ),
-                    options: [.defaults, .prefersNavigationBarHidden(true)]
-                )
-
-                bag += viewController.present(marketingEndPresentation).onValue { _ in
-                    scrollToCallbacker.callAll(with: .first)
-                    pausedCallbacker.callAll(with: false)
-                }
-            }
-
-            let rowsSignal = ReadWriteSignal<[MarketingStory]>([])
-
-            let stories = Stories(
-                marketingStories: rowsSignal.readOnly(),
-                resultCallbacker: resultCallbacker,
-                pausedCallbacker: pausedCallbacker,
-                endScreenCallbacker: endScreenCallbacker,
-                scrollToCallbacker: scrollToCallbacker
+                
+            imageView.contentMode = .scaleAspectFill
+            imageView.kf.setImage(
+                with: url,
+                placeholder: UIImage(blurHash: marketingImage.blurhash ?? "", size: .init(width: 32, height: 32)),
+                options: [
+                    .transition(.fade(0.25))
+                ]
             )
-            bag += containerView.add(stories)
-
-            let loadingIndicator = LoadingIndicator(showAfter: 2)
-            let loadingIndicatorBag = DisposeBag()
-            bag += loadingIndicatorBag
-
-            loadingIndicatorBag += containerView.add(loadingIndicator)
-
-            func getEnvironment() -> Environment {
-                switch ApplicationState.getTargetEnvironment() {
-                case .production:
-                    return .production
-                case .staging:
-                    return .staging
-                case .custom:
-                    return .staging
-                }
-            }
-
-            bag += self.client.fetch(query: MarketingStoriesQuery(
-                languageCode: Localization.Locale.currentLocale.code,
-                environment: getEnvironment()
-            )).onValue { result in
-                guard let data = result.data else { return }
-                let rows = data.marketingStories.map { (marketingStoryData) -> MarketingStory in
-                    MarketingStory(apollo: marketingStoryData!)
-                }
-
-                loadingIndicatorBag.dispose()
-
-                rowsSignal.value = rows
-            }
-
-            return DelayedDisposer(bag, delay: 1)
-        })
+        }
+        
+        let contentStackView = UIStackView()
+        contentStackView.axis = .vertical
+        contentStackView.spacing = 15
+        contentStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        contentStackView.isLayoutMarginsRelativeArrangement = true
+        
+        containerView.addSubview(contentStackView)
+        
+        contentStackView.snp.makeConstraints { make in
+            make.bottom.trailing.leading.equalToSuperview()
+        }
+        
+        let onboardButton = Button(title: String(key: .MARKETING_GET_HEDVIG), type: .standard(backgroundColor: .white, textColor: .black))
+        
+        bag += onboardButton.onTapSignal.onValue { _ in
+            viewController.present(Onboarding(), style: .default, options: [.defaults, .prefersNavigationBarHidden(false)])
+        }
+        
+        bag += contentStackView.addArranged(onboardButton)
+        
+        let loginButton = Button(title: String(key: .MARKETING_LOGIN), type: .standardOutline(borderColor: .white, textColor: .white))
+        
+        bag += loginButton.onTapSignal.onValue { _ in
+            viewController.present(BankIDLogin(), style: .modally())
+        }
+        
+        bag += contentStackView.addArranged(loginButton)
+        
+        return (viewController, bag)
     }
 }

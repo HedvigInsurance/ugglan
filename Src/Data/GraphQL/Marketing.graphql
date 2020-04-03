@@ -1,0 +1,12 @@
+query Marketing($languageCode: String!) {
+    appMarketingImages(
+        where: {
+            language: { code: $languageCode }
+        }
+    ) {
+        image {
+            url
+        }
+        blurhash
+    }
+}
