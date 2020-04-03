@@ -66,6 +66,14 @@ extension WebOnboarding: Presentable {
         webView.isOpaque = false
         webView.customUserAgent = ApolloClient.userAgent
         
+        let doneButton = UIBarButtonItem(title: "done", style: .navigationBarButtonPrimary)
+        
+        bag += doneButton.onValue({ _ in
+            webView.resignFirstResponder()
+        })
+        
+        webView.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [doneButton], representativeItem: nil)]
+
         let view = UIView()
         view.backgroundColor = UIColor(red:0.07, green:0.07, blue:0.07, alpha:1.00)
         viewController.view = view
