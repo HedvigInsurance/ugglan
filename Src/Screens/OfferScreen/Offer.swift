@@ -24,7 +24,7 @@ extension Offer {
             options: [.defaults]
         ).onValue { _ in
             self.analyticsCoordinator.logEcommercePurchase()
-            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
+            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [.defaults, .prefersNavigationBarHidden(true)])
         }
     }
 

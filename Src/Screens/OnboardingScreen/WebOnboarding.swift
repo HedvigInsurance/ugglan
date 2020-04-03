@@ -85,7 +85,7 @@ extension WebOnboarding: Presentable {
             let urlString = String(describing: url)
 
             if urlString.contains("connect-payment") {
-                viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
+                viewController.present(PostOnboarding(), style: .defaultOrModal, options: [.defaults, .prefersNavigationBarHidden(true)])
             }
         }
 
