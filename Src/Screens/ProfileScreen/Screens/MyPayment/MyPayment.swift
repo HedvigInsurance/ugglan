@@ -104,7 +104,7 @@ extension MyPayment: Presentable {
                 viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
             }
 
-            if result.data?.directDebitStatus == .pending {
+            if result.data?.payinMethodStatus == .pending {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true

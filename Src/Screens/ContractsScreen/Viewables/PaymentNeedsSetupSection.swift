@@ -76,7 +76,7 @@ extension PaymentNeedsSetupSection: Viewable {
             .compactMap { $0.data }
 
         bag += dataSignal.wait(until: wrapper.hasWindowSignal).delay(by: 0.5).animated(style: SpringAnimationStyle.lightBounce()) { data in
-            switch data.directDebitStatus {
+            switch data.payinMethodStatus {
             case .active, .pending:
                 wrapper.animationSafeIsHidden = true
                 containerStackView.alpha = 0

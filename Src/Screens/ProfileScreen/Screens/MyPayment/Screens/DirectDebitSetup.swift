@@ -173,7 +173,7 @@ extension DirectDebitSetup: Presentable {
                 switch type {
                 case .success:
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-                        data.directDebitStatus = .pending
+                        data.payinMethodStatus = .pending
                     })
 
                     AnalyticsCoordinator().logAddPaymentInfo()
