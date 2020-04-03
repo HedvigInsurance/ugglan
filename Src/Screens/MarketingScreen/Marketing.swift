@@ -100,6 +100,10 @@ extension Marketing: Presentable {
         
         bag += contentStackView.addArranged(loginButton)
         
+        bag += contentStackView.addArranged(MultilineLabel(value: String(key: .MARKETING_LEGAL), style: TextStyle.bodyXSmallXSmallCenter.colored(.white)).wrappedIn(UIStackView())) { stackView in
+            stackView.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
+        }
+        
         return (viewController, bag)
     }
 }

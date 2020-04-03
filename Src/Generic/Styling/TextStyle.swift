@@ -605,7 +605,7 @@ extension TextStyle {
     }
 
     static let bodyXSmallXSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBook!.withSize(12)
+        style.font = HedvigFonts.favoritStdBook!.withSize(10)
         style.lineHeight = 16
         style.color = .regularBody
         style.letterSpacing = 0.1
@@ -613,7 +613,7 @@ extension TextStyle {
     }
 
     static let bodyXSmallNegXSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBook!.withSize(12)
+        style.font = HedvigFonts.favoritStdBook!.withSize(10)
         style.lineHeight = 16
         style.color = .primaryTextNeg
         style.letterSpacing = 0.1
@@ -621,21 +621,21 @@ extension TextStyle {
     }
 
     static let bodyXSmallXSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBook!.withSize(12)
+        style.font = HedvigFonts.favoritStdBook!.withSize(10)
         style.lineHeight = 16
         style.color = .regularBody
         style.letterSpacing = 0.1
     }
 
     static let bodyXSmallNegXSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBook!.withSize(12)
+        style.font = HedvigFonts.favoritStdBook!.withSize(10)
         style.lineHeight = 16
         style.color = .primaryTextNeg
         style.letterSpacing = 0.1
     }
 
     static let bodyXSmallXSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBook!.withSize(12)
+        style.font = HedvigFonts.favoritStdBook!.withSize(10)
         style.lineHeight = 16
         style.color = .regularBody
         style.letterSpacing = 0.1
