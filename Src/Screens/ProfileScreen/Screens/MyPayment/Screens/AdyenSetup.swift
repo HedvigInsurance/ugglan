@@ -16,6 +16,7 @@ import PassKit
 
 struct AdyenSetup {
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
 }
 
 enum AdyenError: Error {
@@ -267,6 +268,12 @@ extension AdyenSetup: Presentable {
             }
 
             return DelayedDisposer(bag, delay: 2)
+        }.onValue { _ in
+            self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                data.payinMethodStatus = .active
+            })
+
+            AnalyticsCoordinator().logAddPaymentInfo()
         })
     }
 }
