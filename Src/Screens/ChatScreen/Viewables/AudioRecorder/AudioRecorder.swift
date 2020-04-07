@@ -134,7 +134,7 @@ extension AudioRecorder: Viewable {
 
             let redoButton = Button(
                 title: String(key: .AUDIO_INPUT_REDO),
-                type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryText)
+                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
 
             bag += redoButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -149,7 +149,10 @@ extension AudioRecorder: Viewable {
                 stackView.alignment = .trailing
             }
 
-            let sendButton = Button(title: String(key: .AUDIO_INPUT_SAVE), type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryText))
+            let sendButton = Button(
+                title: String(key: .AUDIO_INPUT_SAVE),
+                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+            )
             let loadableSendButton = LoadableButton(button: sendButton)
 
             bag += loadableSendButton.onTapSignal.onValue { _ in

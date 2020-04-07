@@ -43,14 +43,14 @@ extension AudioPlayer: Viewable {
             make.height.equalToSuperview()
         }
 
-        control.backgroundColor = .boxSecondaryBackground
+        control.backgroundColor = .primaryButtonBackgroundColor
         bag += control.didLayoutSignal.onValue { _ in
             control.layer.cornerRadius = control.frame.height / 2
         }
 
         let playIconImageView = UIImageView()
         playIconImageView.image = Asset.play.image
-        playIconImageView.tintColor = .primaryText
+        playIconImageView.tintColor = .primaryButtonTextColor
         playIconImageView.contentMode = .scaleAspectFit
 
         contentView.addArrangedSubview(playIconImageView)
@@ -59,7 +59,7 @@ extension AudioPlayer: Viewable {
             make.width.height.equalTo(12)
         }
 
-        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.rightAligned.colored(.primaryText))
+        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.rightAligned.colored(.primaryButtonTextColor))
         contentView.addArrangedSubview(timeStampLabel)
 
         timeStampLabel.snp.makeConstraints { make in

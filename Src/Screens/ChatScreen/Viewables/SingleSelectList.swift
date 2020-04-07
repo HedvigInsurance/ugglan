@@ -87,7 +87,10 @@ extension SingleSelectList: Viewable {
         bag += options.enumerated().map { arg in
             let (index, option) = arg
             let innerBag = DisposeBag()
-            let button = Button(title: option.text, type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryText))
+            let button = Button(
+                title: option.text,
+                type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryButtonTextColor)
+            )
 
             innerBag += button.onTapSignal.onValue { _ in
                 func removeViews() {
