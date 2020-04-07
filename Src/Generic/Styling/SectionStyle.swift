@@ -41,8 +41,6 @@ extension BackgroundStyle {
         border: .standard
     )
 
-    static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
-
     static let primaryDarkRoundedBorder = BackgroundStyle(
         color: UIColor.secondaryBackground.resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .dark)

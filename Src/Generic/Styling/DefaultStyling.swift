@@ -145,7 +145,7 @@ extension DefaultStyling {
             text: .default,
             placeholder: .default,
             disabled: .default,
-            cursorColor: .turquoise
+            cursorColor: .lavender
         ),
         detailText: .default,
         titleSubtitle: .default,

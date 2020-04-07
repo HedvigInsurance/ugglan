@@ -59,7 +59,10 @@ struct AttachFileAsset: Reusable {
                     make.width.height.centerX.centerY.equalToSuperview()
                 }
 
-                let button = Button(title: String(key: .CHAT_UPLOAD_PRESEND), type: .standard(backgroundColor: .turquoise, textColor: .white))
+                let button = Button(
+                    title: String(key: .CHAT_UPLOAD_PRESEND),
+                    type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                )
                 let loadableButton = LoadableButton(button: button, initialLoadingState: false)
 
                 sendOverlayBag += loadableButton.onTapSignal.onValue { _ in
