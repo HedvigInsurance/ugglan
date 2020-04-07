@@ -165,7 +165,7 @@ extension ClaimsHeader: Viewable {
         let description = Description()
         bag += view.addArranged(description)
 
-        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white))
+        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
 
         bag += button.onTapSignal.onValue {
             self.presentingViewController.present(
@@ -190,9 +190,6 @@ extension ClaimsHeader: Viewable {
                 .animated(style: AnimationStyle.easeOut(duration: 0.25)) { alpha in
                     stackView.alpha = alpha
                 }
-
-            stackView.axis = .vertical
-            stackView.alignment = .center
         }
 
         return (view, bag)

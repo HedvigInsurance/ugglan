@@ -33,7 +33,7 @@ extension WelcomePagerProceedButton: Viewable {
         let buttonTitleSignal = ReadWriteSignal<String>("")
 
         func setButtonStyle(isMorePages: Bool) {
-            button.type.value = ButtonType.standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+            button.type.value = ButtonType.standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         }
 
         func setButtonTitle(isMorePages: Bool) {

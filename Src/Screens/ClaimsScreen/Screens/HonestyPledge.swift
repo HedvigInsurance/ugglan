@@ -18,7 +18,7 @@ struct HonestyPledge {
     func pushNotificationsPresentable() -> PresentableViewable<ImageTextAction<PushNotificationsAction>, PushNotificationsAction> {
         let pushNotificationsDoButton = Button(
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         let pushNotificationsSkipButton = Button(

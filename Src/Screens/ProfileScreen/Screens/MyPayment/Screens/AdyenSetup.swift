@@ -187,7 +187,7 @@ extension AdyenSetup: Presentable {
                         
                         let continueButton = Button(
                             title: String(key: .PAYMENT_SETUP_DONE_CTA),
-                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                       )
 
                       let continueAction = ImageTextAction<Void>(
@@ -208,7 +208,7 @@ extension AdyenSetup: Presentable {
                     case .failure:
                         let tryAgainButton = Button(
                             title: String(key: .PAYMENT_SETUP_FAILED_RETRY_CTA),
-                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                       )
                         
                         let cancelButton = Button(

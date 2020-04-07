@@ -306,7 +306,7 @@ extension CommonClaimCard: Viewable {
         if includeButton {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
 
             bag += claimButton.onTapSignal.onValue {
@@ -340,6 +340,7 @@ extension CommonClaimCard: Viewable {
                 claimButtonView.snp.makeConstraints { make in
                     make.bottom.equalTo(-28)
                     make.centerX.equalToSuperview()
+                    make.width.equalToSuperview().inset(20)
                 }
             }
         }

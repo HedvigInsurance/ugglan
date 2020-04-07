@@ -34,7 +34,7 @@ extension TerminatedInsurance: Presentable {
 
         let button = Button(
             title: String(key: .INSURANCE_STATUS_TERMINATED_ALERT_CTA),
-            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
         bag += view.addArranged(button)
 

@@ -154,7 +154,12 @@ extension UIColor {
     static let grass700 = UIColor(red: 0.0, green: 113.0 / 255.0, blue: 91.0 / 255.0, alpha: 1.0)
     static let coral200 = UIColor(red: 1.0, green: 208.0 / 255.0, blue: 204.0 / 255.0, alpha: 1.0)
     static let violet300 = UIColor(red: 0.58, green: 0.38, blue: 1.00, alpha: 1.0)
-
+    static let lavender = UIColor(dynamic: { trait -> UIColor in
+        trait.userInterfaceStyle == .dark ?
+            UIColor(red:0.75, green:0.61, blue:0.95, alpha:1.00) :
+            UIColor(red:0.79, green:0.67, blue:0.96, alpha:1.00)
+    })
+    
     static var primaryTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .white : .black
@@ -162,9 +167,11 @@ extension UIColor {
     }
 
     static var primaryButtonBackgroundColor: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? UIColor.almostBlack.lighter(amount: 0.15) : .black
-        })
+        .lavender
+    }
+    
+    static var primaryButtonTextColor: UIColor {
+        .black
     }
 
     static var secondaryTintColor: UIColor {

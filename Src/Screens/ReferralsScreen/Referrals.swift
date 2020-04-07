@@ -173,29 +173,19 @@ extension Referrals: Presentable {
         let button = LoadableButton(
             button: Button(
                 title: String(key: .REFERRALS_SHARE_BUTTON),
-                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             ),
             initialLoadingState: true
         )
 
-        bag += scrollView.add(button.wrappedIn(UIView())) { buttonView in
+        bag += scrollView.add(button) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
                     scrollView.safeAreaLayoutGuide.snp.bottom
                 ).inset(20)
-                make.width.equalToSuperview()
+                make.width.equalToSuperview().inset(20)
                 make.centerX.equalToSuperview()
                 make.height.equalTo(button.button.type.value.height)
-            }
-
-            bag += buttonView.applyShadow { _ in
-                UIView.ShadowProperties(
-                    opacity: 0.5,
-                    offset: CGSize(width: 0, height: 6),
-                    radius: 8,
-                    color: UIColor.primaryShadowColor,
-                    path: nil
-                )
             }
 
             bag += codeSignal.compactMap { _ = $0 }.map { false }.bindTo(button.isLoadingSignal)

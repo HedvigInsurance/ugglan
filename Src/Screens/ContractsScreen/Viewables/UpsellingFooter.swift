@@ -49,7 +49,7 @@ extension UpsellingFooter {
 
             let button = Button(
                 title: buttonText,
-                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .white)
+                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
 
             bag += button.onTapSignal.onValue { _ in

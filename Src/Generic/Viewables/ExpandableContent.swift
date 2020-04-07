@@ -34,7 +34,7 @@ extension ExpandableContent: Viewable {
 
         outerContainer.addSubview(scrollView)
 
-        let expandButton = Button(title: "", type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .white))
+        let expandButton = Button(title: "", type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
         let buttonHalfHeight = expandButton.type.value.height / 2
 
         scrollView.snp.makeConstraints { make in
