@@ -217,6 +217,9 @@ extension MarketPicker: Presentable {
         
         Marketing().prefetch()
         
+        form.transform = CGAffineTransform(translationX: 0, y: 100)
+        form.alpha = 0
+        
         bag += client.fetch(query: GeoQuery()).valueSignal.compactMap { $0.data?.geo.countryIsoCode }.onValue { countryISOCode in
             switch countryISOCode {
             case "SE":
@@ -233,9 +236,6 @@ extension MarketPicker: Presentable {
             }
             bag += form.append(Spacing(height: 20))
             bag += form.append(LanguageSection(pickedMarketSignal: pickedMarketSignal.atOnce().compactMap { $0 }, presentingViewController: viewController, didFinish: self.didFinish))
-
-            form.transform = CGAffineTransform(translationX: 0, y: 100)
-            form.alpha = 0
 
             bag += UIApplication.shared.appDelegate.hasFinishedLoading.atOnce()
                 .delay(by: 1.25)
