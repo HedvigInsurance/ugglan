@@ -89,7 +89,7 @@ extension UIColor {
 
     static var navigationItemMutedTintColor: UIColor {
         UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .white : .darkGray
+            trait.userInterfaceStyle == .dark ? .white : .black
         })
     }
 
