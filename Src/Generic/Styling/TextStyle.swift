@@ -76,7 +76,7 @@ extension TextStyle {
     }
 
     static let bodyBold = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
         style.lineSpacing = 6
     }
@@ -101,17 +101,17 @@ extension TextStyle {
     }
 
     static let standaloneLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.color = .primaryText
     }
 
     static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(17)
+        style.font = HedvigFonts.favoritStdBook!.withSize(17)
         style.color = .primaryText
     }
 
     static let offerBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.color = .primaryTextNeg
         style.alignment = .center
     }
@@ -128,7 +128,7 @@ extension TextStyle {
     }
 
     static let headingOne = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(40)
+        style.font = HedvigFonts.favoritStdBook!.withSize(40)
         style.color = .primaryText
     }
 
@@ -142,7 +142,7 @@ extension TextStyle {
     }
 
     static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.color = .primaryText
     }
 
@@ -253,27 +253,27 @@ extension TextStyle {
     }
 
     static let navigationBarButtonPrimary = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(17)
+        style.font = HedvigFonts.favoritStdBook!.withSize(17)
         style.color = .primaryTintColor
     }
 
     static let draggableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.color = .primaryText
     }
 
     static let countdownNumber = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(40)
+        style.font = HedvigFonts.favoritStdBook!.withSize(40)
         style.color = .pink
     }
 
     static let countdownLetter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(12)
+        style.font = HedvigFonts.favoritStdBook!.withSize(12)
         style.color = .primaryText
     }
 
     static let offerSummaryTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(23)
+        style.font = HedvigFonts.favoritStdBook!.withSize(23)
         style.color = .violet200
         style.lineHeight = 24
     }
@@ -285,13 +285,13 @@ extension TextStyle {
     }
 
     static let headerLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(30)
+        style.font = HedvigFonts.favoritStdBook!.withSize(30)
         style.lineHeight = 32
         style.color = .primaryText
     }
 
     static let headlineLargeLargeRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.lineHeight = 24
         style.alignment = .right
         style.color = .primaryText
@@ -304,7 +304,7 @@ extension TextStyle {
     }
 
     static let headlineLargeNegLargeNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryTextNeg
     }
@@ -317,54 +317,54 @@ extension TextStyle {
     }
 
     static let headlineLargeNegLargeNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .center
     }
 
     static let headlineLargeNegLargeNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(24)
+        style.font = HedvigFonts.favoritStdBook!.withSize(24)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .right
     }
 
     static let headlineMediumNegMediumNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .right
     }
 
     static let headlineMediumNegMediumNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
     }
 
     static let headlineMediumMediumLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.lineHeight = 15
         style.color = .primaryText
     }
 
     static let headlineMediumMediumRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryText
         style.alignment = .right
     }
 
     static let headlineMediumNegMediumNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryTextNeg
         style.alignment = .center
     }
 
     static let headlineMediumMediumCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(16)
+        style.font = HedvigFonts.favoritStdBook!.withSize(16)
         style.lineHeight = 24
         style.color = .primaryText
         style.alignment = .center
@@ -466,21 +466,21 @@ extension TextStyle {
     }
 
     static let headLineSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 15
         style.color = .primaryText
         style.alignment = .center
     }
 
     static let headlineSmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 15
         style.color = .primaryTextNeg
         style.alignment = .right
     }
 
     static let headlineSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 15
         style.color = .primaryText
         style.alignment = .right
@@ -493,14 +493,14 @@ extension TextStyle {
     }
 
     static let headlineSmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 15
         style.color = .primaryTextNeg
         style.alignment = .center
     }
 
     static let headlineSmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = HedvigFonts.favoritStdBold!.withSize(14)
+        style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.lineHeight = 15
         style.color = .primaryTextNeg
     }

@@ -71,7 +71,6 @@
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>FavoritStd-Bold.otf</string>
 		<string>FavoritStd-Book.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>

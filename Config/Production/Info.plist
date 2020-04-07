@@ -71,7 +71,6 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>FavoritStd-Book.otf</string>
-		<string>FavoritStd-Bold.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

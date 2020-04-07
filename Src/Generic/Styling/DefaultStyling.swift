@@ -33,7 +33,7 @@ extension DefaultStyling {
         ]
         UINavigationBar.appearance().largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
-            NSAttributedString.Key.font: HedvigFonts.favoritStdBold!.withSize(30),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(30),
         ]
 
         if #available(iOS 13.0, *) {

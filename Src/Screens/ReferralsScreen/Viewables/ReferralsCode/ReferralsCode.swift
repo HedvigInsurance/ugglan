@@ -66,7 +66,7 @@ extension ReferralsCode: Viewable {
         codeContainer.isLayoutMarginsRelativeArrangement = true
 
         let codeTextStyle = TextStyle(
-            font: HedvigFonts.favoritStdBold!,
+            font: HedvigFonts.favoritStdBook!,
             color: UIColor.primaryTintColor
         ).centerAligned.lineHeight(2.4).resized(to: 16)
 

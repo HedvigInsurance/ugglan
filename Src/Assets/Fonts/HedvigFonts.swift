@@ -10,6 +10,5 @@ import Foundation
 import UIKit
 
 struct HedvigFonts {
-    static let favoritStdBold = UIFont(name: "FavoritStd-Bold", size: UIFont.systemFontSize)
     static let favoritStdBook = UIFont(name: "FavoritStd-Book", size: UIFont.systemFontSize)
 }

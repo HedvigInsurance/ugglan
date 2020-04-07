@@ -36,7 +36,7 @@ extension CircleLabelWithSubLabel: Viewable {
         labelsContainer.axis = .vertical
 
         let titleLabel = UILabel()
-        titleLabel.font = HedvigFonts.favoritStdBold?.withSize(48)
+        titleLabel.font = HedvigFonts.favoritStdBook?.withSize(48)
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center

@@ -33,7 +33,7 @@ extension CircleLabel: Viewable {
 
         label.clipsToBounds = true
         label.textAlignment = .center
-        label.font = HedvigFonts.favoritStdBold?.withSize(30)
+        label.font = HedvigFonts.favoritStdBook?.withSize(30)
         label.textColor = textColor
         label.numberOfLines = 3
         label.adjustsFontSizeToFitWidth = true
