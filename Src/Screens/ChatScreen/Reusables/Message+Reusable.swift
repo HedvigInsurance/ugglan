@@ -172,6 +172,7 @@ extension Message: Reusable {
         editButton.layer.cornerRadius = 6
 
         let editButtonIcon = UIImageView(image: Asset.editIcon.image)
+        editButtonIcon.tintColor = .black
         editButtonIcon.contentMode = .scaleAspectFit
         editButton.addSubview(editButtonIcon)
 
@@ -269,7 +270,7 @@ extension Message: Reusable {
 
                 spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                let messageTextColor: UIColor = message.fromMyself ? .black : .primaryText
+                let messageTextColor = message.fromMyself ? UIColor.black : .primaryText
 
                 switch message.type {
                 case .image(_), .video:
@@ -464,7 +465,7 @@ extension Message: Reusable {
                 case .text:
                     let label = MultilineLabel(
                         value: message.body,
-                        style: .chatBody
+                        style: TextStyle.chatBody.colored(messageTextColor)
                     )
                     bag += contentContainer.addArranged(label)
                 }

@@ -106,9 +106,7 @@ extension UIColor {
     }
 
     static var boxSecondaryBackground: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .lighterPurple : .darkerPurple
-        })
+        .lavender
     }
 
     static var boxPrimaryBackground: UIColor {
