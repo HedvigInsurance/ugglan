@@ -87,24 +87,32 @@ extension ContractCollection: Viewable {
         
         let loadingIndicator = LoadingIndicator(showAfter: 0.5, color: .primaryTintColor)
         loadingIndicatorBag += tableKit.view.add(loadingIndicator)
+        
+        func loadContracts() {
+            bag += client.fetch(
+                query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+                cachePolicy: .fetchIgnoringCacheData
+            ).valueSignal.compactMap { $0.data?.contracts }.onValue { contracts in
+                let table = Table(rows: contracts.map { contract -> ContractRow in
+                    ContractRow(
+                        contract: contract,
+                        displayName: contract.displayName,
+                        type: contract.currentAgreement.type
+                    )
+                })
+                
+                loadingIndicatorBag.dispose()
 
-        bag += client.fetch(
-            query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-            cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.compactMap { $0.data?.contracts }.onValue { contracts in
-            let table = Table(rows: contracts.map { contract -> ContractRow in
-                ContractRow(
-                    contract: contract,
-                    displayName: contract.displayName,
-                    type: contract.currentAgreement.type
-                )
-            })
-            
-            loadingIndicatorBag.dispose()
-
-            tableKit.set(table)
+                tableKit.set(table)
+            }
         }
 
+        loadContracts()
+        
+        bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
+            loadContracts()
+        }
+        
         return (tableKit.view, bag)
     }
 }
