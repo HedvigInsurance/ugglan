@@ -89,7 +89,8 @@ extension ContractCollection: Viewable {
         loadingIndicatorBag += tableKit.view.add(loadingIndicator)
 
         bag += client.fetch(
-            query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+            query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+            cachePolicy: .fetchIgnoringCacheData
         ).valueSignal.compactMap { $0.data?.contracts }.onValue { contracts in
             let table = Table(rows: contracts.map { contract -> ContractRow in
                 ContractRow(
