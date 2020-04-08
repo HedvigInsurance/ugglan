@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import UIKit
 
 struct ContractCollection {
     @Inject var client: ApolloClient

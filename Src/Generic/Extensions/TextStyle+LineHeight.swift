@@ -7,6 +7,7 @@
 
 import Form
 import Foundation
+import UIKit
 
 extension TextStyle {
     func lineHeight(_ lineHeight: CGFloat) -> TextStyle {

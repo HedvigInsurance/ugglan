@@ -82,7 +82,7 @@ extension KeyGearAddReceiptRow: Viewable {
 
                 guard
                     let fileUrl = documents.first,
-                    let file = GraphQLFile(fieldName: "file", originalName: "upload.\(fileUrl.pathExtension)", fileURL: fileUrl) else {
+                    let file = try? GraphQLFile(fieldName: "file", originalName: "upload.\(fileUrl.pathExtension)", fileURL: fileUrl) else {
                     button.isLoadingSignal.value = false
                     return
                 }

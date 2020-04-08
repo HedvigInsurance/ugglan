@@ -9,6 +9,7 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 
 extension SectionView {
     func append<V: Viewable>(

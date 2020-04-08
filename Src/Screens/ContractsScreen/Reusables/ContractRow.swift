@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 
 struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool {

@@ -6,8 +6,6 @@
 //
 
 import Apollo
-import FBSDKCoreKit
-import Firebase
 import Flow
 import Foundation
 
@@ -24,17 +22,11 @@ struct AnalyticsCoordinator {
                 return
             }
 
-            Analytics.setUserID(id)
             self.remoteConfig.fetch(true)
         }
     }
 
     func logAddPaymentInfo() {
-        AppEvents.logEvent(
-            .addedPaymentInfo
-        )
-
-        Analytics.logEvent("add_payment_info", parameters: [:])
     }
 
     func logAddToCart() {
@@ -44,19 +36,6 @@ struct AnalyticsCoordinator {
             .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross }
             .onValue { monthlyGross in
                 bag.dispose()
-
-                AppEvents.logEvent(
-                    .addedToCart,
-                    valueToSum: Double(monthlyGross.amount) ?? 0,
-                    parameters: [
-                        "currency": monthlyGross.currency,
-                    ]
-                )
-
-                Analytics.logEvent("add_to_cart", parameters: [
-                    "value": Double(monthlyGross.amount) ?? 0,
-                    "currency": monthlyGross.currency,
-                ])
             }
     }
 
@@ -67,17 +46,6 @@ struct AnalyticsCoordinator {
             .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross }
             .onValue { monthlyGross in
                 bag.dispose()
-
-                AppEvents.logPurchase(
-                    Double(monthlyGross.amount) ?? 0,
-                    currency: monthlyGross.currency
-                )
-
-                Analytics.logEvent("ecommerce_purchase", parameters: [
-                    "transaction_id": UUID().uuidString,
-                    "value": Double(monthlyGross.amount) ?? 0,
-                    "currency": monthlyGross.currency,
-                ])
             }
     }
 }

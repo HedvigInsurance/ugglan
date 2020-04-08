@@ -11,6 +11,7 @@ import Disk
 import Flow
 import Foundation
 import Vision
+import UIKit
 
 extension AddKeyGearItem {
     private enum Category: String {

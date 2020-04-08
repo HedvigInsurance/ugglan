@@ -6,12 +6,13 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-import Adyen
-import AdyenDropIn
+//import Adyen
+//import AdyenDropIn
 import Apollo
 import Flow
 import Form
 import Presentation
+import UIKit
 
 struct MyPayment {
     @Inject var client: ApolloClient

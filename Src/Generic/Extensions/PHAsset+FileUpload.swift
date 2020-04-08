@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import MobileCoreServices
 import Photos
+import UIKit
 
 extension PHAsset {
     enum GenerateFileUploadError: Error {

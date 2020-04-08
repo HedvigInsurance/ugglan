@@ -6,8 +6,8 @@
 //  Copyright © 2018 Hedvig AB. All rights reserved.
 //
 
-import Firebase
-import FirebaseAnalytics
+//import Firebase
+//import FirebaseAnalytics
 import Flow
 import Form
 import Foundation
@@ -423,11 +423,11 @@ extension Button: Viewable {
             )
 
         bag += touchUpInside.withLatestFrom(title.atOnce().plain()).onValue { _, title in
-            if let localizationKey = title.localizationKey?.description {
-                Analytics.logEvent(localizationKey, parameters: [
-                    "context": "Button",
-                ])
-            }
+//            if let localizationKey = title.localizationKey?.description {
+//                Analytics.logEvent(localizationKey, parameters: [
+//                    "context": "Button",
+//                ])
+//            }
         }
 
         bag += merge(

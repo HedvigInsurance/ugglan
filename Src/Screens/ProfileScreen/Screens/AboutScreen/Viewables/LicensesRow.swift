@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import UIKit
 
 struct LicensesRow {
     let presentingViewController: UIViewController
@@ -31,19 +32,9 @@ extension LicensesRow: Viewable {
         }
 
         bag += events.onSelect.onValue {
-            self.presentingViewController.present(
-                Licenses(),
-                style: .default,
-                options: [.autoPop, .largeTitleDisplayMode(.never)]
-            )
+           
         }
 
         return (row, bag)
-    }
-}
-
-extension LicensesRow: Previewable {
-    func preview() -> (Licenses, PresentationOptions) {
-        return (Licenses(), [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

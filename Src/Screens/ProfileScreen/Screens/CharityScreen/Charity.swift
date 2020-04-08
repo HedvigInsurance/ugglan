@@ -11,6 +11,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import UIKit
 
 struct Charity {
     @Inject var client: ApolloClient

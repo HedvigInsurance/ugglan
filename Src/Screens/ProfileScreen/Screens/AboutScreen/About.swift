@@ -156,10 +156,7 @@ extension About: Presentable {
         )
 
         bag += otherSection.append(licensesRow) { row in
-            bag += viewController.registerForPreviewing(
-                sourceView: row.viewRepresentation,
-                previewable: licensesRow
-            )
+            
         }
 
         bag += form.append(Spacing(height: 15))

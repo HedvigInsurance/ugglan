@@ -9,6 +9,7 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 
 enum DirectDebitResultType {
     case success(setupType: PaymentSetup.SetupType), failure(setupType: PaymentSetup.SetupType)

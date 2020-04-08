@@ -8,6 +8,7 @@
 
 import Form
 import Foundation
+import UIKit
 
 extension ButtonStyle {
     static let invisible = ButtonStyle.default.restyled { (style: inout ButtonStyle) in

@@ -65,10 +65,10 @@ extension BankIDLoginNorway: Presentable {
             status == .success
         }).take(first: 1).onValue { _ in
             let appDelegate = UIApplication.shared.appDelegate
-
-            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                appDelegate.registerFCMToken(fcmToken)
-            }
+//
+//            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+//                appDelegate.registerFCMToken(fcmToken)
+//            }
 
             AnalyticsCoordinator().setUserId()
 

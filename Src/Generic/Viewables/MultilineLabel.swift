@@ -9,6 +9,8 @@
 import Flow
 import Form
 import Foundation
+import UIKit
+
 
 struct MultilineLabel {
     let styledTextSignal: ReadWriteSignal<StyledText>

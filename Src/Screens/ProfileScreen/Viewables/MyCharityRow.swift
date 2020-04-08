@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import UIKit
 
 struct MyCharityRow {
     let charityNameSignal = ReadWriteSignal<String?>(nil)

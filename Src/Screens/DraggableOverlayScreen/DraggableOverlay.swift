@@ -5,7 +5,6 @@
 //  Created by Sam Pettersson on 2019-03-13.
 //
 
-import DeviceKit
 import Ease
 import Flow
 import Foundation
@@ -204,8 +203,8 @@ extension DraggableOverlay: Presentable {
 
             overlayContainer.applyRadiusMaskFor(
                 topLeft: 19,
-                bottomLeft: Device.hasRoundedCorners ? 19 : 0,
-                bottomRight: Device.hasRoundedCorners ? 19 : 0,
+                bottomLeft: 0,
+                bottomRight: 0,
                 topRight: 19
             )
 
@@ -236,8 +235,8 @@ extension DraggableOverlay: Presentable {
 
             overlayContainer.applyRadiusMaskFor(
                 topLeft: 19,
-                bottomLeft: Device.hasRoundedCorners ? 19 : 0,
-                bottomRight: Device.hasRoundedCorners ? 19 : 0,
+                bottomLeft: 0,
+                bottomRight: 0,
                 topRight: 19
             )
 

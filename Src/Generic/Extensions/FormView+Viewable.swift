@@ -9,6 +9,7 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 
 extension FormView {
     func prepend<V: Viewable, View: UIView>(

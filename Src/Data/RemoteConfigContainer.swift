@@ -5,20 +5,20 @@
 //  Created by Sam Pettersson on 2019-03-18.
 //
 
-import FirebaseRemoteConfig
+// import FirebaseRemoteConfig
 import Flow
 import Foundation
 
 class RemoteConfigContainer {
-    private let remoteConfig: RemoteConfig
+    //private let remoteConfig: RemoteConfig
     let fetched: ReadWriteSignal<Bool>
 
     init() {
-        let remoteConfig = RemoteConfig.remoteConfig()
-        let fetched = ReadWriteSignal<Bool>(false)
+        // let remoteConfig = RemoteConfig.remoteConfig()
+        let fetched = ReadWriteSignal<Bool>(true)
 
         self.fetched = fetched
-        self.remoteConfig = remoteConfig
+        // self.remoteConfig = remoteConfig
 
         fetch(false)
     }
@@ -29,45 +29,51 @@ class RemoteConfigContainer {
         #else
             let fetchDuration: TimeInterval = force ? 0 : 3600
         #endif
-
-        remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
-            self.remoteConfig.activate(completionHandler: { _ in
-                self.fetched.value = true
-            })
-        })
+        
+        let bag = DisposeBag()
+        
+        bag += Signal(after: 0.5).onValue { _ in
+            self.fetched.value = true
+            bag.dispose()
+        }
+        
+//
+//        remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
+//            self.remoteConfig.activate(completionHandler: { _ in
+//                self.fetched.value = true
+//            })
+//        })
     }
 
     var referralsWebLandingPrefix: String {
-        return remoteConfig.configValue(forKey: "Referrals_WebLanding_Prefix").stringValue ?? ""
+        return ""
     }
 
     var keyGearEnabled: Bool {
-        remoteConfig.configValue(forKey: "Key_Gear_Enabled").boolValue
+        true
     }
 
     func referralsEnabled() -> Bool {
-        return remoteConfig.configValue(forKey: "Referrals_Enabled").boolValue
+        return true
     }
 
     func referralsIncentive() -> Int {
-        return remoteConfig.configValue(
-            forKey: "Referrals_Incentive"
-        ).numberValue?.intValue ?? 100
+        return 100
     }
 
     func dynamicLinkDomainPrefix() -> String {
-        return remoteConfig.configValue(forKey: "DynamicLink_Domain_Prefix").stringValue ?? ""
+        return ""
     }
 
     func dynamicLinkiOSBundleId() -> String {
-        return remoteConfig.configValue(forKey: "DynamicLink_iOS_BundleId").stringValue ?? ""
+        return ""
     }
 
     func dynamicLinkiOSAppStoreId() -> String {
-        return remoteConfig.configValue(forKey: "DynamicLink_iOS_AppStoreId").stringValue ?? ""
+        return ""
     }
 
     func dynamicLinkAndroidPackageName() -> String {
-        return remoteConfig.configValue(forKey: "DynamicLink_Android_PackageName").stringValue ?? ""
+        return ""
     }
 }

@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 
 struct ProceedButton {
     let button: Button

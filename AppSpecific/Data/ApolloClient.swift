@@ -11,6 +11,7 @@ import ApolloWebSocket
 import Disk
 import Flow
 import Foundation
+import UIKit
 
 struct ApolloEnvironmentConfig {
     let endpointURL: URL

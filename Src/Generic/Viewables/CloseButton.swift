@@ -8,6 +8,7 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 
 struct CloseButton {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())

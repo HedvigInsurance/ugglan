@@ -6,10 +6,10 @@
 //
 
 import Apollo
-import Firebase
-import FirebaseAnalytics
-import FirebaseDynamicLinks
-import FirebaseFirestore
+//import Firebase
+//import FirebaseAnalytics
+//import FirebaseDynamicLinks
+//import FirebaseFirestore
 import Flow
 import Form
 import Foundation
@@ -221,7 +221,7 @@ extension Referrals: Presentable {
 
                         if activity != nil {
                             let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
-                            Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
+                            // Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
                         }
                     }
 

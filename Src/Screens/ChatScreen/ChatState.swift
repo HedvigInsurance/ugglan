@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import UIKit
 
 class ChatState {
     private let bag = DisposeBag()
@@ -197,7 +198,7 @@ class ChatState {
     }
 
     func sendChatAudioResponse(fileUrl: URL) {
-        guard let file = GraphQLFile(fieldName: "file", originalName: "recording.mp3", fileURL: fileUrl) else {
+        guard let file = try? GraphQLFile(fieldName: "file", originalName: "recording.mp3", fileURL: fileUrl) else {
             return
         }
 
