@@ -78,8 +78,10 @@ extension RemoteVectorIcon: Viewable {
             guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
                 return
             }
-            
-            imageView.kf.setImage(with: url, options: [.processor(processor), .transition(.fade(0.25))])
+                        
+            imageView.kf.setImage(with: url, options: [.processor(processor), .transition(.fade(0.25))], completionHandler: { _ in
+                self.finishedLoadingCallback.callAll()
+            })
         }
 
         return (imageView, bag)

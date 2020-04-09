@@ -77,7 +77,10 @@ extension UpsellingFooter: Viewable {
         stackView.transform = CGAffineTransform(translationX: 0, y: 100)
         let bag = DisposeBag()
 
-        bag += client.watch(query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+        bag += client.watch(
+            query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+            cachePolicy: .fetchIgnoringCacheData
+        )
             .compactMap { $0.data?.contracts }
             .delay(by: 0.5)
             .onValueDisposePrevious { contracts in
