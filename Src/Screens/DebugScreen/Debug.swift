@@ -72,6 +72,12 @@ struct Debug: View {
                 Section {
                     SwiftUI.TextField("Authorization token", text: $authorizationToken)
                 }
+                Section {
+                    SwiftUI.Button("Logout", action: {
+                        ApplicationState.preserveState(.marketPicker)
+                        UIApplication.shared.appDelegate.logout()
+                    })
+                }
             }
             .alert(isPresented: $showFaultyEndpointAlert) {
                 Alert(title: Text("Endpoint config is faulty"), dismissButton: .default(Text("OK!")))
