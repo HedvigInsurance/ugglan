@@ -96,15 +96,13 @@ extension ContractTable: Viewable {
                     make.top.equalTo(size.height - (view.frame.height / 2))
                 }
             })
-            
-            
         }
         
         func loadContracts() {
             bag += client.fetch(
                 query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
-            ).valueSignal.delay(by: 5).compactMap { $0.data?.contracts }.onValue { contracts in
+            ).valueSignal.compactMap { $0.data?.contracts }.onValue { contracts in
                 let table = Table(rows: contracts.map { contract -> ContractRow in
                     ContractRow(
                         contract: contract,
