@@ -1,5 +1,5 @@
 //
-//  ContractCollection.swift
+//  ContractTable.swift
 //  test
 //
 //  Created by Sam Pettersson on 2020-03-16.
@@ -10,7 +10,7 @@ import Flow
 import Form
 import Foundation
 
-struct ContractCollection {
+struct ContractTable {
     @Inject var client: ApolloClient
     let presentingViewController: UIViewController
 }
@@ -49,7 +49,7 @@ extension ContractsQuery.Data.Contract.CurrentAgreement {
     }
 }
 
-extension ContractCollection: Viewable {
+extension ContractTable: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
 
@@ -86,13 +86,25 @@ extension ContractCollection: Viewable {
         let loadingIndicatorBag = DisposeBag()
         
         let loadingIndicator = LoadingIndicator(showAfter: 0.5, color: .primaryTintColor)
-        loadingIndicatorBag += tableKit.view.add(loadingIndicator)
+        loadingIndicatorBag += tableKit.view.add(loadingIndicator) { view in
+            view.snp.makeConstraints { make in
+                make.top.equalTo(0)
+            }
+            
+            loadingIndicatorBag += tableKit.view.signal(for: \.contentSize).onValue({ size in
+                view.snp.updateConstraints { make in
+                    make.top.equalTo(size.height - (view.frame.height / 2))
+                }
+            })
+            
+            
+        }
         
         func loadContracts() {
             bag += client.fetch(
                 query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
-            ).valueSignal.compactMap { $0.data?.contracts }.onValue { contracts in
+            ).valueSignal.delay(by: 5).compactMap { $0.data?.contracts }.onValue { contracts in
                 let table = Table(rows: contracts.map { contract -> ContractRow in
                     ContractRow(
                         contract: contract,
