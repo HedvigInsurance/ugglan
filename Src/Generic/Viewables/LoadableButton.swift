@@ -34,6 +34,16 @@ extension LoadableButton: Viewable {
         let spinner = UIActivityIndicatorView()
         buttonView.addSubview(spinner)
 
+        bag += button.type.atOnce().onValue { buttonType in
+            if buttonType.backgroundColor.isContrasting(with: .white) {
+                spinner.style = .white
+                spinner.tintColor = .white
+            } else {
+                spinner.style = .gray
+                spinner.tintColor = .gray
+            }
+        }
+
         spinner.snp.makeConstraints { make in
             make.width.equalToSuperview().multipliedBy(0.7)
             make.height.equalToSuperview().multipliedBy(0.7)
@@ -78,6 +88,7 @@ extension LoadableButton: Viewable {
                 bag += Signal(after: layoutDelay).animated(on: .main, style: AnimationStyle.easeOut(duration: 0.25)) { _ in
                     setButtonWidth()
                     buttonView.layoutIfNeeded()
+                    buttonView.layoutSuperviewsIfNeeded()
                 }
             } else {
                 setLabelAlpha()

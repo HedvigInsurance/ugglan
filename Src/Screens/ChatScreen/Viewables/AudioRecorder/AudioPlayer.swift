@@ -35,7 +35,7 @@ extension AudioPlayer: Viewable {
 
         let shaderView = UIView()
         contentView.addSubview(shaderView)
-        shaderView.backgroundColor = UIColor.primaryTintColor.darkened(amount: 0.1)
+        shaderView.backgroundColor = UIColor.boxSecondaryBackground.darkened(amount: 0.1)
 
         shaderView.snp.makeConstraints { make in
             make.width.equalTo(0)
@@ -43,14 +43,14 @@ extension AudioPlayer: Viewable {
             make.height.equalToSuperview()
         }
 
-        control.backgroundColor = .primaryTintColor
-        bag += control.didLayoutSignal.onValue({ _ in
+        control.backgroundColor = .primaryButtonBackgroundColor
+        bag += control.didLayoutSignal.onValue { _ in
             control.layer.cornerRadius = control.frame.height / 2
-        })
+        }
 
         let playIconImageView = UIImageView()
         playIconImageView.image = Asset.play.image
-        playIconImageView.tintColor = .white
+        playIconImageView.tintColor = .primaryButtonTextColor
         playIconImageView.contentMode = .scaleAspectFit
 
         contentView.addArrangedSubview(playIconImageView)
@@ -59,7 +59,7 @@ extension AudioPlayer: Viewable {
             make.width.height.equalTo(12)
         }
 
-        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.rightAligned.colored(.white))
+        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.rightAligned.colored(.primaryButtonTextColor))
         contentView.addArrangedSubview(timeStampLabel)
 
         timeStampLabel.snp.makeConstraints { make in
@@ -104,7 +104,7 @@ extension AudioPlayer: Viewable {
 
         bag += control
             .signal(for: .touchUpInside)
-            .onValue({ _ in
+            .onValue { _ in
 
                 guard let audioPlayer = self.audioPlayerSignal.value else {
                     return
@@ -128,7 +128,7 @@ extension AudioPlayer: Viewable {
                 timerBag += Signal(every: 1).onValue { _ in
                     updateTimeStamp(audioPlayer: audioPlayer)
                 }
-            })
+            }
 
         bag += audioPlayerSignal.atOnce().compactMap { $0 }.onValue { audioPlayer in
             updateTimeStamp(audioPlayer: audioPlayer)

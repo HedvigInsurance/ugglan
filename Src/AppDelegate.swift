@@ -6,6 +6,7 @@
 //  Copyright © 2018 Sam Pettersson. All rights reserved.
 //
 
+import Adyen
 import Apollo
 import Disk
 import Firebase
@@ -74,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
+        ApolloClient.cache = InMemoryNormalizedCache()
         bag += ApolloClient.createClientFromNewSession().onValue { _ in
             self.bag.dispose()
             self.bag += ApplicationState.presentRootViewController(self.window)
@@ -92,12 +94,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if toast != previousToast {
                     self.toastSignal.value = toast
                 }
-                
+
                 self.bag += self.toastSignal.take(first: 1).onValue { _ in
                     completion(.success)
                 }
             }
-            
+
             return NilDisposer()
         }
     }
@@ -128,7 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }
-            
+
             let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
             UNUserNotificationCenter.current().requestAuthorization(
                 options: authOptions,
@@ -148,10 +150,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) {
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
-            guard let rootViewController = self.window.rootViewController else { return }
+            guard let rootViewController = window.rootViewController else { return }
 
             bag += rootViewController.present(
-                DirectDebitSetup(setupType: .initial),
+                PaymentSetup(setupType: .initial),
                 style: .modal,
                 options: [.defaults]
             )
@@ -162,30 +164,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
         guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
 
-        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .onboardingChat, .offer]) == true else { return }
-        guard let rootViewController = self.window.rootViewController else { return }
+        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return }
+        guard let rootViewController = window.rootViewController else { return }
         let innerBag = bag.innerBag()
 
-        innerBag += rootViewController.present(
-            ReferralsReceiverConsent(referralCode: referralCode),
-            style: .modal,
-            options: [
-                .prefersNavigationBarHidden(true),
-            ]
-        ).onValue { result in
-            if result == .accept {
-                if ApplicationState.currentState?.isOneOf([.marketing]) == true {
-                    self.bag += rootViewController.present(
-                        OnboardingChat(),
-                        options: [.prefersNavigationBarHidden(false)]
-                    )
+        func presentReferralsAccept() {
+            innerBag += rootViewController.present(
+                ReferralsReceiverConsent(referralCode: referralCode),
+                style: .modal,
+                options: [
+                    .prefersNavigationBarHidden(true),
+                    .allowSwipeDismissAlways,
+                ]
+            ).onValue { result in
+                if result == .accept {
+                    if ApplicationState.currentState?.isOneOf([.marketing]) == true {
+                        self.bag += rootViewController.present(
+                            OnboardingChat(),
+                            options: [.prefersNavigationBarHidden(false)]
+                        )
+                    }
                 }
+                innerBag.dispose()
             }
-            innerBag.dispose()
+        }
+
+        if ApplicationState.hasPreferredLocale {
+            presentReferralsAccept()
+        } else {
+            bag += rootViewController.present(MarketPicker {
+                presentReferralsAccept()
+            })
         }
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
+
+        if adyenRedirect {
+            return adyenRedirect
+        }
+
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
             guard let dynamicLinkUrl = dynamicLink.url else { return false }
             handleDeepLink(dynamicLinkUrl)
@@ -205,7 +224,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-
+        Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
 
         launchWindow?.isOpaque = false
@@ -247,43 +266,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             remoteConfigContainer
         })
-        
+
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
-            remoteConfigContainer.fetched.plain(),
+            remoteConfigContainer.fetched.take(first: 1).plain(),
             TranslationsRepo.fetch().valueSignal.plain()
-        ).atValue({ _ in
+        ).atValue { _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
                 AnalyticsCoordinator()
             })
-            
+
+            AnalyticsCoordinator().setUserId()
+
             self.bag += ApplicationState.presentRootViewController(self.window)
-            
-            if
-                !(ApplicationState.currentState?.isOneOf([.languagePicker]) ?? false) &&
-                !ApplicationState.hasPreferredLocale &&
-                Localization.Locale.currentLocale == .en_SE {
-                self.window.rootViewController?.present(
-                    LanguagePicker(),
-                    style: .modally(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)]
-                )
-            }
 
             if ApplicationState.hasOverridenTargetEnvironment {
                 self.displayToast(Toast(
                     symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment.")
+                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
+                )
                 ).onValue { _ in }
             }
-        }).delay(by: 0.1).onValue { _ in
-            self.hasFinishedLoading.value = true
+        }.delay(by: 0.1).onValue { _ in
+            let client: ApolloClient = Dependencies.shared.resolve()
+            self.bag += client.fetch(query: FeaturesQuery()).onValue { _ in
+                self.hasFinishedLoading.value = true
+            }
         }
 
-        bag += launchFuture.onValue({ _ in
+        bag += launchFuture.onValue { _ in
             self.window.makeKeyAndVisible()
             self.launchWindow = nil
-        })
+        }
 
         return true
     }
@@ -362,7 +376,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        DirectDebitSetup(),
+                        PaymentSetup(setupType: .initial),
                         style: .modal,
                         options: [.defaults]
                     )
@@ -370,7 +384,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        DirectDebitSetup(),
+                        PaymentSetup(setupType: .replacement),
                         style: .modal,
                         options: [.defaults]
                     )

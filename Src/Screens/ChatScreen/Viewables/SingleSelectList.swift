@@ -84,10 +84,13 @@ extension SingleSelectList: Viewable {
 
         view.addArrangedSubview(contentContainerView)
 
-        bag += options.enumerated().map({ arg in
+        bag += options.enumerated().map { arg in
             let (index, option) = arg
             let innerBag = DisposeBag()
-            let button = Button(title: option.text, type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
+            let button = Button(
+                title: option.text,
+                type: .standardSmall(backgroundColor: .boxSecondaryBackground, textColor: .primaryButtonTextColor)
+            )
 
             innerBag += button.onTapSignal.onValue { _ in
                 func removeViews() {
@@ -121,17 +124,17 @@ extension SingleSelectList: Viewable {
             innerBag += contentContainerView.addArranged(button.wrappedIn(buttonWrapper))
 
             if let buttonView = buttonWrapper.subviews.first {
-                innerBag += buttonView.hasWindowSignal.atOnce().atValue({ _ in
+                innerBag += buttonView.hasWindowSignal.atOnce().atValue { _ in
                     buttonView.alpha = 0
                     buttonView.transform = CGAffineTransform(translationX: buttonView.frame.width + 70, y: 0)
-                }).delay(by: 0.2).animated(style: SpringAnimationStyle.mediumBounce(delay: (Double(index) * 0.1)), animations: { _ in
+                }.delay(by: 0.2).animated(style: SpringAnimationStyle.mediumBounce(delay: Double(index) * 0.1), animations: { _ in
                     buttonView.transform = .identity
                     buttonView.alpha = 1
                 })
             }
 
             return innerBag
-        })
+        }
 
         return (scrollView, bag)
     }

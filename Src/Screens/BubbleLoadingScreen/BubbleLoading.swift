@@ -15,8 +15,8 @@ struct BubbleLoading {
     let originatingView: UIView
     let dismissSignal: Signal<Void>
 
-    init(originatingView: UIView, dismissSignal: Signal<Void>) {
-        self.originatingView = originatingView
+    init(originatingView: UIView?, dismissSignal: Signal<Void>) {
+        self.originatingView = originatingView ?? UIView()
         self.dismissSignal = dismissSignal
     }
 }
@@ -37,7 +37,7 @@ extension BubbleLoading: Presentable {
         let viewController = LightContentViewController()
 
         let bubbleView = UIView()
-        bubbleView.backgroundColor = .primaryTintColor
+        bubbleView.backgroundColor = .black
 
         let containerView = UIView()
         containerView.addSubview(bubbleView)

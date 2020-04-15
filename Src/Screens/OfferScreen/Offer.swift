@@ -18,27 +18,25 @@ struct Offer {
 
 extension Offer {
     func startSignProcess(_ viewController: UIViewController) {
-        let overlay = DraggableOverlay(
-            presentable: BankIdSign(),
-            presentationOptions: [.prefersNavigationBarHidden(true)]
-        )
-        viewController.present(overlay).onValue { _ in
+        viewController.present(
+            BankIdSign().withCloseButton,
+            style: .modally(),
+            options: [.defaults]
+        ).onValue { _ in
             self.analyticsCoordinator.logEcommercePurchase()
-            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [])
+            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [.defaults, .prefersNavigationBarHidden(true)])
         }
     }
-    
+
     static var primaryAccentColor: UIColor {
-        UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .primaryBackground : .midnight500
-        })
+        .primaryBackground
     }
 }
 
 extension Offer {
     func addNavigationBar(
         _ view: UIView,
-        scrollView: UIScrollView,
+        scrollView _: UIScrollView,
         viewController: UIViewController
     ) -> (Disposable, UINavigationBar) {
         let bag = DisposeBag()
@@ -53,7 +51,7 @@ extension Offer {
 
         let chatButton = UIBarButtonItem()
         chatButton.image = Asset.chat.image
-        chatButton.tintColor = .white
+        chatButton.tintColor = .primaryText
 
         bag += chatButton.onValue { _ in
             bag += viewController.present(
@@ -66,33 +64,7 @@ extension Offer {
             ).disposable
         }
 
-        item.leftBarButtonItem = chatButton
-
-        let signButton = Button(
-            title: String(key: .OFFER_BANKID_SIGN_BUTTON),
-            type: .tinyIcon(
-                backgroundColor: .white,
-                textColor: .black,
-                icon: .right(image: Asset.bankIdLogo.image, width: 13)
-            )
-        )
-
-        bag += signButton.onTapSignal.onValue { _ in
-            self.startSignProcess(viewController)
-        }
-
-        let signButtonBarItem = UIBarButtonItem(viewable: signButton)
-        item.rightBarButtonItem = signButtonBarItem
-
-        bag += scrollView.contentOffsetSignal.animated(style: SpringAnimationStyle.lightBounce()) { contentOffset in
-            if contentOffset.y > 400 {
-                signButtonBarItem.view?.alpha = 0
-                signButtonBarItem.view?.transform = CGAffineTransform(translationX: 0, y: 5)
-            } else {
-                signButtonBarItem.view?.alpha = 1
-                signButtonBarItem.view?.transform = CGAffineTransform.identity
-            }
-        }
+        item.rightBarButtonItem = chatButton
 
         let titleViewContainer = UIStackView()
         titleViewContainer.isLayoutMarginsRelativeArrangement = true
@@ -104,9 +76,9 @@ extension Offer {
         titleView.alignment = .center
         titleView.distribution = .fillProportionally
 
-        titleView.addArrangedSubview(UILabel(value: String(key: .OFFER_TITLE), style: .bodyWhite))
+        titleView.addArrangedSubview(UILabel(value: String(key: .OFFER_TITLE), style: .body))
 
-        let addressLabel = UILabel(value: " ", style: .navigationSubtitleWhite)
+        let addressLabel = UILabel(value: " ", style: .navigationSubtitle)
         titleView.addArrangedSubview(addressLabel)
 
         titleViewContainer.addArrangedSubview(titleView)
@@ -121,9 +93,9 @@ extension Offer {
             .fetch(query: OfferQuery())
             .valueSignal
             .compactMap { $0.data?.insurance }
-            .atValue({ insurance in
+            .atValue { insurance in
                 addressLabel.text = insurance.address
-            })
+            }
             .animated(style: AnimationStyle.easeOut(duration: 0.25, delay: 0.65)) { _ in
                 navigationBar.alpha = 1
                 navigationBar.transform = CGAffineTransform.identity
@@ -145,9 +117,15 @@ extension Offer {
     }
 }
 
+extension OfferQuery {
+    convenience init() {
+        self.init(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+    }
+}
+
 extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
-        let viewController = LightContentViewController()
+        let viewController = UIViewController()
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 80)
 
         ApplicationState.preserveState(.offer)
@@ -165,28 +143,21 @@ extension Offer: Presentable {
         let insuranceSignal = offerSignal
             .compactMap { $0.data?.insurance }
 
-        let priceBubble = PriceBubble(containerScrollView: scrollView)
-        bag += stackView.addArranged(priceBubble)
+        let offerHeader = OfferHeader(
+            containerScrollView: scrollView,
+            presentingViewController: viewController
+        )
 
-        bag += offerSignal
-            .compactMap { $0.data }
-            .bindTo(priceBubble.dataSignal)
+        bag += offerHeader.onSignTapSignal.onValue { _ in
+            self.startSignProcess(viewController)
+        }
 
-        let offerBubbles = OfferBubbles(containerScrollView: scrollView)
-        bag += stackView.addArranged(offerBubbles)
+        bag += stackView.addArranged(offerHeader.wrappedIn(UIStackView())) { stackView in
+            stackView.layoutMargins = UIEdgeInsets(horizontalInset: 25, verticalInset: 35)
+            stackView.isLayoutMarginsRelativeArrangement = true
+        }
 
-        bag += insuranceSignal
-            .bindTo(offerBubbles.insuranceSignal)
-        
-        let startDateButton = OfferStartDateButton(containerScrollView: scrollView, presentingViewController: viewController)
-        bag += stackView.addArranged(startDateButton)
-        
         bag += stackView.addArranged(Spacing(height: 16))
-
-        let offerDiscount = OfferDiscount(containerScrollView: scrollView, presentingViewController: viewController)
-        bag += offerSignal.compactMap { $0.data?.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
-
-        bag += stackView.addArranged(offerDiscount)
 
         bag += stackView.addArranged(Spacing(height: Float(UIScreen.main.bounds.height))) { spacingView in
             bag += Signal(after: 1.25).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
@@ -195,9 +166,8 @@ extension Offer: Presentable {
         }
 
         bag += stackView.addArranged(OfferSummary())
-        bag += stackView.addArranged(OfferCoverageHome(presentingViewController: viewController))
-        bag += stackView.addArranged(OfferCoverageStuff(presentingViewController: viewController))
-        bag += stackView.addArranged(OfferCoverageMe(presentingViewController: viewController))
+
+        bag += stackView.addArranged(OfferCoverage())
 
         let insuredAtOtherCompanySignal = insuranceSignal
             .map { $0.previousInsurer != nil }
@@ -205,11 +175,12 @@ extension Offer: Presentable {
 
         bag += stackView.addArranged(OfferCoverageTerms(insuredAtOtherCompanySignal: insuredAtOtherCompanySignal))
 
-        bag += stackView.addArranged(WhenEnabled(insuredAtOtherCompanySignal, {
+        let coverageSwitcher = WhenEnabled(insuredAtOtherCompanySignal, {
             OfferCoverageSwitcher()
-        }))
+        }) { _ in
+        }
 
-        bag += stackView.addArranged(OfferReadyToSign(containerScrollView: scrollView))
+        bag += stackView.addArranged(coverageSwitcher)
 
         let view = UIView()
         view.backgroundColor = Offer.primaryAccentColor
@@ -227,34 +198,33 @@ extension Offer: Presentable {
 
         view.addSubview(scrollView)
 
-        let button = Button(
-            title: String(key: .OFFER_SIGN_BUTTON),
-            type: .standardIcon(
-                backgroundColor: .white,
-                textColor: .offBlack,
-                icon: .right(image: Asset.bankIdLogo.image, width: 20)
-            )
-        )
+        let offerSignButton = OfferSignButton()
 
-        bag += button.onTapSignal.onValue { _ in
+        bag += offerSignButton.onTapSignal.onValue { _ in
             self.startSignProcess(viewController)
         }
 
-        bag += view.add(button) { buttonView in
-            bag += buttonView.applyShadow({ _ in
-                UIView.ShadowProperties(
-                    opacity: 0.1,
-                    offset: CGSize(width: 0, height: 2),
-                    radius: 5,
-                    color: UIColor.primaryShadowColor,
-                    path: nil
-                )
-            })
+        bag += view.add(offerSignButton) { buttonView in
+            buttonView.snp.makeConstraints { make in
+                make.bottom.equalToSuperview()
+                make.trailing.leading.equalToSuperview()
+            }
 
-            buttonView.snp.makeConstraints({ make in
-                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).priority(.high)
-                make.bottom.lessThanOrEqualTo(-20).priority(.required)
-            })
+            let spacerView = UIView()
+            stackView.addArrangedSubview(spacerView)
+
+            spacerView.snp.makeConstraints { make in
+                make.height.equalTo(buttonView.snp.height)
+            }
+
+            bag += spacerView.didLayoutSignal.onValue { _ in
+                scrollView.scrollIndicatorInsets = UIEdgeInsets(
+                    top: 0,
+                    left: 0,
+                    bottom: spacerView.frame.height - buttonView.safeAreaInsets.bottom,
+                    right: 0
+                )
+            }
 
             buttonView.transform = CGAffineTransform(
                 translationX: 0,
@@ -273,10 +243,10 @@ extension Offer: Presentable {
             }
         }
 
-        scrollView.snp.makeConstraints({ make in
+        scrollView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom)
             make.trailing.leading.bottom.equalToSuperview()
-        })
+        }
 
         return (viewController, bag)
     }

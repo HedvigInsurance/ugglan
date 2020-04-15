@@ -14,7 +14,7 @@ struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 
     enum Screen: String {
-        case marketing, onboardingChat, offer, loggedIn, languagePicker
+        case marketing, onboardingChat, offer, loggedIn, languagePicker, marketPicker
 
         func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
@@ -35,17 +35,17 @@ struct ApplicationState {
         }
         return applicationState
     }
-    
+
     static func hasPreviousState() -> Bool {
         return UserDefaults.standard.value(forKey: key) as? String != nil
     }
-    
+
     private static let firebaseMessagingTokenKey = "firebaseMessagingToken"
-    
+
     static func setFirebaseMessagingToken(_ token: String) {
-         UserDefaults.standard.set(token, forKey: ApplicationState.firebaseMessagingTokenKey)
+        UserDefaults.standard.set(token, forKey: ApplicationState.firebaseMessagingTokenKey)
     }
-    
+
     static func getFirebaseMessagingToken() -> String? {
         UserDefaults.standard.value(forKey: firebaseMessagingTokenKey) as? String
     }
@@ -61,50 +61,49 @@ struct ApplicationState {
     static func setLastNewsSeen() {
         UserDefaults.standard.set(Bundle.main.appVersion, forKey: ApplicationState.lastNewsSeenKey)
     }
-    
+
     private static let preferredLocaleKey = "preferredLocale"
-    
+
     static func setPreferredLocale(_ locale: Localization.Locale) {
         UserDefaults.standard.set(locale.rawValue, forKey: ApplicationState.preferredLocaleKey)
     }
-    
+
     static var hasPreferredLocale: Bool {
         return UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
     }
-    
+
     static var preferredLocale: Localization.Locale {
         guard
             let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
             let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) else {
-                
-                let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
+            let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
 
-                       let bestMatchedLanguage = Bundle.preferredLocalizations(
-                           from: availableLanguages
-                       ).first
+            let bestMatchedLanguage = Bundle.preferredLocalizations(
+                from: availableLanguages
+            ).first
 
-                       if let bestMatchedLanguage = bestMatchedLanguage {
-                           return Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
-                       }
-                return .en_SE
+            if let bestMatchedLanguage = bestMatchedLanguage {
+                return Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
+            }
+            return .en_SE
         }
-        
+
         return preferredLocale
     }
-    
+
     private static let targetEnvironmentKey = "targetEnvironment"
-    
+
     enum Environment: Hashable {
         case production
         case staging
         case custom(endpointURL: URL, wsEndpointURL: URL, assetsEndpointURL: URL)
-        
+
         fileprivate struct RawCustomStorage: Codable {
             let endpointURL: URL
             let wsEndpointURL: URL
             let assetsEndpointURL: URL
         }
-        
+
         var rawValue: String {
             switch self {
             case .production:
@@ -118,15 +117,15 @@ struct ApplicationState {
                     assetsEndpointURL: assetsEndpointURL
                 )
                 let data = try? JSONEncoder().encode(rawCustomStorage)
-                
+
                 if let data = data {
                     return String(data: data, encoding: .utf8) ?? "staging"
                 }
-                
+
                 return "staging"
             }
         }
-        
+
         var displayName: String {
             switch self {
             case .production:
@@ -137,7 +136,7 @@ struct ApplicationState {
                 return "custom"
             }
         }
-        
+
         init?(rawValue: String) {
             switch rawValue {
             case "production":
@@ -148,11 +147,11 @@ struct ApplicationState {
                 guard let data = rawValue.data(using: .utf8) else {
                     return nil
                 }
-                
+
                 guard let rawCustomStorage = try? JSONDecoder().decode(RawCustomStorage.self, from: data) else {
                     return nil
                 }
-                                
+
                 self = .custom(
                     endpointURL: rawCustomStorage.endpointURL,
                     wsEndpointURL: rawCustomStorage.wsEndpointURL,
@@ -160,23 +159,23 @@ struct ApplicationState {
                 )
             }
         }
-        
+
         var apolloEnvironmentConfig: ApolloEnvironmentConfig {
             switch getTargetEnvironment() {
             case .staging:
                 return ApolloEnvironmentConfig(
-                    endpointURL: URL(string: "http://localhost:4000/graphql")!,
+                    endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
                     wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
                     assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
                 )
             case .production:
-                return  ApolloEnvironmentConfig(
-                               endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
-                               wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
-                               assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
-                           )
+                return ApolloEnvironmentConfig(
+                    endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+                    wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+                    assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+                )
             case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
-                return  ApolloEnvironmentConfig(
+                return ApolloEnvironmentConfig(
                     endpointURL: endpointURL,
                     wsEndpointURL: wsEndpointURL,
                     assetsEndpointURL: assetsEndpointURL
@@ -184,26 +183,26 @@ struct ApplicationState {
             }
         }
     }
-    
+
     static func setTargetEnvironment(_ environment: Environment) {
         UserDefaults.standard.set(environment.rawValue, forKey: targetEnvironmentKey)
     }
-    
+
     static var hasOverridenTargetEnvironment: Bool {
         return UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
     }
-    
+
     static func getTargetEnvironment() -> Environment {
         guard
             let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
             let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
-                #if APP_VARIANT_PRODUCTION
+            #if APP_VARIANT_PRODUCTION
                 return .production
-                #elseif APP_VARIANT_DEV
+            #elseif APP_VARIANT_DEV
                 return .staging
-                #else
+            #else
                 return .production
-                #endif
+            #endif
         }
         return targetEnvironment
     }
@@ -211,22 +210,20 @@ struct ApplicationState {
     static func presentRootViewController(_ window: UIWindow) -> Disposable {
         guard let applicationState = currentState
         else {
-            if Localization.Locale.currentLocale == .en_SE {
-                return window.present(
-                    PreMarketingLanguagePicker(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)],
-                    animated: false
-                )
-            } else {
-                return window.present(
-                    Marketing(),
-                    options: [.defaults, .prefersNavigationBarHidden(true)],
-                    animated: false
-                ).disposable
-            }
+            return window.present(
+                MarketPicker(),
+                options: [.defaults, .prefersNavigationBarHidden(true)],
+                animated: false
+            )
         }
 
         switch applicationState {
+        case .marketPicker:
+            return window.present(
+                MarketPicker(),
+                options: [.defaults, .prefersNavigationBarHidden(true)],
+                animated: false
+            )
         case .languagePicker:
             return window.present(
                 PreMarketingLanguagePicker(),
@@ -238,9 +235,9 @@ struct ApplicationState {
                 Marketing(),
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false
-            ).disposable
+            )
         case .onboardingChat:
-            return window.present(Embark(name: "Web Onboarding - Swedish Needer"), options: [.defaults], animated: false)
+            return window.present(Onboarding(), options: [.defaults], animated: false)
         case .offer:
             return window.present(
                 Offer(),

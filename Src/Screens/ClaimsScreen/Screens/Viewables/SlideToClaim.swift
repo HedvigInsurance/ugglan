@@ -55,7 +55,7 @@ extension SlideToClaim: Viewable {
         }
 
         let handle = UIView()
-        handle.backgroundColor = .primaryTintColor
+        handle.backgroundColor = .primaryButtonBackgroundColor
 
         let continueIcon = Icon(icon: Asset.continue, iconWidth: 20)
         handle.addSubview(continueIcon)

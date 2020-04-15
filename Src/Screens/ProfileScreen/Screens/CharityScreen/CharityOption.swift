@@ -88,7 +88,7 @@ extension CharityOption: Reusable {
             let button = Button(
                 title: String(key: .CHARTITY_PICK_OPTION),
                 type: .standard(
-                    backgroundColor: .primaryTintColor,
+                    backgroundColor: .primaryButtonBackgroundColor,
                     textColor: .white
                 )
             )

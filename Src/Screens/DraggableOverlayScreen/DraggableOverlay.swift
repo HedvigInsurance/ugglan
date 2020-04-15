@@ -56,7 +56,10 @@ extension DraggableOverlay: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        viewController.view = view
+        viewController.view.addSubview(view)
+        view.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalToSuperview()
+        }
 
         let dimmingView = UIView()
         dimmingView.backgroundColor = UIColor.black
@@ -129,14 +132,14 @@ extension DraggableOverlay: Presentable {
         }
 
         let overlayContainer = UIView()
-        
+
         bag += merge(
-        NotificationCenter.default
-        .signal(forName: UIApplication.willEnterForegroundNotification),
-        NotificationCenter.default
-            .signal(forName: UIApplication.didEnterBackgroundNotification)
+            NotificationCenter.default
+                .signal(forName: UIApplication.willEnterForegroundNotification),
+            NotificationCenter.default
+                .signal(forName: UIApplication.didEnterBackgroundNotification)
         )
-            .onValue { _ in
+        .onValue { _ in
             overlay.center.y = overlayCenter
             ease.value = overlay.center.y
             ease.targetValue = overlay.center.y

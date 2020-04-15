@@ -60,7 +60,7 @@ extension SelectedCharity: Viewable {
             let infoContainer = UIView()
             infoContainer.backgroundColor = .secondaryBackground
             infoContainer.layer.cornerRadius = 8
-            bag += infoContainer.applyShadow({ _ in
+            bag += infoContainer.applyShadow { _ in
                 UIView.ShadowProperties(
                     opacity: 0.2,
                     offset: CGSize(width: 0, height: 10),
@@ -68,7 +68,7 @@ extension SelectedCharity: Viewable {
                     color: UIColor.primaryShadowColor,
                     path: nil
                 )
-            })
+            }
 
             let infoContainerStackView = UIStackView()
             infoContainerStackView.axis = .vertical

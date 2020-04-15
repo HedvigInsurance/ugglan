@@ -15,28 +15,34 @@ class RemoteConfigContainer {
 
     init() {
         let remoteConfig = RemoteConfig.remoteConfig()
-
-        #if DEBUG
-            let fetchDuration: TimeInterval = 0
-        #else
-            let fetchDuration: TimeInterval = 3600
-        #endif
-
         let fetched = ReadWriteSignal<Bool>(false)
 
         self.fetched = fetched
+        self.remoteConfig = remoteConfig
+
+        fetch(false)
+    }
+
+    func fetch(_ force: Bool) {
+        #if DEBUG
+            let fetchDuration: TimeInterval = 0
+        #else
+            let fetchDuration: TimeInterval = force ? 0 : 3600
+        #endif
 
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
-            remoteConfig.activate(completionHandler: { _ in
-                fetched.value = true
+            self.remoteConfig.activate(completionHandler: { _ in
+                self.fetched.value = true
             })
         })
-
-        self.remoteConfig = remoteConfig
     }
 
     var referralsWebLandingPrefix: String {
         return remoteConfig.configValue(forKey: "Referrals_WebLanding_Prefix").stringValue ?? ""
+    }
+
+    var keyGearEnabled: Bool {
+        remoteConfig.configValue(forKey: "Key_Gear_Enabled").boolValue
     }
 
     func referralsEnabled() -> Bool {

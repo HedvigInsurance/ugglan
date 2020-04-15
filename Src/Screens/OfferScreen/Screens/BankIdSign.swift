@@ -26,19 +26,16 @@ extension BankIdSign: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
+        view.backgroundColor = .primaryBackground
         viewController.view = view
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.alignment = .center
-
-        bag += containerStackView.applySafeAreaBottomLayoutMargin()
-        bag += containerStackView.applyPreferredContentSize(on: viewController)
-
         view.addSubview(containerStackView)
 
         containerStackView.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalToSuperview()
+            make.leading.trailing.top.equalToSuperview()
         }
 
         let containerView = UIStackView()
@@ -128,7 +125,7 @@ extension BankIdSign: Presentable {
                     if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
                         UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
                     }
-                    
+
                     completion(.success)
                 }
 
@@ -137,7 +134,7 @@ extension BankIdSign: Presentable {
                     return
                 }
 
-                if code == "userCancel" && state == .failed {
+                if code == "userCancel", state == .failed {
                     bag += Signal(after: 0).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
                         headerContainer.animationSafeIsHidden = true
                         closeButtonContainer.animationSafeIsHidden = false
@@ -145,7 +142,7 @@ extension BankIdSign: Presentable {
                     }
                 }
 
-                if code == "expiredTransaction" && state == .failed {
+                if code == "expiredTransaction", state == .failed {
                     let alert = Alert<Void>(
                         title: String(key: .BANKID_INACTIVE_TITLE),
                         message: String(key: .BANKID_INACTIVE_MESSAGE),

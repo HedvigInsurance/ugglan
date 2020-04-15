@@ -117,8 +117,10 @@ extension ClaimsHeader.InactiveMessage: Viewable {
                 make.center.equalToSuperview()
             }
         }
+        
+        let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
-        bag += client.insuranceIsActiveSignal()
+        bag += isEligibleDataSignal
             .wait(until: view.hasWindowSignal)
             .filter { !$0 }
             .delay(by: 0.5)
@@ -147,15 +149,15 @@ extension ClaimsHeader: Viewable {
         bag += view.addArranged(inactiveMessage)
 
         let imageView = UIImageView()
+        imageView.tintColor = .primaryTintColor
         imageView.image = Asset.claimsHeader.image
         imageView.contentMode = .scaleAspectFit
 
-        imageView.snp.makeConstraints { make in
-            make.height.equalTo(imageView.image?.size.height ?? 0)
-            make.width.equalTo(imageView.image?.size.width ?? 0)
-        }
-
         view.addArrangedSubview(imageView)
+        
+        imageView.snp.makeConstraints { make in
+            make.height.equalTo(300)
+        }
 
         let title = Title()
         bag += view.addArranged(title)
@@ -163,7 +165,7 @@ extension ClaimsHeader: Viewable {
         let description = Description()
         bag += view.addArranged(description)
 
-        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
+        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
 
         bag += button.onTapSignal.onValue {
             self.presentingViewController.present(
@@ -181,15 +183,13 @@ extension ClaimsHeader: Viewable {
         }
 
         bag += view.addArranged(button.wrappedIn(UIStackView())) { stackView in
-            bag += client.insuranceIsActiveSignal().bindTo(stackView, \.isUserInteractionEnabled)
-            bag += client.insuranceIsActiveSignal()
+            let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
+            bag += isEligibleDataSignal.bindTo(stackView, \.isUserInteractionEnabled)
+            bag += isEligibleDataSignal
                 .map { $0 ? 1 : 0.5 }
                 .animated(style: AnimationStyle.easeOut(duration: 0.25)) { alpha in
                     stackView.alpha = alpha
                 }
-
-            stackView.axis = .vertical
-            stackView.alignment = .center
         }
 
         return (view, bag)

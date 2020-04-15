@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "symbol.pdf"
+      "filename" : "hedvig-symbol-light.pdf"
     },
     {
       "idiom" : "universal",
-      "filename" : "Symbol-1.pdf",
+      "filename" : "hedvig-symbol.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",

@@ -55,7 +55,7 @@ extension BackgroundWithLabel: Viewable {
 
         label.clipsToBounds = true
         label.textAlignment = .center
-        label.font = HedvigFonts.soRayExtraBold?.withSize(44)
+        label.font = HedvigFonts.favoritStdBook?.withSize(44)
         label.textColor = textColor
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0

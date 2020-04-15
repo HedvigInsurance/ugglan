@@ -9,29 +9,62 @@
 import Foundation
 
 extension Localization.Locale {
+    enum Market: String {
+        case no = "NO"
+        case se = "SE"
+    }
+
+    var market: Market {
+        switch self {
+        case .sv_SE:
+            return .se
+        case .en_SE:
+            return .se
+        case .en_NO:
+            return .no
+        case .nb_NO:
+            return .no
+        }
+    }
+
     var acceptLanguageHeader: String {
         switch self {
         case .sv_SE:
             return "sv-SE"
         case .en_SE:
             return "en-SE"
-        default:
-            // Temp
-            return "sv-SE"
+        case .en_NO:
+            return "en-NO"
+        case .nb_NO:
+            return "nb-NO"
         }
     }
-    
+
     var code: String {
-       switch self {
-       case .sv_SE:
-           return "sv_SE"
-       case .en_SE:
-           return "en_SE"
-       default:
-            // Temp
-            return "sv-SE"
-       }
-   }
+        switch self {
+        case .sv_SE:
+            return "sv_SE"
+        case .en_SE:
+            return "en_SE"
+        case .en_NO:
+            return "en_NO"
+        case .nb_NO:
+            return "nb_NO"
+        }
+    }
+
+    var lprojCode: String {
+        switch self {
+        case .sv_SE:
+            return "sv"
+        case .en_SE:
+            return "en"
+        case .en_NO:
+            return "en"
+        case .nb_NO:
+            return "nb-NO"
+        }
+    }
 
     func asGraphQLLocale() -> Locale {
         switch self {
@@ -39,9 +72,10 @@ extension Localization.Locale {
             return .svSe
         case .en_SE:
             return .enSe
-        default:
-            // Temp
-            return .svSe
+        case .nb_NO:
+            return .nbNo
+        case .en_NO:
+            return .enNo
         }
     }
 }

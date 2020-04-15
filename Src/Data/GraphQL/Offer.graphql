@@ -1,4 +1,4 @@
-query Offer {
+query Offer($locale: Locale!) {
     redeemedCampaigns {
         ...CampaignFragment
     }
@@ -15,22 +15,17 @@ query Offer {
         cost {
             ...CostFragment
         }
-        arrangedPerilCategories {
-            stuff {
-                ...PerilCategoryFragment
-            }
-            home {
-                ...PerilCategoryFragment
-            }
-            me {
-                ...PerilCategoryFragment
-            }
-        }
     }
     lastQuoteOfMember {
         ... on CompleteQuote {
             startDate
             id
+            perils(locale: $locale) {
+                ...PerilFragment
+            }
+            insurableLimits(locale: $locale) {
+                ...InsurableLimitFragment
+            }
         }
     }
 }

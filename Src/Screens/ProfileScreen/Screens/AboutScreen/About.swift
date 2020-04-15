@@ -10,8 +10,8 @@ import Apollo
 import Flow
 import Form
 import Presentation
-import UIKit
 import SwiftUI
+import UIKit
 
 struct About {
     @Inject var client: ApolloClient
@@ -49,7 +49,11 @@ extension About: Presentable {
             bag += loginSection.append(loginRow)
 
             bag += loginRow.onSelect.onValue { _ in
-                viewController.present(DraggableOverlay(presentable: BankIDLogin(), presentationOptions: [.defaults]))
+                viewController.present(
+                    BankIDLogin(),
+                    style: .modally(),
+                    options: [.allowSwipeDismissAlways, .defaults]
+                )
             }
 
             bag += form.append(Spacing(height: 20))
@@ -65,12 +69,12 @@ extension About: Presentable {
         bag += versionSection.append(versionRow) { versionRowView in
             let tapGestureRecongnizer = UITapGestureRecognizer()
             tapGestureRecongnizer.numberOfTapsRequired = 2
-                        
+
             versionRowView.viewRepresentation.addGestureRecognizer(tapGestureRecongnizer)
-            
+
             bag += tapGestureRecongnizer.signal(forState: .recognized).onValue { _ in
                 if #available(iOS 13, *) {
-                    viewController.present(UIHostingController(rootView: Debug()), style: .modally())
+                    viewController.present(UIHostingController(rootView: Debug()), style: .modally(), options: [])
                 }
             }
         }
@@ -83,15 +87,31 @@ extension About: Presentable {
                 text: String(key: .ABOUT_PUSH_ROW),
                 style: .normalButton
             )
+
             bag += versionSection.append(activatePushNotificationsRow)
 
-            bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
-                let register = PushNotificationsRegister(
-                    title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
-                    message: "",
-                    forceAsk: true
-                )
-                return viewController.present(register).disposable
+            let isRegisteredForRemoteNotifications = UIApplication.shared.isRegisteredForRemoteNotifications
+
+            if !isRegisteredForRemoteNotifications {
+                activatePushNotificationsRow.isHiddenSignal.value = false
+
+                bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
+                    let register = PushNotificationsRegister(
+                        title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                        message: "",
+                        forceAsk: true
+                    )
+
+                    return viewController.present(register).onResult { result in
+                        switch result {
+                        case .success: activatePushNotificationsRow.isHiddenSignal.value = true
+                        case .failure:
+                            break
+                        }
+                    }.disposable
+                }
+            } else {
+                activatePushNotificationsRow.isHiddenSignal.value = true
             }
 
             let showWhatsNew = ButtonRow(
@@ -111,7 +131,7 @@ extension About: Presentable {
                     }
             }
         }
-        
+
         bag += form.append(Spacing(height: 20))
 
         let otherSection = form.appendSection(
@@ -119,7 +139,7 @@ extension About: Presentable {
             footerView: nil,
             style: .sectionPlain
         )
-        
+
         let languageRow = LanguageRow(
             presentingViewController: viewController
         )

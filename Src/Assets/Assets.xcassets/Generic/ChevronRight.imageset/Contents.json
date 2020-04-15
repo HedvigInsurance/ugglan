@@ -3,6 +3,16 @@
     {
       "idiom" : "universal",
       "filename" : "chevron.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "chevron-light.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {
@@ -10,6 +20,7 @@
     "author" : "xcode"
   },
   "properties" : {
+    "template-rendering-intent" : "original",
     "preserves-vector-representation" : true
   }
 }

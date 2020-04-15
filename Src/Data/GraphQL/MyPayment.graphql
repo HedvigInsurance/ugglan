@@ -1,15 +1,13 @@
 query MyPayment {
-    insurance {
-        cost {
-            ...CostFragment
-        }
+    insuranceCost {
+        ...CostFragment
     }
     bankAccount {
         bankName
         descriptor
     }
     nextChargeDate
-    directDebitStatus
+    payinMethodStatus
     redeemedCampaigns {
         ...CampaignFragment
     }

@@ -12,7 +12,7 @@ import Photos
 import UIKit
 
 struct FilePickerHeader {
-    let uploadFileDelegate = Delegate<FileUpload, Signal<Bool>>()
+    let uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 }
 
 extension FilePickerHeader: Reusable {
@@ -44,10 +44,10 @@ extension FilePickerHeader: Viewable {
 
         func processPickResult(_ result: Either<PHAsset, UIImage>) -> Disposable {
             let innerBag = DisposeBag()
-            
+
             if let asset = result.left {
                 asset.fileUpload.onValue { fileUpload in
-                    innerBag += self.uploadFileDelegate.call(
+                    self.uploadFileDelegate.call(
                         fileUpload
                     )?.onValue { _ in }
                 }.onError { error in
@@ -55,21 +55,20 @@ extension FilePickerHeader: Viewable {
                 }
             } else if let image = result.right {
                 guard let jpegData = image.jpegData(compressionQuality: 0.9) else {
-                     log.error("couldn't process image")
-                     return innerBag
-                 }
-                
+                    log.error("couldn't process image")
+                    return innerBag
+                }
+
                 let fileUpload = FileUpload(
                     data: jpegData,
                     mimeType: "image/jpeg",
                     fileName: "image.jpg"
                 )
-                
-                innerBag += self.uploadFileDelegate.call(
+
+                uploadFileDelegate.call(
                     fileUpload
                 )?.onValue { _ in }
             }
-            
 
             return innerBag
         }
@@ -114,7 +113,7 @@ extension FilePickerHeader: Viewable {
                 return join(fileUploads).valueSignal
                     .map { fileUploads -> [Disposable] in
                         fileUploads.compactMap {
-                            self.uploadFileDelegate.call($0)?.onValue { _ in }
+                            self.uploadFileDelegate.call($0)?.valueSignal.onValue { _ in }
                         }
                     }.onValueDisposePrevious { list -> Disposable? in
                         DisposeBag(list)

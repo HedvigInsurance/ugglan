@@ -24,7 +24,7 @@ extension ReferralsProgressHighPremium: Viewable {
         view.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 10, right: 16)
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = .turquoise
+        backgroundView.backgroundColor = .black
         backgroundView.layer.cornerRadius = 10
 
         let contentView = UIStackView()
@@ -33,20 +33,20 @@ extension ReferralsProgressHighPremium: Viewable {
         contentView.axis = .vertical
         contentView.spacing = 5
 
-        let discountAmountTextStyle = TextStyle.standaloneLargeTitle.resized(to: 48)
+        let discountAmountTextStyle = TextStyle.standaloneLargeTitle.resized(to: 48).colored(.white)
         let discountAmountLabel = MultilineLabel(value: "", style: discountAmountTextStyle)
         bag += contentView.addArranged(discountAmountLabel)
 
-        let informationLabel = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE), style: .blockRowTitle)
+        let informationLabel = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE), style: TextStyle.blockRowTitle.colored(.white))
         bag += contentView.addArranged(informationLabel)
 
-        let netPremiumLabel = MultilineLabel(value: "", style: .blockRowDescription)
+        let netPremiumLabel = MultilineLabel(value: "", style: TextStyle.blockRowDescription.colored(.white))
         bag += contentView.addArranged(netPremiumLabel)
 
         bag += combineLatest(grossPremiumSignal.atOnce().compactMap { $0 }, netPremiumSignal.atOnce().compactMap { $0 }).onValue { grossPremium, netPremium in
             netPremiumLabel.styledTextSignal.value = StyledText(
                 text: String(key: .REFERRAL_PROGRESS_HIGH_PREMIUM_DESCRIPTION(monthlyCost: String(netPremium))),
-                style: .blockRowDescription
+                style: TextStyle.blockRowDescription.colored(.white)
             )
             let discount = grossPremium - netPremium
             discountAmountLabel.styledTextSignal.value = StyledText(text: discount > 0 ? "-\(discount) kr" : "\(discount) kr", style: discountAmountTextStyle)

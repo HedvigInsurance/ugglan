@@ -23,9 +23,9 @@ extension ClaimsChat: Presentable {
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 
-        bag += client.perform(mutation: TriggerClaimChatMutation()).onValue({ _ in
+        bag += client.perform(mutation: TriggerClaimChatMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
-        })
+        }
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image
@@ -37,7 +37,7 @@ extension ClaimsChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += future.onValue({ _ in })
+        bag += future.onValue { _ in }
 
         return (viewController, bag)
     }

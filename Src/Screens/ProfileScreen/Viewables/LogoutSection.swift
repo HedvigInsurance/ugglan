@@ -43,7 +43,7 @@ extension LogoutSection: Viewable {
 
             bag += self.presentingViewController.present(alert).onValue { shouldLogout in
                 if shouldLogout {
-                    ApplicationState.preserveState(.marketing)
+                    ApplicationState.preserveState(.marketPicker)
                     UIApplication.shared.appDelegate.logout()
                 }
             }

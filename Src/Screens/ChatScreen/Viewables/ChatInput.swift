@@ -35,7 +35,7 @@ extension ChatInput: Viewable {
 
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
-        backgroundView.backgroundColor = UIColor.primaryBackground.withAlphaComponent(0.8)
+        backgroundView.backgroundColor = UIColor.tertiaryBackground.withAlphaComponent(0.8)
 
         let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)
@@ -46,16 +46,6 @@ extension ChatInput: Viewable {
 
         effectView.snp.makeConstraints { make in
             make.width.height.leading.trailing.equalToSuperview()
-        }
-
-        let topBorderView = UIView()
-        topBorderView.backgroundColor = .primaryBorder
-        backgroundView.addSubview(topBorderView)
-
-        topBorderView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalTo(1 / UIScreen.main.scale)
         }
 
         let containerView = UIStackView()
@@ -115,10 +105,10 @@ extension ChatInput: Viewable {
                 stackView.animationSafeIsHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
-        }.onValue({ _ in
+        }.onValue { _ in
             attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
-        })
+        }
 
         let attachGIFButton = AttachGIFButton(
             isOpenSignal: attachGIFPaneIsOpenSignal.readOnly()
@@ -156,10 +146,10 @@ extension ChatInput: Viewable {
                 stackView.animationSafeIsHidden = isHidden
                 stackView.alpha = isHidden ? 0 : 1
             }
-        }.onValue({ _ in
+        }.onValue { _ in
             attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
             contentView.firstResponder?.resignFirstResponder()
-        })
+        }
 
         let textView = ChatTextView(chatState: chatState)
         bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)
@@ -173,10 +163,10 @@ extension ChatInput: Viewable {
                 bottom: padding,
                 right: padding
             )
-            
+
             bag += attachGIFPaneIsOpenSignal.animated(style: SpringAnimationStyle.lightBounce()) { attachGifPaneIsOpen in
                 var isHidden: Bool
-                
+
                 if attachGifPaneIsOpen {
                     isHidden = true
                 } else {
@@ -280,7 +270,7 @@ extension ChatInput: Viewable {
         bag += containerView.addArranged(
             AttachGIFPane(
                 isOpenSignal: attachGIFPaneIsOpenSignal,
-                chatState: self.chatState
+                chatState: chatState
             )
         )
 

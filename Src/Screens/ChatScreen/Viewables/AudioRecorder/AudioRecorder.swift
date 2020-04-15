@@ -133,8 +133,8 @@ extension AudioRecorder: Viewable {
             bag += playContainer.addArranged(audioPlayer.wrappedIn(UIStackView()))
 
             let redoButton = Button(
-                title: "Gör om",
-                type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white)
+                title: String(key: .AUDIO_INPUT_REDO),
+                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
 
             bag += redoButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -149,10 +149,13 @@ extension AudioRecorder: Viewable {
                 stackView.alignment = .trailing
             }
 
-            let sendButton = Button(title: "Skicka", type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white))
+            let sendButton = Button(
+                title: String(key: .AUDIO_INPUT_SAVE),
+                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+            )
             let loadableSendButton = LoadableButton(button: sendButton)
 
-            bag += loadableSendButton.onTapSignal.onValue({ _ in
+            bag += loadableSendButton.onTapSignal.onValue { _ in
                 guard let fileUrl = currentAudioFileUrl.value else {
                     return
                 }
@@ -163,7 +166,7 @@ extension AudioRecorder: Viewable {
                 }
 
                 self.chatState.sendChatAudioResponse(fileUrl: fileUrl)
-            })
+            }
 
             bag += playContainer.addArranged(loadableSendButton.wrappedIn(UIStackView())) { stackView in
                 stackView.axis = .vertical

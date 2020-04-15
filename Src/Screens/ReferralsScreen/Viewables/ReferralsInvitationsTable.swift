@@ -30,16 +30,11 @@ extension ReferralsInvitationsTable: Viewable {
 
         let tableStyle = DynamicTableViewFormStyle.grouped.restyledWithStyleAndInput { (style: inout TableViewFormStyle, trait) in
             style.section.minRowHeight = 72
+            style.form.insets = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
 
-            if trait.isPad {
-                style.section.background = trait.userInterfaceStyle == .dark ?
-                    SectionStyle.Background.standardDarkLargeIconsRoundedBorder :
-                    SectionStyle.Background.standardLightLargeIconsRoundedBorder
-            } else {
-                style.section.background = trait.userInterfaceStyle == .dark ?
-                    SectionStyle.Background.standardDarkLargeIcons :
-                    SectionStyle.Background.standardLightLargeIcons
-            }
+            style.section.background = trait.userInterfaceStyle == .dark ?
+                SectionStyle.Background.standardDarkLargeIconsRoundedBorder :
+                SectionStyle.Background.standardLightLargeIconsRoundedBorder
         }
 
         let tableKit = TableKit<String, InvitationsListRow>(

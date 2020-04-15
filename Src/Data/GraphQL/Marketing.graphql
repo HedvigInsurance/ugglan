@@ -1,0 +1,11 @@
+query Marketing {
+    appMarketingImages {
+        language {
+            code
+        }
+        image {
+            url
+        }
+        blurhash
+    }
+}

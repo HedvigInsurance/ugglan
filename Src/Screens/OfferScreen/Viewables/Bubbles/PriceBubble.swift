@@ -12,7 +12,6 @@ import Foundation
 import UIKit
 
 struct PriceBubble {
-    let containerScrollView: UIScrollView
     let dataSignal = ReadWriteSignal<OfferQuery.Data?>(nil)
 }
 
@@ -23,19 +22,9 @@ extension PriceBubble: Viewable {
         let containerView = UIStackView()
         containerView.axis = .vertical
         containerView.alignment = .center
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
-        containerView.isLayoutMarginsRelativeArrangement = true
-
-        bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
-            containerView.transform = CGAffineTransform(
-                translationX: 0,
-                y: (contentOffset.y / 5)
-            )
-        }
 
         let bubbleView = UIView()
         containerView.addArrangedSubview(bubbleView)
-        bubbleView.backgroundColor = .secondaryBackground
 
         let stackView = CenterAllStackView()
         stackView.axis = .vertical
@@ -53,11 +42,6 @@ extension PriceBubble: Viewable {
         stackView.addArrangedSubview(grossPriceLabel)
 
         let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
-
-        bubbleView.snp.makeConstraints({ make in
-            make.width.height.equalTo(180)
-        })
-        bubbleView.layer.cornerRadius = 180 / 2
 
         let ease: Ease<CGFloat> = Ease(0, minimumStep: 1)
 
@@ -85,7 +69,7 @@ extension PriceBubble: Viewable {
             .compactMap { $0 }
             .buffer()
 
-        bag += monthlyNetPriceSignal.onValue({ values in
+        bag += monthlyNetPriceSignal.onValue { values in
             guard let value = values.last else { return }
 
             if values.count == 1 {
@@ -93,7 +77,7 @@ extension PriceBubble: Viewable {
             }
 
             ease.targetValue = CGFloat(value)
-        })
+        }
 
         bag += ease.addSpring(tension: 300, damping: 100, mass: 2) { number in
             if number != 0 {
@@ -120,7 +104,7 @@ extension PriceBubble: Viewable {
             if let freeMonths = incentiveFragment?.asFreeMonths {
                 return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
             }
-            
+
             if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
                 return CampaignBubble.CampaignType.percentageDiscount(
                     value: percentageDiscount.percentageDiscount,
@@ -138,8 +122,8 @@ extension PriceBubble: Viewable {
         let campaignBubble = CampaignBubble(campaignTypeSignal: campaignTypeSignal)
         bag += bubbleView.add(campaignBubble) { campaignBubbleView in
             campaignBubbleView.snp.makeConstraints { make in
-                make.right.equalTo(60)
-                make.top.equalTo(0)
+                make.right.equalTo(120)
+                make.top.equalTo(-10)
             }
         }
 
