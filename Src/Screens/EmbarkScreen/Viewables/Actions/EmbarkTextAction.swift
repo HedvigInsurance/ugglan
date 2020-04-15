@@ -29,6 +29,13 @@ extension EmbarkTextAction: Viewable {
                 
         view.addArrangedSubview(textInputView)
         
+        let currentTextSignal: ReadWriteSignal<String> = ReadWriteSignal("")
+        
+        bag += textSignal.onValue { textValue in
+            print("TEXT:", textValue)
+            let diff = 
+        }
+        
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
             type: .standard(backgroundColor: .white, textColor: .black)
