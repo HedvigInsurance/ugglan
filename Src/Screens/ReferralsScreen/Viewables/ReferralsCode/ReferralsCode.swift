@@ -32,14 +32,7 @@ extension ReferralsCode: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.backgroundColor = .secondaryBackground
-        bag += view.applyBorderColor { _ in
-            .primaryBorder
-        }
-        view.layer.borderWidth = 1
-
-        bag += view.didLayoutSignal.onValue { _ in
-            view.layer.cornerRadius = view.frame.height / 2
-        }
+        view.layer.cornerRadius = 6
 
         let touchUpInsideSignal = view.signal(for: .touchUpInside)
         bag += touchUpInsideSignal.feedback(type: .success)
@@ -66,7 +59,7 @@ extension ReferralsCode: Viewable {
         codeContainer.isLayoutMarginsRelativeArrangement = true
 
         let codeTextStyle = TextStyle(
-            font: HedvigFonts.circularStdBold!,
+            font: HedvigFonts.favoritStdBook!,
             color: UIColor.primaryTintColor
         ).centerAligned.lineHeight(2.4).resized(to: 16)
 

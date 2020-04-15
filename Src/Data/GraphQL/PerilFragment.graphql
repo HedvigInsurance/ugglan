@@ -1,0 +1,7 @@
+fragment PerilFragment on PerilV2 {
+    title
+    description
+    icon {
+        ...IconFragment
+    }
+}

@@ -10,8 +10,5 @@ import Foundation
 import UIKit
 
 struct HedvigFonts {
-    static let merriweather = UIFont(name: "Merriweather-Light", size: UIFont.systemFontSize)
-    static let circularStdBold = UIFont(name: "CircularStd-Bold", size: UIFont.systemFontSize)
-    static let circularStdBook = UIFont(name: "CircularStd-Book", size: UIFont.systemFontSize)
-    static let soRayExtraBold = UIFont(name: "SoRay-ExtraBold", size: UIFont.systemFontSize)
+    static let favoritStdBook = UIFont(name: "FavoritStd-Book", size: UIFont.systemFontSize)
 }

@@ -1,0 +1,9 @@
+query AdyenAvailableMethods {
+    availablePaymentMethods {
+        paymentMethodsResponse
+    }
+    adyenPublicKey
+    insuranceCost {
+        ...CostFragment
+    }
+}

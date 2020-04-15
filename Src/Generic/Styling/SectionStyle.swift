@@ -20,7 +20,7 @@ extension BorderStyle {
 
     static let standardRounded = BorderStyle(
         width: 0,
-        color: .clear,
+        color: .transparent,
         cornerRadius: 5,
         borderEdges: [UIRectEdge.top, UIRectEdge.bottom, UIRectEdge.left, UIRectEdge.right]
     )
@@ -41,8 +41,6 @@ extension BackgroundStyle {
         border: .standard
     )
 
-    static let turquoise = BackgroundStyle(color: .turquoise, border: .standard)
-
     static let primaryDarkRoundedBorder = BackgroundStyle(
         color: UIColor.secondaryBackground.resolvedColorOrFallback(
             with: UITraitCollection(userInterfaceStyle: .dark)
@@ -62,13 +60,13 @@ extension BackgroundStyle {
         border: .standard
     )
 
-    static let purpleOpaque = BackgroundStyle(
-        color: UIColor.purple.withAlphaComponent(0.2),
+    static let blackOpaque = BackgroundStyle(
+        color: UIColor.black.withAlphaComponent(0.2),
         border: .standard
     )
 
-    static let purpleOpaqueRoundedBorder = BackgroundStyle(
-        color: UIColor.purple.withAlphaComponent(0.2),
+    static let blackOpaqueRoundedBorder = BackgroundStyle(
+        color: UIColor.black.withAlphaComponent(0.2),
         border: .standardRounded
     )
 
@@ -191,20 +189,20 @@ extension SectionBackgroundStyle {
         bottomSeparator: .inset
     )
 
-    static let purpleOpaque = SectionBackgroundStyle(
-        background: .purpleOpaque,
+    static let blackOpaque = SectionBackgroundStyle(
+        background: .blackOpaque,
         topSeparator: .inset,
         bottomSeparator: .inset
     )
 
-    static let purpleOpaqueLargeIcons = SectionBackgroundStyle(
-        background: .purpleOpaque,
+    static let blackOpaqueLargeIcons = SectionBackgroundStyle(
+        background: .blackOpaque,
         topSeparator: .insetLargeIcons,
         bottomSeparator: .insetLargeIcons
     )
 
-    static let purpleOpaqueRoundedBorder = SectionBackgroundStyle(
-        background: .purpleOpaqueRoundedBorder,
+    static let blackOpaqueRoundedBorder = SectionBackgroundStyle(
+        background: .blackOpaqueRoundedBorder,
         topSeparator: .inset,
         bottomSeparator: .inset
     )
@@ -243,9 +241,9 @@ extension SectionStyle.Background {
     static let standardLightRoundedBorder = SectionStyle.Background(style: .primaryLightRoundedBorder)
     static let standardDarkRoundedBorder = SectionStyle.Background(style: .primaryDarkRoundedBorder)
 
-    static let selected = SectionStyle.Background(style: .purpleOpaque)
-    static let selectedLargeIcons = SectionStyle.Background(style: .purpleOpaqueLargeIcons)
-    static let selectedRoundedBorder = SectionStyle.Background(style: .purpleOpaqueRoundedBorder)
+    static let selected = SectionStyle.Background(style: .blackOpaque)
+    static let selectedLargeIcons = SectionStyle.Background(style: .blackOpaqueLargeIcons)
+    static let selectedRoundedBorder = SectionStyle.Background(style: .blackOpaqueRoundedBorder)
     static let selectedDanger = SectionStyle.Background(style: .pink)
     static let selectedDangerRoundedBorder = SectionStyle.Background(style: .pinkRoundedBorder)
     static let invisible = SectionStyle.Background(style: .invisible)
@@ -257,9 +255,9 @@ extension HeaderFooterStyle {
         backgroundImage: nil,
         insets: UIEdgeInsets(
             top: 15,
-            left: 20,
+            left: 5,
             bottom: 10,
-            right: 20
+            right: 5
         ),
         emptyHeight: 0
     )
@@ -268,9 +266,9 @@ extension HeaderFooterStyle {
 extension SectionStyle {
     static let sectionPlainRowInsets = UIEdgeInsets(
         top: 15,
-        left: 20,
+        left: 15,
         bottom: 15,
-        right: 20
+        right: 15
     )
 
     static let sectionPlainItemSpacing: CGFloat = 10
@@ -357,20 +355,26 @@ extension SectionStyle {
     )
 }
 
+extension DynamicFormStyle {
+    static let `default` = DynamicFormStyle { _ -> FormStyle in
+        FormStyle(insets: UIEdgeInsets(horizontalInset: 20, verticalInset: 15))
+    }
+
+    static let noInsets = DynamicFormStyle { _ -> FormStyle in
+        FormStyle(insets: .zero)
+    }
+}
+
 extension DynamicSectionStyle {
     static let sectionPlainRounded = DynamicSectionStyle { trait -> SectionStyle in
         trait.userInterfaceStyle == .dark ? .sectionPlainDarkRoundedBorder : .sectionPlainLightRoundedBorder
     }
-    
+
     static let sectionPlain = DynamicSectionStyle { trait -> SectionStyle in
-        if trait.isPad {
-            return Self.sectionPlainRounded.styleGenerator(trait)
-        }
-        
-        return trait.userInterfaceStyle == .dark ? .sectionPlainDark : .sectionPlainLight
+        Self.sectionPlainRounded.styleGenerator(trait)
     }
 
     static let sectionPlainLargeIcons = DynamicSectionStyle { trait -> SectionStyle in
-        trait.userInterfaceStyle == .dark ? .sectionPlainLargeIconsDark : .sectionPlainLargeIconsLight
+        trait.userInterfaceStyle == .dark ? .sectionPlainDarkLargeIconsRoundedBorder : .sectionPlainLightLargeIconsRoundedBorder
     }
 }

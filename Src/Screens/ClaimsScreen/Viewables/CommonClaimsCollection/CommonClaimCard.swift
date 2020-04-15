@@ -106,29 +106,7 @@ extension CommonClaimCard: Viewable {
         let bag = DisposeBag()
 
         func backgroundColorFromData() -> UIColor {
-            let lightenedAmount: CGFloat = 0.3
-
-            func getColor(color: HedvigColor) -> UIColor {
-                if #available(iOS 13, *) {
-                    return UIColor { trait in
-                        trait.userInterfaceStyle == .dark ?
-                            UIColor.from(apollo: color).darkened(amount: lightenedAmount) :
-                            UIColor.from(apollo: color).lighter(amount: lightenedAmount)
-                    }
-                }
-
-                return UIColor.from(apollo: color).lighter(amount: lightenedAmount)
-            }
-
-            if let color = data.layout.asTitleAndBulletPoints?.color {
-                return getColor(color: color)
-            }
-
-            if let color = data.layout.asEmergency?.color {
-                return getColor(color: color)
-            }
-
-            return UIColor.primaryTintColor
+            return UIColor.primaryBackground
         }
 
         let contentView = UIControl()
@@ -140,7 +118,7 @@ extension CommonClaimCard: Viewable {
 
         bag += shadowOpacitySignal.atOnce().bindTo(contentView, \.layer.shadowOpacity)
 
-        bag += contentView.applyShadow({ _ in
+        bag += contentView.applyShadow { _ in
             UIView.ShadowProperties(
                 opacity: self.shadowOpacitySignal.value,
                 offset: CGSize(width: 0, height: 16),
@@ -148,7 +126,7 @@ extension CommonClaimCard: Viewable {
                 color: .primaryShadowColor,
                 path: nil
             )
-        })
+        }
 
         view.addArrangedSubview(contentView)
 
@@ -328,7 +306,7 @@ extension CommonClaimCard: Viewable {
         if includeButton {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-                type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
 
             bag += claimButton.onTapSignal.onValue {
@@ -337,14 +315,16 @@ extension CommonClaimCard: Viewable {
 
             bag += view.add(claimButton) { claimButtonView in
                 claimButtonView.alpha = 0
+                
+                let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
-                bag += client.insuranceIsActiveSignal().bindTo(claimButtonView, \.isUserInteractionEnabled)
+                bag += isEligibleDataSignal.bindTo(claimButtonView, \.isUserInteractionEnabled)
 
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
-                bag += combineLatest(showClaimButtonSignal.atOnce().plain(), client.insuranceIsActiveSignal())
-                    .map { showButton, insuranceIsActive in
+                bag += combineLatest(showClaimButtonSignal.atOnce().plain(), isEligibleDataSignal)
+                    .map { showButton, isEligibleToCreateClaim in
                         if showButton {
-                            return insuranceIsActive ? 1 : 0.5
+                            return isEligibleToCreateClaim ? 1 : 0.5
                         }
 
                         return 0
@@ -360,6 +340,7 @@ extension CommonClaimCard: Viewable {
                 claimButtonView.snp.makeConstraints { make in
                     make.bottom.equalTo(-28)
                     make.centerX.equalToSuperview()
+                    make.width.equalToSuperview().inset(20)
                 }
             }
         }

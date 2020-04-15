@@ -39,9 +39,9 @@ extension ReferralsProgressBar {
         let textGeometry = SCNText(string: text, extrusionDepth: 1)
 
         if size == .small {
-            textGeometry.font = HedvigFonts.circularStdBold?.withSize(175)
+            textGeometry.font = HedvigFonts.favoritStdBook?.withSize(175)
         } else {
-            textGeometry.font = HedvigFonts.circularStdBold?.withSize(225)
+            textGeometry.font = HedvigFonts.favoritStdBook?.withSize(225)
         }
 
         textGeometry.firstMaterial?.diffuse.contents = textColor
@@ -459,7 +459,7 @@ extension ReferralsProgressBar: Viewable {
         let bag = DisposeBag()
 
         let scene = SCNScene()
-        
+
         bag += view.traitCollectionSignal.atOnce().onValue { _ in
             scene.background.contents = UIColor.primaryBackground
         }

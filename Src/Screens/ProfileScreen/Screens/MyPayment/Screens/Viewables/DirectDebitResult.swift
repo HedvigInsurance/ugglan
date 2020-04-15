@@ -11,12 +11,12 @@ import Form
 import Foundation
 
 enum DirectDebitResultType {
-    case success(setupType: DirectDebitSetup.SetupType), failure(setupType: DirectDebitSetup.SetupType)
+    case success(setupType: PaymentSetup.SetupType), failure(setupType: PaymentSetup.SetupType)
 
     var icon: ImageAsset {
         switch self {
         case .success:
-            return Asset.greenCircularCheckmark
+            return Asset.circularCheckmark
         case .failure:
             return Asset.pinkCircularExclamationPoint
         }
@@ -162,7 +162,7 @@ extension DirectDebitResult: Viewable {
             if self.type.isSuccess {
                 let continueButton = Button(
                     title: self.type.mainButtonText,
-                    type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                    type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                 )
 
                 bag += continueButton.onTapSignal.onValue { _ in
@@ -176,7 +176,7 @@ extension DirectDebitResult: Viewable {
             } else {
                 let retryButton = Button(
                     title: self.type.mainButtonText,
-                    type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+                    type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                 )
 
                 bag += retryButton.onTapSignal.onValue { _ in

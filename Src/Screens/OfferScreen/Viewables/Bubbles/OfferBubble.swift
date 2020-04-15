@@ -35,20 +35,21 @@ extension OfferBubble: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIView()
-
-        bag += view.applyShadow({ _ in
-            OfferBubble.shadow
+        view.backgroundColor = UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ? .white : .black
         })
 
-        bag += backgroundColorSignal.atOnce().bindTo(view, \.backgroundColor)
+        bag += view.applyShadow { _ in
+            OfferBubble.shadow
+        }
 
         bag += combineLatest(widthSignal.atOnce(), heightSignal.atOnce()).onValue { width, height in
             view.layer.cornerRadius = width / 2
 
-            view.snp.remakeConstraints({ make in
+            view.snp.remakeConstraints { make in
                 make.width.equalTo(width)
                 make.height.equalTo(height)
-            })
+            }
         }
 
         view.addSubview(content)

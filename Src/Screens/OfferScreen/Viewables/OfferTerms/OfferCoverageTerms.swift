@@ -46,23 +46,18 @@ extension OfferCoverageTerms: Viewable {
 
         let bag = DisposeBag()
 
-        let image = UIImageView(image: Asset.offerTerms.image)
-        image.contentMode = .scaleAspectFit
-        image.tintColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? .white : .black
-        })
-
-        image.snp.makeConstraints { make in
-            make.height.equalTo(125)
-        }
-
-        stackView.addArrangedSubview(image)
-
         let titleLabel = MultilineLabel(value: String(key: .OFFER_TERMS_TITLE), style: TextStyle.rowTitleBold.centerAligned)
         bag += stackView.addArranged(titleLabel)
 
         bag += stackView.addArranged(OfferTermsBulletPoints())
-        bag += stackView.addArranged(OfferTermsLinks())
+        
+        bag += stackView.addArranged(Spacing(height: 80))
+        
+        bag += stackView.addArranged(OfferTermsLinks()) { view in
+            view.snp.makeConstraints { make in
+                make.leading.trailing.equalTo(stackView.safeAreaLayoutGuide)
+            }
+        }
 
         let notInsuredAtOtherCompanyBlob = WhenEnabled(insuredAtOtherCompanySignal.map { !$0 }, {
             Blob(color: Offer.primaryAccentColor, position: .top)

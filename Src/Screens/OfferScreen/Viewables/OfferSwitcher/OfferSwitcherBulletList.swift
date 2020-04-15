@@ -28,7 +28,7 @@ extension OfferSwitcherBulletList {
             stackView.alignment = .center
 
             let circle = UIView()
-            circle.backgroundColor = .purple
+            circle.backgroundColor = .black
 
             bag += circle.didLayoutSignal.onValue {
                 circle.layer.cornerRadius = circle.frame.height / 2
@@ -45,7 +45,7 @@ extension OfferSwitcherBulletList {
 
             circleLabel.snp.makeConstraints { make in
                 make.height.width.centerX.equalToSuperview()
-                make.centerY.equalToSuperview().offset(1)
+                make.centerY.equalToSuperview().offset(3)
             }
 
             let textLabel = MultilineLabel(value: text, style: .rowSubtitle)
@@ -72,7 +72,7 @@ extension OfferSwitcherBulletList: Viewable {
         bag += client.fetch(query: OfferQuery())
             .valueSignal
             .compactMap { $0.data?.insurance.previousInsurer }
-            .onValueDisposePrevious({ previousInsurer -> Disposable? in
+            .onValueDisposePrevious { previousInsurer -> Disposable? in
                 let innerBag = DisposeBag()
 
                 innerBag += stackView.addArranged(BulletPoint(index: 1, text: String(key: .SIGN_MOBILE_BANK_ID)))
@@ -86,7 +86,7 @@ extension OfferSwitcherBulletList: Viewable {
                 innerBag += stackView.addArranged(BulletPoint(index: 3, text: String(key: .OFFER_SWITCH_COL_THREE_PARAGRAPH_APP)))
 
                 return innerBag
-            })
+            }
 
         return (stackView, bag)
     }

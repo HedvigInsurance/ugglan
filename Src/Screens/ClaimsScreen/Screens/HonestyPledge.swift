@@ -14,33 +14,31 @@ struct HonestyPledge {
     enum PushNotificationsAction {
         case ask, skip
     }
-    
+
     func pushNotificationsPresentable() -> PresentableViewable<ImageTextAction<PushNotificationsAction>, PushNotificationsAction> {
         let pushNotificationsDoButton = Button(
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         let pushNotificationsSkipButton = Button(
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS),
             type: .transparent(textColor: .pink)
         )
-        
+
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
-            image: Asset.activatePushNotificationsIllustration.image,
+            image: .init(image: Asset.activatePushNotificationsIllustration.image),
             title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_HEADLINE),
             body: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
             actions: [
-               (.ask, pushNotificationsDoButton),
-               (.skip, pushNotificationsSkipButton),
+                (.ask, pushNotificationsDoButton),
+                (.skip, pushNotificationsSkipButton),
             ],
             showLogo: false
         )
 
-        return PresentableViewable(viewable: pushNotificationsAction) {
-            let viewController = UIViewController()
+        return PresentableViewable(viewable: pushNotificationsAction) { viewController in
             viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
-            return viewController
         }
     }
 }
@@ -85,8 +83,15 @@ extension HonestyPledge: Presentable {
 
         bag += containerStackView.applyPreferredContentSize(on: viewController)
 
-        viewController.view = containerStackView
-           
+        let view = UIView()
+        view.backgroundColor = .secondaryBackground
+        viewController.view = view
+
+        view.addSubview(containerStackView)
+
+        containerStackView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
 
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
@@ -97,25 +102,24 @@ extension HonestyPledge: Presentable {
                         options: [.prefersNavigationBarHidden(false)]
                     ).onResult(completion)
                 }
-                
+
                 if UIApplication.shared.isRegisteredForRemoteNotifications {
                     presentClaimsChat()
                 } else {
                     bag += viewController.present(
-                       self.pushNotificationsPresentable(),
-                       style: .default,
-                       options: [.prefersNavigationBarHidden(true)]
-                   ).onValue { action in
-                       if action == .ask {
-                           UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in
-                               presentClaimsChat()
-                           }
-                       } else {
-                           presentClaimsChat()
-                       }
-                   }
+                        self.pushNotificationsPresentable(),
+                        style: .default,
+                        options: [.prefersNavigationBarHidden(true)]
+                    ).onValue { action in
+                        if action == .ask {
+                            UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in
+                                presentClaimsChat()
+                            }
+                        } else {
+                            presentClaimsChat()
+                        }
+                    }
                 }
-               
             }
 
             return DelayedDisposer(bag, delay: 1)

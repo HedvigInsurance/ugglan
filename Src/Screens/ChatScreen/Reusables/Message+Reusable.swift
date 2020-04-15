@@ -12,7 +12,7 @@ import Foundation
 import Kingfisher
 import UIKit
 
-fileprivate let fiveMinutes: TimeInterval = 60 * 5
+private let fiveMinutes: TimeInterval = 60 * 5
 
 extension Message: Reusable {
     var largerMarginTop: CGFloat {
@@ -165,13 +165,14 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = .primaryTintColor
+        editButton.backgroundColor = .boxSecondaryBackground
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
-        editButton.layer.cornerRadius = 10
+        editButton.layer.cornerRadius = 6
 
         let editButtonIcon = UIImageView(image: Asset.editIcon.image)
+        editButtonIcon.tintColor = .black
         editButtonIcon.contentMode = .scaleAspectFit
         editButton.addSubview(editButtonIcon)
 
@@ -221,17 +222,8 @@ extension Message: Reusable {
 
                 editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
 
-                bag += editButton.signal(for: .touchUpInside).onValue({ _ in
+                bag += editButton.signal(for: .touchUpInside).onValue { _ in
                     message.onEditCallbacker.callAll()
-                })
-
-                func applyRounding() {
-                    bubble.applyRadiusMaskFor(
-                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
-                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
-                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
-                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
-                    )
                 }
 
                 func applySpacing() {
@@ -258,25 +250,33 @@ extension Message: Reusable {
                     }
                 }
 
+                func applyRounding() {
+                    bubble.applyRadiusMaskFor(
+                        topLeft: message.absoluteRadiusValue(radius: message.topLeftRadius, view: bubble),
+                        bottomLeft: message.absoluteRadiusValue(radius: message.bottomLeftRadius, view: bubble),
+                        bottomRight: message.absoluteRadiusValue(radius: message.bottomRightRadius, view: bubble),
+                        topRight: message.absoluteRadiusValue(radius: message.topRightRadius, view: bubble)
+                    )
+                }
+
                 bag += message.listSignal?.toVoid().animated(style: SpringAnimationStyle.lightBounce()) { _ in
                     editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
                     editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
 
                     applySpacing()
-                    applyRounding()
 
                     spacingContainer.layoutSuperviewsIfNeeded()
                 }
 
                 spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                let messageTextColor: UIColor = message.fromMyself ? .white : .primaryText
+                let messageTextColor = message.fromMyself ? UIColor.black : .primaryText
 
                 switch message.type {
                 case .image(_), .video:
                     bubble.backgroundColor = .transparent
                 default:
-                    bubble.backgroundColor = message.fromMyself ? .primaryTintColor : .secondaryBackground
+                    bubble.backgroundColor = message.fromMyself ? .boxSecondaryBackground : .boxPrimaryBackground
                 }
 
                 switch message.type {
@@ -285,6 +285,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
 
                     let processor = DownsamplingImageProcessor(
                         size: CGSize(
@@ -338,55 +340,57 @@ extension Message: Reusable {
                     bag += {
                         imageViewContainer.removeFromSuperview()
                     }
-                    
+
                 case let .gif(url):
                     bubble.backgroundColor = .transparent
                     let imageViewContainer = UIView()
-                    
+
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
-                    imageView.layer.cornerRadius = 5
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
                     imageView.backgroundColor = .clear
                     imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                     imageView.kf.setImage(
                         with: url,
-                        options: []) { result in
-                            switch result {
-                            case let .success(imageResult):
-                                let width = imageResult.image.size.width
-                                let height = imageResult.image.size.height
-                                
-                                if width > height {
-                                    imageViewContainer.snp.makeConstraints { (make) in
-                                        make.width.equalTo(300)
-                                    }
-                                } else {
-                                    imageViewContainer.snp.makeConstraints { (make) in
-                                        make.width.equalTo(150)
-                                    }
-                                }
+                        options: []
+                    ) { result in
+                        switch result {
+                        case let .success(imageResult):
+                            let width = imageResult.image.size.width
+                            let height = imageResult.image.size.height
 
-                            case .failure:
-                                break
+                            if width > height {
+                                imageViewContainer.snp.makeConstraints { make in
+                                    make.width.equalTo(300)
+                                }
+                            } else {
+                                imageViewContainer.snp.makeConstraints { make in
+                                    make.width.equalTo(150)
+                                }
                             }
+
+                        case .failure:
+                            break
+                        }
                     }
-                    
+
                     imageViewContainer.addSubview(imageView)
-                    imageView.snp.makeConstraints { (make) in
+                    imageView.snp.makeConstraints { make in
                         make.height.equalToSuperview()
                         make.width.equalToSuperview()
                     }
-                    
-                    imageViewContainer.snp.makeConstraints { (make) in
+
+                    imageViewContainer.snp.makeConstraints { make in
                         make.height.equalTo(200)
                     }
-                    
+
                     contentContainer.addArrangedSubview(imageViewContainer)
-                    
+
                     bag += {
                         imageViewContainer.removeFromSuperview()
                     }
-                    
+
                 case let .file(url):
                     let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
 
@@ -409,6 +413,8 @@ extension Message: Reusable {
 
                     let imageView = UIImageView()
                     imageView.contentMode = .scaleAspectFill
+                    imageView.layer.masksToBounds = true
+                    imageView.layer.cornerRadius = 9
 
                     let processor = DownsamplingImageProcessor(
                         size: CGSize(
@@ -470,9 +476,9 @@ extension Message: Reusable {
                     }
                 }
 
-                bag += bubble.didLayoutSignal.onValue({ _ in
+                bag += bubble.didLayoutSignal.onValue { _ in
                     applyRounding()
-                })
+                }
 
                 applySpacing()
             }

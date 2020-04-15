@@ -14,7 +14,7 @@ import Photos
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
     let type: AssetType
-    let uploadFileDelegate = Delegate<FileUpload, Signal<Bool>>()
+    let uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 
     enum AssetType {
         case image, video
@@ -59,17 +59,20 @@ struct AttachFileAsset: Reusable {
                     make.width.height.centerX.centerY.equalToSuperview()
                 }
 
-                let button = Button(title: String(key: .CHAT_UPLOAD_PRESEND), type: .standard(backgroundColor: .turquoise, textColor: .white))
+                let button = Button(
+                    title: String(key: .CHAT_UPLOAD_PRESEND),
+                    type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                )
                 let loadableButton = LoadableButton(button: button, initialLoadingState: false)
 
                 sendOverlayBag += loadableButton.onTapSignal.onValue { _ in
                     loadableButton.isLoadingSignal.value = true
 
                     self.asset.fileUpload.onValue { fileUpload in
-                        bag += self.uploadFileDelegate.call(fileUpload)?.onValue({ _ in
+                        self.uploadFileDelegate.call(fileUpload)?.onValue { _ in
                             loadableButton.isLoadingSignal.value = false
                             sendOverlayBag.dispose()
-                        })
+                        }
                     }
                 }
 

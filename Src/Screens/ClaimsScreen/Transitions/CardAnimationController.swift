@@ -77,7 +77,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             }
         }
 
-        if let bulletPoints = self.commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
+        if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
             let bulletPointTable = BulletPointTable(
                 bulletPoints: bulletPoints
             )
@@ -106,7 +106,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
             }
         }
 
-        if let _ = self.commonClaimCard.data.layout.asEmergency {
+        if let _ = commonClaimCard.data.layout.asEmergency {
             let emergencyActions = EmergencyActions(presentingViewController: toVC)
 
             bag += contentContainerView.add(emergencyActions) { contentView in

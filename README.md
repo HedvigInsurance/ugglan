@@ -30,7 +30,7 @@
 
 7. Install dependencies
 
-   `carthage update --platform iOS`
+   `carthage bootstrap --platform iOS`
 
 8. Install translations CLI
 

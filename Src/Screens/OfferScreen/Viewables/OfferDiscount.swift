@@ -12,38 +12,20 @@ import Presentation
 import UIKit
 
 struct OfferDiscount {
-    let containerScrollView: UIScrollView
     let presentingViewController: UIViewController
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let redeemedCampaignsSignal = ReadWriteSignal<[OfferQuery.Data.RedeemedCampaign]>([])
-
-    init(
-        containerScrollView: UIScrollView,
-        presentingViewController: UIViewController
-    ) {
-        self.containerScrollView = containerScrollView
-        self.presentingViewController = presentingViewController
-    }
 }
 
 extension OfferDiscount: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIStackView()
-        view.isLayoutMarginsRelativeArrangement = true
-        view.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 30, right: 0)
         view.axis = .vertical
         view.alignment = .center
 
-        bag += containerScrollView.contentOffsetSignal.onValue { contentOffset in
-            view.transform = CGAffineTransform(
-                translationX: 0,
-                y: (contentOffset.y / 5)
-            )
-        }
-
-        let redeemButton = Button(title: String(key: .OFFER_ADD_DISCOUNT_BUTTON), type: .outline(borderColor: .white, textColor: .white))
+        let redeemButton = Button(title: String(key: .OFFER_ADD_DISCOUNT_BUTTON), type: .outline(borderColor: .transparent, textColor: .primaryText))
 
         view.snp.makeConstraints { make in
             make.height.equalTo(redeemButton.type.value.height + view.layoutMargins.top + view.layoutMargins.bottom)
@@ -85,17 +67,17 @@ extension OfferDiscount: Viewable {
 
         bag += view.add(redeemButton) { buttonView in
             handleButtonState(buttonView) { redeemedCampaigns -> Bool in
-                return redeemedCampaigns.isEmpty
+                redeemedCampaigns.isEmpty
             }
         }
 
         let removeButton = Button(
             title: String(key: .OFFER_REMOVE_DISCOUNT_BUTTON),
-            type: .outline(borderColor: .white, textColor: .white)
+            type: .outline(borderColor: .transparent, textColor: .primaryText)
         )
         bag += view.add(removeButton) { buttonView in
             handleButtonState(buttonView) { redeemedCampaigns -> Bool in
-                return !redeemedCampaigns.isEmpty
+                !redeemedCampaigns.isEmpty
             }
         }
 
@@ -114,10 +96,8 @@ extension OfferDiscount: Viewable {
                 }
 
                 bag += self.presentingViewController.present(
-                    DraggableOverlay(
-                        presentable: applyDiscount,
-                        presentationOptions: [.defaults, .prefersNavigationBarHidden(true)]
-                    )
+                    applyDiscount.withCloseButton,
+                    style: .modally()
                 ).disposable
             }
 
@@ -128,14 +108,14 @@ extension OfferDiscount: Viewable {
                 actions: [
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_CANCEL)) {},
                     Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_REMOVE), style: .destructive) {
-                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue({ result in
+                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue { result in
                             self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
                                 data.redeemedCampaigns = result.campaigns.compactMap {
                                     try? OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
                                 }
                                 data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
                             }
-                        })
+                        }
                     },
                 ]
             )

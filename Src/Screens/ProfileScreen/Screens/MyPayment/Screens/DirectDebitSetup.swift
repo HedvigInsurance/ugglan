@@ -10,17 +10,14 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import SafariServices
 import WebKit
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    let setupType: SetupType
+    let setupType: PaymentSetup.SetupType
     let applicationWillTerminateSignal: Signal<Void>
-
-    enum SetupType {
-        case initial, replacement, postOnboarding
-    }
 
     private func makeDismissButton() -> UIBarButtonItem {
         switch setupType {
@@ -38,7 +35,7 @@ struct DirectDebitSetup {
     }
 
     init(
-        setupType: SetupType = .initial,
+        setupType: PaymentSetup.SetupType = .initial,
         applicationWillTerminateSignal: Signal<Void> = UIApplication.shared.appDelegate.applicationWillTerminateSignal
     ) {
         self.setupType = setupType
@@ -67,12 +64,31 @@ extension DirectDebitSetup: Presentable {
 
         let dismissButton = makeDismissButton()
 
+        let userContentController = WKUserContentController()
+
         let webViewConfiguration = WKWebViewConfiguration()
+        webViewConfiguration.userContentController = userContentController
+        webViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
 
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
         webView.backgroundColor = .offWhite
         webView.isOpaque = false
+
+        bag += webView.createWebViewWith.set { (_, _, navigationAction, _) -> WKWebView? in
+            if navigationAction.targetFrame == nil {
+                if let url = navigationAction.request.url {
+                    viewController.present(SFSafariViewController(url: url), animated: true, completion: nil)
+                }
+            }
+
+            return nil
+        }
+
+        userContentController.add(
+            TrustlyWKScriptOpenURLScheme(webView: webView),
+            name: TrustlyWKScriptOpenURLScheme.NAME
+        )
 
         viewController.view = webView
 
@@ -157,8 +173,10 @@ extension DirectDebitSetup: Presentable {
                 switch type {
                 case .success:
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
-                        data.directDebitStatus = .pending
+                        data.payinMethodStatus = .pending
                     })
+
+                    AnalyticsCoordinator().logAddPaymentInfo()
 
                     ClearDirectDebitStatus.clear()
                 case .failure:

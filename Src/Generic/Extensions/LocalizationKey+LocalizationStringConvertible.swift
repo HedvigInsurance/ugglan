@@ -8,7 +8,7 @@
 import Foundation
 
 extension Localization.Key: LocalizationStringConvertible {
-    var localizationDescription: String {
+    public var localizationDescription: String {
         return String(key: self)
     }
 }

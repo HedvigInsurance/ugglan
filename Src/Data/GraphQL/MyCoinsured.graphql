@@ -1,5 +1,0 @@
-query MyCoinsured {
-    insurance {
-        personsInHousehold
-    }
-}

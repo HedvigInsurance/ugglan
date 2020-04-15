@@ -34,17 +34,17 @@ extension OnboardingChat: Presentable {
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
-        bag += settingsButton.onValue({ _ in
+        bag += settingsButton.onValue { _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
                 style: .modally(
                     presentationStyle: .formSheet,
                     transitionStyle: nil,
-                    capturesStatusBarAppearance: true
+                    capturesStatusBarAppearance: false
                 ),
                 options: [.allowSwipeDismissAlways, .defaults]
             )
-        })
+        }
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image

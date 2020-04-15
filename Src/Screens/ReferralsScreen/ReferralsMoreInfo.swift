@@ -33,7 +33,7 @@ extension ReferralsMoreInfo: Presentable {
         let title = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_MORE_INFO_HEADLINE), style: .draggableOverlayTitle)
         bag += containerView.addArranged(title)
 
-        let body = MarkdownText(text: String(key: .REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH(referralValue: "10")), style: .bodyOffBlack)
+        let body = MarkdownText(textSignal: .static(String(key: .REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH(referralValue: "10"))), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
         let button = Button(title: String(key: .REFERRAL_PROGRESS_MORE_INFO_CTA), type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack))

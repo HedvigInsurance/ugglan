@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import FlowFeedback
 
 struct ChatButton {
     let presentingViewController: UIViewController
@@ -27,22 +28,8 @@ extension ChatButton: Viewable {
         let bag = DisposeBag()
 
         let chatButtonView = UIControl()
-        chatButtonView.backgroundColor = .secondaryBackground
-        chatButtonView.layer.cornerRadius = 20
-
-        bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-            chatButtonView.backgroundColor = UIColor.secondaryBackground.darkened(amount: 0.05)
-        }
 
         bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
-
-        bag += merge(
-            chatButtonView.signal(for: .touchUpInside).delay(by: 0.2),
-            chatButtonView.signal(for: .touchUpOutside),
-            chatButtonView.signal(for: .touchCancel)
-        ).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-            chatButtonView.backgroundColor = .secondaryBackground
-        }
 
         bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in
             self.presentingViewController.present(
@@ -59,6 +46,14 @@ extension ChatButton: Viewable {
         chatIcon.image = Asset.chat.image
         chatIcon.contentMode = .scaleAspectFit
         chatIcon.tintColor = .primaryText
+
+        bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
+            chatIcon.tintColor = UIColor.primaryText.lighter(amount: 0.25)
+        })
+
+        bag += chatButtonView.delayedTouchCancel().animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+            chatIcon.tintColor = .primaryText
+        }
 
         chatButtonView.addSubview(chatIcon)
 

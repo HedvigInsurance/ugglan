@@ -17,14 +17,14 @@ extension AttachFileButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .primaryTintColor
-        control.layer.cornerRadius = 20
+        control.backgroundColor = .boxPrimaryBackground
+        control.layer.cornerRadius = 8
 
         control.snp.makeConstraints { make in
             make.width.height.equalTo(40)
         }
 
-        let icon = Icon(icon: Asset.attachFile, iconWidth: 15)
+        let icon = Icon(icon: Asset.attachFile, iconWidth: 20)
 
         bag += isOpenSignal.atOnce().animated(style: SpringAnimationStyle.heavyBounce()) { isOpen in
             icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(isOpen ? 45 : 0)))
@@ -42,7 +42,7 @@ extension AttachFileButton: Viewable {
         bag += touchUpInside.feedback(type: .impactLight)
 
         bag += control.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            control.backgroundColor = UIColor.primaryTintColor.darkened(amount: 0.1)
+            control.backgroundColor = UIColor.boxPrimaryBackground.darkened(amount: 0.1)
         }
 
         bag += merge(
@@ -50,7 +50,7 @@ extension AttachFileButton: Viewable {
             control.signal(for: .touchCancel),
             control.signal(for: .touchUpOutside)
         ).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            control.backgroundColor = UIColor.primaryTintColor
+            control.backgroundColor = UIColor.boxPrimaryBackground
         }
 
         return (control, Signal { callback in

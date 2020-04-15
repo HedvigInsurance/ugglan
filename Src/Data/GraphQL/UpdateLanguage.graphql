@@ -1,3 +1,6 @@
-mutation UpdateLanguage($language: String!) {
+mutation UpdateLanguage($language: String!, $pickedLocale: Locale!) {
     updateLanguage(input: $language)
+    updatePickedLocale(pickedLocale: $pickedLocale) {
+        acceptLanguage
+    }
 }

@@ -29,11 +29,11 @@ extension DefaultStyling {
         UINavigationBar.appearance().tintColor = .primaryTintColor
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ]
         UINavigationBar.appearance().largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.primaryText,
-            NSAttributedString.Key.font: HedvigFonts.circularStdBold!.withSize(30),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(30),
         ]
 
         if #available(iOS 13.0, *) {
@@ -43,9 +43,9 @@ extension DefaultStyling {
 
             UINavigationBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).shadowImage = UIColor.grayBorder.as1ptImage()
+            ).shadowImage = UIColor.transparent.as1ptImage()
         } else {
-            UINavigationBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+            UINavigationBar.appearance().shadowImage = UIColor.transparent.as1ptImage()
         }
 
         UINavigationBar.appearance().barTintColor = UIColor.primaryBackground
@@ -55,13 +55,13 @@ extension DefaultStyling {
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(11),
             ],
             for: .normal
         )
         UITabBarItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(11),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(11),
             ],
             for: .selected
         )
@@ -70,19 +70,23 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
             ],
             for: .normal
         )
 
         UIBarButtonItem.appearance().setTitleTextAttributes(
             [
-                NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+                NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
             ],
             for: .highlighted
         )
 
         UIBarButtonItem.appearance().tintColor = .primaryTintColor
+
+        let barButtonItemAppearance = UIBarButtonItem.appearance()
+        barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .normal)
+        barButtonItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.clear], for: .highlighted)
 
         UITabBar.appearance().barTintColor = UIColor.primaryBackground
 
@@ -97,22 +101,40 @@ extension DefaultStyling {
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
-            ).shadowImage = UIColor.darkGrayBorder.as1ptImage()
+            ).shadowImage = UIColor.almostBlack.as1ptImage()
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).shadowImage = UIColor.grayBorder.as1ptImage()
+            ).shadowImage = UIColor.offWhite.as1ptImage()
+
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).backIndicatorImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).backIndicatorTransitionMaskImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
+
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).backIndicatorImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
+            UINavigationBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).backIndicatorTransitionMaskImage = Asset.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
         } else {
             UITabBar.appearance().backgroundImage = UIColor.primaryBackground.as1ptImage()
             UITabBar.appearance().shadowImage = UIColor.primaryBorder.as1ptImage()
+            UINavigationBar.appearance().backIndicatorImage = Asset.backButton.image
+            UINavigationBar.appearance().backIndicatorTransitionMaskImage = Asset.backButton.image
         }
 
         UITabBarItem.appearance().setBadgeTextAttributes([
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ], for: .normal)
         UITabBarItem.appearance().setBadgeTextAttributes([
-            NSAttributedString.Key.font: HedvigFonts.circularStdBook!.withSize(16),
+            NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ], for: .selected)
+        
+        UIImageView.appearance().tintColor = .primaryTintColor
 
         current = .custom
     }
@@ -123,7 +145,7 @@ extension DefaultStyling {
             text: .default,
             placeholder: .default,
             disabled: .default,
-            cursorColor: .turquoise
+            cursorColor: .lavender
         ),
         detailText: .default,
         titleSubtitle: .default,

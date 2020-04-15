@@ -10,8 +10,26 @@ import Form
 import Foundation
 import UIKit
 
-struct ImageTextAction<ActionResult> {
+struct ImageWithOptions {
     let image: UIImage
+    let size: CGSize?
+    let contentMode: UIView.ContentMode
+    
+    init(image: UIImage) {
+        self.image = image
+        self.size = nil
+        self.contentMode = .scaleAspectFit
+    }
+
+    init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode) {
+        self.image = image
+        self.size = size
+        self.contentMode = contentMode
+    }
+}
+
+struct ImageTextAction<ActionResult> {
+    let image: ImageWithOptions
     let title: String
     let body: String
     let actions: [(ActionResult, Button)]
@@ -59,11 +77,16 @@ extension ImageTextAction: Viewable {
         headerImageContainer.alignment = .center
 
         let headerImageView = UIImageView()
-        headerImageView.image = image
+        headerImageView.image = image.image
         headerImageView.contentMode = .scaleAspectFit
+        headerImageView.tintColor = .primaryTintColor
 
         headerImageView.snp.makeConstraints { make in
-            make.height.equalTo(270)
+            make.height.equalTo(image.size?.height ?? 270)
+            
+            if let width = image.size?.width {
+                make.width.equalTo(width)
+            }
         }
 
         headerImageContainer.addArrangedSubview(headerImageView)

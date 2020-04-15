@@ -31,9 +31,9 @@ extension CharityPicker: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 10,
-                left: 20,
+                left: 0,
                 bottom: 10,
-                right: 20
+                right: 0
             ),
             itemSpacing: 0,
             minRowHeight: 10,
@@ -55,7 +55,7 @@ extension CharityPicker: Viewable {
             holdIn: bag,
             headerForSection: { _, _ in
                 let headerStackView = UIStackView()
-                headerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 0)
+                headerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 10)
                 headerStackView.isLayoutMarginsRelativeArrangement = true
 
                 let label = UILabel(

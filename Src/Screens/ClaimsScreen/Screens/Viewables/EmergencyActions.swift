@@ -57,7 +57,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         return (view, { action in
             let bag = DisposeBag()
 
-            bag += cardContainer.applyShadow({ _ in
+            bag += cardContainer.applyShadow { _ in
                 UIView.ShadowProperties(
                     opacity: 0.05,
                     offset: CGSize(width: 0, height: 16),
@@ -65,14 +65,14 @@ struct EmergencyAction: Reusable, SignalProvider {
                     color: .primaryShadowColor,
                     path: nil
                 )
-            })
+            }
 
             titleLabel.text = action.title
 
             let descriptionLabel = MultilineLabel(value: action.description, style: .blockRowDescription)
             bag += contentView.addArranged(descriptionLabel)
 
-            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryTintColor, textColor: .white))
+            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical
@@ -94,9 +94,9 @@ extension EmergencyActions: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 5,
-                left: 20,
+                left: 0,
                 bottom: 5,
-                right: 20
+                right: 0
             ),
             itemSpacing: 0,
             minRowHeight: 10,

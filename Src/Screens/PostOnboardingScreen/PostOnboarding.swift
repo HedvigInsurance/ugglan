@@ -14,7 +14,7 @@ import UIKit
 
 struct PostOnboarding {
     @Inject var client: ApolloClient
-    typealias Content = ReusableViewable<ImageTextAction<TableAction>, TableAction>
+    typealias Content = ReusableSignalViewable<ImageTextAction<TableAction>, TableAction>
 
     enum TableAction {
         case payment, push, pushSkip
@@ -28,7 +28,7 @@ struct PostOnboarding {
 
         let paymentButton = Button(
             title: String(key: .ONBOARDING_CONNECT_DD_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         bag += paymentButton.onTapSignal.onValue { _ in
@@ -36,7 +36,7 @@ struct PostOnboarding {
         }
 
         let payment = ImageTextAction<TableAction>(
-            image: Asset.paymentSetupIllustration.image,
+            image: .init(image: Asset.paymentSetupIllustration.image),
             title: String(key: .ONBOARDING_CONNECT_DD_HEADLINE),
             body: isSwitching ?
                 String(key: .ONBOARDING_CONNECT_DD_BODY_SWITCHERS) :
@@ -47,7 +47,7 @@ struct PostOnboarding {
 
         let pushNotificationsDoButton = Button(
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_CTA),
-            type: .standard(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         let pushNotificationsSkipButton = Button(
@@ -64,7 +64,7 @@ struct PostOnboarding {
         }
 
         let pushNotifications = ImageTextAction<TableAction>(
-            image: Asset.activatePushNotificationsIllustration.image,
+            image: .init(image: Asset.activatePushNotificationsIllustration.image),
             title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_HEADLINE),
             body: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_BODY),
             actions: [
@@ -75,8 +75,8 @@ struct PostOnboarding {
         )
 
         let table = Table(rows: [
-            ReusableViewable(viewable: payment),
-            ReusableViewable(viewable: pushNotifications),
+            ReusableSignalViewable(viewable: payment),
+            ReusableSignalViewable(viewable: pushNotifications),
         ])
 
         return (table, bag)
@@ -87,7 +87,8 @@ extension PostOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        
+        viewController.navigationItem.hidesBackButton = true
+
         ApplicationState.preserveState(.loggedIn)
 
         let layout = UICollectionViewFlowLayout()
@@ -107,12 +108,8 @@ extension PostOnboarding: Presentable {
         bag += viewController.install(collectionKit)
 
         func presentLoggedIn() {
-            if let modalViewController = viewController.presentingViewController {
-                viewController.dismiss(animated: true, completion: nil)
-                modalViewController.present(LoggedIn(didSign: true), options: [])
-            } else {
-                viewController.present(LoggedIn(didSign: true), options: [])
-            }
+            let appDelegate = UIApplication.shared.appDelegate
+            appDelegate.bag += appDelegate.window.present(LoggedIn(didSign: true), animated: true)
         }
 
         bag += client.isSwitchingInsurance.onValue { isSwitching in
@@ -120,7 +117,7 @@ extension PostOnboarding: Presentable {
                 switch action {
                 case .payment:
                     viewController.present(
-                        DirectDebitSetup(setupType: .postOnboarding),
+                        PaymentSetup(setupType: .postOnboarding),
                         style: .modally(
                             presentationStyle: .formSheet,
                             transitionStyle: nil,

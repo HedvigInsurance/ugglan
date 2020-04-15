@@ -1,7 +1,5 @@
 query InsurancePrice {
-    insurance {
-        cost {
-            ...CostFragment
-        }
+    insuranceCost {
+        ...CostFragment
     }
 }

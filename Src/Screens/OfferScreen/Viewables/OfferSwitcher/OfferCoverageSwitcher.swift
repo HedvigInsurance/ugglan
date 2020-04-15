@@ -22,12 +22,8 @@ extension OfferCoverageSwitcher: Viewable {
         let outerView = UIStackView()
         outerView.axis = .vertical
 
-        bag += outerView.addArranged(Blob(color: .secondaryBackground, position: .top)) { blobView in
-            blobView.backgroundColor = .primaryBackground
-        }
-
         let containerView = UIView()
-        containerView.backgroundColor = .secondaryBackground
+        containerView.backgroundColor = .primaryBackground
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -42,15 +38,6 @@ extension OfferCoverageSwitcher: Viewable {
         stackView.snp.makeConstraints { make in
             make.trailing.leading.top.bottom.equalToSuperview()
         }
-
-        let image = UIImageView(image: Asset.offerSwitcher.image)
-        image.contentMode = .scaleAspectFit
-
-        image.snp.makeConstraints { make in
-            make.height.equalTo(125)
-        }
-
-        stackView.addArrangedSubview(image)
 
         let titleLabel = MultilineLabel(value: "", style: TextStyle.rowTitleBold.centerAligned)
         bag += stackView.addArranged(titleLabel) { titleLabel in
@@ -73,10 +60,6 @@ extension OfferCoverageSwitcher: Viewable {
             .bindTo(titleLabel.styledTextSignal)
 
         bag += stackView.addArranged(OfferSwitcherBulletList())
-
-        bag += outerView.addArranged(Blob(color: Offer.primaryAccentColor, position: .top)) { blobView in
-            blobView.backgroundColor = .secondaryBackground
-        }
 
         return (outerView, bag)
     }

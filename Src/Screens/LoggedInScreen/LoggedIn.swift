@@ -14,6 +14,7 @@ import UIKit
 
 struct LoggedIn {
     @Inject var client: ApolloClient
+    @Inject var remoteConfig: RemoteConfigContainer
     let didSign: Bool
 
     init(didSign: Bool = false) {
@@ -22,18 +23,6 @@ struct LoggedIn {
 }
 
 extension LoggedIn {
-    func handleTerminatedInsurances(tabBarController: UITabBarController) -> Disposable {
-        return client
-            .fetch(query: InsuranceStatusQuery())
-            .valueSignal
-            .compactMap { $0.data?.insurance.status }
-            .filter { $0 == .terminated }
-            .toVoid()
-            .onValue {
-                tabBarController.present(TerminatedInsurance(), options: [.prefersNavigationBarHidden(true)])
-            }
-    }
-
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
         return NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
             tabBarController.selectedIndex = 2
@@ -44,20 +33,30 @@ extension LoggedIn {
 extension LoggedIn: Presentable {
     func materialize() -> (UITabBarController, Disposable) {
         let tabBarController = UITabBarController()
+        let loadingViewController = UIViewController()
+        loadingViewController.view.backgroundColor = .primaryBackground
+        tabBarController.viewControllers = [loadingViewController]
 
         ApplicationState.preserveState(.loggedIn)
 
         let bag = DisposeBag()
 
-        let dashboard = Dashboard()
+        let contracts = Contracts()
+        let keyGear = KeyGearOverview()
         let claims = Claims()
         let referrals = Referrals()
         let profile = Profile()
 
-        let dashboardPresentation = Presentation(
-            dashboard,
+        let contractsPresentation = Presentation(
+            contracts,
             style: .default,
             options: [.defaults, .prefersLargeTitles(true)]
+        )
+
+        let keyGearPresentation = Presentation(
+            keyGear,
+            style: .default,
+            options: [.prefersLargeTitles(true)]
         )
 
         let claimsPresentation = Presentation(
@@ -78,12 +77,41 @@ extension LoggedIn: Presentable {
             options: [.defaults, .prefersLargeTitles(true)]
         )
 
-        bag += tabBarController.presentTabs(
-            dashboardPresentation,
-            claimsPresentation,
-            referralsPresentation,
-            profilePresentation
-        )
+        bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
+            if features.contains(.keyGear) {
+                if features.contains(.referrals) {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        keyGearPresentation,
+                        claimsPresentation,
+                        referralsPresentation,
+                        profilePresentation
+                    )
+                } else {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        keyGearPresentation,
+                        claimsPresentation,
+                        profilePresentation
+                    )
+                }
+            } else {
+                if features.contains(.referrals) {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        claimsPresentation,
+                        referralsPresentation,
+                        profilePresentation
+                    )
+                } else {
+                    bag += tabBarController.presentTabs(
+                        contractsPresentation,
+                        claimsPresentation,
+                        profilePresentation
+                    )
+                }
+            }
+        }
 
         let appVersion = Bundle.main.appVersion
         let lastNewsSeen = ApplicationState.getLastNewsSeen()
@@ -110,7 +138,6 @@ extension LoggedIn: Presentable {
                 }
         }
 
-        bag += handleTerminatedInsurances(tabBarController: tabBarController)
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
         return (tabBarController, bag)

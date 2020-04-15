@@ -37,9 +37,6 @@ extension MyInfo: Presentable {
             saveButton.startAnimating()
         }
 
-        let nameCircle = NameCircle()
-        bag += form.prepend(nameCircle)
-
         let contactDetailsSection = ContactDetailsSection(
             state: state
         )

@@ -34,6 +34,8 @@ extension UITabBarController {
 
         if let navigationController = viewController as? UINavigationController {
             navigationController.tabBarItem = presentation.presentable.tabBarItem()
+        } else if let splitController = viewController as? UISplitViewController {
+            splitController.tabBarItem = presentation.presentable.tabBarItem()
         }
 
         viewControllerWasPresented(viewController)

@@ -55,7 +55,7 @@ class ChatState {
         if let statusMessage = message.header.statusMessage, !hasShownStatusMessage {
             hasShownStatusMessage = true
             let innerBag = bag.innerBag()
-            
+
             func createToast() -> Toast {
                 if UIApplication.shared.isRegisteredForRemoteNotifications {
                     return Toast(
@@ -63,20 +63,20 @@ class ChatState {
                         body: statusMessage
                     )
                 }
-                
+
                 return Toast(
                     symbol: .character("✉️"),
                     body: statusMessage,
                     subtitle: String(key: .CHAT_TOAST_PUSH_NOTIFICATIONS_SUBTITLE)
                 )
             }
-            
+
             let toast = createToast()
-            
+
             innerBag += toast.onTap.onValue { _ in
                 UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
             }
-            
+
             bag += UIApplication.shared.appDelegate.displayToast(toast).onValue { _ in
                 innerBag.dispose()
             }
@@ -96,7 +96,7 @@ class ChatState {
         .compactMap(on: .concurrentBackground) { messages -> [MessageData]? in
             messages.data?.messages.compactMap { message in message?.fragments.messageData }
         }
-        .map({ messages in
+        .map { messages in
             messages.filter { message -> Bool in
                 if self.handledGlobalIds.contains(message.globalId) {
                     return false
@@ -106,25 +106,25 @@ class ChatState {
 
                 return true
             }
-        })
-        .atValue({ _ in
+        }
+        .atValue { _ in
             hasFetched()
-        })
+        }
         .filter(predicate: { messages -> Bool in
             messages.count > 0
         })
-        .atValue({ messages in
+        .atValue { messages in
             if let message = messages.first {
                 self.handleFirstMessage(message: message)
             }
-        })
-        .onValue({ messages in
+        }
+        .onValue { messages in
             self.listSignal.value.insert(contentsOf: messages.flatMap { self.parseMessage(message: $0) }, at: 0)
 
             if cachePolicy == .returnCacheDataAndFetch {
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
             }
-        })
+        }
     }
 
     func subscribe() {
@@ -143,12 +143,12 @@ class ChatState {
 
             return true
         })
-        .atValue({ message in
+        .atValue { message in
             self.handleFirstMessage(message: message)
-        })
-        .onValue({ message in
+        }
+        .onValue { message in
             self.listSignal.value.insert(contentsOf: self.parseMessage(message: message), at: 0)
-        })
+        }
     }
 
     func reset() {
@@ -172,7 +172,7 @@ class ChatState {
     func sendChatFreeTextResponse(text: String) -> Signal<Void> {
         Signal { callback in
             let innerBag = DisposeBag()
-            
+
             innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.take(first: 1).onValue { globalId in
                 innerBag += self.client.perform(
                     mutation: SendChatTextResponseMutation(globalId: globalId, text: text)
@@ -181,11 +181,11 @@ class ChatState {
                     self.fetch(cachePolicy: .fetchIgnoringCacheData)
                 }
             }
-            
+
             return innerBag
         }
     }
-    
+
     func sendChatFileResponseMutation(key: String, mimeType: String) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.perform(
@@ -226,7 +226,7 @@ class ChatState {
                     return item
                 }
 
-                if item.left?.body == "" && !(item.left?.type.isRichType ?? false) {
+                if item.left?.body == "", !(item.left?.type.isRichType ?? false) {
                     return nil
                 }
 
@@ -241,7 +241,7 @@ class ChatState {
             let innerBag = DisposeBag()
 
             innerBag += messages.prefix(10).map { message -> Disposable in
-                return message.left?.onEditCallbacker.addCallback({ _ in
+                message.left?.onEditCallbacker.addCallback { _ in
                     self.bag.dispose()
 
                     guard let firstIndex = self.listSignal.value.firstIndex(where: { message -> Bool in
@@ -259,7 +259,7 @@ class ChatState {
                     self.bag += self.client.perform(mutation: EditLastResponseMutation()).onValue { _ in
                         self.fetch()
                     }
-                }) ?? DisposeBag()
+                } ?? DisposeBag()
             }
 
             return innerBag
