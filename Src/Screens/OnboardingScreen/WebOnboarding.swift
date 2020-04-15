@@ -105,7 +105,7 @@ extension WebOnboarding: Presentable {
             }
 
             let tokenString = token.token.replacingOccurrences(of: "=", with: "%3D")
-
+            
             var localePath: String {
                 switch Localization.Locale.currentLocale {
                 case .en_NO:
@@ -127,7 +127,7 @@ extension WebOnboarding: Presentable {
 
             switch ApplicationState.getTargetEnvironment() {
             case .production:
-                guard let url = URL(string: "https://www.hedvig.com/\(localePath)new-member?variation=ios#token=\(token.token)") else {
+                guard let url = URL(string: "https://www.hedvig.com/\(localePath)new-member?variation=ios#token=\(tokenString)") else {
                     return
                 }
                 webView.load(URLRequest(url: url))
