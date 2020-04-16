@@ -64,7 +64,7 @@ extension ChatPreview: Viewable {
 
         let openChatButton = Button(
             title: String(key: .CHAT_PREVIEW_OPEN_CHAT),
-            type: .standardSmall(backgroundColor: .primaryTintColor, textColor: .white)
+            type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         bag += containerView.addArranged(openChatButton.wrappedIn(UIStackView()).wrappedIn(UIStackView())) { stackView in
