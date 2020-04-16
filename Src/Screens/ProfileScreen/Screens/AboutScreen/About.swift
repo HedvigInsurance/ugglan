@@ -122,7 +122,7 @@ extension About: Presentable {
 
             bag += showWhatsNew.onSelect.onValue { _ in
                 bag += self.client
-                    .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "2.8.3"))
+                    .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "4.0.0"))
                     .compactMap { $0.data }
                     .filter { $0.news.count > 0 }
                     .onValue { data in
