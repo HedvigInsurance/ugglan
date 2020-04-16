@@ -23,15 +23,8 @@ extension Embark: Presentable {
         let bag = DisposeBag()
         
         let view = UIView()
-        view.backgroundColor = .darkPurple
+        view.backgroundColor = .primaryBackground
         viewController.view = view
-        
-        let imageBackground = UIImageView(image: Asset.embarkBackground.image)
-        imageBackground.contentMode = .scaleAspectFill
-        view.addSubview(imageBackground)
-        imageBackground.snp.makeConstraints { make in
-            make.height.width.equalToSuperview()
-        }
         
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -54,6 +47,7 @@ extension Embark: Presentable {
         
         let passagesSignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
         let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
+        let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
         
         let passage = Passage(
             store: store,

@@ -33,7 +33,7 @@ extension EmbarkTextAction: Viewable {
         
         bag += textSignal.onValue { textValue in
             print("TEXT:", textValue)
-            let diff = 
+            //let diff = 
         }
         
         let button = Button(

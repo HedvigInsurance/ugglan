@@ -29,7 +29,18 @@ struct ActionResponseData {
 extension Action: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let view = UIStackView()
+        view.axis = .vertical
+        
         let bag = DisposeBag()
+        
+        let backButton = Button(title: "Go back", type: .standardSmall(backgroundColor: .black, textColor: .white))
+        bag += view.addArranged(backButton)
+        
+        bag += self.dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            view.transform = CGAffineTransform(translationX: 0, y: 300)
+        }.delay(by: 0.25).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+            view.transform = CGAffineTransform.identity
+        }
         
         return (view, Signal { callback in
             bag += combineLatest(self.dataSignal, self.passageName).onValueDisposePrevious { data, passageName in

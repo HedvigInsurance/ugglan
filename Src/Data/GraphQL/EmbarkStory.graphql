@@ -44,7 +44,7 @@ fragment ResponseFragment on EmbarkResponse {
             ...MessageFragment
         }
         title {
-            ...MessageFragment
+              text
         }
     }
 }

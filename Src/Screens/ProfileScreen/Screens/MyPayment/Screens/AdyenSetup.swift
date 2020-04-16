@@ -134,7 +134,7 @@ extension AdyenSetup: Presentable {
                                 guard let jsonData = data.action.data(using: .utf8) else {
                                     return
                                 }
-                                guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
+                                guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
                                     return
                                 }
 
@@ -161,7 +161,7 @@ extension AdyenSetup: Presentable {
                                 guard let jsonData = data.action.data(using: .utf8) else {
                                     return
                                 }
-                                guard let action = try? JSONDecoder().decode(Action.self, from: jsonData) else {
+                                guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
                                     return
                                 }
 

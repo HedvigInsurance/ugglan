@@ -38,7 +38,7 @@ extension OfferChat: Presentable {
                                 duration: 0.25,
                                 options: .transitionCrossDissolve,
                                 animations: {
-                                    ApplicationState.preserveState(.onboardingChat)
+                                    ApplicationState.preserveState(.onboarding)
                                     UIApplication.shared.appDelegate.logout()
                                 }, completion: nil
                             )

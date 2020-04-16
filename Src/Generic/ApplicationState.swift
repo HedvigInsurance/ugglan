@@ -14,7 +14,7 @@ struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 
     enum Screen: String {
-        case marketing, onboardingChat, offer, loggedIn, languagePicker, marketPicker
+        case marketing, onboardingChat, offer, loggedIn, languagePicker, marketPicker, onboarding
 
         func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
@@ -236,7 +236,7 @@ struct ApplicationState {
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false
             )
-        case .onboardingChat:
+        case .onboardingChat, .onboarding:
             return window.present(Onboarding(), options: [.defaults], animated: false)
         case .offer:
             return window.present(

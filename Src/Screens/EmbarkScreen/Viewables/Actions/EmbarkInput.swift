@@ -61,7 +61,7 @@ extension EmbarkInput: Viewable {
         let textField = UITextField()
         textField.textAlignment = .center
         textField.tintColor = .primaryTintColor
-        textField.font = HedvigFonts.circularStdBold?.withSize(38)
+        textField.font = HedvigFonts.favoritStdBook?.withSize(38)
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
 

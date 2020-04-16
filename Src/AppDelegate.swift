@@ -180,7 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if result == .accept {
                     if ApplicationState.currentState?.isOneOf([.marketing]) == true {
                         self.bag += rootViewController.present(
-                            OnboardingChat(),
+                            Onboarding(),
                             options: [.prefersNavigationBarHidden(false)]
                         )
                     }

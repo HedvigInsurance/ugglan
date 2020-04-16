@@ -61,8 +61,6 @@ extension WebOnboarding: Presentable {
             make.width.equalTo(80)
         }
 
-        ApplicationState.preserveState(.onboardingChat)
-
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .transparent
         webView.isOpaque = false
