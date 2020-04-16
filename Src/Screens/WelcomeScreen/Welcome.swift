@@ -71,11 +71,10 @@ extension Welcome: Presentable {
 
         let controlsWrapper = UIStackView()
         controlsWrapper.axis = .vertical
-        controlsWrapper.alignment = .center
         controlsWrapper.spacing = 16
         controlsWrapper.distribution = .equalSpacing
         controlsWrapper.isLayoutMarginsRelativeArrangement = true
-        controlsWrapper.edgeInsets = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+        controlsWrapper.edgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
 
         containerView.addArrangedSubview(controlsWrapper)
 
@@ -87,7 +86,7 @@ extension Welcome: Presentable {
 
         bag += controlsWrapper.addArranged(pagerDots) { pagerDotsView in
             pagerDotsView.snp.makeConstraints { make in
-                make.width.centerX.equalToSuperview()
+                make.centerX.equalToSuperview()
                 make.height.equalTo(20)
             }
         }
