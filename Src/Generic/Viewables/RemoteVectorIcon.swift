@@ -54,8 +54,8 @@ struct PDFProcessor: ImageProcessor {
             return pdfImage
         }
     }
-    
-    let identifier = "com.hedvig.kingfisher.pdf"
+        
+    let identifier: String
 }
 
 extension RemoteVectorIcon: Viewable {
@@ -63,13 +63,12 @@ extension RemoteVectorIcon: Viewable {
         let bag = DisposeBag()
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        
-        let processor = PDFProcessor()
-
+                
         bag += combineLatest(
-            iconSignal.atOnce(),
-            imageView.traitCollectionSignal.atOnce()
-        ).compactMap { iconFragment, traitCollection -> String? in
+            iconSignal.atOnce().plain(),
+            imageView.traitCollectionSignal.atOnce().plain(),
+            imageView.didLayoutSignal
+        ).compactMap { iconFragment, traitCollection, _ -> String? in
             if traitCollection.userInterfaceStyle == .dark {
                 return iconFragment?.variants.dark.pdfUrl
             }
@@ -80,7 +79,15 @@ extension RemoteVectorIcon: Viewable {
                 return
             }
                         
-            imageView.kf.setImage(with: url, options: [.processor(processor), .transition(.fade(0.25))], completionHandler: { _ in
+            let processor = PDFProcessor(identifier: "pdf.\(imageView.frame.size.height)")
+            let cache = ImageCache(name: "pdf.\(imageView.frame.size.height)")
+                        
+            imageView.kf.setImage(with: url, options: [
+                .processor(processor),
+                .transition(.fade(0.25)),
+                .originalCache(cache),
+                .cacheOriginalImage
+            ], completionHandler: { _ in
                 self.finishedLoadingCallback.callAll()
             })
         }
