@@ -82,22 +82,22 @@ extension ContractTable: Viewable {
 
         tableKit.view.backgroundColor = .primaryBackground
         tableKit.view.alwaysBounceVertical = true
-        
+
         let loadingIndicatorBag = DisposeBag()
-        
+
         let loadingIndicator = LoadingIndicator(showAfter: 0.5, color: .primaryTintColor)
         loadingIndicatorBag += tableKit.view.add(loadingIndicator) { view in
             view.snp.makeConstraints { make in
                 make.top.equalTo(0)
             }
-            
-            loadingIndicatorBag += tableKit.view.signal(for: \.contentSize).onValue({ size in
+
+            loadingIndicatorBag += tableKit.view.signal(for: \.contentSize).onValue { size in
                 view.snp.updateConstraints { make in
                     make.top.equalTo(size.height - (view.frame.height / 2))
                 }
-            })
+            }
         }
-        
+
         func loadContracts() {
             bag += client.fetch(
                 query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
@@ -110,7 +110,7 @@ extension ContractTable: Viewable {
                         type: contract.currentAgreement.type
                     )
                 })
-                
+
                 loadingIndicatorBag.dispose()
 
                 tableKit.set(table)
@@ -118,11 +118,11 @@ extension ContractTable: Viewable {
         }
 
         loadContracts()
-        
+
         bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
             loadContracts()
         }
-        
+
         return (tableKit.view, bag)
     }
 }

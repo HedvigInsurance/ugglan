@@ -40,13 +40,13 @@ extension ContractInsurableLimitRow: Reusable {
         let bag = DisposeBag()
 
         bag += makeContent(contentContainer: contentContainer)
-        
+
         let size = contentContainer.systemLayoutSizeFitting(
             targetSize,
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .defaultLow
         )
-        
+
         bag.dispose()
 
         return size

@@ -10,9 +10,9 @@ import AdyenDropIn
 import Apollo
 import Flow
 import Foundation
+import PassKit
 import Presentation
 import UIKit
-import PassKit
 
 struct AdyenSetup {
     @Inject var client: ApolloClient
@@ -31,19 +31,19 @@ extension AdyenSetup: Presentable {
 
         let view = UIView()
         view.backgroundColor = .primaryBackground
-        
+
         let activityIndicator = UIActivityIndicatorView()
-       activityIndicator.style = .whiteLarge
-       activityIndicator.color = .primaryTintColor
+        activityIndicator.style = .whiteLarge
+        activityIndicator.color = .primaryTintColor
 
-       view.addSubview(activityIndicator)
+        view.addSubview(activityIndicator)
 
-       activityIndicator.startAnimating()
+        activityIndicator.startAnimating()
 
-       activityIndicator.snp.makeConstraints { make in
-           make.edges.equalToSuperview()
-           make.size.equalToSuperview()
-       }
+        activityIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.size.equalToSuperview()
+        }
 
         viewController.view = view
 
@@ -56,9 +56,9 @@ extension AdyenSetup: Presentable {
                 configuration.applePay.summaryItems = [
                     PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: "0"), type: .pending),
                 ]
-                
+
                 let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8)!)
-                
+
                 var style = DropInComponent.Style()
                 style.navigation.tintColor = .primaryTintColor
                 style.formComponent.header.title.font = HedvigFonts.favoritStdBook!.withSize(30)
@@ -76,32 +76,32 @@ extension AdyenSetup: Presentable {
                 style.listComponent.backgroundColor = .primaryBackground
                 style.listComponent.listItem.backgroundColor = .secondaryBackground
                 style.navigation.backgroundColor = .primaryBackground
-                
+
                 switch ApplicationState.getTargetEnvironment() {
                 case .staging:
                     configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
                 case .production:
                     configuration.applePay.merchantIdentifier = "merchant.com.hedvig.app"
-                case .custom(_, _, _):
+                case .custom:
                     configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
                 }
-                                
+
                 let dropInComponent = DropInComponent(
                     paymentMethods: paymentMethods,
                     paymentMethodsConfiguration: configuration,
                     style: style
                 )
-                                
+
                 let payment = Payment(amount: Payment.Amount(value: 0, currencyCode: data.insuranceCost?.fragments.costFragment.monthlyNet.currency ?? ""), countryCode: Localization.Locale.currentLocale.market.rawValue)
-                                
+
                 dropInComponent.payment = payment
-                                
+
                 switch ApplicationState.getTargetEnvironment() {
                 case .staging:
                     dropInComponent.environment = .test
                 case .production:
                     dropInComponent.environment = .live
-                case .custom(_, _, _):
+                case .custom:
                     dropInComponent.environment = .test
                 }
 
@@ -119,9 +119,9 @@ extension AdyenSetup: Presentable {
                             let json = String(data: jsonData, encoding: .utf8) else {
                             return
                         }
-                                                
+
                         let urlScheme = Bundle.main.urlScheme ?? ""
-                        
+
                         self.client.perform(
                             mutation: AdyenTokenizePaymentDetailsMutation(
                                 request: TokenizationRequest(paymentMethodDetails: json.replacingOccurrences(of: "applepay.token", with: "applepayToken"), channel: .ios, returnUrl: "\(urlScheme)://adyen")
@@ -173,7 +173,7 @@ extension AdyenSetup: Presentable {
                         }
                     }
 
-                    func didFail(with error: Error, from dropInComponent: DropInComponent) {
+                    func didFail(with error: Error, from _: DropInComponent) {
                         self.completion(.failure(error))
                     }
                 }
@@ -185,21 +185,21 @@ extension AdyenSetup: Presentable {
                             query: ActivePaymentMethodsQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).onValue { _ in }
-                        
+
                         let continueButton = Button(
                             title: String(key: .PAYMENT_SETUP_DONE_CTA),
                             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
-                      )
+                        )
 
-                      let continueAction = ImageTextAction<Void>(
-                        image: .init(image: Asset.circularCheckmark.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
+                        let continueAction = ImageTextAction<Void>(
+                            image: .init(image: Asset.circularCheckmark.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
                             title: String(key: .PAYMENT_SETUP_DONE_TITLE),
-                            body:  String(key: .PAYMENT_SETUP_DONE_DESCRIPTION),
-                          actions: [
-                              ((), continueButton),
-                          ],
-                          showLogo: false
-                      )
+                            body: String(key: .PAYMENT_SETUP_DONE_DESCRIPTION),
+                            actions: [
+                                ((), continueButton),
+                            ],
+                            showLogo: false
+                        )
 
                         bag += dropInComponent.viewController.present(PresentableViewable(viewable: continueAction) { viewController in
                             viewController.navigationItem.hidesBackButton = true
@@ -209,29 +209,29 @@ extension AdyenSetup: Presentable {
                     case .failure:
                         let tryAgainButton = Button(
                             title: String(key: .PAYMENT_SETUP_FAILED_RETRY_CTA),
-                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
-                      )
-                        
+                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                        )
+
                         let cancelButton = Button(
-                              title: String(key: .PAYMENT_SETUP_FAILED_CANCEL_CTA),
+                            title: String(key: .PAYMENT_SETUP_FAILED_CANCEL_CTA),
                             type: .outline(borderColor: .transparent, textColor: .pink)
                         )
 
-                          let didFailAction = ImageTextAction<Bool>(
+                        let didFailAction = ImageTextAction<Bool>(
                             image: .init(image: Asset.redCross.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
-                                title: String(key: .PAYMENT_SETUP_FAILED_TITLE),
-                                body:  String(key: .PAYMENT_SETUP_FAILED_DESCRIPTION),
-                              actions: [
-                                  (true, tryAgainButton),
-                                  (false, cancelButton)
-                              ],
-                              showLogo: false
-                          )
+                            title: String(key: .PAYMENT_SETUP_FAILED_TITLE),
+                            body: String(key: .PAYMENT_SETUP_FAILED_DESCRIPTION),
+                            actions: [
+                                (true, tryAgainButton),
+                                (false, cancelButton),
+                            ],
+                            showLogo: false
+                        )
 
                         bag += dropInComponent.viewController.present(PresentableViewable(viewable: didFailAction) { viewController in
                             viewController.navigationItem.hidesBackButton = true
                         }).onValue { shouldRetry in
-                            if (shouldRetry) {
+                            if shouldRetry {
                                 dropInComponent.viewController.present(AdyenSetup()).onResult { result in
                                     completion(result)
                                 }

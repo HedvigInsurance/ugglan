@@ -117,7 +117,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
                 make.center.equalToSuperview()
             }
         }
-        
+
         let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
         bag += isEligibleDataSignal
@@ -154,7 +154,7 @@ extension ClaimsHeader: Viewable {
         imageView.contentMode = .scaleAspectFit
 
         view.addArrangedSubview(imageView)
-        
+
         imageView.snp.makeConstraints { make in
             make.height.equalTo(300)
         }
