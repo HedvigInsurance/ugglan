@@ -19,7 +19,7 @@ struct ReferralsInvitationAnonymous: Reusable {
 
         let ghostIconContainer = UIView()
 
-        let ghostIcon = Icon(icon: Asset.ghost, iconWidth: 24)
+        let ghostIcon = Icon(icon: Asset.ghost, iconWidth: 40)
         ghostIconContainer.addSubview(ghostIcon)
 
         ghostIcon.snp.makeConstraints { make in
