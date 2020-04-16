@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-10-07.
 //
 
+import Apollo
 import Foundation
 import SwiftUI
-import Apollo
 
 @available(iOS 13, *)
 struct Debug: View {
@@ -108,7 +108,7 @@ struct Debug: View {
                         assetsEndpointURL: assetsEndpointURL
                     ))
                 }
-                
+
                 ApplicationState.preserveState(.loggedIn)
                 ApolloClient.saveToken(token: self.authorizationToken)
             }))

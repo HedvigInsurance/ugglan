@@ -22,11 +22,11 @@ extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
         ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
     }
-    
+
     static var userAgent: String {
         return "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
-    
+
     static var cache = InMemoryNormalizedCache()
 
     static func createClient(token: String?) -> (ApolloStore, ApolloClient) {

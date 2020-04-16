@@ -46,7 +46,7 @@ extension WebOnboarding: Presentable {
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
         restartButton.tintColor = .navigationItemMutedTintColor
-        
+
         let chatButton = UIBarButtonItem(viewable: ChatButton(presentingViewController: viewController))
 
         viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
@@ -67,25 +67,25 @@ extension WebOnboarding: Presentable {
         webView.backgroundColor = .transparent
         webView.isOpaque = false
         webView.customUserAgent = ApolloClient.userAgent
-        
+
         let doneButton = UIBarButtonItem(title: "done", style: .navigationBarButtonPrimary)
-        
-        bag += doneButton.onValue({ _ in
+
+        bag += doneButton.onValue { _ in
             webView.resignFirstResponder()
-        })
-        
+        }
+
         webView.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [doneButton], representativeItem: nil)]
 
         let view = UIView()
-        view.backgroundColor = UIColor(red:0.07, green:0.07, blue:0.07, alpha:1.00)
+        view.backgroundColor = UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.00)
         viewController.view = view
 
         view.addSubview(webView)
-        
+
         webView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
-        
+
         bag += webView.didReceiveAuthenticationChallenge.set { (_, _) -> (URLSession.AuthChallengeDisposition, URLCredential?) in
             let credentials = URLCredential(user: "hedvig", password: "hedvig1234", persistence: .forSession)
             return (.useCredential, credentials)
@@ -105,7 +105,7 @@ extension WebOnboarding: Presentable {
             }
 
             let tokenString = token.token.replacingOccurrences(of: "=", with: "%3D")
-            
+
             var localePath: String {
                 switch Localization.Locale.currentLocale {
                 case .en_NO:

@@ -133,7 +133,7 @@ extension DefaultStyling {
         UITabBarItem.appearance().setBadgeTextAttributes([
             NSAttributedString.Key.font: HedvigFonts.favoritStdBook!.withSize(16),
         ], for: .selected)
-        
+
         UIImageView.appearance().tintColor = .primaryTintColor
 
         current = .custom
