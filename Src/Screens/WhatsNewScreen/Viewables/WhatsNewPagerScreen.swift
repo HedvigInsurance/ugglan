@@ -61,6 +61,7 @@ extension WhatsNewPagerScreen: Presentable {
         bag += innerContainerView.addArranged(remoteVectorIcon) { iconView in
             iconView.snp.makeConstraints { make in
                 make.width.centerX.equalToSuperview()
+                make.height.equalTo(iconView.snp.width)
             }
         }
 

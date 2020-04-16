@@ -62,6 +62,7 @@ extension RemoteVectorIcon: Viewable {
     func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         
         let processor = PDFProcessor()
 
