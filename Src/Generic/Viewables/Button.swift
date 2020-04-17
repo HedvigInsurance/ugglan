@@ -356,6 +356,25 @@ extension Button: Viewable {
 
                 iconImageView.contentMode = .scaleAspectFit
 
+                let iconDistance = type.iconDistance
+
+                switch icon {
+                case .left:
+                    button.titleEdgeInsets = UIEdgeInsets(
+                        top: 0,
+                        left: icon.width + iconDistance,
+                        bottom: 0,
+                        right: 0
+                    )
+                case .right:
+                    button.titleEdgeInsets = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: icon.width + iconDistance
+                    )
+                }
+
                 button.addSubview(iconImageView)
 
                 iconImageView.snp.makeConstraints { make in
