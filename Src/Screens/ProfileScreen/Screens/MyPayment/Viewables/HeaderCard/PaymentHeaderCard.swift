@@ -103,7 +103,7 @@ extension PaymentHeaderCard: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        bottomViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_DATE), style: .bodyText))
+        bottomViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_DATE), style: .bodySmallSmallLeft))
         bag += bottomViewStack.addArranged(PaymentHeaderNextCharge())
 
         view.addArrangedSubview(bottomView)

@@ -61,7 +61,7 @@ extension OfferStartDateButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .bodyText)
+        let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .bodyButtonText)
         stackView.addArrangedSubview(keyLabel)
 
         let valueLabel = UILabel(value: "", style: .bodyBookButtonText)
