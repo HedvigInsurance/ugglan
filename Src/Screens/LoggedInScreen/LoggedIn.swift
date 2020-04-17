@@ -124,7 +124,7 @@ extension LoggedIn: Presentable {
                 .compactMap { $0.data }
                 .filter { $0.welcome.count > 0 }
                 .onValue { data in
-                    let whatsNew = Welcome(data: data)
+                    let whatsNew = Welcome(data: data, endWithReview: true)
                     tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
                 }
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {

@@ -15,9 +15,11 @@ import UIKit
 
 struct Welcome {
     let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>
+    let endWithReview: Bool
 
-    init(data: WelcomeQuery.Data?) {
+    init(data: WelcomeQuery.Data?, endWithReview: Bool) {
         dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(data)
+        self.endWithReview = endWithReview
     }
 }
 
@@ -116,7 +118,9 @@ extension Welcome: Presentable {
                 closeButton.onTapSignal,
                 scrolledToEndCallbacker.providedSignal
             ).onValue {
-                SKStoreReviewController.requestReview()
+                if self.endWithReview {
+                    SKStoreReviewController.requestReview()
+                }
                 completion(.success)
             }
 

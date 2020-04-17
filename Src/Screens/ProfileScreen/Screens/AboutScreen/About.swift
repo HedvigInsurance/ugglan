@@ -126,7 +126,7 @@ extension About: Presentable {
                     .compactMap { $0.data }
                     .filter { $0.welcome.count > 0 }
                     .onValue { data in
-                        let welcome = Welcome(data: data)
+                        let welcome = Welcome(data: data, endWithReview: false)
                         viewController.present(welcome, options: [.prefersNavigationBarHidden(true)])
                     }
             }
