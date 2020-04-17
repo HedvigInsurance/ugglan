@@ -23,11 +23,11 @@ extension MemberIdRow: Viewable {
 
         let valueLabel = UILabel(value: "", style: .rowTitleDisabled)
         row.append(valueLabel)
-        
+
         bag += valueLabel.copySignal.onValue { _ in
             UIPasteboard.general.value = valueLabel.text
         }
-        
+
         bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap {
             $0.data?.member.id
         }.bindTo(valueLabel, \.value)
