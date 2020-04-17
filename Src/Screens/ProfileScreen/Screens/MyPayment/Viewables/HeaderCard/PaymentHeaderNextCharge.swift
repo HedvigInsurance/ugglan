@@ -27,11 +27,14 @@ extension PaymentHeaderNextCharge: Viewable {
         contentContainer.distribution = .equalSpacing
         view.addSubview(contentContainer)
 
-        let label = UILabel(value: "", style: TextStyle.body.zeroedLineSpacing)
+        let label = UILabel(value: "", style: .bodyText)
         contentContainer.addArrangedSubview(label)
 
         contentContainer.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview()
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            make.top.equalToSuperview().offset(2)
+            make.bottom.equalToSuperview().offset(-2)
         }
 
         bag += client.watch(query: MyPaymentQuery()).map { $0.data?.nextChargeDate }.onValue { nextChargeDate in
@@ -48,6 +51,7 @@ extension PaymentHeaderNextCharge: Viewable {
                 view.backgroundColor = .primaryBackground
             } else {
                 label.value = String(key: .PAYMENTS_CARD_NO_STARTDATE)
+                label.textColor = .darkGray
                 view.backgroundColor = .sunflower300
             }
         }

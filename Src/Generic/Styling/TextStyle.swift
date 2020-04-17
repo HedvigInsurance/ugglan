@@ -47,7 +47,7 @@ extension TextStyle {
         style.lineSpacing = 6
     }
 
-    static let bodyButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
+    static let bodyText = TextStyle.default.restyled { (style: inout TextStyle) in
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
     }
