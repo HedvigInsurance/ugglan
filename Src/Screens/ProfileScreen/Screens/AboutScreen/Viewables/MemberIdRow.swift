@@ -16,17 +16,21 @@ struct MemberIdRow {
 }
 
 extension MemberIdRow: Viewable {
-    func materialize(events _: SelectableViewableEvents) -> (KeyValueRow, Disposable) {
+    func materialize(events _: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
-        let row = KeyValueRow()
 
-        row.keySignal.value = String(key: .ABOUT_MEMBER_ID_ROW_KEY)
+        let row = RowView(title: String(key: .ABOUT_MEMBER_ID_ROW_KEY), style: .rowTitle)
 
+        let valueLabel = UILabel(value: "", style: .rowTitleDisabled)
+        row.append(valueLabel)
+        
+        bag += valueLabel.copySignal.onValue { _ in
+            UIPasteboard.general.value = valueLabel.text
+        }
+        
         bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap {
             $0.data?.member.id
-        }.bindTo(row.valueSignal)
-
-        row.valueStyleSignal.value = .rowTitleDisabled
+        }.bindTo(valueLabel, \.value)
 
         return (row, bag)
     }
