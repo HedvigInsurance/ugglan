@@ -185,11 +185,13 @@ extension ClaimsHeader: Viewable {
         bag += view.addArranged(button.wrappedIn(UIStackView())) { stackView in
             let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
             bag += isEligibleDataSignal.bindTo(stackView, \.isUserInteractionEnabled)
-            bag += isEligibleDataSignal
-                .map { $0 ? 1 : 0.5 }
-                .animated(style: AnimationStyle.easeOut(duration: 0.25)) { alpha in
-                    stackView.alpha = alpha
+            bag += isEligibleDataSignal.onValue({ isActive in
+                if !isActive {
+                    button.type.value = .standard(backgroundColor: .secondaryButtonBackgroundColor, textColor: .secondaryButtonTextColor)
+                } else {
+                    button.type.value = .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                 }
+            })
         }
 
         return (view, bag)

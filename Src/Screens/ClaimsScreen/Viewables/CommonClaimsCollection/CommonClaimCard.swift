@@ -323,8 +323,12 @@ extension CommonClaimCard: Viewable {
                 bag += showClaimButtonSignal.atOnce().map { !$0 }.bindTo(claimButtonView, \.isHidden)
                 bag += combineLatest(showClaimButtonSignal.atOnce().plain(), isEligibleDataSignal)
                     .map { showButton, isEligibleToCreateClaim in
+                        if !isEligibleToCreateClaim {
+                            claimButton.type.value = .standard(backgroundColor: .secondaryButtonBackgroundColor, textColor: .secondaryButtonTextColor)
+                        }
+                        
                         if showButton {
-                            return isEligibleToCreateClaim ? 1 : 0.5
+                            return isEligibleToCreateClaim ? 1 : 1
                         }
 
                         return 0
