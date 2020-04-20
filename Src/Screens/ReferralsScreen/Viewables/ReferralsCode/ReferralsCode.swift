@@ -46,7 +46,7 @@ extension ReferralsCode: Viewable {
             return self.presentingViewController.present(register).onValue { _ in
                 UIPasteboard.general.value = code
                 UIApplication.shared.appDelegate.displayToast(Toast(
-                    symbol: .character("🎉"),
+                    symbol: nil,
                     body: String(key: .COPIED)
                 )).onValue { _ in }
             }.disposable

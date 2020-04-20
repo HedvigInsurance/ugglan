@@ -5,9 +5,9 @@
 //  Created by Sam Pettersson on 2019-10-07.
 //
 
+import Apollo
 import Foundation
 import SwiftUI
-import Apollo
 
 @available(iOS 13, *)
 struct Debug: View {
@@ -72,6 +72,12 @@ struct Debug: View {
                 Section {
                     SwiftUI.TextField("Authorization token", text: $authorizationToken)
                 }
+                Section {
+                    SwiftUI.Button("Logout", action: {
+                        ApplicationState.preserveState(.marketPicker)
+                        UIApplication.shared.appDelegate.logout()
+                    })
+                }
             }
             .alert(isPresented: $showFaultyEndpointAlert) {
                 Alert(title: Text("Endpoint config is faulty"), dismissButton: .default(Text("OK!")))
@@ -102,7 +108,7 @@ struct Debug: View {
                         assetsEndpointURL: assetsEndpointURL
                     ))
                 }
-                
+
                 ApplicationState.preserveState(.loggedIn)
                 ApolloClient.saveToken(token: self.authorizationToken)
             }))

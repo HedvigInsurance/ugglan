@@ -129,7 +129,7 @@ extension MarketPicker {
                 }
                 ApolloClient.initClient().always {}
                 Bundle.setLanguage(locale.lprojCode)
-                self.presentingViewController.present(Marketing())
+                presentingViewController.present(Marketing())
                 bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
                     self.didFinish()
                 }
@@ -214,12 +214,12 @@ extension MarketPicker: Presentable {
         bag += viewController.install(form)
 
         let pickedMarketSignal: ReadWriteSignal<Market?> = ReadWriteSignal(nil)
-        
+
         Marketing().prefetch()
-        
+
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
-        
+
         bag += client.fetch(query: GeoQuery()).valueSignal.compactMap { $0.data?.geo.countryIsoCode }.onValue { countryISOCode in
             switch countryISOCode {
             case "SE":

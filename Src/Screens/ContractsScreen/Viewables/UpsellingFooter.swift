@@ -81,47 +81,47 @@ extension UpsellingFooter: Viewable {
             query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
             cachePolicy: .fetchIgnoringCacheData
         )
-            .compactMap { $0.data?.contracts }
-            .delay(by: 0.5)
-            .onValueDisposePrevious { contracts in
-                let innerBag = DisposeBag()
+        .compactMap { $0.data?.contracts }
+        .delay(by: 0.5)
+        .onValueDisposePrevious { contracts in
+            let innerBag = DisposeBag()
 
-                innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                    stackView.alpha = 1
-                    stackView.transform = CGAffineTransform.identity
-                }
-
-                switch Localization.Locale.currentLocale.market {
-                case .no:
-                    let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
-                        contract.currentAgreement.asNorwegianTravelAgreement != nil // todo
-                    })
-
-                    if !hasTravelAgreement {
-                        innerBag += stackView.addArranged(UpsellingBox(
-                            title: String(key: .UPSELL_NOTIFICATION_TRAVEL_TITLE),
-                            description: String(key: .UPSELL_NOTIFICATION_TRAVEL_DESCRIPTION),
-                            buttonText: String(key: .UPSELL_NOTIFICATION_TRAVEL_CTA)
-                        ))
-                    }
-
-                    let hasHomeContentsAgreement = contracts.contains(where: { contract -> Bool in
-                        contract.currentAgreement.asNorwegianHomeContentAgreement != nil
-                    })
-
-                    if !hasHomeContentsAgreement {
-                        innerBag += stackView.addArranged(UpsellingBox(
-                            title: String(key: .UPSELL_NOTIFICATION_CONTENT_TITLE),
-                            description: String(key: .UPSELL_NOTIFICATION_CONTENT_DESCRIPTION),
-                            buttonText: String(key: .UPSELL_NOTIFICATION_CONTENT_CTA)
-                        ))
-                    }
-                case .se:
-                    break
-                }
-
-                return innerBag
+            innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+                stackView.alpha = 1
+                stackView.transform = CGAffineTransform.identity
             }
+
+            switch Localization.Locale.currentLocale.market {
+            case .no:
+                let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
+                    contract.currentAgreement.asNorwegianTravelAgreement != nil // todo
+                    })
+
+                if !hasTravelAgreement {
+                    innerBag += stackView.addArranged(UpsellingBox(
+                        title: String(key: .UPSELL_NOTIFICATION_TRAVEL_TITLE),
+                        description: String(key: .UPSELL_NOTIFICATION_TRAVEL_DESCRIPTION),
+                        buttonText: String(key: .UPSELL_NOTIFICATION_TRAVEL_CTA)
+                    ))
+                }
+
+                let hasHomeContentsAgreement = contracts.contains(where: { contract -> Bool in
+                    contract.currentAgreement.asNorwegianHomeContentAgreement != nil
+                    })
+
+                if !hasHomeContentsAgreement {
+                    innerBag += stackView.addArranged(UpsellingBox(
+                        title: String(key: .UPSELL_NOTIFICATION_CONTENT_TITLE),
+                        description: String(key: .UPSELL_NOTIFICATION_CONTENT_DESCRIPTION),
+                        buttonText: String(key: .UPSELL_NOTIFICATION_CONTENT_CTA)
+                    ))
+                }
+            case .se:
+                break
+            }
+
+            return innerBag
+        }
 
         return (stackView, bag)
     }

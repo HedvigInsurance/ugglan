@@ -41,7 +41,7 @@ struct Toast: Equatable {
             lhs.duration == rhs.duration
     }
 
-    let symbol: ToastSymbol
+    let symbol: ToastSymbol?
     let body: String
     let subtitle: String?
     let textColor: UIColor
@@ -55,7 +55,7 @@ struct Toast: Equatable {
     private let onTapCallbacker = Callbacker<Void>()
 
     init(
-        symbol: ToastSymbol,
+        symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
         textColor: UIColor = UIColor.primaryText,
@@ -91,6 +91,8 @@ extension Toast: Viewable {
             }
 
             return view
+        case .none:
+            return UIView()
         }
     }
 
@@ -99,7 +101,7 @@ extension Toast: Viewable {
 
         let containerView = UIControl()
         bag += containerView.didLayoutSignal.onValue { _ in
-            containerView.layer.cornerRadius = containerView.frame.height / 2
+            containerView.layer.cornerRadius = 6
         }
 
         bag += containerView.signal(for: .touchUpInside).onValue { _ in
@@ -143,17 +145,19 @@ extension Toast: Viewable {
             make.width.height.centerX.centerY.equalToSuperview()
         }
 
-        let symbolContainer = UIStackView()
-        symbolContainer.axis = .horizontal
-        symbolContainer.insetsLayoutMarginsFromSafeArea = false
+        if symbol != nil {
+            let symbolContainer = UIStackView()
+            symbolContainer.axis = .horizontal
+            symbolContainer.insetsLayoutMarginsFromSafeArea = false
 
-        stackView.addArrangedSubview(symbolContainer)
+            stackView.addArrangedSubview(symbolContainer)
 
-        symbolContainer.snp.makeConstraints { make in
-            make.width.equalTo(25)
+            symbolContainer.snp.makeConstraints { make in
+                make.width.equalTo(25)
+            }
+
+            symbolContainer.addArrangedSubview(symbolView)
         }
-
-        symbolContainer.addArrangedSubview(symbolView)
 
         let textContainer = UIStackView()
         textContainer.axis = .vertical

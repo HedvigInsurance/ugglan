@@ -50,9 +50,9 @@ extension OfferCoverageTerms: Viewable {
         bag += stackView.addArranged(titleLabel)
 
         bag += stackView.addArranged(OfferTermsBulletPoints())
-        
+
         bag += stackView.addArranged(Spacing(height: 80))
-        
+
         bag += stackView.addArranged(OfferTermsLinks()) { view in
             view.snp.makeConstraints { make in
                 make.leading.trailing.equalTo(stackView.safeAreaLayoutGuide)

@@ -114,20 +114,20 @@ extension About: Presentable {
                 activatePushNotificationsRow.isHiddenSignal.value = true
             }
 
-            let showWhatsNew = ButtonRow(
+            let showWelcome = ButtonRow(
                 text: String(key: .ABOUT_SHOW_INTRO_ROW),
                 style: .normalButton
             )
-            bag += versionSection.append(showWhatsNew)
+            bag += versionSection.append(showWelcome)
 
-            bag += showWhatsNew.onSelect.onValue { _ in
+            bag += showWelcome.onSelect.onValue { _ in
                 bag += self.client
-                    .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: "2.8.3"))
+                    .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                     .compactMap { $0.data }
-                    .filter { $0.news.count > 0 }
+                    .filter { $0.welcome.count > 0 }
                     .onValue { data in
-                        let whatsNew = WhatsNew(data: data)
-                        viewController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                        let welcome = Welcome(data: data, endWithReview: false)
+                        viewController.present(welcome, options: [.prefersNavigationBarHidden(true)])
                     }
             }
         }

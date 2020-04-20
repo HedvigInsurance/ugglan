@@ -315,7 +315,7 @@ extension CommonClaimCard: Viewable {
 
             bag += view.add(claimButton) { claimButtonView in
                 claimButtonView.alpha = 0
-                
+
                 let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
                 bag += isEligibleDataSignal.bindTo(claimButtonView, \.isUserInteractionEnabled)

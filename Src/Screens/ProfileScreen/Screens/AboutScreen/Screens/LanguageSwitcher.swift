@@ -219,9 +219,9 @@ extension LanguageSwitcher: Presentable {
             norwegianRow.prepend(Asset.flagNO.image)
             norwegianRow.append(norwegianRowImageView)
         }
-        
+
         let marketSection = ButtonSection(text: String(key: .SETTINGS_CHANGE_MARKET), style: .danger)
-        
+
         bag += marketSection.onSelect.onValue { _ in
             let alert = Alert(
                 title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_TITLE),
@@ -229,12 +229,13 @@ extension LanguageSwitcher: Presentable {
                 actions: [
                     Alert.Action(title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_OK)) {
                         ApolloClient.cache = InMemoryNormalizedCache()
-                                   ApplicationState.preserveState(.marketPicker)
-                                   UIApplication.shared.appDelegate.logout()
+                        ApplicationState.preserveState(.marketPicker)
+                        UIApplication.shared.appDelegate.logout()
                     },
-                    Alert.Action(title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_CANCEL)) {}
-            ])
-            
+                    Alert.Action(title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_CANCEL)) {},
+                ]
+            )
+
             viewController.present(alert)
         }
 

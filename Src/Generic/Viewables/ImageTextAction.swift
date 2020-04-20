@@ -14,11 +14,11 @@ struct ImageWithOptions {
     let image: UIImage
     let size: CGSize?
     let contentMode: UIView.ContentMode
-    
+
     init(image: UIImage) {
         self.image = image
-        self.size = nil
-        self.contentMode = .scaleAspectFit
+        size = nil
+        contentMode = .scaleAspectFit
     }
 
     init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode) {
@@ -83,7 +83,7 @@ extension ImageTextAction: Viewable {
 
         headerImageView.snp.makeConstraints { make in
             make.height.equalTo(image.size?.height ?? 270)
-            
+
             if let width = image.size?.width {
                 make.width.equalTo(width)
             }

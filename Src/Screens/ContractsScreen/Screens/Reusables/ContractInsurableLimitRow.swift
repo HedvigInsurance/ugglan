@@ -28,20 +28,24 @@ extension ContractInsurableLimitRow: Reusable {
     func makeContent(contentContainer: UIStackView) -> DisposeBag {
         let bag = DisposeBag()
 
-        contentContainer.addArrangedSubview(UILabel(value: fragment.label, style: .headlineMediumMediumLeft))
+        bag += contentContainer.addArranged(MultilineLabel(value: fragment.label, style: .headlineMediumMediumLeft))
         bag += contentContainer.addArranged(MultilineLabel(value: fragment.limit, style: .bodySmallSmallLeft))
 
         return bag
     }
 
-    var contentSize: CGSize {
+    func contentSize(_ targetSize: CGSize) -> CGSize {
         let contentContainer = Self.makeContainer()
 
         let bag = DisposeBag()
 
         bag += makeContent(contentContainer: contentContainer)
 
-        let size = contentContainer.systemLayoutSizeFitting(CGSize.zero)
+        let size = contentContainer.systemLayoutSizeFitting(
+            targetSize,
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .defaultLow
+        )
 
         bag.dispose()
 
@@ -52,9 +56,9 @@ extension ContractInsurableLimitRow: Reusable {
         let contentContainer = UIStackView()
         contentContainer.spacing = 10
         contentContainer.axis = .vertical
-        contentContainer.layoutMargins = UIEdgeInsets(inset: 10)
+        contentContainer.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         contentContainer.isLayoutMarginsRelativeArrangement = true
-        contentContainer.alignment = .center
+        contentContainer.alignment = .leading
 
         return contentContainer
     }

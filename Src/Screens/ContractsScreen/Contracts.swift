@@ -20,7 +20,7 @@ extension Contracts: Presentable {
 
         let bag = DisposeBag()
 
-        bag += viewController.install(ContractCollection(presentingViewController: viewController))
+        bag += viewController.install(ContractTable(presentingViewController: viewController))
 
         return (viewController, bag)
     }

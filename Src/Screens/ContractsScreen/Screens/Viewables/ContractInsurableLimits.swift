@@ -31,7 +31,8 @@ extension ContractInsurableLimits: Viewable {
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
-            CGSize(width: collectionKit.view.frame.size.width / 2 - 5, height: collectionKit.table[index].contentSize.height)
+            let width = collectionKit.view.frame.size.width / 2 - 5
+            return CGSize(width: width, height: collectionKit.table[index].contentSize(CGSize(width: width, height: 0)).height)
         }
 
         bag += collectionKit.view.signal(for: \.contentSize).onValue { size in

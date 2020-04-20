@@ -23,7 +23,7 @@ extension BankIDLoginNorway: Presentable {
 
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .secondaryBackground
-        
+
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .whiteLarge
         activityIndicator.color = .primaryTintColor
@@ -36,13 +36,13 @@ extension BankIDLoginNorway: Presentable {
             make.edges.equalToSuperview()
             make.size.equalToSuperview()
         }
-        
+
         bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
-          if loading {
-              activityIndicator.alpha = 1
-          } else {
-              activityIndicator.alpha = 0
-          }
+            if loading {
+                activityIndicator.alpha = 1
+            } else {
+                activityIndicator.alpha = 0
+            }
         }
 
         viewController.view = webView
