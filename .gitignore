@@ -13,6 +13,8 @@ Src/Data/API.swift
 Carthage
 test.xcodeproj
 production.xcodeproj
+Ugglan.xcworkspace
+Ugglan.xcodeproj
 UITestsImages/FailureDiffs
 
 ## Various settings
