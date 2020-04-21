@@ -12,6 +12,7 @@ import Presentation
 import SnapshotTesting
 import UIKit
 import XCTest
+import Ugglan
 
 class SnapShotTestCase: XCTestCase {
     let bag = DisposeBag()
@@ -19,10 +20,7 @@ class SnapShotTestCase: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        FontLoader.loadFonts()
         DefaultStyling.installCustom()
-
-        _ = ApolloClient.initClient()
 
         Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
             AnalyticsCoordinator()
@@ -31,7 +29,7 @@ class SnapShotTestCase: XCTestCase {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             RemoteConfigContainer()
         })
-
+        
         #if RECORD_MODE
             record = true
         #endif
@@ -39,18 +37,6 @@ class SnapShotTestCase: XCTestCase {
 
     override func tearDown() {
         bag.dispose()
-    }
-
-    func waitForQuery<Query: GraphQLQuery>(_ query: Query, onFetched: @escaping () -> Void) {
-        let waitForQuery = expectation(description: "wait for query")
-        let client: ApolloClient = Dependencies.shared.resolve()
-
-        bag += client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).delay(by: 0.2).onValue { _ in
-            onFetched()
-            waitForQuery.fulfill()
-        }
-
-        wait(for: [waitForQuery], timeout: 20)
     }
 
     func materializeViewable<View: Viewable>(

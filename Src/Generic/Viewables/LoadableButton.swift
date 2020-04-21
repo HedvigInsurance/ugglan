@@ -9,13 +9,13 @@ import Flow
 import Foundation
 import UIKit
 
-struct LoadableButton {
+public struct LoadableButton {
     let button: Button
     let isLoadingSignal: ReadWriteSignal<Bool>
     let onTapSignal: Signal<Void>
     private let onTapCallbacker = Callbacker<Void>()
 
-    init(button: Button, initialLoadingState: Bool = false) {
+    public init(button: Button, initialLoadingState: Bool = false) {
         onTapSignal = onTapCallbacker.signal()
         self.button = button
         isLoadingSignal = ReadWriteSignal<Bool>(initialLoadingState)
@@ -23,7 +23,7 @@ struct LoadableButton {
 }
 
 extension LoadableButton: Viewable {
-    func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
+    public func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
         let (buttonView, disposable) = button.materialize(events: events)
 

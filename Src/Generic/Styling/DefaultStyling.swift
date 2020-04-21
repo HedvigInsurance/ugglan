@@ -11,7 +11,7 @@ import Foundation
 import StoreKit
 import UIKit
 
-extension DefaultStyling {
+public extension DefaultStyling {
     static func installCustom() {
         ListTableView.appearance().backgroundColor = .primaryBackground
 

@@ -84,6 +84,30 @@ let productionSettings = Settings(
     defaultSettings: .recommended
 )
 
+let unitTestsSettings = Settings(
+    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC"],
+    configurations: [
+        .debug(
+            name: "debug",
+            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"],
+            xcconfig: nil
+        ),
+    ],
+    defaultSettings: .recommended
+)
+
+let unitTestsRecordSettings = Settings(
+    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC"],
+    configurations: [
+        .debug(
+            name: "debug",
+            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING RECORD_MODE"],
+            xcconfig: nil
+        ),
+    ],
+    defaultSettings: .recommended
+)
+
 let project = Project(
     name: "Ugglan",
     organizationName: "Hedvig AB",
@@ -100,6 +124,7 @@ let project = Project(
         .package(url: "https://github.com/saoudrizwan/Disk.git", .upToNextMajor(from: "0.6.4")),
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
         .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "5.13.1")),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.7.2"))
     ],
     targets: [
         Target(
@@ -117,6 +142,36 @@ let project = Project(
                 sdkFrameworks
             ].flatMap { $0 },
             settings: stagingSettings
+        ),
+        Target(
+            name: "Ugglan-UnitTests",
+            platform: .iOS,
+            product: .unitTests,
+            bundleId: "com.hedvig.test.unittests",
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            infoPlist: "UnitTests/Info.plist",
+            sources: ["UnitTests/**"],
+            resources: [],
+            dependencies: [
+                [.target(name: "Ugglan"),
+                .package(product: "SnapshotTesting")]
+            ].flatMap { $0 },
+            settings: unitTestsSettings
+        ),
+        Target(
+            name: "Ugglan-UnitTests-Record",
+            platform: .iOS,
+            product: .unitTests,
+            bundleId: "com.hedvig.test.unittests",
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            infoPlist: "UnitTests/Info.plist",
+            sources: ["UnitTests/**"],
+            resources: [],
+            dependencies: [
+                [.target(name: "Ugglan"),
+                .package(product: "SnapshotTesting")]
+            ].flatMap { $0 },
+            settings: unitTestsRecordSettings
         ),
         Target(
             name: "Hedvig",

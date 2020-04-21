@@ -155,6 +155,15 @@
         }
       },
       {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
+        "state": {
+          "branch": null,
+          "revision": "114882386a815f4a2e6d8f2f7ee4857acd372438",
+          "version": "1.7.2"
+        }
+      },
+      {
         "package": "UICollectionView-AnimatedScroll",
         "repositoryURL": "https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git",
         "state": {

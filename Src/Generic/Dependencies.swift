@@ -8,17 +8,17 @@
 import Foundation
 
 public class Dependencies {
-    static var shared = Dependencies()
+    public static var shared = Dependencies()
     private var modules = [String: Module]()
 
     private init() {}
     deinit { modules.removeAll() }
 
-    func add(module: Module) {
+    public func add(module: Module) {
         modules[module.name] = module
     }
 
-    func resolve<T>(for name: String? = nil) -> T {
+    public func resolve<T>(for name: String? = nil) -> T {
         let name = name ?? String(describing: T.self)
 
         guard let component: T = modules[name]?.resolve() as? T else {

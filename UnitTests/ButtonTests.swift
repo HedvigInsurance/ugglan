@@ -7,6 +7,7 @@
 
 import SnapshotTesting
 import UIKit
+import Ugglan
 import XCTest
 
 class ButtonTests: SnapShotTestCase {
@@ -14,7 +15,7 @@ class ButtonTests: SnapShotTestCase {
         let button = Button(
             title: "Lorem ipsum",
             type: .standard(
-                backgroundColor: .purple,
+                backgroundColor: .red,
                 textColor: .white
             )
         )
@@ -28,7 +29,7 @@ class ButtonTests: SnapShotTestCase {
         let button = Button(
             title: "Mauris velit consectetur interdum eget habitasse velit nisi, tempor venenatis scelerisque donec",
             type: .standard(
-                backgroundColor: .purple,
+                backgroundColor: .red,
                 textColor: .white
             )
         )
@@ -42,7 +43,7 @@ class ButtonTests: SnapShotTestCase {
         let button = Button(
             title: "Lorem ipsum",
             type: .standard(
-                backgroundColor: .turquoise,
+                backgroundColor: .blue,
                 textColor: .black
             )
         )
@@ -67,7 +68,7 @@ class ButtonTests: SnapShotTestCase {
         let button = Button(
             title: "testa",
             type: .standard(
-                backgroundColor: .purple,
+                backgroundColor: .red,
                 textColor: .white
             )
         )

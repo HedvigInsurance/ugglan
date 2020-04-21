@@ -9,11 +9,11 @@
 import Flow
 import Foundation
 
-class RemoteConfigContainer {
+public class RemoteConfigContainer {
     //private let remoteConfig: RemoteConfig
     let fetched: ReadWriteSignal<Bool>
 
-    init() {
+    public init() {
         // let remoteConfig = RemoteConfig.remoteConfig()
         let fetched = ReadWriteSignal<Bool>(true)
 

@@ -13,7 +13,7 @@ import Form
 import Foundation
 import UIKit
 
-enum ButtonType {
+public enum ButtonType {
     case standard(backgroundColor: UIColor, textColor: UIColor)
     case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
     case standardSmall(backgroundColor: UIColor, textColor: UIColor)
@@ -24,7 +24,7 @@ enum ButtonType {
     case transparent(textColor: UIColor)
     case iconTransparent(textColor: UIColor, icon: ButtonIcon)
 
-    enum ButtonIcon {
+    public enum ButtonIcon {
         case left(image: UIImage, width: CGFloat)
         case right(image: UIImage, width: CGFloat)
 
@@ -234,7 +234,7 @@ enum ButtonType {
     }
 }
 
-struct Button {
+public struct Button {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     private let id = UUID()
@@ -243,7 +243,7 @@ struct Button {
     let type: ReadWriteSignal<ButtonType>
     let animate: Bool
 
-    init(title: String, type: ButtonType, animate: Bool = true) {
+    public init(title: String, type: ButtonType, animate: Bool = true) {
         self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = ReadWriteSignal<ButtonType>(type)
@@ -252,13 +252,13 @@ struct Button {
 }
 
 extension Button: Equatable {
-    static func == (lhs: Button, rhs: Button) -> Bool {
+    public static func == (lhs: Button, rhs: Button) -> Bool {
         lhs.id == rhs.id
     }
 }
 
 extension Button: Viewable {
-    func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
+    public func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
 
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)

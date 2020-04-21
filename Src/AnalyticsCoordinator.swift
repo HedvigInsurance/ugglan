@@ -9,9 +9,13 @@ import Apollo
 import Flow
 import Foundation
 
-struct AnalyticsCoordinator {
+public struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient
     @Inject private var remoteConfig: RemoteConfigContainer
+    
+    public init() {
+        
+    }
 
     func setUserId() {
         client.fetch(

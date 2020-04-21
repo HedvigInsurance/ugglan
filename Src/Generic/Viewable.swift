@@ -12,7 +12,7 @@ import Foundation
 import SnapKit
 import UIKit
 
-protocol Viewable {
+public protocol Viewable {
     associatedtype Matter
     associatedtype Result
     associatedtype Events
@@ -20,11 +20,11 @@ protocol Viewable {
     func materialize(events: Events) -> (Matter, Result)
 }
 
-struct ViewableEvents {
+public struct ViewableEvents {
     let wasAdded: Signal<Void>
     let removeAfter = Delegate<Void, TimeInterval>()
 
-    init(
+    public init(
         wasAddedCallbacker: Callbacker<Void>
     ) {
         wasAdded = wasAddedCallbacker.signal()

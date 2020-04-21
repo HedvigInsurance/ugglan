@@ -10,8 +10,12 @@ import FlowFeedback
 import Foundation
 import UIKit
 
-struct ChatButton {
+public struct ChatButton {
     let presentingViewController: UIViewController
+    
+    public init(presentingViewController: UIViewController) {
+        self.presentingViewController = presentingViewController
+    }
 }
 
 extension UIViewController {
@@ -24,7 +28,7 @@ extension UIViewController {
 }
 
 extension ChatButton: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let chatButtonView = UIControl()
