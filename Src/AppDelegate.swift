@@ -6,13 +6,13 @@
 //  Copyright © 2018 Sam Pettersson. All rights reserved.
 //
 
-// import Adyen
+import Adyen
 import Apollo
 import Disk
-// import Firebase
-// import FirebaseAnalytics
-// import FirebaseMessaging
-// import FirebaseRemoteConfig
+import Firebase
+import FirebaseAnalytics
+import FirebaseMessaging
+import FirebaseRemoteConfig
 import Flow
 import Form
 import Foundation
@@ -112,12 +112,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
 
-//        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
-//            guard let dynamicLinkUrl = link?.url else { return }
-//            self.handleDeepLink(dynamicLinkUrl)
-//        }
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
+            guard let dynamicLinkUrl = link?.url else { return }
+            self.handleDeepLink(dynamicLinkUrl)
+        }
 
-        return false
+        return handled
     }
 
     func registerForPushNotifications() -> Future<Void> {
@@ -199,17 +199,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
-//        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
-//
-//        if adyenRedirect {
-//            return adyenRedirect
-//        }
-//
-//        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
-//            guard let dynamicLinkUrl = dynamicLink.url else { return false }
-//            handleDeepLink(dynamicLinkUrl)
-//            return true
-//        }
+        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
+
+        if adyenRedirect {
+            return adyenRedirect
+        }
+
+        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
+            guard let dynamicLinkUrl = dynamicLink.url else { return false }
+            handleDeepLink(dynamicLinkUrl)
+            return true
+        }
         return false
     }
 
@@ -225,26 +225,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
-        //FirebaseApp.configure()
+        FirebaseApp.configure()
 
-        //launchWindow?.isOpaque = false
-        //launchWindow?.backgroundColor = UIColor.transparent
+        launchWindow?.isOpaque = false
+        launchWindow?.backgroundColor = UIColor.transparent
 
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
             let mirror = Mirror(reflecting: viewController)
-//            Analytics.setScreenName(
-//                viewController.debugPresentationTitle,
-//                screenClass: String(describing: mirror.subjectType)
-//            )
+            Analytics.setScreenName(
+                viewController.debugPresentationTitle,
+                screenClass: String(describing: mirror.subjectType)
+            )
         }
         alertActionWasPressed = { _, title in
-//            if let localizationKey = title.localizationKey?.description {
-//                Analytics.logEvent(
-//                    "alert_action_tap_\(localizationKey)",
-//                    parameters: nil
-//                )
-//            }
+            if let localizationKey = title.localizationKey?.description {
+                Analytics.logEvent(
+                    "alert_action_tap_\(localizationKey)",
+                    parameters: nil
+                )
+            }
         }
 
         let launch = Launch(
@@ -252,14 +252,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
 
         
-        //let (launchViewController, launchFuture) = launch.materialize()
-        //launchWindow?.rootViewController = launchViewController
-        //window.makeKeyAndVisible()
-        // launchWindow?.makeKeyAndVisible()
+        let (launchViewController, launchFuture) = launch.materialize()
+        launchWindow?.rootViewController = launchViewController
+        window.makeKeyAndVisible()
+         launchWindow?.makeKeyAndVisible()
 
         DefaultStyling.installCustom()
 
-        // Messaging.messaging().delegate = self
+        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
         let remoteConfigContainer = RemoteConfigContainer()
@@ -295,32 +295,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        //bag += launchFuture.onValue { _ in
-        //    self.window.makeKeyAndVisible()
-        //    self.launchWindow = nil
-        //}
+        bag += launchFuture.onValue { _ in
+            self.window.makeKeyAndVisible()
+            self.launchWindow = nil
+        }
 
         return true
     }
 }
 
-//extension AppDelegate: MessagingDelegate {
-//    func registerFCMToken(_ token: String) {
-//        let client: ApolloClient = Dependencies.shared.resolve()
-//        client.perform(mutation: RegisterPushTokenMutation(pushToken: token)).onValue { result in
-//            if result.data?.registerPushToken != nil {
-//                log.info("Did register push token for user")
-//            } else {
-//                log.info("Failed to register push token for user")
-//            }
-//        }
-//    }
-//
-//    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
-//        ApplicationState.setFirebaseMessagingToken(fcmToken)
-//        registerFCMToken(fcmToken)
-//    }
-//}
+extension AppDelegate: MessagingDelegate {
+    func registerFCMToken(_ token: String) {
+        let client: ApolloClient = Dependencies.shared.resolve()
+        client.perform(mutation: RegisterPushTokenMutation(pushToken: token)).onValue { result in
+            if result.data?.registerPushToken != nil {
+                log.info("Did register push token for user")
+            } else {
+                log.info("Failed to register push token for user")
+            }
+        }
+    }
+
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        ApplicationState.setFirebaseMessagingToken(fcmToken)
+        registerFCMToken(fcmToken)
+    }
+}
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {

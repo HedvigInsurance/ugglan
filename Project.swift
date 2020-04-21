@@ -26,6 +26,7 @@ let carthageFrameworks: [TargetDependency] = [
     .framework(path: "Carthage/Build/iOS/FirebaseAnalytics.framework"),
     .framework(path: "Carthage/Build/iOS/FirebaseCore.framework"),
     .framework(path: "Carthage/Build/iOS/abseil.framework"),
+    .framework(path: "Carthage/Build/iOS/nanopb.framework")
 ]
 
 let spmFrameworks: [TargetDependency] = [
@@ -44,8 +45,13 @@ let spmFrameworks: [TargetDependency] = [
     .package(product: "MarkdownKit"),
 ]
 
+let sdkFrameworks: [TargetDependency] = [
+    .sdk(name: "libc++.tbd"),
+    .sdk(name: "libz.tbd")
+]
+
 let stagingSettings = Settings(
-    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
+    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC"],
     configurations: [
         .debug(
             name: "debug",
@@ -101,13 +107,14 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: "com.hedvig.test.app",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Src/**", "AppSpecific/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
             dependencies: [
                 spmFrameworks,
                 carthageFrameworks,
+                sdkFrameworks
             ].flatMap { $0 },
             settings: stagingSettings
         ),
@@ -116,13 +123,14 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: "com.hedvig.app",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
             infoPlist: "Config/Production/Info.plist",
             sources: ["Src/**", "AppSpecific/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
             dependencies: [
                 spmFrameworks,
                 carthageFrameworks,
+                sdkFrameworks
             ].flatMap { $0 },
             settings: productionSettings
         )
