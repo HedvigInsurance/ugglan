@@ -1,4 +1,83 @@
 import ProjectDescription
+
+let carthageFrameworks: [TargetDependency] = [
+    .framework(path: "Carthage/Build/iOS/Adyen.framework"),
+    .framework(path: "Carthage/Build/iOS/Adyen3DS2.framework"),
+    .framework(path: "Carthage/Build/iOS/AdyenCard.framework"),
+    .framework(path: "Carthage/Build/iOS/AdyenDropIn.framework"),
+    .framework(path: "Carthage/Build/iOS/Crashlytics.framework"),
+    .framework(path: "Carthage/Build/iOS/Fabric.framework"),
+    .framework(path: "Carthage/Build/iOS/FBSDKCoreKit.framework"),
+    .framework(path: "Carthage/Build/iOS/GoogleUtilities.framework"),
+    .framework(path: "Carthage/Build/iOS/GoogleAppMeasurement.framework"),
+    .framework(path: "Carthage/Build/iOS/Protobuf.framework"),
+    .framework(path: "Carthage/Build/iOS/BoringSSL-GRPC.framework"),
+    .framework(path: "Carthage/Build/iOS/leveldb-library.framework"),
+    .framework(path: "Carthage/Build/iOS/gRPC-Core.framework"),
+    .framework(path: "Carthage/Build/iOS/gRPC-C++.framework"),
+    .framework(path: "Carthage/Build/iOS/PromisesObjC.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseInstallations.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseMessaging.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseFirestore.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseABTesting.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseInstanceID.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseRemoteConfig.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseDynamicLinks.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseAnalytics.framework"),
+    .framework(path: "Carthage/Build/iOS/FirebaseCore.framework"),
+    .framework(path: "Carthage/Build/iOS/abseil.framework"),
+]
+
+let spmFrameworks: [TargetDependency] = [
+    .package(product: "Apollo"),
+    .package(product: "ApolloWebSocket"),
+    .package(product: "Flow"),
+    .package(product: "Form"),
+    .package(product: "Presentation"),
+    .package(product: "FlowFeedback"),
+    .package(product: "UICollectionView-AnimatedScroll"),
+    .package(product: "Ease"),
+    .package(product: "DynamicColor"),
+    .package(product: "Disk"),
+    .package(product: "SnapKit"),
+    .package(product: "Kingfisher"),
+    .package(product: "MarkdownKit"),
+]
+
+let stagingSettings = Settings(
+    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
+    configurations: [
+        .debug(
+            name: "debug",
+            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"],
+            xcconfig: nil
+        ),
+        .release(
+            name: "release",
+            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
+            xcconfig: nil
+        ),
+    ],
+    defaultSettings: .recommended
+)
+
+let productionSettings = Settings(
+    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"],
+    configurations: [
+        .debug(
+            name: "debug",
+            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"],
+            xcconfig: nil
+        ),
+        .release(
+            name: "release",
+            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"],
+            xcconfig: nil
+        ),
+    ],
+    defaultSettings: .recommended
+)
+
 let project = Project(
     name: "Ugglan",
     organizationName: "Hedvig AB",
@@ -16,46 +95,36 @@ let project = Project(
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
         .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "5.13.1")),
     ],
-    settings: Settings(
-     base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
-     configurations: [
-            .debug(
-                name: "debug",
-                settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
-                xcconfig: nil
-            ),
-            .release(
-                name: "debug",
-                settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
-                xcconfig: nil
-            ),
-    ],
-     defaultSettings: .recommended
-    ),
     targets: [
         Target(
             name: "Ugglan",
-           platform: .iOS,
-           product: .app,
-           bundleId: "com.hedvig.test.app",
-           deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
-           infoPlist: "Config/Test/Info.plist",
-           sources: ["Src/**", "AppSpecific/**"],
-           resources: ["Resources/**", "Config/Test/Resources/**"],
-           dependencies: [
-            .package(product: "Apollo"),
-            .package(product: "ApolloWebSocket"),
-            .package(product: "Flow"),
-            .package(product: "Form"),
-            .package(product: "Presentation"),
-            .package(product: "FlowFeedback"),
-            .package(product: "UICollectionView-AnimatedScroll"),
-            .package(product: "Ease"),
-            .package(product: "DynamicColor"),
-            .package(product: "Disk"),
-            .package(product: "SnapKit"),
-            .package(product: "Kingfisher"),
-            .package(product: "MarkdownKit")
-        ])
+            platform: .iOS,
+            product: .app,
+            bundleId: "com.hedvig.test.app",
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+            infoPlist: "Config/Test/Info.plist",
+            sources: ["Src/**", "AppSpecific/**"],
+            resources: ["Resources/**", "Config/Test/Resources/**"],
+            dependencies: [
+                spmFrameworks,
+                carthageFrameworks,
+            ].flatMap { $0 },
+            settings: stagingSettings
+        ),
+        Target(
+            name: "Hedvig",
+            platform: .iOS,
+            product: .app,
+            bundleId: "com.hedvig.app",
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+            infoPlist: "Config/Production/Info.plist",
+            sources: ["Src/**", "AppSpecific/**"],
+            resources: ["Resources/**", "Config/Production/Resources/**"],
+            dependencies: [
+                spmFrameworks,
+                carthageFrameworks,
+            ].flatMap { $0 },
+            settings: productionSettings
+        )
     ]
 )

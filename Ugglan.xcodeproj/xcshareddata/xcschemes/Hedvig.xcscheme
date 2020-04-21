@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "35C8D209267B2DE6857B0F27"
-               BuildableName = "Ugglan.app"
-               BlueprintName = "Ugglan"
+               BlueprintIdentifier = "C022BFF5B22A6F2D47F5476D"
+               BuildableName = "Hedvig.app"
+               BlueprintName = "Hedvig"
                ReferencedContainer = "container:Ugglan.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "35C8D209267B2DE6857B0F27"
-            BuildableName = "Ugglan.app"
-            BlueprintName = "Ugglan"
+            BlueprintIdentifier = "C022BFF5B22A6F2D47F5476D"
+            BuildableName = "Hedvig.app"
+            BlueprintName = "Hedvig"
             ReferencedContainer = "container:Ugglan.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -65,9 +65,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "35C8D209267B2DE6857B0F27"
-            BuildableName = "Ugglan.app"
-            BlueprintName = "Ugglan"
+            BlueprintIdentifier = "C022BFF5B22A6F2D47F5476D"
+            BuildableName = "Hedvig.app"
+            BlueprintName = "Hedvig"
             ReferencedContainer = "container:Ugglan.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
