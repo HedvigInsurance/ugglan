@@ -6,8 +6,8 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-//import Firebase
-//import FirebaseAnalytics
+import Firebase
+import FirebaseAnalytics
 import Flow
 import Form
 import Foundation
@@ -60,11 +60,11 @@ extension ButtonRow: Viewable {
         }
 
         bag += events.onSelect.withLatestFrom(text.atOnce().plain()).onValue { _, title in
-//            if let localizationKey = title.localizationKey?.description {
-//                Analytics.logEvent(localizationKey, parameters: [
-//                    "context": "ButtonRow",
-//                ])
-//            }
+            if let localizationKey = title.localizationKey?.description {
+                Analytics.logEvent(localizationKey, parameters: [
+                    "context": "ButtonRow",
+                ])
+            }
         }
 
         row.append(label)
