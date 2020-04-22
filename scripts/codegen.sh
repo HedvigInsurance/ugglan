@@ -1,6 +1,6 @@
 buildDir=$(xcodebuild \
 -workspace Ugglan.xcworkspace \
--scheme Codegen \
+-scheme "Apollo Codegen" \
 build | grep 'TARGET_BUILD_DIR')
 
 eval $buildDir
