@@ -26,7 +26,8 @@ do {
 }
 
 let targetURL = sourceRootURL
-    .appendingPathComponent("Src")
+    .appendingPathComponent("App")
+    .appendingPathComponent("Sources")
     .appendingPathComponent("Data")
 
 let codegenOptions = ApolloCodegenOptions(targetRootURL: targetURL)
