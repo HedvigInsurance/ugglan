@@ -1,1 +1,1 @@
-swiftTranslationsCodegen --projects '[App, IOS]' --destination 'Src/Assets/Localization/Localization.swift'
+swiftTranslationsCodegen --projects '[App, IOS]' --destination 'Projects/App/Sources/Assets/Localization/Localization.swift'
