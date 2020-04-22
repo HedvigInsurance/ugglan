@@ -27,14 +27,27 @@ struct Masking {
         return ""
     }
     
-    func maskValue(text: String, type: MaskType, removedChar: String) -> String {
+    func maskValue(text: String, type: MaskType, oldText: String) -> String {
         switch type {
         case .personalNumber:
-            if text.range(of: "^[0-9]{6}", options: .regularExpression) != nil {
-                let formattedText = removedChar == "-" ? text.dropLast() : text + "-"
-                return text + "-"
+            if text.count <= 11 {
+                let sanitizedString = text.replacingOccurrences(of: "-", with: "")
+                
+                if sanitizedString.range(of: "^[0-9]{6}", options: .regularExpression) != nil {
+                    print(oldText, text)
+                    if oldText.count >= text.count && oldText.last == "-" {
+                        return String(text.dropLast())
+                    } else {
+                        var formattedString = sanitizedString
+                        formattedString.insert("-", at: sanitizedString.index(sanitizedString.startIndex, offsetBy: 6))
+                        return formattedString
+                    }
+                }
+                
+                return sanitizedString
+            } else {
+                return oldText
             }
-            return ""
         default:
             return text
         }

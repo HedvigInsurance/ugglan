@@ -29,11 +29,13 @@ extension EmbarkTextAction: Viewable {
                 
         view.addArrangedSubview(textInputView)
         
-        let currentTextSignal: ReadWriteSignal<String> = ReadWriteSignal("")
+        var oldText = ""
         
-        bag += textSignal.onValue { textValue in
+        bag += textSignal.onValue { textValue in
             print("TEXT:", textValue)
-            //let diff = 
+            let maskedValue = Masking().maskValue(text: textValue, type: .personalNumber, oldText: oldText)
+            textSignal.value = maskedValue
+            oldText = maskedValue
         }
         
         let button = Button(
