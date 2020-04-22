@@ -100,7 +100,7 @@ let unitTestsSettings = Settings(
 )
 
 let unitTestsRecordSettings = Settings(
-    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC"],
+    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC", "DEVELOPMENT_TEAM": team],
     configurations: [
         .debug(
             name: "debug",
