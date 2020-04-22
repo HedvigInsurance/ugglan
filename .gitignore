@@ -16,6 +16,7 @@ production.xcodeproj
 Ugglan.xcworkspace
 Ugglan.xcodeproj
 UITestsImages/FailureDiffs
+Src/Data/operationIDs.json
 
 ## Various settings
 *.pbxuser

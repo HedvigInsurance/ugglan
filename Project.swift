@@ -201,5 +201,29 @@ let project = Project(
             ].flatMap { $0 },
             settings: productionSettings
         )
+    ],
+    schemes: [
+        Scheme(
+            name: "Ugglan",
+            shared: true,
+            buildAction: BuildAction(targets: ["Ugglan"]),
+            runAction: RunAction(executable: "Ugglan")
+        ),
+        Scheme(
+            name: "Hedvig",
+            shared: true,
+            buildAction: BuildAction(targets: ["Hedvig"]),
+            runAction: RunAction(executable: "Hedvig")
+        ),
+        Scheme(
+            name: "UnitTests",
+            shared: true,
+            testAction: TestAction(targets: ["Ugglan-UnitTests"])
+        ),
+        Scheme(
+            name: "UnitTests Record Snapshots",
+            shared: true,
+            testAction: TestAction(targets: ["Ugglan-UnitTests-Record"])
+        ),
     ]
 )
