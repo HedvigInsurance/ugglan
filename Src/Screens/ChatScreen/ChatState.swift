@@ -131,7 +131,7 @@ class ChatState {
     func subscribe() {
         subscriptionBag.dispose()
         subscriptionBag += client.subscribe(
-            subscription: ChatMessagesSubscription(),
+            subscription: ChatMessagesSubscriptionSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
         .compactMap(on: .concurrentBackground) { $0.data?.message.fragments.messageData }

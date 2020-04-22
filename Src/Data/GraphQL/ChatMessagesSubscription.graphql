@@ -1,4 +1,4 @@
-subscription ChatMessages_ {
+subscription ChatMessagesSubscription {
   message {
     ...MessageData
   }

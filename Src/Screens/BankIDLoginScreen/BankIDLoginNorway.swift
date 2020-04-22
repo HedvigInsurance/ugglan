@@ -61,14 +61,14 @@ extension BankIDLoginNorway: Presentable {
             return .allow
         }
 
-        bag += client.subscribe(subscription: BankIdAuthSubscription()).compactMap { $0.data?.authStatus?.status }.filter(predicate: { status -> Bool in
+        bag += client.subscribe(subscription: BankIdAuthSubscriptionSubscription()).compactMap { $0.data?.authStatus?.status }.filter(predicate: { status -> Bool in
             status == .success
         }).take(first: 1).onValue { _ in
             let appDelegate = UIApplication.shared.appDelegate
-//
-//            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-//                appDelegate.registerFCMToken(fcmToken)
-//            }
+
+            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                appDelegate.registerFCMToken(fcmToken)
+            }
 
             AnalyticsCoordinator().setUserId()
 

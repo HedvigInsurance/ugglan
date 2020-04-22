@@ -24,7 +24,7 @@ extension WebOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-
+                
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
         settingsButton.tintColor = .navigationItemMutedTintColor

@@ -25,8 +25,8 @@ extension Date {
     }
 }
 
-extension ChatPreviewSubscription.Data.Message: Equatable {
-    public static func == (lhs: ChatPreviewSubscription.Data.Message, rhs: ChatPreviewSubscription.Data.Message) -> Bool {
+extension ChatPreviewSubscriptionSubscription.Data.Message: Equatable {
+    public static func == (lhs: ChatPreviewSubscriptionSubscription.Data.Message, rhs: ChatPreviewSubscriptionSubscription.Data.Message) -> Bool {
         return lhs.globalId == rhs.globalId
     }
 }
@@ -187,7 +187,7 @@ extension ChatPreview: Viewable {
 
         func setupSubscription() {
             subscriptionBag += client.subscribe(
-                subscription: ChatPreviewSubscription()
+                subscription: ChatPreviewSubscriptionSubscription()
             )
             .compactMap { $0.data?.message }
             .distinct()

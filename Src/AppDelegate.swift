@@ -19,6 +19,7 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import Bugsnag
 
 let log = Logger.self
 
@@ -226,6 +227,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
+        
+        let bugsnagConfig = BugsnagConfiguration()
+        bugsnagConfig.apiKey = "9733585e8e589b5233a03a49bf4f89c4"
+        bugsnagConfig.appVersion = Bundle.main.appVersion
+        bugsnagConfig.releaseStage = ApplicationState.getTargetEnvironment().rawValue
+        
+        Bugsnag.start(with: bugsnagConfig)
 
         launchWindow?.isOpaque = false
         launchWindow?.backgroundColor = UIColor.transparent

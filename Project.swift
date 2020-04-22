@@ -26,7 +26,8 @@ let carthageFrameworks: [TargetDependency] = [
     .framework(path: "Carthage/Build/iOS/FirebaseAnalytics.framework"),
     .framework(path: "Carthage/Build/iOS/FirebaseCore.framework"),
     .framework(path: "Carthage/Build/iOS/abseil.framework"),
-    .framework(path: "Carthage/Build/iOS/nanopb.framework")
+    .framework(path: "Carthage/Build/iOS/nanopb.framework"),
+    .framework(path: "Carthage/Build/iOS/Bugsnag.framework")
 ]
 
 let spmFrameworks: [TargetDependency] = [
@@ -128,6 +129,16 @@ let project = Project(
     ],
     targets: [
         Target(
+            name: "Codegen",
+            platform: .macOS,
+            product: .app,
+            bundleId: "com.hedvig.codegen",
+            infoPlist: "Codegen/Info.plist",
+            sources: ["Codegen/Sources/**"],
+            resources: [],
+            dependencies: [.package(product: "ApolloCodegenLib")]
+        ),
+        Target(
             name: "Ugglan",
             platform: .iOS,
             product: .app,
@@ -136,6 +147,7 @@ let project = Project(
             infoPlist: "Config/Test/Info.plist",
             sources: ["Src/**", "AppSpecific/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
+            actions: [],
             dependencies: [
                 spmFrameworks,
                 carthageFrameworks,

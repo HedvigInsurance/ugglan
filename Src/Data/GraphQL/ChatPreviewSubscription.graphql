@@ -1,4 +1,4 @@
-subscription ChatPreview_ {
+subscription ChatPreviewSubscription {
     message {
         id
         globalId
