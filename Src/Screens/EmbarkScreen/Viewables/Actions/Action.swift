@@ -36,6 +36,9 @@ extension Action: Viewable {
         let backButton = Button(title: "Go back", type: .standardSmall(backgroundColor: .black, textColor: .white))
         bag += view.addArranged(backButton)
         
+        let spacing = Spacing(height: 12)
+        bag += view.addArranged(spacing)
+        
         bag += self.dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
             view.transform = CGAffineTransform(translationX: 0, y: 300)
         }.delay(by: 0.25).animated(style: SpringAnimationStyle.lightBounce()) { _ in

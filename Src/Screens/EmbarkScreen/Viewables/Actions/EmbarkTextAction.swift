@@ -30,9 +30,7 @@ extension EmbarkTextAction: Viewable {
         view.addArrangedSubview(textInputView)
         
         var oldText = ""
-        
         bag += textSignal.onValue { textValue in
-            print("TEXT:", textValue)
             let maskedValue = Masking().maskValue(text: textValue, type: .personalNumber, oldText: oldText)
             textSignal.value = maskedValue
             oldText = maskedValue
