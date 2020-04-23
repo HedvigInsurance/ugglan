@@ -13,6 +13,8 @@ struct Action {
     let store: EmbarkStore
     let dataSignal: ReadSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage.Action?>
     let passageName: ReadSignal<String?>
+    let goBackSignal: ReadWriteSignal<Void>
+    let canGoBackSignal: ReadSignal<Bool>
 }
 
 struct ActionResponse {
@@ -34,7 +36,10 @@ extension Action: Viewable {
         let bag = DisposeBag()
         
         let backButton = Button(title: "Go back", type: .standardSmall(backgroundColor: .black, textColor: .white))
-        bag += view.addArranged(backButton)
+        bag += backButton.onTapSignal.bindTo(goBackSignal)
+        bag += view.addArranged(backButton) { buttonView in
+            bag += canGoBackSignal.atOnce().map {!$0}.bindTo(buttonView, \.isHidden)
+        }
         
         let spacing = Spacing(height: 12)
         bag += view.addArranged(spacing)

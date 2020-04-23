@@ -17,7 +17,6 @@ struct EmbarkMessages {
 
 extension EmbarkMessages: Viewable {
     func parseMessage(message: MessageFragment) -> String? {
-        print("MESSAGE RAW:", message)
         if message.expressions.count == 0 {
             return message.text
         }
@@ -46,8 +45,6 @@ extension EmbarkMessages: Viewable {
     }
     
     func replacePlaceholders(message: String) -> String {
-        print("MESSAGE:", message)
-        
         let placeholderRegex = "(\\{[a-zA-Z0-9_.]+\\})"
         
         do {

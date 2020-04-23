@@ -49,18 +49,31 @@ extension Embark: Presentable {
         let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
         let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
         
+        let goBackSignal = ReadWriteSignal<Void>(())
+        let canGoBackSignal = passageHistorySignal.map { $0.count != 0 }
+        
         let passage = Passage(
             store: store,
-            dataSignal: currentPassageSignal
+            dataSignal: currentPassageSignal,
+            goBackSignal: goBackSignal,
+            canGoBackSignal: canGoBackSignal
         )
         bag += view.add(passage) { passageView in
             passageView.snp.makeConstraints { make in
                 make.top.bottom.leading.trailing.equalToSuperview()
             }
         }.onValue { link in
+            if let currentPassage = currentPassageSignal.value {
+                passageHistorySignal.value.append(currentPassage)
+            }
             currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
                 passage.name == link.name
             })
+        }
+        
+        bag += goBackSignal.onValue { _ in
+            currentPassageSignal.value = passageHistorySignal.value.last
+            passageHistorySignal.value = passageHistorySignal.value.dropLast()
         }
         
         bag += client.fetch(query: EmbarkStoryQuery(name: name)).onValue { data in

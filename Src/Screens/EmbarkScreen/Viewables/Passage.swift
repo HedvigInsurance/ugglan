@@ -12,6 +12,8 @@ import UIKit
 struct Passage {
     let store: EmbarkStore
     let dataSignal: ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>
+    let goBackSignal: ReadWriteSignal<Void>
+    let canGoBackSignal: ReadSignal<Bool>
 }
 
 extension Passage: Viewable {
@@ -33,7 +35,9 @@ extension Passage: Viewable {
         let action = Action(
             store: store,
             dataSignal: dataSignal.map { $0?.action },
-            passageName: dataSignal.map { $0?.name }
+            passageName: dataSignal.map { $0?.name },
+            goBackSignal: goBackSignal,
+            canGoBackSignal: canGoBackSignal
         )
         
         bag += NotificationCenter.default
