@@ -1,5 +1,4 @@
 github "facebook/facebook-ios-sdk" == 5.13.0
-github "bugsnag/bugsnag-cocoa"
 github "adyen/adyen-ios" "3.3.0"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
