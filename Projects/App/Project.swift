@@ -114,11 +114,11 @@ let productionSettings = Settings(
 )
 
 let unitTestsSettings = Settings(
-    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC", "DEVELOPMENT_TEAM": team],
+    base: baseSettings,
     configurations: [
         .debug(
             name: "debug",
-            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"],
+            settings: stagingDebugSettings,
             xcconfig: nil
         ),
     ],
@@ -126,11 +126,11 @@ let unitTestsSettings = Settings(
 )
 
 let unitTestsRecordSettings = Settings(
-    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC", "DEVELOPMENT_TEAM": team],
+    base: baseSettings,
     configurations: [
         .debug(
             name: "debug",
-            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING RECORD_MODE"],
+            settings: stagingDebugSettings,
             xcconfig: nil
         ),
     ],
