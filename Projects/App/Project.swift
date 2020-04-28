@@ -50,36 +50,63 @@ let sdkFrameworks: [TargetDependency] = [
     .sdk(name: "libz.tbd")
 ]
 
+
+func +<Key, Value>(l: Dictionary<Key, Value>, r: Dictionary<Key, Value>) -> Dictionary<Key, Value> {
+    var newDict = Dictionary<Key, Value>()
+    
+    for (key, value) in l {
+        newDict[key] = value
+    }
+    
+    for (key, value) in r {
+        newDict[key] = value
+    }
+    
+    return newDict
+}
+
 let team = "AW656G5PFM"
 
+let baseSettings: [String: SettingValue] = [
+    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
+    "OTHER_LDFLAGS": "-ObjC",
+    "DEVELOPMENT_TEAM": "AW656G5PFM"
+]
+
+let stagingDebugSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"]
+let stagingReleaseSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"]
+
 let stagingSettings = Settings(
-    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING", "OTHER_LDFLAGS": "-ObjC", "DEVELOPMENT_TEAM": team],
+    base: baseSettings,
     configurations: [
         .debug(
             name: "debug",
-            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"],
+            settings: stagingDebugSettings,
             xcconfig: nil
         ),
         .release(
             name: "release",
-            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
+            settings: stagingReleaseSettings,
             xcconfig: nil
         ),
     ],
     defaultSettings: .recommended
 )
 
+let productionDebugSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"]
+let productionReleaseSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"]
+
 let productionSettings = Settings(
-    base: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION", "OTHER_LDFLAGS": "-ObjC", "DEVELOPMENT_TEAM": team],
+    base: baseSettings,
     configurations: [
         .debug(
             name: "debug",
-            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"],
+            settings: productionDebugSettings,
             xcconfig: nil
         ),
         .release(
             name: "release",
-            settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"],
+            settings: productionReleaseSettings,
             xcconfig: nil
         ),
     ],
