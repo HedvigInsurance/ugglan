@@ -70,7 +70,8 @@ let team = "AW656G5PFM"
 let baseSettings: [String: SettingValue] = [
     "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
     "OTHER_LDFLAGS": "-ObjC",
-    "DEVELOPMENT_TEAM": "AW656G5PFM"
+    "DEVELOPMENT_TEAM": "AW656G5PFM",
+    "SDKROOT": "iphoneos"
 ]
 
 let stagingDebugSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"]
