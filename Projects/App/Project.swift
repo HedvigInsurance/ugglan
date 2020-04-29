@@ -51,7 +51,7 @@ let sdkFrameworks: [TargetDependency] = [
 ]
 
 
-func +<Key, Value>(l: Dictionary<Key, Value>, r: Dictionary<Key, Value>) -> Dictionary<Key, Value> {
+func +<Key, Value>(l: Dictionary<Key, Value>, r: Dictionary<Key, Value>) -> Dictionary<Key, Value> {
     var newDict = Dictionary<Key, Value>()
     
     for (key, value) in l {
