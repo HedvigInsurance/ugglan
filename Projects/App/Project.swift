@@ -241,12 +241,14 @@ let project = Project(
             name: "UnitTests",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
+            runAction: RunAction(executable: "Ugglan"),
             testAction: TestAction(targets: ["Ugglan-UnitTests"])
         ),
         Scheme(
             name: "UnitTests Record Snapshots",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
+            runAction: RunAction(executable: "Ugglan"),
             testAction: TestAction(targets: ["Ugglan-UnitTests-Record"])
         ),
     ]
