@@ -153,7 +153,7 @@ let project = Project(
         .package(url: "https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git", .branch("master")),
         .package(url: "https://github.com/HedvigInsurance/ease.git", .branch("master")),
         .package(url: "https://github.com/hedviginsurance/MarkdownKit.git", .branch("master")),
-        .package(url: "https://github.com/yannickl/DynamicColor.git", .upToNextMajor(from: "5.0.0")),
+        .package(url: "https://github.com/yannickl/DynamicColor.git", .upToNextMajor(from: "4.2.1")),
         .package(url: "https://github.com/saoudrizwan/Disk.git", .upToNextMajor(from: "0.6.4")),
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
         .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "5.13.1")),
