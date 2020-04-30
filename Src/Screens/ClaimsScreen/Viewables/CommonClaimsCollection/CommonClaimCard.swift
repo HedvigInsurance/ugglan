@@ -242,7 +242,7 @@ extension CommonClaimCard: Viewable {
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
-                make.leading.equalToSuperview().inset(10)
+                make.leading.equalTo(view.safeAreaLayoutGuide).inset(10)
                 make.width.equalTo(30)
                 make.height.equalTo(30)
             }
@@ -295,15 +295,15 @@ extension CommonClaimCard: Viewable {
                 closeButtonView.transform = CGAffineTransform(translationX: 0, y: point.y)
             }
                         
-            bag += scrollPositionSignal.animated(style: AnimationStyle.easeOut(duration: 0.75), animations: { point in
-                if point.y > 10 {
-                    closeButtonView.alpha = 0
-                    titleLabel.alpha = 0
-                } else {
-                    closeButtonView.alpha = 1
-                    titleLabel.alpha = 1
+            bag += scrollPositionSignal.atOnce().onValue { point in
+                let offset = point.y / 100
+                let newAlphaValue = 1.0 - offset
+                
+                if newAlphaValue >= 0 && newAlphaValue <= 1 {
+                    closeButtonView.alpha = newAlphaValue
+                    titleLabel.alpha = newAlphaValue
                 }
-            })
+            }
             
         }
 
