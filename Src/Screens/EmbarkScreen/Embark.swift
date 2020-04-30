@@ -49,7 +49,7 @@ extension Embark: Presentable {
         let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
         let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
         
-        let goBackSignal = ReadWriteSignal<Void>(())
+        let goBackSignal = ReadWriteSignal<Bool>(false)
         let canGoBackSignal = passageHistorySignal.map { $0.count != 0 }
         
         let passage = Passage(
@@ -71,9 +71,11 @@ extension Embark: Presentable {
             })
         }
         
-        bag += goBackSignal.onValue { _ in
-            currentPassageSignal.value = passageHistorySignal.value.last
-            passageHistorySignal.value = passageHistorySignal.value.dropLast()
+        bag += goBackSignal.onValue { value in
+            if value {
+                currentPassageSignal.value = passageHistorySignal.value.last
+                passageHistorySignal.value = passageHistorySignal.value.dropLast()
+            }
         }
         
         bag += client.fetch(query: EmbarkStoryQuery(name: name)).onValue { data in

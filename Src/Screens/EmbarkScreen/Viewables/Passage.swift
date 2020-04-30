@@ -12,7 +12,7 @@ import UIKit
 struct Passage {
     let store: EmbarkStore
     let dataSignal: ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>
-    let goBackSignal: ReadWriteSignal<Void>
+    let goBackSignal: ReadWriteSignal<Bool>
     let canGoBackSignal: ReadSignal<Bool>
 }
 
@@ -28,7 +28,8 @@ extension Passage: Viewable {
         let embarkMessages = EmbarkMessages(
             store: store,
             dataSignal: dataSignal.map { $0?.messages },
-            responseSignal: dataSignal.map { $0?.response.fragments.responseFragment }
+            responseSignal: dataSignal.map { $0?.response.fragments.responseFragment },
+            goBackSignal: goBackSignal
         )
         bag += view.addArranged(embarkMessages)
         

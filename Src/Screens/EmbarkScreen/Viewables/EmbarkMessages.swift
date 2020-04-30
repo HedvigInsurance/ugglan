@@ -13,6 +13,7 @@ struct EmbarkMessages {
     let store: EmbarkStore
     let dataSignal: ReadSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage.Message]?>
     let responseSignal: ReadSignal<ResponseFragment?>
+    let goBackSignal: ReadWriteSignal<Bool>
 }
 
 extension EmbarkMessages: Viewable {
@@ -76,12 +77,14 @@ extension EmbarkMessages: Viewable {
         let previousResponseSignal: ReadWriteSignal<ResponseFragment?> = ReadWriteSignal(nil)
         
         let animatedResponseSignal: Signal = dataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
-            if let singleMessage = previousResponse?.asEmbarkMessage {
-                let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
-                let responseText = self.replacePlaceholders(message: msgText ?? "")
-                
-                let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
-                bag += view.addArranged(messageBubble)
+            if self.goBackSignal.value == false {
+                if let singleMessage = previousResponse?.asEmbarkMessage {
+                    let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
+                    let responseText = self.replacePlaceholders(message: msgText ?? "")
+                    
+                    let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
+                    bag += view.addArranged(messageBubble)
+                }
             }
             previousResponseSignal.value = self.responseSignal.value
         })
@@ -106,6 +109,10 @@ extension EmbarkMessages: Viewable {
                 let (index, messageText) = arg
                 
                 return view.addArranged(MessageBubble(text: messageText, delay: 0, animated: true, animationDelay: TimeInterval(index)))
+            }
+            
+            if self.goBackSignal.value == true {
+                self.goBackSignal.value = false
             }
             
             /*for (index, stackedMessage) in view.subviews.enumerated() {
