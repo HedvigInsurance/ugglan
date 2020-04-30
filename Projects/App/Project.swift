@@ -47,7 +47,8 @@ let spmFrameworks: [TargetDependency] = [
 
 let sdkFrameworks: [TargetDependency] = [
     .sdk(name: "libc++.tbd"),
-    .sdk(name: "libz.tbd")
+    .sdk(name: "libz.tbd"),
+    .sdk(name: "SwiftUI.framework", status: .optional)
 ]
 
 
