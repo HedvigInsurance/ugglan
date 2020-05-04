@@ -296,12 +296,15 @@ extension CommonClaimCard: Viewable {
             }
                         
             bag += scrollPositionSignal.atOnce().onValue { point in
-                let offset = point.y / 100
+                let offset = point.y / 50
                 let newAlphaValue = 1.0 - offset
                 
                 if newAlphaValue >= 0 && newAlphaValue <= 1 {
                     closeButtonView.alpha = newAlphaValue
                     titleLabel.alpha = newAlphaValue
+                } else if newAlphaValue <= 0.1 {
+                     closeButtonView.alpha = 0
+                     titleLabel.alpha = 0
                 }
             }
             
