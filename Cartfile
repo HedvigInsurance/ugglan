@@ -2,7 +2,6 @@ github "facebook/facebook-ios-sdk" == 5.13.0
 github "adyen/adyen-ios" "3.3.0"
 github "onevcat/Kingfisher" "5.13.4"
 
-binary "https://raw.githubusercontent.com/Instabug/Instabug-iOS/master/Instabug.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.json"

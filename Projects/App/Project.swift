@@ -27,7 +27,6 @@ let carthageFrameworks: [TargetDependency] = [
     .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),
     .framework(path: "../../Carthage/Build/iOS/abseil.framework"),
     .framework(path: "../../Carthage/Build/iOS/nanopb.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Instabug.framework"),
     .framework(path: "../../Carthage/Build/iOS/Kingfisher.framework")
 ]
 
