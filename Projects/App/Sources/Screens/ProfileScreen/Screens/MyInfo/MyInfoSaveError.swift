@@ -15,13 +15,13 @@ extension MyInfoSaveError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .phoneNumberEmpty:
-            return String(key: .MY_INFO_PHONE_NUMBER_EMPTY_ERROR)
+            return L10n.myInfoPhoneNumberEmptyError
         case .phoneNumberMalformed:
-            return String(key: .MY_INFO_PHONE_NUMBER_MALFORMED_ERROR)
+            return L10n.myInfoPhoneNumberMalformedError
         case .emailEmpty:
-            return String(key: .MY_INFO_EMAIL_EMPTY_ERROR)
+            return L10n.myInfoEmailEmptyError
         case .emailMalformed:
-            return String(key: .MY_INFO_EMAIL_MALFORMED_ERROR)
+            return L10n.myInfoEmailMalformedError
         }
     }
 }

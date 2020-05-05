@@ -21,7 +21,7 @@ extension AboutRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: String(key: .PROFILE_ABOUT_ROW), style: .rowTitle))
+        row.append(UILabel(value: L10n.profileAboutRow, style: .rowTitle))
 
         let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 

@@ -99,9 +99,9 @@ extension UpsellingFooter: Viewable {
 
                 if !hasTravelAgreement {
                     innerBag += stackView.addArranged(UpsellingBox(
-                        title: String(key: .UPSELL_NOTIFICATION_TRAVEL_TITLE),
-                        description: String(key: .UPSELL_NOTIFICATION_TRAVEL_DESCRIPTION),
-                        buttonText: String(key: .UPSELL_NOTIFICATION_TRAVEL_CTA)
+                        title: L10n.upsellNotificationTravelTitle,
+                        description: L10n.upsellNotificationTravelDescription,
+                        buttonText: L10n.upsellNotificationTravelCta
                     ))
                 }
 
@@ -111,9 +111,9 @@ extension UpsellingFooter: Viewable {
 
                 if !hasHomeContentsAgreement {
                     innerBag += stackView.addArranged(UpsellingBox(
-                        title: String(key: .UPSELL_NOTIFICATION_CONTENT_TITLE),
-                        description: String(key: .UPSELL_NOTIFICATION_CONTENT_DESCRIPTION),
-                        buttonText: String(key: .UPSELL_NOTIFICATION_CONTENT_CTA)
+                        title: L10n.upsellNotificationContentTitle,
+                        description: L10n.upsellNotificationContentDescription,
+                        buttonText: L10n.upsellNotificationContentCta
                     ))
                 }
             case .se:

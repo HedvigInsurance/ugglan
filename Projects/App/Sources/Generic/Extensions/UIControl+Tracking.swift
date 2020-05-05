@@ -15,7 +15,7 @@ extension UIControl {
     var trackedTouchUpInsideSignal: Signal<Void> {
         return signal(for: .touchUpInside).atValue {
             if let accessibilityLabel = self.accessibilityLabel {
-                if let localizationKey = accessibilityLabel.localizationKey?.description {
+                if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
                     Analytics.logEvent(localizationKey, parameters: [
                         "context": "UIControl",
                     ])

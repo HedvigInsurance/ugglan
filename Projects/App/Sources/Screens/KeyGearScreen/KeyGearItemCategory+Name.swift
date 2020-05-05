@@ -11,21 +11,21 @@ extension KeyGearItemCategory {
     var name: String {
         switch self {
         case .computer:
-            return String(key: .ITEM_TYPE_COMPUTER)
+            return L10n.itemTypeComputer
         case .phone:
-            return String(key: .ITEM_TYPE_PHONE)
+            return L10n.itemTypePhone
         case .tv:
-            return String(key: .ITEM_TYPE_TV)
+            return L10n.itemTypeTv
         case .jewelry:
-            return String(key: .ITEM_TYPE_JEWELRY)
+            return L10n.itemTypeJewelry
         case .bike:
-            return String(key: .ITEM_TYPE_BIKE)
+            return L10n.itemTypeBike
         case .watch:
-            return String(key: .ITEM_TYPE_WATCH)
+            return L10n.itemTypeWatch
         case .smartWatch:
-            return String(key: .ITEM_TYPE_SMART_WATCH)
+            return L10n.itemTypeSmartWatch
         case .tablet:
-            return String(key: .ITEM_TYPE_TABLET)
+            return L10n.itemTypeTablet
         case .__unknown:
             return ""
         }

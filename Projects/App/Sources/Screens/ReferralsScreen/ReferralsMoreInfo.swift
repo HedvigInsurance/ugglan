@@ -30,20 +30,20 @@ extension ReferralsMoreInfo: Presentable {
 
         containerStackView.addArrangedSubview(containerView)
 
-        let title = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_MORE_INFO_HEADLINE), style: .draggableOverlayTitle)
+        let title = MultilineLabel(value: L10n.referralProgressMoreInfoHeadline, style: .draggableOverlayTitle)
         bag += containerView.addArranged(title)
 
-        let body = MarkdownText(textSignal: .static(String(key: .REFERRAL_PROGRESS_MORE_INFO_PARAGRAPH(referralValue: "10"))), style: .bodyOffBlack)
+        let body = MarkdownText(textSignal: .static(L10n.referralProgressMoreInfoParagraph("10")), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
-        let button = Button(title: String(key: .REFERRAL_PROGRESS_MORE_INFO_CTA), type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack))
+        let button = Button(title: L10n.referralProgressMoreInfoCta, type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack))
         bag += containerView.addArranged(button.wrappedIn(UIStackView())) { stackView in
             stackView.alignment = .center
             stackView.axis = .vertical
         }
 
         bag += button.onTapSignal.onValue { _ in
-            guard let url = URL(string: String(key: .REFERRAL_MORE_INFO_LINK)) else { return }
+            guard let url = URL(string: L10n.referralMoreInfoLink) else { return }
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
 

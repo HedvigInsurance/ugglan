@@ -40,7 +40,7 @@ extension OfferSummary: Viewable {
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
-            value: String(key: .OFFER_HOUSE_SUMMARY_DESC),
+            value: L10n.offerHouseSummaryDesc,
             style: TextStyle.bodySmallSmallCenter.centerAligned
         )
         bag += stackView.addArranged(descriptionLabel)

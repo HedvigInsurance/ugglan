@@ -186,14 +186,14 @@ extension AdyenSetup: Presentable {
                         ).onValue { _ in }
 
                         let continueButton = Button(
-                            title: String(key: .PAYMENT_SETUP_DONE_CTA),
+                            title: L10n.paymentSetupDoneCta,
                             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                       )
 
                       let continueAction = ImageTextAction<Void>(
                         image: .init(image: Asset.circularCheckmark.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
-                            title: String(key: .PAYMENT_SETUP_DONE_TITLE),
-                            body:  String(key: .PAYMENT_SETUP_DONE_DESCRIPTION),
+                        title: L10n.paymentSetupDoneTitle,
+                        body:  L10n.paymentSetupDoneDescription,
                           actions: [
                               ((), continueButton),
                           ],
@@ -207,19 +207,19 @@ extension AdyenSetup: Presentable {
                         }
                     case .failure:
                         let tryAgainButton = Button(
-                            title: String(key: .PAYMENT_SETUP_FAILED_RETRY_CTA),
+                            title: L10n.paymentSetupFailedRetryCta,
                           type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
                       )
 
                         let cancelButton = Button(
-                              title: String(key: .PAYMENT_SETUP_FAILED_CANCEL_CTA),
+                            title: L10n.paymentSetupFailedCancelCta,
                             type: .outline(borderColor: .transparent, textColor: .pink)
                         )
 
                           let didFailAction = ImageTextAction<Bool>(
                             image: .init(image: Asset.redCross.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
-                                title: String(key: .PAYMENT_SETUP_FAILED_TITLE),
-                                body:  String(key: .PAYMENT_SETUP_FAILED_DESCRIPTION),
+                            title: L10n.paymentSetupFailedTitle,
+                            body:  L10n.paymentSetupFailedDescription,
                               actions: [
                                   (true, tryAgainButton),
                                   (false, cancelButton)

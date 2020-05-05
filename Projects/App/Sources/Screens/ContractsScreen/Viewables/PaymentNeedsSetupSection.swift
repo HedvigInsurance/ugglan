@@ -41,12 +41,12 @@ extension PaymentNeedsSetupSection: Viewable {
             make.height.width.centerX.centerY.equalToSuperview()
         }
 
-        let infoLabel = MultilineLabel(value: String(key: .DASHBOARD_PAYMENT_SETUP_INFO), style: TextStyle.bodyOffBlack.centered())
+        let infoLabel = MultilineLabel(value: L10n.dashboardPaymentSetupInfo, style: TextStyle.bodyOffBlack.centered())
         bag += containerStackView.addArranged(infoLabel)
 
         let buttonContainer = UIView()
         let connectButton = Button(
-            title: String(key: .DASHBOARD_PAYMENT_SETUP_BUTTON),
+            title: L10n.dashboardPaymentSetupButton,
             type: .outline(borderColor: .primaryTintColor, textColor: .primaryTintColor)
         )
         bag += buttonContainer.add(connectButton) { buttonView in

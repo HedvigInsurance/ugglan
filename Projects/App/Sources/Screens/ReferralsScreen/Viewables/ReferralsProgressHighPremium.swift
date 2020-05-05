@@ -37,7 +37,7 @@ extension ReferralsProgressHighPremium: Viewable {
         let discountAmountLabel = MultilineLabel(value: "", style: discountAmountTextStyle)
         bag += contentView.addArranged(discountAmountLabel)
 
-        let informationLabel = MultilineLabel(value: String(key: .REFERRAL_PROGRESS_HIGH_PREMIUM_DISCOUNT_SUBTITLE), style: TextStyle.blockRowTitle.colored(.white))
+        let informationLabel = MultilineLabel(value: L10n.referralProgressHighPremiumDiscountSubtitle, style: TextStyle.blockRowTitle.colored(.white))
         bag += contentView.addArranged(informationLabel)
 
         let netPremiumLabel = MultilineLabel(value: "", style: TextStyle.blockRowDescription.colored(.white))
@@ -45,7 +45,7 @@ extension ReferralsProgressHighPremium: Viewable {
 
         bag += combineLatest(grossPremiumSignal.atOnce().compactMap { $0 }, netPremiumSignal.atOnce().compactMap { $0 }).onValue { grossPremium, netPremium in
             netPremiumLabel.styledTextSignal.value = StyledText(
-                text: String(key: .REFERRAL_PROGRESS_HIGH_PREMIUM_DESCRIPTION(monthlyCost: String(netPremium))),
+                text: L10n.referralProgressHighPremiumDescription(netPremium),
                 style: TextStyle.blockRowDescription.colored(.white)
             )
             let discount = grossPremium - netPremium

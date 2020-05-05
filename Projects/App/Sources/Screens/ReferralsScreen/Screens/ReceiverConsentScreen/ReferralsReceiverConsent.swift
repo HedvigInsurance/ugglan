@@ -33,19 +33,19 @@ extension ReferralsReceiverConsent: Presentable {
         view.backgroundColor = .secondaryBackground
 
         let acceptDiscountButton = Button(
-            title: String(key: .REFERRAL_STARTSCREEN_BTN_CTA),
+            title: L10n.referralStartscreenBtnCta,
             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         let declineButton = Button(
-            title: String(key: .REFERRAL_STARTSCREEN_BTN_SKIP),
+            title: L10n.referralStartscreenBtnSkip,
             type: .pillSemiTransparent(backgroundColor: .lightGray, textColor: .offBlack)
         )
 
         let content = ImageTextAction<ReferralsReceiverConsentResult>(
             image: .init(image: Asset.inviteSuccess.image),
-            title: String(key: .REFERRAL_STARTSCREEN_HEADLINE(referralValue: "10")),
-            body: String(key: .REFERRAL_STARTSCREEN_BODY(referralValue: "10")),
+            title: L10n.referralStartscreenHeadline(10),
+            body: L10n.referralSuccessBody(10),
             actions: [
                 (.accept, acceptDiscountButton),
                 (.decline, declineButton),
@@ -71,9 +71,9 @@ extension ReferralsReceiverConsent: Presentable {
                         .onValue { result in
                             if result.errors != nil {
                                 let alert = Alert(
-                                    title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
-                                    message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
-                                    actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
+                                    title: L10n.referralErrorMissingcodeHeadline,
+                                    message: L10n.referralErrorMissingcodeBody,
+                                    actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
                                 )
 
                                 viewController.present(alert)

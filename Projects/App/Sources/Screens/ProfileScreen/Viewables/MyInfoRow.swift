@@ -22,7 +22,7 @@ extension MyInfoRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(key: .PROFILE_MY_INFO_ROW_TITLE),
+            title: L10n.profileMyInfoRowTitle,
             subtitle: "",
             iconAsset: Asset.myInfoRowIcon,
             options: [.withArrow]

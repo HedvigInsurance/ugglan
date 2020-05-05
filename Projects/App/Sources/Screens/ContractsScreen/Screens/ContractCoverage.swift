@@ -20,7 +20,7 @@ extension ContractCoverage: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = String(key: .CONTRACT_COVERAGE_MAIN_TITLE)
+        viewController.title = L10n.contractCoverageMainTitle
 
         let form = FormView()
         form.backgroundColor = .secondaryBackground
@@ -33,7 +33,7 @@ extension ContractCoverage: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        bag += form.append(MultilineLabel(value: String(key: .CONTRACT_COVERAGE_MORE_INFO), style: .headlineSmallSmallLeft))
+        bag += form.append(MultilineLabel(value: L10n.contractCoverageMoreInfo, style: .headlineSmallSmallLeft))
 
         bag += form.append(Spacing(height: 10))
 

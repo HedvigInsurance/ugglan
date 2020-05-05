@@ -25,7 +25,7 @@ extension CharityInformationButton: Viewable {
         let bag = DisposeBag()
 
         let button = Button(
-            title: String(key: .PROFILE_MY_CHARITY_INFO_BUTTON),
+            title: L10n.profileMyCharityInfoButton,
             type: .iconTransparent(
                 textColor: .primaryTintColor,
                 icon: .left(image: Asset.infoPurple.image, width: 20)

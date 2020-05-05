@@ -203,7 +203,7 @@ extension KeyGearItem: Presentable {
         let claimsSection = innerForm.appendSection()
         claimsSection.dynamicStyle = .sectionPlain
 
-        let claimsRow = RowView(title: String(key: .KEY_GEAR_REPORT_CLAIM_ROW), style: .rowTitle)
+        let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .rowTitle)
         claimsRow.append(Asset.chevronRight.image)
 
         bag += claimsSection.append(claimsRow).onValue { _ in
@@ -216,7 +216,7 @@ extension KeyGearItem: Presentable {
 
         bag += innerForm.append(Spacing(height: 10))
 
-        let coveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE))
+        let coveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewCoverageTableTitle)
         coveragesSection.dynamicStyle = .sectionPlain
 
         bag += dataSignal.map { $0.covered }.onValueDisposePrevious { covered -> Disposable? in
@@ -231,7 +231,7 @@ extension KeyGearItem: Presentable {
 
         bag += innerForm.append(Spacing(height: 15))
 
-        let nonCoveragesSection = innerForm.appendSection(header: String(key: .KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE))
+        let nonCoveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewNonCoverageTableTitle)
         nonCoveragesSection.dynamicStyle = .sectionPlain
 
         bag += dataSignal.map { $0.exceptions }.onValueDisposePrevious { exceptions -> Disposable? in
@@ -247,7 +247,7 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(Spacing(height: 30))
 
         let receiptFooter = UIStackView()
-        bag += receiptFooter.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_FOOTER), style: .sectionHeader))
+        bag += receiptFooter.addArranged(MultilineLabel(value: L10n.keyGearItemViewReceiptTableFooter, style: .sectionHeader))
 
         let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
         receiptSection.dynamicStyle = .sectionPlain
@@ -262,7 +262,7 @@ extension KeyGearItem: Presentable {
         let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "").writable(setValue: { _ in })
         let nameRow = EditableRow(
             valueSignal: nameValueSignal,
-            placeholderSignal: .static(String(key: .KEY_GEAR_ITEM_VIEW_ITEM_NAME_TABLE_TITLE))
+            placeholderSignal: .static(L10n.keyGearItemViewItemNameTableTitle)
         )
 
         let (navigationBarBag, navigationBar) = addNavigationBar(
@@ -304,10 +304,10 @@ extension KeyGearItem: Presentable {
         return (viewController, Future { completion in
             bag += optionsButton.onValue {
                 viewController.present(Alert(actions: [
-                    Alert.Action(title: String(key: .KEY_GEAR_ITEM_DELETE), style: .destructive, action: { _ in
+                    Alert.Action(title: L10n.keyGearItemDelete, style: .destructive, action: { _ in
                         completion(.success)
                     }),
-                    Alert.Action(title: String(key: .KEY_GEAR_ITEM_OPTIONS_CANCEL), style: .cancel, action: { _ in
+                    Alert.Action(title: L10n.keyGearItemOptionsCancel, style: .cancel, action: { _ in
                         throw GenericError.cancelled
                     }),
                 ]), style: .sheet(from: optionsButton.view, rect: nil)).onValue { _ in

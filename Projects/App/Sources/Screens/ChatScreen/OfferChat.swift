@@ -27,11 +27,11 @@ extension OfferChat: Presentable {
 
         bag += restartButton.onValue { _ in
             let alert = Alert(
-                title: String(key: .CHAT_RESTART_ALERT_TITLE),
-                message: String(key: .CHAT_RESTART_ALERT_MESSAGE),
+                title: L10n.chatRestartAlertTitle,
+                message: L10n.chatRestartAlertMessage,
                 actions: [
                     Alert.Action(
-                        title: String(key: .CHAT_RESTART_ALERT_CONFIRM),
+                        title: L10n.chatRestartAlertConfirm,
                         action: {
                             UIView.transition(
                                 with: UIApplication.shared.appDelegate.window,
@@ -45,7 +45,7 @@ extension OfferChat: Presentable {
                         }
                     ),
                     Alert.Action(
-                        title: String(key: .CHAT_RESTART_ALERT_CANCEL),
+                        title: L10n.chatRestartAlertCancel,
                         action: {}
                     ),
                 ]

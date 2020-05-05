@@ -23,7 +23,7 @@ extension MyHome: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(key: .MY_HOME_TITLE)
+        viewController.title = L10n.myHomeTitle
 
         let form = FormView()
         bag += viewController.install(form)
@@ -31,25 +31,25 @@ extension MyHome: Presentable {
         let addressCircle = AddressCircle()
         bag += form.prepend(addressCircle)
 
-        let rowTitle = UILabel(value: String(key: .MY_HOME_SECTION_TITLE), style: .rowTitle)
+        let rowTitle = UILabel(value: L10n.myHomeSectionTitle, style: .rowTitle)
 
         bag += form.append(InsuranceSummarySection(headerView: rowTitle))
 
         bag += form.append(Spacing(height: 20))
 
         let buttonSection = ButtonSection(
-            text: String(key: .MY_HOME_CHANGE_INFO_BUTTON),
+            text: L10n.myHomeChangeInfoButton,
             style: .normal
         )
         bag += form.append(buttonSection)
 
         bag += buttonSection.onSelect.onValue {
             let alert = Alert<Bool>(
-                title: String(key: .MY_HOME_CHANGE_ALERT_TITLE),
-                message: String(key: .MY_HOME_CHANGE_ALERT_MESSAGE),
+                title: L10n.myHomeChangeAlertTitle,
+                message: L10n.myHomeChangeAlertMessage,
                 actions: [
-                    Alert.Action(title: String(key: .MY_HOME_CHANGE_ALERT_ACTION_CANCEL)) { false },
-                    Alert.Action(title: String(key: .MY_HOME_CHANGE_ALERT_ACTION_CONFIRM)) { true },
+                    Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
+                    Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
                 ]
             )
 

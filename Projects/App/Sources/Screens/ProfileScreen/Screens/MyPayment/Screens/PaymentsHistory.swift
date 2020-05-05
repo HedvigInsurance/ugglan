@@ -19,7 +19,7 @@ struct PaymentsHistory {
 extension PaymentsHistory: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(key: .PAYMENT_HISTORY_TITLE)
+        viewController.title = L10n.paymentHistoryTitle
         let bag = DisposeBag()
 
         let form = FormView()

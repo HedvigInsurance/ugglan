@@ -26,14 +26,14 @@ extension TerminatedInsurance: Presentable {
         let spacing = Spacing(height: 20)
         bag += view.addArranged(spacing)
 
-        let title = MultilineLabel(value: String(key: .INSURANCE_STATUS_TERMINATED_ALERT_TITLE), style: .standaloneLargeTitle)
+        let title = MultilineLabel(value: L10n.insuranceStatusTerminatedAlertTitle, style: .standaloneLargeTitle)
         bag += view.addArranged(title)
 
-        let description = MultilineLabel(value: String(key: .INSURANCE_STATUS_TERMINATED_ALERT_MESSAGE), style: TextStyle.bodyOffBlack.centerAligned)
+        let description = MultilineLabel(value: L10n.insuranceStatusTerminatedAlertMessage, style: TextStyle.bodyOffBlack.centerAligned)
         bag += view.addArranged(description)
 
         let button = Button(
-            title: String(key: .INSURANCE_STATUS_TERMINATED_ALERT_CTA),
+            title: L10n.insuranceStatusTerminatedAlertCta,
             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
         bag += view.addArranged(button)

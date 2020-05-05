@@ -19,13 +19,13 @@ extension BindingPeriodBubble: Viewable {
         content.axis = .vertical
 
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_BINDING_PERIOD_TITLE),
+            value: L10n.offerBubblesBindingPeriodTitle,
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)
 
         let subtitleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_BINDING_PERIOD_SUBTITLE),
+            value: L10n.offerBubblesBindingPeriodSubtitle,
             style: .offerBubbleSubtitle
         )
         bag += content.addArranged(subtitleLabel)

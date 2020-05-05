@@ -23,40 +23,38 @@ extension ContractDetail: Presentable {
             apartmentInfoSection.dynamicStyle = .sectionPlain
 
             let livingSpaceRow = KeyValueRow()
-            livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
-            livingSpaceRow.valueSignal.value = String(key: .MY_HOME_ROW_SIZE_VALUE(
-                livingSpace: swedishApartment.squareMeters
-            ))
+            livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
+            livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(swedishApartment.squareMeters))
             livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(livingSpaceRow)
 
             let adressRow = KeyValueRow()
-            adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
+            adressRow.keySignal.value = L10n.myHomeAddressRowKey
             adressRow.valueSignal.value = swedishApartment.address.street
             adressRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(adressRow)
 
             let postalCodeRow = KeyValueRow()
-            postalCodeRow.keySignal.value = String(key: .MY_HOME_ROW_POSTAL_CODE_KEY)
+            postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
             postalCodeRow.valueSignal.value = swedishApartment.address.postalCode
             postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(postalCodeRow)
 
             let apartmentTypeRow = KeyValueRow()
-            apartmentTypeRow.keySignal.value = String(key: .MY_HOME_ROW_TYPE_KEY)
+            apartmentTypeRow.keySignal.value = L10n.myHomeRowTypeKey
             apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
 
             switch swedishApartment.type {
             case .brf:
-                apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_CONDOMINIUM_VALUE)
+                apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeCondominiumValue
             case .studentBrf:
-                apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_CONDOMINIUM_VALUE)
+                apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeCondominiumValue
             case .rent:
-                apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_RENTAL_VALUE)
+                apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeRentalValue
             case .studentRent:
-                apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_RENTAL_VALUE)
+                apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeRentalValue
             case .__unknown:
-                apartmentTypeRow.valueSignal.value = String(key: .GENERIC_UNKNOWN)
+                apartmentTypeRow.valueSignal.value = L10n.genericUnknown
             }
             bag += apartmentInfoSection.append(apartmentTypeRow)
 
@@ -64,8 +62,8 @@ extension ContractDetail: Presentable {
             coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
-            coinsuredRow.keySignal.value = String(key: .CONTRACT_DETAIL_COINSURED_TITLE)
-            coinsuredRow.valueSignal.value = String(key: .CONTRACT_DETAIL_COINSURED_NUMBER_INPUT(coinsured: swedishApartment.numberCoInsured))
+            coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
+            coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(swedishApartment.numberCoInsured)
             coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
             bag += coinsuredSection.append(coinsuredRow)
 
@@ -87,62 +85,58 @@ extension ContractDetail: Presentable {
             apartmentInfoSection.dynamicStyle = .sectionPlain
 
             let livingSpaceRow = KeyValueRow()
-            livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
-            livingSpaceRow.valueSignal.value = String(key: .MY_HOME_ROW_SIZE_VALUE(
-                livingSpace: swedishHouse.squareMeters
-            ))
+            livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
+            livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(swedishHouse.squareMeters))
             livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(livingSpaceRow)
 
             let ancillaryAreaRow = KeyValueRow()
-            ancillaryAreaRow.keySignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_KEY)
-            ancillaryAreaRow.valueSignal.value = String(key: .MY_HOME_ROW_ANCILLARY_AREA_VALUE(
-                area: swedishHouse.ancillaryArea
-            ))
+            ancillaryAreaRow.keySignal.value = L10n.myHomeRowAncillaryAreaKey
+            ancillaryAreaRow.valueSignal.value = L10n.myHomeRowAncillaryAreaValue(String(swedishHouse.ancillaryArea))
             ancillaryAreaRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(ancillaryAreaRow)
 
             let yearOfConstructionRow = KeyValueRow()
-            yearOfConstructionRow.keySignal.value = String(key: .MY_HOME_ROW_CONSTRUCTION_YEAR_KEY)
+            yearOfConstructionRow.keySignal.value = L10n.myHomeRowConstructionYearKey
             yearOfConstructionRow.valueSignal.value = String(swedishHouse.yearOfConstruction)
             yearOfConstructionRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(yearOfConstructionRow)
 
             let numberOfBathroomsRow = KeyValueRow()
-            numberOfBathroomsRow.keySignal.value = String(key: .MY_HOME_ROW_BATHROOMS_KEY)
+            numberOfBathroomsRow.keySignal.value = L10n.myHomeRowBathroomsKey
             numberOfBathroomsRow.valueSignal.value = String(swedishHouse.numberOfBathrooms)
             numberOfBathroomsRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(numberOfBathroomsRow)
 
             let isSubletedRow = KeyValueRow()
-            isSubletedRow.keySignal.value = String(key: .MY_HOME_ROW_SUBLETED_KEY)
+            isSubletedRow.keySignal.value = L10n.myHomeRowSubletedKey
             isSubletedRow.valueSignal.value = swedishHouse.isSubleted ?
-                String(key: .MY_HOME_ROW_SUBLETED_VALUE_YES) :
-                String(key: .MY_HOME_ROW_SUBLETED_VALUE_NO)
+                L10n.myHomeRowSubletedValueYes :
+                L10n.myHomeRowSubletedValueNo
             isSubletedRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(isSubletedRow)
 
             let adressRow = KeyValueRow()
-            adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
+            adressRow.keySignal.value = L10n.myHomeAddressRowKey
             adressRow.valueSignal.value = swedishHouse.address.street
             adressRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(adressRow)
 
             let postalCodeRow = KeyValueRow()
-            postalCodeRow.keySignal.value = String(key: .MY_HOME_ROW_POSTAL_CODE_KEY)
+            postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
             postalCodeRow.valueSignal.value = swedishHouse.address.postalCode
             postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(postalCodeRow)
 
             let apartmentTypeRow = KeyValueRow()
-            apartmentTypeRow.keySignal.value = String(key: .MY_HOME_ROW_TYPE_KEY)
+            apartmentTypeRow.keySignal.value = L10n.myHomeRowTypeKey
             apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
-            apartmentTypeRow.valueSignal.value = String(key: .MY_HOME_ROW_TYPE_HOUSE_VALUE)
+            apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeHouseValue
             bag += apartmentInfoSection.append(apartmentTypeRow)
 
             if !swedishHouse.extraBuildings.isEmpty {
                 let extraBuildingsSection = SectionView(
-                    headerView: UILabel(value: String(key: .MY_HOME_EXTRABUILDING_TITLE), style: .rowTitle),
+                    headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .rowTitle),
                     footerView: nil
                 )
                 extraBuildingsSection.dynamicStyle = .sectionPlain
@@ -175,21 +169,19 @@ extension ContractDetail: Presentable {
             apartmentInfoSection.dynamicStyle = .sectionPlain
 
             let livingSpaceRow = KeyValueRow()
-            livingSpaceRow.keySignal.value = String(key: .MY_HOME_ROW_SIZE_KEY)
-            livingSpaceRow.valueSignal.value = String(key: .MY_HOME_ROW_SIZE_VALUE(
-                livingSpace: norwegianHomeContents.squareMeters
-            ))
+            livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
+            livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(norwegianHomeContents.squareMeters))
             livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(livingSpaceRow)
 
             let adressRow = KeyValueRow()
-            adressRow.keySignal.value = String(key: .MY_HOME_ADDRESS_ROW_KEY)
+            adressRow.keySignal.value = L10n.myHomeAddressRowKey
             adressRow.valueSignal.value = norwegianHomeContents.address.street
             adressRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(adressRow)
 
             let postalCodeRow = KeyValueRow()
-            postalCodeRow.keySignal.value = String(key: .MY_HOME_ROW_POSTAL_CODE_KEY)
+            postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
             postalCodeRow.valueSignal.value = norwegianHomeContents.address.postalCode
             postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
             bag += apartmentInfoSection.append(postalCodeRow)
@@ -198,10 +190,14 @@ extension ContractDetail: Presentable {
             coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
-            coinsuredRow.keySignal.value = String(key: .CONTRACT_DETAIL_COINSURED_TITLE)
-            coinsuredRow.valueSignal.value = String(
-                key: .CONTRACT_DETAIL_COINSURED_NUMBER_INPUT(coinsured: norwegianHomeContents.numberCoInsured)
-            )
+            coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
+            
+            if norwegianHomeContents.numberCoInsured > 0 {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(norwegianHomeContents.numberCoInsured)
+            } else {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
+            }
+            
             coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
             bag += coinsuredSection.append(coinsuredRow)
 
@@ -223,10 +219,14 @@ extension ContractDetail: Presentable {
             coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
-            coinsuredRow.keySignal.value = String(key: .CONTRACT_DETAIL_COINSURED_TITLE)
-            coinsuredRow.valueSignal.value = String(
-                key: .CONTRACT_DETAIL_COINSURED_NUMBER_INPUT(coinsured: norwegianTravel.numberCoInsured)
-            )
+           coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
+           
+           if norwegianTravel.numberCoInsured > 0 {
+               coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(norwegianTravel.numberCoInsured)
+           } else {
+               coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
+           }
+            
             coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
             bag += coinsuredSection.append(coinsuredRow)
 
@@ -240,7 +240,7 @@ extension ContractDetail: Presentable {
 
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(key: .CONTRACT_DETAIL_MAIN_TITLE)
+        viewController.title = L10n.contractDetailMainTitle
         let bag = DisposeBag()
 
         let form = FormView()
@@ -296,18 +296,18 @@ extension ContractDetail: Presentable {
         bag += form.append(Spacing(height: 20))
 
         let changeButton = ButtonSection(
-            text: String(key: .CONTRACT_DETAIL_HOME_CHANGE_INFO),
+            text: L10n.contractDetailHomeChangeInfo,
             style: .normal
         )
         bag += form.append(changeButton)
 
         bag += changeButton.onSelect.onValue {
             let alert = Alert<Bool>(
-                title: String(key: .MY_HOME_CHANGE_ALERT_TITLE),
-                message: String(key: .MY_HOME_CHANGE_ALERT_MESSAGE),
+                title: L10n.myHomeChangeAlertTitle,
+                message: L10n.myHomeChangeAlertMessage,
                 actions: [
-                    Alert.Action(title: String(key: .MY_HOME_CHANGE_ALERT_ACTION_CANCEL)) { false },
-                    Alert.Action(title: String(key: .MY_HOME_CHANGE_ALERT_ACTION_CONFIRM)) { true },
+                    Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
+                    Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
                 ]
             )
 

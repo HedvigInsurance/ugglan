@@ -37,7 +37,7 @@ extension ClaimsHeader.Title: Viewable {
         let bag = DisposeBag()
 
         let label = MultilineLabel(
-            value: String(key: .CLAIMS_HEADER_TITLE),
+            value: L10n.claimsHeaderTitle,
             style: TextStyle.standaloneLargeTitle.centered()
         )
 
@@ -61,7 +61,7 @@ extension ClaimsHeader.Description: Viewable {
         let bag = DisposeBag()
 
         let label = MultilineLabel(
-            value: String(key: .CLAIMS_HEADER_SUBTITLE),
+            value: L10n.claimsHeaderSubtitle,
             style: TextStyle.body.centered()
         )
 
@@ -107,7 +107,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
         }
 
         let label = MultilineLabel(
-            value: String(key: .CLAIMS_INACTIVE_MESSAGE),
+            value: L10n.claimsInactiveMessage,
             style: TextStyle.bodyOffBlack.centered()
         )
 
@@ -165,7 +165,7 @@ extension ClaimsHeader: Viewable {
         let description = Description()
         bag += view.addArranged(description)
 
-        let button = Button(title: String(key: .CLAIMS_HEADER_ACTION_BUTTON), type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
+        let button = Button(title: L10n.claimsHeaderActionButton, type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
 
         bag += button.onTapSignal.onValue {
             self.presentingViewController.present(

@@ -28,7 +28,7 @@ struct DeductibleBox: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 5
 
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_TITLE), style: .bodySmallSmallLeft))
+        stackView.addArrangedSubview(UILabel(value: L10n.keyGearItemViewDeductibleTitle, style: .bodySmallSmallLeft))
 
         let deductibleValueContainerContainer = UIStackView()
         deductibleValueContainerContainer.alignment = .leading
@@ -66,9 +66,9 @@ struct ValuationBox: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 5
 
-        stackView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_TITLE), style: .bodySmallSmallLeft))
+        stackView.addArrangedSubview(UILabel(value: L10n.keyGearItemViewValuationTitle, style: .bodySmallSmallLeft))
 
-        let emptyValuationLabel = UILabel(value: String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_EMPTY), style: .linksSmallSmallRight)
+        let emptyValuationLabel = UILabel(value: L10n.keyGearItemViewValuationEmpty, style: .linksSmallSmallRight)
         emptyValuationLabel.isHidden = true
         stackView.addArrangedSubview(emptyValuationLabel)
 
@@ -103,10 +103,10 @@ struct ValuationBox: Viewable {
 
                 if let fixedValuation = valuation?.asKeyGearItemValuationFixed {
                     valuationValueLabel.value = "\(fixedValuation.ratio)%"
-                    valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL)
+                    valuationValueDescription.value = L10n.keyGearItemViewValuationPercentageLabel
                 } else if let marketValuation = valuation?.asKeyGearItemValuationMarketValue {
                     valuationValueLabel.value = "\(marketValuation.ratio)%"
-                    valuationValueDescription.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_DESCRIPTION)
+                    valuationValueDescription.value = L10n.keyGearItemViewValuationMarketDescription
                 }
             }
         })

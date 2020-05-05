@@ -31,10 +31,10 @@ extension CharityInformation: Presentable {
 
         containerStackView.addArrangedSubview(containerView)
 
-        let titleLabel = MultilineLabel(value: String(key: .PROFILE_MY_CHARITY_INFO_TITLE), style: .draggableOverlayTitle)
+        let titleLabel = MultilineLabel(value: L10n.profileMyCharityInfoTitle, style: .draggableOverlayTitle)
         bag += containerView.addArranged(titleLabel)
 
-        let body = MarkdownText(textSignal: .static(String(key: .PROFILE_MY_CHARITY_INFO_BODY)), style: .bodyOffBlack)
+        let body = MarkdownText(textSignal: .static(L10n.profileMyCharityInfoBody), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
         bag += containerStackView.applyPreferredContentSize(on: viewController)

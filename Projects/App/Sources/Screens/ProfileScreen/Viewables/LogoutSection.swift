@@ -21,22 +21,22 @@ extension LogoutSection: Viewable {
         let bag = DisposeBag()
 
         let logoutButtonSection = ButtonSection(
-            text: String(key: .LOGOUT_BUTTON),
+            text: L10n.logoutButton,
             style: .danger
         )
 
         bag += logoutButtonSection.onSelect.onValue { _ in
             let alert = Alert<Bool>(
-                title: String(key: .LOGOUT_ALERT_TITLE),
+                title: L10n.logoutAlertTitle,
                 message: nil,
                 tintColor: nil,
                 actions: [
                     Alert.Action(
-                        title: String(key: .LOGOUT_ALERT_ACTION_CANCEL),
+                        title: L10n.logoutAlertActionCancel,
                         style: UIAlertAction.Style.cancel
                     ) { false },
                     Alert.Action(
-                        title: String(key: .LOGOUT_ALERT_ACTION_CONFIRM),
+                        title: L10n.logoutAlertActionConfirm,
                         style: UIAlertAction.Style.destructive
                     ) { true },
                 ]

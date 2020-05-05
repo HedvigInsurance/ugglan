@@ -94,7 +94,7 @@ extension PriceBubble: Viewable {
         stackView.addArrangedSubview(priceLabel)
 
         bag += stackView.addArranged(MultilineLabel(
-            value: String(key: .OFFER_PRICE_BUBBLE_MONTH),
+            value: L10n.offerPriceBubbleMonth,
             style: TextStyle.rowSubtitle.centerAligned
         ))
 

@@ -25,7 +25,7 @@ extension OfferDiscount: Viewable {
         view.axis = .vertical
         view.alignment = .center
 
-        let redeemButton = Button(title: String(key: .OFFER_ADD_DISCOUNT_BUTTON), type: .outline(borderColor: .transparent, textColor: .primaryText))
+        let redeemButton = Button(title: L10n.offerAddDiscountButton, type: .outline(borderColor: .transparent, textColor: .primaryText))
 
         view.snp.makeConstraints { make in
             make.height.equalTo(redeemButton.type.value.height + view.layoutMargins.top + view.layoutMargins.bottom)
@@ -72,7 +72,7 @@ extension OfferDiscount: Viewable {
         }
 
         let removeButton = Button(
-            title: String(key: .OFFER_REMOVE_DISCOUNT_BUTTON),
+            title: L10n.offerRemoveDiscountButton,
             type: .outline(borderColor: .transparent, textColor: .primaryText)
         )
         bag += view.add(removeButton) { buttonView in
@@ -103,11 +103,11 @@ extension OfferDiscount: Viewable {
 
         bag += removeButton.onTapSignal.onValue { _ in
             let alert = Alert(
-                title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_TITLE),
-                message: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION),
+                title: L10n.offerRemoveDiscountAlertTitle,
+                message: L10n.offerRemoveDiscountAlertDescription,
                 actions: [
-                    Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_CANCEL)) {},
-                    Alert.Action(title: String(key: .OFFER_REMOVE_DISCOUNT_ALERT_REMOVE), style: .destructive) {
+                    Alert.Action(title: L10n.offerRemoveDiscountAlertCancel) {},
+                    Alert.Action(title: L10n.offerRemoveDiscountAlertRemove, style: .destructive) {
                         bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue { result in
                             self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
                                 data.redeemedCampaigns = result.campaigns.compactMap {

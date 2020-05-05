@@ -39,7 +39,7 @@ extension PaymentHeaderCard: Viewable {
 
         let leftTopViewStack = UIStackView()
         leftTopViewStack.axis = .vertical
-        leftTopViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_TITLE), style: TextStyle.blockRowTitle.colored(.white)))
+        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.blockRowTitle.colored(.white)))
 
         let dataSignal = client.fetch(query: MyPaymentQuery()).valueSignal
 
@@ -103,7 +103,7 @@ extension PaymentHeaderCard: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        bottomViewStack.addArrangedSubview(UILabel(value: String(key: .PAYMENTS_CARD_DATE), style: .body))
+        bottomViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardDate, style: .body))
         bag += bottomViewStack.addArranged(PaymentHeaderNextCharge())
 
         view.addArrangedSubview(bottomView)

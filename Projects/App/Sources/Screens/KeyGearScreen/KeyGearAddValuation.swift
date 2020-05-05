@@ -32,7 +32,7 @@ struct PurchasePrice: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Signal<Int>) {
         let bag = DisposeBag()
 
-        let footerView = MultilineLabel(value: String(key: .KEY_GEAR_NOT_COVERED(itemType: category.name.localizedLowercase)), style: .sectionHeader)
+        let footerView = MultilineLabel(value: L10n.keyGearNotCovered(category.name.localizedLowercase), style: .sectionHeader)
 
         let footerViewContainer = UIStackView()
         footerViewContainer.isHidden = false
@@ -45,7 +45,7 @@ struct PurchasePrice: Viewable {
         let row = RowView()
         section.append(row)
 
-        row.prepend(UILabel(value: String(key: .KEY_GEAR_ADD_PURCHASE_PRICE_CELL_TITLE), style: .headlineMediumMediumLeft))
+        row.prepend(UILabel(value: L10n.keyGearAddPurchasePriceCellTitle, style: .headlineMediumMediumLeft))
 
         let textField = UITextField(value: "", placeholder: "0", style: .defaultRight)
         textField.keyboardType = .numeric
@@ -87,7 +87,7 @@ struct DatePicker: Viewable {
         mainRowContainerView.axis = .horizontal
         containerView.addArrangedSubview(mainRowContainerView)
 
-        mainRowContainerView.addArrangedSubview(UILabel(value: String(key: .KEY_GEAR_YEARMONTH_PICKER_TITLE), style: .headlineMediumMediumLeft))
+        mainRowContainerView.addArrangedSubview(UILabel(value: L10n.keyGearYearmonthPickerTitle, style: .headlineMediumMediumLeft))
 
         let value = UILabel(value: Date().localDateString ?? "", style: .rowValueEditableRight)
         mainRowContainerView.addArrangedSubview(value)
@@ -122,13 +122,13 @@ extension KeyGearAddValuation: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = String(key: .KEY_GEAR_ADD_PURCHASE_INFO_PAGE_TITLE)
+        viewController.title = L10n.keyGearAddPurchaseInfoPageTitle
         let form = FormView()
 
         bag += viewController.install(form)
 
         let descriptionLabel = MultilineLabel(
-            value: String(key: .KEY_GEAR_ADD_PURCHASE_INFO_BODY(itemType: category.name.localizedLowercase)),
+            value: L10n.keyGearAddPurchaseInfoBody(category.name.localizedLowercase),
             style: .bodyRegularRegularCenter
         )
         bag += form.append(descriptionLabel)
@@ -149,7 +149,7 @@ extension KeyGearAddValuation: Presentable {
         let button = LoadableButton(
             button:
             Button(
-                title: String(key: .KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BUTTON),
+                title: L10n.keyGearItemViewAddPurchaseDateButton,
                 type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
         )

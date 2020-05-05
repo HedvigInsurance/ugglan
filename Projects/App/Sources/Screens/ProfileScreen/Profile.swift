@@ -21,7 +21,7 @@ extension Profile: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.displayableTitle = String(key: .PROFILE_TITLE)
+        viewController.displayableTitle = L10n.profileTitle
         viewController.installChatButton()
 
         let form = FormView()
@@ -69,7 +69,7 @@ extension Profile: Presentable {
 extension Profile: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(key: .TAB_PROFILE_TITLE),
+            title: L10n.tabProfileTitle,
             image: Asset.profileTab.image,
             selectedImage: nil
         )

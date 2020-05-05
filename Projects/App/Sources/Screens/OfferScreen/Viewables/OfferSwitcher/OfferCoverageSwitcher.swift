@@ -51,10 +51,10 @@ extension OfferCoverageSwitcher: Viewable {
             .compactMap { $0.data?.insurance.previousInsurer }
             .map { previousInsurer in
                 if !previousInsurer.switchable {
-                    return String(key: .OFFER_SWITCH_TITLE_NON_SWITCHABLE_APP)
+                    return L10n.offerSwitchTitleNonSwitchableApp
                 }
 
-                return String(key: .OFFER_SWITCH_TITLE_APP(insurer: previousInsurer.displayName ?? ""))
+                return L10n.offerSwitchTitleApp(previousInsurer.displayName ?? "")
             }
             .map { StyledText(text: $0, style: TextStyle.rowTitleBold.centerAligned) }
             .bindTo(titleLabel.styledTextSignal)

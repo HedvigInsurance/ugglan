@@ -22,14 +22,14 @@ extension MyCharityRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: String(key: .PROFILE_MY_CHARITY_ROW_TITLE),
+            title: L10n.profileMyCharityRowTitle,
             subtitle: "",
             iconAsset: Asset.charityPlain,
             options: [.withArrow]
         )
 
         bag += charityNameSignal.atOnce().map { charityName -> String in
-            charityName ?? String(key: .PROFILE_MY_CHARITY_ROW_NOT_SELECTED_SUBTITLE)
+            charityName ?? L10n.profileMyCharityRowNotSelectedSubtitle
         }.bindTo(row.subtitle)
 
         bag += events.onSelect.onValue { _ in

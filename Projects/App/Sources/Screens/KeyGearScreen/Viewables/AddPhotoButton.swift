@@ -19,7 +19,7 @@ extension AddPhotoButton: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.backgroundColor = .secondaryTintColor
-        view.accessibilityLabel = String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON)
+        view.accessibilityLabel = L10n.keyGearAddItemAddPhotoButton
 
         view.layer.cornerRadius = 8
 
@@ -34,7 +34,7 @@ extension AddPhotoButton: Viewable {
         contentContainer.isUserInteractionEnabled = false
 
         contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto, iconWidth: 40))
-        bag += contentContainer.addArranged(MultilineLabel(value: String(key: .KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON), style: TextStyle.body.colored(.primaryTintColor)))
+        bag += contentContainer.addArranged(MultilineLabel(value: L10n.keyGearAddItemAddPhotoButton, style: TextStyle.body.colored(.primaryTintColor)))
 
         view.addSubview(contentContainer)
 

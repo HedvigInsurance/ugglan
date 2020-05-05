@@ -24,7 +24,7 @@ extension BankIDLoginSweden: Presentable {
         let view = UIView()
         view.backgroundColor = .primaryBackground
         viewController.view = view
-        viewController.title = String(key: .BANKID_LOGIN_TITLE)
+        viewController.title = L10n.bankidLoginTitle
 
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -70,7 +70,7 @@ extension BankIDLoginSweden: Presentable {
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
-        let statusLabel = MultilineLabel(value: String(key: .SIGN_START_BANKID), style: .rowTitle)
+        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .rowTitle)
         bag += containerView.addArranged(statusLabel)
 
         let closeButtonContainer = UIStackView()
@@ -89,15 +89,15 @@ extension BankIDLoginSweden: Presentable {
 
             switch authStatus {
             case .initiated:
-                statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
+                statusText = L10n.bankIdAuthTitleInitiated
             case .inProgress:
-                statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
+                statusText = L10n.bankIdAuthTitleInitiated
             case .failed:
-                statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
+                statusText = L10n.bankIdAuthTitleInitiated
             case .success:
-                statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
+                statusText = L10n.bankIdAuthTitleInitiated
             case .__unknown:
-                statusText = String(key: .BANK_ID_AUTH_TITLE_INITIATED)
+                statusText = L10n.bankIdAuthTitleInitiated
             }
 
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)

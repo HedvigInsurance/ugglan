@@ -123,7 +123,7 @@ extension ReferralsProgressBar {
 
     func freeLabel(blockHeight: CGFloat, dividerHeight: CGFloat) -> SCNNode {
         let node = createLabel(
-            text: String(key: .REFERRALS_FREE_LABEL),
+            text: L10n.referralsFreeLabel,
             textColor: UIColor.white,
             backgroundColor: UIColor.offBlack,
             chevronDirection: .right,
@@ -149,7 +149,7 @@ extension ReferralsProgressBar {
         let hasDiscount = discount > 0
 
         let node = createLabel(
-            text: hasDiscount ? "-\(String(discount))kr" : String(key: .REFERRALS_INVITE_LABEL),
+            text: hasDiscount ? "-\(String(discount))kr" : L10n.referralsInviteLabel,
             textColor: hasDiscount ? UIColor.offBlack : UIColor.white,
             backgroundColor: hasDiscount ? UIColor.turquoise : UIColor.purple,
             chevronDirection: .left,
@@ -346,7 +346,7 @@ extension ReferralsProgressBar {
                     let stringAction = SCNAction.customAction(duration: 0.0, action: { _, _ in
                         let blockIndex = Int(ceil(Float(i) / 2.0))
 
-                        (discountLabelNode.childNodes[0].geometry as! SCNText).string = blockIndex == 0 ? String(key: .REFERRALS_FREE_LABEL) : "-\((amountOfBlocks - blockIndex) * 10) kr"
+                        (discountLabelNode.childNodes[0].geometry as! SCNText).string = blockIndex == 0 ? L10n.referralsFreeLabel : "-\((amountOfBlocks - blockIndex) * 10) kr"
                     })
 
                     labelActions.append(stringAction)
@@ -356,7 +356,7 @@ extension ReferralsProgressBar {
                 labelActions.append(labelDelayAction)
 
                 let finalLabelStringAction = SCNAction.customAction(duration: 0.0, action: { _, _ in
-                    (discountLabelNode.childNodes[0].geometry as! SCNText).string = String(key: .REFERRALS_INVITE_LABEL)
+                    (discountLabelNode.childNodes[0].geometry as! SCNText).string = L10n.referralsInviteLabel
                 })
 
                 labelActions.append(finalLabelStringAction)

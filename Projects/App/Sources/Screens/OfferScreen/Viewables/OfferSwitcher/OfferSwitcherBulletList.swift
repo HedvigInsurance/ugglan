@@ -75,15 +75,15 @@ extension OfferSwitcherBulletList: Viewable {
             .onValueDisposePrevious { previousInsurer -> Disposable? in
                 let innerBag = DisposeBag()
 
-                innerBag += stackView.addArranged(BulletPoint(index: 1, text: String(key: .SIGN_MOBILE_BANK_ID)))
+                innerBag += stackView.addArranged(BulletPoint(index: 1, text: L10n.signMobileBankId))
 
                 if previousInsurer.switchable {
-                    innerBag += stackView.addArranged(BulletPoint(index: 2, text: String(key: .OFFER_SWITCH_COL_PARAGRAPH_ONE_APP)))
+                    innerBag += stackView.addArranged(BulletPoint(index: 2, text: L10n.offerSwitchColParagraphOneApp))
                 } else {
-                    innerBag += stackView.addArranged(BulletPoint(index: 2, text: String(key: .OFFER_NON_SWITCHABLE_PARAGRAPH_ONE_APP)))
+                    innerBag += stackView.addArranged(BulletPoint(index: 2, text: L10n.offerNonSwitchableParagraphOneApp))
                 }
 
-                innerBag += stackView.addArranged(BulletPoint(index: 3, text: String(key: .OFFER_SWITCH_COL_THREE_PARAGRAPH_APP)))
+                innerBag += stackView.addArranged(BulletPoint(index: 3, text: L10n.offerSwitchColThreeParagraphApp))
 
                 return innerBag
             }

@@ -59,7 +59,7 @@ struct ContractRow: Hashable {
     }
 }
 
-extension Date: LocalizationStringConvertible {
+extension Date {
     public var localizationDescription: String {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Foundation.Locale(identifier: Localization.Locale.currentLocale.rawValue)
@@ -90,32 +90,28 @@ extension ContractRow: Reusable {
 
         if let _ = contract.status.asPendingStatus {
             imageView.image = Asset.clock.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
+            label.value = L10n.dashboardInsuranceStatusInactiveNoStartdate
         } else if let status = contract.status.asActiveInFutureStatus {
             imageView.image = Asset.clock.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE(
-                activationDate: status.futureInception?.localDateToDate ?? "")
-            )
+            label.value = L10n.dashboardInsuranceStatusInactiveStartdate(status.futureInception?.localDateToDate?.localizationDescription ?? "")
         } else if let _ = contract.status.asActiveStatus {
             imageView.image = Asset.circularCheckmark.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_ACTIVE)
+            label.value = L10n.dashboardInsuranceStatusActive
         } else if let status = contract.status.asActiveInFutureAndTerminatedInFutureStatus {
             imageView.image = Asset.clock.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE_TERMINATED_IN_FUTURE(
-                activationDate: status.futureInception?.localDateToDate ?? "",
-                terminationDate: status.futureTermination?.localDateToDate ?? ""
-            ))
+            label.value = L10n.dashboardInsuranceStatusInactiveStartdateTerminatedInFuture(
+                status.futureInception?.localDateToDate?.localizationDescription ?? "",
+                status.futureTermination?.localDateToDate?.localizationDescription ?? ""
+            )
         } else if let status = contract.status.asTerminatedInFutureStatus {
             imageView.image = Asset.redClock.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE(
-                terminationDate: status.futureTermination?.localDateToDate ?? ""
-            ))
+            label.value = L10n.dashboardInsuranceStatusActiveTerminationdate(status.futureTermination?.localDateToDate?.localizationDescription ?? "")
         } else if let _ = contract.status.asTerminatedTodayStatus {
             imageView.image = Asset.redClock.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
+            label.value = L10n.dashboardInsuranceStatusTerminatedToday
         } else if let _ = contract.status.asTerminatedStatus {
             imageView.image = Asset.redCross.image
-            label.value = String(key: .DASHBOARD_INSURANCE_STATUS_TERMINATED)
+            label.value = L10n.dashboardInsuranceStatusTerminated
         }
 
         return stackView
@@ -136,8 +132,7 @@ extension ContractRow: Reusable {
 
             bag += row.append(
                 MultilineLabel(
-                    value: String(key: .DASHBOARD_PENDING_HAS_DATE(date: status.futureInception?.localDateToDate ?? "")),
-                    style: .bodySmallSmallLeft
+                    value: L10n.dashboardPendingHasDate(status.futureInception?.localDateToDate?.localizationDescription ?? ""), style: .body
                 )
             )
 
@@ -147,7 +142,7 @@ extension ContractRow: Reusable {
 
             bag += row.append(
                 MultilineLabel(
-                    value: String(key: .DASHBOARD_PENDING_NO_DATE),
+                    value: L10n.dashboardPendingNoDate,
                     style: .bodySmallSmallLeft
                 )
             )
@@ -205,12 +200,12 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: String(key: .DASHBOARD_RENEWAL_PROMPTER_TITLE), style: .headlineSmallSmallLeft)
+            UILabel(value: L10n.dashboardRenewalPrompterTitle, style: .headlineSmallSmallLeft)
         )
 
         bag += textContainer.addArranged(
             MultilineLabel(
-                value: String(key: .DASHBOARD_RENEWAL_PROMPTER_BODY(daysUntilRenewal: daysUntilRenewal ?? "")),
+                value: L10n.dashboardRenewalPrompterBody(daysUntilRenewal ?? 0),
                 style: .bodySmallSmallLeft
             )
         )
@@ -266,7 +261,7 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: String(key: .DASHBOARD_MY_INFO_TITLE), style: .headlineSmallSmallLeft)
+            UILabel(value: L10n.dashboardMyInfoTitle, style: .headlineSmallSmallLeft)
         )
         textContainer.addArrangedSubview(
             UILabel(value: contract.currentAgreement.summary ?? "", style: .bodySmallSmallLeft)
@@ -312,10 +307,10 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: String(key: .DASHBOARD_MY_COVERAGE_TITLE), style: .headlineSmallSmallLeft)
+            UILabel(value: L10n.dashboardMyCoverageTitle, style: .headlineSmallSmallLeft)
         )
         textContainer.addArrangedSubview(
-            UILabel(value: String(key: .DASHBOARD_MY_COVERAGE_SUBTITLE), style: .bodySmallSmallLeft)
+            UILabel(value: L10n.dashboardMyCoverageSubtitle, style: .bodySmallSmallLeft)
         )
 
         row.append(textContainer)
@@ -359,10 +354,10 @@ extension ContractRow: Reusable {
         textContainer.axis = .vertical
 
         textContainer.addArrangedSubview(
-            UILabel(value: String(key: .DASHBOARD_MY_DOCUMENTS_TITLE), style: .headlineSmallSmallLeft)
+            UILabel(value: L10n.dashboardMyDocumentsTitle, style: .headlineSmallSmallLeft)
         )
         textContainer.addArrangedSubview(
-            UILabel(value: String(key: .DASHBOARD_MY_DOCUMENTS_SUBTITLE), style: .bodySmallSmallLeft)
+            UILabel(value: L10n.dashboardMyDocumentsSubtitle, style: .bodySmallSmallLeft)
         )
 
         row.append(textContainer)

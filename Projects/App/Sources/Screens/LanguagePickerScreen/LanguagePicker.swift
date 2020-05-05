@@ -136,9 +136,7 @@ extension LanguagePicker: Presentable {
                 ApplicationState.setPreferredLocale(locale)
                 Bundle.setLanguage(locale.lprojCode)
                 Localization.Locale.currentLocale = locale
-                TranslationsRepo.clear().onValue { _ in
-                    UIApplication.shared.reloadAllLabels()
-                }
+                UIApplication.shared.reloadAllLabels()
                 ApolloClient.initClient().always {
                     completion(.success)
                 }

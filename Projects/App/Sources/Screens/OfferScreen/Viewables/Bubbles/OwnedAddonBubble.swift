@@ -19,7 +19,7 @@ extension OwnedAddonBubble: Viewable {
         content.axis = .vertical
 
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_OWNED_ADDON_TITLE),
+            value: L10n.offerBubblesOwnedAddonTitle,
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)

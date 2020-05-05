@@ -102,7 +102,7 @@ extension KeyGearOverview: Presentable {
         split.extendedLayoutIncludesOpaqueBars = true
 
         let viewController = KeyGearOverviewViewController()
-        viewController.title = String(key: .KEY_GEAR_TAB_TITLE)
+        viewController.title = L10n.keyGearTabTitle
 
         bag += split.present(viewController, options: [.defaults, .showInMaster, .prefersLargeTitles(true)])
 
@@ -151,7 +151,7 @@ extension KeyGearOverview: Presentable {
 extension KeyGearOverview: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(key: .KEY_GEAR_TAB_TITLE),
+            title: L10n.keyGearTabTitle,
             image: Asset.keyGearTabIcon.image,
             selectedImage: Asset.keyGearTabIcon.image
         )

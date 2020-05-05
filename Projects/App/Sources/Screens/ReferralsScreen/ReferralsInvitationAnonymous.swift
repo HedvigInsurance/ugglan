@@ -49,17 +49,17 @@ struct ReferralsInvitationAnonymous: Reusable {
             let bag = DisposeBag()
 
             guard let count = invitation.count else {
-                titleLabel.text = String(key: .REFERRAL_INVITE_EMPTYSTATE_TITLE)
-                descriptionLabel.text = String(key: .REFERRAL_INVITE_EMPTYSTATE_DESCRIPTION)
+                titleLabel.text = L10n.referralInviteEmptystateTitle
+                descriptionLabel.text = L10n.referralInviteEmptystateDescription
                 return bag
             }
 
             if count > 1 {
-                titleLabel.text = String(key: .REFERRAL_INVITE_ANONS)
-                descriptionLabel.text = String(key: .REFERRAL_INVITE_OPENEDSTATE)
+                titleLabel.text = L10n.referralInviteAnons
+                descriptionLabel.text = L10n.referralInviteOpenedstate
             } else {
-                titleLabel.text = String(key: .REFERRAL_INVITE_ANON)
-                descriptionLabel.text = String(key: .REFERRAL_INVITE_OPENEDSTATE)
+                titleLabel.text = L10n.referralInviteAnon
+                descriptionLabel.text = L10n.referralInviteOpenedstate
             }
 
             return bag
