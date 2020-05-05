@@ -19,6 +19,7 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import Instabug
 
 let log = Logger.self
 
@@ -226,6 +227,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
+        #if APP_VARIANT_STAGING
+            Instabug.start(withToken: "d534c9aa8b189b2de1b224a4f55f463f", invocationEvents: [.shake, .screenshot])
+            BugReporting.shouldCaptureViewHierarchy = true
+        #elseif APP_VARIANT_PRODUCTION
+            Instabug.start(withToken: "d534c9aa8b189b2de1b224a4f55f463f", invocationEvents: [])
+        #endif
 
         launchWindow?.isOpaque = false
         launchWindow?.backgroundColor = UIColor.transparent
