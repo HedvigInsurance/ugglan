@@ -38,7 +38,7 @@ extension ProceedButton: Viewable {
         }
 
         func setButtonTitle(isMorePages: Bool) {
-            buttonTitleSignal.value = isMorePages ? String(key: .NEWS_PROCEED) : String(key: .NEWS_DISMISS)
+            buttonTitleSignal.value = isMorePages ? L10n.newsProceed : L10n.newsDismiss
         }
 
         bag += button.onTapSignal.bindTo(onTapReadWriteSignal)

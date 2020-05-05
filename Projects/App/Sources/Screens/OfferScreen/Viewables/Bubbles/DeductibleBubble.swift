@@ -19,13 +19,13 @@ extension DeductibleBubble: Viewable {
         content.axis = .vertical
 
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_DEDUCTIBLE_TITLE),
+            value: L10n.offerBubblesDeductibleTitle,
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)
 
         let subtitleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_DEDUCTIBLE_SUBTITLE),
+            value: L10n.offerBubblesDeductibleSubtitle,
             style: .offerBubbleSubtitle
         )
         bag += content.addArranged(subtitleLabel)

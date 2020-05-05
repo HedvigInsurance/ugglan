@@ -18,7 +18,7 @@ extension DiscountTerms: Viewable {
         let view = UIControl()
 
         bag += view.signal(for: .touchUpInside).compactMap {
-            URL(string: String(key: .REFERRALS_RECEIVER_TERMS_LINK))
+            URL(string: L10n.referralsReceiverTermsLink)
         }.onValue { url in
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
@@ -38,12 +38,10 @@ extension DiscountTerms: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let termsAndConditionsString = String(key: .REFERRAL_ADDCOUPON_TC_LINK)
+        let termsAndConditionsString = L10n.referralAddcouponTcLink
         let textStyle = TextStyle.reallySmallTitle.centerAligned
 
-        let termsLabelText = String(
-            key: .REFERRAL_ADDCOUPON_TC(termsAndConditionsLink: termsAndConditionsString)
-        ).attributedStringWithVariableStyles(
+        let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString).attributedStringWithVariableStyles(
             [termsAndConditionsString: textStyle.colored(.primaryTintColor)],
             fallbackStyle: textStyle.colored(.decorText)
         )

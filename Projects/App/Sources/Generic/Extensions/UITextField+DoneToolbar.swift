@@ -15,7 +15,7 @@ extension UITextField {
         let doneToolbar = UIToolbar()
         doneToolbar.barStyle = UIBarStyle.default
         let flexSpace = UIBarButtonItem(system: .flexibleSpace)
-        let done = UIBarButtonItem(title: String(key: .TOOLBAR_DONE_BUTTON), style: .navigationBarButtonPrimary)
+        let done = UIBarButtonItem(title: L10n.toolbarDoneButton, style: .navigationBarButtonPrimary)
 
         doneToolbar.items = [flexSpace, done]
 

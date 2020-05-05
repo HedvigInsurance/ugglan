@@ -46,18 +46,18 @@ extension ApplyDiscount: Presentable {
         }
 
         let titleLabel = MultilineLabel(
-            value: String(key: .REFERRAL_ADDCOUPON_HEADLINE),
+            value: L10n.referralAddcouponHeadline,
             style: .draggableOverlayTitle
         )
         bag += view.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
-            value: String(key: .REFERRAL_ADDCOUPON_BODY),
+            value: L10n.referralAddcouponBody,
             style: .bodyOffBlack
         )
         bag += view.addArranged(descriptionLabel)
 
-        let textField = TextField(value: "", placeholder: String(key: .REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
+        let textField = TextField(value: "", placeholder: L10n.referralAddcouponInputplaceholder)
         bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
             stackView.isUserInteractionEnabled = true
             stackView.isLayoutMarginsRelativeArrangement = true
@@ -65,7 +65,7 @@ extension ApplyDiscount: Presentable {
         }
 
         let submitButton = Button(
-            title: String(key: .REFERRAL_ADDCOUPON_BTN_SUBMIT),
+            title: L10n.referralAddcouponBtnSubmit,
             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
@@ -105,9 +105,9 @@ extension ApplyDiscount: Presentable {
                 .onValue { result in
                     if result.errors != nil {
                         let alert = Alert(
-                            title: String(key: .REFERRAL_ERROR_MISSINGCODE_HEADLINE),
-                            message: String(key: .REFERRAL_ERROR_MISSINGCODE_BODY),
-                            actions: [Alert.Action(title: String(key: .REFERRAL_ERROR_MISSINGCODE_BTN)) {}]
+                            title: L10n.referralErrorMissingcodeHeadline,
+                            message: L10n.referralErrorMissingcodeBody,
+                            actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
                         )
 
                         viewController.present(alert)

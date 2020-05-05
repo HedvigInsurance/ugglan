@@ -10,6 +10,125 @@ import Flow
 import Foundation
 import UIKit
 
+struct Localization {
+    enum Locale: String, CaseIterable {
+        public static var currentLocale: Locale = .sv_SE
+        case sv_SE
+        case en_SE
+        case en_NO
+        case nb_NO
+        
+        enum Market: String {
+            case no = "NO"
+            case se = "SE"
+        }
+
+        var market: Market {
+            switch self {
+            case .sv_SE:
+                return .se
+            case .en_SE:
+                return .se
+            case .en_NO:
+                return .no
+            case .nb_NO:
+                return .no
+            }
+        }
+
+        var acceptLanguageHeader: String {
+            switch self {
+            case .sv_SE:
+                return "sv-SE"
+            case .en_SE:
+                return "en-SE"
+            case .en_NO:
+                return "en-NO"
+            case .nb_NO:
+                return "nb-NO"
+            }
+        }
+
+        var code: String {
+            switch self {
+            case .sv_SE:
+                return "sv_SE"
+            case .en_SE:
+                return "en_SE"
+            case .en_NO:
+                return "en_NO"
+            case .nb_NO:
+                return "nb_NO"
+            }
+        }
+
+        var lprojCode: String {
+            switch self {
+            case .sv_SE:
+                return "sv-SE"
+            case .en_SE:
+                return "en-SE"
+            case .en_NO:
+                return "en-NO"
+            case .nb_NO:
+                return "nb-NO"
+            }
+        }
+    }
+}
+
+extension Localization.Locale {
+    func asGraphQLLocale() -> Locale {
+        switch self {
+        case .sv_SE:
+            return .svSe
+        case .en_SE:
+            return .enSe
+        case .nb_NO:
+            return .nbNo
+        case .en_NO:
+            return .enNo
+        }
+    }
+}
+
+public struct L10nDerivation {
+    let table: String
+    let key: String
+    let args: [CVarArg]
+    
+    /// render the text key again, useful if you have changed the language during runtime
+    func render() -> String {
+        return L10n.tr(table, key, args)
+    }
+}
+
+public extension String {
+    static var derivedFromL10n: UInt8 = 0
+
+    /// set when String is derived from a L10n key
+    var derivedFromL10n: L10nDerivation? {
+        get {
+            guard let value = objc_getAssociatedObject(
+                self,
+                &String.derivedFromL10n
+            ) as? L10nDerivation? else {
+                return nil
+            }
+
+            return value
+        }
+        set(newValue) {
+            objc_setAssociatedObject(
+                self,
+                &String.derivedFromL10n,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+}
+
 struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 
@@ -198,7 +317,7 @@ struct ApplicationState {
             let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
             #if APP_VARIANT_PRODUCTION
                 return .production
-            #elseif APP_VARIANT_DEV
+            #elseif APP_VARIANT_STAGING
                 return .staging
             #else
                 return .production

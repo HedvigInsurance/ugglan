@@ -27,7 +27,7 @@ extension MyPayment: Presentable {
         let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
 
         let viewController = UIViewController()
-        viewController.title = String(key: .MY_PAYMENT_TITLE)
+        viewController.title = L10n.myPaymentTitle
 
         let form = FormView()
         bag += viewController.install(form)
@@ -96,7 +96,7 @@ extension MyPayment: Presentable {
             let innerBag = bag.innerBag()
 
             let hasAlreadyConnected = result.data?.payinMethodStatus != .needsSetup
-            buttonSection.text.value = hasAlreadyConnected ? String(key: .MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON) : String(key: .MY_PAYMENT_DIRECT_DEBIT_BUTTON)
+            buttonSection.text.value = hasAlreadyConnected ? L10n.myPaymentDirectDebitReplaceButton : L10n.myPaymentDirectDebitButton
 
             innerBag += buttonSection.onSelect.onValue {
                 let setup = PaymentSetup(

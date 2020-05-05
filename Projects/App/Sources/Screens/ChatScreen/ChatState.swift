@@ -68,7 +68,7 @@ class ChatState {
                 return Toast(
                     symbol: .character("✉️"),
                     body: statusMessage,
-                    subtitle: String(key: .CHAT_TOAST_PUSH_NOTIFICATIONS_SUBTITLE)
+                    subtitle: L10n.chatToastPushNotificationsSubtitle
                 )
             }
 

@@ -29,7 +29,7 @@ extension ReferralsCodeContainer: Viewable {
         stackView.spacing = 5
 
         let titleLabel = MultilineLabel(
-            value: String(key: .REFERRAL_PROGRESS_CODE_TITLE),
+            value: L10n.referralProgressCodeTitle,
             style: TextStyle.centeredBodyOffBlack
         )
         bag += stackView.addArranged(titleLabel)

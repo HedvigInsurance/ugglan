@@ -17,13 +17,13 @@ struct ReferralsInvitation: Reusable {
         var description: String {
             switch self {
             case .invitedYou:
-                return String(key: .REFERRAL_INVITE_INVITEDYOUSTATE)
+                return L10n.referralInviteInvitedyoustate
             case .onboarding:
-                return String(key: .REFERRAL_INVITE_STARTEDSTATE)
+                return L10n.referralInviteStartedstate
             case .member:
-                return String(key: .REFERRAL_INVITE_NEWSTATE)
+                return L10n.referralInviteNewstate
             case .left:
-                return String(key: .REFERRAL_INVITE_QUITSTATE)
+                return L10n.referralInviteQuitstate
             }
         }
     }
@@ -93,7 +93,7 @@ struct ReferralsInvitation: Reusable {
                 circle.backgroundColor = String(name.prefix(1)).hedvigColor
                 titleLabel.text = name
             } else {
-                titleLabel.text = String(key: .REFERRAL_INVITE_ANONS)
+                titleLabel.text = L10n.referralInviteAnons
             }
 
             descriptionLabel.text = invitation.state.description

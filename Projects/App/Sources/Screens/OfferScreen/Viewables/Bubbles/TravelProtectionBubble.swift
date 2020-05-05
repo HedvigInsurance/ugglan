@@ -21,7 +21,7 @@ extension TravelProtectionBubble: Viewable {
         content.isLayoutMarginsRelativeArrangement = true
 
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_TRAVEL_PROTECTION_TITLE),
+            value: L10n.offerBubblesTravelProtectionTitle,
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)

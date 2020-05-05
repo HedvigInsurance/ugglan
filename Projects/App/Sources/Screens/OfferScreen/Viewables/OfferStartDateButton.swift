@@ -61,7 +61,7 @@ extension OfferStartDateButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let keyLabel = UILabel(value: String(key: .START_DATE_BTN), style: .bodyButtonText)
+        let keyLabel = UILabel(value: L10n.startDateBtn, style: .bodyButtonText)
         stackView.addArrangedSubview(keyLabel)
 
         let valueLabel = UILabel(value: "", style: .bodyBookButtonText)
@@ -75,11 +75,11 @@ extension OfferStartDateButton: Viewable {
             make.width.equalTo(20)
         }
 
-        let alert = Alert<Void>(title: String(key: .ALERT_TITLE_STARTDATE),
-                                message: String(key: .ALERT_DESCRIPTION_STARTDATE),
+        let alert = Alert<Void>(title: L10n.alertTitleStartdate,
+                                message: L10n.alertDescriptionStartdate,
                                 tintColor: .black,
-                                actions: [Alert.Action(title: String(key: .ALERT_CANCEL), action: {}),
-                                          Alert.Action(title: String(key: .ALERT_CONTINUE), action: {
+                                actions: [Alert.Action(title: L10n.alertCancel, action: {}),
+                                          Alert.Action(title: L10n.alertContinue, action: {
                                               self.presentingViewController.present(
                                                   chooseStartDate.withCloseButton,
                                                   style: .modally()
@@ -101,9 +101,9 @@ extension OfferStartDateButton: Viewable {
 
         bag += client.watch(query: OfferQuery()).map { $0.data }.onValue { result in
             if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
-                valueLabel.value = String(key: .START_DATE_EXPIRES)
+                valueLabel.value = L10n.startDateExpires
             } else if result?.insurance.previousInsurer == nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
-                valueLabel.value = String(key: .CHOOSE_DATE_BTN)
+                valueLabel.value = L10n.chooseDateBtn
             } else {
                 valueLabel.value = result?.lastQuoteOfMember.asCompleteQuote?.startDate ?? ""
             }
@@ -112,7 +112,7 @@ extension OfferStartDateButton: Viewable {
         bag += dataSignal.map { $0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }.onValue { startDay in
             if let startDate = startDay {
                 if Calendar.current.isDateInToday(startDate) {
-                    valueLabel.value = String(key: .START_DATE_TODAY)
+                    valueLabel.value = L10n.startDateToday
                 } else {
                     valueLabel.value = startDate.localDateString ?? ""
                 }

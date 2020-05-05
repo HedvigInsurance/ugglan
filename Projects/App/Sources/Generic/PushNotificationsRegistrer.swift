@@ -37,10 +37,10 @@ struct PushNotificationsRegister: Presentable {
             title: title,
             message: message,
             actions: [
-                Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_OK), action: {
+                Alert.Action(title: L10n.pushNotificationsAlertActionOk, action: {
                     UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
                 }),
-                Alert.Action(title: String(key: .PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW), style: .cancel, action: {
+                Alert.Action(title: L10n.pushNotificationsAlertActionNotNow, style: .cancel, action: {
                     throw PushNotificationsRegisterError.canceled
                 }),
             ]

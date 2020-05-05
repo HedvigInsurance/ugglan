@@ -20,66 +20,54 @@ extension OfferTermsBulletPoints {
         var bulletList: [BulletPoint] = []
 
         if type.isApartment {
-            bulletList.append(BulletPoint(title: String(key: .OFFER_TERMS_NO_BINDING_PERIOD)))
+            bulletList.append(BulletPoint(title: L10n.offerTermsNoBindingPeriod))
 
             if type.isOwnedApartment {
-                bulletList.append(BulletPoint(title: String(key: .OFFER_TERMS_NO_COVERAGE_LIMIT)))
+                bulletList.append(BulletPoint(title: L10n.offerTermsNoCoverageLimit))
             }
 
             if type.isStudent {
                 bulletList.append(
                     BulletPoint(
-                        title: String(
-                            key: .OFFER_TERMS_MAX_COMPENSATION(
-                                maxCompensation: Localization.Key.MAX_COMPENSATION_STUDENT
-                            )
-                        )
+                        title: L10n.offerTermsMaxCompensation(L10n.maxCompensationStudent)
                     )
                 )
             } else {
                 bulletList.append(
                     BulletPoint(
-                        title: String(
-                            key: .OFFER_TERMS_MAX_COMPENSATION(
-                                maxCompensation: Localization.Key.MAX_COMPENSATION
-                            )
-                        )
+                        title: L10n.offerTermsMaxCompensation(L10n.maxCompensation)
                     )
                 )
             }
 
             bulletList.append(
                 BulletPoint(
-                    title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE))
+                    title: L10n.offerTermsDeductible(L10n.deductible)
                 )
             )
         } else {
             bulletList.append(
                 BulletPoint(
-                    title: String(key: .OFFER_HOUSE_TRUST_HOUSE)
+                    title: L10n.offerHouseTrustHouse
                 )
             )
 
             bulletList.append(
                 BulletPoint(
-                    title: String(
-                        key: .OFFER_TERMS_MAX_COMPENSATION(
-                            maxCompensation: Localization.Key.MAX_COMPENSATION_HOUSE
-                        )
-                    )
+                    title: L10n.offerTermsMaxCompensation(L10n.maxCompensationHouse)
                 )
             )
 
             bulletList.append(
                 BulletPoint(
-                    title: String(key: .OFFER_TERMS_DEDUCTIBLE(deductible: Localization.Key.DEDUCTIBLE)),
-                    message: String(key: .OFFER_TRUST_INCREASED_DEDUCTIBLE)
+                    title: L10n.offerTermsDeductible(L10n.deductible),
+                    message: L10n.offerTrustIncreasedDeductible
                 )
             )
 
             bulletList.append(
                 BulletPoint(
-                    title: String(key: .OFFER_HOUSE_TRUST_HDI)
+                    title: L10n.offerHouseTrustHdi
                 )
             )
         }

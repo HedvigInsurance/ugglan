@@ -24,12 +24,12 @@ struct DirectDebitSetup {
         switch setupType {
         case .postOnboarding:
             return UIBarButtonItem(
-                title: String(key: .TRUSTLY_SKIP_BUTTON),
+                title: L10n.trustlySkipButton,
                 style: .navigationBarButtonSkip
             )
         default:
             return UIBarButtonItem(
-                title: String(key: .DIRECT_DEBIT_DISMISS_BUTTON),
+                title: L10n.directDebitDismissButton,
                 style: .navigationBarButton
             )
         }
@@ -56,11 +56,11 @@ extension DirectDebitSetup: Presentable {
 
         switch setupType {
         case .initial:
-            viewController.title = String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE)
+            viewController.title = L10n.directDebitSetupScreenTitle
         case .replacement:
-            viewController.title = String(key: .DIRECT_DEBIT_SETUP_CHANGE_SCREEN_TITLE)
+            viewController.title = L10n.directDebitSetupChangeScreenTitle
         case .postOnboarding:
-            viewController.title = String(key: .DIRECT_DEBIT_SETUP_SCREEN_TITLE)
+            viewController.title = L10n.directDebitSetupScreenTitle
         }
 
         let dismissButton = makeDismissButton()
@@ -141,13 +141,13 @@ extension DirectDebitSetup: Presentable {
         return (viewController, Future { completion in
             bag += dismissButton.onValue {
                 let alert = Alert<Bool>.init(
-                    title: String(key: .DIRECT_DEBIT_DISMISS_ALERT_TITLE),
-                    message: String(key: .DIRECT_DEBIT_DISMISS_ALERT_MESSAGE),
+                    title: L10n.directDebitDismissAlertTitle,
+                    message: L10n.directDebitDismissAlertMessage,
                     actions: [
-                        Alert.Action(title: String(key: .DIRECT_DEBIT_DISMISS_ALERT_CONFIRM_ACTION)) {
+                        Alert.Action(title: L10n.directDebitDismissAlertConfirmAction) {
                             true
                         },
-                        Alert.Action(title: String(key: .DIRECT_DEBIT_DISMISS_ALERT_CANCEL_ACTION)) {
+                        Alert.Action(title: L10n.directDebitDismissAlertCancelAction) {
                             false
                         },
                     ]

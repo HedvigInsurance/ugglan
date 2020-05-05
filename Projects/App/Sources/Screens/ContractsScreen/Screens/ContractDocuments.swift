@@ -18,7 +18,7 @@ struct ContractDocuments {
 extension ContractDocuments: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(key: .INSURANCE_PAGE_MY_DOCUMENTS_TITLE)
+        viewController.title = L10n.insurancePageMyDocumentsTitle
         let bag = DisposeBag()
 
         let form = FormView()
@@ -26,7 +26,7 @@ extension ContractDocuments: Presentable {
         let section = form.appendSection()
         section.dynamicStyle = .sectionPlain
 
-        let certificateRow = ButtonRow(text: String(key: .MY_DOCUMENTS_INSURANCE_CERTIFICATE), style: .normalButton)
+        let certificateRow = ButtonRow(text: L10n.myDocumentsInsuranceCertificate, style: .normalButton)
         bag += section.append(certificateRow)
 
         bag += certificateRow.onSelect.onValue { _ in
@@ -35,7 +35,7 @@ extension ContractDocuments: Presentable {
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: String(key: .MY_DOCUMENTS_INSURANCE_CERTIFICATE)),
+                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate),
                 style: .default,
                 options: [.defaults, .allowSwipeDismissAlways]
             )

@@ -34,19 +34,19 @@ extension ReferralsNotification: Presentable {
         viewController.view = view
 
         let openReferralsButton = Button(
-            title: String(key: .REFERRAL_SUCCESS_BTN_CTA),
+            title: L10n.referralSuccessBtnCta,
             type: .standard(backgroundColor: .purple, textColor: .white)
         )
 
         let closeButton = Button(
-            title: String(key: .REFERRAL_SUCCESS_BTN_CLOSE),
+            title: L10n.referralSuccessBtnClose,
             type: .pillSemiTransparent(backgroundColor: .blackPurple, textColor: .white)
         )
 
         let content = ImageTextAction<ReferralsNotificationResult>(
             image: .init(image: Asset.inviteSuccess.image),
-            title: String(key: .REFERRAL_SUCCESS_HEADLINE(user: name)),
-            body: String(key: .REFERRAL_SUCCESS_BODY(referralValue: String(incentive))),
+            title: L10n.referralSuccessHeadline(name),
+            body: L10n.referralSuccessBody(incentive),
             actions: [
                 (.openReferrals, openReferralsButton),
                 (.cancel, closeButton),

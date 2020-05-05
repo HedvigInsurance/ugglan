@@ -6,8 +6,7 @@
 build/
 DerivedData/
 Src/Assets/Assets.swift
-Src/Assets/Localization/Localization.json
-Src/Assets/Localization/Localization.swift
+Src/Assets/Strings.swift
 Src/Data/schema.json
 Src/Data/API.swift
 Carthage
@@ -17,6 +16,7 @@ Ugglan.xcworkspace
 Ugglan.xcodeproj
 UITestsImages/FailureDiffs
 Src/Data/operationIDs.json
+Localizable.strings
 
 ## Various settings
 *.pbxuser

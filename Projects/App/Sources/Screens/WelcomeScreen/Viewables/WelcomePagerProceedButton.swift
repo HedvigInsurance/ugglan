@@ -38,7 +38,7 @@ extension WelcomePagerProceedButton: Viewable {
         }
 
         func setButtonTitle(isMorePages: Bool) {
-            buttonTitleSignal.value = isMorePages ? String(key: .NEW_MEMBER_PROCEED) : String(key: .NEW_MEMBER_DISMISS)
+            buttonTitleSignal.value = isMorePages ? L10n.newMemberProceed : L10n.newMemberDismiss
         }
 
         bag += button.onTapSignal.bindTo(onTapReadWriteSignal)

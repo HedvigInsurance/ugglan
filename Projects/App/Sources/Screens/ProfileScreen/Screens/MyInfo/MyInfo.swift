@@ -18,7 +18,7 @@ extension MyInfo: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(key: .MY_INFO_TITLE)
+        viewController.title = L10n.myInfoTitle
 
         let state = MyInfoState(presentingViewController: viewController)
         bag += state.loadData()
@@ -26,7 +26,7 @@ extension MyInfo: Presentable {
         let form = FormView()
 
         let saveButton = ActivityBarButton(
-            item: UIBarButtonItem(title: String(key: .MY_INFO_SAVE_BUTTON), style: .navigationBarButtonPrimary),
+            item: UIBarButtonItem(title: L10n.myInfoSaveButton, style: .navigationBarButtonPrimary),
             position: .right
         )
         bag += saveButton.onValue { _ in
@@ -43,7 +43,7 @@ extension MyInfo: Presentable {
         bag += form.append(contactDetailsSection)
 
         let cancelButton = UIBarButtonItem(
-            title: String(key: .MY_INFO_CANCEL_BUTTON),
+            title: L10n.myInfoCancelButton,
             style: .navigationBarButton
         )
 
@@ -58,8 +58,8 @@ extension MyInfo: Presentable {
                 viewController.navigationItem.setLeftBarButtonItems([], animated: true)
 
                 UIApplication.shared.appDelegate.displayToast(Toast(
-                    symbol: .character(Character(String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_SYMBOL))),
-                    body: String(key: .PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY)
+                    symbol: .character(Character(L10n.profileMyInfoSaveSuccessToastSymbol)),
+                    body: L10n.profileMyInfoSaveSuccessToastBody
                 )).onValue { _ in }
             } else {
                 saveButton.stopAnimating()
@@ -71,13 +71,13 @@ extension MyInfo: Presentable {
         return (viewController, Future { completion in
             bag += cancelButton.onValue { _ in
                 let alert = Alert<Bool>(
-                    title: String(key: .MY_INFO_CANCEL_ALERT_TITLE),
-                    message: String(key: .MY_INFO_CANCEL_ALERT_MESSAGE),
+                    title: L10n.myInfoCancelAlertTitle,
+                    message: L10n.myInfoCancelAlertMessage,
                     actions: [
-                        Alert.Action(title: String(key: .MY_INFO_CANCEL_ALERT_BUTTON_CONFIRM)) {
+                        Alert.Action(title: L10n.myInfoCancelAlertButtonConfirm) {
                             true
                         },
-                        Alert.Action(title: String(key: .MY_INFO_CANCEL_ALERT_BUTTON_CANCEL)) {
+                        Alert.Action(title: L10n.myInfoCancelAlertButtonCancel) {
                             false
                         },
                     ]

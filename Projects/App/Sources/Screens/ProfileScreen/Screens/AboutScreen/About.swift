@@ -29,7 +29,7 @@ struct About {
 extension About: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(key: .ABOUT_SCREEN_TITLE)
+        viewController.title = L10n.aboutScreenTitle
 
         let bag = DisposeBag()
 
@@ -43,7 +43,7 @@ extension About: Presentable {
             )
 
             let loginRow = ButtonRow(
-                text: String(key: .SETTINGS_LOGIN_ROW),
+                text: L10n.settingsLoginRow,
                 style: .normalButton
             )
             bag += loginSection.append(loginRow)
@@ -84,7 +84,7 @@ extension About: Presentable {
 
         if state == .loggedIn {
             let activatePushNotificationsRow = ButtonRow(
-                text: String(key: .ABOUT_PUSH_ROW),
+                text: L10n.aboutPushRow,
                 style: .normalButton
             )
 
@@ -97,7 +97,7 @@ extension About: Presentable {
 
                 bag += activatePushNotificationsRow.onSelect.onValueDisposePrevious { _ in
                     let register = PushNotificationsRegister(
-                        title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
+                        title: L10n.pushNotificationsAlertTitle,
                         message: "",
                         forceAsk: true
                     )
@@ -115,7 +115,7 @@ extension About: Presentable {
             }
 
             let showWelcome = ButtonRow(
-                text: String(key: .ABOUT_SHOW_INTRO_ROW),
+                text: L10n.aboutShowIntroRow,
                 style: .normalButton
             )
             bag += versionSection.append(showWelcome)

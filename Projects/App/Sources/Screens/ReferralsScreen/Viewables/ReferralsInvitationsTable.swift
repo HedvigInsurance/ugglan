@@ -67,10 +67,10 @@ extension ReferralsInvitationsTable: Viewable {
 
             return rows
         }, referredBySignal.atOnce().plain()).map { rows, referredBy -> Table<String, InvitationsListRow> in
-            let rowsSection = (String(key: .REFERRAL_INVITE_TITLE), rows)
+            let rowsSection = (L10n.referralsInviteLabel, rows)
 
             if let referredBy = referredBy {
-                return Table(sections: [(String(key: .REFERRAL_REFERRED_BY_TITLE), [referredBy]), rowsSection])
+                return Table(sections: [(L10n.referralReferredByTitle, [referredBy]), rowsSection])
             }
 
             return Table(sections: [rowsSection])

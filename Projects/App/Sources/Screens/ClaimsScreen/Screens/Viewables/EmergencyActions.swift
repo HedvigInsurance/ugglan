@@ -120,9 +120,9 @@ extension EmergencyActions: Viewable {
         }
 
         let callMeAction = EmergencyAction(
-            title: String(key: .EMERGENCY_CALL_ME_TITLE),
-            description: String(key: .EMERGENCY_CALL_ME_DESCRIPTION),
-            buttonTitle: String(key: .EMERGENCY_CALL_ME_BUTTON)
+            title: L10n.emergencyCallMeTitle,
+            description: L10n.emergencyCallMeDescription,
+            buttonTitle: L10n.emergencyCallMeButton
         )
 
         bag += callMeAction.onValue {
@@ -137,22 +137,22 @@ extension EmergencyActions: Viewable {
         }
 
         let emergencyAbroadAction = EmergencyAction(
-            title: String(key: .EMERGENCY_ABROAD_TITLE),
-            description: String(key: .EMERGENCY_ABROAD_DESCRIPTION),
-            buttonTitle: String(key: .EMERGENCY_ABROAD_BUTTON)
+            title: L10n.emergencyAbroadTitle,
+            description: L10n.emergencyAbroadDescription,
+            buttonTitle: L10n.emergencyAbroadButton
         )
 
         bag += emergencyAbroadAction.onValue {
-            let phoneNumber = String(key: .EMERGENCY_ABROAD_BUTTON_ACTION_PHONE_NUMBER)
+            let phoneNumber = L10n.emergencyAbroadButtonActionPhoneNumber
             guard let phoneNumberUrl = URL(string: "tel:\(phoneNumber)") else { return }
 
             if UIApplication.shared.canOpenURL(phoneNumberUrl) {
                 UIApplication.shared.open(phoneNumberUrl, options: [:], completionHandler: nil)
             } else {
                 let nonPhoneAlert = Alert<Void>(
-                    title: String(key: .EMERGENCY_ABROAD_ALERT_NON_PHONE_TITLE),
+                    title: L10n.emergencyAbroadAlertNonPhoneTitle,
                     message: phoneNumber,
-                    actions: [Alert<Void>.Action(title: String(key: .EMERGENCY_ABROAD_ALERT_NON_PHONE_OK_BUTTON)) {}]
+                    actions: [Alert<Void>.Action(title: L10n.emergencyAbroadAlertNonPhoneOkButton) {}]
                 )
 
                 self.presentingViewController.present(nonPhoneAlert)
@@ -160,9 +160,9 @@ extension EmergencyActions: Viewable {
         }
 
         let unsureAction = EmergencyAction(
-            title: String(key: .EMERGENCY_UNSURE_TITLE),
-            description: String(key: .EMERGENCY_UNSURE_DESCRIPTION),
-            buttonTitle: String(key: .EMERGENCY_UNSURE_BUTTON)
+            title: L10n.emergencyUnsureTitle,
+            description: L10n.emergencyUnsureDescription,
+            buttonTitle: L10n.emergencyUnsureButton
         )
 
         bag += unsureAction.onValue {

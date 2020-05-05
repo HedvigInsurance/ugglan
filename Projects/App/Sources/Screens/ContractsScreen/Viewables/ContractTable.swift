@@ -36,10 +36,10 @@ extension ContractsQuery.Data.Contract.CurrentAgreement {
             return norwegianHomeContents.address.street
         } else if let norwegianTravel = asNorwegianTravelAgreement {
             if norwegianTravel.numberCoInsured > 0 {
-                return String(key: .DASHBOARD_MY_INFO_COINSURED(coinsuredPeople: norwegianTravel.numberCoInsured))
+                return L10n.dashboardMyInfoCoinsured(norwegianTravel.numberCoInsured)
             }
 
-            return String(key: .DASHBOARD_MY_INFO_NO_COINSURED)
+            return L10n.dashboardMyInfoNoCoinsured
         } else if let swedishApartment = asSwedishApartmentAgreement {
             return swedishApartment.address.street
         } else if let swedishHouse = asSwedishHouseAgreement {

@@ -22,7 +22,7 @@ extension PastPaymentsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String(key: .PAYMENTS_SUBTITLE_PAYMENT_HISTORY),
+            header: L10n.paymentsSubtitlePaymentHistory,
             footer: nil,
             style: .sectionPlain
         )
@@ -55,7 +55,7 @@ extension PastPaymentsSection: Viewable {
             }
 
             let moreRow = RowView()
-            moreRow.append(UILabel(value: String(key: .PAYMENTS_BTN_HISTORY), style: .rowTitle))
+            moreRow.append(UILabel(value: L10n.paymentsBtnHistory, style: .rowTitle))
 
             let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
 

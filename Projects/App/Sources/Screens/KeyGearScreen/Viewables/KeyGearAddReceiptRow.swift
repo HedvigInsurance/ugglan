@@ -33,7 +33,7 @@ extension KeyGearAddReceiptRow: Viewable {
 
         let icon = Icon(icon: Asset.receipt, iconWidth: 40)
 
-        let receiptText = MultilineLabel(value: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_TABLE_TITLE), style: .smallTitle)
+        let receiptText = MultilineLabel(value: L10n.keyGearItemViewReceiptTableTitle, style: .smallTitle)
 
         stackView.addArrangedSubview(icon)
         bag += stackView.addArranged(receiptText) { view in
@@ -47,7 +47,7 @@ extension KeyGearAddReceiptRow: Viewable {
 
         let button = LoadableButton(
             button: Button(
-                title: String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON),
+                title: L10n.keyGearItemViewReceiptCellAddButton,
                 type: .outline(
                     borderColor: .transparent,
                     textColor: .primaryTintColor
@@ -68,7 +68,7 @@ extension KeyGearAddReceiptRow: Viewable {
         bag += receiptsSignal.map { receipts in
             !receipts.isEmpty
         }.onValue { hasReceipts in
-            button.button.title.value = hasReceipts ? String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW) : String(key: .KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
+            button.button.title.value = hasReceipts ? L10n.keyGearItemViewReceiptShow : L10n.keyGearItemViewReceiptCellAddButton
         }
 
         bag += button.onTapSignal.withLatestFrom(receiptsSignal.atOnce().plain()).onValue { _, receipts in

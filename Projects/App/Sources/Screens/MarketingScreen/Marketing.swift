@@ -88,7 +88,7 @@ extension Marketing: Presentable {
             make.bottom.trailing.leading.equalToSuperview()
         }
 
-        let onboardButton = Button(title: String(key: .MARKETING_GET_HEDVIG), type: .standard(backgroundColor: .white, textColor: .black))
+        let onboardButton = Button(title: L10n.marketingGetHedvig, type: .standard(backgroundColor: .white, textColor: .black))
 
         bag += onboardButton.onTapSignal.onValue { _ in
             viewController.present(Onboarding(), style: .default, options: [.defaults, .prefersNavigationBarHidden(false)])
@@ -96,7 +96,7 @@ extension Marketing: Presentable {
 
         bag += contentStackView.addArranged(onboardButton)
 
-        let loginButton = Button(title: String(key: .MARKETING_LOGIN), type: .standardOutline(borderColor: .white, textColor: .white))
+        let loginButton = Button(title: L10n.marketingLogin, type: .standardOutline(borderColor: .white, textColor: .white))
 
         bag += loginButton.onTapSignal.onValue { _ in
             viewController.present(BankIDLogin(), style: .modally())
@@ -104,7 +104,7 @@ extension Marketing: Presentable {
 
         bag += contentStackView.addArranged(loginButton)
 
-        bag += contentStackView.addArranged(MultilineLabel(value: String(key: .MARKETING_LEGAL), style: TextStyle.bodyXSmallXSmallCenter.colored(.white)).wrappedIn(UIStackView())) { stackView in
+        bag += contentStackView.addArranged(MultilineLabel(value: L10n.marketingLegal, style: TextStyle.bodyXSmallXSmallCenter.colored(.white)).wrappedIn(UIStackView())) { stackView in
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 10, verticalInset: 10)
         }
 

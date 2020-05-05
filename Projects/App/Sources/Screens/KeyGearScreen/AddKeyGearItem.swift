@@ -33,9 +33,9 @@ extension AddKeyGearItem: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        viewController.title = String(key: .KEY_GEAR_ADD_ITEM_PAGE_TITLE)
+        viewController.title = L10n.keyGearAddItemPageTitle
 
-        let cancelButton = UIBarButtonItem(title: String(key: .KEY_GEAR_ADD_ITEM_PAGE_CLOSE_BUTTON), style: .navigationBarButton)
+        let cancelButton = UIBarButtonItem(title: L10n.keyGearAddItemPageCloseButton, style: .navigationBarButton)
         viewController.navigationItem.rightBarButtonItem = cancelButton
 
         let form = FormView()
@@ -48,7 +48,7 @@ extension AddKeyGearItem: Presentable {
 
         bag += form.append(Spacing(height: 10))
 
-        let categoryPickerSection = form.appendSection(header: String(key: .KEY_GEAR_ADD_ITEM_TYPE_HEADLINE))
+        let categoryPickerSection = form.appendSection(header: L10n.keyGearAddItemTypeHeadline)
         categoryPickerSection.alpha = 0.5
         categoryPickerSection.isUserInteractionEnabled = false
         categoryPickerSection.dynamicStyle = .sectionPlain
@@ -64,7 +64,7 @@ extension AddKeyGearItem: Presentable {
 
         let saveButton = LoadableButton(
             button: Button(
-                title: String(key: .KEY_GEAR_ADD_ITEM_SAVE_BUTTON),
+                title: L10n.keyGearAddItemSaveButton,
                 type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
         )

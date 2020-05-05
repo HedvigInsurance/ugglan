@@ -76,7 +76,7 @@ extension AttachGIFImage: Reusable {
                     make.bottom.equalTo(view.safeAreaLayoutGuide)
                 }
 
-                let button = Button(title: String(key: .ATTACH_GIF_IMAGE_SEND),
+                let button = Button(title: L10n.attachGifImageSend,
                                     type: .standard(backgroundColor: .primaryButtonBackgroundColor,
                                                     textColor: .primaryButtonTextColor))
                 let loadableButton = LoadableButton(button: button,

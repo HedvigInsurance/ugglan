@@ -23,16 +23,16 @@ struct KeyGearImagePicker: Presentable {
         let actions = allowedTypes.map { pickType -> Alert<PickType>.Action in
             switch pickType {
             case .camera:
-                return Alert.Action(title: String(key: .KEY_GEAR_IMAGE_PICKER_CAMERA), style: .default, action: { _ in
+                return Alert.Action(title: L10n.keyGearImagePickerCamera, style: .default, action: { _ in
                     .camera
                 })
             case .photoLibrary:
-                return Alert.Action(title: String(key: .KEY_GEAR_IMAGE_PICKER_PHOTO_LIBRARY), style: .default, action: { _ in
+                return Alert.Action(title: L10n.keyGearImagePickerPhotoLibrary, style: .default, action: { _ in
                     .photoLibrary
                 })
             case .document:
 
-                return Alert.Action(title: String(key: .KEY_GEAR_IMAGE_PICKER_DOCUMENT), style: .default, action: { _ in
+                return Alert.Action(title: L10n.keyGearImagePickerDocument, style: .default, action: { _ in
                     .document
                 })
             }
@@ -41,7 +41,7 @@ struct KeyGearImagePicker: Presentable {
         return [
             actions,
             [
-                Alert.Action(title: String(key: .KEY_GEAR_IMAGE_PICKER_CANCEL), style: .cancel, action: { _ in
+                Alert.Action(title: L10n.keyGearImagePickerCancel, style: .cancel, action: { _ in
                     throw GenericError.cancelled
                 }),
             ],

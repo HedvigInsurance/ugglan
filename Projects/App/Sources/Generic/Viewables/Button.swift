@@ -442,7 +442,7 @@ extension Button: Viewable {
             )
 
         bag += touchUpInside.withLatestFrom(title.atOnce().plain()).onValue { _, title in
-            if let localizationKey = title.localizationKey?.description {
+            if let localizationKey = title.derivedFromL10n?.key {
                 Analytics.logEvent(localizationKey, parameters: [
                     "context": "Button",
                 ])

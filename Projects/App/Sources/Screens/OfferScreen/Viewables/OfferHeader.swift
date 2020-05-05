@@ -72,7 +72,7 @@ extension OfferHeader: Viewable {
         bag += stackView.addArranged(startDateButton)
 
         let signButton = Button(
-            title: String(key: .OFFER_SIGN_BUTTON),
+            title: L10n.offerSignButton,
             type: .standardIcon(
                 backgroundColor: .black,
                 textColor: .white,

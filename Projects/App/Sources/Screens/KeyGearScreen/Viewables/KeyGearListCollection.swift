@@ -39,8 +39,8 @@ extension KeyGearListCollection: Viewable {
 
         let header = TabHeader(
             image: Asset.keyGearOverviewHeader.image,
-            title: String(key: .KEY_GEAR_START_EMPTY_HEADLINE),
-            description: String(key: .KEY_GEAR_START_EMPTY_BODY)
+            title: L10n.keyGearStartEmptyHeadline,
+            description: L10n.keyGearStartEmptyBody
         )
 
         bag += collectionKit.registerViewForSupplementaryElement(

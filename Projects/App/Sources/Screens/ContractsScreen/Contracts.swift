@@ -15,7 +15,7 @@ struct Contracts {}
 extension Contracts: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(key: .DASHBOARD_SCREEN_TITLE)
+        viewController.title = L10n.dashboardScreenTitle
         viewController.installChatButton()
 
         let bag = DisposeBag()
@@ -29,7 +29,7 @@ extension Contracts: Presentable {
 extension Contracts: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(key: .TAB_DASHBOARD_TITLE),
+            title: L10n.tabDashboardTitle,
             image: Asset.dashboardTab.image,
             selectedImage: nil
         )

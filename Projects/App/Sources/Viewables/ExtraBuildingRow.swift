@@ -35,10 +35,10 @@ extension ExtraBuildingRow: Viewable {
         contentView.addArrangedSubview(subtitleLabel)
 
         bag += data.atOnce().map { (String($0.area), $0.hasWaterConnected) }.onValue { area, hasWaterConnected in
-            let baseText = String(key: .MY_HOME_ROW_SIZE_VALUE(livingSpace: area))
+            let baseText = L10n.myHomeRowSizeValue(area)
 
             if hasWaterConnected {
-                subtitleLabel.text = String(key: .MY_HOME_BUILDING_HAS_WATER_SUFFIX(base: baseText))
+                subtitleLabel.text = L10n.myHomeBuildingHasWaterSuffix(baseText)
             } else {
                 subtitleLabel.text = baseText
             }

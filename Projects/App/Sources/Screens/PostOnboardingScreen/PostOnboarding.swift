@@ -27,7 +27,7 @@ struct PostOnboarding {
         let bag = DisposeBag()
 
         let paymentButton = Button(
-            title: String(key: .ONBOARDING_CONNECT_DD_CTA),
+            title: L10n.onboardingConnectDdCta,
             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
@@ -37,21 +37,21 @@ struct PostOnboarding {
 
         let payment = ImageTextAction<TableAction>(
             image: .init(image: Asset.paymentSetupIllustration.image),
-            title: String(key: .ONBOARDING_CONNECT_DD_HEADLINE),
+            title: L10n.onboardingConnectDdHeadline,
             body: isSwitching ?
-                String(key: .ONBOARDING_CONNECT_DD_BODY_SWITCHERS) :
-                String(key: .ONBOARDING_CONNECT_DD_BODY),
+                L10n.onboardingConnectDdBodySwitchers :
+                L10n.onboardingConnectDdBody,
             actions: [(.payment, paymentButton)],
             showLogo: false
         )
 
         let pushNotificationsDoButton = Button(
-            title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_CTA),
+            title: L10n.onboardingActivateNotificationsCta,
             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         let pushNotificationsSkipButton = Button(
-            title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
+            title: L10n.onboardingActivateNotificationsDismiss,
             type: .transparent(textColor: .pink)
         )
 
@@ -65,8 +65,8 @@ struct PostOnboarding {
 
         let pushNotifications = ImageTextAction<TableAction>(
             image: .init(image: Asset.activatePushNotificationsIllustration.image),
-            title: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_HEADLINE),
-            body: String(key: .ONBOARDING_ACTIVATE_NOTIFICATIONS_BODY),
+            title: L10n.onboardingActivateNotificationsHeadline,
+            body: L10n.onboardingActivateNotificationsBody,
             actions: [
                 (.push, pushNotificationsDoButton),
                 (.pushSkip, pushNotificationsSkipButton),

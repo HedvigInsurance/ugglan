@@ -239,7 +239,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         }
         alertActionWasPressed = { _, title in
-            if let localizationKey = title.localizationKey?.description {
+            if let localizationKey = title.derivedFromL10n?.key {
                 Analytics.logEvent(
                     "alert_action_tap_\(localizationKey)",
                     parameters: nil
@@ -270,8 +270,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         bag += combineLatest(
             ApolloClient.initClient().valueSignal.map { _ in true }.plain(),
-            remoteConfigContainer.fetched.take(first: 1).plain(),
-            TranslationsRepo.fetch().valueSignal.plain()
+            remoteConfigContainer.fetched.take(first: 1).plain()
         ).atValue { _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
                 AnalyticsCoordinator()

@@ -133,7 +133,7 @@ extension AudioRecorder: Viewable {
             bag += playContainer.addArranged(audioPlayer.wrappedIn(UIStackView()))
 
             let redoButton = Button(
-                title: String(key: .AUDIO_INPUT_REDO),
+                title: L10n.audioInputRedo,
                 type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
 
@@ -150,7 +150,7 @@ extension AudioRecorder: Viewable {
             }
 
             let sendButton = Button(
-                title: String(key: .AUDIO_INPUT_SAVE),
+                title: L10n.audioInputSave,
                 type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             )
             let loadableSendButton = LoadableButton(button: sendButton)

@@ -55,7 +55,7 @@ extension KeyGearListItem: Reusable {
         }
 
         let addedAutomaticallyLabel = UILabel(
-            value: String(key: .KEY_GEAR_ADDED_AUTOMATICALLY_TAG),
+            value: L10n.keyGearAddedAutomaticallyTag,
             style: .bodySmallSmallLeft
         )
         addedAutomaticallyStackView.addArrangedSubview(addedAutomaticallyLabel)

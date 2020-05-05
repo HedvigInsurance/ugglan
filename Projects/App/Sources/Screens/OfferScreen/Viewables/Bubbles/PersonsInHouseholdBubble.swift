@@ -21,15 +21,13 @@ extension PersonsInHouseholdBubble: Viewable {
         content.axis = .vertical
 
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_INSURED_TITLE),
+            value: L10n.offerBubblesInsuredTitle,
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)
 
         let subtitleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_INSURED_SUBTITLE(
-                personsInHousehold: String(personsInHousehold)
-            )),
+            value: L10n.offerBubblesInsuredSubtitle(String(personsInHousehold)),
             style: .offerBubbleSubtitle
         )
         bag += content.addArranged(subtitleLabel)

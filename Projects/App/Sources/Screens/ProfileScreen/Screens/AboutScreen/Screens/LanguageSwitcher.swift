@@ -22,19 +22,19 @@ extension UIApplication {
         func reloadLabels(in base: UIView) {
             for view in base.subviews {
                 if let label = view as? UILabel {
-                    if let key = label.text?.localizationKey {
-                        label.text = String(key: key)
+                    if let derivedFromL10n = label.text?.derivedFromL10n {
+                        label.text = derivedFromL10n.render()
                         label.layoutIfNeeded()
                         label.sizeToFit()
-                    } else if let key = label.value.displayValue.localizationKey {
-                        label.value = String(key: key)
+                    } else if let derivedFromL10n = label.value.displayValue.derivedFromL10n {
+                        label.value = derivedFromL10n.render()
                         label.layoutIfNeeded()
                         label.sizeToFit()
                     }
                 } else if let button = view as? UIButton {
                     let title = button.title(for: .normal)
-                    if let key = title?.localizationKey {
-                        button.setTitle(String(key: key), for: .normal)
+                    if let derivedFromL10n = title?.derivedFromL10n {
+                        button.setTitle(derivedFromL10n.render(), for: .normal)
                     }
                 }
 
@@ -43,8 +43,8 @@ extension UIApplication {
         }
 
         func reloadViewControllers(in base: UIViewController) {
-            if let key = base.title?.localizationKey {
-                base.title = String(key: key)
+            if let derivedFromL10n = base.title?.derivedFromL10n {
+                base.title = derivedFromL10n.render()
             }
 
             if let presentedViewController = base.presentedViewController {
@@ -87,7 +87,7 @@ struct LanguageSwitcher {
 extension LanguageSwitcher: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = String(key: .ABOUT_LANGUAGE_ROW)
+        viewController.title = L10n.aboutLanguageRow
         let bag = DisposeBag()
 
         let form = FormView(sections: [], style: .defaultGrouped)
@@ -104,10 +104,8 @@ extension LanguageSwitcher: Presentable {
             Localization.Locale.currentLocale = locale
             Bundle.setLanguage(locale.lprojCode)
             ApolloClient.initClient().always {
-                TranslationsRepo.clear().onValue { _ in
-                    reloadAllLabels()
-                    NotificationCenter.default.post(Notification(name: .localeSwitched))
-                }
+                reloadAllLabels()
+                NotificationCenter.default.post(Notification(name: .localeSwitched))
             }
             bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
         }
@@ -220,19 +218,19 @@ extension LanguageSwitcher: Presentable {
             norwegianRow.append(norwegianRowImageView)
         }
 
-        let marketSection = ButtonSection(text: String(key: .SETTINGS_CHANGE_MARKET), style: .danger)
+        let marketSection = ButtonSection(text: L10n.settingsChangeMarket, style: .danger)
 
         bag += marketSection.onSelect.onValue { _ in
             let alert = Alert(
-                title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_TITLE),
-                message: String(key: .SETTINGS_ALERT_CHANGE_MARKET_TEXT),
+                title: L10n.settingsAlertChangeMarketTitle,
+                message: L10n.settingsAlertChangeMarketText,
                 actions: [
-                    Alert.Action(title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_OK)) {
+                    Alert.Action(title: L10n.settingsAlertChangeMarketOk) {
                         ApolloClient.cache = InMemoryNormalizedCache()
                         ApplicationState.preserveState(.marketPicker)
                         UIApplication.shared.appDelegate.logout()
                     },
-                    Alert.Action(title: String(key: .SETTINGS_ALERT_CHANGE_MARKET_CANCEL)) {},
+                    Alert.Action(title: L10n.settingsAlertChangeMarketCancel) {},
                 ]
             )
 

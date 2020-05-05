@@ -63,7 +63,7 @@ extension ChatPreview: Viewable {
         containerView.addArrangedSubview(messageBubbleContainer)
 
         let openChatButton = Button(
-            title: String(key: .CHAT_PREVIEW_OPEN_CHAT),
+            title: L10n.chatPreviewOpenChat,
             type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 

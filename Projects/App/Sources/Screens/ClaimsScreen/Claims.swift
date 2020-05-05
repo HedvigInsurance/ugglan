@@ -20,7 +20,7 @@ extension Claims: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(key: .CLAIMS_SCREEN_TITLE)
+        viewController.title = L10n.claimsScreenTitle
         viewController.installChatButton()
 
         let stackView = UIStackView()
@@ -44,7 +44,7 @@ extension Claims: Presentable {
 extension Claims: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(key: .CLAIMS_SCREEN_TAB),
+            title: L10n.claimsScreenTab,
             image: Asset.claimsTabIcon.image,
             selectedImage: Asset.claimsTabIcon.image
         )

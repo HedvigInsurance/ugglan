@@ -39,15 +39,15 @@ extension ReferralsCode: Viewable {
 
         bag += touchUpInsideSignal.withLatestFrom(codeSignal).onValueDisposePrevious { _, code in
             let register = PushNotificationsRegister(
-                title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
-                message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
+                title: L10n.pushNotificationsAlertTitle,
+                message: L10n.pushNotificationsAlertMessage
             )
 
             return self.presentingViewController.present(register).onValue { _ in
                 UIPasteboard.general.value = code
                 UIApplication.shared.appDelegate.displayToast(Toast(
                     symbol: nil,
-                    body: String(key: .COPIED)
+                    body: L10n.copied
                 )).onValue { _ in }
             }.disposable
         }

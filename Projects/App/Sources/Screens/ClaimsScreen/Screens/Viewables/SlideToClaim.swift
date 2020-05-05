@@ -43,7 +43,7 @@ extension SlideToClaim: Viewable {
         }
 
         let trackLabel = UILabel(
-            value: String(key: .CLAIMS_PLEDGE_SLIDE_LABEL),
+            value: L10n.claimsPledgeSlideLabel,
             style: TextStyle.body.centerAligned
         )
         view.addSubview(trackLabel)

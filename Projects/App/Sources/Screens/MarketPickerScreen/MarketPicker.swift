@@ -62,7 +62,7 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = MultilineLabel(value: String(key: .MARKET_PICKER_TITLE), style: .headlineLargeLargeLeft)
+            let titleLabel = MultilineLabel(value: L10n.marketPickerTitle, style: .headlineLargeLargeLeft)
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
@@ -115,7 +115,7 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = MultilineLabel(value: String(key: .MARKET_PICKER_LANGUAGE_TITLE), style: .headlineSmallSmallLeft)
+            let titleLabel = MultilineLabel(value: L10n.marketPickerLanguageTitle, style: .headlineSmallSmallLeft)
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
@@ -124,9 +124,7 @@ extension MarketPicker {
             func pickLanguage(locale: Localization.Locale) {
                 ApplicationState.setPreferredLocale(locale)
                 Localization.Locale.currentLocale = locale
-                TranslationsRepo.clear().onValue { _ in
-                    UIApplication.shared.reloadAllLabels()
-                }
+                UIApplication.shared.reloadAllLabels()
                 ApolloClient.initClient().always {}
                 Bundle.setLanguage(locale.lprojCode)
                 presentingViewController.present(Marketing())

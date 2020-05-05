@@ -17,19 +17,19 @@ struct HonestyPledge {
 
     func pushNotificationsPresentable() -> PresentableViewable<ImageTextAction<PushNotificationsAction>, PushNotificationsAction> {
         let pushNotificationsDoButton = Button(
-            title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+            title: L10n.claimsActivateNotificationsCta,
             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
         )
 
         let pushNotificationsSkipButton = Button(
-            title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS),
+            title: L10n.claimsActivateNotificationsDismiss,
             type: .transparent(textColor: .pink)
         )
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
             image: .init(image: Asset.activatePushNotificationsIllustration.image),
-            title: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_HEADLINE),
-            body: String(key: .CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
+            title: L10n.claimsActivateNotificationsHeadline,
+            body: L10n.claimsActivateNotificationsBody,
             actions: [
                 (.ask, pushNotificationsDoButton),
                 (.skip, pushNotificationsSkipButton),
@@ -61,11 +61,11 @@ extension HonestyPledge: Presentable {
 
         containerStackView.addArrangedSubview(stackView)
 
-        let titleLabel = MultilineLabel(value: String(key: .HONESTY_PLEDGE_TITLE), style: .draggableOverlayTitle)
+        let titleLabel = MultilineLabel(value: L10n.honestyPledgeTitle, style: .draggableOverlayTitle)
         bag += stackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
-            value: String(key: .HONESTY_PLEDGE_DESCRIPTION),
+            value: L10n.honestyPledgeDescription,
             style: .bodyOffBlack
         )
         bag += stackView.addArranged(descriptionLabel)

@@ -15,7 +15,7 @@ struct KeyGearAddButton {}
 extension KeyGearAddButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let view = UIControl()
-        view.accessibilityLabel = String(key: .KEY_GEAR_ADD_BUTTON)
+        view.accessibilityLabel = L10n.keyGearAddButton
 
         let bag = DisposeBag()
 
@@ -37,7 +37,7 @@ extension KeyGearAddButton: Viewable {
         let icon = Icon(icon: Asset.addButton, iconWidth: 32)
         contentContainer.addArrangedSubview(icon)
 
-        let label = MultilineLabel(value: String(key: .KEY_GEAR_ADD_BUTTON), style: TextStyle.body.colored(.primaryTintColor))
+        let label = MultilineLabel(value: L10n.keyGearAddButton, style: TextStyle.body.colored(.primaryTintColor))
         bag += contentContainer.addArranged(label)
 
         let touchUpInsideSignal = view.trackedTouchUpInsideSignal

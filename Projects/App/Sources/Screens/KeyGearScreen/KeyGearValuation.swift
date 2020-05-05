@@ -21,7 +21,7 @@ extension KeyGearValuation: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        viewController.title = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE)
+        viewController.title = L10n.keyGearItemViewValuationPageTitle
         viewController.navigationItem.hidesBackButton = true
 
         let form = FormView()
@@ -51,26 +51,18 @@ extension KeyGearValuation: Presentable {
 
         bag += client.watch(query: KeyGearItemQuery(id: itemId), cachePolicy: .returnCacheDataAndFetch).map { $0.data?.keyGearItem }.onValue { item in
             if let fixed = item?.valuation?.asKeyGearItemValuationFixed {
-                descriptionLabel.textSignal.value = String(
-                    key: .KEY_GEAR_ITEM_VIEW_VALUATION_BODY(
-                        itemType: item?.category.name.localizedLowercase ?? "",
-                        purchasePrice: item?.purchasePrice?.fragments.monetaryAmountFragment.formattedAmount ?? "",
-                        valuationPercentage: fixed.ratio,
-                        valuationPrice: fixed.valuation.fragments.monetaryAmountFragment.formattedAmount
-                    )
+                descriptionLabel.textSignal.value = L10n.keyGearItemViewValuationBody(
+                    item?.category.name.localizedLowercase ?? "",
+                    item?.purchasePrice?.fragments.monetaryAmountFragment.formattedAmount ?? "",
+                    String(fixed.ratio),
+                    fixed.valuation.fragments.monetaryAmountFragment.formattedAmount
                 )
 
                 totalPercentageLabel.value = "\(fixed.ratio)%"
-                totalPercentageDescriptionLabel.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL)
+                totalPercentageDescriptionLabel.value = L10n.keyGearItemViewValuationPercentageLabel
             } else if let marketValue = item?.valuation?.asKeyGearItemValuationMarketValue {
-                descriptionLabel.textSignal.value = String(
-                    key: .KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY(
-                        itemType: item?.category.name.localizedLowercase ?? "",
-                        valuationPercentage: marketValue.ratio
-                    )
-                )
-
-                totalPercentageDescriptionLabel.value = String(key: .KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_DESCRIPTION)
+                descriptionLabel.textSignal.value = L10n.keyGearItemViewValuationMarketBody(item?.category.name.localizedLowercase ?? "", marketValue.ratio)
+                totalPercentageDescriptionLabel.value = L10n.keyGearItemViewValuationMarketDescription
                 totalPercentageLabel.value = "\(marketValue.ratio)%"
             }
         }

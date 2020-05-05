@@ -72,7 +72,7 @@ extension BankIdSign: Presentable {
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
-        let statusLabel = MultilineLabel(value: String(key: .SIGN_START_BANKID), style: .rowTitle)
+        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .rowTitle)
         bag += containerView.addArranged(statusLabel)
 
         let closeButtonContainer = UIStackView()
@@ -91,13 +91,13 @@ extension BankIdSign: Presentable {
 
             switch collectStatus.code {
             case "noClient", "outstandingTransaction":
-                statusText = String(key: .SIGN_START_BANKID)
+                statusText = L10n.signStartBankid
             case "userSign":
-                statusText = String(key: .SIGN_IN_PROGRESS)
+                statusText = L10n.signInProgress
             case "userCancel", "cancelled":
-                statusText = String(key: .SIGN_CANCELED)
+                statusText = L10n.signCanceled
             default:
-                statusText = String(key: .SIGN_FAILED_REASON_UNKNOWN)
+                statusText = L10n.signFailedReasonUnknown
             }
 
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
@@ -122,9 +122,9 @@ extension BankIdSign: Presentable {
                 .filter { state in state == .completed }
                 .take(first: 1)
                 .onValue { _ in
-//                    if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-//                        UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
-//                    }
+                    if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                        UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
+                    }
 
                     completion(.success)
                 }
@@ -144,9 +144,9 @@ extension BankIdSign: Presentable {
 
                 if code == "expiredTransaction", state == .failed {
                     let alert = Alert<Void>(
-                        title: String(key: .BANKID_INACTIVE_TITLE),
-                        message: String(key: .BANKID_INACTIVE_MESSAGE),
-                        actions: [Alert.Action(title: String(key: .BANKID_INACTIVE_BUTTON), action: { _ in
+                        title: L10n.bankidInactiveTitle,
+                        message: L10n.bankidInactiveMessage,
+                        actions: [Alert.Action(title: L10n.bankidInactiveButton, action: { _ in
                             completion(.failure(BankIdSignError.failed))
                         })]
                     )

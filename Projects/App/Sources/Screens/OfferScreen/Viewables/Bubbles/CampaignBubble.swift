@@ -70,25 +70,25 @@ extension CampaignBubble: Viewable {
 
                 switch value {
                 case let .freeMonths(number):
-                    titleLabel.text = String(key: .OFFER_SCREEN_FREE_MONTHS_BUBBLE_TITLE)
+                    titleLabel.text = L10n.offerScreenFreeMonthsBubbleTitle
                     titleLabel.animationSafeIsHidden = false
-                    subtitlelabel.text = String(key: .OFFER_SCREEN_FREE_MONTHS_BUBBLE(freeMonth: number))
+                    subtitlelabel.text = L10n.offerScreenFreeMonthsBubble(number)
                 case let .percentageDiscount(value, months):
-                    titleLabel.text = String(key: .OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
+                    titleLabel.text = L10n.offerScreenPercentageDiscountBubbleTitle
                     titleLabel.animationSafeIsHidden = false
                     if months == 1 {
-                        subtitlelabel.text = String(key: .OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR(percentage: Int(value)))
+                        subtitlelabel.text = L10n.offerScreenPercentageDiscountBubbleTitleSingular(Int(value))
                     } else {
-                        subtitlelabel.text = String(key: .OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL(months: months, percentage: Int(value)))
+                        subtitlelabel.text = L10n.offerScreenPercentageDiscountBubbleTitlePlural(months, Int(value))
                     }
                 case let .monthlyDeduction(amount):
-                    titleLabel.text = String(key: .OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE)
+                    titleLabel.text = L10n.offerScreenPercentageDiscountBubbleTitle
                     titleLabel.animationSafeIsHidden = false
                     subtitlelabel.text = "-\(amount)/mån"
                 case .invited:
                     titleLabel.text = ""
                     titleLabel.animationSafeIsHidden = true
-                    subtitlelabel.text = String(key: .OFFER_SCREEN_INVITED_BUBBLE)
+                    subtitlelabel.text = L10n.offerScreenInvitedBubble
                 }
             } else {
                 titleLabel.animationSafeIsHidden = true

@@ -19,7 +19,7 @@ extension CardDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String(key: .MY_PAYMENT_CARD_ROW_LABEL),
+            header: L10n.myPaymentCardRowLabel,
             footer: nil,
             style: .sectionPlain
         )

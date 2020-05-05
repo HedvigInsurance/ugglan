@@ -37,7 +37,7 @@ extension WhatsNew: Presentable {
         let item = UIBarButtonItem(viewable: closeButton)
         viewController.navigationItem.rightBarButtonItem = item
 
-        viewController.displayableTitle = String(key: .FEATURE_PROMO_TITLE)
+        viewController.displayableTitle = L10n.featurePromoTitle
 
         let view = UIView()
         view.backgroundColor = .primaryBackground

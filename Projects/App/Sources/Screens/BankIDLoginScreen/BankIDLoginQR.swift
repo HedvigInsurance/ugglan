@@ -23,7 +23,7 @@ extension BankIDLoginQR: Presentable {
         view.backgroundColor = .primaryBackground
 
         viewController.view = view
-        viewController.title = String(key: .BANKID_MISSING_TITLE)
+        viewController.title = L10n.bankidMissingTitle
         viewController.navigationItem.hidesBackButton = true
 
         let moreBarButtonItem = UIBarButtonItem(
@@ -37,7 +37,7 @@ extension BankIDLoginQR: Presentable {
         bag += moreBarButtonItem.onValue { _ in
             let alert = Alert<Void>(actions: [
                 .init(
-                    title: String(key: .DEMO_MODE_START),
+                    title: L10n.demoModeStart,
                     action: {
                         viewController.present(
                             LoggedIn(),
@@ -51,7 +51,7 @@ extension BankIDLoginQR: Presentable {
                     }
                 ),
                 .init(
-                    title: String(key: .DEMO_MODE_CANCEL),
+                    title: L10n.demoModeCancel,
                     style: .cancel,
                     action: {}
                 ),
@@ -109,7 +109,7 @@ extension BankIDLoginQR: Presentable {
         headerContainer.addArrangedSubview(iconContainerView)
 
         let messageLabel = MultilineLabel(
-            value: String(key: .BANKID_MISSING_MESSAGE),
+            value: L10n.bankidMissingMessage,
             style: .rowTitle
         )
         bag += containerView.addArranged(messageLabel)

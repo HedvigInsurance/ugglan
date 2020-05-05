@@ -21,15 +21,13 @@ extension StartDateBubble: Viewable {
         content.axis = .vertical
 
         let titleLabel = MultilineLabel(
-            value: String(key: .OFFER_BUBBLES_START_DATE_TITLE),
+            value: L10n.offerBubblesStartDateTitle,
             style: .offerBubbleTitle
         )
         bag += content.addArranged(titleLabel)
 
         let subtitleLabel = MultilineLabel(
-            value: String(key: insuredAtOtherCompany ?
-                .OFFER_BUBBLES_START_DATE_SUBTITLE_SWITCHER :
-                .OFFER_BUBBLES_START_DATE_SUBTITLE_NEW),
+            value: insuredAtOtherCompany ? L10n.offerBubblesStartDateSubtitleSwitcher : L10n.offerBubblesStartDateSubtitleNew,
             style: .offerBubbleSubtitle
         )
         bag += content.addArranged(subtitleLabel)

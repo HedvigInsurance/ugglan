@@ -66,14 +66,14 @@ extension ChooseStartDate: Presentable {
         containerView.addArrangedSubview(actionStackView)
 
         let titleLabel = MultilineLabel(
-            value: String(key: .DRAGGABLE_STARTDATE_TITLE),
+            value: L10n.draggableStartdateTitle,
             style: .draggableOverlayTitle
         )
 
         bag += textStackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
-            value: String(key: .DRAGGABLE_STARTDATE_DESCRIPTION),
+            value: L10n.draggableStartdateDescription,
             style: .draggableOverlayDescription
         )
 
@@ -99,7 +99,7 @@ extension ChooseStartDate: Presentable {
             }
         }
 
-        let chooseDateButton = Button(title: String(key: .CHOOSE_DATE_BTN),
+        let chooseDateButton = Button(title: L10n.chooseDateBtn,
                                       type: .standard(backgroundColor: .primaryButtonBackgroundColor,
                                                       textColor: .white))
 
@@ -147,7 +147,7 @@ extension ChooseStartDate: Presentable {
 
             bag += self.client.fetch(query: OfferQuery()).map { $0.data?.insurance.previousInsurer }.onValue { previousInsurer in
                 if previousInsurer == nil {
-                    activateNowButton.title.value = String(key: .ACTIVATE_TODAY_BTN)
+                    activateNowButton.title.value = L10n.activateTodayBtn
 
                     bag += loadableActivateButton.onTapSignal.onValue { _ in
                         loadableActivateButton.isLoadingSignal.value = true
@@ -166,7 +166,7 @@ extension ChooseStartDate: Presentable {
                         }
                     }
                 } else {
-                    activateNowButton.title.value = String(key: .ACTIVATE_INSURANCE_END_BTN)
+                    activateNowButton.title.value = L10n.activateInsuranceEndBtn
 
                     bag += loadableActivateButton.onTapSignal.onValue { _ in
                         loadableActivateButton.isLoadingSignal.value = true

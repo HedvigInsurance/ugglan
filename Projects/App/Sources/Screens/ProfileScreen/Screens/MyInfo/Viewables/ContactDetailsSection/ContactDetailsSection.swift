@@ -19,7 +19,7 @@ extension ContactDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let section = SectionView(
-            header: String(key: .MY_INFO_CONTACT_DETAILS_TITLE),
+            header: L10n.myInfoContactDetailsTitle,
             footer: nil,
             style: .sectionPlain
         )

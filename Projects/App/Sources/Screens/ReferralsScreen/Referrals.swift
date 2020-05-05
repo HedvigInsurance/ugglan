@@ -30,10 +30,10 @@ extension Referrals: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-        viewController.title = String(key: .REFERRALS_SCREEN_TITLE)
+        viewController.title = L10n.referralsScreenTitle
 
         let moreInfoBarButton = UIBarButtonItem(
-            title: String(key: .REFERRAL_PROGRESS_TOPBAR_BUTTON),
+            title: L10n.referralProgressTopbarButton,
             style: .navigationBarButton
         )
 
@@ -172,7 +172,7 @@ extension Referrals: Presentable {
 
         let button = LoadableButton(
             button: Button(
-                title: String(key: .REFERRALS_SHARE_BUTTON),
+                title: L10n.referralsShareButton,
                 type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
             ),
             initialLoadingState: true
@@ -194,10 +194,7 @@ extension Referrals: Presentable {
                 codeSignal.plain()
             ).compactMap { $1 }.onValue { code in
                 let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
-                let message = String(key: .REFERRAL_SMS_MESSAGE(
-                    referralLink: landingPageUrl,
-                    referralValue: "10"
-                ))
+                let message = L10n.referralSmsMessage(landingPageUrl, "10")
 
                 let activityView = ActivityView(
                     activityItems: [message],
@@ -213,8 +210,8 @@ extension Referrals: Presentable {
 
                     if success {
                         let register = PushNotificationsRegister(
-                            title: String(key: .PUSH_NOTIFICATIONS_ALERT_TITLE),
-                            message: String(key: .PUSH_NOTIFICATIONS_REFERRALS_ALERT_MESSSAGE)
+                            title: L10n.pushNotificationsAlertTitle,
+                            message: L10n.pushNotificationsReferralsAlertMesssage
                         )
 
                         innerBag += viewController.present(register)
@@ -237,7 +234,7 @@ extension Referrals: Presentable {
 extension Referrals: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
-            title: String(key: .TAB_REFERRALS_TITLE),
+            title: L10n.tabReferralsTitle,
             image: Asset.referralsTab.image,
             selectedImage: Asset.referralsTab.image
         )

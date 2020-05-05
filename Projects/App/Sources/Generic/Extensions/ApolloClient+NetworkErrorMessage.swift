@@ -26,11 +26,11 @@ extension ApolloClient {
         ApolloClient.isShowingNetworkErrorMessage = true
 
         let alert = Alert<Bool>(
-            title: String(key: .NETWORK_ERROR_ALERT_TITLE),
-            message: String(key: .NETWORK_ERROR_ALERT_MESSAGE),
+            title: L10n.networkErrorAlertTitle,
+            message: L10n.networkErrorAlertMessage,
             actions:
-            Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION)) { true },
-            Alert.Action(title: String(key: .NETWORK_ERROR_ALERT_CANCEL_ACTION)) { false }
+            Alert.Action(title: L10n.networkErrorAlertTryAgainAction) { true },
+            Alert.Action(title: L10n.networkErrorAlertCancelAction) { false }
         )
 
         DispatchQueue.main.async {

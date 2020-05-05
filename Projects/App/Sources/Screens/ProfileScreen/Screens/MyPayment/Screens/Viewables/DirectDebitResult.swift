@@ -37,16 +37,16 @@ enum DirectDebitResultType {
         case let .success(setupType):
             switch setupType {
             case .postOnboarding:
-                return String(key: .ONBOARDING_CONNECT_DD_SUCCESS_HEADLINE)
+                return L10n.onboardingConnectDdSuccessHeadline
             default:
-                return String(key: .DIRECT_DEBIT_SUCCESS_HEADING)
+                return L10n.directDebitSuccessHeading
             }
         case let .failure(setupType):
             switch setupType {
             case .postOnboarding:
-                return String(key: .ONBOARDING_CONNECT_DD_FAILURE_HEADLINE)
+                return L10n.onboardingConnectDdFailureHeadline
             default:
-                return String(key: .DIRECT_DEBIT_FAIL_HEADING)
+                return L10n.directDebitFailHeading
             }
         }
     }
@@ -56,16 +56,16 @@ enum DirectDebitResultType {
         case let .success(setupType):
             switch setupType {
             case .postOnboarding:
-                return String(key: .ONBOARDING_CONNECT_DD_SUCCESS_BODY)
+                return L10n.onboardingConnectDdSuccessBody
             default:
-                return String(key: .DIRECT_DEBIT_SUCCESS_MESSAGE)
+                return L10n.directDebitSuccessMessage
             }
         case let .failure(setupType):
             switch setupType {
             case .postOnboarding:
-                return String(key: .ONBOARDING_CONNECT_DD_FAILURE_BODY)
+                return L10n.onboardingConnectDdFailureBody
             default:
-                return String(key: .DIRECT_DEBIT_FAIL_MESSAGE)
+                return L10n.directDebitFailMessage
             }
         }
     }
@@ -75,12 +75,12 @@ enum DirectDebitResultType {
         case let .success(setupType):
             switch setupType {
             case .postOnboarding:
-                return String(key: .ONBOARDING_CONNECT_DD_SUCCESS_CTA)
+                return L10n.onboardingConnectDdSuccessCta
             default:
-                return String(key: .DIRECT_DEBIT_SUCCESS_BUTTON)
+                return L10n.directDebitSuccessButton
             }
         case .failure:
-            return String(key: .ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY)
+            return L10n.onboardingConnectDdFailureCtaRetry
         }
     }
 }
@@ -196,7 +196,7 @@ extension DirectDebitResult: Viewable {
                 }
 
                 let skipButton = Button(
-                    title: String(key: .ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER),
+                    title: L10n.onboardingConnectDdFailureCtaLater,
                     type: .transparent(textColor: .pink)
                 )
 

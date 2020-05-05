@@ -34,12 +34,12 @@ extension EditableRow: Viewable {
         bag += valueSignal.atOnce().bindTo(textField, \.value)
 
         let button = Button(
-            title: String(key: .EDITABLE_ROW_EDIT),
+            title: L10n.editableRowEdit,
             type: .outline(borderColor: .transparent, textColor: .primaryTintColor)
         )
 
         bag += textField.signal(for: .editingDidBegin)
-            .map { _ in String(key: .EDITABLE_ROW_SAVE) }
+            .map { _ in L10n.editableRowSave }
             .bindTo(
                 animate: AnimationStyle.easeOut(duration: 0.25),
                 button.title,
@@ -47,7 +47,7 @@ extension EditableRow: Viewable {
             )
 
         bag += textField.signal(for: .editingDidEnd)
-            .map { _ in String(key: .EDITABLE_ROW_EDIT) }
+            .map { _ in L10n.editableRowEdit }
             .bindTo(
                 animate: AnimationStyle.easeOut(duration: 0.25),
                 button.title,

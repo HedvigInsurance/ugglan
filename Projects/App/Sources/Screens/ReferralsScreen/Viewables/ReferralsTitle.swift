@@ -24,7 +24,7 @@ extension ReferralsTitle: Viewable {
         view.spacing = 8
 
         let title = MultilineLabel(
-            value: String(key: .REFERRAL_PROGRESS_HEADLINE),
+            value: L10n.referralProgressHeadline,
             style: TextStyle.standaloneLargeTitle.centerAligned
         )
 
@@ -42,7 +42,7 @@ extension ReferralsTitle: Viewable {
         bag += incentiveSignal
             .atOnce()
             .compactMap { $0 }
-            .map { String(key: .REFERRAL_PROGRESS_BODY(referralValue: String($0))) }
+            .map { L10n.referralProgressBody($0) }
             .map { StyledText(text: $0, style: TextStyle.bodyOffBlack.centerAligned) }
             .bindTo(description.styledTextSignal)
 

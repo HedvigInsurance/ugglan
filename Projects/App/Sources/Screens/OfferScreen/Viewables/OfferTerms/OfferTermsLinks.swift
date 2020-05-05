@@ -32,7 +32,7 @@ extension OfferTermsLinks: Viewable {
             let innerBag = DisposeBag()
 
             if let policyUrl = URL(string: insurance.policyUrl) {
-                let button = Button(title: String(key: .OFFER_TERMS), type: .standard(backgroundColor: .lightGray, textColor: .black))
+                let button = Button(title: L10n.offerTerms, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
                 innerBag += button.onTapSignal.onValue { _ in
                     openUrl(policyUrl)
@@ -42,7 +42,7 @@ extension OfferTermsLinks: Viewable {
             }
 
             if let presaleUrl = URL(string: insurance.presaleInformationUrl) {
-                let button = Button(title: String(key: .OFFER_PRESALE_INFORMATION), type: .standard(backgroundColor: .lightGray, textColor: .black))
+                let button = Button(title: L10n.offerPresaleInformation, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
                 innerBag += button.onTapSignal.onValue { _ in
                     openUrl(presaleUrl)
@@ -51,8 +51,8 @@ extension OfferTermsLinks: Viewable {
                 innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
             }
 
-            if let privacyPolicyUrl = URL(key: .PRIVACY_POLICY_URL) {
-                let button = Button(title: String(key: .OFFER_PRIVACY_POLICY), type: .standard(backgroundColor: .lightGray, textColor: .black))
+            if let privacyPolicyUrl = URL(string: L10n.privacyPolicyUrl) {
+                let button = Button(title: L10n.offerPrivacyPolicy, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
                 innerBag += button.onTapSignal.onValue { _ in
                     openUrl(privacyPolicyUrl)
