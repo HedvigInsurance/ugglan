@@ -1,0 +1,278 @@
+{
+  "0e6c3cd5ec868c8d720f136c49e23dd68f54b420cd23674e33ef3f1733493d34": {
+    "name": "ActivePaymentMethods",
+    "source": "query ActivePaymentMethods {\n  activePaymentMethods {\n    __typename\n    storedPaymentMethodsDetails {\n      __typename\n      lastFourDigits\n      holderName\n      brand\n    }\n  }\n}"
+  },
+  "94c12f1a83d33ac8bb0e0f3dc50cacaa941b6157a8f576109a87a933d3f30e73": {
+    "name": "AddReceipt",
+    "source": "mutation AddReceipt($id: ID!, $file: S3FileInput!) {\n  addReceiptToKeyGearItem(input: {itemId: $id, file: $file}) {\n    __typename\n    receipts {\n      __typename\n      file {\n        __typename\n        preSignedUrl\n      }\n    }\n  }\n}"
+  },
+  "d3838aa974f0ec516efe3780406f0f15640a2e0a024a461485506366ec98b705": {
+    "name": "AdyenAdditionalPaymentDetails",
+    "source": "mutation AdyenAdditionalPaymentDetails($req: PaymentsDetailsRequest!) {\n  submitAdditionalPaymentDetails(req: {paymentsDetailsRequest: $req}) {\n    __typename\n    ... on AdditionalPaymentsDetailsResponseFinished {\n      resultCode\n    }\n    ... on AdditionalPaymentsDetailsResponseAction {\n      action\n    }\n  }\n}"
+  },
+  "cc9df09f4960021eba91de9b6ffbdc9a349ddd493f939e64748ca27649c48dc8": {
+    "name": "AdyenAvailableMethods",
+    "source": "query AdyenAvailableMethods {\n  availablePaymentMethods {\n    __typename\n    paymentMethodsResponse\n  }\n  adyenPublicKey\n  insuranceCost {\n    __typename\n    ...CostFragment\n  }\n}"
+  },
+  "2a64c2f8a9d9fd353572f0b82087df9fa62cea2c3294bf5949d9ea86a9901f8c": {
+    "name": "AdyenTokenizePaymentDetails",
+    "source": "mutation AdyenTokenizePaymentDetails($request: TokenizationRequest!) {\n  tokenizePaymentDetails(req: $request) {\n    __typename\n    ... on TokenizationResponseFinished {\n      resultCode\n    }\n    ... on TokenizationResponseAction {\n      action\n    }\n  }\n}"
+  },
+  "628d9ff9d94781b2193629262e684ef9b1fad5c49b693eadf31f3464b5eb20a1": {
+    "name": "BankIDAuth",
+    "source": "mutation BankIDAuth {\n  bankIdAuth {\n    __typename\n    autoStartToken\n  }\n}"
+  },
+  "0315727d26b5a53766b1bb079cdda143732d284ea480495b69485f95cd691485": {
+    "name": "BankIDAuthSubscription",
+    "source": "subscription BankIDAuthSubscription {\n  authStatus {\n    __typename\n    status\n  }\n}"
+  },
+  "791eff89881eda9be4e03c102ca24f0ef31b4854f4d76359cbb6bfd7ab491931": {
+    "name": "BankIDNorwayAuth",
+    "source": "mutation BankIDNorwayAuth {\n  norwegianBankIdAuth {\n    __typename\n    redirectUrl\n  }\n}"
+  },
+  "0fa92aa575f64383b727b31801154c1adc1f9ae401587ab33a1609477872e479": {
+    "name": "CancelDirectDebitRequest",
+    "source": "mutation CancelDirectDebitRequest {\n  cancelDirectDebitRequest\n}"
+  },
+  "56e8225357b9930a4996670a4e14c62237b30aea2b3e58bd785841e73279df1e": {
+    "name": "ChangeStartDateMutation",
+    "source": "mutation ChangeStartDateMutation($id: ID!, $startDate: LocalDate!) {\n  editQuote(input: {id: $id, startDate: $startDate}) {\n    __typename\n    ... on CompleteQuote {\n      id\n      startDate\n    }\n  }\n}"
+  },
+  "966cad0242b329f620ba164a2660bab4073ae6809ffdde3e27bcefdf20e66020": {
+    "name": "CharityOptions",
+    "source": "query CharityOptions {\n  cashbackOptions {\n    __typename\n    id\n    name\n    title\n    imageUrl\n    description\n    paragraph\n  }\n}"
+  },
+  "c5f3cff3ba53e0a4ba5b085398da6265457d46534ca1ba5142ff615faf18cd0a": {
+    "name": "ChatMessages",
+    "source": "query ChatMessages {\n  messages {\n    __typename\n    ...MessageData\n  }\n}"
+  },
+  "1b918242e11a676481d04f670338ef12f698ccf5406c4d2e7262dfcb741c1581": {
+    "name": "ChatMessagesSubscription",
+    "source": "subscription ChatMessagesSubscription {\n  message {\n    __typename\n    ...MessageData\n  }\n}"
+  },
+  "fb6fac990520f5756941ac2aeb969833e509524b8946f985dbff04d499cde243": {
+    "name": "ChatPreview",
+    "source": "query ChatPreview {\n  messages {\n    __typename\n    id\n    globalId\n    body {\n      __typename\n      ... on MessageBodyText {\n        text\n      }\n    }\n    header {\n      __typename\n      fromMyself\n      timeStamp\n      markedAsRead\n    }\n  }\n}"
+  },
+  "dec8389a19e1db6464702b524c1568cd0d106f675f42d4a32d2ee788ac4a8aee": {
+    "name": "ChatPreviewSubscription",
+    "source": "subscription ChatPreviewSubscription {\n  message {\n    __typename\n    id\n    globalId\n    body {\n      __typename\n      ... on MessageBodyText {\n        text\n      }\n    }\n    header {\n      __typename\n      timeStamp\n      fromMyself\n    }\n  }\n}"
+  },
+  "fec463233388707f07a7d6dc45c8ad8289e7fc77e2294f3e468e7318d366b236": {
+    "name": "CommonClaims",
+    "source": "query CommonClaims($locale: Locale!) {\n  commonClaims(locale: $locale) {\n    __typename\n    title\n    icon {\n      __typename\n      ...IconFragment\n    }\n    layout {\n      __typename\n      ... on TitleAndBulletPoints {\n        color\n        bulletPoints {\n          __typename\n          description\n          title\n          icon {\n            __typename\n            ...IconFragment\n          }\n        }\n        buttonTitle\n        claimFirstMessage\n        color\n        title\n      }\n      ... on Emergency {\n        color\n        title\n      }\n    }\n  }\n}"
+  },
+  "45a6286116c80bd61362db7bb4e6ef8511b224dc15eefc12743c2789fa0cf244": {
+    "name": "Contracts",
+    "source": "query Contracts($locale: Locale!) {\n  contracts {\n    __typename\n    displayName\n    switchedFromInsuranceProvider\n    upcomingRenewal {\n      __typename\n      renewalDate\n      draftCertificateUrl\n    }\n    perils(locale: $locale) {\n      __typename\n      ...PerilFragment\n    }\n    insurableLimits(locale: $locale) {\n      __typename\n      ...InsurableLimitFragment\n    }\n    termsAndConditions(locale: $locale) {\n      __typename\n      displayName\n      url\n    }\n    status {\n      __typename\n      ... on PendingStatus {\n        pendingSince\n      }\n      ... on ActiveInFutureStatus {\n        futureInception\n      }\n      ... on ActiveStatus {\n        pastInception\n      }\n      ... on ActiveInFutureAndTerminatedInFutureStatus {\n        futureInception\n        futureTermination\n      }\n      ... on TerminatedInFutureStatus {\n        futureTermination\n      }\n      ... on TerminatedTodayStatus {\n        today\n      }\n      ... on TerminatedStatus {\n        termination\n      }\n    }\n    currentAgreement {\n      __typename\n      ... on AgreementCore {\n        certificateUrl\n      }\n      ... on SwedishApartmentAgreement {\n        activeFrom\n        activeTo\n        certificateUrl\n        numberCoInsured\n        address {\n          __typename\n          street\n          postalCode\n          city\n        }\n        squareMeters\n        type\n        premium {\n          __typename\n          ...MonetaryAmountFragment\n        }\n      }\n      ... on SwedishHouseAgreement {\n        activeFrom\n        activeTo\n        certificateUrl\n        numberCoInsured\n        address {\n          __typename\n          street\n          postalCode\n          city\n        }\n        squareMeters\n        yearOfConstruction\n        ancillaryArea\n        isSubleted\n        numberOfBathrooms\n        extraBuildings {\n          __typename\n          ...ExtraBuildingFragment\n        }\n      }\n      ... on NorwegianHomeContentAgreement {\n        activeFrom\n        activeTo\n        certificateUrl\n        numberCoInsured\n        address {\n          __typename\n          street\n          postalCode\n          city\n        }\n        squareMeters\n      }\n      ... on NorwegianTravelAgreement {\n        activeFrom\n        activeTo\n        certificateUrl\n        numberCoInsured\n      }\n    }\n  }\n}"
+  },
+  "4ed134dc67c4409dfbb9f266a2ab899d239a7b759f0260cadf411e449980c6c9": {
+    "name": "CreateKeyGearItem",
+    "source": "mutation CreateKeyGearItem($input: CreateKeyGearItemInput!) {\n  createKeyGearItem(input: $input) {\n    __typename\n    id\n  }\n}"
+  },
+  "d3cce6d18b3ecaca068d76970e7de385d2b0a6834b1de82ac83adc58241045ce": {
+    "name": "CreateSession",
+    "source": "mutation CreateSession($campaign: CampaignInput, $trackingId: UUID) {\n  createSession(campaign: $campaign, trackingId: $trackingId)\n}"
+  },
+  "862e659477c6054d8c8bd8203118c5768690933e5bbea01d7cda7ae201f07f4e": {
+    "name": "Dashboard",
+    "source": "query Dashboard {\n  insurance {\n    __typename\n    renewal {\n      __typename\n      certificateUrl\n      date\n    }\n    status\n    type\n    activeFrom\n    arrangedPerilCategories {\n      __typename\n      stuff {\n        __typename\n        ...PerilCategoryFragment\n      }\n      home {\n        __typename\n        ...PerilCategoryFragment\n      }\n      me {\n        __typename\n        ...PerilCategoryFragment\n      }\n    }\n  }\n  member {\n    __typename\n    firstName\n  }\n}"
+  },
+  "e77a739f328a35991889f78fff3caad1a710e33b58b3ea1e752718311250cfdd": {
+    "name": "DeleteKeyGearItem",
+    "source": "mutation DeleteKeyGearItem($id: ID!) {\n  deleteKeyGearItem(id: $id) {\n    __typename\n    id\n  }\n}"
+  },
+  "21d095779185790a54c7839bc6b860f8c3dad9261b4d290b7ca2838181f14be9": {
+    "name": "EditLastResponse",
+    "source": "mutation EditLastResponse {\n  editLastResponse\n}"
+  },
+  "fb49ab9a5193f384eb6d6e2d324b04a5284c5746fb4ef83afcef5bb54da088c6": {
+    "name": "EligibleToCreateClaim",
+    "source": "query EligibleToCreateClaim {\n  isEligibleToCreateClaim\n}"
+  },
+  "9b11e13d9ff4f08be489296830865ba5275d0fc0dbcee0ea37393d49f8b5d539": {
+    "name": "Features",
+    "source": "query Features {\n  member {\n    __typename\n    features\n  }\n}"
+  },
+  "fb1bd3cee9c6cea351932922e0a30a591eb330f70c02c57a6725b79c89d9b2d9": {
+    "name": "Geo",
+    "source": "query Geo {\n  geo {\n    __typename\n    countryISOCode\n  }\n}"
+  },
+  "5afb304b4d5b6a803c57595f062d5e111e64d802d5cec5979ad111938398afda": {
+    "name": "GIF",
+    "source": "query GIF($query: String!) {\n  gifs(query: $query) {\n    __typename\n    url\n  }\n}"
+  },
+  "66f07b898756df09750b9dbedff17e3dc0fbd7ef10546d196509e8e88b37629f": {
+    "name": "ImportantMessages",
+    "source": "query ImportantMessages($languageCode: String!) {\n  importantMessages(where: {language: {code: $languageCode}}) {\n    __typename\n    title\n    message\n    button\n    link\n  }\n}"
+  },
+  "ab26beb247da274219e8c38ee917d3017b74ef8762a4890ee2bb0f5ebf901638": {
+    "name": "InsurancePrice",
+    "source": "query InsurancePrice {\n  insuranceCost {\n    __typename\n    ...CostFragment\n  }\n}"
+  },
+  "5590aa08c57a79a8bc177bb5c825cead675f3f4cab53c3858cd3728afc1d7882": {
+    "name": "KeyGearClassifier",
+    "source": "query KeyGearClassifier {\n  coreMLModels(where: {type: KeyGearClassifier}) {\n    __typename\n    file {\n      __typename\n      url\n    }\n  }\n}"
+  },
+  "2ce6e12c1723a0a75bf9582761dbbbff9dc3a2fc4365e7db22129f71cc058f0b": {
+    "name": "KeyGearItem",
+    "source": "query KeyGearItem($id: ID!, $languageCode: String!) {\n  keyGearItem(id: $id) {\n    __typename\n    name\n    category\n    purchasePrice {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    deductible {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    maxInsurableAmount {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    valuation {\n      __typename\n      ... on KeyGearItemValuationFixed {\n        ratio\n        valuation {\n          __typename\n          ...MonetaryAmountFragment\n        }\n      }\n      ... on KeyGearItemValuationMarketValue {\n        ratio\n      }\n    }\n    photos {\n      __typename\n      file {\n        __typename\n        preSignedUrl\n      }\n    }\n    receipts {\n      __typename\n      file {\n        __typename\n        preSignedUrl\n      }\n    }\n    covered {\n      __typename\n      title {\n        __typename\n        translations(where: {language: {code: $languageCode}, project: IOS}) {\n          __typename\n          text\n        }\n      }\n    }\n    exceptions {\n      __typename\n      title {\n        __typename\n        translations(where: {language: {code: $languageCode}, project: IOS}) {\n          __typename\n          text\n        }\n      }\n    }\n  }\n}"
+  },
+  "81640379c4d30c419435d68204a413df53e0c4f6ecd048e791d28a5985be1965": {
+    "name": "KeyGearItems",
+    "source": "query KeyGearItems {\n  keyGearItems(where: {deleted: false}) {\n    __typename\n    id\n    name\n    deleted\n    physicalReferenceHash\n    photos {\n      __typename\n      id\n      file {\n        __typename\n        preSignedUrl\n      }\n    }\n    category\n    receipts {\n      __typename\n      id\n      file {\n        __typename\n        preSignedUrl\n      }\n    }\n    purchasePrice {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    timeOfPurchase\n  }\n}"
+  },
+  "4a35fbef47e6941598e0c10d5865a2891e82ead4395fa99aad515285a3838e69": {
+    "name": "Log",
+    "source": "mutation Log($input: LoggingInput!) {\n  log(input: $input)\n}"
+  },
+  "d33294c28ffdaff741dcadc2dba75b4013cdc29cd5f9e8f61d3ac85d57868a04": {
+    "name": "Logout",
+    "source": "mutation Logout {\n  logout\n}"
+  },
+  "d282ab5247166924c4dc64b21b03da7e41bf53da1d6c376e8ad54fcf452a0644": {
+    "name": "Marketing",
+    "source": "query Marketing {\n  appMarketingImages {\n    __typename\n    language {\n      __typename\n      code\n    }\n    image {\n      __typename\n      url\n    }\n    blurhash\n  }\n}"
+  },
+  "7e1bbfdb096bc0a25739d52da1835166da5905cdab859608f1a3c088226bde57": {
+    "name": "MemberId",
+    "source": "query MemberId {\n  member {\n    __typename\n    id\n  }\n}"
+  },
+  "a0942551a7e4f4e1b24726330ea501a757dd9cd69e8cced1413911a0ff4778bc": {
+    "name": "MyHome",
+    "source": "query MyHome {\n  insurance {\n    __typename\n    address\n    postalNumber\n    type\n    livingSpace\n    ancillaryArea\n    yearOfConstruction\n    numberOfBathrooms\n    extraBuildings {\n      __typename\n      ...ExtraBuildingFragment\n    }\n    isSubleted\n  }\n}"
+  },
+  "d4c2e2c963a39d5849cc5ba863a01abb39b8996ac2856e390f58ab5b394fed21": {
+    "name": "MyInfo",
+    "source": "query MyInfo {\n  member {\n    __typename\n    firstName\n    lastName\n    email\n    phoneNumber\n  }\n}"
+  },
+  "3cf9857ddf1b42c09b67ea686fc6c577c1554112ac2e7885a842caee21d59f32": {
+    "name": "MyPayment",
+    "source": "query MyPayment {\n  insuranceCost {\n    __typename\n    ...CostFragment\n  }\n  bankAccount {\n    __typename\n    bankName\n    descriptor\n  }\n  nextChargeDate\n  payinMethodStatus\n  redeemedCampaigns {\n    __typename\n    ...CampaignFragment\n  }\n  balance {\n    __typename\n    currentBalance {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    failedCharges\n  }\n  chargeEstimation {\n    __typename\n    charge {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    discount {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    subscription {\n      __typename\n      ...MonetaryAmountFragment\n    }\n  }\n  chargeHistory {\n    __typename\n    amount {\n      __typename\n      ...MonetaryAmountFragment\n    }\n    date\n  }\n}"
+  },
+  "f5778c42caa9260146f46b4bd5c2850405d6ba5b3c596817137e3c961dfd355d": {
+    "name": "Offer",
+    "source": "query Offer($locale: Locale!) {\n  redeemedCampaigns {\n    __typename\n    ...CampaignFragment\n  }\n  insurance {\n    __typename\n    address\n    type\n    previousInsurer {\n      __typename\n      displayName\n      switchable\n    }\n    personsInHousehold\n    presaleInformationUrl\n    policyUrl\n    cost {\n      __typename\n      ...CostFragment\n    }\n  }\n  lastQuoteOfMember {\n    __typename\n    ... on CompleteQuote {\n      startDate\n      id\n      perils(locale: $locale) {\n        __typename\n        ...PerilFragment\n      }\n      insurableLimits(locale: $locale) {\n        __typename\n        ...InsurableLimitFragment\n      }\n    }\n  }\n}"
+  },
+  "2e8915f8312d118b1be03f3e60db0b12113d5d5059a1d753eb1a32377a650b53": {
+    "name": "OfferClosed",
+    "source": "mutation OfferClosed {\n  offerClosed\n}"
+  },
+  "6bcea25e4c85b8433c6176659a86a8788c34912e4dabb310327fe66c97846f0a": {
+    "name": "Profile",
+    "source": "query Profile {\n  member {\n    __typename\n    firstName\n    lastName\n  }\n  insuranceCost {\n    __typename\n    ...CostFragment\n  }\n  cashback {\n    __typename\n    name\n    imageUrl\n  }\n}"
+  },
+  "362c499368096c75a7f531610adccaaa39381881c827517ffb186519d32bc9d2": {
+    "name": "RedeemCode",
+    "source": "mutation RedeemCode($code: String!) {\n  redeemCode(code: $code) {\n    __typename\n    cost {\n      __typename\n      ...CostFragment\n    }\n    campaigns {\n      __typename\n      ...CampaignFragment\n    }\n  }\n}"
+  },
+  "5c31eef27f64586a8ac3edc5384d86b6e2fbc0974c64b9b328613072382400bd": {
+    "name": "ReferralsScreen",
+    "source": "query ReferralsScreen {\n  insuranceCost {\n    __typename\n    ...CostFragment\n  }\n  referralInformation {\n    __typename\n    campaign {\n      __typename\n      code\n      incentive {\n        __typename\n        ... on MonthlyCostDeduction {\n          amount {\n            __typename\n            amount\n          }\n        }\n      }\n    }\n    referredBy {\n      __typename\n      ... on ActiveReferral {\n        discount {\n          __typename\n          amount\n        }\n        name\n      }\n      ... on InProgressReferral {\n        name\n      }\n      ... on AcceptedReferral {\n        quantity\n      }\n      ... on TerminatedReferral {\n        name\n      }\n    }\n    invitations {\n      __typename\n      ... on ActiveReferral {\n        discount {\n          __typename\n          amount\n        }\n        name\n      }\n      ... on InProgressReferral {\n        name\n      }\n      ... on AcceptedReferral {\n        quantity\n      }\n      ... on TerminatedReferral {\n        name\n      }\n    }\n  }\n}"
+  },
+  "243ce23d5c681ab42edbe0b26fea318643dd01459147bffedc9911a29c6ccc64": {
+    "name": "RegisterPushToken",
+    "source": "mutation RegisterPushToken($pushToken: String!) {\n  registerPushToken(pushToken: $pushToken)\n}"
+  },
+  "d7819cbd9e1e9be9f60e020a41817bb8566d9c6dc430fd00b51be6c2ab42beb6": {
+    "name": "RemoveDiscountCode",
+    "source": "mutation RemoveDiscountCode {\n  removeDiscountCode {\n    __typename\n    campaigns {\n      __typename\n      ...CampaignFragment\n    }\n    cost {\n      __typename\n      ...CostFragment\n    }\n  }\n}"
+  },
+  "7d6fdcd8e05997baadab9f30c73c15acfa5056c343827ecce9fa31dd668077b3": {
+    "name": "RemoveStartDate",
+    "source": "mutation RemoveStartDate($id: ID!) {\n  removeStartDate(input: {id: $id}) {\n    __typename\n    ... on CompleteQuote {\n      id\n      startDate\n    }\n  }\n}"
+  },
+  "fef5f10d0ca69b23d95e1b8758256a578d48fc55d92db3253e35094523f91d27": {
+    "name": "SelectCharity",
+    "source": "mutation SelectCharity($id: ID!) {\n  selectCashbackOption(id: $id) {\n    __typename\n    id\n  }\n}"
+  },
+  "f4ff185ba12cf7f9df033cf6c1effac494930283ed097c0e94f790dfa9bfdb3d": {
+    "name": "SelectedCharity",
+    "source": "query SelectedCharity {\n  cashback {\n    __typename\n    id\n    name\n    title\n    imageUrl\n    description\n    paragraph\n  }\n}"
+  },
+  "9aad937432f3d7e27868e3992a6aa1a330c267f40293e67407edeb63230320a8": {
+    "name": "SendChatAudioResponse",
+    "source": "mutation SendChatAudioResponse($globalID: ID!, $file: Upload!) {\n  sendChatAudioResponse(input: {globalId: $globalID, file: $file})\n}"
+  },
+  "b2b51a542eaa7a6ce8018271c6a725e9b063ca29bf37b613c37fdd785e071c44": {
+    "name": "SendChatFileResponse",
+    "source": "mutation SendChatFileResponse($globalID: ID!, $key: String!, $mimeType: String!) {\n  sendChatFileResponse(input: {globalId: $globalID, body: {key: $key, mimeType: $mimeType}})\n}"
+  },
+  "50a3e67f58b90685487f84e6444fa5f7fb9d1beba8a57cd72b2fc249847c2ef7": {
+    "name": "SendChatSingleSelectResponse",
+    "source": "mutation SendChatSingleSelectResponse($globalId: ID!, $selectedValue: ID!) {\n  sendChatSingleSelectResponse(input: {globalId: $globalId, body: {selectedValue: $selectedValue}})\n}"
+  },
+  "d17ef6107c1996703a75e3f26950df1edaecb9e04615e75dd05647834d133311": {
+    "name": "SendChatTextResponse",
+    "source": "mutation SendChatTextResponse($globalId: ID!, $text: String!) {\n  sendChatTextResponse(input: {globalId: $globalId, body: {text: $text}})\n}"
+  },
+  "8b98850ac61596f74105b09026a9b1496986c89769dcea03bf88db0cba4a107c": {
+    "name": "SignOffer",
+    "source": "mutation SignOffer {\n  signOfferV2 {\n    __typename\n    autoStartToken\n  }\n}"
+  },
+  "1ec6d91540b53bdc883068ef71f3a5c0dbd4f525e6acc2d526aa2df841480898": {
+    "name": "SignStatus",
+    "source": "subscription SignStatus {\n  signStatus {\n    __typename\n    status {\n      __typename\n      collectStatus {\n        __typename\n        status\n        code\n      }\n      signState\n    }\n  }\n}"
+  },
+  "920328423f6b60eb57388371c2fa3f233f8b87d17f16040ab4044635110c2139": {
+    "name": "StartDirectDebitRegistration",
+    "source": "mutation StartDirectDebitRegistration {\n  startDirectDebitRegistration\n}"
+  },
+  "a70f6991bca3f523836e87b5a257e5bf4466a58f0fbd6756488f5273a30a316a": {
+    "name": "Translations",
+    "source": "query Translations($code: String) {\n  languages(where: {code: $code}) {\n    __typename\n    translations(where: {project_in: [IOS, App]}) {\n      __typename\n      key {\n        __typename\n        value\n      }\n      text\n    }\n  }\n}"
+  },
+  "140d647b4468f8d8f20fb9d15df54176bdff4ad7e724b8673743b04889de89ac": {
+    "name": "TriggerCallMeChat",
+    "source": "mutation TriggerCallMeChat {\n  triggerCallMeChat\n}"
+  },
+  "de42518bf2e68e1b37226f0004d7c50d6208c6e3d8f7d04ed89f40c00767618f": {
+    "name": "TriggerClaimChat",
+    "source": "mutation TriggerClaimChat($claimTypeId: ID) {\n  triggerClaimChat(input: {claimTypeId: $claimTypeId})\n}"
+  },
+  "77a7314edb7ddce98083b1d7351f25e40120c8f95964cf5fc49a1cdeff0656a4": {
+    "name": "TriggerFreeTextChat",
+    "source": "mutation TriggerFreeTextChat {\n  triggerFreeTextChat\n}"
+  },
+  "6f53559ed574f6cc86aafbe52e815854ae966db35602b17eb24241e992f6f19b": {
+    "name": "TriggerResetChat",
+    "source": "mutation TriggerResetChat {\n  resetConversation\n}"
+  },
+  "b647262011d41b10974cf6210880211bbfbfd8c702bda6b1bd675f850badc8d3": {
+    "name": "UpdateEmail",
+    "source": "mutation UpdateEmail($email: String!) {\n  updateEmail(input: $email) {\n    __typename\n    email\n  }\n}"
+  },
+  "8b11b6763551778d24a192ef222079e627605ffdcc4f38303b3a8db932448b55": {
+    "name": "UpdateKeyGearItemName",
+    "source": "mutation UpdateKeyGearItemName($id: ID!, $name: String!) {\n  updateKeyGearItemName(itemId: $id, updatedName: $name) {\n    __typename\n    name\n  }\n}"
+  },
+  "c475e1019588e68d6b75af2b4d7e7e089e1c5027f89885c1c975802802ede616": {
+    "name": "UpdateKeyGearValuation",
+    "source": "mutation UpdateKeyGearValuation($itemId: ID!, $purchasePrice: MonetaryAmountV2Input!, $purchaseDate: LocalDate!) {\n  updatePurchasePriceForKeyGearItem(itemId: $itemId, newPrice: $purchasePrice) {\n    __typename\n    id\n  }\n  updateTimeOfPurchaseForKeyGearItem(id: $itemId, newTimeOfPurchase: $purchaseDate) {\n    __typename\n    id\n  }\n}"
+  },
+  "68f0cabb0c53297fec0b9ed2d76c2051255418e8b86052cf33c3b949d63650f1": {
+    "name": "UpdateLanguage",
+    "source": "mutation UpdateLanguage($language: String!, $pickedLocale: Locale!) {\n  updateLanguage(input: $language)\n  updatePickedLocale(pickedLocale: $pickedLocale) {\n    __typename\n    acceptLanguage\n  }\n}"
+  },
+  "63bee85b5166db970f09651d2f2ee964a0849a649df2d8aa9ea262465711d750": {
+    "name": "UpdatePhoneNumber",
+    "source": "mutation UpdatePhoneNumber($phoneNumber: String!) {\n  updatePhoneNumber(input: $phoneNumber) {\n    __typename\n    phoneNumber\n  }\n}"
+  },
+  "359cc1d4de6cba613c61cc02581340e643b52c0b61a19444e512ddb37dc7b3a0": {
+    "name": "UploadFile",
+    "source": "mutation UploadFile($file: Upload!) {\n  uploadFile(file: $file) {\n    __typename\n    signedUrl\n    key\n    bucket\n  }\n}"
+  },
+  "2bae54ddb72c547ee38848896aef4d54af05aba233aa8f25c2d87cdb24cabb26": {
+    "name": "UploadFiles",
+    "source": "mutation UploadFiles($files: [Upload!]!) {\n  uploadFiles(files: $files) {\n    __typename\n    signedUrl\n    key\n    bucket\n  }\n}"
+  },
+  "97dd247c880c5dcfa8b346fa272bc1ae75a14eef83facf227e2c91b8d79a8fde": {
+    "name": "Welcome",
+    "source": "query Welcome($locale: Locale!) {\n  welcome(platform: iOS, locale: $locale) {\n    __typename\n    illustration {\n      __typename\n      ...IconFragment\n    }\n    title\n    paragraph\n  }\n}"
+  },
+  "203f316e8c8e550f5beaf5ead26d169c598aa40ddf36aed3fefc6bcc6ffad75b": {
+    "name": "WhatsNew",
+    "source": "query WhatsNew($locale: Locale!, $sinceVersion: String!) {\n  news(platform: iOS, locale: $locale, sinceVersion: $sinceVersion) {\n    __typename\n    illustration {\n      __typename\n      ...IconFragment\n    }\n    title\n    paragraph\n  }\n}"
+  }
+}

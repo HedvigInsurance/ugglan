@@ -1,0 +1,15 @@
+subscription ChatPreviewSubscription {
+    message {
+        id
+        globalId
+        body {
+            ... on MessageBodyText {
+                text
+            }
+        }
+        header {
+            timeStamp
+            fromMyself
+        }
+    }
+}

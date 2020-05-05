@@ -1,5 +1,0 @@
-subscription BankIDAuth_ {
-    authStatus {
-        status
-    }
-}
