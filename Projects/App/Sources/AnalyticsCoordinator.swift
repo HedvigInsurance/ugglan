@@ -8,6 +8,7 @@
 import Apollo
 import Flow
 import Foundation
+import Firebase
 
 public struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient
@@ -26,6 +27,7 @@ public struct AnalyticsCoordinator {
                 return
             }
 
+            Analytics.setUserID(id)
             self.remoteConfig.fetch(true)
         }
     }
