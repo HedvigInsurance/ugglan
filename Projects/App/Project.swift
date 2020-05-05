@@ -27,7 +27,8 @@ let carthageFrameworks: [TargetDependency] = [
     .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),
     .framework(path: "../../Carthage/Build/iOS/abseil.framework"),
     .framework(path: "../../Carthage/Build/iOS/nanopb.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Instabug.framework")
+    .framework(path: "../../Carthage/Build/iOS/Instabug.framework"),
+    .framework(path: "../../Carthage/Build/iOS/Kingfisher.framework")
 ]
 
 let spmFrameworks: [TargetDependency] = [
@@ -42,7 +43,6 @@ let spmFrameworks: [TargetDependency] = [
     .package(product: "DynamicColor"),
     .package(product: "Disk"),
     .package(product: "SnapKit"),
-    .package(product: "Kingfisher"),
     .package(product: "MarkdownKit"),
 ]
 
@@ -157,7 +157,6 @@ let project = Project(
         .package(url: "https://github.com/yannickl/DynamicColor.git", .upToNextMajor(from: "4.2.1")),
         .package(url: "https://github.com/saoudrizwan/Disk.git", .upToNextMajor(from: "0.6.4")),
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
-        .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "5.13.1")),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.7.2"))
     ],
     targets: [

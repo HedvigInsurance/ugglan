@@ -65,15 +65,6 @@
         }
       },
       {
-        "package": "Kingfisher",
-        "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
-        "state": {
-          "branch": null,
-          "revision": "7ccfb6cefdb6180cde839310e3dbd5b2d6fefee5",
-          "version": "5.13.3"
-        }
-      },
-      {
         "package": "MarkdownKit",
         "repositoryURL": "https://github.com/hedviginsurance/MarkdownKit.git",
         "state": {
