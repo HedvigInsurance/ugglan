@@ -1,4 +1,5 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let carthageFrameworks: [TargetDependency] = [
     .framework(path: "../../Carthage/Build/iOS/Adyen.framework"),
