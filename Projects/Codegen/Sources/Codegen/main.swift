@@ -30,7 +30,10 @@ let targetURL = sourceRootURL
     .appendingPathComponent("Sources")
     .appendingPathComponent("Data")
 
-let codegenOptions = ApolloCodegenOptions(targetRootURL: targetURL)
+let codegenOptions = ApolloCodegenOptions(
+    outputFormat: .singleFile(atFileURL: targetURL.appendingPathComponent("API.swift")),
+    urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
+)
 
 do {
     try ApolloCodegen.run(from: targetURL,
