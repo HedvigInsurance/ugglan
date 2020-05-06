@@ -12,7 +12,7 @@ import UIKit
 
 public struct ChatButton {
     let presentingViewController: UIViewController
-    
+
     public init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
     }

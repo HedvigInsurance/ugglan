@@ -5,8 +5,8 @@
 ## Build generated
 build/
 DerivedData/
-Src/Assets/Assets.swift
-Src/Assets/Strings.swift
+Assets/Assets.swift
+Assets/Strings.swift
 Src/Data/schema.json
 Src/Data/API.swift
 Carthage

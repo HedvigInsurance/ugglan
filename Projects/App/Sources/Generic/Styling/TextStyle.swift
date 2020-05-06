@@ -28,7 +28,7 @@ extension TextStyle {
         style.lineSpacing = 5
     }
 
-    static let chatBodyUnderlined = TextStyle.chatBody.restyled { (style: inout TextStyle) in
+    static let chatBodyUnderlined = TextStyle.chatBody.restyled { (_: inout TextStyle) in
 //        style.setAttribute(
 //            NSUnderlineStyle.single.rawValue,
 //            for: NSAttributedString.Key.underlineStyle
@@ -150,7 +150,7 @@ extension TextStyle {
         style.font = HedvigFonts.favoritStdBook!.withSize(14)
         style.color = .primaryText
         style.alignment = .center
-        //style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
+        // style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
     }
 
     static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in

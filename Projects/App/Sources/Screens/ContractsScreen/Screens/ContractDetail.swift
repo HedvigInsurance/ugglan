@@ -191,13 +191,13 @@ extension ContractDetail: Presentable {
 
             let coinsuredRow = KeyValueRow()
             coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
-            
+
             if norwegianHomeContents.numberCoInsured > 0 {
                 coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(norwegianHomeContents.numberCoInsured)
             } else {
                 coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
             }
-            
+
             coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
             bag += coinsuredSection.append(coinsuredRow)
 
@@ -219,14 +219,14 @@ extension ContractDetail: Presentable {
             coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
-           coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
-           
-           if norwegianTravel.numberCoInsured > 0 {
-               coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(norwegianTravel.numberCoInsured)
-           } else {
-               coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
-           }
-            
+            coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
+
+            if norwegianTravel.numberCoInsured > 0 {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(norwegianTravel.numberCoInsured)
+            } else {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
+            }
+
             coinsuredRow.valueStyleSignal.value = .rowTitleDisabled
             bag += coinsuredSection.append(coinsuredRow)
 

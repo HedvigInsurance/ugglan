@@ -14,7 +14,7 @@ import UIKit
 
 struct Licenses {}
 //
-//extension Acknow: Reusable {
+// extension Acknow: Reusable {
 //    public static func makeAndConfigure() -> (make: RowView, configure: (Acknow) -> Disposable) {
 //        let row = RowView()
 //        let titleLabel = UILabel(value: "", style: .rowTitle)
@@ -33,15 +33,15 @@ struct Licenses {}
 //            return NilDisposer()
 //        })
 //    }
-//}
+// }
 //
-//extension Acknow: Previewable {
+// extension Acknow: Previewable {
 //    func preview() -> (License, PresentationOptions) {
 //        return (License(acknowledgement: self), .defaults)
 //    }
-//}
+// }
 //
-//extension Licenses: Presentable {
+// extension Licenses: Presentable {
 //    func materialize() -> (UIViewController, Disposable) {
 //        let viewController = UIViewController()
 //
@@ -105,4 +105,4 @@ struct Licenses {}
 //
 //        return (viewController, bag)
 //    }
-//}
+// }

@@ -251,11 +251,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             hasLoadedSignal: hasFinishedLoading.toVoid().plain()
         )
 
-        
         let (launchViewController, launchFuture) = launch.materialize()
         launchWindow?.rootViewController = launchViewController
         window.makeKeyAndVisible()
-         launchWindow?.makeKeyAndVisible()
+        launchWindow?.makeKeyAndVisible()
 
         DefaultStyling.installCustom()
 

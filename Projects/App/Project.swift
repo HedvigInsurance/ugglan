@@ -27,7 +27,7 @@ let carthageFrameworks: [TargetDependency] = [
     .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),
     .framework(path: "../../Carthage/Build/iOS/abseil.framework"),
     .framework(path: "../../Carthage/Build/iOS/nanopb.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Kingfisher.framework")
+    .framework(path: "../../Carthage/Build/iOS/Kingfisher.framework"),
 ]
 
 let spmFrameworks: [TargetDependency] = [
@@ -50,21 +50,20 @@ let sdkFrameworks: [TargetDependency] = [
     .sdk(name: "libz.tbd"),
     .sdk(name: "SwiftUI.framework", status: .optional),
     .sdk(name: "SceneKit.framework"),
-    .sdk(name: "AdSupport.framework")
+    .sdk(name: "AdSupport.framework"),
 ]
 
+func + <Key, Value>(l: [Key: Value], r: [Key: Value]) -> [Key: Value] {
+    var newDict = [Key: Value]()
 
-func +<Key, Value>(l: Dictionary<Key, Value>, r: Dictionary<Key, Value>) -> Dictionary<Key, Value> {
-    var newDict = Dictionary<Key, Value>()
-    
     for (key, value) in l {
         newDict[key] = value
     }
-    
+
     for (key, value) in r {
         newDict[key] = value
     }
-    
+
     return newDict
 }
 
@@ -74,7 +73,7 @@ let baseSettings: [String: SettingValue] = [
     "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
     "OTHER_LDFLAGS": "-ObjC",
     "DEVELOPMENT_TEAM": "AW656G5PFM",
-    "SDKROOT": "iphoneos"
+    "SDKROOT": "iphoneos",
 ]
 
 let stagingDebugSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"]
@@ -156,7 +155,7 @@ let project = Project(
         .package(url: "https://github.com/yannickl/DynamicColor.git", .upToNextMajor(from: "4.2.1")),
         .package(url: "https://github.com/saoudrizwan/Disk.git", .upToNextMajor(from: "0.6.4")),
         .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.7.2"))
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.7.2")),
     ],
     targets: [
         Target(
@@ -172,7 +171,7 @@ let project = Project(
             dependencies: [
                 spmFrameworks,
                 carthageFrameworks,
-                sdkFrameworks
+                sdkFrameworks,
             ].flatMap { $0 },
             settings: stagingSettings
         ),
@@ -187,7 +186,7 @@ let project = Project(
             resources: [],
             dependencies: [
                 [.target(name: "Ugglan"),
-                .package(product: "SnapshotTesting")]
+                 .package(product: "SnapshotTesting")],
             ].flatMap { $0 },
             settings: unitTestsSettings
         ),
@@ -202,7 +201,7 @@ let project = Project(
             resources: [],
             dependencies: [
                 [.target(name: "Ugglan"),
-                .package(product: "SnapshotTesting")]
+                 .package(product: "SnapshotTesting")],
             ].flatMap { $0 },
             settings: unitTestsRecordSettings
         ),
@@ -218,10 +217,10 @@ let project = Project(
             dependencies: [
                 spmFrameworks,
                 carthageFrameworks,
-                sdkFrameworks
+                sdkFrameworks,
             ].flatMap { $0 },
             settings: productionSettings
-        )
+        ),
     ],
     schemes: [
         Scheme(

@@ -29,14 +29,13 @@ public class RemoteConfigContainer {
         #else
             let fetchDuration: TimeInterval = force ? 0 : 3600
         #endif
-        
+
         let bag = DisposeBag()
-        
+
         bag += Signal(after: 0.5).onValue { _ in
             self.fetched.value = true
             bag.dispose()
         }
-        
 
         remoteConfig.fetch(withExpirationDuration: fetchDuration, completionHandler: { _, _ in
             self.remoteConfig.activate(completionHandler: { _ in
@@ -45,37 +44,37 @@ public class RemoteConfigContainer {
         })
     }
 
-     var referralsWebLandingPrefix: String {
-           return remoteConfig.configValue(forKey: "Referrals_WebLanding_Prefix").stringValue ?? ""
-       }
+    var referralsWebLandingPrefix: String {
+        return remoteConfig.configValue(forKey: "Referrals_WebLanding_Prefix").stringValue ?? ""
+    }
 
-       var keyGearEnabled: Bool {
-           remoteConfig.configValue(forKey: "Key_Gear_Enabled").boolValue
-       }
+    var keyGearEnabled: Bool {
+        remoteConfig.configValue(forKey: "Key_Gear_Enabled").boolValue
+    }
 
-       func referralsEnabled() -> Bool {
-           return remoteConfig.configValue(forKey: "Referrals_Enabled").boolValue
-       }
+    func referralsEnabled() -> Bool {
+        return remoteConfig.configValue(forKey: "Referrals_Enabled").boolValue
+    }
 
-       func referralsIncentive() -> Int {
-           return remoteConfig.configValue(
-               forKey: "Referrals_Incentive"
-           ).numberValue?.intValue ?? 100
-       }
+    func referralsIncentive() -> Int {
+        return remoteConfig.configValue(
+            forKey: "Referrals_Incentive"
+        ).numberValue?.intValue ?? 100
+    }
 
-       func dynamicLinkDomainPrefix() -> String {
-           return remoteConfig.configValue(forKey: "DynamicLink_Domain_Prefix").stringValue ?? ""
-       }
+    func dynamicLinkDomainPrefix() -> String {
+        return remoteConfig.configValue(forKey: "DynamicLink_Domain_Prefix").stringValue ?? ""
+    }
 
-       func dynamicLinkiOSBundleId() -> String {
-           return remoteConfig.configValue(forKey: "DynamicLink_iOS_BundleId").stringValue ?? ""
-       }
+    func dynamicLinkiOSBundleId() -> String {
+        return remoteConfig.configValue(forKey: "DynamicLink_iOS_BundleId").stringValue ?? ""
+    }
 
-       func dynamicLinkiOSAppStoreId() -> String {
-           return remoteConfig.configValue(forKey: "DynamicLink_iOS_AppStoreId").stringValue ?? ""
-       }
+    func dynamicLinkiOSAppStoreId() -> String {
+        return remoteConfig.configValue(forKey: "DynamicLink_iOS_AppStoreId").stringValue ?? ""
+    }
 
-       func dynamicLinkAndroidPackageName() -> String {
-           return remoteConfig.configValue(forKey: "DynamicLink_Android_PackageName").stringValue ?? ""
-       }
+    func dynamicLinkAndroidPackageName() -> String {
+        return remoteConfig.configValue(forKey: "DynamicLink_Android_PackageName").stringValue ?? ""
+    }
 }

@@ -11,8 +11,8 @@ import Flow
 import Foundation
 import Presentation
 import SafariServices
-import WebKit
 import UIKit
+import WebKit
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient

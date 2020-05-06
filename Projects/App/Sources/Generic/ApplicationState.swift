@@ -17,7 +17,7 @@ struct Localization {
         case en_SE
         case en_NO
         case nb_NO
-        
+
         enum Market: String {
             case no = "NO"
             case se = "SE"
@@ -96,7 +96,7 @@ public struct L10nDerivation {
     let table: String
     let key: String
     let args: [CVarArg]
-    
+
     /// render the text key again, useful if you have changed the language during runtime
     func render() -> String {
         return L10n.tr(table, key, args)

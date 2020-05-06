@@ -6,8 +6,8 @@
 //
 
 import SnapshotTesting
-import UIKit
 import Ugglan
+import UIKit
 import XCTest
 
 class ButtonTests: SnapShotTestCase {

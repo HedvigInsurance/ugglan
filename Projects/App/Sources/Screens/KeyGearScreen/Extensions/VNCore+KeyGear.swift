@@ -10,8 +10,8 @@ import CoreML
 import Disk
 import Flow
 import Foundation
-import Vision
 import UIKit
+import Vision
 
 extension AddKeyGearItem {
     private enum Category: String {

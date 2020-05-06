@@ -14,7 +14,7 @@ let project = Project(
             sources: ["Sources/**"],
             resources: [],
             dependencies: [.package(product: "ApolloCodegenLib")]
-        )
+        ),
     ],
     schemes: [
         Scheme(
@@ -22,6 +22,6 @@ let project = Project(
             shared: true,
             buildAction: BuildAction(targets: ["Codegen"]),
             runAction: RunAction(executable: "Codegen")
-        )
+        ),
     ]
 )

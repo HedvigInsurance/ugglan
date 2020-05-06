@@ -10,9 +10,9 @@ import Flow
 import Form
 import Presentation
 import SnapshotTesting
+import Ugglan
 import UIKit
 import XCTest
-import Ugglan
 
 class SnapShotTestCase: XCTestCase {
     let bag = DisposeBag()
@@ -29,7 +29,7 @@ class SnapShotTestCase: XCTestCase {
         Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
             RemoteConfigContainer()
         })
-        
+
         #if RECORD_MODE
             record = true
         #endif

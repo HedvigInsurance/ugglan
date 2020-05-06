@@ -6,17 +6,15 @@
 //
 
 import Apollo
+import Firebase
 import Flow
 import Foundation
-import Firebase
 
 public struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient
     @Inject private var remoteConfig: RemoteConfigContainer
-    
-    public init() {
-        
-    }
+
+    public init() {}
 
     func setUserId() {
         client.fetch(
@@ -32,15 +30,14 @@ public struct AnalyticsCoordinator {
         }
     }
 
-    func logAddPaymentInfo() {
-    }
+    func logAddPaymentInfo() {}
 
     func logAddToCart() {
         let bag = DisposeBag()
         bag += client.fetch(query: InsurancePriceQuery())
             .valueSignal
             .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross }
-            .onValue { monthlyGross in
+            .onValue { _ in
                 bag.dispose()
             }
     }
@@ -50,7 +47,7 @@ public struct AnalyticsCoordinator {
         bag += client.fetch(query: InsurancePriceQuery())
             .valueSignal
             .compactMap { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross }
-            .onValue { monthlyGross in
+            .onValue { _ in
                 bag.dispose()
             }
     }

@@ -12,8 +12,7 @@ import Foundation
 import Presentation
 import UIKit
 
-struct License {
-}
+struct License {}
 
 extension License: Presentable {
     func materialize() -> (UIViewController, Disposable) {

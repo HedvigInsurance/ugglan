@@ -10,9 +10,9 @@ import AdyenDropIn
 import Apollo
 import Flow
 import Foundation
+import PassKit
 import Presentation
 import UIKit
-import PassKit
 
 struct AdyenSetup {
     @Inject var client: ApolloClient
@@ -31,19 +31,19 @@ extension AdyenSetup: Presentable {
 
         let view = UIView()
         view.backgroundColor = .primaryBackground
-        
+
         let activityIndicator = UIActivityIndicatorView()
-       activityIndicator.style = .whiteLarge
-       activityIndicator.color = .primaryTintColor
+        activityIndicator.style = .whiteLarge
+        activityIndicator.color = .primaryTintColor
 
-       view.addSubview(activityIndicator)
+        view.addSubview(activityIndicator)
 
-       activityIndicator.startAnimating()
+        activityIndicator.startAnimating()
 
-       activityIndicator.snp.makeConstraints { make in
-           make.edges.equalToSuperview()
-           make.size.equalToSuperview()
-       }
+        activityIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.size.equalToSuperview()
+        }
 
         viewController.view = view
 
@@ -81,7 +81,7 @@ extension AdyenSetup: Presentable {
                     configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
                 case .production:
                     configuration.applePay.merchantIdentifier = "merchant.com.hedvig.app"
-                case .custom(_, _, _):
+                case .custom:
                     configuration.applePay.merchantIdentifier = "merchant.com.hedvig.test.app"
                 }
 
@@ -100,7 +100,7 @@ extension AdyenSetup: Presentable {
                     dropInComponent.environment = .test
                 case .production:
                     dropInComponent.environment = .live
-                case .custom(_, _, _):
+                case .custom:
                     dropInComponent.environment = .test
                 }
 
@@ -172,7 +172,7 @@ extension AdyenSetup: Presentable {
                         }
                     }
 
-                    func didFail(with error: Error, from dropInComponent: DropInComponent) {
+                    func didFail(with error: Error, from _: DropInComponent) {
                         self.completion(.failure(error))
                     }
                 }
@@ -188,17 +188,17 @@ extension AdyenSetup: Presentable {
                         let continueButton = Button(
                             title: L10n.paymentSetupDoneCta,
                             type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
-                      )
+                        )
 
-                      let continueAction = ImageTextAction<Void>(
-                        image: .init(image: Asset.circularCheckmark.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
-                        title: L10n.paymentSetupDoneTitle,
-                        body:  L10n.paymentSetupDoneDescription,
-                          actions: [
-                              ((), continueButton),
-                          ],
-                          showLogo: false
-                      )
+                        let continueAction = ImageTextAction<Void>(
+                            image: .init(image: Asset.circularCheckmark.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
+                            title: L10n.paymentSetupDoneTitle,
+                            body: L10n.paymentSetupDoneDescription,
+                            actions: [
+                                ((), continueButton),
+                            ],
+                            showLogo: false
+                        )
 
                         bag += dropInComponent.viewController.present(PresentableViewable(viewable: continueAction) { viewController in
                             viewController.navigationItem.hidesBackButton = true
@@ -208,29 +208,29 @@ extension AdyenSetup: Presentable {
                     case .failure:
                         let tryAgainButton = Button(
                             title: L10n.paymentSetupFailedRetryCta,
-                          type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
-                      )
+                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                        )
 
                         let cancelButton = Button(
                             title: L10n.paymentSetupFailedCancelCta,
                             type: .outline(borderColor: .transparent, textColor: .pink)
                         )
 
-                          let didFailAction = ImageTextAction<Bool>(
+                        let didFailAction = ImageTextAction<Bool>(
                             image: .init(image: Asset.redCross.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
                             title: L10n.paymentSetupFailedTitle,
-                            body:  L10n.paymentSetupFailedDescription,
-                              actions: [
-                                  (true, tryAgainButton),
-                                  (false, cancelButton)
-                              ],
-                              showLogo: false
-                          )
+                            body: L10n.paymentSetupFailedDescription,
+                            actions: [
+                                (true, tryAgainButton),
+                                (false, cancelButton),
+                            ],
+                            showLogo: false
+                        )
 
                         bag += dropInComponent.viewController.present(PresentableViewable(viewable: didFailAction) { viewController in
                             viewController.navigationItem.hidesBackButton = true
                         }).onValue { shouldRetry in
-                            if (shouldRetry) {
+                            if shouldRetry {
                                 dropInComponent.viewController.present(AdyenSetup()).onResult { result in
                                     completion(result)
                                 }

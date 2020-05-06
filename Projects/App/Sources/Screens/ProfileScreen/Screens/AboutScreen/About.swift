@@ -155,8 +155,7 @@ extension About: Presentable {
             presentingViewController: viewController
         )
 
-        bag += otherSection.append(licensesRow) { row in
-            
+        bag += otherSection.append(licensesRow) { _ in
         }
 
         bag += form.append(Spacing(height: 15))

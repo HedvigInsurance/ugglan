@@ -3,9 +3,9 @@ import Foundation
 
 let parentFolderOfScriptFile = FileFinder.findParentFolder()
 let sourceRootURL = parentFolderOfScriptFile
-  .deletingLastPathComponent()
-  .deletingLastPathComponent()
-  .deletingLastPathComponent()
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
 
 let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!
     .appendingPathComponent("Codegen")
@@ -19,10 +19,10 @@ let options = ApolloSchemaOptions(
 )
 
 do {
-  try ApolloSchemaDownloader.run(with: cliFolderURL,
-                                 options: options)
+    try ApolloSchemaDownloader.run(with: cliFolderURL,
+                                   options: options)
 } catch {
-  exit(1)
+    exit(1)
 }
 
 let targetURL = sourceRootURL

@@ -89,7 +89,7 @@ extension InsuranceSummarySection: Viewable {
                     let isSubletedRow = KeyValueRow()
                     isSubletedRow.keySignal.value = L10n.myHomeRowSubletedKey
                     isSubletedRow.valueSignal.value = isSubleted ?
-                    L10n.myHomeRowSubletedValueYes :
+                        L10n.myHomeRowSubletedValueYes :
                         L10n.myHomeRowSubletedValueNo
                     isSubletedRow.valueStyleSignal.value = .rowTitleDisabled
                     innerBag += sectionView.append(isSubletedRow)

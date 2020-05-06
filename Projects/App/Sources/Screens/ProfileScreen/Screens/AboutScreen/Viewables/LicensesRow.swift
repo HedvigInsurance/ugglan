@@ -31,9 +31,7 @@ extension LicensesRow: Viewable {
             make.width.equalTo(20)
         }
 
-        bag += events.onSelect.onValue {
-           
-        }
+        bag += events.onSelect.onValue {}
 
         return (row, bag)
     }
