@@ -8,7 +8,6 @@ github "hedviginsurance/form" "master"
 github "SnapKit/SnapKit" >= 5.0.0
 github "hedviginsurance/flowfeedback" "master"
 github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
-github "vtourraine/AcknowList" "1.7"
 github "daltoniam/Starscream" "3.1.0"
 github "ivanbruel/MarkdownKit" "bdd03bb07179b23a741fb83f9b1bbe325604a690"
 github "hedviginsurance/ease" "master"
