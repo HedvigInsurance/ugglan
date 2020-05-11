@@ -5,15 +5,17 @@
 ## Build generated
 build/
 DerivedData/
-Src/Assets/Assets.swift
-Src/Assets/Localization/Localization.json
-Src/Assets/Localization/Localization.swift
-Src/Data/schema.json
-Src/Data/API.swift
+Projects/App/Sources/Assets/Assets.swift
+Projects/App/Sources/Assets/Strings.swift
+Projects/App/Sources/Data/API.swift
 Carthage
 test.xcodeproj
 production.xcodeproj
+Ugglan.xcworkspace
+Ugglan.xcodeproj
 UITestsImages/FailureDiffs
+Src/Data/operationIDs.json
+Localizable.strings
 
 ## Various settings
 *.pbxuser

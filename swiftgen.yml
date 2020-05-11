@@ -1,6 +1,21 @@
 xcassets:
   inputs:
-    - Src/Assets/Assets.xcassets
+    - Projects/App/Resources/Assets.xcassets
   outputs:
-    - templateName: swift4
-      output: Src/Assets/Assets.swift
+    templateName: swift4
+    output: Projects/App/Sources/Assets/Assets.swift
+xcassets:
+    inputs:
+      - Projects/hCoreUI/Resources/Assets.xcassets
+    outputs:
+      templateName: swift4
+      output: Projects/hCoreUI/Sources/Derived/Assets.swift
+      params:
+        enumName: hCoreUIAssets
+        publicAccess: true
+strings:
+  inputs: 
+    - Projects/App/Resources/en-SE.lproj/Localizable.strings
+  outputs:
+    templatePath: swiftgen/localization.stencil
+    output: Projects/App/Sources/Assets/Strings.swift
