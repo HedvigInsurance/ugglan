@@ -9,6 +9,9 @@ import Foundation
 import Flow
 import UIKit
 import Form
+import hCore
+import hCoreUI
+import FlowFeedback
 
 struct EmbarkSelectActionOption {
     let data: EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
@@ -25,7 +28,7 @@ extension EmbarkSelectActionOption: Viewable {
                 opacity: 0.25,
                 offset: CGSize(width: 0, height: 6),
                 radius: 8,
-                color: UIColor.primaryShadowColor,
+                color: .brand(.primaryShadowColor),
                 path: nil
             )
         })
@@ -58,10 +61,12 @@ extension EmbarkSelectActionOption: Viewable {
             bag += control.signal(for: .touchUpInside).feedback(type: .impactLight)
             
             bag += control.signal(for: .touchUpInside).onValue { _ in
-                let key = self.data.key ?? "\(self.data.link.fragments.embarkLinkFragment.name)Result"
-                let value = self.data.value ?? self.data.link.fragments.embarkLinkFragment.label
                 let textValue = self.data.link.fragments.embarkLinkFragment.label
-                callback(ActionResponseData(key: key, value: value, textValue: textValue))
+                callback(ActionResponseData(
+                    keys: self.data.keys,
+                    values: self.data.values,
+                    textValue: textValue
+                ))
             }
             
             return bag

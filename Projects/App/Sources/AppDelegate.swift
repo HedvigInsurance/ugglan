@@ -19,6 +19,7 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import Core
 
 let log = Logger.self
 
@@ -223,6 +224,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        
+        buttonTrackingHandler = { button in
+            if let localizationKey = button.title.derivedFromL10n?.key {
+                Analytics.logEvent(localizationKey, parameters: [
+                    "context": "Button",
+                ])
+            }
+        }
+        
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()

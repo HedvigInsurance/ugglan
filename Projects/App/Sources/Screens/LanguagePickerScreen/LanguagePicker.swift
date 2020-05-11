@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Core
 
 extension UIView {
     var isPossiblyVisible: Signal<Bool> {

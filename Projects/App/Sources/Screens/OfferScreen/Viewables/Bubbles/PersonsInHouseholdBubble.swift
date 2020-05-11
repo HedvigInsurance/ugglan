@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import Core
 
 struct PersonsInHouseholdBubble {
     let personsInHousehold: Int

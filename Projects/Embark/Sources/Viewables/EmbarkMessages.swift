@@ -8,6 +8,7 @@
 import Foundation
 import Flow
 import UIKit
+import hCore
 
 struct EmbarkMessages {
     let store: EmbarkStore

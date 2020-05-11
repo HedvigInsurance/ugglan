@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 /// A row that the user can edit
 /// Signal emits everytime save is clicked

@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct AddPhotoButton {
     let pickedPhotoSignal = ReadWriteSignal<UIImage?>(nil)

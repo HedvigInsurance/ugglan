@@ -9,6 +9,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
+import SnapKit
 
 struct EmbarkInput {
     let placeholder: ReadWriteSignal<String>
@@ -38,14 +40,7 @@ extension EmbarkInput: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
-
-        bag += view.traitCollectionSignal.atOnce().onValue({ trait in
-            if trait.userInterfaceStyle == .dark {
-                view.backgroundColor = UIColor.secondaryBackground
-            } else {
-                view.backgroundColor = UIColor.white
-            }
-        })
+        view.backgroundColor = .brand(.primaryBackground())
         
         let paddingView = UIStackView()
         paddingView.isUserInteractionEnabled = true
@@ -60,8 +55,8 @@ extension EmbarkInput: Viewable {
 
         let textField = UITextField()
         textField.textAlignment = .center
-        textField.tintColor = .primaryTintColor
-        textField.font = HedvigFonts.favoritStdBook?.withSize(38)
+        textField.tintColor = .brand(.primaryTintColor)
+        //textField.font = HedvigFonts.favoritStdBook?.withSize(38)
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
 

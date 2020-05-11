@@ -8,6 +8,8 @@
 import Foundation
 import Flow
 import UIKit
+import hCore
+import hCoreUI
 
 struct Action {
     let store: EmbarkStore
@@ -23,8 +25,8 @@ struct ActionResponse {
 }
 
 struct ActionResponseData {
-    let key: String
-    let value: String
+    let keys: [String]
+    let values: [String]
     let textValue: String
 }
 

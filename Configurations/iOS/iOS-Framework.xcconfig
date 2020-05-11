@@ -9,3 +9,5 @@
 
 // Import common settings specific to iOS
 #include "iOS-Base.xcconfig"
+
+APPLICATION_EXTENSION_API_ONLY = NO

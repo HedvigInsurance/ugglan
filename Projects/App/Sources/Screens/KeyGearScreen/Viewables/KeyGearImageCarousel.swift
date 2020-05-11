@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct KeyGearImageCarousel {
     let imagesSignal: ReadSignal<[Either<URL, KeyGearItemCategory>]>

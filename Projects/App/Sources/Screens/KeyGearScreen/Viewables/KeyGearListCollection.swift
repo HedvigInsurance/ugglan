@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct KeyGearListCollection {
     @Inject var client: ApolloClient

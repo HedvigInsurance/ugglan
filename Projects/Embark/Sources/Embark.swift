@@ -10,20 +10,26 @@ import Flow
 import Presentation
 import UIKit
 import Apollo
+import hCore
+import hCoreUI
 
-struct Embark {
+public struct Embark {
     @Inject var client: ApolloClient
     let name: String
     let store = EmbarkStore()
+    
+    public init(name: String) {
+        self.name = name
+    }
 }
 
 extension Embark: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .brand(.primaryBackground())
         viewController.view = view
         
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
@@ -33,10 +39,10 @@ extension Embark: Presentable {
             make.height.width.equalToSuperview()
         }
         
-        viewController.installChatButton()
+        // viewController.installChatButton()
         
         let titleHedvigLogo = UIImageView()
-        titleHedvigLogo.image = Asset.wordmark.image
+        titleHedvigLogo.image = hCoreUIAssets.wordmark.image
         titleHedvigLogo.contentMode = .scaleAspectFit
 
         viewController.navigationItem.titleView = titleHedvigLogo
@@ -79,6 +85,7 @@ extension Embark: Presentable {
         }
         
         bag += client.fetch(query: EmbarkStoryQuery(name: name)).onValue { data in
+            print(data)
             passagesSignal.value = data.data?.embarkStory?.passages ?? []
             
             let startPassageId = data.data?.embarkStory?.startPassage

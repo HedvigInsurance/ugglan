@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Core
 
 struct CardDetailsSection {
     @Inject var client: ApolloClient

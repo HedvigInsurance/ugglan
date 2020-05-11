@@ -15,6 +15,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import Core
 
 enum ReferralsFailure: LocalizedError {
     case failedToCreateLink

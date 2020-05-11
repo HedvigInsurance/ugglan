@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import Core
 
 struct ContractTableHeader {
     let presentingViewController: UIViewController

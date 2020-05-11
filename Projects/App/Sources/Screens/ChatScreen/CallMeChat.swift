@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Core
 
 struct CallMeChat {
     @Inject var client: ApolloClient

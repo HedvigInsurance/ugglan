@@ -9,6 +9,8 @@ import Foundation
 import Flow
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 typealias EmbarkNumberActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
 
@@ -33,7 +35,7 @@ extension EmbarkNumberAction: Viewable {
                 opacity: 0.25,
                 offset: CGSize(width: 0, height: 6),
                 radius: 8,
-                color: UIColor.primaryShadowColor,
+                color: .brand(.primaryShadowColor),
                 path: nil
             )
         })

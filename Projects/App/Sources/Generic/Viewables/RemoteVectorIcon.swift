@@ -11,6 +11,7 @@ import Flow
 import Foundation
 import Kingfisher
 import UIKit
+import Core
 
 struct RemoteVectorIcon {
     let iconSignal = ReadWriteSignal<IconFragment?>(nil)

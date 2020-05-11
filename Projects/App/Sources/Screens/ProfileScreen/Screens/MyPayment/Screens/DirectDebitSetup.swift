@@ -13,6 +13,7 @@ import Presentation
 import SafariServices
 import UIKit
 import WebKit
+import Core
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient

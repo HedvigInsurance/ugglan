@@ -1,0 +1,1211 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02FCB9EBCCAFE825F361B561 /* Flow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A321CF178F32415DFD1ADEBA /* Flow.framework */; };
+		075B198B10E69E65E5FAC6ED /* Flow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A321CF178F32415DFD1ADEBA /* Flow.framework */; };
+		07E3213D637889A17AA61D8A /* FlowFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11FA2DA6665144BB02B8436D /* FlowFeedback.framework */; };
+		083ED4BEDFD12F727BD6BBC2 /* Embark.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1BB487F6FCC975FBB8EFBCDE /* Embark.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0A964541D548842A9003FFF2 /* hCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC8E5A8F2B4FBCCC7600FA74 /* hCore.framework */; };
+		15D7D5F48D352AA59CE64EFF /* FlowFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11FA2DA6665144BB02B8436D /* FlowFeedback.framework */; };
+		1CA3F738B5E45E6D7B555A1A /* Form.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EBD7C1F4553659577E81C7 /* Form.framework */; };
+		22666CC697AEBEBB954A883C /* Apollo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F7F3A90C049B4B31ED076BD /* Apollo.framework */; };
+		2532BE16DB7C4663C7A95B1F /* hCoreUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A9171A1A88773483DAD3080D /* hCoreUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2B3DFFD6FE9F736FBCCA8AF3 /* EmbarkSelectActionOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA3D4378FDC2A4E80D800B3 /* EmbarkSelectActionOption.swift */; };
+		2EF5E13C76B2C5A4C3B169EE /* Embark.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1BB487F6FCC975FBB8EFBCDE /* Embark.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		32170FAFADDBDECEC27299B0 /* hCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC8E5A8F2B4FBCCC7600FA74 /* hCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4419F8A3AD28B36AB9F561F3 /* Embark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BB487F6FCC975FBB8EFBCDE /* Embark.framework */; };
+		452F30769DF3B9B8D4105F57 /* hCoreUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9171A1A88773483DAD3080D /* hCoreUI.framework */; };
+		46EF1B2A62955D9DC026C34D /* Apollo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F7F3A90C049B4B31ED076BD /* Apollo.framework */; };
+		4DEEFA66745FB6CE77059E1B /* EmbarkSelectAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A46DAB77AB994B66926B317 /* EmbarkSelectAction.swift */; };
+		52859C11353431E8B494134C /* Starscream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 842E1558BEA99AF125B2939C /* Starscream.framework */; };
+		5437A0742DA39BA9ACFBE174 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 588E066CDBF62019D3071CE4 /* Presentation.framework */; };
+		58D6725F21E12FE43AEB8268 /* Embark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BB487F6FCC975FBB8EFBCDE /* Embark.framework */; };
+		638CAB322DB11B02F2019E57 /* EmbarkMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D85AEC2A84CB365B4817FF /* EmbarkMessages.swift */; };
+		6582F2C73205B599D032B2CB /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC19924FD88D703B3880AE6F /* API.swift */; };
+		6818A07299FC556E5BD726B2 /* Testing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3432383140DF1611728B7B25 /* Testing.framework */; };
+		6828D9C6E731851F22CCE69B /* Passage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E244F25B1EBF84ABFDAECAF /* Passage.swift */; };
+		7C8CA9C672900E58B1BCE4C3 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B81B9DC6FEF5675E392B2C /* MessageBubble.swift */; };
+		877371A134F258817D26B122 /* hCoreUITesting.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D00E02B2B952F2B07A0E4C93 /* hCoreUITesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8E2C934C3458E93B2440AEF2 /* EmbarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC948F6C7C09E687B1CAC975 /* EmbarkTests.swift */; };
+		9EF4F2AD75052643DE56BDB8 /* hCoreTesting.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 818E9AC4BEB652E02C539FF2 /* hCoreTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A118A69BB34087DB78DF6706 /* Embark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BB487F6FCC975FBB8EFBCDE /* Embark.framework */; };
+		A292953858773AE9CB8CC1AE /* EmbarkNumberAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8BA075CEAD0D5168E64590 /* EmbarkNumberAction.swift */; };
+		A339D2BFA3E31A3F231E1D85 /* hCoreUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A9171A1A88773483DAD3080D /* hCoreUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6AB91977E7D63907DD1D370 /* hCoreTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 818E9AC4BEB652E02C539FF2 /* hCoreTesting.framework */; };
+		B91559436E4B60DD33909DF8 /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED0964D299FA511EEB44D812 /* SnapKit.framework */; };
+		BB2BCD19F7069CFD88643639 /* Form.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18EBD7C1F4553659577E81C7 /* Form.framework */; };
+		BE5A41CFD235F7D970336E5F /* EmbarkInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7070E1A882BB1EE662CFC819 /* EmbarkInput.swift */; };
+		C04F8CE4B994CABB7383F715 /* EmbarkTextAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17957FC867C7B64F1525BE31 /* EmbarkTextAction.swift */; };
+		C518A05C6CF0E08A92FB5C03 /* hCoreUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9171A1A88773483DAD3080D /* hCoreUI.framework */; };
+		D5985372E968E35F04D235BF /* hCoreUITesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D00E02B2B952F2B07A0E4C93 /* hCoreUITesting.framework */; };
+		D9F5F1927D0447F8D10677FE /* ApolloWebSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C8BD8B29B2646624F72968E /* ApolloWebSocket.framework */; };
+		E29852A34E4149127038E7FC /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E51515FE306A48C7CBC3474 /* Action.swift */; };
+		E551C9A29F0F686C0B56EEAC /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED0964D299FA511EEB44D812 /* SnapKit.framework */; };
+		EBDD56356B3FE5C0601609FD /* EmbarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413E9067C80BEB5CE8C8D439 /* EmbarkStore.swift */; };
+		ED1DDD1EB779D91DB4BEF8C5 /* Masking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60BA36FF8F1A79D411F9D24 /* Masking.swift */; };
+		ED2BDDC270969EB4ADF7DDE1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9615DDB7AA2ED62D0DC848 /* AppDelegate.swift */; };
+		EF3972C6640A6EB6907E8B09 /* Embark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 904C4FB88EC0DB730EF8BCCB /* Embark.swift */; };
+		F01EF6A5B83836E027257C9F /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 588E066CDBF62019D3071CE4 /* Presentation.framework */; };
+		F48D8C8D3D64CAFFCCBE0905 /* Starscream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 842E1558BEA99AF125B2939C /* Starscream.framework */; };
+		F67F104345AE0453C5D5D313 /* hCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC8E5A8F2B4FBCCC7600FA74 /* hCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F7BD4DB33BC2E4E12AFEBEB5 /* Testing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3432383140DF1611728B7B25 /* Testing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FB872AA4CDDF149D128E8EC0 /* ApolloWebSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C8BD8B29B2646624F72968E /* ApolloWebSocket.framework */; };
+		FE43A22431E40839B625BEA0 /* hCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC8E5A8F2B4FBCCC7600FA74 /* hCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4D1F6E66718BCAFD09667D1D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4B8CDE40E36ED1D09F258DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 77181DF5659A08810F748596;
+			remoteInfo = Embark;
+		};
+		702E48837E06E63F27ABBA34 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4B8CDE40E36ED1D09F258DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 77181DF5659A08810F748596;
+			remoteInfo = Embark;
+		};
+		FBD41D624FECA03B0C56C78F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4B8CDE40E36ED1D09F258DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 77181DF5659A08810F748596;
+			remoteInfo = Embark;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		487CC6AF02F7B4C2903F28A8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstSubfolderSpec = 10;
+			files = (
+				083ED4BEDFD12F727BD6BBC2 /* Embark.framework in Embed Frameworks */,
+				F7BD4DB33BC2E4E12AFEBEB5 /* Testing.framework in Embed Frameworks */,
+				32170FAFADDBDECEC27299B0 /* hCore.framework in Embed Frameworks */,
+				9EF4F2AD75052643DE56BDB8 /* hCoreTesting.framework in Embed Frameworks */,
+				A339D2BFA3E31A3F231E1D85 /* hCoreUI.framework in Embed Frameworks */,
+				877371A134F258817D26B122 /* hCoreUITesting.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D4C1F4D056DA80478AEE936 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8C214D49040B1FF9269C9F66 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstSubfolderSpec = 10;
+			files = (
+				2EF5E13C76B2C5A4C3B169EE /* Embark.framework in Embed Frameworks */,
+				F67F104345AE0453C5D5D313 /* hCore.framework in Embed Frameworks */,
+				2532BE16DB7C4663C7A95B1F /* hCoreUI.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AFBA22CC18DE66C63495C9F8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0240BE210316ADAF567F13C5 /* EmbarkExample.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = EmbarkExample.plist; sourceTree = "<group>"; };
+		03B81B9DC6FEF5675E392B2C /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
+		0C8BA075CEAD0D5168E64590 /* EmbarkNumberAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkNumberAction.swift; sourceTree = "<group>"; };
+		11FA2DA6665144BB02B8436D /* FlowFeedback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FlowFeedback.framework; sourceTree = "<group>"; };
+		17957FC867C7B64F1525BE31 /* EmbarkTextAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkTextAction.swift; sourceTree = "<group>"; };
+		18EBD7C1F4553659577E81C7 /* Form.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Form.framework; sourceTree = "<group>"; };
+		1B1A47128968119043036D24 /* EmbarkTesting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EmbarkTesting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BB487F6FCC975FBB8EFBCDE /* Embark.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Embark.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E244F25B1EBF84ABFDAECAF /* Passage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Passage.swift; sourceTree = "<group>"; };
+		1E51515FE306A48C7CBC3474 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
+		1F7F3A90C049B4B31ED076BD /* Apollo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Apollo.framework; sourceTree = "<group>"; };
+		269C5B889968F7EC81F8FDB0 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		2C8BD8B29B2646624F72968E /* ApolloWebSocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ApolloWebSocket.framework; sourceTree = "<group>"; };
+		3432383140DF1611728B7B25 /* Testing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Testing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		413E9067C80BEB5CE8C8D439 /* EmbarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkStore.swift; sourceTree = "<group>"; };
+		4A46DAB77AB994B66926B317 /* EmbarkSelectAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkSelectAction.swift; sourceTree = "<group>"; };
+		4B9615DDB7AA2ED62D0DC848 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		588E066CDBF62019D3071CE4 /* Presentation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Presentation.framework; sourceTree = "<group>"; };
+		641EB961402F01912794585C /* iOS-Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "iOS-Base.xcconfig"; sourceTree = "<group>"; };
+		7070E1A882BB1EE662CFC819 /* EmbarkInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkInput.swift; sourceTree = "<group>"; };
+		818E9AC4BEB652E02C539FF2 /* hCoreTesting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = hCoreTesting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		842E1558BEA99AF125B2939C /* Starscream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Starscream.framework; sourceTree = "<group>"; };
+		904C4FB88EC0DB730EF8BCCB /* Embark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Embark.swift; sourceTree = "<group>"; };
+		99F94E6750B534D9E42864FC /* Embark.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Embark.plist; sourceTree = "<group>"; };
+		A070849974D029F44DF3D0FD /* iOS-Framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "iOS-Framework.xcconfig"; sourceTree = "<group>"; };
+		A321CF178F32415DFD1ADEBA /* Flow.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Flow.framework; sourceTree = "<group>"; };
+		A3BA81E926D2024A1019BC2A /* EmbarkTesting.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = EmbarkTesting.plist; sourceTree = "<group>"; };
+		A9171A1A88773483DAD3080D /* hCoreUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = hCoreUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAA3D4378FDC2A4E80D800B3 /* EmbarkSelectActionOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkSelectActionOption.swift; sourceTree = "<group>"; };
+		B6D85AEC2A84CB365B4817FF /* EmbarkMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkMessages.swift; sourceTree = "<group>"; };
+		BCEE318F38A3E93243F46944 /* DynamicColor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DynamicColor.framework; sourceTree = "<group>"; };
+		CC19924FD88D703B3880AE6F /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		CC20D979F62128C861085973 /* EmbarkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmbarkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D00E02B2B952F2B07A0E4C93 /* hCoreUITesting.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = hCoreUITesting.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8E5A8F2B4FBCCC7600FA74 /* hCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = hCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E60BA36FF8F1A79D411F9D24 /* Masking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Masking.swift; sourceTree = "<group>"; };
+		EC8251B452D74DFE410D1713 /* EmbarkExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmbarkExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC948F6C7C09E687B1CAC975 /* EmbarkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbarkTests.swift; sourceTree = "<group>"; };
+		ED0964D299FA511EEB44D812 /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SnapKit.framework; sourceTree = "<group>"; };
+		F64B6A847CFCB2CD0B3F2818 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		F8BAAF9621D94E7B4C639478 /* EmbarkTests.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = EmbarkTests.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B6CDD8223454E6E25F2032B6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A964541D548842A9003FFF2 /* hCore.framework in Frameworks */,
+				C518A05C6CF0E08A92FB5C03 /* hCoreUI.framework in Frameworks */,
+				22666CC697AEBEBB954A883C /* Apollo.framework in Frameworks */,
+				D9F5F1927D0447F8D10677FE /* ApolloWebSocket.framework in Frameworks */,
+				075B198B10E69E65E5FAC6ED /* Flow.framework in Frameworks */,
+				15D7D5F48D352AA59CE64EFF /* FlowFeedback.framework in Frameworks */,
+				1CA3F738B5E45E6D7B555A1A /* Form.framework in Frameworks */,
+				5437A0742DA39BA9ACFBE174 /* Presentation.framework in Frameworks */,
+				B91559436E4B60DD33909DF8 /* SnapKit.framework in Frameworks */,
+				F48D8C8D3D64CAFFCCBE0905 /* Starscream.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9117CF3901C0F13AF8635B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58D6725F21E12FE43AEB8268 /* Embark.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DE99CD3B7AA0BD0EDE245C26 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4419F8A3AD28B36AB9F561F3 /* Embark.framework in Frameworks */,
+				FE43A22431E40839B625BEA0 /* hCore.framework in Frameworks */,
+				452F30769DF3B9B8D4105F57 /* hCoreUI.framework in Frameworks */,
+				46EF1B2A62955D9DC026C34D /* Apollo.framework in Frameworks */,
+				FB872AA4CDDF149D128E8EC0 /* ApolloWebSocket.framework in Frameworks */,
+				02FCB9EBCCAFE825F361B561 /* Flow.framework in Frameworks */,
+				07E3213D637889A17AA61D8A /* FlowFeedback.framework in Frameworks */,
+				BB2BCD19F7069CFD88643639 /* Form.framework in Frameworks */,
+				F01EF6A5B83836E027257C9F /* Presentation.framework in Frameworks */,
+				E551C9A29F0F686C0B56EEAC /* SnapKit.framework in Frameworks */,
+				52859C11353431E8B494134C /* Starscream.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC5F8BE8B625AAC2F859FEC0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A118A69BB34087DB78DF6706 /* Embark.framework in Frameworks */,
+				6818A07299FC556E5BD726B2 /* Testing.framework in Frameworks */,
+				A6AB91977E7D63907DD1D370 /* hCoreTesting.framework in Frameworks */,
+				D5985372E968E35F04D235BF /* hCoreUITesting.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08E856E4020763571E0D3D3A /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				435FAF9DAC1CC920ED21797B /* Viewables */,
+				904C4FB88EC0DB730EF8BCCB /* Embark.swift */,
+				413E9067C80BEB5CE8C8D439 /* EmbarkStore.swift */,
+				03B81B9DC6FEF5675E392B2C /* MessageBubble.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		0BA99B05243FF618657841D5 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				83572742DA97E6300ECD93AA /* Configurations */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		110FC0977E270315D1585EA7 /* Carthage */ = {
+			isa = PBXGroup;
+			children = (
+				BDBC2BF70415AFB5FEE293A9 /* Build */,
+			);
+			name = Carthage;
+			path = ../../Carthage;
+			sourceTree = "<group>";
+		};
+		1BC398C054BF746F70719F39 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				1F7F3A90C049B4B31ED076BD /* Apollo.framework */,
+				2C8BD8B29B2646624F72968E /* ApolloWebSocket.framework */,
+				BCEE318F38A3E93243F46944 /* DynamicColor.framework */,
+				A321CF178F32415DFD1ADEBA /* Flow.framework */,
+				11FA2DA6665144BB02B8436D /* FlowFeedback.framework */,
+				18EBD7C1F4553659577E81C7 /* Form.framework */,
+				588E066CDBF62019D3071CE4 /* Presentation.framework */,
+				ED0964D299FA511EEB44D812 /* SnapKit.framework */,
+				842E1558BEA99AF125B2939C /* Starscream.framework */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		265CC4DAD762C79A35626E6B /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				F57A96390713DD1AC1674415 /* SelectAction */,
+				1E51515FE306A48C7CBC3474 /* Action.swift */,
+				7070E1A882BB1EE662CFC819 /* EmbarkInput.swift */,
+				0C8BA075CEAD0D5168E64590 /* EmbarkNumberAction.swift */,
+				17957FC867C7B64F1525BE31 /* EmbarkTextAction.swift */,
+				E60BA36FF8F1A79D411F9D24 /* Masking.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		41EC7EA930BC3D1ECE3799EC /* Configurations */ = {
+			isa = PBXGroup;
+			children = (
+				0BA99B05243FF618657841D5 /* Base */,
+				DFC92276D6B4F9397D98CA40 /* iOS */,
+			);
+			name = Configurations;
+			path = ../../Configurations;
+			sourceTree = "<group>";
+		};
+		435FAF9DAC1CC920ED21797B /* Viewables */ = {
+			isa = PBXGroup;
+			children = (
+				265CC4DAD762C79A35626E6B /* Actions */,
+				B6D85AEC2A84CB365B4817FF /* EmbarkMessages.swift */,
+				1E244F25B1EBF84ABFDAECAF /* Passage.swift */,
+			);
+			path = Viewables;
+			sourceTree = "<group>";
+		};
+		4F72E691BCA5843494BBA322 /* Derived */ = {
+			isa = PBXGroup;
+			children = (
+				AAECB523D9D5081907622DE4 /* InfoPlists */,
+			);
+			path = Derived;
+			sourceTree = "<group>";
+		};
+		7A5AAB903CD4AAADFC900FA0 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				EC948F6C7C09E687B1CAC975 /* EmbarkTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		83572742DA97E6300ECD93AA /* Configurations */ = {
+			isa = PBXGroup;
+			children = (
+				269C5B889968F7EC81F8FDB0 /* Debug.xcconfig */,
+				F64B6A847CFCB2CD0B3F2818 /* Release.xcconfig */,
+			);
+			path = Configurations;
+			sourceTree = "<group>";
+		};
+		8EC1C98BC0DDACAC5FED4BE1 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				B8B3B7ED1156E57028BFD50B /* Sources */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		952D91900C049CF965A9CD46 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AAECB523D9D5081907622DE4 /* InfoPlists */ = {
+			isa = PBXGroup;
+			children = (
+				99F94E6750B534D9E42864FC /* Embark.plist */,
+				0240BE210316ADAF567F13C5 /* EmbarkExample.plist */,
+				A3BA81E926D2024A1019BC2A /* EmbarkTesting.plist */,
+				F8BAAF9621D94E7B4C639478 /* EmbarkTests.plist */,
+			);
+			path = InfoPlists;
+			sourceTree = "<group>";
+		};
+		B8B3B7ED1156E57028BFD50B /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				4B9615DDB7AA2ED62D0DC848 /* AppDelegate.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		BDBC2BF70415AFB5FEE293A9 /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				1BC398C054BF746F70719F39 /* iOS */,
+			);
+			path = Build;
+			sourceTree = "<group>";
+		};
+		BFFA1C696A664C1961B22FF7 /* GraphQL */ = {
+			isa = PBXGroup;
+			children = (
+				CC19924FD88D703B3880AE6F /* API.swift */,
+			);
+			path = GraphQL;
+			sourceTree = "<group>";
+		};
+		C8B47DC0900B5854812A9CD1 = {
+			isa = PBXGroup;
+			children = (
+				E577DE4456A1737696B1EDFF /* Project */,
+				952D91900C049CF965A9CD46 /* Frameworks */,
+				FEACD4998EC0517EB997FF2B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DFC92276D6B4F9397D98CA40 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				641EB961402F01912794585C /* iOS-Base.xcconfig */,
+				A070849974D029F44DF3D0FD /* iOS-Framework.xcconfig */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		E577DE4456A1737696B1EDFF /* Project */ = {
+			isa = PBXGroup;
+			children = (
+				110FC0977E270315D1585EA7 /* Carthage */,
+				41EC7EA930BC3D1ECE3799EC /* Configurations */,
+				4F72E691BCA5843494BBA322 /* Derived */,
+				8EC1C98BC0DDACAC5FED4BE1 /* Example */,
+				BFFA1C696A664C1961B22FF7 /* GraphQL */,
+				08E856E4020763571E0D3D3A /* Sources */,
+				7A5AAB903CD4AAADFC900FA0 /* Tests */,
+			);
+			name = Project;
+			sourceTree = "<group>";
+		};
+		F57A96390713DD1AC1674415 /* SelectAction */ = {
+			isa = PBXGroup;
+			children = (
+				4A46DAB77AB994B66926B317 /* EmbarkSelectAction.swift */,
+				AAA3D4378FDC2A4E80D800B3 /* EmbarkSelectActionOption.swift */,
+			);
+			path = SelectAction;
+			sourceTree = "<group>";
+		};
+		FEACD4998EC0517EB997FF2B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1BB487F6FCC975FBB8EFBCDE /* Embark.framework */,
+				EC8251B452D74DFE410D1713 /* EmbarkExample.app */,
+				1B1A47128968119043036D24 /* EmbarkTesting.framework */,
+				CC20D979F62128C861085973 /* EmbarkTests.xctest */,
+				DC8E5A8F2B4FBCCC7600FA74 /* hCore.framework */,
+				818E9AC4BEB652E02C539FF2 /* hCoreTesting.framework */,
+				A9171A1A88773483DAD3080D /* hCoreUI.framework */,
+				D00E02B2B952F2B07A0E4C93 /* hCoreUITesting.framework */,
+				3432383140DF1611728B7B25 /* Testing.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		77181DF5659A08810F748596 /* Embark */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 826F5E73C7D55C8755E6E862 /* Build configuration list for PBXNativeTarget "Embark" */;
+			buildPhases = (
+				945D73034291EE3161CCF7D3 /* Sources */,
+				A3F49AEF5EE90A851E22D990 /* Resources */,
+				95548A6D995C17A0188403E3 /* Embed Precompiled Frameworks */,
+				AFBA22CC18DE66C63495C9F8 /* Embed Frameworks */,
+				B6CDD8223454E6E25F2032B6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Embark;
+			productName = Embark;
+			productReference = 1BB487F6FCC975FBB8EFBCDE /* Embark.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		BB83ED850BC2E8ED76D02253 /* EmbarkTesting */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F707D5B917942DAC2C553EE /* Build configuration list for PBXNativeTarget "EmbarkTesting" */;
+			buildPhases = (
+				69FE8A1A211DFE26085E67AE /* Sources */,
+				1392E74078CE0E972623E1AC /* Resources */,
+				5C5AB815FAAA8FC32C7DC273 /* Embed Precompiled Frameworks */,
+				7D4C1F4D056DA80478AEE936 /* Embed Frameworks */,
+				B9117CF3901C0F13AF8635B7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8A19A56E5A0F6DB3DF4A7ED4 /* PBXTargetDependency */,
+			);
+			name = EmbarkTesting;
+			productName = EmbarkTesting;
+			productReference = 1B1A47128968119043036D24 /* EmbarkTesting.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		DFE53ED08F820D85B2E30BEB /* EmbarkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1F8C196E3D97CE0107985A9 /* Build configuration list for PBXNativeTarget "EmbarkTests" */;
+			buildPhases = (
+				CC87A7073A6C1702082684A0 /* Sources */,
+				50C976B0C3B5EF56D014F1F5 /* Resources */,
+				2EB12E96E88F9728D598B878 /* Embed Precompiled Frameworks */,
+				487CC6AF02F7B4C2903F28A8 /* Embed Frameworks */,
+				FC5F8BE8B625AAC2F859FEC0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5CB9239987E70FECC27F0381 /* PBXTargetDependency */,
+			);
+			name = EmbarkTests;
+			productName = EmbarkTests;
+			productReference = CC20D979F62128C861085973 /* EmbarkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F093CAF1218E630D7C3C2C92 /* EmbarkExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9A70A34B1FF279A160067138 /* Build configuration list for PBXNativeTarget "EmbarkExample" */;
+			buildPhases = (
+				C73FA0AFE30B0E0973C7E01A /* Sources */,
+				DF6D4AA6567C8A7BDF8382E7 /* Resources */,
+				923A4FB378E9D850B497A9BD /* Embed Precompiled Frameworks */,
+				8C214D49040B1FF9269C9F66 /* Embed Frameworks */,
+				DE99CD3B7AA0BD0EDE245C26 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBDE36F5FBBC72A0C0134507 /* PBXTargetDependency */,
+			);
+			name = EmbarkExample;
+			productName = EmbarkExample;
+			productReference = EC8251B452D74DFE410D1713 /* EmbarkExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E4B8CDE40E36ED1D09F258DE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Hedvig AB";
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 178F15887BF8196B7EE3F18E /* Build configuration list for PBXProject "Embark" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C8B47DC0900B5854812A9CD1;
+			productRefGroup = FEACD4998EC0517EB997FF2B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				77181DF5659A08810F748596 /* Embark */,
+				BB83ED850BC2E8ED76D02253 /* EmbarkTesting */,
+				DFE53ED08F820D85B2E30BEB /* EmbarkTests */,
+				F093CAF1218E630D7C3C2C92 /* EmbarkExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1392E74078CE0E972623E1AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		50C976B0C3B5EF56D014F1F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A3F49AEF5EE90A851E22D990 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DF6D4AA6567C8A7BDF8382E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2EB12E96E88F9728D598B878 /* Embed Precompiled Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				../../Carthage/Build/iOS/Apollo.framework,
+				../../Carthage/Build/iOS/ApolloWebSocket.framework,
+				../../Carthage/Build/iOS/DynamicColor.framework,
+				../../Carthage/Build/iOS/Flow.framework,
+				../../Carthage/Build/iOS/FlowFeedback.framework,
+				../../Carthage/Build/iOS/Form.framework,
+				../../Carthage/Build/iOS/Presentation.framework,
+				../../Carthage/Build/iOS/SnapKit.framework,
+				../../Carthage/Build/iOS/Starscream.framework,
+			);
+			name = "Embed Precompiled Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Apollo.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ApolloWebSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowFeedback.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Form.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Presentation.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\nset -e\nset -u\nset -o pipefail\n\nfunction on_error {\n  echo \"$(realpath -mq \"${0}\"):$1: error: Unexpected failure\"\n}\ntrap 'on_error $LINENO' ERR\n\nif [ -z ${FRAMEWORKS_FOLDER_PATH+x} ]; then\n  # If FRAMEWORKS_FOLDER_PATH is not set, then there's nowhere for us to copy\n  # frameworks to, so exit 0 (signalling the script phase was successful).\n  exit 0\nfi\n\necho \"mkdir -p ${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\nmkdir -p \"${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\nSWIFT_STDLIB_PATH=\"${DT_TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"\n# Used as a return value for each invocation of `strip_invalid_archs` function.\nSTRIP_BINARY_RETVAL=0\n# This protects against multiple targets copying the same framework dependency at the same time. The solution\n# was originally proposed here: https://lists.samba.org/archive/rsync/2008-February/020158.html\nRSYNC_PROTECT_TMP_FILES=(--filter \"P .*.??????\")\n# Copies and strips a vendored framework\ninstall_framework()\n{\n  if [ -r \"${BUILT_PRODUCTS_DIR}/$1\" ]; then\n    local source=\"${BUILT_PRODUCTS_DIR}/$1\"\n  elif [ -r \"${BUILT_PRODUCTS_DIR}/$(basename \"$1\")\" ]; then\n    local source=\"${BUILT_PRODUCTS_DIR}/$(basename \"$1\")\"\n  elif [ -r \"$1\" ]; then\n    local source=\"$1\"\n  fi\n  local destination=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n  if [ -L \"${source}\" ]; then\n    echo \"Symlinked...\"\n    source=\"$(readlink \"${source}\")\"\n  fi\n  # Use filter instead of exclude so missing patterns don't throw errors.\n  echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${source}\\\" \\\"${destination}\\\"\"\n  rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${destination}\"\n  local basename\n  basename=\"$(basename -s .framework \"$1\")\"\n  binary=\"${destination}/${basename}.framework/${basename}\"\n  if ! [ -r \"$binary\" ]; then\n    binary=\"${destination}/${basename}\"\n  elif [ -L \"${binary}\" ]; then\n    echo \"Destination binary is symlinked...\"\n    dirname=\"$(dirname \"${binary}\")\"\n    binary=\"${dirname}/$(readlink \"${binary}\")\"\n  fi\n  # Strip invalid architectures so \"fat\" simulator / device frameworks work on device\n  if [[ \"$(file \"$binary\")\" == *\"dynamically linked shared library\"* ]]; then\n    strip_invalid_archs \"$binary\"\n  fi\n  # Resign the code if required by the build settings to avoid unstable apps\n  code_sign_if_enabled \"${destination}/$(basename \"$1\")\"\n}\n\n\n# Copies and strips a vendored dSYM\ninstall_dsym() {\n  local source=\"$1\"\n  if [ -r \"$source\" ]; then\n    \n    # Copy the dSYM into a the targets temp dir.\n    echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${source}\\\" \\\"${DERIVED_FILES_DIR}\\\"\"\n    rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${DERIVED_FILES_DIR}\"\n    \n    local basename\n    basename=\"$(basename -s .framework.dSYM \"$source\")\"\n    binary=\"${DERIVED_FILES_DIR}/${basename}.framework.dSYM/Contents/Resources/DWARF/${basename}\"\n    \n    # Strip invalid architectures so \"fat\" simulator / device frameworks work on device\n    if [[ \"$(file \"$binary\")\" == *\"Mach-O \"*\"dSYM companion\"* ]]; then\n      strip_invalid_archs \"$binary\"\n    fi\n    if [[ $STRIP_BINARY_RETVAL == 1 ]]; then\n      # Move the stripped file into its final destination.\n      echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${DERIVED_FILES_DIR}/${basename}.framework.dSYM\\\" \\\"${DWARF_DSYM_FOLDER_PATH}\\\"\"\n      rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${DERIVED_FILES_DIR}/${basename}.framework.dSYM\" \"${DWARF_DSYM_FOLDER_PATH}\"\n    else\n      # The dSYM was not stripped at all, in this case touch a fake folder so the input/output paths from Xcode do not reexecute this script because the file is missing.\n      touch \"${DWARF_DSYM_FOLDER_PATH}/${basename}.framework.dSYM\"\n    fi\n\n  fi\n}\n\n\n# Copies the bcsymbolmap files of a vendored framework\ninstall_bcsymbolmap() {\n    local bcsymbolmap_path=\"$1\"\n    local destination=\"${BUILT_PRODUCTS_DIR}\"\n    echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${bcsymbolmap_path}\" \"${destination}\"\"\n    rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${bcsymbolmap_path}\" \"${destination}\"\n}\n\n\n# Signs a framework with the provided identity\ncode_sign_if_enabled() {\n  if [ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" -a \"${CODE_SIGNING_REQUIRED:-}\" != \"NO\" -a \"${CODE_SIGNING_ALLOWED}\" != \"NO\" ]; then\n    # Use the current code_sign_identity\n    echo \"Code Signing $1 with Identity ${EXPANDED_CODE_SIGN_IDENTITY_NAME}\"\n    local code_sign_cmd=\"/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements '$1'\"\n    code_sign_cmd=\"$code_sign_cmd &\"\n    echo \"$code_sign_cmd\"\n    eval \"$code_sign_cmd\"\n  fi\n}\n\n\n# Strip invalid architectures\nstrip_invalid_archs() {\n  binary=\"$1\"\n  # Get architectures for current target binary\n  binary_archs=\"$(lipo -info \"$binary\" | rev | cut -d ':' -f1 | awk '{$1=$1;print}' | rev)\"\n  # Intersect them with the architectures we are building for\n  intersected_archs=\"$(echo ${ARCHS[@]} ${binary_archs[@]} | tr ' ' '\\n' | sort | uniq -d)\"\n  # If there are no archs supported by this binary then warn the user\n  if [[ -z \"$intersected_archs\" ]]; then\n    echo \"warning: [CP] Vendored binary '$binary' contains architectures ($binary_archs) none of which match the current build architectures ($ARCHS).\"\n    STRIP_BINARY_RETVAL=0\n    return\n  fi\n  stripped=\"\"\n  for arch in $binary_archs; do\n    if ! [[ \"${ARCHS}\" == *\"$arch\"* ]]; then\n      # Strip non-valid architectures in-place\n      lipo -remove \"$arch\" -output \"$binary\" \"$binary\"\n      stripped=\"$stripped $arch\"\n    fi\n  done\n  if [[ \"$stripped\" ]]; then\n    echo \"Stripped $binary of architectures:$stripped\"\n  fi\n  STRIP_BINARY_RETVAL=1\n}\ninstall_framework \"../../Carthage/Build/iOS/Apollo.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Apollo.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/5DFD17C4-8B90-3B64-845C-E99E57915AE7.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/BFB8FC61-C476-3100-AE52-DD9476500F10.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/ApolloWebSocket.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/ApolloWebSocket.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/3A78B95A-213B-38EA-AF06-2AA6697116D2.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/782F90CF-EEEC-3F77-A8B6-B7928D7E7194.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/DynamicColor.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/DynamicColor.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/13D7071F-E931-383B-B45C-330A8BBBBBA0.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/229EBE1E-6ED0-3F99-8A52-8E59D9441068.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Flow.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Flow.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/252C51D9-2A23-3992-86BA-E8A72046F3AB.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/D35F0A66-791E-30D7-A608-CC22E465BA7C.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/FlowFeedback.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/FlowFeedback.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/4EA4B823-9137-36B5-9603-311DDE6CDD0E.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/D183E43B-57EB-3BF0-9A43-58E345BD4A78.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Form.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Form.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/7188B14B-13A1-35DB-B5BE-FAEAC29606A5.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/B68F1E41-857D-3C56-BB7C-2BB230E045E2.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Presentation.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Presentation.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/39848607-3FA6-394D-9E0E-0171D792D685.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/F78C7614-98C9-390D-9CCE-57A6464970AE.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/SnapKit.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/SnapKit.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/736DFEA6-F963-305B-9F9D-3AF160EC404B.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/BC20F060-BCDF-3000-BBC1-26BC6475037D.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Starscream.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Starscream.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/50870630-CCFA-3631-93D0-7837BFD3F005.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/71B533B0-2816-3741-B20C-1252E7157CBA.bcsymbolmap\"\n";
+		};
+		5C5AB815FAAA8FC32C7DC273 /* Embed Precompiled Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Precompiled Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Skipping, nothing to be embedded.\"";
+		};
+		923A4FB378E9D850B497A9BD /* Embed Precompiled Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				../../Carthage/Build/iOS/Apollo.framework,
+				../../Carthage/Build/iOS/Apollo.framework.dSYM,
+				"../../Carthage/Build/iOS/5DFD17C4-8B90-3B64-845C-E99E57915AE7.bcsymbolmap",
+				"../../Carthage/Build/iOS/BFB8FC61-C476-3100-AE52-DD9476500F10.bcsymbolmap",
+				../../Carthage/Build/iOS/ApolloWebSocket.framework,
+				../../Carthage/Build/iOS/ApolloWebSocket.framework.dSYM,
+				"../../Carthage/Build/iOS/3A78B95A-213B-38EA-AF06-2AA6697116D2.bcsymbolmap",
+				"../../Carthage/Build/iOS/782F90CF-EEEC-3F77-A8B6-B7928D7E7194.bcsymbolmap",
+				../../Carthage/Build/iOS/DynamicColor.framework,
+				../../Carthage/Build/iOS/DynamicColor.framework.dSYM,
+				"../../Carthage/Build/iOS/13D7071F-E931-383B-B45C-330A8BBBBBA0.bcsymbolmap",
+				"../../Carthage/Build/iOS/229EBE1E-6ED0-3F99-8A52-8E59D9441068.bcsymbolmap",
+				../../Carthage/Build/iOS/Flow.framework,
+				../../Carthage/Build/iOS/Flow.framework.dSYM,
+				"../../Carthage/Build/iOS/252C51D9-2A23-3992-86BA-E8A72046F3AB.bcsymbolmap",
+				"../../Carthage/Build/iOS/D35F0A66-791E-30D7-A608-CC22E465BA7C.bcsymbolmap",
+				../../Carthage/Build/iOS/FlowFeedback.framework,
+				../../Carthage/Build/iOS/FlowFeedback.framework.dSYM,
+				"../../Carthage/Build/iOS/4EA4B823-9137-36B5-9603-311DDE6CDD0E.bcsymbolmap",
+				"../../Carthage/Build/iOS/D183E43B-57EB-3BF0-9A43-58E345BD4A78.bcsymbolmap",
+				../../Carthage/Build/iOS/Form.framework,
+				../../Carthage/Build/iOS/Form.framework.dSYM,
+				"../../Carthage/Build/iOS/7188B14B-13A1-35DB-B5BE-FAEAC29606A5.bcsymbolmap",
+				"../../Carthage/Build/iOS/B68F1E41-857D-3C56-BB7C-2BB230E045E2.bcsymbolmap",
+				../../Carthage/Build/iOS/Presentation.framework,
+				../../Carthage/Build/iOS/Presentation.framework.dSYM,
+				"../../Carthage/Build/iOS/39848607-3FA6-394D-9E0E-0171D792D685.bcsymbolmap",
+				"../../Carthage/Build/iOS/F78C7614-98C9-390D-9CCE-57A6464970AE.bcsymbolmap",
+				../../Carthage/Build/iOS/SnapKit.framework,
+				../../Carthage/Build/iOS/SnapKit.framework.dSYM,
+				"../../Carthage/Build/iOS/736DFEA6-F963-305B-9F9D-3AF160EC404B.bcsymbolmap",
+				"../../Carthage/Build/iOS/BC20F060-BCDF-3000-BBC1-26BC6475037D.bcsymbolmap",
+				../../Carthage/Build/iOS/Starscream.framework,
+				../../Carthage/Build/iOS/Starscream.framework.dSYM,
+				"../../Carthage/Build/iOS/50870630-CCFA-3631-93D0-7837BFD3F005.bcsymbolmap",
+				"../../Carthage/Build/iOS/71B533B0-2816-3741-B20C-1252E7157CBA.bcsymbolmap",
+			);
+			name = "Embed Precompiled Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Apollo.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/Apollo.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/5DFD17C4-8B90-3B64-845C-E99E57915AE7.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/BFB8FC61-C476-3100-AE52-DD9476500F10.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ApolloWebSocket.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/ApolloWebSocket.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/3A78B95A-213B-38EA-AF06-2AA6697116D2.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/782F90CF-EEEC-3F77-A8B6-B7928D7E7194.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/DynamicColor.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/13D7071F-E931-383B-B45C-330A8BBBBBA0.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/229EBE1E-6ED0-3F99-8A52-8E59D9441068.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flow.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/Flow.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/252C51D9-2A23-3992-86BA-E8A72046F3AB.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/D35F0A66-791E-30D7-A608-CC22E465BA7C.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlowFeedback.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/FlowFeedback.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/4EA4B823-9137-36B5-9603-311DDE6CDD0E.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/D183E43B-57EB-3BF0-9A43-58E345BD4A78.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Form.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/Form.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/7188B14B-13A1-35DB-B5BE-FAEAC29606A5.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/B68F1E41-857D-3C56-BB7C-2BB230E045E2.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Presentation.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/Presentation.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/39848607-3FA6-394D-9E0E-0171D792D685.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/F78C7614-98C9-390D-9CCE-57A6464970AE.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/SnapKit.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/736DFEA6-F963-305B-9F9D-3AF160EC404B.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/BC20F060-BCDF-3000-BBC1-26BC6475037D.bcsymbolmap",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/Starscream.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/50870630-CCFA-3631-93D0-7837BFD3F005.bcsymbolmap",
+				"${BUILT_PRODUCTS_DIR}/71B533B0-2816-3741-B20C-1252E7157CBA.bcsymbolmap",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\nset -e\nset -u\nset -o pipefail\n\nfunction on_error {\n  echo \"$(realpath -mq \"${0}\"):$1: error: Unexpected failure\"\n}\ntrap 'on_error $LINENO' ERR\n\nif [ -z ${FRAMEWORKS_FOLDER_PATH+x} ]; then\n  # If FRAMEWORKS_FOLDER_PATH is not set, then there's nowhere for us to copy\n  # frameworks to, so exit 0 (signalling the script phase was successful).\n  exit 0\nfi\n\necho \"mkdir -p ${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\nmkdir -p \"${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n\nSWIFT_STDLIB_PATH=\"${DT_TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"\n# Used as a return value for each invocation of `strip_invalid_archs` function.\nSTRIP_BINARY_RETVAL=0\n# This protects against multiple targets copying the same framework dependency at the same time. The solution\n# was originally proposed here: https://lists.samba.org/archive/rsync/2008-February/020158.html\nRSYNC_PROTECT_TMP_FILES=(--filter \"P .*.??????\")\n# Copies and strips a vendored framework\ninstall_framework()\n{\n  if [ -r \"${BUILT_PRODUCTS_DIR}/$1\" ]; then\n    local source=\"${BUILT_PRODUCTS_DIR}/$1\"\n  elif [ -r \"${BUILT_PRODUCTS_DIR}/$(basename \"$1\")\" ]; then\n    local source=\"${BUILT_PRODUCTS_DIR}/$(basename \"$1\")\"\n  elif [ -r \"$1\" ]; then\n    local source=\"$1\"\n  fi\n  local destination=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\n  if [ -L \"${source}\" ]; then\n    echo \"Symlinked...\"\n    source=\"$(readlink \"${source}\")\"\n  fi\n  # Use filter instead of exclude so missing patterns don't throw errors.\n  echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${source}\\\" \\\"${destination}\\\"\"\n  rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${destination}\"\n  local basename\n  basename=\"$(basename -s .framework \"$1\")\"\n  binary=\"${destination}/${basename}.framework/${basename}\"\n  if ! [ -r \"$binary\" ]; then\n    binary=\"${destination}/${basename}\"\n  elif [ -L \"${binary}\" ]; then\n    echo \"Destination binary is symlinked...\"\n    dirname=\"$(dirname \"${binary}\")\"\n    binary=\"${dirname}/$(readlink \"${binary}\")\"\n  fi\n  # Strip invalid architectures so \"fat\" simulator / device frameworks work on device\n  if [[ \"$(file \"$binary\")\" == *\"dynamically linked shared library\"* ]]; then\n    strip_invalid_archs \"$binary\"\n  fi\n  # Resign the code if required by the build settings to avoid unstable apps\n  code_sign_if_enabled \"${destination}/$(basename \"$1\")\"\n}\n\n\n# Copies and strips a vendored dSYM\ninstall_dsym() {\n  local source=\"$1\"\n  if [ -r \"$source\" ]; then\n    \n    # Copy the dSYM into a the targets temp dir.\n    echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${source}\\\" \\\"${DERIVED_FILES_DIR}\\\"\"\n    rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${source}\" \"${DERIVED_FILES_DIR}\"\n    \n    local basename\n    basename=\"$(basename -s .framework.dSYM \"$source\")\"\n    binary=\"${DERIVED_FILES_DIR}/${basename}.framework.dSYM/Contents/Resources/DWARF/${basename}\"\n    \n    # Strip invalid architectures so \"fat\" simulator / device frameworks work on device\n    if [[ \"$(file \"$binary\")\" == *\"Mach-O \"*\"dSYM companion\"* ]]; then\n      strip_invalid_archs \"$binary\"\n    fi\n    if [[ $STRIP_BINARY_RETVAL == 1 ]]; then\n      # Move the stripped file into its final destination.\n      echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \\\"- CVS/\\\" --filter \\\"- .svn/\\\" --filter \\\"- .git/\\\" --filter \\\"- .hg/\\\" --filter \\\"- Headers\\\" --filter \\\"- PrivateHeaders\\\" --filter \\\"- Modules\\\" \\\"${DERIVED_FILES_DIR}/${basename}.framework.dSYM\\\" \\\"${DWARF_DSYM_FOLDER_PATH}\\\"\"\n      rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${DERIVED_FILES_DIR}/${basename}.framework.dSYM\" \"${DWARF_DSYM_FOLDER_PATH}\"\n    else\n      # The dSYM was not stripped at all, in this case touch a fake folder so the input/output paths from Xcode do not reexecute this script because the file is missing.\n      touch \"${DWARF_DSYM_FOLDER_PATH}/${basename}.framework.dSYM\"\n    fi\n\n  fi\n}\n\n\n# Copies the bcsymbolmap files of a vendored framework\ninstall_bcsymbolmap() {\n    local bcsymbolmap_path=\"$1\"\n    local destination=\"${BUILT_PRODUCTS_DIR}\"\n    echo \"rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${bcsymbolmap_path}\" \"${destination}\"\"\n    rsync --delete -av \"${RSYNC_PROTECT_TMP_FILES[@]}\" --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${bcsymbolmap_path}\" \"${destination}\"\n}\n\n\n# Signs a framework with the provided identity\ncode_sign_if_enabled() {\n  if [ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" -a \"${CODE_SIGNING_REQUIRED:-}\" != \"NO\" -a \"${CODE_SIGNING_ALLOWED}\" != \"NO\" ]; then\n    # Use the current code_sign_identity\n    echo \"Code Signing $1 with Identity ${EXPANDED_CODE_SIGN_IDENTITY_NAME}\"\n    local code_sign_cmd=\"/usr/bin/codesign --force --sign ${EXPANDED_CODE_SIGN_IDENTITY} ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements '$1'\"\n    code_sign_cmd=\"$code_sign_cmd &\"\n    echo \"$code_sign_cmd\"\n    eval \"$code_sign_cmd\"\n  fi\n}\n\n\n# Strip invalid architectures\nstrip_invalid_archs() {\n  binary=\"$1\"\n  # Get architectures for current target binary\n  binary_archs=\"$(lipo -info \"$binary\" | rev | cut -d ':' -f1 | awk '{$1=$1;print}' | rev)\"\n  # Intersect them with the architectures we are building for\n  intersected_archs=\"$(echo ${ARCHS[@]} ${binary_archs[@]} | tr ' ' '\\n' | sort | uniq -d)\"\n  # If there are no archs supported by this binary then warn the user\n  if [[ -z \"$intersected_archs\" ]]; then\n    echo \"warning: [CP] Vendored binary '$binary' contains architectures ($binary_archs) none of which match the current build architectures ($ARCHS).\"\n    STRIP_BINARY_RETVAL=0\n    return\n  fi\n  stripped=\"\"\n  for arch in $binary_archs; do\n    if ! [[ \"${ARCHS}\" == *\"$arch\"* ]]; then\n      # Strip non-valid architectures in-place\n      lipo -remove \"$arch\" -output \"$binary\" \"$binary\"\n      stripped=\"$stripped $arch\"\n    fi\n  done\n  if [[ \"$stripped\" ]]; then\n    echo \"Stripped $binary of architectures:$stripped\"\n  fi\n  STRIP_BINARY_RETVAL=1\n}\ninstall_framework \"../../Carthage/Build/iOS/Apollo.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Apollo.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/5DFD17C4-8B90-3B64-845C-E99E57915AE7.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/BFB8FC61-C476-3100-AE52-DD9476500F10.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/ApolloWebSocket.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/ApolloWebSocket.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/3A78B95A-213B-38EA-AF06-2AA6697116D2.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/782F90CF-EEEC-3F77-A8B6-B7928D7E7194.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/DynamicColor.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/DynamicColor.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/13D7071F-E931-383B-B45C-330A8BBBBBA0.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/229EBE1E-6ED0-3F99-8A52-8E59D9441068.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Flow.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Flow.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/252C51D9-2A23-3992-86BA-E8A72046F3AB.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/D35F0A66-791E-30D7-A608-CC22E465BA7C.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/FlowFeedback.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/FlowFeedback.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/4EA4B823-9137-36B5-9603-311DDE6CDD0E.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/D183E43B-57EB-3BF0-9A43-58E345BD4A78.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Form.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Form.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/7188B14B-13A1-35DB-B5BE-FAEAC29606A5.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/B68F1E41-857D-3C56-BB7C-2BB230E045E2.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Presentation.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Presentation.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/39848607-3FA6-394D-9E0E-0171D792D685.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/F78C7614-98C9-390D-9CCE-57A6464970AE.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/SnapKit.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/SnapKit.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/736DFEA6-F963-305B-9F9D-3AF160EC404B.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/BC20F060-BCDF-3000-BBC1-26BC6475037D.bcsymbolmap\"\ninstall_framework \"../../Carthage/Build/iOS/Starscream.framework\"\ninstall_dsym \"../../Carthage/Build/iOS/Starscream.framework.dSYM\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/50870630-CCFA-3631-93D0-7837BFD3F005.bcsymbolmap\"\ninstall_bcsymbolmap \"../../Carthage/Build/iOS/71B533B0-2816-3741-B20C-1252E7157CBA.bcsymbolmap\"\n";
+		};
+		95548A6D995C17A0188403E3 /* Embed Precompiled Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Precompiled Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Skipping, nothing to be embedded.\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		69FE8A1A211DFE26085E67AE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		945D73034291EE3161CCF7D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6582F2C73205B599D032B2CB /* API.swift in Sources */,
+				EF3972C6640A6EB6907E8B09 /* Embark.swift in Sources */,
+				EBDD56356B3FE5C0601609FD /* EmbarkStore.swift in Sources */,
+				7C8CA9C672900E58B1BCE4C3 /* MessageBubble.swift in Sources */,
+				E29852A34E4149127038E7FC /* Action.swift in Sources */,
+				BE5A41CFD235F7D970336E5F /* EmbarkInput.swift in Sources */,
+				A292953858773AE9CB8CC1AE /* EmbarkNumberAction.swift in Sources */,
+				C04F8CE4B994CABB7383F715 /* EmbarkTextAction.swift in Sources */,
+				ED1DDD1EB779D91DB4BEF8C5 /* Masking.swift in Sources */,
+				4DEEFA66745FB6CE77059E1B /* EmbarkSelectAction.swift in Sources */,
+				2B3DFFD6FE9F736FBCCA8AF3 /* EmbarkSelectActionOption.swift in Sources */,
+				638CAB322DB11B02F2019E57 /* EmbarkMessages.swift in Sources */,
+				6828D9C6E731851F22CCE69B /* Passage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C73FA0AFE30B0E0973C7E01A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED2BDDC270969EB4ADF7DDE1 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC87A7073A6C1702082684A0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8E2C934C3458E93B2440AEF2 /* EmbarkTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5CB9239987E70FECC27F0381 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Embark;
+			target = 77181DF5659A08810F748596 /* Embark */;
+			targetProxy = 702E48837E06E63F27ABBA34 /* PBXContainerItemProxy */;
+		};
+		8A19A56E5A0F6DB3DF4A7ED4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Embark;
+			target = 77181DF5659A08810F748596 /* Embark */;
+			targetProxy = FBD41D624FECA03B0C56C78F /* PBXContainerItemProxy */;
+		};
+		DBDE36F5FBBC72A0C0134507 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Embark;
+			target = 77181DF5659A08810F748596 /* Embark */;
+			targetProxy = 4D1F6E66718BCAFD09667D1D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		03827A3CE3F193070345CA4F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 641EB961402F01912794585C /* iOS-Base.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Derived/InfoPlists/EmbarkTests.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.EmbarkTests;
+				PRODUCT_NAME = EmbarkTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		28E77A5BBF5EBC5E25D94199 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F64B6A847CFCB2CD0B3F2818 /* Release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		3E62DB1B6CE078C340E6A168 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 641EB961402F01912794585C /* iOS-Base.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Derived/InfoPlists/EmbarkTests.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.EmbarkTests;
+				PRODUCT_NAME = EmbarkTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4DD7A1C5080EF88AF800E016 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 641EB961402F01912794585C /* iOS-Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = Derived/InfoPlists/EmbarkExample.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.EmbarkExample;
+				PRODUCT_NAME = EmbarkExample;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6E555FCB76A29DA1D6A710B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 269C5B889968F7EC81F8FDB0 /* Debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8351699A38636B634B428E74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A070849974D029F44DF3D0FD /* iOS-Framework.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = Derived/InfoPlists/EmbarkTesting.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.EmbarkTesting;
+				PRODUCT_NAME = EmbarkTesting;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A287752FD0EAE31E0B0417CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A070849974D029F44DF3D0FD /* iOS-Framework.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = Derived/InfoPlists/EmbarkTesting.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.EmbarkTesting;
+				PRODUCT_NAME = EmbarkTesting;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		C8188FCF8941327102DF9D46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A070849974D029F44DF3D0FD /* iOS-Framework.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = Derived/InfoPlists/Embark.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.Embark;
+				PRODUCT_NAME = Embark;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		CA180102BE062DD7DDE32FFA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A070849974D029F44DF3D0FD /* iOS-Framework.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = Derived/InfoPlists/Embark.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.Embark;
+				PRODUCT_NAME = Embark;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E82712C5335937625929D1E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 641EB961402F01912794585C /* iOS-Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = Derived/InfoPlists/EmbarkExample.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hedvig.EmbarkExample;
+				PRODUCT_NAME = EmbarkExample;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		178F15887BF8196B7EE3F18E /* Build configuration list for PBXProject "Embark" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6E555FCB76A29DA1D6A710B7 /* Debug */,
+				28E77A5BBF5EBC5E25D94199 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5F707D5B917942DAC2C553EE /* Build configuration list for PBXNativeTarget "EmbarkTesting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8351699A38636B634B428E74 /* Debug */,
+				A287752FD0EAE31E0B0417CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		826F5E73C7D55C8755E6E862 /* Build configuration list for PBXNativeTarget "Embark" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA180102BE062DD7DDE32FFA /* Debug */,
+				C8188FCF8941327102DF9D46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9A70A34B1FF279A160067138 /* Build configuration list for PBXNativeTarget "EmbarkExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E82712C5335937625929D1E9 /* Debug */,
+				4DD7A1C5080EF88AF800E016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B1F8C196E3D97CE0107985A9 /* Build configuration list for PBXNativeTarget "EmbarkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03827A3CE3F193070345CA4F /* Debug */,
+				3E62DB1B6CE078C340E6A168 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E4B8CDE40E36ED1D09F258DE /* Project object */;
+}

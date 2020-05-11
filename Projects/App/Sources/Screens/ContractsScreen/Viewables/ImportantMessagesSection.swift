@@ -11,6 +11,7 @@ import Form
 import Foundation
 import SafariServices
 import UIKit
+import Core
 
 struct ImportantMessagesSection {
     let presentingViewController: UIViewController

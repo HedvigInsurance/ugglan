@@ -8,7 +8,8 @@
 import Flow
 import Foundation
 import UIKit
-
+import Core
+ 
 struct RecordButton {
     let isRecordingSignal = ReadWriteSignal(false)
 }

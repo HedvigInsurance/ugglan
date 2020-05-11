@@ -12,6 +12,7 @@ import Foundation
 import Presentation
 import UIKit
 import WatchConnectivity
+import Core
 
 struct KeyGearOverview {
     @Inject var client: ApolloClient

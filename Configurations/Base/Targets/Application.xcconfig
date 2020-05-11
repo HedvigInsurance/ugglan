@@ -4,6 +4,12 @@
 // instead.
 //
 
+// Firebase requires this
+OTHER_LDFLAGS = -ObjC
+
+// Auto set to our development team to ease building the app
+DEVELOPMENT_TEAM = AW656G5PFM
+
 // Whether to strip out code that isn't called from anywhere
 DEAD_CODE_STRIPPING = NO
 

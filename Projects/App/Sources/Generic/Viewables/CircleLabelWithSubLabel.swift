@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct CircleLabelWithSubLabel {
     let labelText: DynamicString

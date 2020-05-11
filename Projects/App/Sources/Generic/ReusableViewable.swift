@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct ReusableDisposableViewable<View: Viewable>: Reusable where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Disposable {
     let viewable: View

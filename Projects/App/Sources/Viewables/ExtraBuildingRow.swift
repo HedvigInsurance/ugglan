@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct ExtraBuildingRow {
     let data: ReadWriteSignal<ExtraBuildingFragment>

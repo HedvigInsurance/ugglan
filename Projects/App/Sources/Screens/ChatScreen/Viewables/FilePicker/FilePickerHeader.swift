@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Photos
 import UIKit
+import Core
 
 struct FilePickerHeader {
     let uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()

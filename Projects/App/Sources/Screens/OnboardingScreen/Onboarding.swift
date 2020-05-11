@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Core
 
 struct Onboarding {}
 
@@ -18,7 +19,7 @@ extension Onboarding: Presentable {
         
         switch Localization.Locale.currentLocale.market {
         case .se:
-            return Embark(name: "Web Onboarding - Swedish Needer").materialize()
+            return OnboardingChat().materialize()
         case .no:
             return WebOnboarding().materialize()
         }

@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import Core
 
 struct AttachGIFPane {
     let isOpenSignal: ReadWriteSignal<Bool>

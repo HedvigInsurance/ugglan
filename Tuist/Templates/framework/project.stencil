@@ -1,4 +1,15 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.framework(name: "{{ name }}", platform: .{{ platform }}, dependencies: [])
+let project = Project.framework(
+    name: "{{ name }}",
+    targets: Set([
+       .framework,
+       .tests,
+       .example,
+       .testing
+    ]),
+    dependencies: [],
+    sdks: [],
+    includesGraphQL: true
+)

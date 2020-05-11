@@ -12,6 +12,7 @@ import Form
 import Presentation
 import SwiftUI
 import UIKit
+import Core
 
 struct About {
     @Inject var client: ApolloClient

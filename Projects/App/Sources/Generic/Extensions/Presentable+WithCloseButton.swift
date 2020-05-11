@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import Core
 
 enum CloseButtonError: Error {
     case cancelled

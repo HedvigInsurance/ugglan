@@ -8,6 +8,7 @@
 import Foundation
 import Flow
 import UIKit
+import hCore
 
 struct Passage {
     let store: EmbarkStore
@@ -64,7 +65,6 @@ extension Passage: Viewable {
         
         return (view, Signal { callback in
             bag += view.addArranged(action).onValue(callback)
-            
             return bag
         })
     }

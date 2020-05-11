@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import Core
 
 extension UIBarButtonItem {
     convenience init<V: Viewable, View: UIView>(viewable: V, onCreate: @escaping (_ view: View) -> Void = { _ in }) where

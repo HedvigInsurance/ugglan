@@ -9,6 +9,7 @@
 import Flow
 import Foundation
 import UIKit
+import Core
 
 struct Localization {
     enum Locale: String, CaseIterable {

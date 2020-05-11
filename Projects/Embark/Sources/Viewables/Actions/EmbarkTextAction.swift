@@ -9,6 +9,8 @@ import Foundation
 import Flow
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 typealias EmbarkTextActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction
 
