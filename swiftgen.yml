@@ -3,7 +3,7 @@ xcassets:
     - Projects/App/Resources/Assets.xcassets
   outputs:
     templateName: swift4
-    output: Projects/App/Sources/Assets/Assets.swift
+    output: Projects/App/Sources/Derived/Assets.swift
 xcassets:
     inputs:
       - Projects/hCoreUI/Resources/Assets.xcassets
@@ -18,4 +18,4 @@ strings:
     - Projects/App/Resources/en-SE.lproj/Localizable.strings
   outputs:
     templatePath: swiftgen/localization.stencil
-    output: Projects/App/Sources/Assets/Strings.swift
+    output: Projects/App/Sources/Derived/Strings.swift

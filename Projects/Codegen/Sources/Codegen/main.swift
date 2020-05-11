@@ -28,8 +28,7 @@ do {
 let sourceUrls = [
     sourceRootURL
     .appendingPathComponent("App")
-    .appendingPathComponent("Sources")
-    .appendingPathComponent("Data"),
+    .appendingPathComponent("GraphQL"),
     sourceRootURL
     .appendingPathComponent("Embark")
     .appendingPathComponent("GraphQL")
@@ -37,7 +36,12 @@ let sourceUrls = [
 
 sourceUrls.forEach { sourceUrl in
     let codegenOptions = ApolloCodegenOptions(
-        outputFormat: .singleFile(atFileURL: sourceUrl.appendingPathComponent("API.swift")),
+        outputFormat: .singleFile(atFileURL: sourceUrl
+            .appendingPathComponent("../")
+            .appendingPathComponent("Sources")
+            .appendingPathComponent("Derived")
+            .appendingPathComponent("API.swift")
+        ),
         urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
     )
 
