@@ -39,6 +39,9 @@ extension MyPayment: Presentable {
             form.alpha = 1
             form.transform = CGAffineTransform.identity
         }
+        
+        let failedChargesSpacing = Spacing(height: 20)
+        failedChargesSpacing.isHiddenSignal.value = true
 
         bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious { failedCharges, nextPayment in
             let innerbag = DisposeBag()
@@ -56,6 +59,14 @@ extension MyPayment: Presentable {
 
         let updatingMessageSectionSpacing = Spacing(height: 20)
         updatingMessageSectionSpacing.isHiddenSignal.value = true
+        
+        bag += failedChargesSignalData.onValue({ failedCharges in
+            if failedCharges != nil {
+                failedChargesSpacing.isHiddenSignal.value = false
+            }
+        })
+        
+        bag += form.prepend(failedChargesSpacing)
 
         bag += form.append(updatingMessageSectionSpacing)
 
