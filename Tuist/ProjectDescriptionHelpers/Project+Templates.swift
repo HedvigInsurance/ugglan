@@ -36,8 +36,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .firebase:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Crashlytics.framework"),
-                .framework(path: "../../Carthage/Build/iOS/Fabric.framework"),
+                .framework(path: "../../Carthage/Build/iOS/FirebaseCrashlytics.framework"),
                 .framework(path: "../../Carthage/Build/iOS/GoogleUtilities.framework"),
                 .framework(path: "../../Carthage/Build/iOS/GoogleAppMeasurement.framework"),
                 .framework(path: "../../Carthage/Build/iOS/Protobuf.framework"),
@@ -69,8 +68,7 @@ public enum ExternalDependencies: CaseIterable {
         case .apollo:
             return [
                 .framework(path: "../../Carthage/Build/iOS/Apollo.framework"),
-                .framework(path: "../../Carthage/Build/iOS/ApolloWebSocket.framework"),
-                .framework(path: "../../Carthage/Build/iOS/Starscream.framework"),
+                .framework(path: "../../Carthage/Build/iOS/ApolloWebSocket.framework")
             ]
         case .flow:
             return [
