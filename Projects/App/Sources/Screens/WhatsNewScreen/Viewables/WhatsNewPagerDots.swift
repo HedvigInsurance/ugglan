@@ -9,7 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
 
 struct WhatsNewPagerDots {
     let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)

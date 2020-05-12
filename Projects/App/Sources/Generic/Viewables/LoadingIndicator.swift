@@ -11,7 +11,7 @@ import Form
 import Foundation
 import SnapKit
 import UIKit
-import Core
+import hCore
 
 struct LoadingIndicator {
     let showAfter: TimeInterval

@@ -10,7 +10,7 @@ import Form
 import Foundation
 import Kingfisher
 import UIKit
-import Core
+import hCore
 
 struct KeyGearListItem {
     let id: String

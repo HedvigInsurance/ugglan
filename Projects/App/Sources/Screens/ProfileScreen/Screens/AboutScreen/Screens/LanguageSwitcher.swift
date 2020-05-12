@@ -11,7 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")

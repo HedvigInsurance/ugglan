@@ -8,7 +8,7 @@
 import Flow
 import Foundation
 import UIKit
-import Core
+import hCore
 
 struct AttachGIFButton {
     let isOpenSignal: ReadSignal<Bool>

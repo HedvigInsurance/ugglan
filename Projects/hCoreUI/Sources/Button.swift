@@ -75,7 +75,7 @@ public enum ButtonType {
         }
     }
 
-    var backgroundColor: UIColor {
+    public var backgroundColor: UIColor {
         switch self {
         case let .standard(backgroundColor, _):
             return backgroundColor
@@ -121,7 +121,7 @@ public enum ButtonType {
         }
     }
 
-    var height: CGFloat {
+    public var height: CGFloat {
         switch self {
         case .standard, .standardIcon, .standardOutline:
             return 50
@@ -155,7 +155,7 @@ public enum ButtonType {
         }
     }
 
-    var extraWidthOffset: CGFloat {
+    public var extraWidthOffset: CGFloat {
         switch self {
         case .standard, .standardIcon, .standardOutline:
             return 50
@@ -257,9 +257,9 @@ extension Button: Equatable {
     }
 }
 
-var buttonTrackingHandler: (_ button: Button) -> Void = { _ in }
-
 extension Button: Viewable {
+    public static var trackingHandler: (_ button: Button) -> Void = { _ in }
+
     public func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
 
@@ -444,7 +444,7 @@ extension Button: Viewable {
             )
 
         bag += touchUpInside.onValue { _ in
-            buttonTrackingHandler(self)
+            Button.trackingHandler(self)
         }
 
         bag += merge(

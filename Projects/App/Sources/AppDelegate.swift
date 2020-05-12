@@ -19,7 +19,8 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
-import Core
+import hCore
+import hCoreUI
 
 let log = Logger.self
 
@@ -225,8 +226,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         
-        buttonTrackingHandler = { button in
-            if let localizationKey = button.title.derivedFromL10n?.key {
+        Button.trackingHandler = { button in
+            if let localizationKey = button.title.value.derivedFromL10n?.key {
                 Analytics.logEvent(localizationKey, parameters: [
                     "context": "Button",
                 ])

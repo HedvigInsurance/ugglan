@@ -9,7 +9,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct ImageWithOptions {
     let image: UIImage

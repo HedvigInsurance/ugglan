@@ -9,7 +9,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 /// A row that the user can edit
 /// Signal emits everytime save is clicked

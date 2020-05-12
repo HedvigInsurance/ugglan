@@ -8,7 +8,7 @@
 import Flow
 import Foundation
 import UIKit
-import Core
+import hCore
 
 class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     private let originView: UIView

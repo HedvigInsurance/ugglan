@@ -8,7 +8,8 @@
 import Flow
 import Form
 import Foundation
-import Core
+import hCore
+import hCoreUI
 
 struct KeyGearCoverage {
     let type: CoverageType

@@ -9,7 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
 
 extension CGSize {
     func append(inset: UIEdgeInsets) -> CGSize {

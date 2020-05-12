@@ -11,7 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
 
 struct MyInfoRow {
     let nameSignal = ReadWriteSignal<(firstName: String, lastName: String)?>(nil)

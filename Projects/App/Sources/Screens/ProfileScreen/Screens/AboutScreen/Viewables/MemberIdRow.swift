@@ -11,7 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
 
 struct MemberIdRow {
     @Inject var client: ApolloClient

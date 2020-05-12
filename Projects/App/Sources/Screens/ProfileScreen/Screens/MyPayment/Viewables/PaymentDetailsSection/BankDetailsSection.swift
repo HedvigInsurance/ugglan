@@ -10,7 +10,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Core
+import hCore
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient

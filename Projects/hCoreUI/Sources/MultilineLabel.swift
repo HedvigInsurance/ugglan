@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
 
 public struct MultilineLabel {
     public let styledTextSignal: ReadWriteSignal<StyledText>

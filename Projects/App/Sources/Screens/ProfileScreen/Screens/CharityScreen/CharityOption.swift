@@ -11,6 +11,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCoreUI
 
 struct CharityOption {
     let id: GraphQLID

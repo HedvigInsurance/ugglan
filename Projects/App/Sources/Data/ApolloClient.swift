@@ -12,7 +12,7 @@ import Disk
 import Flow
 import Foundation
 import UIKit
-import Core
+import hCore
 
 struct ApolloEnvironmentConfig {
     let endpointURL: URL

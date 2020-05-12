@@ -10,7 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
 
 class ChatState {
     private let bag = DisposeBag()

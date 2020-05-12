@@ -13,7 +13,8 @@ import Foundation
 import PassKit
 import Presentation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct AdyenSetup {
     @Inject var client: ApolloClient

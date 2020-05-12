@@ -11,6 +11,7 @@ import Foundation
 import Kingfisher
 import Photos
 import UIKit
+import hCoreUI
 
 struct AttachFileAsset: Reusable {
     let asset: PHAsset

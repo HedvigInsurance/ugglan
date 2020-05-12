@@ -8,7 +8,8 @@
 import Flow
 import Foundation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 public struct LoadableButton {
     let button: Button

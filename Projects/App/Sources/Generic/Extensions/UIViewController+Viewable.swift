@@ -9,7 +9,7 @@
 import Flow
 import Foundation
 import UIKit
-import Core
+import hCore
 
 extension UIViewController {
     func install<V: Viewable, View: UIView>(

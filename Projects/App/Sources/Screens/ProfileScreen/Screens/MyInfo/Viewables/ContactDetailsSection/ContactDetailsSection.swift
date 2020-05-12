@@ -9,7 +9,7 @@
 import Flow
 import Form
 import Foundation
-import Core
+import hCore
 
 struct ContactDetailsSection {
     let state: MyInfoState

@@ -9,7 +9,7 @@ import Apollo
 import Firebase
 import Flow
 import Foundation
-import Core
+import hCore
 
 public struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient

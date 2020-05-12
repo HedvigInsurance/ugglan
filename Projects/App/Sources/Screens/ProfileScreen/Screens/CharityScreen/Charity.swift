@@ -12,7 +12,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
 
 struct Charity {
     @Inject var client: ApolloClient

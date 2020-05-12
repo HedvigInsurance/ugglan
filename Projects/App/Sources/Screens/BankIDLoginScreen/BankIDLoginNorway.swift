@@ -11,7 +11,7 @@ import Foundation
 import Presentation
 import UIKit
 import WebKit
-import Core
+import hCore
 
 struct BankIDLoginNorway {
     @Inject var client: ApolloClient

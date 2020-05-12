@@ -12,7 +12,8 @@ import Foundation
 import Presentation
 import StoreKit
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct Welcome {
     let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>

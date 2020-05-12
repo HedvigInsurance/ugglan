@@ -11,6 +11,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 enum MessageType {
     case received, replied

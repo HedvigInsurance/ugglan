@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-import Core
+import hCore
 import Flow
 
 final class ViewableTests: XCTestCase {

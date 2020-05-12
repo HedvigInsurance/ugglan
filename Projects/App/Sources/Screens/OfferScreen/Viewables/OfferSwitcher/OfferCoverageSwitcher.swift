@@ -10,7 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct OfferCoverageSwitcher {
     @Inject var client: ApolloClient

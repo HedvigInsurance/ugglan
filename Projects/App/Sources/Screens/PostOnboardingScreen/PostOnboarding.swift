@@ -11,7 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct PostOnboarding {
     @Inject var client: ApolloClient

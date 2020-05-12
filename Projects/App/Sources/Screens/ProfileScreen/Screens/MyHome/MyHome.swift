@@ -10,8 +10,9 @@ import Flow
 import Form
 import Presentation
 import UIKit
-import Core
-import Core
+import hCore
+import hCore
+import hCoreUI
 
 struct MyHome {
     @Inject var client: ApolloClient

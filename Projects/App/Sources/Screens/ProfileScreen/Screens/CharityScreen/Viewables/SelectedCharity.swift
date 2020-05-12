@@ -11,8 +11,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
-import Core
+import hCore
+import hCoreUI
 
 struct SelectedCharity {
     @Inject var client: ApolloClient

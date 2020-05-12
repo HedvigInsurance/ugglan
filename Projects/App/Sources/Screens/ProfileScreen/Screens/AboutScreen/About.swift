@@ -12,7 +12,8 @@ import Form
 import Presentation
 import SwiftUI
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct About {
     @Inject var client: ApolloClient

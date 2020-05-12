@@ -11,7 +11,8 @@ import Form
 import Presentation
 import SnapKit
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct Marketing {
     @Inject var client: ApolloClient

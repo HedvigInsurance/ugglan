@@ -9,7 +9,7 @@ import Flow
 import FlowFeedback
 import Foundation
 import UIKit
-import Core
+import hCore
 
 public struct ChatButton {
     let presentingViewController: UIViewController

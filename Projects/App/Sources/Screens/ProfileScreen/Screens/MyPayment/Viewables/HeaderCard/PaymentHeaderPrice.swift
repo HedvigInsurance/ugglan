@@ -10,7 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
 
 struct PaymentHeaderPrice {
     let grossPriceSignal: ReadSignal<Int>

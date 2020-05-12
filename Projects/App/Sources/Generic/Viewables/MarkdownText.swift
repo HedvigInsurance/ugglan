@@ -10,7 +10,7 @@ import Form
 import Foundation
 import MarkdownKit
 import UIKit
-import Core
+import hCore
 
 struct MarkdownText {
     let textSignal: ReadWriteSignal<String>

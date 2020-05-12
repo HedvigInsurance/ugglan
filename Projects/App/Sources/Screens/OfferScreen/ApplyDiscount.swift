@@ -12,7 +12,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct ApplyDiscount {
     @Inject var client: ApolloClient

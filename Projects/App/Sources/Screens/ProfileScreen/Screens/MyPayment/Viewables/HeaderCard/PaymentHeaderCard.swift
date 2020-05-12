@@ -10,8 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
-import Core
+import hCore
+import hCore
 
 struct PaymentHeaderCard {
     @Inject var client: ApolloClient

@@ -9,7 +9,8 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct HonestyPledge {
     enum PushNotificationsAction {

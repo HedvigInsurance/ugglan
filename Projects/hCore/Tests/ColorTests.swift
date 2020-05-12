@@ -9,7 +9,7 @@
 import Foundation
 import XCTest
 import UIKit
-import Core
+import hCore
 
 final class ColorTests: XCTestCase {
     func testHedvigColors() {

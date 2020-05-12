@@ -10,7 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
-import Core
+import hCore
+import hCoreUI
 
 struct ApolloMultilineLabel<Query: GraphQLQuery> {
     let query: Query

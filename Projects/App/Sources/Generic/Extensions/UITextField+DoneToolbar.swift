@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import hCoreUI
 
 extension UITextField {
     func addDoneToolbar() -> Disposable {
