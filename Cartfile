@@ -1,6 +1,6 @@
 github "dennisweissmann/DeviceKit" ~> 2.0
 github "yannickl/DynamicColor" == 4.2.1
-github "apollographql/apollo-ios" == 0.15.1
+github "apollographql/apollo-ios" == 0.27.1
 github "saoudrizwan/Disk" == 0.6.3
 github "hedviginsurance/flow" "master"
 github "hedviginsurance/presentation" "master"

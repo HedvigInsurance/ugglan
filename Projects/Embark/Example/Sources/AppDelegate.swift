@@ -25,11 +25,11 @@ extension ApolloClient {
 
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
 
-        let session = URLSession(configuration: configuration)
+        let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
         
         let httpNetworkTransport = HTTPNetworkTransport(
             url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-            session: session
+            client: urlSessionClient
         )
 
         let websocketNetworkTransport = WebSocketTransport(

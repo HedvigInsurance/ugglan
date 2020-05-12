@@ -41,12 +41,12 @@ extension ApolloClient {
         let configuration = URLSessionConfiguration.default
 
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
-
-        let session = URLSession(configuration: configuration)
+        
+        let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
 
         let httpNetworkTransport = HTTPNetworkTransport(
             url: environment.endpointURL,
-            session: session
+            client: urlSessionClient
         )
 
         let websocketNetworkTransport = WebSocketTransport(
