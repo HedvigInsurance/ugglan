@@ -16,11 +16,9 @@
 
    `tuist up`
 
-4. Run tuist generate
+4. Run tuist focus
 
-   `tuist generate`
-
-5. Open Ugglan.xcworkspace 🚀
+   `tuist focus`
 
 ## How to release
 
