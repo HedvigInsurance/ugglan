@@ -11,8 +11,8 @@ import UIKit
 
 class FontBundleToken {}
 
-struct Fonts {
-    static var favoritStdBook: UIFont = {
+public struct Fonts {
+    public static var favoritStdBook: UIFont = {
         let fontPath = Bundle(for: FontBundleToken.self).path(
             forResource: "FavoritStd-Book",
             ofType: "otf"

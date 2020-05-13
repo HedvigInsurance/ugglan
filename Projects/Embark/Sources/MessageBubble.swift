@@ -87,12 +87,8 @@ extension MessageBubble: Viewable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = messageType == .replied ? .brand(.primaryButtonBackgroundColor) : .brand(.primaryBackground())
-        stylingView.layer.cornerRadius = 30
-
-        bag += merge(stylingView.didMoveToWindowSignal, stylingView.didLayoutSignal).onValue { _ in
-            stylingView.layer.cornerRadius = min(stylingView.frame.height / 2, 20)
-        }
+        stylingView.backgroundColor = .brand(.secondaryBackground(messageType == .replied))
+        stylingView.layer.cornerRadius = 10
         
         if messageType == .replied {
             bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in

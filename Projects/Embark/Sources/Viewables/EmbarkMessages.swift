@@ -15,6 +15,7 @@ struct EmbarkMessages {
     let dataSignal: ReadSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage.Message]?>
     let responseSignal: ReadSignal<ResponseFragment?>
     let goBackSignal: ReadWriteSignal<Bool>
+    let passageNameSignal: ReadSignal<String?>
 }
 
 extension EmbarkMessages: Viewable {
@@ -75,19 +76,23 @@ extension EmbarkMessages: Viewable {
         view.spacing = 10
         let bag = DisposeBag()
         
-        let previousResponseSignal: ReadWriteSignal<ResponseFragment?> = ReadWriteSignal(nil)
+        let previousResponseSignal: ReadWriteSignal<(response: ResponseFragment?, passageName: String?)?> = ReadWriteSignal(nil)
         
         let animatedResponseSignal: Signal = dataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
             if self.goBackSignal.value == false {
-                if let singleMessage = previousResponse?.asEmbarkMessage {
+                if let singleMessage = previousResponse?.response?.asEmbarkMessage {
                     let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
                     let responseText = self.replacePlaceholders(message: msgText ?? "")
                     
                     let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                     bag += view.addArranged(messageBubble)
+                } else if let passageName = previousResponse?.passageName {
+                    let responseText = self.replacePlaceholders(message: "{\(passageName)Result}")
+                    let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
+                    bag += view.addArranged(messageBubble)
                 }
             }
-            previousResponseSignal.value = self.responseSignal.value
+            previousResponseSignal.value = (self.responseSignal.value, self.passageNameSignal.value)
         })
         
         let animateOutSignal: Signal = animatedResponseSignal.animated(style: .lightBounce(), animations: { _ in
@@ -115,17 +120,6 @@ extension EmbarkMessages: Viewable {
             if self.goBackSignal.value == true {
                 self.goBackSignal.value = false
             }
-            
-            /*for (index, stackedMessage) in view.subviews.enumerated() {
-                stackedMessage.transform = CGAffineTransform.identity
-                stackedMessage.transform = CGAffineTransform(translationX: 0, y: 40)
-                stackedMessage.alpha = 0
-               
-                innerBag += Signal(after: 0.1+Double(index)*0.1).animated(style: .lightBounce(), animations: { _ in
-                    stackedMessage.transform = CGAffineTransform.identity
-                    stackedMessage.alpha = 1
-                })
-           }*/
             
            return innerBag
         }

@@ -85,7 +85,6 @@ extension Embark: Presentable {
         }
         
         bag += client.fetch(query: EmbarkStoryQuery(name: name)).onValue { data in
-            print(data)
             passagesSignal.value = data.data?.embarkStory?.passages ?? []
             
             let startPassageId = data.data?.embarkStory?.startPassage

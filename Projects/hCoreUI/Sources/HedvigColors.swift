@@ -83,12 +83,12 @@ public extension UIColor {
             case let .secondaryBackground(negative):
                 if negative {
                     return UIColor(dynamic: { trait -> UIColor in
-                        trait.userInterfaceStyle == .dark ? BrandColorBase.almostBlack.lighter(amount: 0.10) : BrandColorBase.white
+                        trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.almostBlack.lighter(amount: 0.10)
                     })
                 }
                 
                 return UIColor(dynamic: { trait -> UIColor in
-                    trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.almostBlack.lighter(amount: 0.10)
+                    trait.userInterfaceStyle == .dark ?  BrandColorBase.almostBlack.lighter(amount: 0.10) : BrandColorBase.white
                 })
             case let .primaryText(negative):
                 if negative {

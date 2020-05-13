@@ -30,7 +30,8 @@ extension Passage: Viewable {
             store: store,
             dataSignal: dataSignal.map { $0?.messages },
             responseSignal: dataSignal.map { $0?.response.fragments.responseFragment },
-            goBackSignal: goBackSignal
+            goBackSignal: goBackSignal,
+            passageNameSignal: dataSignal.map { $0?.name }
         )
         bag += view.addArranged(embarkMessages)
         

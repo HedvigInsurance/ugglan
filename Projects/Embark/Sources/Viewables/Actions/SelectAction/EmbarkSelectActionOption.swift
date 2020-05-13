@@ -40,6 +40,7 @@ extension EmbarkSelectActionOption: Viewable {
         stackView.spacing = 6
         stackView.layoutMargins = UIEdgeInsets(top: 15, left: 10, bottom: 15, right: 10)
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.insetsLayoutMarginsFromSafeArea = false
         control.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in

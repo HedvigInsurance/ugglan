@@ -17,6 +17,7 @@ typealias EmbarkNumberActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Act
 struct EmbarkNumberAction {
     let store: EmbarkStore
     let data: EmbarkNumberActionData
+    let passageName: String?
 }
 
 extension EmbarkNumberAction: Viewable {
@@ -73,7 +74,9 @@ extension EmbarkNumberAction: Viewable {
             bag += button.onTapSignal.withLatestFrom(textSignal.plain()).onValue { _, textValue in
                 let key = self.data.numberActionData.key
                 self.store.setValue(key: key, value: textValue)
-                //self.store.setValue(key: (self.passageName ?? result.key) + "Result", value: result.textValue)
+                if let passageName = self.passageName {
+                    self.store.setValue(key: "\(passageName)Result", value: textValue)
+                }
                 callback(self.data.numberActionData.link.fragments.embarkLinkFragment)
             }
                         

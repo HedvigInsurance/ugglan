@@ -10,6 +10,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 import SnapKit
 
 struct EmbarkInput {
@@ -40,7 +41,6 @@ extension EmbarkInput: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
-        view.backgroundColor = .brand(.primaryBackground())
         
         let paddingView = UIStackView()
         paddingView.isUserInteractionEnabled = true
@@ -56,7 +56,7 @@ extension EmbarkInput: Viewable {
         let textField = UITextField()
         textField.textAlignment = .center
         textField.tintColor = .brand(.primaryTintColor)
-        //textField.font = HedvigFonts.favoritStdBook?.withSize(38)
+        textField.font = Fonts.favoritStdBook.withSize(38)
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
 
@@ -70,22 +70,13 @@ extension EmbarkInput: Viewable {
 
         let placeholderLabel = UILabel(value: placeholder.value, style: TextStyle.bodyBold.colored(.lightGray).resized(to: 38))
         placeholderLabel.textAlignment = .center
-        //paddingView.addSubview(placeholderLabel)
-
-        /*bag += placeholder.map { Optional($0) }.bindTo(
-            transition: placeholderLabel,
-            style: .crossDissolve(duration: 0.25),
-            placeholderLabel,
-            \.text
-        )*/
-
-        /*placeholderLabel.snp.makeConstraints { make in
-            make.centerY.centerX.equalToSuperview()
-            make.width.equalToSuperview()
-        }*/
-
+        
         bag += textField.atOnce().onValue { value in
             placeholderLabel.alpha = value.isEmpty ? 1 : 0
+        }
+        
+        bag += textField.didMoveToWindowSignal.delay(by: 0.5).onValue { _ in
+            textField.becomeFirstResponder()
         }
 
         bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
