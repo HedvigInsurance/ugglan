@@ -18,21 +18,24 @@ struct EmbarkInput {
     let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
     let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
     let enabledSignal: ReadWriteSignal<Bool>
-    let shouldReturn = Delegate<(String, UITextField), Bool>()
+    let shouldReturn = Delegate<String, Bool>()
     let insets: UIEdgeInsets
+    let allowedCharacters: CharacterSet
 
     init(
         placeholder: String,
         keyboardTypeSignal: UIKeyboardType? = nil,
         textContentType: UITextContentType? = nil,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
-        enabled: Bool = true
+        enabled: Bool = true,
+        allowedCharacters: CharacterSet = CharacterSet.alphanumerics
     ) {
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
         self.keyboardTypeSignal = ReadWriteSignal(keyboardTypeSignal)
         textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
+        self.allowedCharacters = allowedCharacters
     }
 }
 
@@ -81,6 +84,14 @@ extension EmbarkInput: Viewable {
 
         bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
             textField.becomeFirstResponder()
+        }
+        
+        bag += textField.distinct().onValue({ value in
+            textField.value = value.components(separatedBy: self.allowedCharacters.inverted).joined()
+        })
+        
+        bag += textField.shouldReturn.set { value -> Bool in
+            return self.shouldReturn.call(value) ?? false
         }
         
         return (view, Signal { callback in
