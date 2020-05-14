@@ -24,7 +24,7 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    
+
     public func targetDependencies() -> [TargetDependency] {
         switch self {
         case .adyen:
@@ -59,7 +59,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .fb:
             return [
-                .framework(path: "../../Carthage/Build/iOS/FBSDKCoreKit.framework")
+                .framework(path: "../../Carthage/Build/iOS/FBSDKCoreKit.framework"),
             ]
         case .kingfisher:
             return [
@@ -68,7 +68,7 @@ public enum ExternalDependencies: CaseIterable {
         case .apollo:
             return [
                 .framework(path: "../../Carthage/Build/iOS/Apollo.framework"),
-                .framework(path: "../../Carthage/Build/iOS/ApolloWebSocket.framework")
+                .framework(path: "../../Carthage/Build/iOS/ApolloWebSocket.framework"),
             ]
         case .flow:
             return [
@@ -107,9 +107,9 @@ public enum ExternalDependencies: CaseIterable {
                 .framework(path: "../../Carthage/Build/iOS/SnapKit.framework"),
             ]
         case .markdownkit:
-           return [
-               .framework(path: "../../Carthage/Build/iOS/MarkdownKit.framework"),
-           ]
+            return [
+                .framework(path: "../../Carthage/Build/iOS/MarkdownKit.framework"),
+            ]
         }
     }
 }
@@ -117,49 +117,48 @@ public enum ExternalDependencies: CaseIterable {
 extension Project {
     public static func framework(name: String,
                                  targets: Set<FeatureTarget> = Set([
-                                    .framework,
-                                    .tests,
-                                    .example,
-                                    .testing
+                                     .framework,
+                                     .tests,
+                                     .example,
+                                     .testing,
                                  ]),
                                  externalDependencies: [ExternalDependencies] = [],
                                  dependencies: [String] = [],
                                  sdks: [String] = [],
                                  includesGraphQL: Bool = false) -> Project {
-        
         // Configurations
         let frameworkConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
-            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig"))
+            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
         ]
         let testsConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
-            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig"))
+            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
         ]
         let appConfigurations: [CustomConfiguration] = [
-            .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
-            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig"))
+            .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
+            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
         ]
         let projectConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/Base/Configurations/Debug.xcconfig")),
-            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig"))
+            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")),
         ]
-        
+
         // Test dependencies
         var testsDependencies: [TargetDependency] = [
             .target(name: "\(name)"),
-            .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))
+            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
         dependencies.forEach { testsDependencies.append(.project(target: "\($0)Testing", path: .relativeToRoot("Projects/\($0)"))) }
-        
+
         // Target dependencies
-        var targetDependencies: [TargetDependency] = dependencies.map({ .project(target: $0, path: .relativeToRoot("Projects/\($0)")) })
-        targetDependencies.append(contentsOf: sdks.map({.sdk(name: $0)}))
-        
+        var targetDependencies: [TargetDependency] = dependencies.map { .project(target: $0, path: .relativeToRoot("Projects/\($0)")) }
+        targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
+
         targetDependencies.append(contentsOf: externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
         }.flatMap { $0 })
-        
+
         // Project targets
         var projectTargets: [Target] = []
         if targets.contains(.framework) {
@@ -170,50 +169,49 @@ extension Project {
                                          platform: .iOS,
                                          product: .framework,
                                          bundleId: "com.hedvig.\(name)",
-                deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
-                infoPlist: .default,
-                sources: sources,
-                resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
-                dependencies: targetDependencies,
-                settings: Settings(configurations: frameworkConfigurations)))
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+                                         infoPlist: .default,
+                                         sources: sources,
+                                         resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
+                                         dependencies: targetDependencies,
+                                         settings: Settings(configurations: frameworkConfigurations)))
         }
         if targets.contains(.testing) {
             projectTargets.append(Target(name: "\(name)Testing",
-                platform: .iOS,
-                product: .framework,
-                bundleId: "com.hedvig.\(name)Testing",
-                infoPlist: .default,
-                sources: "Testing/**/*.swift",
-                dependencies: [.target(name: "\(name)")],
-                settings: Settings(configurations: frameworkConfigurations)))
+                                         platform: .iOS,
+                                         product: .framework,
+                                         bundleId: "com.hedvig.\(name)Testing",
+                                         infoPlist: .default,
+                                         sources: "Testing/**/*.swift",
+                                         dependencies: [.target(name: "\(name)")],
+                                         settings: Settings(configurations: frameworkConfigurations)))
         }
         if targets.contains(.tests) {
             projectTargets.append(Target(name: "\(name)Tests",
-                platform: .iOS,
-                product: .unitTests,
-                bundleId: "com.hedvig.\(name)Tests",
-                infoPlist: .default,
-                sources: "Tests/**/*.swift",
-                dependencies: testsDependencies,
-                settings: Settings(configurations: testsConfigurations)))
+                                         platform: .iOS,
+                                         product: .unitTests,
+                                         bundleId: "com.hedvig.\(name)Tests",
+                                         infoPlist: .default,
+                                         sources: "Tests/**/*.swift",
+                                         dependencies: testsDependencies,
+                                         settings: Settings(configurations: testsConfigurations)))
         }
         if targets.contains(.example) {
             projectTargets.append(Target(name: "\(name)Example",
-                platform: .iOS,
-                product: .app,
-                bundleId: "com.hedvig.\(name)Example",
-                infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": ""]),
-                sources: "Example/Sources/**/*.swift",
-                resources: "Example/Resources/**",
-                dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
-                settings: Settings(configurations: appConfigurations)))
+                                         platform: .iOS,
+                                         product: .app,
+                                         bundleId: "com.hedvig.\(name)Example",
+                                         infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": ""]),
+                                         sources: "Example/Sources/**/*.swift",
+                                         resources: "Example/Resources/**",
+                                         dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
+                                         settings: Settings(configurations: appConfigurations)))
         }
-        
+
         // Project
         return Project(name: name,
                        organizationName: "Hedvig",
                        settings: Settings(configurations: projectConfigurations),
                        targets: projectTargets)
     }
-
 }
