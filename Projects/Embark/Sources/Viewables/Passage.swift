@@ -60,6 +60,10 @@ extension Passage: Viewable {
             } else if translationY < 50 {
                 hasSentFeedback.value = false
             }
+                
+                if translationY > 200 {
+                    panGestureRecognizer.state = .ended
+                }
         }
         
         bag += panGestureRecognizer
