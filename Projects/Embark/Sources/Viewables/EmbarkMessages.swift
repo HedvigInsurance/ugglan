@@ -11,11 +11,7 @@ import UIKit
 import hCore
 
 struct EmbarkMessages {
-    let store: EmbarkStore
-    let dataSignal: ReadSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage.Message]?>
-    let responseSignal: ReadSignal<ResponseFragment?>
-    let goBackSignal: ReadWriteSignal<Bool>
-    let passageNameSignal: ReadSignal<String?>
+    let state: EmbarkState
 }
 
 extension EmbarkMessages: Viewable {
@@ -25,7 +21,7 @@ extension EmbarkMessages: Viewable {
         }
         
         let firstMatchingExpression = message.expressions.first { expression -> Bool in
-            self.store.passes(expression: expression)
+            self.state.store.passes(expression: expression)
         }
         
         if firstMatchingExpression == nil {
@@ -59,7 +55,7 @@ extension EmbarkMessages: Viewable {
             var replacedMessage = message
             stringResults.forEach { message in
                 let key = message.replacingOccurrences(of: "[\\{\\}]", with: "", options: [.regularExpression])
-                let result = store.store[key]
+                let result = self.state.store.store[key]
                 replacedMessage = replacedMessage.replacingOccurrences(of: message, with: result ?? key)
             }
             
@@ -78,8 +74,11 @@ extension EmbarkMessages: Viewable {
         
         let previousResponseSignal: ReadWriteSignal<(response: ResponseFragment?, passageName: String?)?> = ReadWriteSignal(nil)
         
-        let animatedResponseSignal: Signal = dataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
-            if self.goBackSignal.value == false {
+        let messagesDataSignal = state.currentPassageSignal.map { $0?.messages }
+        let responseDataSignal = state.currentPassageSignal.map { $0?.response.fragments.responseFragment }
+        
+        let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
+            if self.state.animationDirectionSignal.value == .forwards {
                 if let singleMessage = previousResponse?.response?.asEmbarkMessage {
                     let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
                     let responseText = self.replacePlaceholders(message: msgText ?? "")
@@ -92,7 +91,7 @@ extension EmbarkMessages: Viewable {
                     bag += view.addArranged(messageBubble)
                 }
             }
-            previousResponseSignal.value = (self.responseSignal.value, self.passageNameSignal.value)
+            previousResponseSignal.value = (responseDataSignal.value, self.state.passageNameSignal.value)
         })
         
         let animateOutSignal: Signal = animatedResponseSignal.animated(style: .lightBounce(), animations: { _ in
@@ -104,7 +103,7 @@ extension EmbarkMessages: Viewable {
         
         let delaySignal = Signal(after: 1.5).readable()
         
-        bag += combineLatest(dataSignal.compactMap { $0 }.driven(by: animateOutSignal), delaySignal.compactMap { $0 }).onValueDisposePrevious { messages, _ in
+        bag += combineLatest(messagesDataSignal.compactMap { $0 }.driven(by: animateOutSignal), delaySignal.compactMap { $0 }).onValueDisposePrevious { messages, _ in
             let innerBag = DisposeBag()
             
             for stackedView in view.subviews {
@@ -117,8 +116,8 @@ extension EmbarkMessages: Viewable {
                 return view.addArranged(MessageBubble(text: messageText, delay: 0, animated: true, animationDelay: TimeInterval(index)))
             }
             
-            if self.goBackSignal.value == true {
-                self.goBackSignal.value = false
+            if self.state.animationDirectionSignal.value == .backwards {
+                self.state.animationDirectionSignal.value = .forwards
             }
             
            return innerBag

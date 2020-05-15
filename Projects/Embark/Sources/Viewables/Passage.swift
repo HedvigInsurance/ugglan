@@ -12,10 +12,7 @@ import hCore
 import Form
 
 struct Passage {
-    let store: EmbarkStore
-    let dataSignal: ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>
-    let goBackSignal: ReadWriteSignal<Bool>
-    let canGoBackSignal: ReadSignal<Bool>
+    let state: EmbarkState
 }
 
 extension Passage: Viewable {
@@ -25,8 +22,7 @@ extension Passage: Viewable {
         let panGestureRecognizer = UIPanGestureRecognizer()
         let hasSentFeedback = ReadWriteSignal(false)
         
-        let releaseToGoBackLabel = UILabel(value: "Release to go back", style: TextStyle.chatTimeStamp
-            .centerAligned)
+        let releaseToGoBackLabel = UILabel(value: "Release to go back", style: TextStyle.brand(.footnote(color: .tertiary)).centerAligned)
         releaseToGoBackLabel.alpha = 0
         
         view.addSubview(releaseToGoBackLabel)
@@ -44,7 +40,7 @@ extension Passage: Viewable {
         
         bag += panGestureRecognizer
             .signal(forState: .changed)
-            .filter(predicate: { _ in self.canGoBackSignal.value })
+            .filter(predicate: { _ in self.state.canGoBackSignal.value })
             .onValue { _ in
             let translationY = max(panGestureRecognizer.translation(in: view).y, (panGestureRecognizer.translation(in: view).y / 25))
             view.transform = CGAffineTransform(translationX: 0, y: min(translationY, 50 + (translationY / 25)))
@@ -56,7 +52,7 @@ extension Passage: Viewable {
                 
             if translationY > 50, hasSentFeedback.value == false {
                 hasSentFeedback.value = true
-                bag += Signal(after: 0).feedback(type: .impactLight)
+                bag += Signal(after: 0).feedback(type: .selection)
             } else if translationY < 50 {
                 hasSentFeedback.value = false
             }
@@ -68,12 +64,12 @@ extension Passage: Viewable {
         
         bag += panGestureRecognizer
             .signal(forState: .ended)
-            .filter(predicate: { _ in self.canGoBackSignal.value })
+            .filter(predicate: { _ in self.state.canGoBackSignal.value })
             .animated(style: SpringAnimationStyle.heavyBounce()) { _ in
             hasSentFeedback.value = false
             if panGestureRecognizer.translation(in: view).y > 40 {
-                self.goBackSignal.value = true
-                bag += Signal(after: 0).feedback(type: .selection)
+                self.state.goBack()
+                bag += Signal(after: 0).feedback(type: .impactLight)
             }
              
             releaseToGoBackLabel.alpha = 0
@@ -95,20 +91,12 @@ extension Passage: Viewable {
         let bag = DisposeBag()
         
         let embarkMessages = EmbarkMessages(
-            store: store,
-            dataSignal: dataSignal.map { $0?.messages },
-            responseSignal: dataSignal.map { $0?.response.fragments.responseFragment },
-            goBackSignal: goBackSignal,
-            passageNameSignal: dataSignal.map { $0?.name }
+            state: state
         )
         bag += view.addArranged(embarkMessages)
         
         let action = Action(
-            store: store,
-            dataSignal: dataSignal.map { $0?.action },
-            passageName: dataSignal.map { $0?.name },
-            goBackSignal: goBackSignal,
-            canGoBackSignal: canGoBackSignal
+            state: state
         )
         
         bag += NotificationCenter.default

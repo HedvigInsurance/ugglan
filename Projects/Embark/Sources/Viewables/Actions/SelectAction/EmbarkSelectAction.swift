@@ -14,9 +14,8 @@ import hCore
 typealias EmbarkSelectActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
 
 struct EmbarkSelectAction {
-    let store: EmbarkStore
+    let state: EmbarkState
     let data: EmbarkSelectActionData
-    let passageName: String?
 }
 
 extension EmbarkSelectAction: Viewable {
@@ -42,11 +41,11 @@ extension EmbarkSelectAction: Viewable {
                     return stack.addArranged(EmbarkSelectActionOption(data: option)).onValue { result in
                         result.keys.enumerated().forEach { offset, key in
                             let value = result.values[offset]
-                            self.store.setValue(key: key, value: value)
+                            self.state.store.setValue(key: key, value: value)
                         }
                         
-                        if let passageName = self.passageName {
-                            self.store.setValue(
+                        if let passageName = self.state.passageNameSignal.value {
+                            self.state.store.setValue(
                                key: "\(passageName)Result",
                                value: result.textValue
                            )

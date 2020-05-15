@@ -135,7 +135,7 @@ extension TextView: Viewable {
 
         paddingView.addArrangedSubview(textView)
 
-        let placeholderLabel = UILabel(value: placeholder.value, style: TextStyle.body.colored(.darkGray).resized(to: 14))
+        let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.footnote(color: .secondary)))
         paddingView.addSubview(placeholderLabel)
 
         bag += placeholder.map { Optional($0) }.bindTo(

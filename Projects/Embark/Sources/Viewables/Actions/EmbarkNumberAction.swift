@@ -11,13 +11,13 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import Form
 
 typealias EmbarkNumberActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
 
 struct EmbarkNumberAction {
-    let store: EmbarkStore
+    let state: EmbarkState
     let data: EmbarkNumberActionData
-    let passageName: String?
 }
 
 extension EmbarkNumberAction: Viewable {
@@ -49,9 +49,9 @@ extension EmbarkNumberAction: Viewable {
             
             func handleSubmit(textValue: String) {
                 let key = self.data.numberActionData.key
-                self.store.setValue(key: key, value: textValue)
-                if let passageName = self.passageName {
-                    self.store.setValue(key: "\(passageName)Result", value: textValue)
+                self.state.store.setValue(key: key, value: textValue)
+                if let passageName = self.state.passageNameSignal.value {
+                    self.state.store.setValue(key: "\(passageName)Result", value: textValue)
                 }
                 callback(self.data.numberActionData.link.fragments.embarkLinkFragment)
             }
@@ -67,7 +67,7 @@ extension EmbarkNumberAction: Viewable {
             }
            
             if let unit = self.data.numberActionData.unit {
-               let unitLabel = MultilineLabel(value: unit, style: .centeredBodyOffBlack)
+                let unitLabel = MultilineLabel(value: unit, style: TextStyle.brand(.body(color: .primary)).centerAligned)
                bag += boxStack.addArranged(unitLabel)
            }
            

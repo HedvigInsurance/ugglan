@@ -12,11 +12,7 @@ import hCore
 import hCoreUI
 
 struct Action {
-    let store: EmbarkStore
-    let dataSignal: ReadSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage.Action?>
-    let passageName: ReadSignal<String?>
-    let goBackSignal: ReadWriteSignal<Bool>
-    let canGoBackSignal: ReadSignal<Bool>
+    let state: EmbarkState
 }
 
 struct ActionResponse {
@@ -39,24 +35,28 @@ extension Action: Viewable {
         let bag = DisposeBag()
         
         let backButton = Button(title: "Go back", type: .standardSmall(backgroundColor: .black, textColor: .white))
-        bag += backButton.onTapSignal.map { true }.bindTo(goBackSignal)
+        bag += backButton.onTapSignal.onValue {
+            self.state.goBack()
+        }
+        
         bag += view.addArranged(backButton.wrappedIn(UIStackView())) { buttonView in
             buttonView.axis = .vertical
             buttonView.alignment = .center
             buttonView.distribution = .equalCentering
-            bag += canGoBackSignal.delay(by: 0.25).atOnce().map {!$0}.bindTo(buttonView, \.isHidden)
+            bag += self.state.canGoBackSignal.delay(by: 0.25).atOnce().map {!$0}.bindTo(buttonView, \.isHidden)
         }
         
         let spacing = Spacing(height: 12)
         bag += view.addArranged(spacing)
         
-        bag += self.dataSignal.withLatestFrom(self.passageName).animated(style: SpringAnimationStyle.lightBounce()) { data, passageName in
-            if let selectAction = data?.asEmbarkSelectAction {
+        let actionDataSignal = self.state.currentPassageSignal.map { $0?.action }
+        
+        bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).animated(style: SpringAnimationStyle.lightBounce()) { actionData, passageName in
+            if let selectAction = actionData?.asEmbarkSelectAction {
                 let stackView = UIStackView()
                 bag += stackView.addArranged(EmbarkSelectAction(
-                    store: self.store,
-                    data: selectAction,
-                    passageName: passageName
+                    state: self.state,
+                    data: selectAction
                 )).nil()
                 
                 let height = stackView.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + 12
@@ -69,26 +69,23 @@ extension Action: Viewable {
         }
         
         return (view, Signal { callback in
-            bag += combineLatest(self.dataSignal, self.passageName).delay(by: 0.25).onValueDisposePrevious { data, passageName in
+            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).delay(by: 0.25).onValueDisposePrevious { actionData, passageName in
                 let innerBag = DisposeBag()
                                 
-                if let selectAction = data?.asEmbarkSelectAction {
+                if let selectAction = actionData?.asEmbarkSelectAction {
                     innerBag += view.addArranged(EmbarkSelectAction(
-                        store: self.store,
-                        data: selectAction,
-                        passageName: passageName
+                        state: self.state,
+                        data: selectAction
                     )).onValue(callback)
-                } else if let textAction = data?.asEmbarkTextAction {
+                } else if let textAction = actionData?.asEmbarkTextAction {
                     innerBag += view.addArranged(EmbarkTextAction(
-                        store: self.store,
-                        data: textAction,
-                        passageName: passageName
+                        state: self.state,
+                        data: textAction
                     )).onValue(callback)
-                } else if let numberAction = data?.asEmbarkNumberAction {
+                } else if let numberAction = actionData?.asEmbarkNumberAction {
                     innerBag += view.addArranged(EmbarkNumberAction(
-                        store: self.store,
-                        data: numberAction,
-                        passageName: passageName
+                        state: self.state,
+                        data: numberAction
                     )).onValue(callback)
                 }
                 

@@ -71,7 +71,7 @@ extension EmbarkInput: Viewable {
 
         paddingView.addArrangedSubview(textField)
 
-        let placeholderLabel = UILabel(value: placeholder.value, style: TextStyle.bodyBold.colored(.lightGray).resized(to: 38))
+        let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
         placeholderLabel.textAlignment = .center
         
         bag += textField.atOnce().onValue { value in

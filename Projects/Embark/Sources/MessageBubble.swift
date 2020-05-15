@@ -58,7 +58,7 @@ extension MessageBubble: Viewable {
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
 
-        let bodyStyle: TextStyle = messageType == .replied ? .bodyWhite : .bodyOffBlack
+        let bodyStyle: TextStyle = messageType == .replied ? .brand(.body(color: .primary(state: .negative))) : .brand(.body(color: .primary))
         
         let label = MultilineLabel(value: "", style: bodyStyle, usePreferredMaxLayoutWidth: false)
         bag += containerView.addArranged(label) { labelView in

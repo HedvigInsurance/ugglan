@@ -212,6 +212,9 @@ extension Project {
         return Project(name: name,
                        organizationName: "Hedvig",
                        settings: Settings(configurations: projectConfigurations),
-                       targets: projectTargets)
+                       targets: projectTargets,
+                       additionalFiles: [
+                           includesGraphQL ? .folderReference(path: "GraphQL") : nil,
+                       ].compactMap { $0 })
     }
 }

@@ -10,649 +10,230 @@ import Form
 import Foundation
 
 public extension TextStyle {
-    func centered() -> TextStyle {
-        return restyled { (style: inout TextStyle) in
-            style.alignment = .center
+    enum TypographyColor {
+        case primary(state: State)
+        case secondary(state: State)
+        case tertiary(state: State)
+        case quartenary(state: State)
+        case link(state: State)
+        case destructive(state: State)
+
+        public enum State {
+            case negative
+            case positive
+            case dynamic
+        }
+
+        public static var primary: Self {
+            return Self.primary(state: .dynamic)
+        }
+
+        public static var secondary: Self {
+            return Self.secondary(state: .dynamic)
+        }
+
+        public static var tertiary: Self {
+            return Self.tertiary(state: .dynamic)
+        }
+
+        public static var quartenary: Self {
+            return Self.quartenary(state: .dynamic)
+        }
+
+        public static var link: Self {
+            return Self.link(state: .dynamic)
+        }
+
+        public static var destructive: Self {
+            return Self.destructive(state: .dynamic)
+        }
+
+        public var positiveColor: UIColor {
+            switch self {
+            case .primary:
+                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 1)
+
+            case .secondary:
+                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.73)
+
+            case .tertiary:
+                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.56)
+
+            case .quartenary:
+                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.34)
+
+            case .link:
+                return UIColor(red: 0.53, green: 0.369, blue: 0.771, alpha: 1)
+
+            case .destructive:
+                return UIColor(red: 0.867, green: 0.153, blue: 0.153, alpha: 1)
+            }
+        }
+
+        public var negativeColor: UIColor {
+            switch self {
+            case .primary:
+                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 1)
+            case .secondary:
+                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.66)
+
+            case .tertiary:
+                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.44)
+
+            case .quartenary:
+                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.27)
+
+            case .link:
+                return UIColor(red: 0.745, green: 0.608, blue: 0.953, alpha: 1)
+
+            case .destructive:
+                return UIColor(red: 0.886, green: 0.275, blue: 0.275, alpha: 1)
+            }
+        }
+
+        var dynamicColor: UIColor {
+            return UIColor(dynamic: { trait -> UIColor in
+                if trait.userInterfaceStyle == .light {
+                    return self.positiveColor
+                }
+
+                return self.negativeColor
+            })
+        }
+
+        func color(for state: State) -> UIColor {
+            switch state {
+            case .dynamic:
+                return dynamicColor
+            case .negative:
+                return self.negativeColor
+            case .positive:
+                return self.positiveColor
+            }
+        }
+
+        var color: UIColor {
+            switch self {
+            case let .primary(state: state):
+                return color(for: state)
+            case let .secondary(state: state):
+                return color(for: state)
+            case let .tertiary(state: state):
+                return color(for: state)
+            case let .quartenary(state: state):
+                return color(for: state)
+            case let .link(state: state):
+                return color(for: state)
+            case let .destructive(state: state):
+                return color(for: state)
+            }
         }
     }
 
-    var zeroedLineSpacing: TextStyle {
-        restyled { (style: inout TextStyle) in
-            style.lineSpacing = 0
+    enum BrandTextStyle {
+        case largeTitle(color: TypographyColor)
+        case title1(color: TypographyColor)
+        case title2(color: TypographyColor)
+        case title3(color: TypographyColor)
+        case headline(color: TypographyColor)
+        case subHeadline(color: TypographyColor)
+        case body(color: TypographyColor)
+        case callout(color: TypographyColor)
+        case footnote(color: TypographyColor)
+        case caption1(color: TypographyColor)
+        case caption2(color: TypographyColor)
+
+        private var color: UIColor {
+            switch self {
+            case let .largeTitle(color: color):
+                return color.color
+            case let .title1(color: color):
+                return color.color
+            case let .title2(color: color):
+                return color.color
+            case let .title3(color: color):
+                return color.color
+            case let .headline(color: color):
+                return color.color
+            case let .subHeadline(color: color):
+                return color.color
+            case let .body(color: color):
+                return color.color
+            case let .callout(color: color):
+                return color.color
+            case let .footnote(color: color):
+                return color.color
+            case let .caption1(color: color):
+                return color.color
+            case let .caption2(color: color):
+                return color.color
+            }
+        }
+
+        private var font: UIFont {
+            switch self {
+            case .largeTitle:
+                return UIFontMetrics(forTextStyle: .largeTitle).scaledFont(for: Fonts.favoritStdBook)
+            case .title1:
+                return UIFontMetrics(forTextStyle: .title1).scaledFont(for: Fonts.favoritStdBook)
+            case .title2:
+                return UIFontMetrics(forTextStyle: .title2).scaledFont(for: Fonts.favoritStdBook)
+            case .title3:
+                return UIFontMetrics(forTextStyle: .title3).scaledFont(for: Fonts.favoritStdBook)
+            case .headline:
+                return UIFontMetrics(forTextStyle: .headline).scaledFont(for: Fonts.favoritStdBook)
+            case .subHeadline:
+                return UIFontMetrics(forTextStyle: .subheadline).scaledFont(for: Fonts.favoritStdBook)
+            case .body:
+                return UIFontMetrics(forTextStyle: .body).scaledFont(for: Fonts.favoritStdBook)
+            case .callout:
+                return UIFontMetrics(forTextStyle: .callout).scaledFont(for: Fonts.favoritStdBook)
+            case .footnote:
+                return UIFontMetrics(forTextStyle: .footnote).scaledFont(for: Fonts.favoritStdBook)
+            case .caption1:
+                return UIFontMetrics(forTextStyle: .caption1).scaledFont(for: Fonts.favoritStdBook)
+            case .caption2:
+                return UIFontMetrics(forTextStyle: .caption2).scaledFont(for: Fonts.favoritStdBook)
+            }
+        }
+
+        private var lineHeight: CGFloat {
+            switch self {
+            case .largeTitle:
+                return 41
+            case .title1:
+                return 34
+            case .title2:
+                return 22
+            case .title3:
+                return 24
+            case .headline:
+                return 22
+            case .subHeadline:
+                return 20
+            case .body:
+                return 22
+            case .callout:
+                return 21
+            case .footnote:
+                return 18
+            case .caption1:
+                return 16
+            case .caption2:
+                return 14
+            }
+        }
+
+        var textStyle: TextStyle {
+            return TextStyle.default.restyled { (style: inout TextStyle) in
+                style.font = font
+                style.lineHeight = lineHeight
+                style.color = color
+            }
         }
     }
 
-    static let chatBody = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(15)
-        style.color = .brand(.primaryText())
-        style.lineSpacing = 5
-    }
-
-    static let chatBodyUnderlined = TextStyle.chatBody.restyled { (_: inout TextStyle) in
-//        style.setAttribute(
-//            NSUnderlineStyle.single.rawValue,
-//            for: NSAttributedString.Key.underlineStyle
-//        )
-    }
-
-    static let chatTimeStamp = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(12)
-        style.color = .brand(.tertiaryText)
-        style.lineSpacing = 2
-    }
-
-    static let body = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.color = .brand(.primaryText())
-        style.lineSpacing = 6
-    }
-
-    static let bodyButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.color = .brand(.primaryText())
-    }
-
-    static let bodyBookButtonText = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.color = .brand(.primaryText())
-    }
-
-    static let bodyOffBlack = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.color = .brand(.secondaryText)
-    }
-
-    static let toastBody = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.color = .brand(.secondaryText)
-        style.font = Fonts.favoritStdBook.withSize(15)
-    }
-
-    static let toastBodySubtitle = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.color = .brand(.secondaryText)
-        style.font = Fonts.favoritStdBook.withSize(12)
-    }
-
-    static let bodyWhite = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.color = .white
-    }
-
-    static let bodyBold = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.color = .brand(.primaryText())
-        style.lineSpacing = 6
-    }
-
-    static let navigationSubtitle = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(13)
-        style.lineSpacing = 6
-        style.color = .brand(.primaryText())
-    }
-
-    static let centeredBody = TextStyle.body.restyled { (style: inout TextStyle) in
-        style.alignment = .center
-    }
-
-    static let centeredBodyOffBlack = TextStyle.bodyOffBlack.restyled { (style: inout TextStyle) in
-        style.alignment = .center
-    }
-
-    static let sectionHeader = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(15)
-        style.color = .darkGray
-    }
-
-    static let standaloneLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.color = .brand(.primaryText())
-    }
-
-    static let blockRowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryText())
-    }
-
-    static let offerBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.color = .brand(.primaryText(true))
-        style.alignment = .center
-    }
-
-    static let offerBubbleSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.color = .brand(.primaryText(true))
-        style.alignment = .center
-    }
-
-    static let blockRowDescription = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.color = .brand(.secondaryText)
-    }
-
-    static let headingOne = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(40)
-        style.color = .brand(.primaryText())
-    }
-
-    static let centeredHeadingOne = TextStyle.headingOne.restyled { (style: inout TextStyle) in
-        style.alignment = .center
-    }
-
-    static let smallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.color = .brand(.secondaryText)
-    }
-
-    static let boldSmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.color = .brand(.primaryText())
-    }
-
-    static let priceBubbleGrossTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-        // style.setAttribute(NSUnderlineStyle.single.rawValue, for: NSAttributedString.Key.strikethroughStyle)
-    }
-
-    static let largePriceBubbleTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(60)
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let reallySmallTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(13)
-        style.color = .darkGray
-    }
-
-    static let perilTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(12)
-        style.color = .brand(.tertiaryText)
-    }
-
-    static let rowTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-    }
-
-    static let rowTitleBold = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.lineHeight = 15
-    }
-
-    static let rowTitleSecondary = TextStyle.rowTitle.restyled { (style: inout TextStyle) in
-        style.color = .brand(.secondaryText)
-        style.lineHeight = 15
-    }
-
-    static let rowTitleDisabled = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .gray
-        style.lineHeight = 15
-    }
-
-    static let rowValueLink = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryTintColor)
-        style.lineHeight = 15
-    }
-
-    static let rowSubtitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.secondaryText)
-    }
-
-    static let rowTertitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(12)
-        style.color = .brand(.secondaryText)
-        style.lineHeight = 15
-    }
-
-    static let rowSubtitlePrimary = TextStyle.rowSubtitle.restyled { (style: inout TextStyle) in
-        style.color = .brand(.primaryText())
-    }
-
-    static let rowValueEditable = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryTintColor)
-    }
-
-    static let rowValueEditableMuted = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryText())
-    }
-
-    static let rowValueEditablePlaceholder = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryTextMuted)
-    }
-
-    static let rowValueEditableRight = TextStyle.rowValueEditable.restyled { (style: inout TextStyle) in
-        style.alignment = .right
-    }
-
-    static let dangerButton = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(15)
-        style.color = .brand(.regularCaution)
-    }
-
-    static let normalButton = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(15)
-        style.color = .brand(.primaryTintColor)
-    }
-
-    static let navigationBarButton = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryTintColor)
-    }
-
-    static let navigationBarButtonSkip = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.regularCaution)
-    }
-
-    static let navigationBarButtonPrimary = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(17)
-        style.color = .brand(.primaryTintColor)
-    }
-
-    static let draggableOverlayTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.color = .brand(.primaryText())
-    }
-
-    static let countdownNumber = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(40)
-        style.color = .brand(.regularCaution)
-    }
-
-    static let countdownLetter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(12)
-        style.color = .brand(.primaryText())
-    }
-
-    static let offerSummaryTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(23)
-        style.color = .brand(.primaryText())
-        style.lineHeight = 24
-    }
-
-    static let draggableOverlayDescription = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.secondaryText)
-    }
-
-    static let headerLargeTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(30)
-        style.lineHeight = 32
-        style.color = .brand(.primaryText())
-    }
-
-    static let headlineLargeLargeRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.lineHeight = 24
-        style.alignment = .right
-        style.color = .brand(.primaryText())
-    }
-
-    static let headlineLargeLargeLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-    }
-
-    static let headlineLargeNegLargeNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-    }
-
-    static let headlineLargeLargeCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let headlineLargeNegLargeNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-        style.alignment = .center
-    }
-
-    static let headlineLargeNegLargeNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(24)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-        style.alignment = .right
-    }
-
-    static let headlineMediumNegMediumNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-        style.alignment = .right
-    }
-
-    static let headlineMediumNegMediumNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-    }
-
-    static let headlineMediumMediumLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-    }
-
-    static let headlineMediumMediumRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-        style.alignment = .right
-    }
-
-    static let headlineMediumNegMediumNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-        style.alignment = .center
-    }
-
-    static let headlineMediumMediumCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let linksRegularCautionRegularLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.letterSpacing = 0.2
-        style.color = .brand(.regularCaution)
-    }
-
-    static let linksRegularRegularRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.letterSpacing = 0.2
-        style.color = .brand(.primaryText())
-    }
-
-    static let headerRegularTitle = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 18
-        style.color = .brand(.primaryText())
-    }
-
-    static let linksRegularRegularLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 18
-        style.color = .brand(.primaryText())
-    }
-
-    static let bodyRegularRegularLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 18
-        style.color = .brand(.primaryText())
-    }
-
-    static let bodyRegularNegRegularNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.letterSpacing = 0.2
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let linksRegularRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-        style.alignment = .center
-    }
-
-    static let bodyRegularRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.alignment = .center
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-    }
-
-    static let bodyRegularNegRegularNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.2
-    }
-
-    static let bodyRegularRegularRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-        style.alignment = .right
-    }
-
-    static let bodyRegularNegRegularNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.2
-        style.alignment = .right
-    }
-
-    static let linksRegularCautionRegularRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.letterSpacing = 0.2
-        style.color = .brand(.primaryText())
-        style.alignment = .right
-    }
-
-    static let linksRegularCautionRegularCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(16)
-        style.lineHeight = 24
-        style.letterSpacing = 0.2
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let headLineSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let headlineSmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText(true))
-        style.alignment = .right
-    }
-
-    static let headlineSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.alignment = .right
-    }
-
-    static let headlineSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-    }
-
-    static let headlineSmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText(true))
-        style.alignment = .center
-    }
-
-    static let headlineSmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText(true))
-    }
-
-    static let bodySmallNegSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.2
-        style.alignment = .right
-    }
-
-    static let linksSmallCautionSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.regularCaution)
-        style.letterSpacing = 0.2
-        style.alignment = .center
-    }
-
-    static let bodySmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-        style.alignment = .right
-    }
-
-    static let linksSmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-        style.alignment = .center
-    }
-
-    static let bodySmallNegSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.2
-    }
-
-    static let linksSmallSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-    }
-
-    static let bodySmallSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0
-        style.alignment = .center
-    }
-
-    static let bodySmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-    }
-
-    static let bodySmallNegSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.2
-        style.alignment = .center
-    }
-
-    static let linksSmallCautionSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.regularCaution)
-        style.letterSpacing = 0.2
-    }
-
-    static let linksSmallCautionSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.regularCaution)
-        style.letterSpacing = 0.2
-        style.alignment = .right
-    }
-
-    static let linksSmallSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(14)
-        style.lineHeight = 15
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.2
-    }
-
-    static let bodyXSmallNegXSmallNegCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(12)
-        style.lineHeight = 16
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.1
-        style.alignment = .center
-    }
-
-    static let bodyXSmallXSmallCenter = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(10)
-        style.lineHeight = 16
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.1
-        style.alignment = .center
-    }
-
-    static let bodyXSmallNegXSmallNegRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(10)
-        style.lineHeight = 16
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.1
-        style.alignment = .right
-    }
-
-    static let bodyXSmallXSmallLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(10)
-        style.lineHeight = 16
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.1
-    }
-
-    static let bodyXSmallNegXSmallNegLeft = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(10)
-        style.lineHeight = 16
-        style.color = .brand(.primaryText(true))
-        style.letterSpacing = 0.1
-    }
-
-    static let bodyXSmallXSmallRight = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(10)
-        style.lineHeight = 16
-        style.color = .brand(.primaryText())
-        style.letterSpacing = 0.1
-        style.alignment = .right
-    }
-
-    static let specialTabBarActive = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(11)
-        style.lineHeight = 11
-        style.color = .brand(.primaryText())
-        style.alignment = .center
-    }
-
-    static let specialTabBarInactive = TextStyle.default.restyled { (style: inout TextStyle) in
-        style.font = Fonts.favoritStdBook.withSize(11)
-        style.lineHeight = 11
-        style.color = .brand(.primaryText())
-        style.alignment = .center
+    static func brand(_ brandTextStyle: BrandTextStyle) -> TextStyle {
+        brandTextStyle.textStyle
     }
 }

@@ -15,9 +15,8 @@ import hCoreUI
 typealias EmbarkTextActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction
 
 struct EmbarkTextAction {
-    let store: EmbarkStore
+    let state: EmbarkState
     let data: EmbarkTextActionData
-    let passageName: String?
 }
 
 extension EmbarkTextAction: Viewable {
@@ -53,13 +52,13 @@ extension EmbarkTextAction: Viewable {
             })
             
             bag += button.onTapSignal.onValue { _ in
-                if let passageName = self.passageName {
-                    self.store.setValue(
+                if let passageName = self.state.passageNameSignal.value {
+                    self.state.store.setValue(
                         key: "\(passageName)Result",
                         value: textSignal.value
                     )
                 }
-                self.store.setValue(
+                self.state.store.setValue(
                     key: self.data.textActionData.key,
                     value: textSignal.value
                 )

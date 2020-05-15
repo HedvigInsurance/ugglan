@@ -47,8 +47,8 @@ extension EmbarkSelectActionOption: Viewable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
         
-        bag += stackView.addArranged(MultilineLabel(value: data.link.fragments.embarkLinkFragment.label, style: TextStyle.bodyBold.aligned(to: .center)))
-        bag += stackView.addArranged(MultilineLabel(value: "Välj", style: TextStyle.rowSubtitle.colored(.purple).aligned(to: .center)))
+        bag += stackView.addArranged(MultilineLabel(value: data.link.fragments.embarkLinkFragment.label, style: .brand(.title3(color: .primary))))
+        bag += stackView.addArranged(MultilineLabel(value: "Välj", style: TextStyle.brand(.callout(color: .link)).centerAligned))
                 
         return (control, Signal { callback in
             bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
