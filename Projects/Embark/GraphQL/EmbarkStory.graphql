@@ -57,6 +57,9 @@ query EmbarkStory($name: String!) {
         passages {
             id
             name
+            allLinks {
+                ...EmbarkLinkFragment
+            }
             response {
                 ...ResponseFragment
             }
