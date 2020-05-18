@@ -22,7 +22,10 @@ extension Passage: Viewable {
         let panGestureRecognizer = UIPanGestureRecognizer()
         let hasSentFeedback = ReadWriteSignal(false)
 
-        let releaseToGoBackLabel = UILabel(value: "Release to go back", style: TextStyle.brand(.footnote(color: .tertiary)).centerAligned)
+        let releaseToGoBackLabel = UILabel(
+            value: "Release to go back",
+            style: TextStyle.brand(.footnote(color: .tertiary)).centerAligned
+        )
         releaseToGoBackLabel.alpha = 0
 
         view.addSubview(releaseToGoBackLabel)
