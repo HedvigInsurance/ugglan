@@ -53,9 +53,9 @@ struct CommonClaimCard {
             context: nil
         )
 
-        let buttonPadding: CGFloat = includeButton ? 60 : 0
+        let buttonPadding: CGFloat = includeButton ? 70 : 0
 
-        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 80 + buttonPadding)
+        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 60 + buttonPadding)
     }
 
     var isFirstInRow: Bool {
@@ -131,7 +131,8 @@ extension CommonClaimCard: Viewable {
         view.addArrangedSubview(contentView)
 
         contentView.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
         }
 
         let expandedHeaderView = UIView()
@@ -143,7 +144,7 @@ extension CommonClaimCard: Viewable {
         view.addSubview(expandedHeaderView)
 
         expandedHeaderView.snp.makeConstraints { make in
-            make.height.equalTo(65 + safeAreaTop)
+            make.height.equalTo(safeAreaTop)
             make.top.equalTo(0)
             make.left.equalTo(0)
             make.width.equalToSuperview()
@@ -165,13 +166,6 @@ extension CommonClaimCard: Viewable {
 
             if point.y != 0 {
                 expandedHeaderView.alpha = 1
-                expandedHeaderView.snp.updateConstraints { make in
-                    if point.y < 0 {
-                        make.height.equalTo(55 + self.safeAreaTop + -point.y)
-                    } else {
-                        make.height.equalTo(55 + self.safeAreaTop)
-                    }
-                }
             }
         }
 
@@ -221,8 +215,7 @@ extension CommonClaimCard: Viewable {
         bag += contentView.add(layoutTitleLabel) { view in
             view.snp.makeConstraints { make in
                 make.top.equalTo(0)
-                make.centerX.equalToSuperview()
-                make.width.equalToSuperview().inset(15)
+                make.leading.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(15)
             }
 
             bag += iconTopPaddingStateSignal.atOnce().onValue { state in
@@ -249,7 +242,7 @@ extension CommonClaimCard: Viewable {
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
-                make.left.equalToSuperview().inset(15)
+                make.leading.equalTo(view.safeAreaLayoutGuide).inset(10)
                 make.width.equalTo(30)
                 make.height.equalTo(30)
             }
@@ -286,7 +279,7 @@ extension CommonClaimCard: Viewable {
             bag += showTitleCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(closeButtonView, \.alpha)
 
             closeButtonView.snp.makeConstraints { make in
-                make.left.equalTo(10)
+                make.left.equalTo(view.safeAreaLayoutGuide).inset(10)
                 make.top.equalTo(15 + self.safeAreaTop)
             }
 
@@ -301,6 +294,20 @@ extension CommonClaimCard: Viewable {
             bag += scrollPositionSignal.onValue { point in
                 closeButtonView.transform = CGAffineTransform(translationX: 0, y: point.y)
             }
+                        
+            bag += scrollPositionSignal.atOnce().onValue { point in
+                let offset = point.y / 50
+                let newAlphaValue = 1.0 - offset
+                
+                if newAlphaValue >= 0 && newAlphaValue <= 1 {
+                    closeButtonView.alpha = newAlphaValue
+                    titleLabel.alpha = newAlphaValue
+                } else if newAlphaValue <= 0.1 {
+                     closeButtonView.alpha = 0
+                     titleLabel.alpha = 0
+                }
+            }
+            
         }
 
         if includeButton {
@@ -340,7 +347,7 @@ extension CommonClaimCard: Viewable {
                 claimButtonView.snp.makeConstraints { make in
                     make.bottom.equalTo(-28)
                     make.centerX.equalToSuperview()
-                    make.width.equalToSuperview().inset(20)
+                    make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
                 }
             }
         }
