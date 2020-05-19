@@ -77,13 +77,26 @@ extension Embark: Presentable {
             progressView.setNeedsLayout()
             progressView.layoutIfNeeded()
         })
+        
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.startAnimating()
+        
+        view.addSubview(activityIndicator)
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
 
-        bag += client.fetch(query: EmbarkStoryQuery(name: name)).onValue { data in
-            self.state.passagesSignal.value = data.data?.embarkStory?.passages ?? []
+        bag += client.fetch(query: EmbarkStoryQuery(name: name)).valueSignal.compactMap { $0.data?.embarkStory }.onValue { embarkStory in
+            activityIndicator.removeFromSuperview()
+            
+            self.state.storySignal.value = embarkStory
+            
+            self.state.passagesSignal.value = embarkStory.passages
 
-            let startPassageId = data.data?.embarkStory?.startPassage
+            let startPassageId = embarkStory.startPassage
 
-            self.state.currentPassageSignal.value = data.data?.embarkStory?.passages.first(where: { passage -> Bool in
+            self.state.currentPassageSignal.value = embarkStory.passages.first(where: { passage -> Bool in
                 passage.id == startPassageId
             })
         }

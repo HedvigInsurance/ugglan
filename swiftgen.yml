@@ -12,7 +12,9 @@ xcassets:
           publicAccess: true
 strings:
   inputs: 
-    - Projects/App/Resources/en-SE.lproj/Localizable.strings
+    - Projects/hCore/Resources/en-SE.lproj/Localizable.strings
   outputs:
     templatePath: swiftgen/localization.stencil
-    output: Projects/App/Sources/Derived/Strings.swift
+    output: Projects/hCore/Sources/Derived/Strings.swift
+    params:
+        publicAccess: true

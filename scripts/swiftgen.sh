@@ -2,6 +2,7 @@ TMPDIR=/tmp
 
 mkdir Projects/hCoreUI/Sources/Derived
 mkdir Projects/App/Sources/Derived
+mkdir Projects/hCore/Sources/Derived
 
 if [[ -f $TMPDIR/swiftgen/bin/swiftgen ]]
 then

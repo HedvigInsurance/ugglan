@@ -34,7 +34,7 @@ extension Action: Viewable {
         
         let bag = DisposeBag()
         
-        let backButton = Button(title: "Go back", type: .standardSmall(backgroundColor: .black, textColor: .white))
+        let backButton = Button(title: L10n.embarkGoBackButton, type: .standardSmall(backgroundColor: .black, textColor: .white))
         bag += backButton.onTapSignal.onValue {
             self.state.goBack()
         }
@@ -87,6 +87,11 @@ extension Action: Viewable {
                         state: self.state,
                         data: numberAction
                     )).onValue(callback)
+                } else if let textActionSet = actionData?.asEmbarkTextActionSet {
+                    innerBag += view.addArranged(TextActionSet(
+                        state: self.state,
+                        data: textActionSet
+                    ))
                 }
                 
                 return innerBag

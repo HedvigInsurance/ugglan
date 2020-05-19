@@ -71,8 +71,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigationController = UINavigationController()
         self.window?.rootViewController = navigationController
         
+        Bundle.setLanguage("en-SE")
+        
         bag += navigationController.present(Embark(
-            name: "Web Onboarding - English Needer"
+            name: "Web Onboarding NO - English Contents"
         ))
         
         return true

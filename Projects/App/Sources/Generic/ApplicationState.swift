@@ -93,43 +93,6 @@ extension Localization.Locale {
     }
 }
 
-public struct L10nDerivation {
-    let table: String
-    let key: String
-    let args: [CVarArg]
-
-    /// render the text key again, useful if you have changed the language during runtime
-    func render() -> String {
-        return L10n.tr(table, key, args)
-    }
-}
-
-public extension String {
-    static var derivedFromL10n: UInt8 = 0
-
-    /// set when String is derived from a L10n key
-    var derivedFromL10n: L10nDerivation? {
-        get {
-            guard let value = objc_getAssociatedObject(
-                self,
-                &String.derivedFromL10n
-            ) as? L10nDerivation? else {
-                return nil
-            }
-
-            return value
-        }
-        set(newValue) {
-            objc_setAssociatedObject(
-                self,
-                &String.derivedFromL10n,
-                newValue,
-                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            )
-        }
-    }
-}
-
 struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 

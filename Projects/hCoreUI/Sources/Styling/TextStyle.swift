@@ -227,7 +227,6 @@ public extension TextStyle {
         var textStyle: TextStyle {
             return TextStyle.default.restyled { (style: inout TextStyle) in
                 style.font = font
-                style.lineHeight = lineHeight
                 style.color = color
             }
         }

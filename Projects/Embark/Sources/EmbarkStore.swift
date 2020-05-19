@@ -133,23 +133,102 @@ class EmbarkStore {
 
         return false
     }
+    
+    func passes(expression: ExpressionFragment) -> Bool {
+           if let multiple = expression.asEmbarkExpressionMultiple {
+               switch multiple.expressionMultipleType {
+               case .and:
+                   return !multiple.subExpressions.map { subExpression -> Bool in
+                       self.passes(expression: subExpression.fragments.basicExpressionFragment)
+                   }.contains(false)
+               case .or:
+                   return !multiple.subExpressions.map { subExpression -> Bool in
+                       self.passes(expression: subExpression.fragments.basicExpressionFragment)
+                   }.contains(true)
+               case .__unknown:
+                   return false
+               }
+           }
+
+            return passes(expression: expression.fragments.basicExpressionFragment)
+       }
 
     func passes(expression: MessageFragment.Expression) -> Bool {
-        if let multiple = expression.fragments.expressionFragment.asEmbarkExpressionMultiple {
-            switch multiple.expressionMultipleType {
+        passes(expression: expression.fragments.expressionFragment)
+    }
+    
+    func shouldRedirectTo(redirect: EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
+        guard let store = revisions.last else {
+            return nil
+        }
+        
+             if let unaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectUnaryExpression {
+                if unaryExpression.unaryType == .always {
+                    return unaryExpression.to
+                }
+           }
+           
+           if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
+               switch binaryExpression.binaryType {
+               case .equals:
+                if store[binaryExpression.key] == binaryExpression.value {
+                    return binaryExpression.to
+                }
+                case .lessThan:
+                               if
+                                   let storeFloat = Float(store[binaryExpression.key] ?? ""),
+                                   let expressionFloat = Float(binaryExpression.value), storeFloat < expressionFloat {
+                                return binaryExpression.to
+                               }
+
+                           case .lessThanOrEquals:
+                               if
+                                   let storeFloat = Float(store[binaryExpression.key] ?? ""),
+                                let expressionFloat = Float(binaryExpression.value), storeFloat <= expressionFloat {
+                                   return binaryExpression.to
+                               }
+                           case .moreThan:
+                               if
+                                   let storeFloat = Float(store[binaryExpression.key] ?? ""),
+                                   let expressionFloat = Float(binaryExpression.value), storeFloat > expressionFloat {
+                                return binaryExpression.to
+                               }
+                           case .moreThanOrEquals:
+                               if
+                                   let storeFloat = Float(store[binaryExpression.key] ?? ""),
+                                   let expressionFloat = Float(binaryExpression.value), storeFloat >= expressionFloat {
+                                return binaryExpression.to
+                               }
+
+                           case .notEquals:
+                            if store[binaryExpression.key] != binaryExpression.value {
+                                return binaryExpression.to
+                }
+                           case .__unknown:
+                               break
+               
+               }
+           }
+        
+        if let multipleExpression = redirect.fragments.embarkRedirectFragment.asEmbarkRedirectMultipleExpressions {
+            switch multipleExpression.multipleType {
             case .and:
-                return !multiple.subExpressions.map { subExpression -> Bool in
-                    self.passes(expression: subExpression.fragments.basicExpressionFragment)
-                }.contains(false)
+                if !multipleExpression.subExpressions.map({ subExpression -> Bool in
+                    self.passes(expression: subExpression.fragments.expressionFragment)
+                }).contains(false) {
+                    return multipleExpression.to
+                }
             case .or:
-                return !multiple.subExpressions.map { subExpression -> Bool in
-                    self.passes(expression: subExpression.fragments.basicExpressionFragment)
-                }.contains(true)
+                if !multipleExpression.subExpressions.map({ subExpression -> Bool in
+                    self.passes(expression: subExpression.fragments.expressionFragment)
+                }).contains(true) {
+                    return multipleExpression.to
+                }
             case .__unknown:
-                return false
+                break
             }
         }
-
-        return passes(expression: expression.fragments.expressionFragment.fragments.basicExpressionFragment)
+           
+           return nil
     }
 }

@@ -5,6 +5,7 @@ let project = Project.framework(
     name: "hCore",
     targets: Set([
        .framework,
+       .frameworkResources,
        .tests,
        .example,
        .testing

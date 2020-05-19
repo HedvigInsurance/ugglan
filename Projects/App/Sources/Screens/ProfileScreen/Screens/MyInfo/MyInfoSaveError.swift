@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import hCore
 
 enum MyInfoSaveError {
     case emailEmpty, emailMalformed, phoneNumberEmpty, phoneNumberMalformed

@@ -23,14 +23,14 @@ class AnyLanguageBundle: Bundle {
     }
 }
 
-extension Bundle {
+public extension Bundle {
     class func setLanguage(_ language: String) {
         UserDefaults.standard.set(language, forKey: "AppleLanguage")
 
         defer {
-            object_setClass(Bundle.main, AnyLanguageBundle.self)
+            object_setClass(Bundle(for: AnyLanguageBundle.self), AnyLanguageBundle.self)
         }
-
-        objc_setAssociatedObject(Bundle.main, &bundleKey, Bundle.main.path(forResource: language, ofType: "lproj"), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        
+        objc_setAssociatedObject(Bundle(for: AnyLanguageBundle.self), &bundleKey, Bundle(for: AnyLanguageBundle.self).path(forResource: language, ofType: "lproj"), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
 }

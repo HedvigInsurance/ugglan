@@ -30,6 +30,20 @@ fragment ExpressionFragment on EmbarkExpression {
         text
         subExpressions {
             ...BasicExpressionFragment
+              ... on EmbarkExpressionMultiple {
+                expressionMultipleType: type
+                text
+                subExpressions {
+                    ...BasicExpressionFragment
+                      ... on EmbarkExpressionMultiple {
+                        expressionMultipleType: type
+                        text
+                        subExpressions {
+                            ...BasicExpressionFragment
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -44,9 +58,103 @@ fragment ResponseFragment on EmbarkResponse {
             ...MessageFragment
         }
         title {
-              text
+            text
         }
     }
+}
+
+fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
+    ... on EmbarkAPIGraphQLSingleVariable {
+        key
+        from
+        as
+    }
+    ... on EmbarkAPIGraphQLGeneratedVariable {
+        key
+        storeAs
+        type
+    }
+    ... on EmbarkAPIGraphQLMultiActionVariable {
+        key
+        variables {
+            ... on EmbarkAPIGraphQLSingleVariable {
+                key
+                from
+                as
+            }
+            ... on EmbarkAPIGraphQLGeneratedVariable {
+                key
+                storeAs
+                type
+            }
+            ... on EmbarkAPIGraphQLMultiActionVariable {
+                key
+                variables {
+                    ... on EmbarkAPIGraphQLSingleVariable {
+                        key
+                        from
+                        as
+                    }
+                    ... on EmbarkAPIGraphQLGeneratedVariable {
+                        key
+                        storeAs
+                        type
+                    }
+                }
+            }
+        }
+    }
+}
+
+fragment ApiFragment on EmbarkApi {
+    ... on EmbarkApiGraphQLQuery {
+        next {
+            ...EmbarkLinkFragment
+        }
+        query
+        variables {
+            ...ApiVariablesFragment
+        }
+    }
+    ... on EmbarkApiGraphQLMutation {
+        next {
+            ...EmbarkLinkFragment
+        }
+        mutation
+        variables {
+            ...ApiVariablesFragment
+        }
+    }
+}
+
+fragment EmbarkRedirectSingle on EmbarkRedirect {
+  ... on EmbarkRedirectUnaryExpression {
+    unaryType: type
+    to
+    passedExpressionKey
+    passedExpressionValue
+  }
+  ... on EmbarkRedirectBinaryExpression {
+    binaryType: type
+    to
+    key
+    value
+    passedExpressionKey
+    passedExpressionValue
+  }
+}
+
+fragment EmbarkRedirectFragment on EmbarkRedirect {
+    ...EmbarkRedirectSingle
+  ... on EmbarkRedirectMultipleExpressions {
+    multipleType: type
+    to
+      passedExpressionKey
+    passedExpressionValue
+    subExpressions {
+      ...ExpressionFragment
+    }
+  }
 }
 
 query EmbarkStory($name: String!) {
@@ -65,6 +173,12 @@ query EmbarkStory($name: String!) {
             }
             messages {
                 ...MessageFragment
+            }
+            api {
+                ...ApiFragment
+            }
+            redirects {
+              ...EmbarkRedirectFragment
             }
             action {
                 ... on EmbarkActionCore {
@@ -90,6 +204,19 @@ query EmbarkStory($name: String!) {
                         minValue
                         link {
                             ...EmbarkLinkFragment
+                        }
+                    }
+                }
+                ... on EmbarkTextActionSet {
+                    textActionSetData: data {
+                        link {
+                            ...EmbarkLinkFragment
+                        }
+                        textActions {
+                            data {
+                              key
+                                placeholder
+                            }
                         }
                     }
                 }

@@ -23,7 +23,7 @@ extension Passage: Viewable {
         let hasSentFeedback = ReadWriteSignal(false)
 
         let releaseToGoBackLabel = UILabel(
-            value: "Release to go back",
+            value: L10n.embarkReleaseGoBackButton,
             style: TextStyle.brand(.footnote(color: .tertiary)).centerAligned
         )
         releaseToGoBackLabel.alpha = 0
@@ -103,6 +103,10 @@ extension Passage: Viewable {
         let action = Action(
             state: state
         )
+        
+        bag += state.currentPassageSignal.onValue { passage in
+            print("API", passage?.api ?? " none")
+        }
 
         bag += NotificationCenter.default
             .signal(forName: UIResponder.keyboardWillChangeFrameNotification)

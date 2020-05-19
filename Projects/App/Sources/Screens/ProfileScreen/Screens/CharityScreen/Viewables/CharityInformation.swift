@@ -11,6 +11,7 @@ import Form
 import Presentation
 import UIKit
 import hCoreUI
+import hCore
 
 struct CharityInformation {}
 

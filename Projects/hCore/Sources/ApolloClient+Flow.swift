@@ -57,7 +57,7 @@ public extension ApolloClient {
                     if numberOfRetries == 0 {
                         retryHandler()
                     } else {
-                        //self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
                     }
                 }
             }
@@ -114,7 +114,7 @@ public extension ApolloClient {
                         if numberOfRetries == 0 {
                             retryHandler()
                         } else {
-                            //self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
                         }
                     }
                 }
@@ -161,7 +161,7 @@ public extension ApolloClient {
                     if numberOfRetries == 0 {
                         retryHandler()
                     } else {
-                        //self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
                     }
                 }
             }
@@ -208,7 +208,7 @@ public extension ApolloClient {
                     if numberOfRetries == 0 {
                         retryHandler()
                     } else {
-                        //self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
                     }
                 }
             }

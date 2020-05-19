@@ -8,6 +8,7 @@
 import Foundation
 import Presentation
 import WebKit
+import hCore
 
 class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
     let presentingViewController: UIViewController

@@ -11,6 +11,7 @@ import Foundation
 import Presentation
 import UIKit
 import WebKit
+import hCore
 
 struct WebOnboarding {}
 

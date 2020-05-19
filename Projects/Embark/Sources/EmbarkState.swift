@@ -11,6 +11,7 @@ import Foundation
 
 struct EmbarkState {
     let store = EmbarkStore()
+    let storySignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let passagesSignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
@@ -44,9 +45,22 @@ struct EmbarkState {
         if let currentPassage = currentPassageSignal.value {
             passageHistorySignal.value.append(currentPassage)
         }
-        currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
-            passage.name == passageName
-       })
+        
+        if let newPassage = passagesSignal.value.first(where: { passage -> Bool in
+             passage.name == passageName
+        }) {
+            currentPassageSignal.value = handleRedirects(passage: newPassage) ?? newPassage
+        }
+    }
+    
+    private func handleRedirects(passage: EmbarkStoryQuery.Data.EmbarkStory.Passage) -> EmbarkStoryQuery.Data.EmbarkStory.Passage? {
+        passage.redirects.map { redirect in
+            store.shouldRedirectTo(redirect: redirect)
+        }.map { redirectTo in
+            passagesSignal.value.first(where: { passage -> Bool in
+                passage.name == redirectTo
+            })
+        }.compactMap { $0 }.first
     }
 
     private var totalStepsSignal = ReadWriteSignal<Int?>(nil)

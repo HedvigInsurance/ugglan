@@ -140,18 +140,18 @@ public enum ButtonType {
         }
     }
 
-    var fontSize: CGFloat {
+    var textStyle: TextStyle {
         switch self {
         case .standard, .standardSmall, .outline, .standardIcon, .standardOutline:
-            return 15
+            return TextStyle.brand(.body(color: .primary(state: .negative))).colored(textColor)
         case .pillSemiTransparent:
-            return 13
+            return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .iconTransparent:
-            return 14
+            return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .tinyIcon:
-            return 10
+            return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
         case .transparent:
-            return 13
+            return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
         }
     }
 
@@ -282,10 +282,7 @@ extension Button: Viewable {
                                 cornerRadius: 6
                             )
                         ),
-                        text: TextStyle(
-                            font: Fonts.favoritStdBook.withSize(buttonType.fontSize),
-                            color: buttonType.textColor
-                        )
+                        text: buttonType.textStyle
                     ),
                 ]
             }
@@ -296,7 +293,6 @@ extension Button: Viewable {
                 style.buttonType = .custom
 
                 let backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
-                let textColor = buttonType.textColor
 
                 style.states = [
                     .normal: ButtonStateStyle(
@@ -308,10 +304,7 @@ extension Button: Viewable {
                                 cornerRadius: 6
                             )
                         ),
-                        text: TextStyle(
-                            font: Fonts.favoritStdBook.withSize(buttonType.fontSize),
-                            color: textColor
-                        )
+                        text: buttonType.textStyle
                     ),
                 ]
             }
