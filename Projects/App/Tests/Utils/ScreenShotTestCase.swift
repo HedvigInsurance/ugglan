@@ -13,6 +13,7 @@ import SnapshotTesting
 import Ugglan
 import UIKit
 import XCTest
+import hCore
 
 class SnapShotTestCase: XCTestCase {
     let bag = DisposeBag()

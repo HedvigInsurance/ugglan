@@ -9,6 +9,7 @@ import SnapshotTesting
 import Ugglan
 import UIKit
 import XCTest
+import hCoreUI
 
 class ButtonTests: SnapShotTestCase {
     func testStandard() {
