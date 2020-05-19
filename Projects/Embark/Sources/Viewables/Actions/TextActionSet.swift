@@ -32,7 +32,7 @@ extension TextActionSet: Viewable {
                 
         let button = Button(
           title: data.textActionSetData?.link.label ?? "",
-          type: .standard(backgroundColor: .white, textColor: .black)
+          type: .standard(backgroundColor: .black, textColor: .white)
         )
         
         bag += view.addArranged(button)

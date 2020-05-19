@@ -68,8 +68,10 @@ class EmbarkStore {
     }
 
     func removeLastRevision() {
-        revisions.removeLast()
-        print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
+        if revisions.count > 1 {
+            revisions.removeLast()
+            print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
+        }
     }
 
     func passes(expression: BasicExpressionFragment) -> Bool {

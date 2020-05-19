@@ -32,7 +32,7 @@ extension EmbarkSelectActionOption: Viewable {
                 path: nil
             )
         })
-        
+ 
         let stackView = UIStackView()
         stackView.isUserInteractionEnabled = false
         stackView.alignment = .center
