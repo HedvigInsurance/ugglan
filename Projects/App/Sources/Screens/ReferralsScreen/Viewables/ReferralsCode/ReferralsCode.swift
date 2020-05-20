@@ -15,7 +15,6 @@ import hCore
 
 struct ReferralsCode {
     @Inject var client: ApolloClient
-    @Inject var remoteConfigContainer: RemoteConfigContainer
     let codeSignal: Signal<String>
     let presentingViewController: UIViewController
 

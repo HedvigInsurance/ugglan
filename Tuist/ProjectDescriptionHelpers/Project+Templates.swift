@@ -51,7 +51,6 @@ public enum ExternalDependencies: CaseIterable {
                 .framework(path: "../../Carthage/Build/iOS/FirebaseFirestore.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseABTesting.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseInstanceID.framework"),
-                .framework(path: "../../Carthage/Build/iOS/FirebaseRemoteConfig.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseDynamicLinks.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseAnalytics.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),

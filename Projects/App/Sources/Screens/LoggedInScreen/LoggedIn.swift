@@ -16,7 +16,6 @@ import Mixpanel
 
 struct LoggedIn {
     @Inject var client: ApolloClient
-    @Inject var remoteConfig: RemoteConfigContainer
     let didSign: Bool
 
     init(didSign: Bool = false) {

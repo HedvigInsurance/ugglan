@@ -27,10 +27,6 @@ class SnapShotTestCase: XCTestCase {
             AnalyticsCoordinator()
         })
 
-        Dependencies.shared.add(module: Module { () -> RemoteConfigContainer in
-            RemoteConfigContainer()
-        })
-
         #if RECORD_MODE
             record = true
         #endif

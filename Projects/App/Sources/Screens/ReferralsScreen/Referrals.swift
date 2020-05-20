@@ -25,7 +25,6 @@ enum ReferralsFailure: LocalizedError {
 
 struct Referrals {
     @Inject var client: ApolloClient
-    @Inject var remoteConfigContainer: RemoteConfigContainer
 }
 
 extension Referrals: Presentable {
@@ -196,7 +195,7 @@ extension Referrals: Presentable {
             bag += button.onTapSignal.withLatestFrom(
                 codeSignal.plain()
             ).compactMap { $1 }.onValue { code in
-                let landingPageUrl = "\(self.remoteConfigContainer.referralsWebLandingPrefix)\(code)"
+                let landingPageUrl = "\(L10n.referralsWebLandingPrefix)\(code)"
                 let message = L10n.referralSmsMessage(landingPageUrl, "10")
 
                 let activityView = ActivityView(
