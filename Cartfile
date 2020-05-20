@@ -20,5 +20,4 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.js
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json"
