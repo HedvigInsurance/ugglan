@@ -25,7 +25,6 @@ extension Offer {
             style: .modally(),
             options: [.defaults]
         ).onValue { _ in
-            self.analyticsCoordinator.logEcommercePurchase()
             viewController.present(PostOnboarding(), style: .defaultOrModal, options: [.defaults, .prefersNavigationBarHidden(true)])
         }
     }
@@ -131,7 +130,6 @@ extension Offer: Presentable {
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 80)
 
         ApplicationState.preserveState(.offer)
-        analyticsCoordinator.logAddToCart()
 
         let bag = DisposeBag()
 

@@ -7,7 +7,6 @@
 
 import Apollo
 import Firebase
-import FirebaseAnalytics
 import FirebaseDynamicLinks
 import FirebaseFirestore
 import Flow
@@ -17,6 +16,8 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import Mixpanel
+import FirebaseAnalytics
 
 enum ReferralsFailure: LocalizedError {
     case failedToCreateLink
@@ -220,7 +221,9 @@ extension Referrals: Presentable {
 
                         if activity != nil {
                             let activity = activity?.rawValue.replacingOccurrences(of: ".", with: "_")
-                            Analytics.logEvent("referrals_share", parameters: ["activity": activity ?? "nil_activity"])
+                            Mixpanel.mainInstance().track(event: "referrals_share", properties: [
+                                "activity": activity ?? "nil_activity"
+                            ])
                         }
                     }
 

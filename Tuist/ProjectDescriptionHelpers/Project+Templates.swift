@@ -24,6 +24,7 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
+    case mixpanel
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
@@ -109,6 +110,10 @@ public enum ExternalDependencies: CaseIterable {
         case .markdownkit:
             return [
                 .framework(path: "../../Carthage/Build/iOS/MarkdownKit.framework"),
+            ]
+        case .mixpanel:
+            return [
+                .framework(path: "../../Carthage/Build/iOS/Mixpanel.framework"),
             ]
         }
     }

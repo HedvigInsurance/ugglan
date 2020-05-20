@@ -5,10 +5,10 @@
 //  Created by Sam Pettersson on 2020-02-06.
 //
 
-import Firebase
 import Flow
 import Foundation
 import UIKit
+import Mixpanel
 
 extension UIControl {
     /// Triggers on touchUpInside and uses accessibilityLabel to trigger an analytics event
@@ -16,13 +16,13 @@ extension UIControl {
         return signal(for: .touchUpInside).atValue {
             if let accessibilityLabel = self.accessibilityLabel {
                 if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
-                    Analytics.logEvent(localizationKey, parameters: [
-                        "context": "UIControl",
+                    Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
+                        "context": "UIControl"
                     ])
                 }
             } else if let accessibilityIdentifier = self.accessibilityIdentifier {
-                Analytics.logEvent(accessibilityIdentifier, parameters: [
-                    "context": "UIControl",
+                Mixpanel.mainInstance().track(event: "TAP_\(accessibilityIdentifier)", properties: [
+                    "context": "UIControl"
                 ])
             }
         }

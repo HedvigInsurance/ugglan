@@ -21,6 +21,7 @@ import UIKit
 import UserNotifications
 import hCore
 import hCoreUI
+import Mixpanel
 
 let log = Logger.self
 
@@ -220,16 +221,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
     }
+    
+    var mixpanelToken: String? {
+        return Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String
+    }
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
+        if let mixpanelToken = mixpanelToken {
+            Mixpanel.initialize(token: mixpanelToken)
+        }
+                
         Button.trackingHandler = { button in
             if let localizationKey = button.title.value.derivedFromL10n?.key {
-                Analytics.logEvent(localizationKey, parameters: [
-                    "context": "Button",
+                Mixpanel.mainInstance().track(event: localizationKey, properties: [
+                     "context": "Button",
                 ])
             }
         }
@@ -243,17 +251,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
-            let mirror = Mirror(reflecting: viewController)
-            Analytics.setScreenName(
-                viewController.debugPresentationTitle,
-                screenClass: String(describing: mirror.subjectType)
-            )
+            if let debugPresentationTitle = viewController.debugPresentationTitle {
+                Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
+            }
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
-                Analytics.logEvent(
-                    "alert_action_tap_\(localizationKey)",
-                    parameters: nil
+                Mixpanel.mainInstance().track(event:
+                    "ALERT_ACTION_TAP_\(localizationKey)"
                 )
             }
         }

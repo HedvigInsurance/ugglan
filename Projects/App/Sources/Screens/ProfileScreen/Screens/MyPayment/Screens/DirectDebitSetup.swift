@@ -177,9 +177,6 @@ extension DirectDebitSetup: Presentable {
                     self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                         data.payinMethodStatus = .pending
                     })
-
-                    AnalyticsCoordinator().logAddPaymentInfo()
-
                     ClearDirectDebitStatus.clear()
                 case .failure:
                     break
