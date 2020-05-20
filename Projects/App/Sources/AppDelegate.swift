@@ -251,17 +251,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         window.rootViewController = navigationController
         viewControllerWasPresented = { viewController in
-            let mirror = Mirror(reflecting: viewController)
-            Analytics.setScreenName(
-                viewController.debugPresentationTitle,
-                screenClass: String(describing: mirror.subjectType)
-            )
+            if let debugPresentationTitle = viewController.debugPresentationTitle {
+                Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
+            }
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
-                Analytics.logEvent(
-                    "alert_action_tap_\(localizationKey)",
-                    parameters: nil
+                Mixpanel.mainInstance().track(event:
+                    "ALERT_ACTION_TAP_\(localizationKey)"
                 )
             }
         }

@@ -42,6 +42,15 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
     var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
         AnyPresentable { () -> (Self.Matter, Future<Void>) in
             let (viewController, disposable) = self.materialize()
+            
+            if let presentableIdentifier = (self as? PresentableIdentifierExpressible)?.presentableIdentifier {
+                viewController.debugPresentationTitle = presentableIdentifier.value
+            } else {
+                let title = "\(type(of: self))"
+                if !title.hasPrefix("AnyPresentable<") {
+                    viewController.debugPresentationTitle = title
+                }
+            }
 
             return (viewController, Future { completion in
                 let bag = DisposeBag()
@@ -67,6 +76,15 @@ extension Presentable where Matter: UIViewController, Result == Future<Void> {
     var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
         AnyPresentable { () -> (Self.Matter, Self.Result) in
             let (viewController, future) = self.materialize()
+            
+            if let presentableIdentifier = (self as? PresentableIdentifierExpressible)?.presentableIdentifier {
+                viewController.debugPresentationTitle = presentableIdentifier.value
+            } else {
+                let title = "\(type(of: self))"
+                if !title.hasPrefix("AnyPresentable<") {
+                    viewController.debugPresentationTitle = title
+                }
+            }
 
             return (viewController, Future { completion in
                 let bag = DisposeBag()
