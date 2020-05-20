@@ -92,6 +92,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>MixpanelToken</key>
+	<string>94a297abd45b862207a9ba3f11f6bd8c</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict/>
