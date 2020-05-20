@@ -119,14 +119,14 @@ let project = Project(
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
             testAction: TestAction(targets: ["AppTests"]),
-            runAction: RunAction(executable: "Ugglan")
+            runAction: RunAction(executable: "Ugglan", arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:]))
         ),
         Scheme(
             name: "AppTests Record",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
             testAction: TestAction(targets: ["AppTestsRecord"]),
-            runAction: RunAction(executable: "Ugglan")
+            runAction: RunAction(executable: "Ugglan", arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:]))
         ),
     ]
 )
