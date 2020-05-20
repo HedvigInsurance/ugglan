@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct ContractPerilCollection {
     let presentDetailStyle: PresentationStyle

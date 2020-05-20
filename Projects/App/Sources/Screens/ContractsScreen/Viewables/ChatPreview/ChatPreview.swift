@@ -9,6 +9,8 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
+import hCore
+import hCoreUI
 
 struct ChatPreview {
     @Inject var client: ApolloClient

@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import SceneKit
 import SpriteKit
+import hCore
 
 struct ReferralsProgressBar {
     let incentiveSignal: ReadSignal<Int?>

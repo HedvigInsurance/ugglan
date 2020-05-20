@@ -10,6 +10,8 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct Offer {
     @Inject var client: ApolloClient

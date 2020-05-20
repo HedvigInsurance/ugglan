@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
 
 struct ReferralsInvitationAnonymous: Reusable {
     let count: Int?

@@ -1,0 +1,238 @@
+fragment EmbarkLinkFragment on EmbarkLink {
+    name
+    label
+}
+
+fragment MessageFragment on EmbarkMessage {
+    text
+    expressions {
+        ...ExpressionFragment
+    }
+}
+
+fragment BasicExpressionFragment on EmbarkExpression {
+    ... on EmbarkExpressionUnary {
+        expressionUnaryType: type
+        text
+    }
+    ... on EmbarkExpressionBinary {
+        expressionBinaryType: type
+        key
+        value
+        text
+    }
+}
+
+fragment ExpressionFragment on EmbarkExpression {
+    ...BasicExpressionFragment
+    ... on EmbarkExpressionMultiple {
+        expressionMultipleType: type
+        text
+        subExpressions {
+            ...BasicExpressionFragment
+              ... on EmbarkExpressionMultiple {
+                expressionMultipleType: type
+                text
+                subExpressions {
+                    ...BasicExpressionFragment
+                      ... on EmbarkExpressionMultiple {
+                        expressionMultipleType: type
+                        text
+                        subExpressions {
+                            ...BasicExpressionFragment
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fragment ResponseFragment on EmbarkResponse {
+    ... on EmbarkMessage {
+        ...MessageFragment
+    }
+    ... on EmbarkGroupedResponse {
+        component
+        items {
+            ...MessageFragment
+        }
+        title {
+            text
+        }
+    }
+}
+
+fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
+    ... on EmbarkAPIGraphQLSingleVariable {
+        key
+        from
+        as
+    }
+    ... on EmbarkAPIGraphQLGeneratedVariable {
+        key
+        storeAs
+        type
+    }
+    ... on EmbarkAPIGraphQLMultiActionVariable {
+        key
+        variables {
+            ... on EmbarkAPIGraphQLSingleVariable {
+                key
+                from
+                as
+            }
+            ... on EmbarkAPIGraphQLGeneratedVariable {
+                key
+                storeAs
+                type
+            }
+            ... on EmbarkAPIGraphQLMultiActionVariable {
+                key
+                variables {
+                    ... on EmbarkAPIGraphQLSingleVariable {
+                        key
+                        from
+                        as
+                    }
+                    ... on EmbarkAPIGraphQLGeneratedVariable {
+                        key
+                        storeAs
+                        type
+                    }
+                }
+            }
+        }
+    }
+}
+
+fragment ApiFragment on EmbarkApi {
+    ... on EmbarkApiGraphQLQuery {
+        next {
+            ...EmbarkLinkFragment
+        }
+        query
+        variables {
+            ...ApiVariablesFragment
+        }
+    }
+    ... on EmbarkApiGraphQLMutation {
+        next {
+            ...EmbarkLinkFragment
+        }
+        mutation
+        variables {
+            ...ApiVariablesFragment
+        }
+    }
+}
+
+fragment EmbarkRedirectSingle on EmbarkRedirect {
+  ... on EmbarkRedirectUnaryExpression {
+    unaryType: type
+    to
+    passedExpressionKey
+    passedExpressionValue
+  }
+  ... on EmbarkRedirectBinaryExpression {
+    binaryType: type
+    to
+    key
+    value
+    passedExpressionKey
+    passedExpressionValue
+  }
+}
+
+fragment EmbarkRedirectFragment on EmbarkRedirect {
+    ...EmbarkRedirectSingle
+  ... on EmbarkRedirectMultipleExpressions {
+    multipleType: type
+    to
+      passedExpressionKey
+    passedExpressionValue
+    subExpressions {
+      ...ExpressionFragment
+    }
+  }
+}
+
+query EmbarkStory($name: String!) {
+    embarkStory(name: $name) {
+        id
+        startPassage
+        name
+        passages {
+            id
+            name
+            allLinks {
+                ...EmbarkLinkFragment
+            }
+            response {
+                ...ResponseFragment
+            }
+            messages {
+                ...MessageFragment
+            }
+            api {
+                ...ApiFragment
+            }
+            redirects {
+              ...EmbarkRedirectFragment
+            }
+            action {
+                ... on EmbarkActionCore {
+                    component
+                }
+                ... on EmbarkTextAction {
+                    component
+                    textActionData: data {
+                        key
+                        placeholder
+                        link {
+                            ...EmbarkLinkFragment
+                        }
+                    }
+                }
+                ... on EmbarkNumberAction {
+                    component
+                    numberActionData: data {
+                        key
+                        placeholder
+                        unit
+                        maxValue
+                        minValue
+                        link {
+                            ...EmbarkLinkFragment
+                        }
+                    }
+                }
+                ... on EmbarkTextActionSet {
+                    textActionSetData: data {
+                        link {
+                            ...EmbarkLinkFragment
+                        }
+                        textActions {
+                            data {
+                              key
+                                placeholder
+                            }
+                        }
+                    }
+                }
+                ... on EmbarkSelectAction {
+                    component
+                    selectActionData: data {
+                        options {
+                            keys
+                            values
+                            link {
+                                ...EmbarkLinkFragment
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

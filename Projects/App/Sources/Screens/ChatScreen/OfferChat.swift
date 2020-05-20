@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct OfferChat {
     @Inject var client: ApolloClient
@@ -38,7 +39,7 @@ extension OfferChat: Presentable {
                                 duration: 0.25,
                                 options: .transitionCrossDissolve,
                                 animations: {
-                                    ApplicationState.preserveState(.onboardingChat)
+                                    ApplicationState.preserveState(.onboarding)
                                     UIApplication.shared.appDelegate.logout()
                                 }, completion: nil
                             )

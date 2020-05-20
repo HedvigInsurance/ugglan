@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 extension UIView {
     var isPossiblyVisible: Signal<Bool> {

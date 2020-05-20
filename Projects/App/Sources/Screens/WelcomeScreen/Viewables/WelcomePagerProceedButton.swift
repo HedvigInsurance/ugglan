@@ -9,6 +9,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
+import hCoreUI
 
 struct WelcomePagerProceedButton {
     let button: Button

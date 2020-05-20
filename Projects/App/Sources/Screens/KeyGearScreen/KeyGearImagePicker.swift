@@ -10,6 +10,7 @@ import Foundation
 import Photos
 import Presentation
 import UIKit
+import hCore
 
 struct KeyGearImagePicker: Presentable {
     let presentingViewController: UIViewController

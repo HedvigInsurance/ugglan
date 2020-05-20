@@ -9,6 +9,7 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import hCore
 
 struct CachedImage {
     let url: URL

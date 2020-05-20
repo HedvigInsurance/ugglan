@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct MyCharityRow {
     let charityNameSignal = ReadWriteSignal<String?>(nil)

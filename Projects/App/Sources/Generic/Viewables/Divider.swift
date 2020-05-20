@@ -9,6 +9,7 @@
 import Flow
 import Foundation
 import UIKit
+import hCore
 
 struct Divider {
     let backgroundColor: UIColor

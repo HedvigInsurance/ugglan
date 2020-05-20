@@ -10,6 +10,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct WelcomePagerScreen {
     let title: String

@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct BubbleLoading {
     let originatingView: UIView

@@ -13,6 +13,7 @@ import Foundation
 import Presentation
 import SafariServices
 import UIKit
+import hCore
 
 struct InsuranceDocument {
     @Inject var client: ApolloClient

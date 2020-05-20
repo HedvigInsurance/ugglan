@@ -25,17 +25,31 @@ do {
     exit(1)
 }
 
-let targetURL = sourceRootURL
+let sourceUrls = [
+    sourceRootURL
     .appendingPathComponent("App")
-    .appendingPathComponent("Sources")
-    .appendingPathComponent("Data")
+    .appendingPathComponent("GraphQL"),
+    sourceRootURL
+    .appendingPathComponent("Embark")
+    .appendingPathComponent("GraphQL")
+]
 
-let codegenOptions = ApolloCodegenOptions(targetRootURL: targetURL)
+sourceUrls.forEach { sourceUrl in
+    let codegenOptions = ApolloCodegenOptions(
+        outputFormat: .singleFile(atFileURL: sourceUrl
+            .appendingPathComponent("../")
+            .appendingPathComponent("Sources")
+            .appendingPathComponent("Derived")
+            .appendingPathComponent("API.swift")
+        ),
+        urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
+    )
 
-do {
-    try ApolloCodegen.run(from: targetURL,
-                          with: cliFolderURL,
-                          options: codegenOptions)
-} catch {
-    exit(1)
+    do {
+        try ApolloCodegen.run(from: sourceUrl,
+                              with: cliFolderURL,
+                              options: codegenOptions)
+    } catch {
+        exit(1)
+    }
 }

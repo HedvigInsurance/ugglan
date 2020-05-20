@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
 
 struct CategoryPicker {
     let onSelectCategorySignal: Signal<KeyGearItemCategory>

@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCoreUI
 
 struct ContractInsurableLimitRow: Hashable {
     static func == (lhs: ContractInsurableLimitRow, rhs: ContractInsurableLimitRow) -> Bool {

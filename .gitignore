@@ -5,17 +5,11 @@
 ## Build generated
 build/
 DerivedData/
-Projects/App/Sources/Assets/Assets.swift
-Projects/App/Sources/Assets/Strings.swift
-Src/Data/schema.json
-Src/Data/API.swift
+Derived/
 Carthage
-test.xcodeproj
-production.xcodeproj
-Ugglan.xcworkspace
-Ugglan.xcodeproj
+*.xcworkspace
+*.xcodeproj
 UITestsImages/FailureDiffs
-Src/Data/operationIDs.json
 Localizable.strings
 
 ## Various settings

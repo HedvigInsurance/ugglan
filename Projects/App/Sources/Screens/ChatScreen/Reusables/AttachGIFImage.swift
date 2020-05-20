@@ -10,6 +10,8 @@ import Form
 import Foundation
 import Kingfisher
 import UIKit
+import hCoreUI
+import hCore
 
 struct AttachGIFImage {
     let url: URL

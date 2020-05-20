@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct CommonClaimEmergency {
     let commonClaimCard: CommonClaimCard

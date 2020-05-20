@@ -1,49 +1,5 @@
 import ProjectDescription
-
-let carthageFrameworks: [TargetDependency] = [
-    .framework(path: "../../Carthage/Build/iOS/Adyen.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Adyen3DS2.framework"),
-    .framework(path: "../../Carthage/Build/iOS/AdyenCard.framework"),
-    .framework(path: "../../Carthage/Build/iOS/AdyenDropIn.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Crashlytics.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Fabric.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FBSDKCoreKit.framework"),
-    .framework(path: "../../Carthage/Build/iOS/GoogleUtilities.framework"),
-    .framework(path: "../../Carthage/Build/iOS/GoogleAppMeasurement.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Protobuf.framework"),
-    .framework(path: "../../Carthage/Build/iOS/BoringSSL-GRPC.framework"),
-    .framework(path: "../../Carthage/Build/iOS/leveldb-library.framework"),
-    .framework(path: "../../Carthage/Build/iOS/gRPC-Core.framework"),
-    .framework(path: "../../Carthage/Build/iOS/gRPC-C++.framework"),
-    .framework(path: "../../Carthage/Build/iOS/PromisesObjC.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseInstallations.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseMessaging.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseFirestore.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseABTesting.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseInstanceID.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseRemoteConfig.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseDynamicLinks.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseAnalytics.framework"),
-    .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),
-    .framework(path: "../../Carthage/Build/iOS/abseil.framework"),
-    .framework(path: "../../Carthage/Build/iOS/nanopb.framework"),
-    .framework(path: "../../Carthage/Build/iOS/Kingfisher.framework"),
-]
-
-let spmFrameworks: [TargetDependency] = [
-    .package(product: "Apollo"),
-    .package(product: "ApolloWebSocket"),
-    .package(product: "Flow"),
-    .package(product: "Form"),
-    .package(product: "Presentation"),
-    .package(product: "FlowFeedback"),
-    .package(product: "UICollectionView-AnimatedScroll"),
-    .package(product: "Ease"),
-    .package(product: "DynamicColor"),
-    .package(product: "Disk"),
-    .package(product: "SnapKit"),
-    .package(product: "MarkdownKit"),
-]
+import ProjectDescriptionHelpers
 
 let sdkFrameworks: [TargetDependency] = [
     .sdk(name: "libc++.tbd"),
@@ -53,110 +9,41 @@ let sdkFrameworks: [TargetDependency] = [
     .sdk(name: "AdSupport.framework"),
 ]
 
-func + <Key, Value>(l: [Key: Value], r: [Key: Value]) -> [Key: Value] {
-    var newDict = [Key: Value]()
-
-    for (key, value) in l {
-        newDict[key] = value
-    }
-
-    for (key, value) in r {
-        newDict[key] = value
-    }
-
-    return newDict
-}
-
-let team = "AW656G5PFM"
-
-let baseSettings: [String: SettingValue] = [
-    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
-    "OTHER_LDFLAGS": "-ObjC",
-    "DEVELOPMENT_TEAM": "AW656G5PFM",
-    "SDKROOT": "iphoneos",
+let ugglanConfigurations: [CustomConfiguration] = [
+    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig"))
 ]
 
-let stagingDebugSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"]
-let stagingReleaseSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"]
+let hedvigConfigurations: [CustomConfiguration] = [
+    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig"))
+]
 
-let stagingSettings = Settings(
-    base: baseSettings,
-    configurations: [
-        .debug(
-            name: "debug",
-            settings: stagingDebugSettings,
-            xcconfig: nil
-        ),
-        .release(
-            name: "release",
-            settings: stagingReleaseSettings,
-            xcconfig: nil
-        ),
+let testsConfigurations: [CustomConfiguration] = [
+    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig"))
+]
+
+let testsRecordConfigurations: [CustomConfiguration] = [
+    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING RECORD_MODE"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING RECORD_MODE"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig"))
+]
+
+let appDependencies: [TargetDependency] = [
+    [
+        .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
+        .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI"))
     ],
-    defaultSettings: .recommended
-)
-
-let productionDebugSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"]
-let productionReleaseSettings = baseSettings + ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"]
-
-let productionSettings = Settings(
-    base: baseSettings,
-    configurations: [
-        .debug(
-            name: "debug",
-            settings: productionDebugSettings,
-            xcconfig: nil
-        ),
-        .release(
-            name: "release",
-            settings: productionReleaseSettings,
-            xcconfig: nil
-        ),
-    ],
-    defaultSettings: .recommended
-)
-
-let unitTestsSettings = Settings(
-    base: baseSettings,
-    configurations: [
-        .debug(
-            name: "debug",
-            settings: stagingDebugSettings,
-            xcconfig: nil
-        ),
-    ],
-    defaultSettings: .recommended
-)
-
-let unitTestsRecordSettings = Settings(
-    base: baseSettings,
-    configurations: [
-        .debug(
-            name: "debug",
-            settings: stagingDebugSettings,
-            xcconfig: nil
-        ),
-    ],
-    defaultSettings: .recommended
-)
+    sdkFrameworks,
+    ExternalDependencies.allCases.map { externalDependency in
+        externalDependency.targetDependencies()
+    }.flatMap { $0 }
+].flatMap { $0 }
 
 let project = Project(
     name: "Ugglan",
-    organizationName: "Hedvig AB",
-    packages: [
-        .package(url: "https://github.com/apollographql/apollo-ios.git", .upToNextMajor(from: "0.25.0")),
-        .package(url: "https://github.com/HedvigInsurance/flow.git", .branch("master")),
-        .package(url: "https://github.com/HedvigInsurance/form.git", .branch("master")),
-        .package(url: "https://github.com/HedvigInsurance/presentation.git", .branch("master")),
-        .package(url: "https://github.com/HedvigInsurance/flowfeedback.git", .branch("master")),
-        .package(url: "https://github.com/HedvigInsurance/UICollectionView-AnimatedScroll.git", .branch("master")),
-        .package(url: "https://github.com/HedvigInsurance/ease.git", .branch("master")),
-        .package(url: "https://github.com/hedviginsurance/MarkdownKit.git", .branch("master")),
-        .package(url: "https://github.com/yannickl/DynamicColor.git", .upToNextMajor(from: "4.2.1")),
-        .package(url: "https://github.com/saoudrizwan/Disk.git", .upToNextMajor(from: "0.6.4")),
-        .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.1")),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.7.2")),
-    ],
+    organizationName: "Hedvig",
+    packages: [],
     targets: [
         Target(
             name: "Ugglan",
@@ -168,42 +55,38 @@ let project = Project(
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
             actions: [],
-            dependencies: [
-                spmFrameworks,
-                carthageFrameworks,
-                sdkFrameworks,
-            ].flatMap { $0 },
-            settings: stagingSettings
+            dependencies: appDependencies,
+            settings: Settings(configurations: ugglanConfigurations)
         ),
         Target(
-            name: "Ugglan-UnitTests",
+            name: "AppTests",
             platform: .iOS,
             product: .unitTests,
-            bundleId: "com.hedvig.test.unittests",
+            bundleId: "com.hedvig.AppTests",
             deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
-            infoPlist: "UnitTests/Info.plist",
-            sources: ["UnitTests/**"],
+            infoPlist: .default,
+            sources: ["Tests/**"],
             resources: [],
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .package(product: "SnapshotTesting")],
+                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework")],
             ].flatMap { $0 },
-            settings: unitTestsSettings
+            settings: Settings(configurations: testsConfigurations)
         ),
         Target(
-            name: "Ugglan-UnitTests-Record",
+            name: "AppTestsRecord",
             platform: .iOS,
             product: .unitTests,
-            bundleId: "com.hedvig.test.unittests",
+            bundleId: "com.hedvig.AppTests",
             deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
-            infoPlist: "UnitTests/Info.plist",
-            sources: ["UnitTests/**"],
+            infoPlist: .default,
+            sources: ["Tests/**"],
             resources: [],
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .package(product: "SnapshotTesting")],
+                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework")],
             ].flatMap { $0 },
-            settings: unitTestsRecordSettings
+            settings: Settings(configurations: testsRecordConfigurations)
         ),
         Target(
             name: "Hedvig",
@@ -214,12 +97,8 @@ let project = Project(
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
-            dependencies: [
-                spmFrameworks,
-                carthageFrameworks,
-                sdkFrameworks,
-            ].flatMap { $0 },
-            settings: productionSettings
+            dependencies: appDependencies,
+            settings: Settings(configurations: hedvigConfigurations)
         ),
     ],
     schemes: [
@@ -236,18 +115,18 @@ let project = Project(
             runAction: RunAction(executable: "Hedvig")
         ),
         Scheme(
-            name: "UnitTests",
+            name: "AppTests",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
-            testAction: TestAction(targets: ["Ugglan-UnitTests"]),
-            runAction: RunAction(executable: "Ugglan")
+            testAction: TestAction(targets: ["AppTests"]),
+            runAction: RunAction(executable: "Ugglan", arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:]))
         ),
         Scheme(
-            name: "UnitTests Record Snapshots",
+            name: "AppTests Record",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
-            testAction: TestAction(targets: ["Ugglan-UnitTests-Record"]),
-            runAction: RunAction(executable: "Ugglan")
+            testAction: TestAction(targets: ["AppTestsRecord"]),
+            runAction: RunAction(executable: "Ugglan", arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:]))
         ),
     ]
 )

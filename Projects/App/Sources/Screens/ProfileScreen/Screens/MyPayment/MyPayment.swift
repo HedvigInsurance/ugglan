@@ -13,6 +13,8 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct MyPayment {
     @Inject var client: ApolloClient

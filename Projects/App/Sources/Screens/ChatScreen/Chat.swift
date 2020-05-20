@@ -12,6 +12,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import hCore
 
 struct Chat {
     @Inject var client: ApolloClient

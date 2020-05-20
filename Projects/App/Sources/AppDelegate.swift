@@ -19,6 +19,8 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import hCore
+import hCoreUI
 
 let log = Logger.self
 
@@ -180,7 +182,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if result == .accept {
                     if ApplicationState.currentState?.isOneOf([.marketing]) == true {
                         self.bag += rootViewController.present(
-                            OnboardingChat(),
+                            Onboarding(),
                             options: [.prefersNavigationBarHidden(false)]
                         )
                     }
@@ -223,6 +225,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        
+        Button.trackingHandler = { button in
+            if let localizationKey = button.title.value.derivedFromL10n?.key {
+                Analytics.logEvent(localizationKey, parameters: [
+                    "context": "Button",
+                ])
+            }
+        }
+        
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()

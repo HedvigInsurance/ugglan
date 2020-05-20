@@ -11,6 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct WhatsNew {
     let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?>

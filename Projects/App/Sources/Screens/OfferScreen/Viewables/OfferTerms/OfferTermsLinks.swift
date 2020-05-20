@@ -11,6 +11,8 @@ import Form
 import Foundation
 import SafariServices
 import UIKit
+import hCore
+import hCoreUI
 
 struct OfferTermsLinks {
     @Inject var client: ApolloClient

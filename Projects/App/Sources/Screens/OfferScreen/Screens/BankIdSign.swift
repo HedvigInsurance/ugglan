@@ -11,6 +11,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct BankIdSign {
     @Inject var client: ApolloClient

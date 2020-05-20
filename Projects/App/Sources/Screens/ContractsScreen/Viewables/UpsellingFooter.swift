@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
+import hCoreUI
 
 struct UpsellingFooter {
     @Inject var client: ApolloClient

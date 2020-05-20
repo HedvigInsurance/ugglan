@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
 
 struct AudioPlayer {
     let audioPlayerSignal = ReadWriteSignal<AVAudioPlayer?>(nil)

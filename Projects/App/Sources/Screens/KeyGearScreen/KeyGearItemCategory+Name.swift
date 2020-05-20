@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import hCore
 
 extension KeyGearItemCategory {
     var name: String {

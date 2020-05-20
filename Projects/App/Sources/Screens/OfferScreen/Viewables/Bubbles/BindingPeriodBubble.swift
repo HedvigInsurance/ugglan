@@ -8,6 +8,8 @@
 import Flow
 import Foundation
 import UIKit
+import hCore
+import hCoreUI
 
 struct BindingPeriodBubble {}
 

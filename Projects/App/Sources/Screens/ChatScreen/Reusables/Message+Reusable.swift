@@ -11,6 +11,8 @@ import Form
 import Foundation
 import Kingfisher
 import UIKit
+import hCore
+import hCoreUI
 
 private let fiveMinutes: TimeInterval = 60 * 5
 

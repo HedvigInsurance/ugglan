@@ -10,6 +10,7 @@ import Foundation
 import Presentation
 import UIKit
 import UserNotifications
+import hCore
 
 enum PushNotificationsRegisterError: Error {
     case canceled

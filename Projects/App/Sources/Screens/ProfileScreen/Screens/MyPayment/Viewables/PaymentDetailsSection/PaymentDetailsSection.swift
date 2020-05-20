@@ -12,6 +12,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct PaymentDetailsSection {
     @Inject var client: ApolloClient

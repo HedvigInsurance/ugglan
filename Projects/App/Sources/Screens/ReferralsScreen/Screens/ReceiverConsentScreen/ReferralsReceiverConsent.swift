@@ -10,6 +10,8 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 enum ReferralsReceiverConsentResult {
     case accept, decline

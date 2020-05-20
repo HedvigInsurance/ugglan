@@ -11,6 +11,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct MyPaymentRow {
     let monthlyCostSignal = ReadWriteSignal<Int?>(nil)

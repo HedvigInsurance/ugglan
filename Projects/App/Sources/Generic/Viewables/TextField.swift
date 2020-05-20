@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import hCore
 
 struct TextField {
     let value: ReadWriteSignal<String>

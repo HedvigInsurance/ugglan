@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hCore
+import hCoreUI
 
 struct PriceBubble {
     let dataSignal = ReadWriteSignal<OfferQuery.Data?>(nil)

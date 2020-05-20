@@ -11,6 +11,7 @@ import Foundation
 import Presentation
 import UIKit
 import WebKit
+import hCore
 
 struct WebOnboarding {}
 
@@ -60,8 +61,6 @@ extension WebOnboarding: Presentable {
         titleHedvigLogo.snp.makeConstraints { make in
             make.width.equalTo(80)
         }
-
-        ApplicationState.preserveState(.onboardingChat)
 
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .transparent

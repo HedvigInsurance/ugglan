@@ -1,13 +1,13 @@
 //
 //  TextStyle.swift
-//  Hedvig
+//  Ugglan
 //
-//  Created by Sam Pettersson on 2018-12-17.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
+//  Created by sam on 18.5.20.
+//  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Form
 import Foundation
+import Form
 
 extension TextStyle {
     func centered() -> TextStyle {

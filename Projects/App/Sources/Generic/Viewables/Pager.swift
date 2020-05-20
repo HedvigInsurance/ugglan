@@ -10,6 +10,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hCore
 
 struct PagerScreen {
     let id: UUID

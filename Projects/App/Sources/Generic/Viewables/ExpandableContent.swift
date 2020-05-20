@@ -8,6 +8,8 @@
 import Flow
 import Foundation
 import UIKit
+import hCore
+import hCoreUI
 
 struct ExpandableContent<Content: Viewable> where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
     let content: Content

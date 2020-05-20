@@ -12,6 +12,7 @@ import Flow
 import Foundation
 import UIKit
 import Vision
+import hCore
 
 extension AddKeyGearItem {
     private enum Category: String {

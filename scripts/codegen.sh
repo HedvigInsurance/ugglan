@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+set -e
+set -x
+
 buildDir=$(xcodebuild \
 -workspace Ugglan.xcworkspace \
 -scheme "Apollo Codegen" \

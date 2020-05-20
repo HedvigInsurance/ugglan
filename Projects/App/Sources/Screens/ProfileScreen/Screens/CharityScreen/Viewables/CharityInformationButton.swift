@@ -9,6 +9,8 @@ import Flow
 import Foundation
 import SnapKit
 import UIKit
+import hCore
+import hCoreUI
 
 struct CharityInformationButton {
     let presentingViewController: UIViewController
