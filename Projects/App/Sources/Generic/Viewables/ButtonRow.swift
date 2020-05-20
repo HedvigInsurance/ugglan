@@ -6,13 +6,12 @@
 //  Copyright © 2019 Hedvig AB. All rights reserved.
 //
 
-import Firebase
-import FirebaseAnalytics
 import Flow
 import Form
 import Foundation
 import UIKit
 import hCore
+import Mixpanel
 
 struct ButtonRow {
     let text: ReadWriteSignal<String>
@@ -62,8 +61,8 @@ extension ButtonRow: Viewable {
 
         bag += events.onSelect.withLatestFrom(text.atOnce().plain()).onValue { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
-                Analytics.logEvent(localizationKey, parameters: [
-                    "context": "ButtonRow",
+                Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
+                     "context": "ButtonRow",
                 ])
             }
         }

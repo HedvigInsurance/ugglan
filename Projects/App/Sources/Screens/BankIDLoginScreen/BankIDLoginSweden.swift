@@ -125,9 +125,9 @@ extension BankIDLoginSweden: Presentable {
                 if authState == .success {
                     let appDelegate = UIApplication.shared.appDelegate
 
-//                    if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-//                        appDelegate.registerFCMToken(fcmToken)
-//                    }
+                    if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+                        appDelegate.registerFCMToken(fcmToken)
+                    }
 
                     AnalyticsCoordinator().setUserId()
 

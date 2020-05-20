@@ -77,7 +77,7 @@ extension ContractTable: Viewable {
         }
 
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .noInsets)
-
+        
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
         bag += tableKit.view.addTableHeaderView(ContractTableHeader(presentingViewController: presentingViewController))
         bag += tableKit.view.addTableFooterView(UpsellingFooter())

@@ -14,6 +14,7 @@ github "pointfreeco/swift-snapshot-testing" ~> 1.6
 github "facebook/facebook-ios-sdk" == 5.13.0
 github "https://github.com/onevcat/Kingfisher" == 5.13.4
 github "adyen/adyen-ios" "3.3.0"
+github "mixpanel/mixpanel-swift"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"

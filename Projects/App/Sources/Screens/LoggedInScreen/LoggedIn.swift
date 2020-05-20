@@ -12,6 +12,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import Mixpanel
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -139,6 +140,12 @@ extension LoggedIn: Presentable {
         }
 
         bag += handleOpenReferrals(tabBarController: tabBarController)
+        
+        bag += tabBarController.signal(for: \.selectedViewController).onValue { viewController in
+            if let debugPresentationTitle = viewController?.debugPresentationTitle {
+                Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
+            }
+        }
 
         return (tabBarController, bag)
     }

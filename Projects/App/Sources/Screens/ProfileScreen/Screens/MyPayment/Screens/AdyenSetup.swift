@@ -274,8 +274,6 @@ extension AdyenSetup: Presentable {
             self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
                 data.payinMethodStatus = .active
             })
-
-            AnalyticsCoordinator().logAddPaymentInfo()
         })
     }
 }
