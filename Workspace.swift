@@ -18,6 +18,12 @@ let workspace = Workspace(
         "Projects/hCoreUI",
     ],
     schemes: [
+        Scheme(name: "WorkspaceApps",
+            shared: true,
+            buildAction: BuildAction(targets: [.project(path: "Projects/App", target: "Ugglan"), .project(path: "Projects/Embark", target: "EmbarkExample")]),
+            testAction: nil,
+            runAction: nil,
+            archiveAction: nil),
         Scheme(name: "WorkspaceTests",
                shared: true,
                buildAction: nil,
