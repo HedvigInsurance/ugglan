@@ -11,33 +11,28 @@ let sdkFrameworks: [TargetDependency] = [
 
 let ugglanConfigurations: [CustomConfiguration] = [
     .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
-    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig"))
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
 ]
 
 let hedvigConfigurations: [CustomConfiguration] = [
     .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
-    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig"))
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
 ]
 
 let testsConfigurations: [CustomConfiguration] = [
     .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
-    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig"))
-]
-
-let testsRecordConfigurations: [CustomConfiguration] = [
-    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING RECORD_MODE"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
-    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING RECORD_MODE"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig"))
+    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
 ]
 
 let appDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
-        .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI"))
+        .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
     ],
     sdkFrameworks,
     ExternalDependencies.allCases.map { externalDependency in
         externalDependency.targetDependencies()
-    }.flatMap { $0 }
+    }.flatMap { $0 },
 ].flatMap { $0 }
 
 let project = Project(
@@ -74,21 +69,6 @@ let project = Project(
             settings: Settings(configurations: testsConfigurations)
         ),
         Target(
-            name: "AppTestsRecord",
-            platform: .iOS,
-            product: .unitTests,
-            bundleId: "com.hedvig.AppTests",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
-            infoPlist: .default,
-            sources: ["Tests/**"],
-            resources: [],
-            dependencies: [
-                [.target(name: "Ugglan"),
-                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework")],
-            ].flatMap { $0 },
-            settings: Settings(configurations: testsRecordConfigurations)
-        ),
-        Target(
             name: "Hedvig",
             platform: .iOS,
             product: .app,
@@ -117,16 +97,9 @@ let project = Project(
         Scheme(
             name: "AppTests",
             shared: true,
-            buildAction: BuildAction(targets: ["Ugglan"]),
-            testAction: TestAction(targets: ["AppTests"]),
-            runAction: RunAction(executable: "Ugglan", arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:]))
-        ),
-        Scheme(
-            name: "AppTests Record",
-            shared: true,
-            buildAction: BuildAction(targets: ["Ugglan"]),
-            testAction: TestAction(targets: ["AppTestsRecord"]),
-            runAction: RunAction(executable: "Ugglan", arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:]))
+            buildAction: nil,
+            testAction: TestAction(targets: ["AppTests"], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:])),
+            runAction: nil
         ),
     ]
 )

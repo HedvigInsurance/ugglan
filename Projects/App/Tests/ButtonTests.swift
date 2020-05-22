@@ -5,13 +5,18 @@
 //  Created by Sam Pettersson on 2019-03-30.
 //
 
+import hCoreUI
 import SnapshotTesting
 import Ugglan
 import UIKit
 import XCTest
-import hCoreUI
 
-class ButtonTests: SnapShotTestCase {
+class ButtonTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        setupScreenShotTests()
+    }
+
     func testStandard() {
         let button = Button(
             title: "Lorem ipsum",

@@ -7,21 +7,21 @@
 //
 
 import Foundation
-import XCTest
+@testable import hCoreUI
 import UIKit
-import hCore
+import XCTest
 
 final class ColorTests: XCTestCase {
     func testHedvigColors() {
         let view = UIView()
-        view.backgroundColor = .hedvig(.primaryTintColor)
+        view.backgroundColor = .brand(.primaryTintColor)
     }
-    
+
     func testDynamicPolyfill() {
         let color = UIColor { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? .black : .white
         }
-                
+
         XCTAssert(
             color.resolvedColor(
                 with: UITraitCollection(userInterfaceStyle: .dark)
