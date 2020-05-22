@@ -21,7 +21,7 @@ class ButtonTests: XCTestCase {
         let button = Button(
             title: "Lorem ipsum",
             type: .standard(
-                backgroundColor: .systemPink,
+                backgroundColor: .red,
                 textColor: .white
             )
         )
