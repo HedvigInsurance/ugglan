@@ -152,6 +152,7 @@ extension Project {
         var testsDependencies: [TargetDependency] = [
             .target(name: "\(name)"),
             .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
+            .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework")
         ]
         dependencies.forEach { testsDependencies.append(.project(target: "\($0)Testing", path: .relativeToRoot("Projects/\($0)"))) }
 
@@ -221,6 +222,22 @@ extension Project {
                        organizationName: "Hedvig",
                        settings: Settings(configurations: projectConfigurations),
                        targets: projectTargets,
+                       schemes: [
+                            Scheme(
+                                name: name,
+                                shared: true,
+                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
+                                testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"))], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:])) : nil,
+                                runAction: nil
+                            ),
+                            targets.contains(.example) ? Scheme(
+                                name: "\(name)Example",
+                                shared: true,
+                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: "\(name)Example")]),
+                                testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"))], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:])),
+                                runAction: RunAction(executable: TargetReference(stringLiteral: "\(name)Example"))
+                        ) : nil
+                        ].compactMap { $0 },
                        additionalFiles: [
                            includesGraphQL ? .folderReference(path: "GraphQL") : nil,
                        ].compactMap { $0 })

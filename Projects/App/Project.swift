@@ -64,7 +64,8 @@ let project = Project(
             resources: [],
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework")],
+                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
+                .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
             ].flatMap { $0 },
             settings: Settings(configurations: testsConfigurations)
         ),

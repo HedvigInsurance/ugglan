@@ -17,8 +17,10 @@ struct TooltipButton {
 
 extension TooltipButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
+        let view = UILabel(value: "fish", style: .brand(.body(color: .primary)))
         let bag = DisposeBag()
+        
+        
         
         return (view, bag)
     }
