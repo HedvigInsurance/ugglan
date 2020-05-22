@@ -87,6 +87,7 @@ let project = Project(
             name: "Ugglan",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
+            testAction: TestAction(targets: ["AppTests"], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:])),
             runAction: RunAction(executable: "Ugglan")
         ),
         Scheme(
@@ -94,13 +95,6 @@ let project = Project(
             shared: true,
             buildAction: BuildAction(targets: ["Hedvig"]),
             runAction: RunAction(executable: "Hedvig")
-        ),
-        Scheme(
-            name: "AppTests",
-            shared: true,
-            buildAction: nil,
-            testAction: TestAction(targets: ["AppTests"], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:])),
-            runAction: nil
-        ),
+        )
     ]
 )
