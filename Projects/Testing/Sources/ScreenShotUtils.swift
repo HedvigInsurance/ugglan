@@ -30,3 +30,14 @@ public func materializeViewable<View: Viewable>(
     onCreated(matter)
     bag.dispose()
 }
+
+public func materializeViewable<View: Viewable, SignalKind, SignalValue>(
+    _ viewable: View,
+    onCreated: (_ view: View.Matter) -> Void
+) where View.Events == ViewableEvents, View.Matter: UIView, View.Result == CoreSignal<SignalKind, SignalValue> {
+    let bag = DisposeBag()
+    let (matter, result) = viewable.materialize(events: ViewableEvents(wasAddedCallbacker: Callbacker()))
+    matter.layoutIfNeeded()
+    onCreated(matter)
+    let _ = result.hold(bag)
+}
