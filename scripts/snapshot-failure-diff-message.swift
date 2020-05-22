@@ -5,7 +5,7 @@ import Foundation
 let fileManager = FileManager()
 
 let cwd = fileManager.currentDirectoryPath
-let failureDir = "\(cwd)/Projects/App/Tests/__SnapshotFailures__"
+let failureDir = "/tmp/__SnapshotFailures__"
 
 if !fileManager.fileExists(atPath: failureDir) {
     exit(0)
@@ -43,8 +43,11 @@ func uploadFile(_ file: URL, onCompletion: @escaping (_ link: String) -> Void) {
     task.resume()
 }
 
-let actualAndReference = allFailures.map {
-    (failure: $0, reference: URL(string: $0.absoluteString.replacingOccurrences(of: "__SnapshotFailures__", with: "__Snapshots__"))!)
+let actualAndReference = allFailures.map { failure -> (failure: URL, reference: URL) in
+    let enumerator = FileManager.default.enumerator(atPath: cwd)
+    let filePaths = enumerator?.allObjects as! [String]
+    let reference = filePaths.first { $0.contains(failure.lastPathComponent) }
+    return (failure: failure, reference: URL(string: reference!)!)
 }.map { failure, reference -> (failure: String, reference: String) in
     var failureImageLink: String = ""
     var referenceImageLink: String = ""
@@ -68,13 +71,13 @@ let actualAndReference = allFailures.map {
 }
 
 let githubComment = """
-AppTests found a missmatch in screenshots:
+WorkspaceTests found a missmatch in screenshots:
 
 Failure  |  Reference
 :-------------------------:|:-------------------------:
 \(actualAndReference.map { "![](\($0.failure)) | ![](\($0.reference))" }.joined(separator: "\n"))
 
-If you changed styling which expects this outcome run the `AppTests Record` scheme and commit the updated reference screenshots.
+If you changed styling which expects this outcome run the `WorkspaceTests Record` scheme and commit the updated reference screenshots.
 """
 
 print(githubComment)

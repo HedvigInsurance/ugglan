@@ -87,7 +87,10 @@ let project = Project(
             name: "Ugglan",
             shared: true,
             buildAction: BuildAction(targets: ["Ugglan"]),
-            testAction: TestAction(targets: ["AppTests"], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "$(PROJECT_DIR)/Tests/__SnapshotFailures__"], launch: [:])),
+            testAction: TestAction(
+                targets: [TestableTarget(target: TargetReference(stringLiteral: "AppTests"), parallelizable: true)],
+                          arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])
+                    ),
             runAction: RunAction(executable: "Ugglan")
         ),
         Scheme(
