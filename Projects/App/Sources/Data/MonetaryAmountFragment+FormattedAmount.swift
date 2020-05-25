@@ -15,6 +15,10 @@ extension MonetaryAmountFragment {
             if let floatValue = Float(amount) {
                 return "\(Int(floatValue)) kr"
             }
+        case "NOK":
+            if let floatValue = Float(amount) {
+               return "\(Int(floatValue)) kr"
+            }
         default:
             return "\(amount) \(currency)"
         }
