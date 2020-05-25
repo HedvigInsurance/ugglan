@@ -55,8 +55,8 @@ extension KeyGearValuation: Presentable {
             if let fixed = item?.valuation?.asKeyGearItemValuationFixed {
                 descriptionLabel.textSignal.value = L10n.keyGearItemViewValuationBody(
                     item?.category.name.localizedLowercase ?? "",
+                    fixed.ratio,
                     item?.purchasePrice?.fragments.monetaryAmountFragment.formattedAmount ?? "",
-                    String(fixed.ratio),
                     fixed.valuation.fragments.monetaryAmountFragment.formattedAmount
                 )
 
