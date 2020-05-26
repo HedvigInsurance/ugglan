@@ -6,10 +6,14 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Apollo
 import Flow
 import Foundation
+import hCore
 
 struct EmbarkState {
+    @Inject var client: ApolloClient
+
     let store = EmbarkStore()
     let storySignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let passagesSignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
@@ -45,14 +49,14 @@ struct EmbarkState {
         if let currentPassage = currentPassageSignal.value {
             passageHistorySignal.value.append(currentPassage)
         }
-        
+
         if let newPassage = passagesSignal.value.first(where: { passage -> Bool in
-             passage.name == passageName
+            passage.name == passageName
         }) {
             currentPassageSignal.value = handleRedirects(passage: newPassage) ?? newPassage
         }
     }
-    
+
     private func handleRedirects(passage: EmbarkStoryQuery.Data.EmbarkStory.Passage) -> EmbarkStoryQuery.Data.EmbarkStory.Passage? {
         passage.redirects.map { redirect in
             store.shouldRedirectTo(redirect: redirect)
