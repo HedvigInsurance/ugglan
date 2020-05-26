@@ -68,7 +68,8 @@ extension MessageBubble: Viewable {
 
             labelView.alpha = 0
 
-            bag += textSignal
+            if animated {
+                bag += textSignal
                 .atOnce()
                 .map { StyledText(text: $0, style: bodyStyle) }
                 .delay(by: delay)
@@ -78,6 +79,17 @@ extension MessageBubble: Viewable {
                     stylingView.alpha = 1
                     labelView.alpha = 1
                 }
+            } else {
+                bag += textSignal
+                .atOnce()
+                .map { StyledText(text: $0, style: bodyStyle) }
+                .onValue { styledText in
+                    label.styledTextSignal.value = styledText
+                    containerStackView.isHidden = false
+                    stylingView.alpha = 1
+                    labelView.alpha = 1
+                }
+            }
         }
 
         stylingView.addSubview(containerView)
