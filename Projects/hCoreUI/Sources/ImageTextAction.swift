@@ -36,7 +36,13 @@ public struct ImageTextAction<ActionResult> {
     let actions: [(ActionResult, Button)]
     let showLogo: Bool
     
-    public init(image: ImageWithOptions, title: String, body: String, actions: [(ActionResult, Button)], showLogo: Bool) {
+    public init(
+        image: ImageWithOptions,
+        title: String,
+        body: String,
+        actions: [(ActionResult, Button)],
+        showLogo: Bool
+    ) {
         self.image = image
         self.title = title
         self.body = body
@@ -128,7 +134,7 @@ extension ImageTextAction: Viewable {
         func setGradientColors() {
             gradient.colors = [
                 UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
-                UIColor.brand(.primaryBackground()).cgColor,
+                UIColor.brand(.primaryBackground()).cgColor
             ]
         }
 

@@ -20,8 +20,6 @@ extension InvitationScreen: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
-        
-        
         return (viewController, bag)
     }
 }
