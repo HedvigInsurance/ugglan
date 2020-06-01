@@ -10,7 +10,6 @@ import Form
 import Foundation
 import UIKit
 import hCore
-import hCoreUI
 
 struct ImageWithOptions {
     let image: UIImage
@@ -42,7 +41,7 @@ extension ImageTextAction: Viewable {
     func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .primaryBackground
+        scrollView.backgroundColor = .brand(.primaryBackground())
 
         let containerView = UIStackView()
         containerView.axis = .horizontal
@@ -63,7 +62,7 @@ extension ImageTextAction: Viewable {
             logoImageContainer.alignment = .center
 
             let logoImageView = UIImageView()
-            logoImageView.image = Asset.wordmark.image
+            logoImageView.image = hCoreUIAssets.wordmark.image
             logoImageView.contentMode = .scaleAspectFit
 
             logoImageView.snp.makeConstraints { make in
@@ -81,7 +80,7 @@ extension ImageTextAction: Viewable {
         let headerImageView = UIImageView()
         headerImageView.image = image.image
         headerImageView.contentMode = .scaleAspectFit
-        headerImageView.tintColor = .primaryTintColor
+        headerImageView.tintColor = .brand(.primaryTintColor)
 
         headerImageView.snp.makeConstraints { make in
             make.height.equalTo(image.size?.height ?? 270)
@@ -96,13 +95,13 @@ extension ImageTextAction: Viewable {
 
         let titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.standaloneLargeTitle.aligned(to: .center)
+            style: TextStyle.brand(.title1(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(titleLabel)
 
         let bodyLabel = MultilineLabel(
             value: body,
-            style: TextStyle.body.aligned(to: .center)
+            style: TextStyle.brand(.body(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(bodyLabel)
 
@@ -120,8 +119,8 @@ extension ImageTextAction: Viewable {
 
         func setGradientColors() {
             gradient.colors = [
-                UIColor.primaryBackground.withAlphaComponent(0.2).cgColor,
-                UIColor.primaryBackground.cgColor,
+                UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
+                UIColor.brand(.primaryBackground()).cgColor,
             ]
         }
 
