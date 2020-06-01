@@ -1,24 +1,24 @@
 //
 //  AppDelegate.swift
-//  
+//
 //
 //  Created by Sam Pettersson on 2020-05-06.
 //
 
-import Foundation
-import UIKit
-import Presentation
-import Embark
-import Flow
 import Apollo
 import ApolloWebSocket
+import Embark
+import Flow
+import Foundation
 import hCore
+import Presentation
+import UIKit
 
 extension ApolloClient {
-    static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+    static func createClient(token _: String?) -> (ApolloStore, ApolloClient) {
         let httpAdditionalHeaders = [
             "Authorization": "SXjDmWsfPNG4Dw==.1dCSCrv8Te5PpQ==.yHXEgngWUvfcUA==",
-            "User-Agent": "iOS"
+            "User-Agent": "iOS",
         ]
 
         let configuration = URLSessionConfiguration.default
@@ -26,14 +26,14 @@ extension ApolloClient {
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
 
         let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
-        
+
         let httpNetworkTransport = HTTPNetworkTransport(
             url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
             client: urlSessionClient
         )
 
         let websocketNetworkTransport = WebSocketTransport(
-            request: URLRequest(url:  URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!),
+            request: URLRequest(url: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!),
             connectingPayload: httpAdditionalHeaders as GraphQLMap
         )
 
@@ -62,22 +62,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let bag = DisposeBag()
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.makeKeyAndVisible()
-        
-        let _ = ApolloClient.createClient(token: nil)
-        
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+
+        _ = ApolloClient.createClient(token: nil)
+
         let navigationController = UINavigationController()
-        self.window?.rootViewController = navigationController
-        
+        window?.rootViewController = navigationController
+
         Bundle.setLanguage("en-SE")
-        
+
         bag += navigationController.present(Embark(
-            name: "Web Onboarding NO - English Contents"
+            name: "Web Onboarding NO - English Travel"
         ))
-        
+
         return true
     }
-
 }

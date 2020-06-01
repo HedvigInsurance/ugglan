@@ -35,6 +35,10 @@ extension Passage: Viewable {
             make.left.right.equalToSuperview()
         }
 
+        bag += state.apiResponseSignal.onValue { data in
+            print("got api response", data ?? "")
+        }
+
         bag += panGestureRecognizer.signal(forState: .began).onValue { _ in
             if panGestureRecognizer.translation(in: view).y < 0 {
                 panGestureRecognizer.state = .ended
@@ -52,8 +56,14 @@ extension Passage: Viewable {
                 view.transform = CGAffineTransform(translationX: 0, y: min(translationY, 50 + (translationY / 25)))
 
                 releaseToGoBackLabel.alpha = (translationY - 35) / 50
-                releaseToGoBackLabel.transform = CGAffineTransform(translationX: 0, y: -min(0, 50 + (translationY / 100)))
-                actionView.transform = CGAffineTransform(translationX: 0, y: -min(translationY, 50 + (translationY / 100)))
+                releaseToGoBackLabel.transform = CGAffineTransform(
+                    translationX: 0,
+                    y: -min(0, 50 + (translationY / 100))
+                )
+                actionView.transform = CGAffineTransform(
+                    translationX: 0,
+                    y: -min(translationY, 50 + (translationY / 100))
+                )
 
                 if translationY > 50, hasSentFeedback.value == false {
                     hasSentFeedback.value = true
@@ -103,7 +113,7 @@ extension Passage: Viewable {
         let action = Action(
             state: state
         )
-        
+
         bag += state.currentPassageSignal.onValue { passage in
             print("API", passage?.api ?? " none")
         }
