@@ -11,34 +11,42 @@ import Foundation
 import UIKit
 import hCore
 
-struct ImageWithOptions {
+public struct ImageWithOptions {
     let image: UIImage
     let size: CGSize?
     let contentMode: UIView.ContentMode
 
-    init(image: UIImage) {
+    public init(image: UIImage) {
         self.image = image
         size = nil
         contentMode = .scaleAspectFit
     }
 
-    init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode) {
+    public init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode) {
         self.image = image
         self.size = size
         self.contentMode = contentMode
     }
 }
 
-struct ImageTextAction<ActionResult> {
+public struct ImageTextAction<ActionResult> {
     let image: ImageWithOptions
     let title: String
     let body: String
     let actions: [(ActionResult, Button)]
     let showLogo: Bool
+    
+    public init(image: ImageWithOptions, title: String, body: String, actions: [(ActionResult, Button)], showLogo: Bool) {
+        self.image = image
+        self.title = title
+        self.body = body
+        self.actions = actions
+        self.showLogo = showLogo
+    }
 }
 
 extension ImageTextAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
+    public func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
