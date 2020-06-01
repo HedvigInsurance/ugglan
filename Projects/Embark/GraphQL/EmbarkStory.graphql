@@ -63,66 +63,68 @@ fragment ResponseFragment on EmbarkResponse {
     }
 }
 
-fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
-    ... on EmbarkAPIGraphQLSingleVariable {
-        key
-        from
-        as
-    }
-    ... on EmbarkAPIGraphQLGeneratedVariable {
-        key
-        storeAs
-        type
-    }
-    ... on EmbarkAPIGraphQLMultiActionVariable {
-        key
-        variables {
-            ... on EmbarkAPIGraphQLSingleVariable {
-                key
-                from
-                as
-            }
-            ... on EmbarkAPIGraphQLGeneratedVariable {
-                key
-                storeAs
-                type
-            }
-            ... on EmbarkAPIGraphQLMultiActionVariable {
-                key
-                variables {
-                    ... on EmbarkAPIGraphQLSingleVariable {
-                        key
-                        from
-                        as
-                    }
-                    ... on EmbarkAPIGraphQLGeneratedVariable {
-                        key
-                        storeAs
-                        type
-                    }
-                }
+fragment ApiSingleVariableFragment on EmbarkAPIGraphQLSingleVariable {
+    key
+    from
+    as
+}
+
+fragment ApiGeneratedVariableFragment on EmbarkAPIGraphQLGeneratedVariable {
+    key
+    storeAs
+    type
+}
+
+fragment ApiMultiActionVariableFragment on EmbarkAPIGraphQLMultiActionVariable {
+    key
+    variables {
+        ...ApiSingleVariableFragment
+        ...ApiGeneratedVariableFragment
+        ... on EmbarkAPIGraphQLMultiActionVariable {
+            key
+            variables {
+                ...ApiSingleVariableFragment
+                ...ApiGeneratedVariableFragment
             }
         }
     }
 }
 
+fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
+    ...ApiSingleVariableFragment
+    ...ApiGeneratedVariableFragment
+    ...ApiMultiActionVariableFragment
+}
+
 fragment ApiFragment on EmbarkApi {
     ... on EmbarkApiGraphQLQuery {
-        next {
-            ...EmbarkLinkFragment
-        }
-        query
-        variables {
-            ...ApiVariablesFragment
+        data {
+            next {
+                ...EmbarkLinkFragment
+            }
+            query
+            variables {
+                ...ApiVariablesFragment
+            }
+            queryResults: results {
+                key
+                as
+            }
         }
     }
     ... on EmbarkApiGraphQLMutation {
-        next {
-            ...EmbarkLinkFragment
-        }
-        mutation
-        variables {
-            ...ApiVariablesFragment
+        data {
+            next {
+                ...EmbarkLinkFragment
+            }
+            mutation
+            variables {
+                ...ApiVariablesFragment
+            }
+            mutationResults: results {
+               key
+               as
+            }
         }
     }
 }
@@ -146,15 +148,15 @@ fragment EmbarkRedirectSingle on EmbarkRedirect {
 
 fragment EmbarkRedirectFragment on EmbarkRedirect {
     ...EmbarkRedirectSingle
-  ... on EmbarkRedirectMultipleExpressions {
-    multipleType: type
-    to
-      passedExpressionKey
-    passedExpressionValue
-    subExpressions {
-      ...ExpressionFragment
+    ... on EmbarkRedirectMultipleExpressions {
+        multipleType: type
+        to
+        passedExpressionKey
+        passedExpressionValue
+        subExpressions {
+          ...ExpressionFragment
+        }
     }
-  }
 }
 
 query EmbarkStory($name: String!) {
