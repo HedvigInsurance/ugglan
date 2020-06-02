@@ -109,7 +109,7 @@ extension ImageTextAction: Viewable {
 
         let titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.brand(.title1(color: .primary)).aligned(to: .center)
+            style: TextStyle.brand(.largeTitle(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(titleLabel)
 

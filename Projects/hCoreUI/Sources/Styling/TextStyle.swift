@@ -197,33 +197,6 @@ public extension TextStyle {
             }
         }
 
-        private var lineHeight: CGFloat {
-            switch self {
-            case .largeTitle:
-                return 41
-            case .title1:
-                return 34
-            case .title2:
-                return 22
-            case .title3:
-                return 24
-            case .headline:
-                return 22
-            case .subHeadline:
-                return 20
-            case .body:
-                return 22
-            case .callout:
-                return 21
-            case .footnote:
-                return 18
-            case .caption1:
-                return 16
-            case .caption2:
-                return 14
-            }
-        }
-
         var textStyle: TextStyle {
             return TextStyle.default.restyled { (style: inout TextStyle) in
                 style.font = font
