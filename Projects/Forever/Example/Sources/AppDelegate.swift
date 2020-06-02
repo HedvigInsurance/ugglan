@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.rootViewController = navigationController
         self.window?.makeKeyAndVisible()
         
-        bag += navigationController.present(InvitationScreen())
+        bag += navigationController.present(Debug())
         
         return true
     }
