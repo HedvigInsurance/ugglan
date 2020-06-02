@@ -10,6 +10,10 @@ xcassets:
         params:
           enumName: hCoreUIAssets
           publicAccess: true
+    - inputs: Projects/Forever/Resources/Assets.xcassets
+      outputs:
+        templateName: swift4
+        output: Projects/Forever/Sources/Derived/Assets.swift
 strings:
   inputs: 
     - Projects/hCore/Resources/en-SE.lproj/Localizable.strings

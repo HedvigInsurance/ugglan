@@ -109,13 +109,13 @@ extension ImageTextAction: Viewable {
 
         let titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.brand(.largeTitle(color: .primary)).aligned(to: .center)
+            style: TextStyle.brand(.title1(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(titleLabel)
 
         let bodyLabel = MultilineLabel(
             value: body,
-            style: TextStyle.brand(.body(color: .primary)).aligned(to: .center)
+            style: TextStyle.brand(.body(color: .secondary)).aligned(to: .center)
         )
         bag += view.addArranged(bodyLabel)
 
@@ -160,7 +160,9 @@ extension ImageTextAction: Viewable {
             bag += self.actions.map { _, button in
                 buttonsContainer.addArranged(button.wrappedIn(UIStackView())) { stackView in
                     stackView.axis = .vertical
-                    stackView.alignment = .center
+                    stackView.alignment = .fill
+                    stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+                    stackView.isLayoutMarginsRelativeArrangement = true
                 }
             }
 

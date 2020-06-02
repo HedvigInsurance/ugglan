@@ -42,6 +42,7 @@ extension MultilineLabel: Viewable {
             styledText.restyled { (textStyle: inout TextStyle) in
                 textStyle.numberOfLines = 0
                 textStyle.lineBreakMode = .byWordWrapping
+                textStyle.lineHeight = textStyle.font.pointSize * 1.4
             }
         }.bindTo(label, \.styledText)
 

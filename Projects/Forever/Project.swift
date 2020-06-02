@@ -5,6 +5,7 @@ let project = Project.framework(
     name: "Forever",
     targets: Set([
        .framework,
+       .frameworkResources,
        .tests,
        .example,
        .testing

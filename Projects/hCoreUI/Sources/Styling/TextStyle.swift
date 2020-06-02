@@ -173,27 +173,27 @@ public extension TextStyle {
         private var font: UIFont {
             switch self {
             case .largeTitle:
-                return UIFontMetrics(forTextStyle: .largeTitle).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .largeTitle)
             case .title1:
-                return UIFontMetrics(forTextStyle: .title1).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .title1)
             case .title2:
-                return UIFontMetrics(forTextStyle: .title2).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .title2)
             case .title3:
-                return UIFontMetrics(forTextStyle: .title3).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .title3)
             case .headline:
-                return UIFontMetrics(forTextStyle: .headline).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .headline)
             case .subHeadline:
-                return UIFontMetrics(forTextStyle: .subheadline).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .subheadline)
             case .body:
-                return UIFontMetrics(forTextStyle: .body).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .body)
             case .callout:
-                return UIFontMetrics(forTextStyle: .callout).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .callout)
             case .footnote:
-                return UIFontMetrics(forTextStyle: .footnote).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .footnote)
             case .caption1:
-                return UIFontMetrics(forTextStyle: .caption1).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .caption1)
             case .caption2:
-                return UIFontMetrics(forTextStyle: .caption2).scaledFont(for: Fonts.favoritStdBook)
+                return Fonts.fontFor(style: .caption2)
             }
         }
 
