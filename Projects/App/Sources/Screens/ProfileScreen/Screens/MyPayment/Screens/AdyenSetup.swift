@@ -10,11 +10,11 @@ import AdyenDropIn
 import Apollo
 import Flow
 import Foundation
+import hCore
+import hCoreUI
 import PassKit
 import Presentation
 import UIKit
-import hCore
-import hCoreUI
 
 struct AdyenSetup {
     @Inject var client: ApolloClient

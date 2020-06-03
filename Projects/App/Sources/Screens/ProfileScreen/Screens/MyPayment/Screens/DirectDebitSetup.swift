@@ -9,11 +9,11 @@
 import Apollo
 import Flow
 import Foundation
+import hCore
 import Presentation
 import SafariServices
 import UIKit
 import WebKit
-import hCore
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient

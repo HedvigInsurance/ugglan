@@ -9,10 +9,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct LatePaymentHeaderSection {
     @Inject var client: ApolloClient
@@ -58,7 +58,7 @@ extension LatePaymentHeaderSection: Viewable {
 
         containerView.setCustomSpacing(10, after: icon)
 
-        let infoLabel = MultilineLabel(styledText: StyledText(text: L10n.paymentsLatePaymentsMessage(self.failedCharges, self.lastDate),
+        let infoLabel = MultilineLabel(styledText: StyledText(text: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
                                                               style: TextStyle.body.colored(UIColor.almostBlack)))
         bag += containerView.addArranged(infoLabel)
 

@@ -9,10 +9,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
