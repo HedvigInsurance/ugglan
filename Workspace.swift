@@ -1,11 +1,11 @@
 import ProjectDescription
 
 let testableTargets = [
-    TestableTarget(target: .project(path: "Projects/App", target: "AppTests")),
-    TestableTarget(target: .project(path: "Projects/Embark", target: "EmbarkTests")),
-    TestableTarget(target: .project(path: "Projects/hCore", target: "hCoreTests")),
-    TestableTarget(target: .project(path: "Projects/hCoreUI", target: "hCoreUITests")),
-    TestableTarget(target: .project(path: "Projects/Forever", target: "ForeverTests"))
+    TestableTarget(target: .project(path: "Projects/App", target: "AppTests"), parallelizable: true),
+    TestableTarget(target: .project(path: "Projects/Embark", target: "EmbarkTests"), parallelizable: true),
+    TestableTarget(target: .project(path: "Projects/hCore", target: "hCoreTests"), parallelizable: true),
+    TestableTarget(target: .project(path: "Projects/hCoreUI", target: "hCoreUITests"), parallelizable: true),
+    TestableTarget(target: .project(path: "Projects/Forever", target: "ForeverTests"), parallelizable: true)
 ]
 
 let workspace = Workspace(
