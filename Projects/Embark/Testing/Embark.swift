@@ -1,3 +1,1 @@
-public struct EmbarkTestingData {
-
-}
+public struct EmbarkTestingData {}

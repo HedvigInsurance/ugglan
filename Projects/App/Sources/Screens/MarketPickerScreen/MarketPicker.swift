@@ -9,10 +9,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct MarketPicker {
     @Inject var client: ApolloClient

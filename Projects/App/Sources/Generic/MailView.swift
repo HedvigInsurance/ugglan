@@ -8,10 +8,10 @@
 
 import Flow
 import Foundation
+import hCore
 import MessageUI
 import Presentation
 import UIKit
-import hCore
 
 struct MailView {
     let recipients: [String]

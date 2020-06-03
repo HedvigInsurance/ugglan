@@ -7,11 +7,11 @@
 //
 
 import Flow
+import FlowFeedback
 import Form
 import Foundation
-import UIKit
 import hCore
-import FlowFeedback
+import UIKit
 
 public enum ButtonType {
     case standard(backgroundColor: UIColor, textColor: UIColor)
@@ -91,7 +91,7 @@ public enum ButtonType {
             return borderColor
         case let .pillSemiTransparent(backgroundColor, _):
             return backgroundColor
-        case .iconTransparent(_, _):
+        case .iconTransparent:
             return .purple
         case .transparent:
             return .clear
@@ -260,7 +260,7 @@ extension Button: Equatable {
 extension Button: Viewable {
     public static var trackingHandler: (_ button: Button) -> Void = { _ in }
 
-    public func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
 
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
@@ -453,7 +453,7 @@ extension Button: Viewable {
                 button,
                 \.style
             )
-        
+
         bag += button.hasWindowSignal.take(first: 1).onValue { _ in
             button.snp.makeConstraints { make in
                 make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset)

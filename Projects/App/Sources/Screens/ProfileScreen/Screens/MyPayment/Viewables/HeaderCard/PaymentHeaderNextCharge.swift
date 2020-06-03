@@ -9,8 +9,8 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct PaymentHeaderNextCharge {
     @Inject var client: ApolloClient

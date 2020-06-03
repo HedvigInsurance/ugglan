@@ -16,12 +16,12 @@ import FirebaseRemoteConfig
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
-import UserNotifications
 import hCore
 import hCoreUI
 import Mixpanel
+import Presentation
+import UIKit
+import UserNotifications
 
 let log = Logger.self
 
@@ -221,7 +221,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
                            annotation: "")
     }
-    
+
     var mixpanelToken: String? {
         return Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String
     }
@@ -233,15 +233,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
         }
-                
+
         Button.trackingHandler = { button in
             if let localizationKey = button.title.value.derivedFromL10n?.key {
                 Mixpanel.mainInstance().track(event: localizationKey, properties: [
-                     "context": "Button",
+                    "context": "Button",
                 ])
             }
         }
-        
+
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()

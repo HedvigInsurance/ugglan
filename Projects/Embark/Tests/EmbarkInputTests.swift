@@ -6,21 +6,21 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import XCTest
 @testable import Embark
-import Testing
+import Foundation
 import SnapshotTesting
+import Testing
+import XCTest
 
 final class EmbarkInputTests: XCTestCase {
     override func setUp() {
         super.setUp()
         setupScreenShotTests()
     }
-    
+
     func testInput() {
         let embarkInput = EmbarkInput(placeholder: "Test 123")
-        
+
         materializeViewable(embarkInput) { tooltipView in
             tooltipView.snp.makeConstraints { make in
                 make.width.equalTo(300)

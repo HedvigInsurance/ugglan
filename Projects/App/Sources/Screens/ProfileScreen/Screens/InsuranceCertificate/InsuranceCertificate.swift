@@ -10,10 +10,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
 import Presentation
 import SafariServices
 import UIKit
-import hCore
 
 struct InsuranceDocument {
     @Inject var client: ApolloClient

@@ -176,7 +176,7 @@ let template = Template(
     description: "Framework template",
     attributes: [
         nameAttribute,
-        .optional("platform", default: "iOS")
+        .optional("platform", default: "iOS"),
     ],
     files: [
         .string(path: "\(nameAttribute)/Example/Sources/AppDelegate.swift", contents: appDelegateContents),

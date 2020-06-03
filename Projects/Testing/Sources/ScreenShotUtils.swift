@@ -6,10 +6,10 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import hCoreUI
-import hCore
 import Flow
+import Foundation
+import hCore
+import hCoreUI
 import SnapshotTesting
 import UIKit
 
@@ -39,5 +39,5 @@ public func materializeViewable<View: Viewable, SignalKind, SignalValue>(
     let (matter, result) = viewable.materialize(events: ViewableEvents(wasAddedCallbacker: Callbacker()))
     matter.layoutIfNeeded()
     onCreated(matter)
-    let _ = result.hold(bag)
+    _ = result.hold(bag)
 }

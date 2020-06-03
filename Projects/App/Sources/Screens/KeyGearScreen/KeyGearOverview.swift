@@ -9,10 +9,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
 import Presentation
 import UIKit
 import WatchConnectivity
-import hCore
 
 struct KeyGearOverview {
     @Inject var client: ApolloClient

@@ -7,8 +7,8 @@
 
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct LoadableView<V: Viewable> where V.Matter: UIView, V.Result == Disposable {
     let view: V

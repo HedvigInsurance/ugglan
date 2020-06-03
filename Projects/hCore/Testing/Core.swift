@@ -1,3 +1,1 @@
-public struct CoreTestingData {
-
-}
+public struct CoreTestingData {}

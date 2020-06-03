@@ -9,8 +9,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct ProfileSection {
     let dataSignal: ReadWriteSignal<ProfileQuery.Data?> = ReadWriteSignal(nil)

@@ -9,9 +9,8 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
 import UIKit
-import hCore
-import hCore
 
 struct PaymentHeaderCard {
     @Inject var client: ApolloClient

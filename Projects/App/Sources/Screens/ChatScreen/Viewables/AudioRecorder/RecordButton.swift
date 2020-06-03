@@ -7,9 +7,9 @@
 
 import Flow
 import Foundation
-import UIKit
 import hCore
- 
+import UIKit
+
 struct RecordButton {
     let isRecordingSignal = ReadWriteSignal(false)
 }

@@ -25,7 +25,7 @@ public struct AnalyticsCoordinator {
             guard let id = id else {
                 return
             }
-            
+
             Mixpanel.mainInstance().identify(distinctId: id)
         }
     }

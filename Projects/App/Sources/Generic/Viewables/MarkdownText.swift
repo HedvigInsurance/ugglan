@@ -8,9 +8,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import MarkdownKit
 import UIKit
-import hCore
 
 struct MarkdownText {
     let textSignal: ReadWriteSignal<String>

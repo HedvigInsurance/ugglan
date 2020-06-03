@@ -8,10 +8,10 @@
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct ContractCoverage {
     let perilFragments: [PerilFragment]

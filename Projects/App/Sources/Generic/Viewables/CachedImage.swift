@@ -8,8 +8,8 @@
 import Disk
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct CachedImage {
     let url: URL

@@ -7,8 +7,8 @@
 
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct CharityLogo {
     let url: URL

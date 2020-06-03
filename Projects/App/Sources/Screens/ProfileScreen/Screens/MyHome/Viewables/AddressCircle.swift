@@ -8,8 +8,8 @@
 import Apollo
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct AddressCircle {
     @Inject var client: ApolloClient

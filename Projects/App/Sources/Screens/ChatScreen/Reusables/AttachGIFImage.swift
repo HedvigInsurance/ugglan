@@ -8,10 +8,10 @@
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
 import Kingfisher
 import UIKit
-import hCoreUI
-import hCore
 
 struct AttachGIFImage {
     let url: URL

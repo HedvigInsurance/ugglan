@@ -7,10 +7,10 @@
 
 import Flow
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 enum ReferralsNotificationResult {
     case cancel, openReferrals

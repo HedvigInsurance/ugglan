@@ -25,7 +25,7 @@ extension UIView {
             self.color = color
             self.path = path
         }
-        
+
         let opacity: Float?
         let offset: CGSize?
         let radius: CGFloat?
@@ -59,4 +59,3 @@ extension UIView {
         }
     }
 }
-

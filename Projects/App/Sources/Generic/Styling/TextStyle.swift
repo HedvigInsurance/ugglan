@@ -6,8 +6,8 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Form
+import Foundation
 
 extension TextStyle {
     func centered() -> TextStyle {

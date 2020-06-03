@@ -9,9 +9,9 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
 import Photos
 import UIKit
-import hCore
 
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>

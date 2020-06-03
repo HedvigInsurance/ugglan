@@ -20,7 +20,7 @@ let allFailures = failureDirs.map { dir -> [URL]? in
 
 struct ImgurResponse: Codable {
     let data: ImgurData
-    
+
     struct ImgurData: Codable {
         let link: String
     }
@@ -30,14 +30,14 @@ func uploadFile(_ file: URL, onCompletion: @escaping (_ link: String) -> Void) {
     var request = URLRequest(url: URL(string: "https://api.imgur.com/3/image")!)
     request.allHTTPHeaderFields = ["Authorization": "Client-ID e1dab8f4e0cf6f2"]
     request.httpMethod = "POST"
-    let task = URLSession.shared.uploadTask(with: request, fromFile: file) { data, urlResponse, error in
+    let task = URLSession.shared.uploadTask(with: request, fromFile: file) { data, _, _ in
         guard let data = data else {
             exit(1)
         }
         guard let response = try? JSONDecoder().decode(ImgurResponse.self, from: data) else {
             exit(1)
         }
-        
+
         onCompletion(response.data.link)
     }
     task.resume()
@@ -51,22 +51,22 @@ let actualAndReference = allFailures.map { failure -> (failure: URL, reference: 
 }.map { failure, reference -> (failure: String, reference: String) in
     var failureImageLink: String = ""
     var referenceImageLink: String = ""
-    
+
     let dispatchGroup = DispatchGroup()
     dispatchGroup.enter()
     uploadFile(failure) { failureLink in
         failureImageLink = failureLink
         dispatchGroup.leave()
     }
-    
+
     dispatchGroup.enter()
     uploadFile(reference) { referenceLink in
         referenceImageLink = referenceLink
         dispatchGroup.leave()
     }
-    
+
     dispatchGroup.wait()
-    
+
     return (failure: failureImageLink, reference: referenceImageLink)
 }
 
@@ -81,4 +81,3 @@ If you changed styling which expects this outcome run the `WorkspaceTests Record
 """
 
 print(githubComment)
-

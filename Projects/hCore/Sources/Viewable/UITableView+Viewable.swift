@@ -8,8 +8,8 @@
 
 import Flow
 import Foundation
-import UIKit
 import SnapKit
+import UIKit
 
 extension UIView {
     var anyDescendantDidLayoutSignal: Signal<Void> {
@@ -103,4 +103,3 @@ extension UITableView {
         }
     }
 }
-

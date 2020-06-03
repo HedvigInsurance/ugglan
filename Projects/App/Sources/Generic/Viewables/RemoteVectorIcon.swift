@@ -9,9 +9,9 @@ import Apollo
 import Disk
 import Flow
 import Foundation
+import hCore
 import Kingfisher
 import UIKit
-import hCore
 
 struct RemoteVectorIcon {
     let iconSignal = ReadWriteSignal<IconFragment?>(nil)
