@@ -89,7 +89,7 @@ let project = Project(
             buildAction: BuildAction(targets: ["Ugglan"]),
             testAction: TestAction(
                 targets: [TestableTarget(target: TargetReference(stringLiteral: "AppTests"), parallelizable: true)],
-                          arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])
+                          arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])
                     ),
             runAction: RunAction(executable: "Ugglan")
         ),

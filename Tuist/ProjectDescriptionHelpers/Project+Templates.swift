@@ -227,14 +227,14 @@ extension Project {
                                 name: name,
                                 shared: true,
                                 buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
-                                testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])) : nil,
+                                testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])) : nil,
                                 runAction: nil
                             ),
                             targets.contains(.example) ? Scheme(
                                 name: "\(name)Example",
                                 shared: true,
                                 buildAction: BuildAction(targets: [TargetReference(stringLiteral: "\(name)Example")]),
-                                testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])),
+                                testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
                                 runAction: RunAction(executable: TargetReference(stringLiteral: "\(name)Example"))
                         ) : nil
                         ].compactMap { $0 },
