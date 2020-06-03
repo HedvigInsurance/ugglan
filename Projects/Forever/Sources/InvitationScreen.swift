@@ -22,6 +22,9 @@ extension InvitationScreen: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
+        let closeButton = UIBarButtonItem(title: "Close")
+        viewController.navigationItem.rightBarButtonItem = closeButton
+        
         let imageTextAction = ImageTextAction<Void>(
             image: .init(image: Asset.invitationIllustration.image),
             title: L10n.ReferralsIntroScreen.title,
@@ -40,18 +43,8 @@ extension InvitationScreen: Presentable {
             ],
             showLogo: false
         )
-        
-        let view = UIView()
-        view.backgroundColor = .brand(.primaryBackground())
-        
-        bag += view.add(imageTextAction) { view in
-            view.snp.makeConstraints { make in
-                make.top.bottom.leading.trailing.equalToSuperview()
-            }
-        }.nil()
-        
-        viewController.view = view
-        
+                
+        bag += viewController.install(imageTextAction).nil()
         
         return (viewController, bag)
     }

@@ -21,14 +21,15 @@ public struct Forever {
 extension Forever: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
+        viewController.title = L10n.referralsScreenTitle
         let bag = DisposeBag()
         
-        let tableKit = TableKit<EmptySection, InvitationRow>()
+        let tableKit = TableKit<EmptySection, InvitationRow>.init(holdIn: bag)
         
         bag += viewController.install(tableKit)
         
-        tableKit.set(Table(rows: [.init(title: "test")]))
-        
+        tableKit.set(Table(rows: Array.init(repeating: .init(title: "test"), count: 300)))
+                
         return (viewController, bag)
     }
 }

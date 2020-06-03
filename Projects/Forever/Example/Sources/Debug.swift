@@ -24,14 +24,18 @@ extension Debug: Presentable {
         
         let form = FormView()
         
-        let section = form.appendSection(headerView: UILabel(value: "Forever", style: .brand(.footnote(color: .primary))), footerView: nil)
-        
-        bag += section.appendRow(title: "Present main screen").onValue {
-            viewController.present(Forever())
+        let section = form.appendSection(headerView: UILabel(value: "Screens", style: .default), footerView: nil)
+                
+        bag += section.appendRow(title: "Main tab screen").onValue {
+            viewController.present(Forever(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
         
-        bag += section.appendRow(title: "Present invitation screen").onValue {
+        bag += section.appendRow(title: "Invitation screen").onValue {
             viewController.present(InvitationScreen(), style: .modal)
+        }
+        
+        bag += section.appendRow(title: "Infinite loop").onValue {
+            viewController.present(Debug(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
         
         bag += viewController.install(form)

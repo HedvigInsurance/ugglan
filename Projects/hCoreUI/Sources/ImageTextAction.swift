@@ -54,9 +54,8 @@ public struct ImageTextAction<ActionResult> {
 extension ImageTextAction: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
-        let scrollView = UIScrollView()
-        scrollView.backgroundColor = .brand(.primaryBackground())
-
+        let scrollView = FormScrollView()
+        
         let containerView = UIStackView()
         containerView.axis = .horizontal
         containerView.alignment = .center
@@ -132,9 +131,10 @@ extension ImageTextAction: Viewable {
         shadowView.layer.addSublayer(gradient)
 
         func setGradientColors() {
+            let formBackground = scrollView.backgroundColor ?? UIColor.black
             gradient.colors = [
-                UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
-                UIColor.brand(.primaryBackground()).cgColor
+                formBackground.withAlphaComponent(0.2).cgColor,
+                formBackground.cgColor
             ]
         }
 
