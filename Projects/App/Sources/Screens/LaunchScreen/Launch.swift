@@ -8,9 +8,9 @@
 
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 struct Launch {
     let hasLoadedSignal: Signal<Void>

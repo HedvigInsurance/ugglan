@@ -1,3 +1,1 @@
-public struct UiTestingData {
-
-}
+public struct UiTestingData {}

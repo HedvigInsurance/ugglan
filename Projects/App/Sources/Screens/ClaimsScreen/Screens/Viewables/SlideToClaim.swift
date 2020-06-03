@@ -9,8 +9,8 @@ import Ease
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct SlideToClaim: SignalProvider {
     var providedSignal: CoreSignal<Finite, Void> {

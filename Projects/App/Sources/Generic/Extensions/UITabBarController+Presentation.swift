@@ -37,7 +37,7 @@ extension UITabBarController {
         } else if let splitController = viewController as? UISplitViewController {
             splitController.tabBarItem = presentation.presentable.tabBarItem()
         }
-            
+
         if let presentableIdentifier = (presentation.presentable as? PresentableIdentifierExpressible)?.presentableIdentifier {
             viewController.debugPresentationTitle = presentableIdentifier.value
         } else {

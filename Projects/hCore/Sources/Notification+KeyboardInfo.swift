@@ -41,4 +41,3 @@ extension Notification {
         return nil
     }
 }
-

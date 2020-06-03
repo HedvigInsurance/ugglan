@@ -10,9 +10,9 @@ import CoreML
 import Disk
 import Flow
 import Foundation
+import hCore
 import UIKit
 import Vision
-import hCore
 
 extension AddKeyGearItem {
     private enum Category: String {

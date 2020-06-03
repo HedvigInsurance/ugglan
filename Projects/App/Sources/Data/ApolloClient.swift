@@ -11,8 +11,8 @@ import ApolloWebSocket
 import Disk
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct ApolloEnvironmentConfig {
     let endpointURL: URL
@@ -41,7 +41,7 @@ extension ApolloClient {
         let configuration = URLSessionConfiguration.default
 
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
-        
+
         let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
 
         let httpNetworkTransport = HTTPNetworkTransport(

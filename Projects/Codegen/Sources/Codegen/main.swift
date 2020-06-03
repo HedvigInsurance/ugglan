@@ -27,11 +27,11 @@ do {
 
 let sourceUrls = [
     sourceRootURL
-    .appendingPathComponent("App")
-    .appendingPathComponent("GraphQL"),
+        .appendingPathComponent("App")
+        .appendingPathComponent("GraphQL"),
     sourceRootURL
-    .appendingPathComponent("Embark")
-    .appendingPathComponent("GraphQL")
+        .appendingPathComponent("Embark")
+        .appendingPathComponent("GraphQL"),
 ]
 
 sourceUrls.forEach { sourceUrl in

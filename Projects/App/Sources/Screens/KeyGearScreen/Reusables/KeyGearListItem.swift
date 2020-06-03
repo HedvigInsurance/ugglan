@@ -8,9 +8,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import Kingfisher
 import UIKit
-import hCore
 
 struct KeyGearListItem {
     let id: String

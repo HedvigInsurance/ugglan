@@ -9,9 +9,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import Mixpanel
+import UIKit
 
 struct ButtonRow {
     let text: ReadWriteSignal<String>
@@ -62,7 +62,7 @@ extension ButtonRow: Viewable {
         bag += events.onSelect.withLatestFrom(text.atOnce().plain()).onValue { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
                 Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
-                     "context": "ButtonRow",
+                    "context": "ButtonRow",
                 ])
             }
         }

@@ -7,8 +7,8 @@
 
 import Flow
 import Foundation
-import UIKit
 import Mixpanel
+import UIKit
 
 extension UIControl {
     /// Triggers on touchUpInside and uses accessibilityLabel to trigger an analytics event
@@ -17,12 +17,12 @@ extension UIControl {
             if let accessibilityLabel = self.accessibilityLabel {
                 if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
                     Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
-                        "context": "UIControl"
+                        "context": "UIControl",
                     ])
                 }
             } else if let accessibilityIdentifier = self.accessibilityIdentifier {
                 Mixpanel.mainInstance().track(event: "TAP_\(accessibilityIdentifier)", properties: [
-                    "context": "UIControl"
+                    "context": "UIControl",
                 ])
             }
         }

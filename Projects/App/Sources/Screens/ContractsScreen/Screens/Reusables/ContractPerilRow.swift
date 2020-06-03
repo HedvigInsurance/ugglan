@@ -8,9 +8,9 @@
 import Flow
 import Form
 import Foundation
+import hCoreUI
 import Presentation
 import UIKit
-import hCoreUI
 
 extension PerilFragment: Equatable {
     public static func == (lhs: PerilFragment, rhs: PerilFragment) -> Bool {

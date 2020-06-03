@@ -9,8 +9,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct ButtonSection {
     let text: ReadWriteSignal<String>

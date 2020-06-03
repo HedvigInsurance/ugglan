@@ -9,10 +9,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct CommonClaimCard {
     let data: CommonClaimsQuery.Data.CommonClaim
@@ -296,20 +296,19 @@ extension CommonClaimCard: Viewable {
             bag += scrollPositionSignal.onValue { point in
                 closeButtonView.transform = CGAffineTransform(translationX: 0, y: point.y)
             }
-                        
+
             bag += scrollPositionSignal.atOnce().onValue { point in
                 let offset = point.y / 50
                 let newAlphaValue = 1.0 - offset
-                
-                if newAlphaValue >= 0 && newAlphaValue <= 1 {
+
+                if newAlphaValue >= 0, newAlphaValue <= 1 {
                     closeButtonView.alpha = newAlphaValue
                     titleLabel.alpha = newAlphaValue
                 } else if newAlphaValue <= 0.1 {
-                     closeButtonView.alpha = 0
-                     titleLabel.alpha = 0
+                    closeButtonView.alpha = 0
+                    titleLabel.alpha = 0
                 }
             }
-            
         }
 
         if includeButton {

@@ -8,10 +8,10 @@
 import Apollo
 import Flow
 import Form
+import hCore
+import hCoreUI
 import Presentation
 import UIKit
-import hCoreUI
-import hCore
 
 struct CharityInformation {}
 

@@ -7,9 +7,9 @@
 
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 struct Contracts {}
 

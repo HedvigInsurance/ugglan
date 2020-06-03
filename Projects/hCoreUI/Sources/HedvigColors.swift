@@ -6,10 +6,10 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import UIKit
 import DynamicColor
+import Foundation
 import hCore
+import UIKit
 
 public extension UIColor {
     private struct BrandColorBase {
@@ -32,9 +32,9 @@ public extension UIColor {
                 BrandColorBase.darkGray
         })
         static let secondaryText = UIColor(dynamic: { trait -> UIColor in
-                   trait.userInterfaceStyle == .dark ?
-                    BrandColorBase.white :
-                    BrandColorBase.offBlack
+            trait.userInterfaceStyle == .dark ?
+                BrandColorBase.white :
+                BrandColorBase.offBlack
         })
         static let lavender = UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ?
@@ -53,7 +53,7 @@ public extension UIColor {
         static let darkGrayBorder = BrandColorBase.darkGray.withAlphaComponent(0.3)
         static let grayBorder = BrandColorBase.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
     }
-    
+
     enum BrandColor {
         case primaryBackground(_ negative: Bool = false)
         case secondaryBackground(_ negative: Bool = false)
@@ -67,7 +67,7 @@ public extension UIColor {
         case primaryShadowColor
         case regularCaution
         case primaryBorderColor
-        
+
         var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -76,7 +76,7 @@ public extension UIColor {
                         trait.userInterfaceStyle == .dark ? BrandColorBase.offWhite : BrandColorBase.almostBlack
                     })
                 }
-                
+
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark ? BrandColorBase.almostBlack : BrandColorBase.offWhite
                 })
@@ -86,9 +86,9 @@ public extension UIColor {
                         trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.almostBlack.lighter(amount: 0.10)
                     })
                 }
-                
+
                 return UIColor(dynamic: { trait -> UIColor in
-                    trait.userInterfaceStyle == .dark ?  BrandColorBase.almostBlack.lighter(amount: 0.10) : BrandColorBase.white
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.almostBlack.lighter(amount: 0.10) : BrandColorBase.white
                 })
             case let .primaryText(negative):
                 if negative {
@@ -96,7 +96,7 @@ public extension UIColor {
                         trait.userInterfaceStyle == .dark ? BrandColorBase.black : BrandColorBase.white
                     })
                 }
-                
+
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
                 })
@@ -127,9 +127,8 @@ public extension UIColor {
             }
         }
     }
-    
+
     static func brand(_ color: BrandColor) -> UIColor {
         return color.color
     }
 }
-

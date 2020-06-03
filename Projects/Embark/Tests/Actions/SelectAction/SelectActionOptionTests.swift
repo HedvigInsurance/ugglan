@@ -6,18 +6,18 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import XCTest
 @testable import Embark
-import Testing
+import Foundation
 import SnapshotTesting
+import Testing
+import XCTest
 
 final class SelectActionOptionTests: XCTestCase {
     override func setUp() {
         super.setUp()
         setupScreenShotTests()
     }
-    
+
     func testSelectActionOption() {
         let selectActionOption = EmbarkSelectActionOption(
             data: EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option(
@@ -29,14 +29,13 @@ final class SelectActionOptionTests: XCTestCase {
                 )
             )
         )
-        
+
         materializeViewable(selectActionOption) { view in
             view.snp.makeConstraints { make in
                 make.width.equalTo(150)
             }
-            
+
             assertSnapshot(matching: view, as: .image)
         }
     }
-    
 }

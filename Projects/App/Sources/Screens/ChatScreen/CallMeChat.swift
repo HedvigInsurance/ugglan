@@ -8,9 +8,9 @@
 import Apollo
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 struct CallMeChat {
     @Inject var client: ApolloClient

@@ -8,10 +8,10 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
 import SnapKit
+import UIKit
 
 struct EmbarkInput {
     let placeholder: ReadWriteSignal<String>
@@ -44,7 +44,7 @@ extension EmbarkInput: Viewable {
         let bag = DisposeBag()
         let view = UIControl()
         view.isUserInteractionEnabled = true
-        
+
         let paddingView = UIStackView()
         paddingView.isUserInteractionEnabled = true
         paddingView.axis = .vertical
@@ -63,21 +63,21 @@ extension EmbarkInput: Viewable {
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
 
-        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo({ (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
+        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo { (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
             textField.textContentType = textContentType
             textField.keyboardType = keyboardType ?? .default
             textField.reloadInputViews()
-        })
+        }
 
         paddingView.addArrangedSubview(textField)
 
         let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
         placeholderLabel.textAlignment = .center
-        
+
         bag += textField.atOnce().onValue { value in
             placeholderLabel.alpha = value.isEmpty ? 1 : 0
         }
-        
+
         bag += textField.didMoveToWindowSignal.delay(by: 0.5).onValue { _ in
             textField.becomeFirstResponder()
         }
@@ -85,20 +85,20 @@ extension EmbarkInput: Viewable {
         bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
             textField.becomeFirstResponder()
         }
-        
-        bag += textField.distinct().onValue({ value in
+
+        bag += textField.distinct().onValue { value in
             textField.value = value.components(separatedBy: self.allowedCharacters.inverted).joined()
-        })
-        
-        bag += textField.shouldReturn.set { value -> Bool in
-            return self.shouldReturn.call(value) ?? false
         }
-        
+
+        bag += textField.shouldReturn.set { value -> Bool in
+            self.shouldReturn.call(value) ?? false
+        }
+
         return (view, Signal { callback in
             bag += textField.providedSignal.onValue { value in
                 callback(value)
             }
-            
+
             return bag
         }.readable(getValue: { textField.value }).writable(setValue: { newValue in
             placeholderLabel.alpha = newValue.isEmpty ? 1 : 0

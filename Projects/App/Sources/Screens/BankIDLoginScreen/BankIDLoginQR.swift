@@ -7,10 +7,10 @@
 
 import Flow
 import Foundation
+import hCore
+import hCoreUI
 import Presentation
 import UIKit
-import hCoreUI
-import hCore
 
 struct BankIDLoginQR {
     let autoStartURL: URL

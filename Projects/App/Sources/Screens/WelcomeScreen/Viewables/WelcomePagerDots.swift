@@ -8,8 +8,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct WelcomePagerDots {
     let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)

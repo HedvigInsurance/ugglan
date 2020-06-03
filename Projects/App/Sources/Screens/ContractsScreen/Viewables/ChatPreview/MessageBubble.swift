@@ -8,9 +8,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 enum MessageType {
     case received, replied
@@ -58,7 +58,7 @@ extension MessageBubble: Viewable {
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
 
         let bodyStyle: TextStyle = messageType == .replied ? .bodyWhite : .bodyOffBlack
-        
+
         let label = MultilineLabel(value: "", style: bodyStyle, usePreferredMaxLayoutWidth: false)
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in
@@ -92,7 +92,7 @@ extension MessageBubble: Viewable {
         bag += merge(stylingView.didMoveToWindowSignal, stylingView.didLayoutSignal).onValue { _ in
             stylingView.layer.cornerRadius = min(stylingView.frame.height / 2, 20)
         }
-        
+
         if messageType == .replied {
             bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in
                 let pushView = UIView()
@@ -101,22 +101,22 @@ extension MessageBubble: Viewable {
                 }
                 pushView.setContentHuggingPriority(.defaultLow, for: .horizontal)
                 containerStackView.insertArrangedSubview(pushView, at: 0)
-                
+
                 containerStackView.snp.makeConstraints { make in
                     make.leading.trailing.equalToSuperview()
                 }
             }
         }
-        
+
         containerStackView.addArrangedSubview(stylingView)
-        
+
         if animated {
             bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in
                 containerStackView.transform = CGAffineTransform.identity
                 containerStackView.transform = CGAffineTransform(translationX: 0, y: 40)
                 containerStackView.alpha = 0
-        
-                bag += Signal(after: 0.1+Double(self.animationDelay)*0.1).animated(style: .lightBounce(), animations: { _ in
+
+                bag += Signal(after: 0.1 + Double(self.animationDelay) * 0.1).animated(style: .lightBounce(), animations: { _ in
                     containerStackView.transform = CGAffineTransform.identity
                     containerStackView.alpha = 1
                 })

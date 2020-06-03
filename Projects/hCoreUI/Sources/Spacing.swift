@@ -9,14 +9,14 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public struct Spacing {
     public init(height: Float) {
         self.height = height
     }
-    
+
     public let height: Float
     public let isHiddenSignal = ReadWriteSignal<Bool>(false)
 }

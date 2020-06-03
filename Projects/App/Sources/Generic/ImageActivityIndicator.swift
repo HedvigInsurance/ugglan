@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import hCore
 import Kingfisher
 import UIKit
-import hCore
 
 struct ImageActivityIndicator: Indicator {
     let indicatorView = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))

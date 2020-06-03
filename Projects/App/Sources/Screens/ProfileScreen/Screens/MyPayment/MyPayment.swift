@@ -11,10 +11,10 @@ import AdyenDropIn
 import Apollo
 import Flow
 import Form
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct MyPayment {
     @Inject var client: ApolloClient
@@ -41,7 +41,7 @@ extension MyPayment: Presentable {
             form.alpha = 1
             form.transform = CGAffineTransform.identity
         }
-        
+
         let failedChargesSpacing = Spacing(height: 20)
         failedChargesSpacing.isHiddenSignal.value = true
 
@@ -61,13 +61,13 @@ extension MyPayment: Presentable {
 
         let updatingMessageSectionSpacing = Spacing(height: 20)
         updatingMessageSectionSpacing.isHiddenSignal.value = true
-        
-        bag += failedChargesSignalData.onValue({ failedCharges in
+
+        bag += failedChargesSignalData.onValue { failedCharges in
             if failedCharges != nil {
                 failedChargesSpacing.isHiddenSignal.value = false
             }
-        })
-        
+        }
+
         bag += form.prepend(failedChargesSpacing)
 
         bag += form.append(updatingMessageSectionSpacing)

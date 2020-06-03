@@ -17,13 +17,13 @@ public struct Fonts {
             forResource: "FavoritStd-Book",
             ofType: "otf"
         )
-        let inData = NSData(contentsOfFile:fontPath!)
+        let inData = NSData(contentsOfFile: fontPath!)
         let provider = CGDataProvider(data: inData!)
-        
+
         let font = CGFont(provider!)
         var error: Unmanaged<CFError>?
         CTFontManagerRegisterGraphicsFont(font!, &error)
-        
+
         return UIFont(
             name: "FavoritStd-Book",
             size: UIFont.systemFontSize

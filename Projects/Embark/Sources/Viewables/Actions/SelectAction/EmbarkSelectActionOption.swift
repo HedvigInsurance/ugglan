@@ -5,25 +5,25 @@
 //  Created by Sam Pettersson on 2020-01-16.
 //
 
-import Foundation
 import Flow
-import UIKit
+import FlowFeedback
 import Form
+import Foundation
 import hCore
 import hCoreUI
-import FlowFeedback
+import UIKit
 
 struct EmbarkSelectActionOption {
     let data: EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
 }
 
 extension EmbarkSelectActionOption: Viewable {
-    func materialize(events: ViewableEvents) -> (UIControl, Signal<ActionResponseData>) {
+    func materialize(events _: ViewableEvents) -> (UIControl, Signal<ActionResponseData>) {
         let bag = DisposeBag()
         let control = UIControl()
         control.backgroundColor = .white
         control.layer.cornerRadius = 10
-        bag += control.applyShadow({ _ -> UIView.ShadowProperties in
+        bag += control.applyShadow { _ -> UIView.ShadowProperties in
             UIView.ShadowProperties(
                 opacity: 0.25,
                 offset: CGSize(width: 0, height: 6),
@@ -31,8 +31,8 @@ extension EmbarkSelectActionOption: Viewable {
                 color: .brand(.primaryShadowColor),
                 path: nil
             )
-        })
- 
+        }
+
         let stackView = UIStackView()
         stackView.isUserInteractionEnabled = false
         stackView.alignment = .center
@@ -42,14 +42,14 @@ extension EmbarkSelectActionOption: Viewable {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
         control.addSubview(stackView)
-        
+
         stackView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
-        
+
         bag += stackView.addArranged(MultilineLabel(value: data.link.fragments.embarkLinkFragment.label, style: TextStyle.brand(.title3(color: .primary)).centerAligned))
         bag += stackView.addArranged(MultilineLabel(value: L10n.embarkSelectOptionLabel, style: TextStyle.brand(.callout(color: .link)).centerAligned))
-                
+
         return (control, Signal { callback in
             bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 control.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
@@ -58,9 +58,9 @@ extension EmbarkSelectActionOption: Viewable {
             bag += control.delayedTouchCancel(delay: 0.1).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 control.transform = CGAffineTransform.identity
             }
-            
+
             bag += control.signal(for: .touchUpInside).feedback(type: .impactLight)
-            
+
             bag += control.signal(for: .touchUpInside).onValue { _ in
                 let textValue = self.data.link.fragments.embarkLinkFragment.label
                 callback(ActionResponseData(
@@ -69,7 +69,7 @@ extension EmbarkSelectActionOption: Viewable {
                     textValue: textValue
                 ))
             }
-            
+
             return bag
         })
     }

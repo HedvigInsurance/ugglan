@@ -9,8 +9,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public struct MultilineLabel {
     public let styledTextSignal: ReadWriteSignal<StyledText>
@@ -55,4 +55,3 @@ extension MultilineLabel: Viewable {
         return (label, bag)
     }
 }
-

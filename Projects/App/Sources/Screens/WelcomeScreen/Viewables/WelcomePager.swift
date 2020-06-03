@@ -8,9 +8,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 struct WelcomePager {
     let dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(nil)

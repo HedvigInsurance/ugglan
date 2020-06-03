@@ -7,8 +7,8 @@
 
 import Apollo
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 private struct LogMessage: Encodable {
     let text: String

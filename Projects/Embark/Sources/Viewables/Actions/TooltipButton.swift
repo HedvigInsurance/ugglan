@@ -6,22 +6,20 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
 import Foundation
 import hCore
 import UIKit
-import Flow
 
 struct TooltipButton {
     let state: EmbarkState
 }
 
 extension TooltipButton: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UILabel(value: "fish", style: .brand(.body(color: .primary)))
         let bag = DisposeBag()
-        
-        
-        
+
         return (view, bag)
     }
 }

@@ -9,11 +9,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
 import Presentation
 import StoreKit
 import UIKit
-import hCore
-import hCoreUI
 
 struct Welcome {
     let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>

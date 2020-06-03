@@ -9,8 +9,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public struct TextView {
     public let placeholder: ReadWriteSignal<String>
@@ -64,14 +64,14 @@ extension UITextView: SignalProvider {
 }
 
 extension TextView: Viewable {
-    public  func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
+    public func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
         let bag = DisposeBag()
         let view = UIControl()
         view.backgroundColor = .brand(.primaryBackground())
         view.isUserInteractionEnabled = true
         view.layer.cornerRadius = 6
         view.layer.borderWidth = 1
-        
+
         bag += view.applyBorderColor { _ in
             .brand(.primaryBorderColor)
         }

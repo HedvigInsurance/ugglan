@@ -1,6 +1,4 @@
 import Foundation
 import XCTest
 
-public extension XCTest {
-    
-}
+public extension XCTest {}

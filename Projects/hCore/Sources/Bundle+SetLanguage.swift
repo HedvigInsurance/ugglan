@@ -30,7 +30,7 @@ public extension Bundle {
         defer {
             object_setClass(Bundle(for: AnyLanguageBundle.self), AnyLanguageBundle.self)
         }
-        
+
         objc_setAssociatedObject(Bundle(for: AnyLanguageBundle.self), &bundleKey, Bundle(for: AnyLanguageBundle.self).path(forResource: language, ofType: "lproj"), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
 }

@@ -8,8 +8,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct KeyValueRow {
     let isHiddenSignal = ReadWriteSignal<Bool>(false)

@@ -65,7 +65,7 @@ let project = Project(
             dependencies: [
                 [.target(name: "Ugglan"),
                  .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
-                .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
+                 .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
             ].flatMap { $0 },
             settings: Settings(configurations: testsConfigurations)
         ),
@@ -89,8 +89,8 @@ let project = Project(
             buildAction: BuildAction(targets: ["Ugglan"]),
             testAction: TestAction(
                 targets: [TestableTarget(target: TargetReference(stringLiteral: "AppTests"), parallelizable: true)],
-                          arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])
-                    ),
+                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])
+            ),
             runAction: RunAction(executable: "Ugglan")
         ),
         Scheme(
@@ -98,6 +98,6 @@ let project = Project(
             shared: true,
             buildAction: BuildAction(targets: ["Hedvig"]),
             runAction: RunAction(executable: "Hedvig")
-        )
+        ),
     ]
 )

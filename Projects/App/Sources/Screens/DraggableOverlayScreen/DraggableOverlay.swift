@@ -8,9 +8,9 @@
 import Ease
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 struct DraggableOverlay<P: Presentable, PMatter: UIViewController, FutureResult: Any> where P.Matter == PMatter, P.Result == Future<FutureResult> {
     let presentable: P
