@@ -18,12 +18,9 @@ public struct InvitationScreen {
 }
 
 extension InvitationScreen: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-
-        let closeButton = UIBarButtonItem(title: "Close")
-        viewController.navigationItem.rightBarButtonItem = closeButton
 
         let imageTextAction = ImageTextAction<Void>(
             image: .init(image: Asset.invitationIllustration.image),
@@ -44,8 +41,12 @@ extension InvitationScreen: Presentable {
             showLogo: false
         )
 
-        bag += viewController.install(imageTextAction).nil()
-
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            bag += viewController.install(imageTextAction).onValue {
+                completion(.success)
+            }
+                        
+            return DelayedDisposer(bag, delay: 2)
+        })
     }
 }

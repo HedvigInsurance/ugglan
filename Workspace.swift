@@ -1,4 +1,5 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let testableTargets = [
     TestableTarget(target: .project(path: "Projects/App", target: "AppTests"), parallelizable: true),
@@ -20,12 +21,6 @@ let workspace = Workspace(
         "Projects/Forever",
     ],
     schemes: [
-        Scheme(name: "WorkspaceApps",
-               shared: true,
-               buildAction: BuildAction(targets: [.project(path: "Projects/App", target: "Ugglan"), .project(path: "Projects/Embark", target: "EmbarkExample")]),
-               testAction: nil,
-               runAction: nil,
-               archiveAction: nil),
         Scheme(name: "WorkspaceTests",
                shared: true,
                buildAction: nil,

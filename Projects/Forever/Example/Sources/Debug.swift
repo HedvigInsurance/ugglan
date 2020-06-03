@@ -31,7 +31,7 @@ extension Debug: Presentable {
         }
 
         bag += section.appendRow(title: "Invitation screen").onValue {
-            viewController.present(InvitationScreen(), style: .modal)
+            viewController.present(InvitationScreen(), style: .modal, options: [])
         }
 
         bag += section.appendRow(title: "Infinite loop").onValue {

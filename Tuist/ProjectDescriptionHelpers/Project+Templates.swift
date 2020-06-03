@@ -183,7 +183,7 @@ extension Project {
                                          sources: sources,
                                          resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
                                          dependencies: targetDependencies,
-                                         settings: Settings(configurations: frameworkConfigurations)))
+                                         settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
         if targets.contains(.testing) {
             projectTargets.append(Target(name: "\(name)Testing",
@@ -193,7 +193,7 @@ extension Project {
                                          infoPlist: .default,
                                          sources: "Testing/**/*.swift",
                                          dependencies: [.target(name: "\(name)")],
-                                         settings: Settings(configurations: frameworkConfigurations)))
+                                         settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
         if targets.contains(.tests) {
             projectTargets.append(Target(name: "\(name)Tests",
@@ -203,7 +203,7 @@ extension Project {
                                          infoPlist: .default,
                                          sources: "Tests/**/*.swift",
                                          dependencies: testsDependencies,
-                                         settings: Settings(configurations: testsConfigurations)))
+                                         settings: Settings(base: [:], configurations: testsConfigurations)))
         }
         if targets.contains(.example) {
             projectTargets.append(Target(name: "\(name)Example",
@@ -214,7 +214,7 @@ extension Project {
                                          sources: "Example/Sources/**/*.swift",
                                          resources: "Example/Resources/**",
                                          dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
-                                         settings: Settings(configurations: appConfigurations)))
+                                         settings: Settings(base: [:], configurations: appConfigurations)))
         }
 
         // Project
