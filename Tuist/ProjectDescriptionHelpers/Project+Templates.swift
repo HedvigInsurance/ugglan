@@ -152,7 +152,7 @@ extension Project {
         var testsDependencies: [TargetDependency] = [
             .target(name: "\(name)"),
             .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
-            .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework")
+            .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
         ]
         dependencies.forEach { testsDependencies.append(.project(target: "\($0)Testing", path: .relativeToRoot("Projects/\($0)"))) }
 
@@ -223,21 +223,21 @@ extension Project {
                        settings: Settings(configurations: projectConfigurations),
                        targets: projectTargets,
                        schemes: [
-                            Scheme(
-                                name: name,
-                                shared: true,
-                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
-                                testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])) : nil,
-                                runAction: nil
-                            ),
-                            targets.contains(.example) ? Scheme(
-                                name: "\(name)Example",
-                                shared: true,
-                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: "\(name)Example")]),
-                                testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
-                                runAction: RunAction(executable: TargetReference(stringLiteral: "\(name)Example"))
-                        ) : nil
-                        ].compactMap { $0 },
+                           Scheme(
+                               name: name,
+                               shared: true,
+                               buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
+                               testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])) : nil,
+                               runAction: nil
+                           ),
+                           targets.contains(.example) ? Scheme(
+                               name: "\(name)Example",
+                               shared: true,
+                               buildAction: BuildAction(targets: [TargetReference(stringLiteral: "\(name)Example")]),
+                               testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
+                               runAction: RunAction(executable: TargetReference(stringLiteral: "\(name)Example"))
+                           ) : nil,
+                       ].compactMap { $0 },
                        additionalFiles: [
                            includesGraphQL ? .folderReference(path: "GraphQL") : nil,
                        ].compactMap { $0 })

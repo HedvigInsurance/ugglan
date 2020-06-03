@@ -1,9 +1,9 @@
-import Foundation
-import UIKit
-import Forever
 import Flow
-import hCoreUI
+import Forever
 import Form
+import Foundation
+import hCoreUI
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -11,21 +11,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
 
     internal func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         DefaultStyling.installCustom()
-                
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+
         let navigationController = UINavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
-        
-        self.window?.rootViewController = navigationController
-        self.window?.makeKeyAndVisible()
-        
+
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
+
         bag += navigationController.present(Debug(), style: .default, options: [.largeTitleDisplayMode(.always)])
-        
+
         return true
     }
 }

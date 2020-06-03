@@ -2,7 +2,6 @@ import Foundation
 import XCTest
 
 final class ForeverTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -14,6 +13,4 @@ final class ForeverTests: XCTestCase {
     func test_example() {
         // Add your test here
     }
-
 }
-

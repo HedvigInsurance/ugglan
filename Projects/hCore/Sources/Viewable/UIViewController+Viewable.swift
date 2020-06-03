@@ -6,12 +6,12 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
 import Foundation
 import UIKit
-import Flow
 
 extension UIViewController {
-   public func install<V: Viewable, View: UIView>(
+    public func install<V: Viewable, View: UIView>(
         _ viewable: V
     ) -> Disposable where V.Matter == View, V.Result == Disposable, V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()

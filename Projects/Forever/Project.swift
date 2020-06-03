@@ -4,20 +4,20 @@ import ProjectDescriptionHelpers
 let project = Project.framework(
     name: "Forever",
     targets: Set([
-       .framework,
-       .frameworkResources,
-       .tests,
-       .example,
-       .testing
+        .framework,
+        .frameworkResources,
+        .tests,
+        .example,
+        .testing,
     ]),
     externalDependencies: [
         .flow,
         .presentation,
-        .form
+        .form,
     ],
     dependencies: [
-          "hCore",
-          "hCoreUI"
+        "hCore",
+        "hCoreUI",
     ],
     sdks: [],
     includesGraphQL: true

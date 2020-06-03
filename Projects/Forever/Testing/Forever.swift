@@ -1,4 +1,1 @@
-public struct ForeverTestingData {
-
-}
-
+public struct ForeverTestingData {}

@@ -8,8 +8,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public struct ImageWithOptions {
     let image: UIImage
@@ -35,7 +35,7 @@ public struct ImageTextAction<ActionResult> {
     let body: String
     let actions: [(ActionResult, Button)]
     let showLogo: Bool
-    
+
     public init(
         image: ImageWithOptions,
         title: String,
@@ -55,7 +55,7 @@ extension ImageTextAction: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIScrollView, Signal<ActionResult>) {
         let bag = DisposeBag()
         let scrollView = FormScrollView()
-        
+
         let containerView = UIStackView()
         containerView.axis = .horizontal
         containerView.alignment = .center
@@ -134,7 +134,7 @@ extension ImageTextAction: Viewable {
             let formBackground = scrollView.backgroundColor ?? UIColor.black
             gradient.colors = [
                 formBackground.withAlphaComponent(0.2).cgColor,
-                formBackground.cgColor
+                formBackground.cgColor,
             ]
         }
 

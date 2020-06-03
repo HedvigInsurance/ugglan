@@ -6,12 +6,12 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import UIKit
-import Presentation
 import Flow
-import hCoreUI
+import Foundation
 import hCore
+import hCoreUI
+import Presentation
+import UIKit
 
 public struct InvitationScreen {
     public init() {}
@@ -21,10 +21,10 @@ extension InvitationScreen: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let closeButton = UIBarButtonItem(title: "Close")
         viewController.navigationItem.rightBarButtonItem = closeButton
-        
+
         let imageTextAction = ImageTextAction<Void>(
             image: .init(image: Asset.invitationIllustration.image),
             title: L10n.ReferralsIntroScreen.title,
@@ -39,13 +39,13 @@ extension InvitationScreen: Presentable {
                             textColor: .brand(.primaryButtonTextColor)
                         )
                     )
-                )
+                ),
             ],
             showLogo: false
         )
-                
+
         bag += viewController.install(imageTextAction).nil()
-        
+
         return (viewController, bag)
     }
 }

@@ -20,7 +20,7 @@ public extension DefaultStyling {
                 for: UITraitCollection(userInterfaceIdiom: .pad)
             ).backgroundColor = .brand(.primaryBackground())
             view.appearance().backgroundColor = .brand(.primaryBackground())
-            
+
             if #available(iOS 13.0, *) {
                 view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor = .brand(.secondaryBackground())
             }
@@ -31,28 +31,28 @@ public extension DefaultStyling {
 
         if #available(iOS 13.0, *) {
             UINavigationBar.appearance().isTranslucent = false
-            
+
             func generateAppearanceFor(userInterfaceLevel: UIUserInterfaceLevel) -> UINavigationBarAppearance {
                 let appearance = UINavigationBarAppearance()
                 appearance.backgroundColor = userInterfaceLevel == .elevated ? .brand(.secondaryBackground()) : .brand(.primaryBackground())
                 appearance.shadowImage = UIColor.clear.asImage()
                 appearance.titleTextAttributes = [
-                   NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                   NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
                 ]
                 appearance.largeTitleTextAttributes = [
-                   NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                   NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
                 ]
                 return appearance
             }
-            
+
             let baseAppearance = generateAppearanceFor(userInterfaceLevel: .base)
 
             UINavigationBar.appearance().standardAppearance = baseAppearance
             UINavigationBar.appearance().compactAppearance = baseAppearance
             UINavigationBar.appearance().scrollEdgeAppearance = baseAppearance
-            
+
             let elevatedAppearance = generateAppearanceFor(userInterfaceLevel: .elevated)
 
             UINavigationBar.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).standardAppearance = elevatedAppearance
@@ -61,15 +61,15 @@ public extension DefaultStyling {
         } else {
             UINavigationBar.appearance().shadowImage = UIColor.clear.asImage()
             UINavigationBar.appearance().titleTextAttributes = [
-               NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-               NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
             ]
             UINavigationBar.appearance().largeTitleTextAttributes = [
-               NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-               NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
             ]
         }
-        
+
         UINavigationBar.appearance().tintColor = .brand(.primaryTintColor)
 
         UITabBar.appearance().unselectedItemTintColor = .brand(.secondaryText)
@@ -119,7 +119,7 @@ public extension DefaultStyling {
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
-            ).backgroundImage  = UIColor.brand(.primaryBackground()).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+            ).backgroundImage = UIColor.brand(.primaryBackground()).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .dark)
@@ -189,19 +189,19 @@ public extension DefaultStyling {
 }
 
 extension DynamicSectionStyle {
-    static let brandPlain = DynamicSectionStyle { trait -> SectionStyle in
+    static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in
         fatalError("never use plain style")
     }
-    
+
     static let brandGrouped = DynamicSectionStyle { trait -> SectionStyle in
         let backgroundColor: UIColor
-        
+
         if #available(iOS 13.0, *) {
             backgroundColor = trait.userInterfaceLevel == .elevated ? UIColor.brand(.primaryBackground()) : UIColor.brand(.secondaryBackground())
         } else {
             backgroundColor = UIColor.brand(.secondaryBackground())
         }
-        
+
         return Style(
             rowInsets: .init(inset: 15),
             itemSpacing: 10,
@@ -209,8 +209,7 @@ extension DynamicSectionStyle {
             background: .init(style:
                 .init(background: .init(color: backgroundColor, border: .init(width: 0, color: UIColor.clear, cornerRadius: 8, borderEdges: .all)),
                       topSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
-                      bottomSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0))
-                )
+                      bottomSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
             ),
             selectedBackground: .init(all: UIColor.brand(.primaryBackground()).asImage()),
             header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
@@ -221,16 +220,16 @@ extension DynamicSectionStyle {
 
 extension DynamicFormStyle {
     static let brandPlain = DynamicFormStyle { _ -> FormStyle in
-        return .init(insets: UIEdgeInsets(inset: 15))
+        .init(insets: UIEdgeInsets(inset: 15))
     }
-    
+
     static let brandGrouped = DynamicFormStyle { _ -> FormStyle in
-        return .init(insets: UIEdgeInsets(inset: 15))
+        .init(insets: UIEdgeInsets(inset: 15))
     }
 }
 
-final class FormScrollView: UIScrollView {
-}
+final class FormScrollView: UIScrollView {}
+
 final class FormTableView: UITableView {
     override func didMoveToWindow() {
         super.didMoveToWindow()
@@ -240,6 +239,5 @@ final class FormTableView: UITableView {
         }
     }
 }
-final class ListTableView: UITableView {
-}
 
+final class ListTableView: UITableView {}

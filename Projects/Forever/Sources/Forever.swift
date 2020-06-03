@@ -6,13 +6,13 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
+import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
 import Presentation
-import Flow
-import Form
+import UIKit
 
 public struct Forever {
     public init() {}
@@ -23,13 +23,13 @@ extension Forever: Presentable {
         let viewController = UIViewController()
         viewController.title = L10n.referralsScreenTitle
         let bag = DisposeBag()
-        
+
         let tableKit = TableKit<EmptySection, InvitationRow>.init(holdIn: bag)
-        
+
         bag += viewController.install(tableKit)
-        
-        tableKit.set(Table(rows: Array.init(repeating: .init(title: "test"), count: 300)))
-                
+
+        tableKit.set(Table(rows: Array(repeating: .init(title: "test"), count: 300)))
+
         return (viewController, bag)
     }
 }
