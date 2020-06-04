@@ -230,6 +230,13 @@ extension Project {
                                testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])) : nil,
                                runAction: nil
                            ),
+                           targets.contains(.tests) ? Scheme(
+                               name: "\(name)Tests Record",
+                               shared: true,
+                               buildAction: nil,
+                               testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": "RECORD"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
+                               runAction: nil
+                            ) : nil,
                            targets.contains(.example) ? Scheme(
                                name: "\(name)Example",
                                shared: true,
