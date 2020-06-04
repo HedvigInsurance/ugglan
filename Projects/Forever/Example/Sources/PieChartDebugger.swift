@@ -29,7 +29,7 @@ extension PieChartDebugger: Presentable {
         let pieChartContainer = UIStackView()
         section.append(pieChartContainer)
         
-        let slicesSignal = ReadWriteSignal([PieChartSlice(percent: 0.1, color: .brand(.primaryButtonBackgroundColor))])
+        let slicesSignal = ReadWriteSignal<[PieChartSlice]>([])
         
         bag += pieChartContainer.addArranged(PieChart(slicesSignal: slicesSignal))
         

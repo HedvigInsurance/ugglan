@@ -44,6 +44,12 @@ public extension DefaultStyling {
                     NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                     NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
                 ]
+                
+                appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
+                appearance.backButtonAppearance.normal.titleTextAttributes = [
+                    .foregroundColor: UIColor.clear
+                ]
+                
                 return appearance
             }
 
@@ -128,20 +134,6 @@ public extension DefaultStyling {
             UITabBar.appearance(
                 for: UITraitCollection(userInterfaceStyle: .light)
             ).shadowImage = UIColor.brand(.primaryBackground()).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-
-            UINavigationBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .light)
-            ).backIndicatorImage = hCoreUIAssets.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
-            UINavigationBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .light)
-            ).backIndicatorTransitionMaskImage = hCoreUIAssets.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .light).imageConfiguration)
-
-            UINavigationBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .dark)
-            ).backIndicatorImage = hCoreUIAssets.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
-            UINavigationBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .dark)
-            ).backIndicatorTransitionMaskImage = hCoreUIAssets.backButton.image.withConfiguration(UITraitCollection(userInterfaceStyle: .dark).imageConfiguration)
         } else {
             UITabBar.appearance().backgroundImage = UIColor.brand(.primaryBackground()).asImage()
             UITabBar.appearance().shadowImage = UIColor.brand(.primaryBorderColor).asImage()
