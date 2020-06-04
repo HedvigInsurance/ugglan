@@ -19,7 +19,7 @@ extension Header: Viewable {
         let stackView = UIStackView()
         let bag = DisposeBag()
         
-        bag += stackView.addArranged(MultilineLabel(value: "testing", style: .brand(.largeTitle(color: .primary))))
+        bag += stackView.addArranged(PieChart(slicesSignal: .init([.init(percent: 0.1, color: .brand(.primaryButtonBackgroundColor)), .init(percent: 0.1, color: .brown)])))
         
         return (stackView, bag)
     }

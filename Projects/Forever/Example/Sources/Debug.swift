@@ -34,8 +34,8 @@ extension Debug: Presentable {
             viewController.present(InvitationScreen(), style: .modal, options: [])
         }
 
-        bag += section.appendRow(title: "Infinite loop").onValue {
-            viewController.present(Debug(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+        bag += section.appendRow(title: "PieChart debugger").onValue {
+            viewController.present(PieChartDebugger())
         }
 
         bag += viewController.install(form)

@@ -12,12 +12,17 @@ import hCoreUI
 import hCore
 import Flow
 
-struct PieChartSlice {
-    var percent: CGFloat
-    var color: UIColor
+public struct PieChartSlice {
+    public var percent: CGFloat
+    public var color: UIColor
+    
+    public init(percent: CGFloat, color: UIColor) {
+        self.percent = percent
+        self.color = color
+    }
 }
 
-struct PieChart {
+public struct PieChart {
     let slicesSignal: ReadWriteSignal<[PieChartSlice]>
     
     public init(slicesSignal: ReadWriteSignal<[PieChartSlice]>) {
@@ -35,7 +40,7 @@ struct PieChart {
 }
 
 extension PieChart: Viewable {
-    func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
+    public func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let stackView = UIStackView()
         let bag = DisposeBag()
         
@@ -47,35 +52,45 @@ extension PieChart: Viewable {
         
         stackView.addArrangedSubview(pieView)
         
+        let pieBag = bag.innerBag()
+        
         func renderChart(slices: [PieChartSlice]) {
+            pieBag.dispose()
+            var currPercent: CGFloat = 0
             
             slices.map { slice -> CAShapeLayer in
                 
-                let pieViewWidth = pieView.frame.width
+                let pieViewWidth: CGFloat = 100
 
                 
                 let path = UIBezierPath(arcCenter: pieView.center,
                                                radius: pieViewWidth * 3 / 8,
-                                               startAngle: percentToRadian(0),
-                                               endAngle: percentToRadian(0 + slice.percent),
+                                               startAngle: percentToRadian(currPercent),
+                                               endAngle: percentToRadian(currPercent + slice.percent),
                                                clockwise: true)
-                       
+                        
+                currPercent += slice.percent
+            
                let sliceLayer = CAShapeLayer()
                sliceLayer.path = path.cgPath
                sliceLayer.fillColor = nil
                sliceLayer.strokeColor = slice.color.cgColor
-               sliceLayer.lineWidth = pieViewWidth * 2 / 8
-               sliceLayer.strokeEnd = 1
+               sliceLayer.lineWidth = pieViewWidth - 25
                 
                 return sliceLayer
             }.forEach { shapeLayer in
                 pieView.layer.addSublayer(shapeLayer)
+                
+                pieBag += {
+                    shapeLayer.removeFromSuperlayer()
+                }
             }
-            
         }
         
-        bag += slicesSignal.onValue(renderChart)
-        
+        bag += combineLatest(self.slicesSignal.atOnce().plain().toVoid(), pieView.didLayoutSignal.toVoid()).onValue { _ in
+            renderChart(slices: self.slicesSignal.value)
+        }
+                
         return (stackView, bag)
     }
 }
