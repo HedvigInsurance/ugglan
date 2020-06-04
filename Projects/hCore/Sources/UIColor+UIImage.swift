@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 extension UIColor {
-    func asImage(_ size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
+    public func asImage(_ size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
         UIGraphicsBeginImageContext(size)
         let ctx = UIGraphicsGetCurrentContext()
         setFill()

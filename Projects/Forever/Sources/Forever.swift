@@ -25,6 +25,8 @@ extension Forever: Presentable {
         let bag = DisposeBag()
 
         let tableKit = TableKit<EmptySection, InvitationRow>.init(holdIn: bag)
+        
+        bag += tableKit.view.addTableHeaderView(Header())
 
         bag += viewController.install(tableKit)
 

@@ -210,7 +210,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .app,
                                          bundleId: "com.hedvig.\(name)Example",
-                                         infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": ""]),
+                                         infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
                                          sources: "Example/Sources/**/*.swift",
                                          resources: "Example/Resources/**",
                                          dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
