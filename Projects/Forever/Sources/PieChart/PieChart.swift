@@ -64,7 +64,6 @@ extension PieChart: Viewable {
         let filledLayer = CAShapeLayer()
         filledLayer.path = path.cgPath
         filledLayer.fillColor = nil
-        filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
         filledLayer.lineWidth = pieViewWidth - 25
         filledLayer.strokeStart = 0
         filledLayer.strokeEnd = 1
@@ -74,7 +73,6 @@ extension PieChart: Viewable {
         let sliceLayer = CAShapeLayer()
         sliceLayer.path = path.cgPath
         sliceLayer.fillColor = nil
-        sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
         sliceLayer.lineWidth = pieViewWidth - 24
         sliceLayer.strokeStart = 0
         sliceLayer.strokeEnd = 0
@@ -84,12 +82,17 @@ extension PieChart: Viewable {
         let nextSliceLayer = CAShapeLayer()
         nextSliceLayer.path = path.cgPath
         nextSliceLayer.fillColor = nil
-        nextSliceLayer.strokeColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.4).cgColor
         nextSliceLayer.lineWidth = pieViewWidth - 25
         nextSliceLayer.strokeStart = 0
         nextSliceLayer.strokeEnd = 0
 
         pieView.layer.addSublayer(nextSliceLayer)
+        
+        bag += pieView.traitCollectionSignal.atOnce().onValue({ _ in
+            filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
+            sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
+            nextSliceLayer.strokeColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.4).cgColor
+        })
 
         var previousPercentage: CGFloat = 0
 
