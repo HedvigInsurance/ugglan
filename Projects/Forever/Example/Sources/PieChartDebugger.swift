@@ -38,7 +38,7 @@ extension PieChartDebugger: Presentable {
         sliceChangerStepper.maximumValue = 20
 
         bag += sliceChangerStepper.signal(for: .touchUpInside).onValue {
-            pieChartStateSignal.value = PieChartState(percentagePerSlice: 0.05, slices: CGFloat(sliceChangerStepper.value))
+            pieChartStateSignal.value = PieChartState(percentagePerSlice: 0.05, slices: CGFloat(sliceChangerStepper.value) * 1.25)
         }
 
         sliceChangerRow.append(sliceChangerStepper)

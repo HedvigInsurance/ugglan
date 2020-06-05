@@ -125,7 +125,7 @@ extension PieChart: Viewable {
                 nextSliceLayer.opacity = 0
             }
 
-            bag += Signal(after: sliceAnimation.settlingDuration - 0.15).onValue { _ in
+            bag += Signal(after: sliceAnimation.settlingDuration * 0.6).onValue { _ in
                 nextSliceLayer.opacity = 1
 
                 let nextSliceStrokeStartAnimation = CASpringAnimation(keyPath: "strokeStart")
