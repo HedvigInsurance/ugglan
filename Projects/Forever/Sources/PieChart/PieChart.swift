@@ -87,12 +87,17 @@ extension PieChart: Viewable {
         nextSliceLayer.strokeEnd = 0
 
         pieView.layer.addSublayer(nextSliceLayer)
-        
-        bag += pieView.traitCollectionSignal.atOnce().onValue({ _ in
+
+        bag += pieView.traitCollectionSignal.atOnce().onValue { trait in
             filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
             sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
-            nextSliceLayer.strokeColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.4).cgColor
-        })
+
+            if trait.userInterfaceStyle == .dark {
+                nextSliceLayer.strokeColor = UIColor.black.withAlphaComponent(0.4).cgColor
+            } else {
+                nextSliceLayer.strokeColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.4).cgColor
+            }
+        }
 
         var previousPercentage: CGFloat = 0
 
@@ -124,9 +129,31 @@ extension PieChart: Viewable {
 
             let bag = DisposeBag()
 
-            if slicePercentage < previousPercentage {
-                nextSliceLayer.opacity = 0
-            }
+            let nextSliceStrokeStartAnimation = CASpringAnimation(keyPath: "strokeStart")
+            nextSliceStrokeStartAnimation.damping = 50
+            nextSliceStrokeStartAnimation.duration = sliceAnimation.settlingDuration
+
+            nextSliceStrokeStartAnimation.fillMode = CAMediaTimingFillMode.forwards
+            nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
+
+            nextSliceStrokeStartAnimation.fromValue = nextSliceLayer.presentation()?.strokeStart ?? 0
+            nextSliceStrokeStartAnimation.toValue = slicePercentage
+
+            nextSliceLayer.removeAnimation(forKey: "stroke-start-animation")
+            nextSliceLayer.add(nextSliceStrokeStartAnimation, forKey: "stroke-start-animation")
+
+            let nextSliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
+            nextSliceAnimation.damping = 50
+            nextSliceAnimation.duration = sliceAnimation.settlingDuration
+
+            nextSliceAnimation.fillMode = CAMediaTimingFillMode.forwards
+            nextSliceAnimation.isRemovedOnCompletion = false
+
+            nextSliceAnimation.fromValue = nextSliceLayer.presentation()?.strokeEnd ?? 0
+            nextSliceAnimation.toValue = slicePercentage
+
+            nextSliceLayer.removeAnimation(forKey: "stroke-animation")
+            nextSliceLayer.add(nextSliceAnimation, forKey: "stroke-animation")
 
             bag += Signal(after: sliceAnimation.settlingDuration * 0.6).onValue { _ in
                 nextSliceLayer.opacity = 1
@@ -138,7 +165,7 @@ extension PieChart: Viewable {
                 nextSliceStrokeStartAnimation.fillMode = CAMediaTimingFillMode.forwards
                 nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
 
-                nextSliceStrokeStartAnimation.fromValue = 0
+                nextSliceStrokeStartAnimation.fromValue = nextSliceLayer.presentation()?.strokeStart ?? 0
                 nextSliceStrokeStartAnimation.toValue = slicePercentage
 
                 nextSliceLayer.removeAnimation(forKey: "stroke-start-animation")
