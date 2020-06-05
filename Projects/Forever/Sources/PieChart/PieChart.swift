@@ -20,15 +20,28 @@ public struct PieChartState {
         self.percentagePerSlice = percentagePerSlice
         self.slices = slices
     }
+    
+    public init(
+        grossAmount: Float,
+        netAmount: Float,
+        potentialDiscountAmount: Float
+    ) {
+        let totalNeededSlices = grossAmount / potentialDiscountAmount
+        self.slices = (CGFloat(grossAmount - netAmount) / CGFloat(potentialDiscountAmount))
+        self.percentagePerSlice = 1 / CGFloat(totalNeededSlices)
+    }
 }
 
 public struct PieChart {
     let stateSignal: ReadWriteSignal<PieChartState>
+    let animated: Bool
 
     public init(
-        stateSignal: ReadWriteSignal<PieChartState>
+        stateSignal: ReadWriteSignal<PieChartState>,
+        animated: Bool = true
     ) {
         self.stateSignal = stateSignal
+        self.animated = animated
     }
 
     func percentToRadian(_ percent: CGFloat) -> CGFloat {
@@ -123,54 +136,26 @@ extension PieChart: Viewable {
             filledLayer.path = path.cgPath
             sliceLayer.path = path.cgPath
             nextSliceLayer.path = path.cgPath
-
-            let sliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
-            sliceAnimation.damping = 20
-            sliceAnimation.duration = sliceAnimation.settlingDuration
-
-            sliceAnimation.fillMode = CAMediaTimingFillMode.forwards
-            sliceAnimation.isRemovedOnCompletion = false
-
-            sliceAnimation.fromValue = sliceLayer.presentation()?.strokeEnd ?? previousPercentage
-            sliceAnimation.toValue = slicePercentage
-
-            sliceLayer.removeAnimation(forKey: "stroke-animation")
-            sliceLayer.add(sliceAnimation, forKey: "stroke-animation")
-
+            
             let bag = DisposeBag()
+            
+            if self.animated {
+                let sliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
+                sliceAnimation.damping = 20
+                sliceAnimation.duration = sliceAnimation.settlingDuration
 
-            let nextSliceStrokeStartAnimation = CASpringAnimation(keyPath: "strokeStart")
-            nextSliceStrokeStartAnimation.damping = 50
-            nextSliceStrokeStartAnimation.duration = sliceAnimation.settlingDuration
+                sliceAnimation.fillMode = CAMediaTimingFillMode.forwards
+                sliceAnimation.isRemovedOnCompletion = false
 
-            nextSliceStrokeStartAnimation.fillMode = CAMediaTimingFillMode.forwards
-            nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
+                sliceAnimation.fromValue = sliceLayer.presentation()?.strokeEnd ?? previousPercentage
+                sliceAnimation.toValue = slicePercentage
 
-            nextSliceStrokeStartAnimation.fromValue = nextSliceLayer.presentation()?.strokeStart ?? 0
-            nextSliceStrokeStartAnimation.toValue = slicePercentage
-
-            nextSliceLayer.removeAnimation(forKey: "stroke-start-animation")
-            nextSliceLayer.add(nextSliceStrokeStartAnimation, forKey: "stroke-start-animation")
-
-            let nextSliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
-            nextSliceAnimation.damping = 50
-            nextSliceAnimation.duration = sliceAnimation.settlingDuration
-
-            nextSliceAnimation.fillMode = CAMediaTimingFillMode.forwards
-            nextSliceAnimation.isRemovedOnCompletion = false
-
-            nextSliceAnimation.fromValue = nextSliceLayer.presentation()?.strokeEnd ?? 0
-            nextSliceAnimation.toValue = slicePercentage
-
-            nextSliceLayer.removeAnimation(forKey: "stroke-animation")
-            nextSliceLayer.add(nextSliceAnimation, forKey: "stroke-animation")
-
-            bag += Signal(after: sliceAnimation.settlingDuration * 0.6).onValue { _ in
-                nextSliceLayer.opacity = 1
-
+                sliceLayer.removeAnimation(forKey: "stroke-animation")
+                sliceLayer.add(sliceAnimation, forKey: "stroke-animation")
+                
                 let nextSliceStrokeStartAnimation = CASpringAnimation(keyPath: "strokeStart")
                 nextSliceStrokeStartAnimation.damping = 50
-                nextSliceStrokeStartAnimation.duration = sliceAnimation.settlingDuration
+                nextSliceStrokeStartAnimation.duration = nextSliceStrokeStartAnimation.settlingDuration
 
                 nextSliceStrokeStartAnimation.fillMode = CAMediaTimingFillMode.forwards
                 nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
@@ -183,16 +168,50 @@ extension PieChart: Viewable {
 
                 let nextSliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
                 nextSliceAnimation.damping = 50
-                nextSliceAnimation.duration = sliceAnimation.settlingDuration
+                nextSliceAnimation.duration = nextSliceAnimation.settlingDuration
 
                 nextSliceAnimation.fillMode = CAMediaTimingFillMode.forwards
                 nextSliceAnimation.isRemovedOnCompletion = false
 
-                nextSliceAnimation.fromValue = 0
-                nextSliceAnimation.toValue = slicePercentage + self.stateSignal.value.percentagePerSlice
+                nextSliceAnimation.fromValue = nextSliceLayer.presentation()?.strokeEnd ?? 0
+                nextSliceAnimation.toValue = slicePercentage
 
                 nextSliceLayer.removeAnimation(forKey: "stroke-animation")
                 nextSliceLayer.add(nextSliceAnimation, forKey: "stroke-animation")
+
+                bag += Signal(after: sliceAnimation.settlingDuration * 0.6).onValue { _ in
+                    nextSliceLayer.opacity = 1
+
+                    let nextSliceStrokeStartAnimation = CASpringAnimation(keyPath: "strokeStart")
+                    nextSliceStrokeStartAnimation.damping = 50
+                    nextSliceStrokeStartAnimation.duration = sliceAnimation.settlingDuration
+
+                    nextSliceStrokeStartAnimation.fillMode = CAMediaTimingFillMode.forwards
+                    nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
+
+                    nextSliceStrokeStartAnimation.fromValue = nextSliceLayer.presentation()?.strokeStart ?? 0
+                    nextSliceStrokeStartAnimation.toValue = slicePercentage
+
+                    nextSliceLayer.removeAnimation(forKey: "stroke-start-animation")
+                    nextSliceLayer.add(nextSliceStrokeStartAnimation, forKey: "stroke-start-animation")
+
+                    let nextSliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
+                    nextSliceAnimation.damping = 50
+                    nextSliceAnimation.duration = sliceAnimation.settlingDuration
+
+                    nextSliceAnimation.fillMode = CAMediaTimingFillMode.forwards
+                    nextSliceAnimation.isRemovedOnCompletion = false
+
+                    nextSliceAnimation.fromValue = 0
+                    nextSliceAnimation.toValue = slicePercentage + self.stateSignal.value.percentagePerSlice
+
+                    nextSliceLayer.removeAnimation(forKey: "stroke-animation")
+                    nextSliceLayer.add(nextSliceAnimation, forKey: "stroke-animation")
+                }
+            } else {
+                sliceLayer.strokeEnd = slicePercentage
+                nextSliceLayer.strokeStart = slicePercentage
+                nextSliceLayer.strokeEnd = slicePercentage + self.stateSignal.value.percentagePerSlice
             }
 
             previousPercentage = slicePercentage
