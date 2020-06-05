@@ -33,17 +33,38 @@ extension PieChartDebugger: Presentable {
 
         bag += pieChartContainer.addArranged(PieChart(stateSignal: pieChartStateSignal))
 
-        let sliceChangerRow = RowView(title: "Number of slices")
+        let sliceChangerRow = RowView(title: "Number of slices (stepper)")
         let sliceChangerStepper = UIStepper()
         sliceChangerStepper.maximumValue = 20
 
         bag += sliceChangerStepper.signal(for: .touchUpInside).onValue {
-            pieChartStateSignal.value = PieChartState(percentagePerSlice: 0.05, slices: CGFloat(sliceChangerStepper.value) * 1.25)
+            pieChartStateSignal.value = PieChartState(percentagePerSlice: 0.05, slices: CGFloat(sliceChangerStepper.value))
         }
 
         sliceChangerRow.append(sliceChangerStepper)
 
         section.append(sliceChangerRow)
+        
+        let sliceChangerTextFieldRow = RowView(title: "Number of slices (text field)")
+        let sliceChangerTextField = UITextField()
+        sliceChangerTextField.keyboardType = .numberPad
+        
+        bag += sliceChangerStepper.signal(for: .touchUpInside).map { String(sliceChangerStepper.value) }.bindTo(sliceChangerTextField, \.value)
+        
+        sliceChangerTextFieldRow.append(sliceChangerTextField)
+        
+        bag += sliceChangerTextField.shouldReturn.set { _ -> Bool in
+            return true
+        }
+        
+        bag += sliceChangerTextField.signal(for: .primaryActionTriggered).map { sliceChangerTextField.value }.onValue { newValue in
+            if let floatValue = Float(newValue) {
+                let cgFloatValue = CGFloat(floatValue)
+                pieChartStateSignal.value = PieChartState(percentagePerSlice: 0.05, slices: cgFloatValue)
+            }
+        }
+        
+        section.append(sliceChangerTextFieldRow)
 
         bag += viewController.install(form)
 
