@@ -46,8 +46,7 @@ extension PieChartDebugger: Presentable {
         section.append(sliceChangerRow)
         
         let sliceChangerTextFieldRow = RowView(title: "Number of slices (text field)")
-        let sliceChangerTextField = UITextField()
-        sliceChangerTextField.value = "1.0"
+        let sliceChangerTextField = UITextField(value: "1.0", placeholder: "", style: .default)
         sliceChangerTextField.keyboardType = .numberPad
         
         bag += sliceChangerStepper.signal(for: .touchUpInside).map { String(sliceChangerStepper.value) }.bindTo(sliceChangerTextField, \.value)
