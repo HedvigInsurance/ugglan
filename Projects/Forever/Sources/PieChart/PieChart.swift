@@ -25,7 +25,9 @@ public struct PieChartState {
 public struct PieChart {
     let stateSignal: ReadWriteSignal<PieChartState>
 
-    public init(stateSignal: ReadWriteSignal<PieChartState>) {
+    public init(
+        stateSignal: ReadWriteSignal<PieChartState>
+    ) {
         self.stateSignal = stateSignal
     }
 
@@ -45,7 +47,6 @@ extension PieChart: Viewable {
         let bag = DisposeBag()
 
         let pieView = UIView()
-        pieView.backgroundColor = .brand(.primaryBackground())
 
         pieView.snp.makeConstraints { make in
             make.height.width.equalTo(215)
@@ -90,8 +91,17 @@ extension PieChart: Viewable {
 
         bag += pieView.traitCollectionSignal.atOnce().onValue { trait in
             filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
-            sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
-
+            
+            if #available(iOS 13.0, *) {
+                if trait.userInterfaceLevel == .elevated {
+                    sliceLayer.strokeColor = UIColor.brand(.primaryBackground()).cgColor
+                } else {
+                    sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
+                }
+            } else {
+                sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
+            }
+            
             if trait.userInterfaceStyle == .dark {
                 nextSliceLayer.strokeColor = UIColor.black.withAlphaComponent(0.4).cgColor
             } else {

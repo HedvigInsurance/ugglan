@@ -21,18 +21,21 @@ extension PieChartDebugger: Presentable {
         viewController.title = "Pie chart debugger"
 
         let bag = DisposeBag()
-
         let form = FormView()
 
-        let section = form.appendSection(headerView: UILabel(value: "Pie chart", style: .default), footerView: nil)
+        let section = form.appendSection()
+        section.dynamicStyle = section.dynamicStyle.restyled { (style: inout SectionStyle) in
+            style.background = .none
+        }
 
         let pieChartContainer = UIStackView()
         section.append(pieChartContainer)
-
+        
         let pieChartStateSignal = ReadWriteSignal<PieChartState>(PieChartState(percentagePerSlice: 0, slices: 0))
-
         bag += pieChartContainer.addArranged(PieChart(stateSignal: pieChartStateSignal))
 
+        let editorSection = form.appendSection(headerView: UILabel(value: "Editor", style: .default), footerView: nil)
+        
         let sliceChangerRow = RowView(title: "Number of slices (stepper)")
         let sliceChangerStepper = UIStepper()
         sliceChangerStepper.maximumValue = 20
@@ -42,17 +45,16 @@ extension PieChartDebugger: Presentable {
         }
 
         sliceChangerRow.append(sliceChangerStepper)
-
-        section.append(sliceChangerRow)
+        editorSection.append(sliceChangerRow)
         
         let sliceChangerTextFieldRow = RowView(title: "Number of slices (text field)")
         let sliceChangerTextField = UITextField(value: "1.0", placeholder: "", style: .default)
         sliceChangerTextField.keyboardType = .numberPad
+        sliceChangerTextFieldRow.append(sliceChangerTextField)
+        editorSection.append(sliceChangerTextFieldRow)
         
         bag += sliceChangerStepper.signal(for: .touchUpInside).map { String(sliceChangerStepper.value) }.bindTo(sliceChangerTextField, \.value)
-        
-        sliceChangerTextFieldRow.append(sliceChangerTextField)
-        
+                
         bag += sliceChangerTextField.shouldReturn.set { _ -> Bool in
             return true
         }
@@ -64,8 +66,6 @@ extension PieChartDebugger: Presentable {
             }
         }
         
-        section.append(sliceChangerTextFieldRow)
-
         bag += viewController.install(form)
 
         return (viewController, bag)
