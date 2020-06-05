@@ -6,21 +6,21 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import UIKit
 import Flow
+import Foundation
 import hCore
 import hCoreUI
+import UIKit
 
 struct Header {}
 
 extension Header: Viewable {
-    func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let stackView = UIStackView()
         let bag = DisposeBag()
-        
-        bag += stackView.addArranged(PieChart(slicesSignal: .init([.init(percent: 0.1, color: .brand(.primaryButtonBackgroundColor)), .init(percent: 0.1, color: .brown)])))
-        
+
+        bag += stackView.addArranged(PieChart(stateSignal: .init(.init(percentagePerSlice: 0.1, slices: 2))))
+
         return (stackView, bag)
     }
 }

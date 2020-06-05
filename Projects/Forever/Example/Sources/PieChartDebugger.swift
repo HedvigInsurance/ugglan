@@ -25,23 +25,24 @@ extension PieChartDebugger: Presentable {
         let form = FormView()
 
         let section = form.appendSection(headerView: UILabel(value: "Pie chart", style: .default), footerView: nil)
-        
+
         let pieChartContainer = UIStackView()
         section.append(pieChartContainer)
-        
-        let slicesSignal = ReadWriteSignal<[PieChartSlice]>([])
-        
-        bag += pieChartContainer.addArranged(PieChart(slicesSignal: slicesSignal))
-        
+
+        let pieChartStateSignal = ReadWriteSignal<PieChartState>(PieChartState(percentagePerSlice: 0, slices: 0))
+
+        bag += pieChartContainer.addArranged(PieChart(stateSignal: pieChartStateSignal))
+
         let sliceChangerRow = RowView(title: "Number of slices")
         let sliceChangerStepper = UIStepper()
-                
+        sliceChangerStepper.maximumValue = 20
+
         bag += sliceChangerStepper.signal(for: .touchUpInside).onValue {
-            slicesSignal.value = Array(repeating: PieChartSlice(percent: 0.1, color: .brand(.primaryButtonBackgroundColor)), count: Int(sliceChangerStepper.value))
+            pieChartStateSignal.value = PieChartState(percentagePerSlice: 0.05, slices: CGFloat(sliceChangerStepper.value))
         }
-        
+
         sliceChangerRow.append(sliceChangerStepper)
-        
+
         section.append(sliceChangerRow)
 
         bag += viewController.install(form)
