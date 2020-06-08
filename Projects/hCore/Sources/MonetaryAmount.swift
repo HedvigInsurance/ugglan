@@ -35,6 +35,7 @@ public extension MonetaryAmount {
      var formattedAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
+        formatter.currencyCode = currency
         formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
         formatter.maximumFractionDigits = 2
         
