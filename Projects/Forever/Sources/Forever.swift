@@ -34,7 +34,7 @@ extension Forever: Presentable {
 
         bag += viewController.install(tableKit)
 
-        tableKit.set(Table.init(sections: [(L10n.ReferralsActive.Invited.title, [.init(title: "hej hej")])]))
+        tableKit.table = Table.init(sections: [(L10n.ReferralsActive.Invited.title, [.init(title: "hej hej")])])
         
         let button = Button(title: "Share code", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
         tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: button.type.value.height, right: 0)

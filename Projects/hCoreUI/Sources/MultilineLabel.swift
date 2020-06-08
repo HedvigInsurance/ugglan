@@ -32,6 +32,17 @@ public struct MultilineLabel {
     }
 }
 
+extension UILabel {
+    func calculateMaxLines() -> Int {
+        let maxSize = CGSize(width: frame.size.width, height: CGFloat(Float.infinity))
+        let charSize = font.lineHeight
+        let text = (self.text ?? "") as NSString
+        let textSize = text.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font ?? UIFont.systemFont(ofSize: 0)], context: nil)
+        let linesRoundedUp = Int(ceil(textSize.height/charSize))
+        return linesRoundedUp
+    }
+}
+
 extension MultilineLabel: Viewable {
     public func materialize(events _: ViewableEvents) -> (UILabel, Disposable) {
         let bag = DisposeBag()
@@ -42,11 +53,16 @@ extension MultilineLabel: Viewable {
             styledText.restyled { (textStyle: inout TextStyle) in
                 textStyle.numberOfLines = 0
                 textStyle.lineBreakMode = .byWordWrapping
-                textStyle.lineHeight = textStyle.font.pointSize * 1.4
             }
         }.bindTo(label, \.styledText)
 
         bag += label.didLayoutSignal.onValue {
+            if label.calculateMaxLines() > 1 {
+                label.styledText = label.styledText.restyled({ (style: inout TextStyle) in
+                    style.lineHeight = style.font.lineHeight * 1.4
+                })
+            }
+            
             if self.usePreferredMaxLayoutWidth {
                 label.preferredMaxLayoutWidth = label.frame.size.width
             }

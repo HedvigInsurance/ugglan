@@ -34,7 +34,7 @@ extension DiscountCodeSection: Viewable {
         codeRow.append(codeLabel)
         
         bag += section.append(codeRow).onValue { _ in
-            print("hello")
+            bag += section.viewController?.displayToast(title: "Copied!")
         }
                 
         return (section, bag)
