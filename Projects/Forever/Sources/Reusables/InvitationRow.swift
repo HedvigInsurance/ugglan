@@ -22,6 +22,10 @@ struct InvitationRow: Hashable {
         case pending
         case active
     }
+    
+    static var cellHeight: CGFloat {
+        return 54
+    }
 }
 
 extension InvitationRow: Reusable {
@@ -33,7 +37,7 @@ extension InvitationRow: Reusable {
         stackView.addArrangedSubview(iconImageView)
         
         iconImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(18)
+            make.width.height.equalTo(18).priority(.required)
         }
         
         let nameLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))

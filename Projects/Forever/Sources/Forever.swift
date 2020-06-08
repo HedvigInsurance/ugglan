@@ -26,7 +26,7 @@ extension Forever: Presentable {
 
         let tableKit = TableKit<String, InvitationRow>.init(holdIn: bag)
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
-            return 54
+            return InvitationRow.cellHeight
         }
         
         bag += tableKit.view.addTableHeaderView(Header(
