@@ -26,27 +26,30 @@ extension Forever: Presentable {
 
         let tableKit = TableKit<String, InvitationRow>.init(holdIn: bag)
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
-            return InvitationRow.cellHeight
+            return tableKit.table[index].cellHeight
         }
         
         bag += tableKit.view.addTableHeaderView(Header(
             grossAmountSignal: .init(.sek(100)),
             netAmountSignal: .init(.sek(100)),
             potentialDiscountAmountSignal: .init(.sek(10))
-        ))
+        ), animated: false)
 
         bag += viewController.install(tableKit)
 
         tableKit.table = Table.init(sections: [(L10n.ReferralsActive.Invited.title, [
-            .init(name: "Torsten", state: .active, discount: .sek(-10)),
-            .init(name: "Fisken", state: .pending, discount: .sek(-10)),
-            .init(name: "Någon annan", state: .terminated, discount: .sek(-10))
+            .init(name: "Torsten", state: .active, discount: .sek(-10), invitedByOther: false),
+            .init(name: "Fisken", state: .pending, discount: .sek(-10), invitedByOther: false),
+            .init(name: "Någon annan", state: .terminated, discount: .sek(-10), invitedByOther: false),
+            .init(name: "Någon annan", state: .active, discount: .sek(-10), invitedByOther: true)
         ])])
         
         let button = Button(title: "Share code", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
         tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: button.type.value.height, right: 0)
                 
         bag += tableKit.view.add(button) { buttonView in
+            buttonView.layer.zPosition = 100
+            
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
                     tableKit.view.safeAreaLayoutGuide.snp.bottom

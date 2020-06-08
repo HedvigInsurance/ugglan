@@ -24,8 +24,8 @@ final class InvitationRowTests: XCTestCase {
     
     func setupTableKit(holdIn bag: DisposeBag) -> TableKit<EmptySection, InvitationRow> {
         let tableKit = TableKit<EmptySection, InvitationRow>(holdIn: bag)
-        bag += tableKit.delegate.heightForCell.set { _ -> CGFloat in
-            InvitationRow.cellHeight
+        bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
+            tableKit.table[index].cellHeight
         }
         
         tableKit.view.snp.makeConstraints { make in
@@ -37,7 +37,7 @@ final class InvitationRowTests: XCTestCase {
     }
 
     func testPendingState() {
-        let invitationRow = InvitationRow(name: "mock", state: .pending, discount: .sek(10))
+        let invitationRow = InvitationRow(name: "mock", state: .pending, discount: .sek(10), invitedByOther: false)
         
         let bag = DisposeBag()
         
@@ -51,7 +51,7 @@ final class InvitationRowTests: XCTestCase {
     }
     
     func testActiveState() {
-        let invitationRow = InvitationRow(name: "mock", state: .active, discount: .sek(10))
+        let invitationRow = InvitationRow(name: "mock", state: .active, discount: .sek(10), invitedByOther: false)
         
         let bag = DisposeBag()
         
@@ -65,7 +65,7 @@ final class InvitationRowTests: XCTestCase {
     }
     
     func testTerminatedState() {
-        let invitationRow = InvitationRow(name: "mock", state: .terminated, discount: .sek(10))
+        let invitationRow = InvitationRow(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: false)
        
        let bag = DisposeBag()
        
@@ -77,5 +77,19 @@ final class InvitationRowTests: XCTestCase {
        
        bag.dispose()
    }
+    
+    func testTerminatedStateWithInvited() {
+         let invitationRow = InvitationRow(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: true)
+        
+        let bag = DisposeBag()
+        
+        let tableKit = setupTableKit(holdIn: bag)
+        
+        tableKit.table = Table(rows: [invitationRow])
+        
+        assertSnapshot(matching: tableKit.view, as: .image)
+        
+        bag.dispose()
+    }
 }
 
