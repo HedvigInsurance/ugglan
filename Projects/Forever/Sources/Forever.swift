@@ -27,14 +27,14 @@ extension Forever: Presentable {
         let tableKit = TableKit<String, InvitationRow>.init(holdIn: bag)
         
         bag += tableKit.view.addTableHeaderView(Header(
-            grossAmountSignal: .init(100.0),
-            netAmountSignal: .init(100.0),
-            potentialDiscountAmountSignal: .init(10.0)
+            grossAmountSignal: .init(.sek(100)),
+            netAmountSignal: .init(.sek(100)),
+            potentialDiscountAmountSignal: .init(.sek(10))
         ))
 
         bag += viewController.install(tableKit)
 
-        tableKit.table = Table.init(sections: [(L10n.ReferralsActive.Invited.title, [.init(title: "hej hej")])])
+        tableKit.table = Table.init(sections: [(L10n.ReferralsActive.Invited.title, [.init(name: "hej hej", state: .active, discount: .sek(-10))])])
         
         let button = Button(title: "Share code", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
         tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: button.type.value.height, right: 0)

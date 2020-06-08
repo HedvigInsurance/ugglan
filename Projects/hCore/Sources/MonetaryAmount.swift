@@ -8,73 +8,58 @@
 
 import Foundation
 
-public protocol MonetaryAmount {
-    var amount: String { get }
-    var currency: String { get }
+public struct MonetaryAmount: Equatable, Hashable {
+    public init(amount: String, currency: String) {
+        self.amount = amount
+        self.currency = currency
+    }
+    
+    public var amount: String
+    public var currency: String
     /// amount parsed as a float
-    var value: Float { get }
-}
-
-public extension MonetaryAmount {
-    /// amount formatted according to currency specifications, ready to be displayed
-     var formattedAmount: String {
-        switch currency {
-        case "SEK":
-            if let floatValue = Float(amount) {
-                return "\(Int(floatValue)) kr"
-            }
-        case "NOK":
-            if let floatValue = Float(amount) {
-                return "\(Int(floatValue)) kr"
-            }
-        default:
-            return "\(amount) \(currency)"
-        }
-
-        return "\(amount) \(currency)"
-    }
-}
-
-extension MonetaryAmount {
-    public static func == (lhs: MonetaryAmount, rhs: MonetaryAmount) -> Bool {
-        lhs.amount == rhs.amount
-    }
-}
-
-extension Float: MonetaryAmount {
-    public var amount: String {
-        String(self)
-    }
-    
-    public var value: Float {
-        self
-    }
-    
-    public var currency: String {
-        ""
-    }
-}
-
-extension Double: MonetaryAmount {
-    public var amount: String {
-        String(self)
-    }
-    
-    public var value: Float {
-        Float(self)
-    }
-    
-    public var currency: String {
-        ""
-    }
-}
-
-extension MonetaryAmountFragment: MonetaryAmount {
     public var value: Float {
         if let floatValue = Float(amount) {
             return floatValue
         }
         
         return 0
+    }
+    
+    public static func sek(_ value: Float) -> Self {
+        self.init(amount: String(value), currency: "SEK")
+    }
+}
+
+public extension MonetaryAmount {
+    /// amount formatted according to currency specifications, ready to be displayed
+     var formattedAmount: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
+        formatter.maximumFractionDigits = 2
+        
+        switch currency {
+        case "SEK":
+            if let floatValue = Float(amount) {
+                formatter.locale = Locale(identifier: "sv_SE")
+                return formatter.string(from: NSNumber(value: floatValue)) ?? ""
+            }
+        case "NOK":
+            if let floatValue = Float(amount) {
+                formatter.locale = Locale(identifier: "nb_NO")
+                return formatter.string(from: NSNumber(value: floatValue)) ?? ""
+            }
+        default:
+            if let floatValue = Float(amount) {
+                return formatter.string(from: NSNumber(value: floatValue)) ?? ""
+            }
+        }
+
+        return "\(amount) \(currency)"
+    }
+}
+extension MonetaryAmountFragment {
+    public var monetaryAmount: MonetaryAmount {
+        .init(amount: amount, currency: currency)
     }
 }
