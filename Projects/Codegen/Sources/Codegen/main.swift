@@ -32,6 +32,9 @@ let sourceUrls = [
     sourceRootURL
         .appendingPathComponent("Embark")
         .appendingPathComponent("GraphQL"),
+    sourceRootURL
+        .appendingPathComponent("hCore")
+        .appendingPathComponent("GraphQL"),
 ]
 
 sourceUrls.forEach { sourceUrl in

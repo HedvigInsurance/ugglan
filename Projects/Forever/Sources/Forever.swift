@@ -26,7 +26,11 @@ extension Forever: Presentable {
 
         let tableKit = TableKit<EmptySection, InvitationRow>.init(holdIn: bag)
         
-        bag += tableKit.view.addTableHeaderView(Header())
+        bag += tableKit.view.addTableHeaderView(Header(
+            grossAmountSignal: .init(100.0),
+            netAmountSignal: .init(100.0),
+            potentialDiscountAmountSignal: .init(10.0)
+        ))
 
         bag += viewController.install(tableKit)
 

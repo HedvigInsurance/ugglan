@@ -22,12 +22,12 @@ public struct PieChartState {
     }
     
     public init(
-        grossAmount: Float,
-        netAmount: Float,
-        potentialDiscountAmount: Float
+        grossAmount: MonetaryAmount,
+        netAmount: MonetaryAmount,
+        potentialDiscountAmount: MonetaryAmount
     ) {
-        let totalNeededSlices = grossAmount / potentialDiscountAmount
-        self.slices = (CGFloat(grossAmount - netAmount) / CGFloat(potentialDiscountAmount))
+        let totalNeededSlices = grossAmount.value / potentialDiscountAmount.value
+        self.slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(potentialDiscountAmount.value))
         self.percentagePerSlice = 1 / CGFloat(totalNeededSlices)
     }
 }

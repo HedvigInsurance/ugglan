@@ -12,14 +12,35 @@ import hCore
 import hCoreUI
 import UIKit
 
-struct Header {}
+struct Header {
+    let grossAmountSignal: ReadWriteSignal<MonetaryAmount>
+    let netAmountSignal: ReadWriteSignal<MonetaryAmount>
+    let potentialDiscountAmountSignal: ReadWriteSignal<MonetaryAmount>
+}
 
 extension Header: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let stackView = UIStackView()
+        stackView.axis = .vertical
         let bag = DisposeBag()
-
-        bag += stackView.addArranged(PieChart(stateSignal: .init(.init(percentagePerSlice: 0.1, slices: 2))))
+        
+        let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
+        bag += stackView.addArranged(pieChart)
+        
+        let emptyStateHeader = EmptyStateHeader()
+        bag += stackView.addArranged(emptyStateHeader) { view in
+            view.isHidden = true
+        }
+        
+        bag += combineLatest(grossAmountSignal.atOnce(), netAmountSignal.atOnce(), potentialDiscountAmountSignal.atOnce()).onValue { (grossAmount, netAmount, potentialDiscountAmount) in
+            pieChart.stateSignal.value = .init(
+                grossAmount: grossAmount,
+                netAmount: netAmount,
+                potentialDiscountAmount: potentialDiscountAmount
+            )
+            
+            emptyStateHeader.isHiddenSignal.value = grossAmount.amount != netAmount.amount
+        }
 
         return (stackView, bag)
     }
