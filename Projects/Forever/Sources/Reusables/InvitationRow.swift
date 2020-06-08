@@ -30,7 +30,6 @@ extension InvitationRow: Reusable {
         
         let iconImageView = UIImageView()
         iconImageView.contentMode = .scaleAspectFill
-        iconImageView.image = Asset.activeInvite.image
         stackView.addArrangedSubview(iconImageView)
         
         iconImageView.snp.makeConstraints { make in
@@ -45,7 +44,22 @@ extension InvitationRow: Reusable {
 
         return (stackView, { `self` in
             nameLabel.value = self.name
-            discountAmountLabel.value = self.discount.formattedAmount
+            
+            switch self.state {
+            case .active:
+                iconImageView.image = Asset.activeInvite.image
+                discountAmountLabel.value = self.discount.formattedAmount
+                discountAmountLabel.style = .brand(.headline(color: .primary))
+            case .pending:
+                iconImageView.image = Asset.pendingInvite.image
+                discountAmountLabel.value = L10n.ReferallsInviteeStates.awaiting
+                discountAmountLabel.style = .brand(.headline(color: .tertiary))
+            case .terminated:
+                iconImageView.image = Asset.terminatedInvite.image
+                iconImageView.tintColor = .brand(.regularCaution)
+                discountAmountLabel.value = L10n.ReferallsInviteeStates.terminated
+                discountAmountLabel.style = .brand(.headline(color: .destructive))
+            }
             
             return NilDisposer()
         })
