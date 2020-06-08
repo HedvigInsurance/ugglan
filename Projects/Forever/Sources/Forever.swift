@@ -24,7 +24,7 @@ extension Forever: Presentable {
         viewController.title = L10n.referralsScreenTitle
         let bag = DisposeBag()
 
-        let tableKit = TableKit<EmptySection, InvitationRow>.init(holdIn: bag)
+        let tableKit = TableKit<String, InvitationRow>.init(holdIn: bag)
         
         bag += tableKit.view.addTableHeaderView(Header(
             grossAmountSignal: .init(100.0),
@@ -34,7 +34,21 @@ extension Forever: Presentable {
 
         bag += viewController.install(tableKit)
 
-        tableKit.set(Table(rows: Array(repeating: .init(title: "test"), count: 300)))
+        tableKit.set(Table.init(sections: [(L10n.ReferralsActive.Invited.title, [.init(title: "hej hej")])]))
+        
+        let button = Button(title: "Share code", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
+        tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: button.type.value.height, right: 0)
+                
+        bag += tableKit.view.add(button) { buttonView in
+            buttonView.snp.makeConstraints { make in
+                make.bottom.equalTo(
+                    tableKit.view.safeAreaLayoutGuide.snp.bottom
+                ).inset(20)
+                make.width.equalToSuperview().inset(15)
+                make.centerX.equalToSuperview()
+                make.height.equalTo(button.type.value.height)
+            }
+        }
 
         return (viewController, bag)
     }

@@ -27,7 +27,7 @@ extension Debug: Presentable {
         let section = form.appendSection(headerView: UILabel(value: "Screens", style: .default), footerView: nil)
 
         bag += section.appendRow(title: "Main tab screen").onValue {
-            viewController.present(Forever(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            viewController.present(Forever(), style: .default, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
 
         bag += section.appendRow(title: "Invitation screen").onValue {
