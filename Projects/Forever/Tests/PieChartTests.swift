@@ -50,20 +50,20 @@ final class PieChartTests: XCTestCase {
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.05, slices: 1.5)
             assertSnapshot(matching: view, as: .image)
             
-            pieChart.stateSignal.value = .init(grossAmount: 100, netAmount: 50, potentialDiscountAmount: 10)
+            pieChart.stateSignal.value = .init(grossAmount: .sek(100), netAmount: .sek(50), potentialDiscountAmount: .sek(10))
             assertSnapshot(matching: view, as: .image)
             
-            pieChart.stateSignal.value = .init(grossAmount: 1000, netAmount: 5, potentialDiscountAmount: 10)
+            pieChart.stateSignal.value = .init(grossAmount: .sek(1000), netAmount: .sek(5), potentialDiscountAmount: .sek(10))
             assertSnapshot(matching: view, as: .image)
         }
     }
     
     func testMoneyToPieChartState() {
-        let state = PieChartState(grossAmount: 1000, netAmount: 5, potentialDiscountAmount: 10)
+        let state = PieChartState(grossAmount: .sek(1000), netAmount: .sek(5), potentialDiscountAmount: .sek(10))
         XCTAssert(state.percentagePerSlice == 0.01)
         XCTAssert(state.slices == 99.5)
         
-        let state2 = PieChartState(grossAmount: 100, netAmount: 90, potentialDiscountAmount: 10)
+        let state2 = PieChartState(grossAmount: .sek(100), netAmount: .sek(90), potentialDiscountAmount: .sek(10))
         XCTAssert(state2.percentagePerSlice == 0.1)
         XCTAssert(state2.slices == 1)
     }
