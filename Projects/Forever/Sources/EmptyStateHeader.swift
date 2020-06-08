@@ -23,9 +23,9 @@ extension EmptyStateHeader: Viewable {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 16
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
-        
+
         bag += isHiddenSignal.bindTo(stackView, \.isHidden)
         
         let title = MultilineLabel(value: L10n.ReferralsEmpty.headline, style: TextStyle.brand(.title1(color: .primary)).centerAligned)

@@ -22,6 +22,9 @@ extension Header: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 24, right: 15)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        
         let bag = DisposeBag()
         
         let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
@@ -31,6 +34,9 @@ extension Header: Viewable {
         bag += stackView.addArranged(emptyStateHeader) { view in
             view.isHidden = true
         }
+        
+        let discountCodeSection = DiscountCodeSection()
+        bag += stackView.addArranged(discountCodeSection)
         
         bag += combineLatest(grossAmountSignal.atOnce(), netAmountSignal.atOnce(), potentialDiscountAmountSignal.atOnce()).onValue { (grossAmount, netAmount, potentialDiscountAmount) in
             pieChart.stateSignal.value = .init(
