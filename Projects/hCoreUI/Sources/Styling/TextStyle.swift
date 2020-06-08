@@ -22,6 +22,7 @@ public extension TextStyle {
             case negative
             case positive
             case dynamic
+            case dynamicReversed
         }
 
         public static var primary: Self {
@@ -100,11 +101,24 @@ public extension TextStyle {
                 return self.negativeColor
             })
         }
+        
+        var dynamicReversedColor: UIColor {
+            return UIColor(dynamic: { trait -> UIColor in
+                if trait.userInterfaceStyle == .light {
+                    return self.negativeColor
+                }
+
+                return self.dynamicColor
+            })
+        }
+
 
         func color(for state: State) -> UIColor {
             switch state {
             case .dynamic:
                 return dynamicColor
+            case .dynamicReversed:
+                return dynamicReversedColor
             case .negative:
                 return self.negativeColor
             case .positive:

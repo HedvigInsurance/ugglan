@@ -18,7 +18,13 @@ struct Toast: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
         view.layer.cornerRadius = 8
-        view.backgroundColor = .brand(.primaryBackground(true))
+        view.backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
+            if trait.userInterfaceStyle == .dark {
+                return .brand(.secondaryBackground())
+            }
+            
+            return .brand(.primaryBackground(true))
+        })
         
         let bag = DisposeBag()
         
@@ -42,7 +48,7 @@ struct Toast: Viewable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
                 
-        bag += contentView.addArranged(MultilineLabel(value: value, style: TextStyle.brand(.headline(color: .primary(state: .negative))).centerAligned))
+        bag += contentView.addArranged(MultilineLabel(value: value, style: TextStyle.brand(.headline(color: .primary(state: .dynamicReversed))).centerAligned))
         
         return (view, bag)
     }
@@ -75,7 +81,14 @@ public extension UIViewController {
         toastView.transform = CGAffineTransform(translationX: 0, y: -200)
         toastView.tag = toastTag
         
-        view.embedView(toastView, withinLayoutArea: .safeArea, edgeInsets: .zero, pinToEdges: .top, layoutPriority: .required, disembedBag: nil)
+        view.embedView(
+            toastView,
+            withinLayoutArea: .safeArea,
+            edgeInsets: UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0),
+            pinToEdges: .top,
+            layoutPriority: .required,
+            disembedBag: nil
+        )
         
         toastView.snp.makeConstraints { make in
             make.width.equalToSuperview().inset(15)
@@ -106,7 +119,11 @@ public extension UIViewController {
            }
        }
         
-        bag += timeoutSignal.wait(until: gestureRecognizer.signal(for: \.state).map { state in state == .ended }).animated(style: SpringAnimationStyle.lightBounce()) { _ in
+        bag += timeoutSignal
+            .atOnce()
+            .filter(predicate: { $0 })
+            .wait(until: gestureRecognizer.signal(for: \.state).atOnce().map { state in state == .ended || state == .possible })
+            .animated(style: SpringAnimationStyle.lightBounce()) { _ in
             toastView.transform = CGAffineTransform(translationX: 0, y: -200)
         }.onValue { _ in
             toastView.removeFromSuperview()
