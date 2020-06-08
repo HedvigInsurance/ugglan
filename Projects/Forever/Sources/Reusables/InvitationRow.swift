@@ -49,16 +49,19 @@ extension InvitationRow: Reusable {
             case .active:
                 iconImageView.image = Asset.activeInvite.image
                 discountAmountLabel.value = self.discount.formattedAmount
+                nameLabel.style = .brand(.headline(color: .primary))
                 discountAmountLabel.style = .brand(.headline(color: .primary))
             case .pending:
                 iconImageView.image = Asset.pendingInvite.image
+                nameLabel.style = .brand(.headline(color: .primary))
                 discountAmountLabel.value = L10n.ReferallsInviteeStates.awaiting
                 discountAmountLabel.style = .brand(.headline(color: .tertiary))
             case .terminated:
                 iconImageView.image = Asset.terminatedInvite.image
-                iconImageView.tintColor = .brand(.regularCaution)
+                iconImageView.tintColor = .brand(.tertiaryText)
+                nameLabel.style = .brand(.headline(color: .tertiary))
                 discountAmountLabel.value = L10n.ReferallsInviteeStates.terminated
-                discountAmountLabel.style = .brand(.headline(color: .destructive))
+                discountAmountLabel.style = .brand(.headline(color: .tertiary))
             }
             
             return NilDisposer()
