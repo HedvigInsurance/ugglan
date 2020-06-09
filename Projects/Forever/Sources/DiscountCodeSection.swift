@@ -21,11 +21,13 @@ extension DiscountCodeSection: Viewable {
         let section = SectionView(
             headerView: UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default),
             footerView: {
-                let label = UILabel(value: L10n.ReferralsEmpty.Code.footer, style: TextStyle.default.restyled({ (style: inout TextStyle) in
-                    style.numberOfLines = 0
-                    style.lineBreakMode = .byWordWrapping
-                }))
-                return label
+                let stackView = UIStackView()
+                
+                let label = MultilineLabel(value: L10n.ReferralsEmpty.Code.footer, style: TextStyle.brand(.footnote(color: .tertiary)))
+                
+                bag += stackView.addArranged(label)
+                
+                return stackView
         }()
         )
         

@@ -205,7 +205,7 @@ extension DynamicSectionStyle {
             ),
             selectedBackground: .init(all: UIColor.brand(.primaryBackground()).asImage()),
             header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
-            footer: .init(text: .brand(.footnote(color: .secondary)), insets: UIEdgeInsets(inset: 8))
+            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
         )
     }
 }
