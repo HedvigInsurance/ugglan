@@ -135,9 +135,12 @@ extension Project {
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
             .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
         ]
+
+        let testHost: [String: SettingValue] = targets.contains(.example) ? ["TEST_HOST": SettingValue(stringLiteral: "$(BUILT_PRODUCTS_DIR)/\(name)Example.app/\(name)Example")] : [:]
+
         let testsConfigurations: [CustomConfiguration] = [
-            .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
-            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
+            .debug(name: "Debug", settings: testHost, xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
+            .debug(name: "Release", settings: testHost, xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
         ]
         let appConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
@@ -217,6 +220,15 @@ extension Project {
                                          settings: Settings(base: [:], configurations: appConfigurations)))
         }
 
+        func getTestAction(_ recordMode: Bool) -> TestAction {
+            TestAction(
+                targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)],
+                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": recordMode ? "RECORD" : ""],
+                                     launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true]),
+                coverage: true
+            )
+        }
+
         // Project
         return Project(name: name,
                        organizationName: "Hedvig",
@@ -227,21 +239,21 @@ extension Project {
                                name: name,
                                shared: true,
                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
-                               testAction: targets.contains(.tests) ? TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])) : nil,
+                               testAction: targets.contains(.tests) ? getTestAction(false) : nil,
                                runAction: nil
                            ),
                            targets.contains(.tests) ? Scheme(
                                name: "\(name)Tests Record",
                                shared: true,
                                buildAction: nil,
-                               testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": "RECORD"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
+                               testAction: getTestAction(true),
                                runAction: nil
-                            ) : nil,
+                           ) : nil,
                            targets.contains(.example) ? Scheme(
                                name: "\(name)Example",
                                shared: true,
                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: "\(name)Example")]),
-                               testAction: TestAction(targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)], arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
+                               testAction: getTestAction(false),
                                runAction: RunAction(executable: TargetReference(stringLiteral: "\(name)Example"))
                            ) : nil,
                        ].compactMap { $0 },

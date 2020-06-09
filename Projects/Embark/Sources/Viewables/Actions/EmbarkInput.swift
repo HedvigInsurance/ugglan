@@ -49,6 +49,7 @@ extension EmbarkInput: Viewable {
         paddingView.isUserInteractionEnabled = true
         paddingView.axis = .vertical
         paddingView.isLayoutMarginsRelativeArrangement = true
+        paddingView.insetsLayoutMarginsFromSafeArea = false
         paddingView.layoutMargins = insets
         view.addSubview(paddingView)
 

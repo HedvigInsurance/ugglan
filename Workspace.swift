@@ -24,13 +24,21 @@ let workspace = Workspace(
         Scheme(name: "WorkspaceTests",
                shared: true,
                buildAction: nil,
-               testAction: TestAction(targets: testableTargets, arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
+               testAction: TestAction(
+                   targets: testableTargets,
+                   arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true]),
+                   coverage: true
+               ),
                runAction: nil,
                archiveAction: nil),
         Scheme(name: "WorkspaceTests Record",
                shared: true,
                buildAction: nil,
-               testAction: TestAction(targets: testableTargets, arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": "RECORD"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])),
+               testAction: TestAction(
+                   targets: testableTargets,
+                   arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": "RECORD"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true]),
+                   coverage: true
+               ),
                runAction: nil,
                archiveAction: nil),
     ]
