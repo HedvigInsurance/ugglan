@@ -35,6 +35,10 @@ let appDependencies: [TargetDependency] = [
     }.flatMap { $0 },
 ].flatMap { $0 }
 
+let targetActions: [TargetAction] = [
+    .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications")
+]
+
 let project = Project(
     name: "Ugglan",
     organizationName: "Hedvig",
@@ -49,7 +53,7 @@ let project = Project(
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
-            actions: [],
+            actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: ugglanConfigurations)
         ),
@@ -62,6 +66,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
+            actions: targetActions,
             dependencies: [
                 [.target(name: "Ugglan"),
                  .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
@@ -78,6 +83,7 @@ let project = Project(
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
+            actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: hedvigConfigurations)
         ),

@@ -136,11 +136,9 @@ extension Project {
             .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
         ]
 
-        let testHost: [String: SettingValue] = targets.contains(.example) ? ["TEST_HOST": SettingValue(stringLiteral: "$(BUILT_PRODUCTS_DIR)/\(name)Example.app/\(name)Example")] : [:]
-
         let testsConfigurations: [CustomConfiguration] = [
-            .debug(name: "Debug", settings: testHost, xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
-            .debug(name: "Release", settings: testHost, xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
+            .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
+            .debug(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
         ]
         let appConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
@@ -170,6 +168,10 @@ extension Project {
         targetDependencies.append(contentsOf: externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
         }.flatMap { $0 })
+        
+        let targetActions: [TargetAction] = [
+            .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications")
+        ]
 
         // Project targets
         var projectTargets: [Target] = []
@@ -185,6 +187,7 @@ extension Project {
                                          infoPlist: .default,
                                          sources: sources,
                                          resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
+                                         actions: targetActions,
                                          dependencies: targetDependencies,
                                          settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
@@ -195,6 +198,7 @@ extension Project {
                                          bundleId: "com.hedvig.\(name)Testing",
                                          infoPlist: .default,
                                          sources: "Testing/**/*.swift",
+                                         actions: targetActions,
                                          dependencies: [.target(name: "\(name)")],
                                          settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
@@ -205,7 +209,8 @@ extension Project {
                                          bundleId: "com.hedvig.\(name)Tests",
                                          infoPlist: .default,
                                          sources: "Tests/**/*.swift",
-                                         dependencies: testsDependencies,
+                                         actions: targetActions,
+                                         dependencies: [[.target(name: "\(name)Example")], testsDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: testsConfigurations)))
         }
         if targets.contains(.example) {
@@ -216,6 +221,7 @@ extension Project {
                                          infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
                                          sources: "Example/Sources/**/*.swift",
                                          resources: "Example/Resources/**",
+                                         actions: targetActions,
                                          dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: appConfigurations)))
         }
