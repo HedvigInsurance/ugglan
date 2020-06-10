@@ -9,5 +9,5 @@ frameworks=$(find "${mainDir}" -name '*.framework')
 
 for file in $frameworks
 do
-  rsync --progress -a -u "${file}" "${CONFIGURATION_BUILD_DIR}"
+  rsync --progress -a -u -v "${file}" "${CONFIGURATION_BUILD_DIR}"
 done
