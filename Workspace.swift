@@ -21,6 +21,12 @@ let workspace = Workspace(
         "Projects/Forever",
     ],
     schemes: [
+        Scheme(name: "WorkspaceApps",
+            shared: true,
+            buildAction: BuildAction(targets: [.project(path: "Projects/App", target: "Ugglan"), .project(path: "Projects/Embark", target: "EmbarkExample"), .project(path: "Projects/Forever", target: "ForeverExample")]),
+            testAction: nil,
+            runAction: nil,
+            archiveAction: nil),
         Scheme(name: "WorkspaceTests",
                shared: true,
                buildAction: nil,
