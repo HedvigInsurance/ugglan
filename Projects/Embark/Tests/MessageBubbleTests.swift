@@ -19,7 +19,7 @@ final class MessageBubbleTests: XCTestCase {
     }
 
     func testMessage() {
-        let messageBubble = MessageBubble(text: "Hello, I am a message 👋", delay: 0)
+        let messageBubble = MessageBubble(text: "Hello, I am a message 2 👋", delay: 0)
 
         materializeViewable(messageBubble) { view in
             view.snp.makeConstraints { make in
