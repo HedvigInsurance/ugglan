@@ -13,10 +13,10 @@ import hCoreUI
 import UIKit
 
 struct Header {
-    let grossAmountSignal: ReadSignal<MonetaryAmount>
-    let netAmountSignal: ReadSignal<MonetaryAmount>
-    let discountCodeSignal: ReadSignal<String>
-    let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount>
+    let grossAmountSignal: ReadSignal<MonetaryAmount?>
+    let netAmountSignal: ReadSignal<MonetaryAmount?>
+    let discountCodeSignal: ReadSignal<String?>
+    let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
 }
 
 extension Header: Viewable {
@@ -40,9 +40,9 @@ extension Header: Viewable {
         bag += stackView.addArranged(discountCodeSection)
 
         bag += combineLatest(
-            grossAmountSignal.atOnce(),
-            netAmountSignal.atOnce(),
-            potentialDiscountAmountSignal.atOnce()
+            grossAmountSignal.atOnce().compactMap { $0 },
+            netAmountSignal.atOnce().compactMap { $0 },
+            potentialDiscountAmountSignal.atOnce().compactMap { $0 }
         ).onValue { grossAmount, netAmount, potentialDiscountAmount in
             pieChart.stateSignal.value = .init(
                 grossAmount: grossAmount,

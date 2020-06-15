@@ -25,7 +25,7 @@ public extension DefaultStyling {
                 view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor = .brand(.secondaryBackground())
             }
         }
-
+        
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
         UINavigationBar.appearance().barTintColor = .brand(.primaryBackground())
 

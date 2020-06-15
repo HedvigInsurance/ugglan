@@ -46,7 +46,7 @@ extension Debug: Presentable {
                 discountCode: "HJQ123",
                 invitations: []
             )
-            let service = MockForeverService(data: data)
+            let service = MockDelayedForeverService(data: data, delay: 0.5)
             viewController.present(
                 Forever(service: service),
                 style: .default,

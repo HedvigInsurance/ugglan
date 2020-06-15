@@ -14,7 +14,7 @@ import hCoreUI
 import UIKit
 
 struct DiscountCodeSection {
-    let discountCodeSignal: ReadSignal<String>
+    let discountCodeSignal: ReadSignal<String?>
 }
 
 extension DiscountCodeSection: Viewable {
@@ -38,7 +38,7 @@ extension DiscountCodeSection: Viewable {
 
         let codeRow = RowView()
         let codeLabel = UILabel(
-            value: discountCodeSignal.value,
+            value: discountCodeSignal.value ?? "",
             style: TextStyle.brand(.body(color: .primary)).centerAligned
         )
         codeRow.append(codeLabel)

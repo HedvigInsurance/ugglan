@@ -46,6 +46,6 @@ public struct ForeverData {
 }
 
 public protocol ForeverService {
-    var dataSignal: ReadSignal<ForeverData> { get }
+    var dataSignal: ReadSignal<ForeverData?> { get }
     func refetch()
 }

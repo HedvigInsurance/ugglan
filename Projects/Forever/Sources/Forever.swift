@@ -35,15 +35,15 @@ extension Forever: Presentable {
         }
 
         bag += tableKit.view.addTableHeaderView(Header(
-            grossAmountSignal: service.dataSignal.map { $0.grossAmount },
-            netAmountSignal: service.dataSignal.map { $0.netAmount },
-            discountCodeSignal: service.dataSignal.map { $0.discountCode },
-            potentialDiscountAmountSignal: service.dataSignal.map { $0.potentialDiscountAmount }
+            grossAmountSignal: service.dataSignal.map { $0?.grossAmount },
+            netAmountSignal: service.dataSignal.map { $0?.netAmount },
+            discountCodeSignal: service.dataSignal.map { $0?.discountCode },
+            potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }
         ), animated: false)
 
         bag += viewController.install(tableKit)
 
-        bag += service.dataSignal.atOnce().map { $0.invitations }.onValue { invitations in
+        bag += service.dataSignal.atOnce().compactMap { $0?.invitations }.onValue { invitations in
             var table = Table(
                 sections: [
                     (
