@@ -6,39 +6,49 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
+import Form
 import Foundation
 import hCore
-import UIKit
 import hCoreUI
-import Form
-import Flow
+import UIKit
 
-struct DiscountCodeSection {}
+struct DiscountCodeSection {
+    let discountCodeSignal: ReadSignal<String>
+}
 
 extension DiscountCodeSection: Viewable {
-    func materialize(events: ViewableEvents) -> (SectionView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(
             headerView: UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default),
             footerView: {
                 let stackView = UIStackView()
-                
-                let label = MultilineLabel(value: L10n.ReferralsEmpty.Code.footer, style: TextStyle.brand(.footnote(color: .tertiary)))
-                
+
+                let label = MultilineLabel(
+                    value: L10n.ReferralsEmpty.Code.footer,
+                    style: TextStyle.brand(.footnote(color: .tertiary))
+                )
+
                 bag += stackView.addArranged(label)
-                
+
                 return stackView
-        }()
+            }()
         )
-        
+
         let codeRow = RowView()
-        let codeLabel = UILabel(value: "HJQ081", style: TextStyle.brand(.body(color: .primary)).centerAligned)
+        let codeLabel = UILabel(
+            value: discountCodeSignal.value,
+            style: TextStyle.brand(.body(color: .primary)).centerAligned
+        )
         codeRow.append(codeLabel)
-        
+
+        bag += discountCodeSignal.atOnce().bindTo(codeLabel, \.text)
+
         bag += section.append(codeRow).onValue { _ in
-            bag += section.viewController?.displayToast(title: "Copied!")
+            bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
         }
-                
+
         return (section, bag)
     }
 }

@@ -15,7 +15,11 @@ import Presentation
 import UIKit
 
 public struct Forever {
-    public init() {}
+    let service: ForeverService
+
+    public init(service: ForeverService) {
+        self.service = service
+    }
 }
 
 extension Forever: Presentable {
@@ -24,32 +28,45 @@ extension Forever: Presentable {
         viewController.title = L10n.referralsScreenTitle
         let bag = DisposeBag()
 
-        let tableKit = TableKit<String, InvitationRow>.init(holdIn: bag)
+        let tableKit = TableKit<String, InvitationRow>(holdIn: bag)
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
-            return tableKit.table[index].cellHeight
+            tableKit.table[index].cellHeight
         }
-        
+
         bag += tableKit.view.addTableHeaderView(Header(
-            grossAmountSignal: .init(.sek(100)),
-            netAmountSignal: .init(.sek(100)),
-            potentialDiscountAmountSignal: .init(.sek(10))
+            grossAmountSignal: service.dataSignal.map { $0.grossAmount },
+            netAmountSignal: service.dataSignal.map { $0.netAmount },
+            discountCodeSignal: service.dataSignal.map { $0.discountCode },
+            potentialDiscountAmountSignal: service.dataSignal.map { $0.potentialDiscountAmount }
         ), animated: false)
 
         bag += viewController.install(tableKit)
 
-        tableKit.table = Table.init(sections: [(L10n.ReferralsActive.Invited.title, [
-            .init(name: "Torsten", state: .active, discount: .sek(-10), invitedByOther: false),
-            .init(name: "Fisken", state: .pending, discount: .sek(-10), invitedByOther: false),
-            .init(name: "Någon annan", state: .terminated, discount: .sek(-10), invitedByOther: false),
-            .init(name: "Någon annan", state: .active, discount: .sek(-10), invitedByOther: true)
-        ])])
-        
-        let button = Button(title: "Share code", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
+        bag += service.dataSignal.atOnce().map { $0.invitations }.onValue { invitations in
+            var table = Table(
+                sections: [
+                    (
+                        L10n.ReferralsActive.Invited.title,
+                        invitations.map { InvitationRow(invitation: $0) }
+                    )
+                ]
+            )
+            table.removeEmptySections()
+            tableKit.set(table)
+        }
+
+        let button = Button(
+            title: "Share code",
+            type: .standard(
+                backgroundColor: .brand(.primaryButtonBackgroundColor),
+                textColor: .brand(.primaryButtonTextColor)
+            )
+        )
         tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: button.type.value.height, right: 0)
-                
+
         bag += tableKit.view.add(button) { buttonView in
             buttonView.layer.zPosition = 100
-            
+
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
                     tableKit.view.safeAreaLayoutGuide.snp.bottom

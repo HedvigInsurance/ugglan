@@ -8,6 +8,7 @@
 
 import Flow
 import Forever
+import ForeverTesting
 import Form
 import Foundation
 import Presentation
@@ -26,8 +27,31 @@ extension Debug: Presentable {
 
         let section = form.appendSection(headerView: UILabel(value: "Screens", style: .default), footerView: nil)
 
+        bag += section.appendRow(title: "Advanced main tab screen").onValue {
+            bag += viewController.present(
+                ReflectionForm(type: ForeverData.self, title: "Advanced"),
+                style: .default,
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+            ).onValue { data in
+                let service = MockForeverService(data: data)
+                bag += viewController.present(Forever(service: service))
+            }
+        }
+
         bag += section.appendRow(title: "Main tab screen").onValue {
-            viewController.present(Forever(), style: .default, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            let data = ForeverData(
+                grossAmount: .sek(100),
+                netAmount: .sek(50),
+                potentialDiscountAmount: .sek(10),
+                discountCode: "HJQ123",
+                invitations: []
+            )
+            let service = MockForeverService(data: data)
+            viewController.present(
+                Forever(service: service),
+                style: .default,
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+            )
         }
 
         bag += section.appendRow(title: "Invitation screen").onValue {

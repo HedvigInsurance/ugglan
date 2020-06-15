@@ -96,11 +96,11 @@ extension SectionView {
         }
     }
 
-    public func append<V: Viewable>(
+    public func append<V: Viewable, View: UIView>(
         _ viewable: V,
         onCreate: @escaping (_ row: SubviewOrderable) -> Void = { _ in }
     ) -> Disposable where
-        V.Matter == UIView,
+        V.Matter == View,
         V.Result == Disposable,
         V.Events == ViewableEvents {
         let (matter, result, disposable) = materializeViewable(

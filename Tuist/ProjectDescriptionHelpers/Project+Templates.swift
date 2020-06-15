@@ -168,9 +168,9 @@ extension Project {
         targetDependencies.append(contentsOf: externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
         }.flatMap { $0 })
-        
+
         let targetActions: [TargetAction] = [
-            .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications")
+            .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications"),
         ]
 
         // Project targets
@@ -199,7 +199,7 @@ extension Project {
                                          infoPlist: .default,
                                          sources: "Testing/**/*.swift",
                                          actions: targetActions,
-                                         dependencies: [.target(name: "\(name)")],
+                                         dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
         if targets.contains(.tests) {
@@ -222,7 +222,7 @@ extension Project {
                                          sources: "Example/Sources/**/*.swift",
                                          resources: "Example/Resources/**",
                                          actions: targetActions,
-                                         dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
+                                         dependencies: [[.target(name: "\(name)"), .package(product: "Runtime")], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: appConfigurations)))
         }
 
@@ -238,6 +238,9 @@ extension Project {
         // Project
         return Project(name: name,
                        organizationName: "Hedvig",
+                       packages: [
+                           .package(url: "https://github.com/wickwirew/Runtime", .exact("2.1.1")),
+                       ],
                        settings: Settings(configurations: projectConfigurations),
                        targets: projectTargets,
                        schemes: [

@@ -1,4 +1,4 @@
-query Example {
+query ForeverQuery {
     member {
         id
     }
