@@ -26,6 +26,7 @@ extension Forever: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.referralsScreenTitle
+        viewController.extendedLayoutIncludesOpaqueBars = true
         let bag = DisposeBag()
 
         let tableKit = TableKit<String, InvitationRow>(holdIn: bag)
