@@ -1,8 +1,8 @@
 //
-//  ReflectionForm.swift
-//  ForeverExample
+//  ArrayItemForm.swift
+//  ExampleUtil
 //
-//  Created by sam on 11.6.20.
+//  Created by sam on 16.6.20.
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
@@ -15,27 +15,23 @@ import Presentation
 import Runtime
 import UIKit
 
-struct ReflectionForm<T: Codable> {
-    let editInstance: T?
-    let title: String
-}
+struct ArrayItemForm: Presentable {
+    let item: AnyCodable
+    let type: Any.Type
 
-extension ReflectionForm: Presentable {
-    func materialize() -> (UIViewController, Future<T>) {
+    func materialize() -> (UIViewController, Future<AnyCodable>) {
         let viewController = UIViewController()
         viewController.title = "Create new"
 
         let bag = DisposeBag()
         let form = FormView()
 
-        guard var typeInstance = editInstance ?? (try? createInstance(of: T.self) as? T) else {
-            fatalError("Couldn't create instance of type \(T.self)")
-        }
+        var itemCopy = item
 
-        if let info = try? typeInfo(of: T.self) {
+        if let info = try? typeInfo(of: type) {
             bag += info.properties.map { property in
-                let (section, bag) = getSection(for: property, typeInstance: typeInstance, in: viewController) { value in
-                    try? property.set(value: value, on: &typeInstance)
+                let (section, bag) = getSection(for: property, typeInstance: item, in: viewController) { value in
+                    try? property.set(value: value, on: &itemCopy)
                 }
 
                 form.append(section)
@@ -60,15 +56,12 @@ extension ReflectionForm: Presentable {
             )
         }
 
-        return (viewController, Future<T> { completion in
+        return (viewController, Future<AnyCodable> { completion in
             bag += button.onTapSignal.onValue {
-                if self.editInstance == nil {
-                    ReflectionFormHistory<T>(title: self.title).appendItem(typeInstance)
-                }
-                completion(.success(typeInstance))
+                completion(.success(itemCopy))
             }
 
             return bag
-        })
+               })
     }
 }
