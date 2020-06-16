@@ -10,20 +10,20 @@ import Flow
 import Foundation
 import hCore
 
-public struct ForeverInvitation: Hashable {
+public struct ForeverInvitation: Hashable, Codable {
     let name: String
     let state: State
     let discount: MonetaryAmount
     let invitedByOther: Bool
 
-    public enum State {
+    public enum State: String, Codable {
         case terminated
         case pending
         case active
     }
 }
 
-public struct ForeverData {
+public struct ForeverData: Codable {
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,

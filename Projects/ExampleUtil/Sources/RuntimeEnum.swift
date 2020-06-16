@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol RuntimeEnum {
+public protocol RuntimeEnum {
     static func fromName(_ name: String) -> Self
 }

@@ -25,6 +25,7 @@ public enum ExternalDependencies: CaseIterable {
     case snapkit
     case markdownkit
     case mixpanel
+    case runtime
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
@@ -113,6 +114,10 @@ public enum ExternalDependencies: CaseIterable {
         case .mixpanel:
             return [
                 .framework(path: "../../Carthage/Build/iOS/Mixpanel.framework"),
+            ]
+        case .runtime:
+            return [
+                .package(product: "Runtime")
             ]
         }
     }
@@ -222,7 +227,7 @@ extension Project {
                                          sources: "Example/Sources/**/*.swift",
                                          resources: "Example/Resources/**",
                                          actions: targetActions,
-                                         dependencies: [[.target(name: "\(name)"), .package(product: "Runtime")], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
+                                         dependencies: [[.target(name: "\(name)"), .project(target: "ExampleUtil", path: .relativeToRoot("Projects/ExampleUtil"))], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: appConfigurations)))
         }
 

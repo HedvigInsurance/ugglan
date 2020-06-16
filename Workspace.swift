@@ -7,6 +7,7 @@ let testableTargets = [
     TestableTarget(target: .project(path: "Projects/hCore", target: "hCoreTests"), parallelizable: true),
     TestableTarget(target: .project(path: "Projects/hCoreUI", target: "hCoreUITests"), parallelizable: true),
     TestableTarget(target: .project(path: "Projects/Forever", target: "ForeverTests"), parallelizable: true),
+    TestableTarget(target: .project(path: "Projects/ExampleUtil", target: "ExampleUtilTests"), parallelizable: true),
 ]
 
 let workspace = Workspace(
@@ -19,6 +20,7 @@ let workspace = Workspace(
         "Projects/hCore",
         "Projects/hCoreUI",
         "Projects/Forever",
+        "Projects/ExampleUtil"
     ],
     schemes: [
         Scheme(name: "WorkspaceApps",

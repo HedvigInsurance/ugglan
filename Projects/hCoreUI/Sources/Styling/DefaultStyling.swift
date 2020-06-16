@@ -203,7 +203,11 @@ extension DynamicSectionStyle {
                       topSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
                       bottomSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
             ),
-            selectedBackground: .init(all: UIColor.brand(.primaryBackground()).asImage()),
+            selectedBackground: .init(style:
+                .init(background: .init(color: UIColor.brand(.primaryButtonBackgroundColor).withAlphaComponent(0.2), border: .init(width: 0, color: UIColor.clear, cornerRadius: 8, borderEdges: .all)),
+                      topSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
+                      bottomSeparator: .init(style: .init(width: 1 / UIScreen.main.scale, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
+            ),
             header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
             footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
         )

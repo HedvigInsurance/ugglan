@@ -13,6 +13,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import ExampleUtil
 
 struct Debug {}
 
@@ -27,31 +28,15 @@ extension Debug: Presentable {
 
         let section = form.appendSection(headerView: UILabel(value: "Screens", style: .default), footerView: nil)
 
-        bag += section.appendRow(title: "Advanced main tab screen").onValue {
+        bag += section.appendRow(title: "Forever tab screen").onValue {
             bag += viewController.present(
-                ReflectionForm(type: ForeverData.self, title: "Advanced"),
+                ReflectionFormHistory<ForeverData>(title: "Advanced"),
                 style: .default,
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
             ).onValue { data in
                 let service = MockForeverService(data: data)
                 bag += viewController.present(Forever(service: service))
             }
-        }
-
-        bag += section.appendRow(title: "Main tab screen").onValue {
-            let data = ForeverData(
-                grossAmount: .sek(100),
-                netAmount: .sek(50),
-                potentialDiscountAmount: .sek(10),
-                discountCode: "HJQ123",
-                invitations: []
-            )
-            let service = MockDelayedForeverService(data: data, delay: 0.5)
-            viewController.present(
-                Forever(service: service),
-                style: .default,
-                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-            )
         }
 
         bag += section.appendRow(title: "Invitation screen").onValue {

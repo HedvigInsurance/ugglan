@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct MonetaryAmount: Equatable, Hashable {
+public struct MonetaryAmount: Equatable, Hashable, Codable {
     public init(amount: String, currency: String) {
         self.amount = amount
         self.currency = currency

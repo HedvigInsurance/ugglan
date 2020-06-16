@@ -8,9 +8,10 @@
 
 import Forever
 import Foundation
+import ExampleUtil
 
 extension ForeverInvitation.State: RuntimeEnum {
-    static func fromName(_ name: String) -> ForeverInvitation.State {
+    public static func fromName(_ name: String) -> ForeverInvitation.State {
         switch name {
         case "active":
             return .active
