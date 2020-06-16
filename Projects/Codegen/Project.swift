@@ -3,13 +3,13 @@ import ProjectDescription
 let project = Project(
     name: "Codegen",
     organizationName: "Hedvig AB",
-    packages: [.package(url: "https://github.com/apollographql/apollo-ios.git", .upToNextMajor(from: "0.27.1"))],
+    packages: [.package(url: "https://github.com/apollographql/apollo-ios.git", .upToNextMajor(from: "0.28.0"))],
     targets: [
         Target(
             name: "Codegen",
             platform: .macOS,
             product: .app,
-            bundleId: "com.hedvig.codegen",
+            bundleId: "com.hedvig.codegen",
             infoPlist: "Info.plist",
             sources: ["Sources/**"],
             resources: [],
