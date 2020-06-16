@@ -49,7 +49,7 @@ extension Forever: Presentable {
                     (
                         L10n.ReferralsActive.Invited.title,
                         invitations.map { InvitationRow(invitation: $0) }
-                    )
+                    ),
                 ]
             )
             table.removeEmptySections()

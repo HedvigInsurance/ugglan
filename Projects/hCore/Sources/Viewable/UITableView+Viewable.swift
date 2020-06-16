@@ -53,11 +53,11 @@ extension UITableView {
         }
 
         let bag = DisposeBag()
-            
+
         func update() {
-            self.tableHeaderView = matter
+            tableHeaderView = matter
             matter.layoutIfNeeded()
-            self.layoutIfNeeded()
+            layoutIfNeeded()
         }
 
         if animated {

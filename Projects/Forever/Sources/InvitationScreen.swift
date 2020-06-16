@@ -45,7 +45,7 @@ extension InvitationScreen: Presentable {
             bag += viewController.install(imageTextAction).onValue {
                 completion(.success)
             }
-                        
+
             return DelayedDisposer(bag, delay: 2)
         })
     }

@@ -117,7 +117,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .runtime:
             return [
-                .package(product: "Runtime")
+                .package(product: "Runtime"),
             ]
         }
     }

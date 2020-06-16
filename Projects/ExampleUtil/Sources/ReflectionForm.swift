@@ -18,198 +18,197 @@ import UIKit
 typealias AnyCodable = (Any & Codable)
 
 func getSection(
-       for property: PropertyInfo,
-       typeInstance: Any,
-       in viewController: UIViewController,
-       setValue: @escaping (_ value: Any) -> Void
-   ) -> (SectionView, Disposable) {
-       if var monetaryAmount = try? property.get(from: typeInstance) as? MonetaryAmount {
-           let bag = DisposeBag()
+    for property: PropertyInfo,
+    typeInstance: Any,
+    in viewController: UIViewController,
+    setValue: @escaping (_ value: Any) -> Void
+) -> (SectionView, Disposable) {
+    if var monetaryAmount = try? property.get(from: typeInstance) as? MonetaryAmount {
+        let bag = DisposeBag()
 
-           let section = SectionView(
-               headerView: UILabel(value: property.name, style: .default),
-               footerView: UILabel(value: "", style: .default)
-           )
-           let amountRow = section.appendRow(title: "Amount")
+        let section = SectionView(
+            headerView: UILabel(value: property.name, style: .default),
+            footerView: UILabel(value: "", style: .default)
+        )
+        let amountRow = section.appendRow(title: "Amount")
 
-           bag += amountRow.append(
-               UITextField(value: monetaryAmount.amount, placeholder: "0.0", style: .default)
-           ).onValue { value in
-               monetaryAmount.amount = value
-               setValue(monetaryAmount)
-           }
+        bag += amountRow.append(
+            UITextField(value: monetaryAmount.amount, placeholder: "0.0", style: .default)
+        ).onValue { value in
+            monetaryAmount.amount = value
+            setValue(monetaryAmount)
+        }
 
-           let currencyRow = section.appendRow(title: "Currency")
-           bag += currencyRow.append(
-               UITextField(value: monetaryAmount.currency, placeholder: "SEK", style: .default)
-           ).onValue { value in
-               monetaryAmount.amount = value
-               setValue(monetaryAmount)
-           }
+        let currencyRow = section.appendRow(title: "Currency")
+        bag += currencyRow.append(
+            UITextField(value: monetaryAmount.currency, placeholder: "SEK", style: .default)
+        ).onValue { value in
+            monetaryAmount.amount = value
+            setValue(monetaryAmount)
+        }
 
-           return (section, bag)
-       } else if var list = try? property.get(from: typeInstance) as? [Any] {
-           let bag = DisposeBag()
+        return (section, bag)
+    } else if var list = try? property.get(from: typeInstance) as? [Any] {
+        let bag = DisposeBag()
 
-           let section = SectionView(
-               headerView: UILabel(value: property.name, style: .default),
-               footerView: UILabel(value: "", style: .default)
-           )
-           
-        func renderRow(item: (Decodable & Encodable), type: Any.Type, offset: Int) {
-               let row = RowView(title: "\(offset)")
-                bag += section.append(row).onValue { _ in
-                    viewController.present(ArrayItemForm(item: item, type: type), style: .default, options: [.defaults, .autoPop]).onValue { updatedItem in
-                        list.append(updatedItem)
-                        setValue(list)
-                    }
+        let section = SectionView(
+            headerView: UILabel(value: property.name, style: .default),
+            footerView: UILabel(value: "", style: .default)
+        )
+
+        func renderRow(item: Decodable & Encodable, type: Any.Type, offset: Int) {
+            let row = RowView(title: "\(offset)")
+            bag += section.append(row).onValue { _ in
+                viewController.present(ArrayItemForm(item: item, type: type), style: .default, options: [.defaults, .autoPop]).onValue { updatedItem in
+                    list.append(updatedItem)
+                    setValue(list)
                 }
-           }
-           
-        list.enumerated().forEach { (offset, item) in
-            guard
-                   let info = try? typeInfo(of: property.type),
-                   let elementType = info.genericTypes.first,
-                   let item = item as? (Decodable & Encodable) else {
-                   fatalError("Failed to parse array item")
             }
-            
+        }
+
+        list.enumerated().forEach { offset, item in
+            guard
+                let info = try? typeInfo(of: property.type),
+                let elementType = info.genericTypes.first,
+                let item = item as? (Decodable & Encodable) else {
+                fatalError("Failed to parse array item")
+            }
+
             renderRow(item: item, type: elementType, offset: offset)
         }
-        
+
         let createRow = RowView(title: "Create new")
-        
+
         createRow.append(.chevron)
-        
+
         bag += section.append(createRow).onValue { _ in
-                   guard
-                                        let info = try? typeInfo(of: property.type),
-                                        let elementType = info.genericTypes.first,
-                                        let arrayElementInstance = try? createInstance(of: elementType) as? (Decodable & Encodable) else {
-                                        fatalError("Failed to create instance for array")
-                                 }
-                                    
-                                 
-                              viewController.present(ArrayItemForm(item: arrayElementInstance, type: elementType), style: .default, options: [.defaults, .autoPop]).onValue { item in
-                                      list.append(item)
-                                 setValue(list)
-                                  
-                                renderRow(item: item, type: elementType, offset: list.endIndex)
-                                  }
-               }
+            guard
+                let info = try? typeInfo(of: property.type),
+                let elementType = info.genericTypes.first,
+                let arrayElementInstance = try? createInstance(of: elementType) as? (Decodable & Encodable) else {
+                fatalError("Failed to create instance for array")
+            }
 
-           return (section, bag)
-       } else if let string = try? property.get(from: typeInstance) as? String {
-           let bag = DisposeBag()
-           let section = SectionView(
-               headerView: UILabel(value: property.name, style: .default),
-               footerView: UILabel(value: "", style: .default)
-           )
+            viewController.present(ArrayItemForm(item: arrayElementInstance, type: elementType), style: .default, options: [.defaults, .autoPop]).onValue { item in
+                list.append(item)
+                setValue(list)
 
-           let row = RowView()
-           section.append(row)
+                renderRow(item: item, type: elementType, offset: list.endIndex)
+            }
+        }
 
-           bag += row.append(
-               UITextField(value: string, placeholder: "value", style: .default)
-           ).onValue { value in
-               setValue(value)
-           }
+        return (section, bag)
+    } else if let string = try? property.get(from: typeInstance) as? String {
+        let bag = DisposeBag()
+        let section = SectionView(
+            headerView: UILabel(value: property.name, style: .default),
+            footerView: UILabel(value: "", style: .default)
+        )
 
-           return (section, bag)
-       } else if let boolean = try? property.get(from: typeInstance) as? Bool {
-           let bag = DisposeBag()
-           let section = SectionView(
-               headerView: UILabel(value: property.name, style: .default),
-               footerView: UILabel(value: "", style: .default)
-           )
+        let row = RowView()
+        section.append(row)
 
-           let currencyRow = section.appendRow(title: "boolean")
-           bag += currencyRow.append(UISwitch(value: boolean)).onValue { value in
-               setValue(value)
-           }
+        bag += row.append(
+            UITextField(value: string, placeholder: "value", style: .default)
+        ).onValue { value in
+            setValue(value)
+        }
 
-           return (section, bag)
-       } else if let info = try? typeInfo(of: property.type) {
-           if info.kind == .enum {
-               let bag = DisposeBag()
+        return (section, bag)
+    } else if let boolean = try? property.get(from: typeInstance) as? Bool {
+        let bag = DisposeBag()
+        let section = SectionView(
+            headerView: UILabel(value: property.name, style: .default),
+            footerView: UILabel(value: "", style: .default)
+        )
 
-               let section = SectionView(
-                   headerView: UILabel(value: property.name, style: .default),
-                   footerView: UILabel(value: "", style: .default)
-               )
+        let currencyRow = section.appendRow(title: "boolean")
+        bag += currencyRow.append(UISwitch(value: boolean)).onValue { value in
+            setValue(value)
+        }
 
-               let row = RowView()
-               section.append(row)
+        return (section, bag)
+    } else if let info = try? typeInfo(of: property.type) {
+        if info.kind == .enum {
+            let bag = DisposeBag()
 
-               let segmentControl = UISegmentedControl(titles: info.cases.map { $0.name })
-               row.append(segmentControl)
+            let section = SectionView(
+                headerView: UILabel(value: property.name, style: .default),
+                footerView: UILabel(value: "", style: .default)
+            )
 
-               bag += segmentControl.onValue { index in
-                   if let runtimeEnum = property.type as? RuntimeEnum.Type {
-                       let caseValue = info.cases[index]
-                       setValue(runtimeEnum.fromName(caseValue.name))
-                   }
-               }
+            let row = RowView()
+            section.append(row)
 
-               return (section, bag)
-           }
-       }
+            let segmentControl = UISegmentedControl(titles: info.cases.map { $0.name })
+            row.append(segmentControl)
 
-       let fallbackSection = SectionView(
-           headerView: UILabel(value: "Unknown type: \(property.name)", style: .default),
-           footerView: nil
-       )
+            bag += segmentControl.onValue { index in
+                if let runtimeEnum = property.type as? RuntimeEnum.Type {
+                    let caseValue = info.cases[index]
+                    setValue(runtimeEnum.fromName(caseValue.name))
+                }
+            }
 
-       return (fallbackSection, NilDisposer())
-   }
+            return (section, bag)
+        }
+    }
+
+    let fallbackSection = SectionView(
+        headerView: UILabel(value: "Unknown type: \(property.name)", style: .default),
+        footerView: nil
+    )
+
+    return (fallbackSection, NilDisposer())
+}
 
 struct ArrayItemForm: Presentable {
     let item: AnyCodable
     let type: Any.Type
-    
+
     func materialize() -> (UIViewController, Future<AnyCodable>) {
         let viewController = UIViewController()
-               viewController.title = "Create new"
-               
-               let bag = DisposeBag()
-               let form = FormView()
-        
+        viewController.title = "Create new"
+
+        let bag = DisposeBag()
+        let form = FormView()
+
         var itemCopy = item
 
-            if let info = try? typeInfo(of: type) {
-                   bag += info.properties.map { property in
-                       let (section, bag) = getSection(for: property, typeInstance: item, in: viewController) { value in
-                           try? property.set(value: value, on: &itemCopy)
-                       }
+        if let info = try? typeInfo(of: type) {
+            bag += info.properties.map { property in
+                let (section, bag) = getSection(for: property, typeInstance: item, in: viewController) { value in
+                    try? property.set(value: value, on: &itemCopy)
+                }
 
-                       form.append(section)
+                form.append(section)
 
-                       return bag
-                   }
-               }
+                return bag
+            }
+        }
 
-               let button = Button(
-                   title: "Save",
-                   type: .standard(
-                       backgroundColor: .brand(.primaryButtonBackgroundColor),
-                       textColor: .brand(.primaryButtonTextColor)
-                   )
-               )
-               bag += form.append(button)
+        let button = Button(
+            title: "Save",
+            type: .standard(
+                backgroundColor: .brand(.primaryButtonBackgroundColor),
+                textColor: .brand(.primaryButtonTextColor)
+            )
+        )
+        bag += form.append(button)
 
-               bag += viewController.install(form) { scrollView in
-                   bag += scrollView.chainAllControlResponders(
-                       shouldLoop: false,
-                       returnKey: .next
-                   )
-               }
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.chainAllControlResponders(
+                shouldLoop: false,
+                returnKey: .next
+            )
+        }
 
-               return (viewController, Future<AnyCodable> { completion in
-                   bag += button.onTapSignal.onValue {
-                       completion(.success(itemCopy))
-                   }
+        return (viewController, Future<AnyCodable> { completion in
+            bag += button.onTapSignal.onValue {
+                completion(.success(itemCopy))
+            }
 
-                   return bag
+            return bag
                })
     }
 }
@@ -223,7 +222,7 @@ extension ReflectionForm: Presentable {
     func materialize() -> (UIViewController, Future<T>) {
         let viewController = UIViewController()
         viewController.title = "Create new"
-        
+
         let bag = DisposeBag()
         let form = FormView()
 

@@ -2,7 +2,6 @@ import Foundation
 import XCTest
 
 final class ExampleUtilTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -14,5 +13,4 @@ final class ExampleUtilTests: XCTestCase {
     func test_example() {
         // Add your test here
     }
-
 }

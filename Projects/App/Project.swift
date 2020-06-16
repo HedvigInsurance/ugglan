@@ -36,7 +36,7 @@ let appDependencies: [TargetDependency] = [
 ].flatMap { $0 }
 
 let targetActions: [TargetAction] = [
-    .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications")
+    .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications"),
 ]
 
 let project = Project(

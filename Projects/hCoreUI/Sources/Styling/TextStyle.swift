@@ -101,7 +101,7 @@ public extension TextStyle {
                 return self.negativeColor
             })
         }
-        
+
         var dynamicReversedColor: UIColor {
             return UIColor(dynamic: { trait -> UIColor in
                 if trait.userInterfaceStyle == .light {
@@ -111,7 +111,6 @@ public extension TextStyle {
                 return self.dynamicColor
             })
         }
-
 
         func color(for state: State) -> UIColor {
             switch state {

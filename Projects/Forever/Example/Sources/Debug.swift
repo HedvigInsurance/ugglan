@@ -6,6 +6,7 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import ExampleUtil
 import Flow
 import Forever
 import ForeverTesting
@@ -13,7 +14,6 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import ExampleUtil
 
 struct Debug {}
 

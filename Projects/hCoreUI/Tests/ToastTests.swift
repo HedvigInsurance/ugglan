@@ -23,12 +23,12 @@ final class ToastTests: XCTestCase {
 
     func test() {
         let toast = Toast(value: "Testing a title!")
-        
+
         materializeViewable(toast) { view in
             view.snp.makeConstraints { make in
                 make.width.equalTo(400)
             }
-            
+
             assertSnapshot(matching: view, as: .image)
         }
     }

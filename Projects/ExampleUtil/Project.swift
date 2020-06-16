@@ -4,17 +4,17 @@ import ProjectDescriptionHelpers
 let project = Project.framework(
     name: "ExampleUtil",
     targets: Set([
-       .framework
+        .framework,
     ]),
     externalDependencies: [
         .flow,
         .form,
         .presentation,
-        .runtime
+        .runtime,
     ],
     dependencies: [
         "hCore",
-        "hCoreUI"
+        "hCoreUI",
     ],
     sdks: [],
     includesGraphQL: false

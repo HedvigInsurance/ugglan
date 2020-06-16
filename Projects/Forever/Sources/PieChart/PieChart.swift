@@ -20,15 +20,15 @@ public struct PieChartState {
         self.percentagePerSlice = percentagePerSlice
         self.slices = slices
     }
-    
+
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,
         potentialDiscountAmount: MonetaryAmount
     ) {
         let totalNeededSlices = grossAmount.value / potentialDiscountAmount.value
-        self.slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(potentialDiscountAmount.value))
-        self.percentagePerSlice = 1 / CGFloat(totalNeededSlices)
+        slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(potentialDiscountAmount.value))
+        percentagePerSlice = 1 / CGFloat(totalNeededSlices)
     }
 }
 
@@ -104,7 +104,7 @@ extension PieChart: Viewable {
 
         bag += pieView.traitCollectionSignal.atOnce().onValue { trait in
             filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
-            
+
             if #available(iOS 13.0, *) {
                 if trait.userInterfaceLevel == .elevated {
                     sliceLayer.strokeColor = UIColor.brand(.primaryBackground()).cgColor
@@ -114,7 +114,7 @@ extension PieChart: Viewable {
             } else {
                 sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
             }
-            
+
             if trait.userInterfaceStyle == .dark {
                 nextSliceLayer.strokeColor = UIColor.black.withAlphaComponent(0.4).cgColor
             } else {
@@ -136,9 +136,9 @@ extension PieChart: Viewable {
             filledLayer.path = path.cgPath
             sliceLayer.path = path.cgPath
             nextSliceLayer.path = path.cgPath
-            
+
             let bag = DisposeBag()
-            
+
             if self.animated {
                 let sliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
                 sliceAnimation.damping = 20
@@ -152,7 +152,7 @@ extension PieChart: Viewable {
 
                 sliceLayer.removeAnimation(forKey: "stroke-animation")
                 sliceLayer.add(sliceAnimation, forKey: "stroke-animation")
-                
+
                 let nextSliceStrokeStartAnimation = CASpringAnimation(keyPath: "strokeStart")
                 nextSliceStrokeStartAnimation.damping = 50
                 nextSliceStrokeStartAnimation.duration = nextSliceStrokeStartAnimation.settlingDuration

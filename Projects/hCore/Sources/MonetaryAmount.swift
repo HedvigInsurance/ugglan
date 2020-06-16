@@ -13,7 +13,7 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
         self.amount = amount
         self.currency = currency
     }
-    
+
     public var amount: String
     public var currency: String
     /// amount parsed as a float
@@ -21,10 +21,10 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
         if let floatValue = Float(amount) {
             return floatValue
         }
-        
+
         return 0
     }
-    
+
     public static func sek(_ value: Float) -> Self {
         self.init(amount: String(value), currency: "SEK")
     }
@@ -32,13 +32,13 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
 
 public extension MonetaryAmount {
     /// amount formatted according to currency specifications, ready to be displayed
-     var formattedAmount: String {
+    var formattedAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = currency
         formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
         formatter.maximumFractionDigits = 2
-        
+
         switch currency {
         case "SEK":
             if let floatValue = Float(amount) {
@@ -59,6 +59,7 @@ public extension MonetaryAmount {
         return "\(amount) \(currency)"
     }
 }
+
 extension MonetaryAmountFragment {
     public var monetaryAmount: MonetaryAmount {
         .init(amount: amount, currency: currency)

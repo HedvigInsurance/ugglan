@@ -7,13 +7,13 @@
 //
 
 import Flow
+@testable import Forever
 import Form
 import Foundation
 import hCoreUI
 import SnapshotTesting
 import Testing
 import XCTest
-@testable import Forever
 
 final class DiscountCodeSectionTests: XCTestCase {
     override func setUp() {
@@ -21,15 +21,15 @@ final class DiscountCodeSectionTests: XCTestCase {
         setupScreenShotTests()
         DefaultStyling.installCustom()
     }
-    
+
     func testScreenshot() {
         let discountCodeSection = DiscountCodeSection()
-        
+
         materializeViewable(discountCodeSection) { view in
             view.snp.makeConstraints { make in
                 make.width.equalTo(300)
             }
-            
+
             assertSnapshot(matching: view, as: .image)
         }
     }

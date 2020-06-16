@@ -1,6 +1,6 @@
-import Foundation
 import Flow
 import Forever
+import Foundation
 
 public struct MockForeverService: ForeverService {
     let data: ForeverData
@@ -20,13 +20,13 @@ public struct MockDelayedForeverService: ForeverService {
     let delay: TimeInterval
     public var dataSignal: ReadSignal<ForeverData?> {
         let signal = ReadWriteSignal<ForeverData?>(nil)
-        
+
         let bag = DisposeBag()
-        
+
         bag += Signal(after: delay).onValue {
             signal.value = self.data
         }
-        
+
         return signal.hold(bag).readOnly()
     }
 

@@ -417,7 +417,7 @@ extension Button: Viewable {
                 button,
                 \.style
             )
-        
+
         let touchUpInside = button.signal(for: .touchUpInside)
         bag += touchUpInside.feedback(type: .impactLight)
 

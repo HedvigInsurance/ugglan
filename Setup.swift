@@ -1,12 +1,12 @@
-import ProjectDescription
 import Foundation
+import ProjectDescription
 
 func isCI() -> Bool {
     if case let .boolean(isCI) = Environment.CI {
-    return isCI
-  } else {
-    return false
-  }
+        return isCI
+    } else {
+        return false
+    }
 }
 
 let setup = Setup([

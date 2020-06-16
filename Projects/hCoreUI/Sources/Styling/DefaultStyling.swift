@@ -25,7 +25,7 @@ public extension DefaultStyling {
                 view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor = .brand(.secondaryBackground())
             }
         }
-        
+
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
         UINavigationBar.appearance().barTintColor = .brand(.primaryBackground())
 
@@ -44,12 +44,12 @@ public extension DefaultStyling {
                     NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                     NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
                 ]
-                
+
                 appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
                 appearance.backButtonAppearance.normal.titleTextAttributes = [
-                    .foregroundColor: UIColor.clear
+                    .foregroundColor: UIColor.clear,
                 ]
-                
+
                 return appearance
             }
 
