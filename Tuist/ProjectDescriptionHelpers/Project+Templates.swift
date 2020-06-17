@@ -87,10 +87,6 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .framework(path: "../../Carthage/Build/iOS/FlowFeedback.framework"),
             ]
-        case .uicollectionview_animatedscroll:
-            return [
-                .framework(path: "../../Carthage/Build/iOS/UICollectionView_AnimatedScroll.framework"),
-            ]
         case .ease:
             return [
                 .framework(path: "../../Carthage/Build/iOS/Ease.framework"),

@@ -7,7 +7,6 @@ github "hedviginsurance/presentation" "master"
 github "hedviginsurance/form" "master"
 github "SnapKit/SnapKit" >= 5.0.0
 github "hedviginsurance/flowfeedback" "master"
-github "hedviginsurance/UICollectionView-AnimatedScroll" "master"
 github "ivanbruel/MarkdownKit" "bdd03bb07179b23a741fb83f9b1bbe325604a690"
 github "hedviginsurance/ease" "master"
 github "pointfreeco/swift-snapshot-testing" ~> 1.6

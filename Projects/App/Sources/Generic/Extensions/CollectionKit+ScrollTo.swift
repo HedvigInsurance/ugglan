@@ -8,7 +8,7 @@
 
 import Form
 import Foundation
-import UICollectionView_AnimatedScroll
+import hCore
 import UIKit
 
 enum ScrollTo {
