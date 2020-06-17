@@ -36,6 +36,9 @@ extension Header: Viewable {
             view.isHidden = true
         }
 
+        let priceSection = PriceSection(grossAmountSignal: grossAmountSignal, netAmountSignal: netAmountSignal)
+        bag += stackView.addArranged(priceSection)
+
         let discountCodeSection = DiscountCodeSection(discountCodeSignal: discountCodeSignal)
         bag += stackView.addArranged(discountCodeSection)
 
