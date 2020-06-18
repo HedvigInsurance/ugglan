@@ -18,7 +18,6 @@ public enum ExternalDependencies: CaseIterable {
     case form
     case presentation
     case flowfeedback
-    case uicollectionview_animatedscroll
     case ease
     case dynamiccolor
     case disk
@@ -113,7 +112,8 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .runtime:
             return [
-                .package(product: "Runtime"),
+                 .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
+                 .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
             ]
         }
     }
@@ -197,6 +197,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .framework,
                                          bundleId: "com.hedvig.\(name)Testing",
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                                          infoPlist: .default,
                                          sources: "Testing/**/*.swift",
                                          actions: targetActions,
@@ -208,6 +209,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .unitTests,
                                          bundleId: "com.hedvig.\(name)Tests",
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                                          infoPlist: .default,
                                          sources: "Tests/**/*.swift",
                                          actions: targetActions,
@@ -219,6 +221,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .app,
                                          bundleId: "com.hedvig.\(name)Example",
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                                          infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
                                          sources: "Example/Sources/**/*.swift",
                                          resources: "Example/Resources/**",
@@ -239,9 +242,7 @@ extension Project {
         // Project
         return Project(name: name,
                        organizationName: "Hedvig",
-                       packages: [
-                           .package(url: "https://github.com/wickwirew/Runtime", .exact("2.1.1")),
-                       ],
+                       packages: [],
                        settings: Settings(configurations: projectConfigurations),
                        targets: projectTargets,
                        schemes: [
