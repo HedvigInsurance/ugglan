@@ -155,7 +155,7 @@ extension Project {
             .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
             .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
         ]
-        dependencies.forEach { testsDependencies.append(.project(target: "\($0)Testing", path: .relativeToRoot("Projects/\($0)"))) }
+        dependencies.forEach { testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)"))) }
 
         testsDependencies.append(contentsOf: externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
@@ -208,7 +208,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .unitTests,
                                          bundleId: "com.hedvig.\(name)Tests",
-                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+                                         deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                                          infoPlist: .default,
                                          sources: "Tests/**/*.swift",
                                          actions: targetActions,
