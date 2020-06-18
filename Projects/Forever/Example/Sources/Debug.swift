@@ -34,7 +34,7 @@ extension Debug: Presentable {
                 style: .default,
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
             ).onValue { data in
-                let service = MockForeverService(data: data)
+                let service = MockDelayedForeverService(data: data, delay: 0.5)
                 bag += viewController.present(Forever(service: service))
             }
         }
