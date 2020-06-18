@@ -59,7 +59,7 @@ func getSection(
         func renderRow(item: Decodable & Encodable, type: Any.Type, offset: Int) {
             let row = RowView(title: "\(offset)")
             bag += section.append(row).onValue { _ in
-                viewController.present(ArrayItemForm(item: item, type: type), style: .default, options: [.defaults, .autoPop]).onValue { updatedItem in
+                viewController.present(ArrayItemForm(item: item, type: type, isEditing: true), style: .default, options: [.defaults, .autoPop]).onValue { updatedItem in
                     list.append(updatedItem)
                     setValue(list)
                 }
@@ -89,11 +89,13 @@ func getSection(
                 fatalError("Failed to create instance for array")
             }
 
-            viewController.present(ArrayItemForm(item: arrayElementInstance, type: elementType), style: .default, options: [.defaults, .autoPop]).onValue { item in
+            viewController.present(ArrayItemForm(item: arrayElementInstance, type: elementType, isEditing: false), style: .default, options: [.defaults, .autoPop]).onValue { item in
                 list.append(item)
                 setValue(list)
 
-                renderRow(item: item, type: elementType, offset: list.endIndex)
+                bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) {
+                    renderRow(item: item, type: elementType, offset: list.endIndex)
+                }
             }
         }
 

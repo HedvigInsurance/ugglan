@@ -37,7 +37,7 @@ final class InvitationRowTests: XCTestCase {
     }
 
     func testPendingState() {
-        let invitationRow = InvitationRow(name: "mock", state: .pending, discount: .sek(10), invitedByOther: false)
+        let invitationRow = InvitationRow(invitation: .init(name: "mock", state: .pending, discount: .sek(10), invitedByOther: false))
 
         let bag = DisposeBag()
 
@@ -51,7 +51,7 @@ final class InvitationRowTests: XCTestCase {
     }
 
     func testActiveState() {
-        let invitationRow = InvitationRow(name: "mock", state: .active, discount: .sek(10), invitedByOther: false)
+        let invitationRow = InvitationRow(invitation: .init(name: "mock", state: .active, discount: .sek(10), invitedByOther: false))
 
         let bag = DisposeBag()
 
@@ -65,7 +65,7 @@ final class InvitationRowTests: XCTestCase {
     }
 
     func testTerminatedState() {
-        let invitationRow = InvitationRow(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: false)
+        let invitationRow = InvitationRow(invitation: .init(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: false))
 
         let bag = DisposeBag()
 
@@ -79,7 +79,7 @@ final class InvitationRowTests: XCTestCase {
     }
 
     func testTerminatedStateWithInvited() {
-        let invitationRow = InvitationRow(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: true)
+        let invitationRow = InvitationRow(invitation: .init(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: true))
 
         let bag = DisposeBag()
 

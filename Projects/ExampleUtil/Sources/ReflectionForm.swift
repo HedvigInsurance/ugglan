@@ -23,6 +23,7 @@ struct ReflectionForm<T: Codable> {
 extension ReflectionForm: Presentable {
     func materialize() -> (UIViewController, Future<T>) {
         let viewController = UIViewController()
+        viewController.extendedLayoutIncludesOpaqueBars = true
         viewController.title = "Create new"
 
         let bag = DisposeBag()
@@ -68,7 +69,7 @@ extension ReflectionForm: Presentable {
                 completion(.success(typeInstance))
             }
 
-            return bag
+            return DelayedDisposer(bag, delay: 2)
         })
     }
 }

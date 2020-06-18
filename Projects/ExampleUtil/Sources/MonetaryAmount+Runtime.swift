@@ -1,18 +1,17 @@
 //
-//  InvitationState+Runtime.swift
+//  MonetaryAmount+Runtime.swift
 //  ForeverExample
 //
 //  Created by sam on 15.6.20.
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Forever
 import Foundation
-import ExampleUtil
+import hCore
 import Runtime
 
-extension ForeverInvitation.State: DefaultConstructor {
+extension MonetaryAmount: DefaultConstructor {
     public init() {
-        self = .active
+        self = MonetaryAmount(amount: "10.0", currency: "SEK")
     }
 }

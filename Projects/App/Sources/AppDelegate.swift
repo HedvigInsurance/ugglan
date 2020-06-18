@@ -50,10 +50,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let toastBag = bag.innerBag()
         let toasts = Toasts(toastSignal: toastSignal)
 
-        toastBag += keyWindow.add(toasts) { toastsView in
-            toastBag += toastSignal.atOnce().onValue { _ in
+        toastBag += keyWindow.add(toasts) { toastsView in            toastBag += toastSignal.atOnce().onValue { _ in
                 toastsView.snp.remakeConstraints { make in
-                    if #available(iOS 13, *), !keyWindow.traitCollection.isPad {
+                    if #available(iOS 13, *), keyWindow.traitCollection.userInterfaceIdiom != .pad {
                         if keyWindow.rootViewController?.presentedViewController != nil {
                             let safeAreaTop = keyWindow.safeAreaInsets.top
                             make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)

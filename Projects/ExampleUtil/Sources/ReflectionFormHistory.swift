@@ -94,6 +94,7 @@ extension ReflectionFormHistory: Presentable {
     public func materialize() -> (UIViewController, Signal<T>) {
         let viewController = UIViewController()
         viewController.title = "History"
+        viewController.extendedLayoutIncludesOpaqueBars = true
         let bag = DisposeBag()
 
         let addItem = UIBarButtonItem(system: .add)
@@ -121,12 +122,15 @@ extension ReflectionFormHistory: Presentable {
             true
         }).onValue { index in
             var item = tableKit.table[index]
-
             viewController.present(Alert<Void>(
                 title: "Name",
                 message: "",
                 tintColor: nil,
-                fields: [.init(initial: item.name ?? "", style: .default)],
+                fields: [
+                    Alert.Field(initial: item.name ?? "") { textField in
+                        textField.style = .default
+                    }
+                ],
                 actions: [.init(title: "Change", action: { values in
                     item.name = values.first
 

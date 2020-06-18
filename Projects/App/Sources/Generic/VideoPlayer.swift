@@ -24,7 +24,7 @@ private final class VideoPlayerViewController: AVPlayerViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if !traitCollection.isPad {
+        if traitCollection.userInterfaceIdiom != .pad {
             let value = UIInterfaceOrientation.portrait.rawValue
             UIDevice.current.setValue(value, forKey: "orientation")
         }

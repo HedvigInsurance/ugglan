@@ -13,16 +13,17 @@ import hCore
 import hCoreUI
 import Presentation
 import Runtime
-import CRuntime
 import UIKit
 
 struct ArrayItemForm: Presentable {
     let item: AnyCodable
     let type: Any.Type
+    let isEditing: Bool
 
     func materialize() -> (UIViewController, Future<AnyCodable>) {
         let viewController = UIViewController()
-        viewController.title = "Create new"
+        viewController.extendedLayoutIncludesOpaqueBars = true
+        viewController.title = isEditing ? "Editing" : "Create new"
 
         let bag = DisposeBag()
         let form = FormView()
@@ -62,7 +63,7 @@ struct ArrayItemForm: Presentable {
                 completion(.success(itemCopy))
             }
 
-            return bag
-               })
+            return DelayedDisposer(bag, delay: 2)
+        })
     }
 }
