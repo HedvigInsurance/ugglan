@@ -12,7 +12,6 @@ import Disk
 import Firebase
 import FirebaseAnalytics
 import FirebaseMessaging
-import FirebaseRemoteConfig
 import Flow
 import Form
 import Foundation
