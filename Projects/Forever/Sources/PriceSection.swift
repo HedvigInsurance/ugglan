@@ -16,6 +16,7 @@ import UIKit
 struct PriceSection {
     let grossAmountSignal: ReadSignal<MonetaryAmount?>
     let netAmountSignal: ReadSignal<MonetaryAmount?>
+    let isHiddenSignal = ReadWriteSignal<Bool>(false)
 }
 
 extension PriceSection: Viewable {
@@ -23,6 +24,9 @@ extension PriceSection: Viewable {
         let section = SectionView()
         let bag = DisposeBag()
         let row = RowView()
+        section.isHidden = isHiddenSignal.value
+        
+        bag += isHiddenSignal.bindTo(animate: SpringAnimationStyle.lightBounce(), section, \.animationSafeIsHidden)
 
         let discountStackView = UIStackView()
         discountStackView.spacing = 5

@@ -35,15 +35,19 @@ extension DiscountCodeSection: Viewable {
                 return stackView
             }()
         )
+        section.isHidden = true
 
         let codeRow = RowView()
         let codeLabel = UILabel(
-            value: discountCodeSignal.value ?? "",
-            style: TextStyle.brand(.body(color: .primary)).centerAligned
+            value: "",
+            style: TextStyle.brand(.title3(color: .primary)).centerAligned
         )
         codeRow.append(codeLabel)
 
-        bag += discountCodeSignal.atOnce().bindTo(codeLabel, \.text)
+        bag += discountCodeSignal.atOnce().compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { code in
+            section.animationSafeIsHidden = false
+            codeLabel.value = code
+        }
 
         bag += section.append(codeRow).onValue { _ in
             bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)

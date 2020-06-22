@@ -25,6 +25,7 @@ extension EmptyStateHeader: Viewable {
         stackView.spacing = 16
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.isHidden = isHiddenSignal.value
 
         bag += isHiddenSignal.bindTo(animate: SpringAnimationStyle.lightBounce(), stackView, \.animationSafeIsHidden)
 

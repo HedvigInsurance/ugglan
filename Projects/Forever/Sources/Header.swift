@@ -32,11 +32,12 @@ extension Header: Viewable {
         bag += stackView.addArranged(pieChart)
 
         let emptyStateHeader = EmptyStateHeader()
-        bag += stackView.addArranged(emptyStateHeader) { view in
-            view.isHidden = true
-        }
+        emptyStateHeader.isHiddenSignal.value = true
+        
+        bag += stackView.addArranged(emptyStateHeader)
 
         let priceSection = PriceSection(grossAmountSignal: grossAmountSignal, netAmountSignal: netAmountSignal)
+        priceSection.isHiddenSignal.value = true
         bag += stackView.addArranged(priceSection)
         
         bag += stackView.addArranged(Spacing(height: 25))
@@ -58,6 +59,7 @@ extension Header: Viewable {
             }
 
             emptyStateHeader.isHiddenSignal.value = grossAmount.amount != netAmount.amount
+            priceSection.isHiddenSignal.value = grossAmount.amount == netAmount.amount
         }
 
         return (stackView, bag)
