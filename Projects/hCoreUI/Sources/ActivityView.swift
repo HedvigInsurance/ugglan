@@ -25,7 +25,7 @@ extension PresentationStyle {
     }
 }
 
-struct ActivityView {
+public struct ActivityView {
     let activityItems: [Any]
     let applicationActivities: [UIActivity]?
     let sourceView: UIView?
@@ -33,7 +33,13 @@ struct ActivityView {
 
     let completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)>
 
-    init(activityItems: [Any], applicationActivities: [UIActivity]?, sourceView: UIView?, sourceRect: CGRect?, completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)> = ReadWriteSignal<(UIActivity.ActivityType?, Bool)>((nil, false))) {
+    public init(
+        activityItems: [Any],
+        applicationActivities: [UIActivity]?,
+        sourceView: UIView?,
+        sourceRect: CGRect?,
+        completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)> = ReadWriteSignal<(UIActivity.ActivityType?, Bool)>((nil, false))
+    ) {
         self.activityItems = activityItems
         self.applicationActivities = applicationActivities
         self.sourceView = sourceView
@@ -43,7 +49,7 @@ struct ActivityView {
 }
 
 extension ActivityView: Presentable {
-    func materialize() -> (UIActivityViewController, Disposable) {
+    public func materialize() -> (UIActivityViewController, Disposable) {
         let viewController = UIActivityViewController(
             activityItems: activityItems,
             applicationActivities: applicationActivities

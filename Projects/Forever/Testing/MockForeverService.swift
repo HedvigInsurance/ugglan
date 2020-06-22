@@ -15,25 +15,25 @@ public struct MockForeverService: ForeverService {
     }
 }
 
-public struct MockDelayedForeverService: ForeverService {
-    let data: ForeverData
+public class MockDelayedForeverService: ForeverService {
+    var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
     let delay: TimeInterval
     public var dataSignal: ReadSignal<ForeverData?> {
-        let signal = ReadWriteSignal<ForeverData?>(nil)
-
-        let bag = DisposeBag()
-
-        bag += Signal(after: delay).onValue {
-            signal.value = self.data
-        }
-
-        return signal.hold(bag).readOnly()
+        _dataSignal.readOnly()
     }
 
     public func refetch() {}
+    
+    func timer(data: ForeverData) {
+        let bag = DisposeBag()
+        bag += Signal(after: delay).onValue {
+            self._dataSignal.value = data
+          bag.dispose()
+        }
+    }
 
     public init(data: ForeverData, delay: TimeInterval) {
-        self.data = data
         self.delay = delay
+        timer(data: data)
     }
 }

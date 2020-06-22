@@ -67,6 +67,16 @@ extension Forever: Presentable {
 
         bag += tableKit.view.add(button) { buttonView in
             buttonView.layer.zPosition = 100
+            
+            bag += button.onTapSignal.onValue { _ in
+                let activity = ActivityView(
+                    activityItems: [URL(string: "https://www.hedvig.com/referrals/\(self.service.dataSignal.value?.discountCode ?? "")?utm_source=ios") ?? ""],
+                    applicationActivities: nil,
+                    sourceView: buttonView,
+                    sourceRect: nil
+                )
+                viewController.present(activity)
+            }
 
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
