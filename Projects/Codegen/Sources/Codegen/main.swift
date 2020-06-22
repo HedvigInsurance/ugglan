@@ -11,6 +11,14 @@ let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomai
     .appendingPathComponent("Codegen")
     .appendingPathComponent("ApolloCLI")
 
+try FileManager.default.removeItem(at: cliFolderURL)
+
+try FileManager.default.createDirectory(
+    at: cliFolderURL,
+    withIntermediateDirectories: true,
+    attributes: nil
+)
+
 let endpoint = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
 
 let options = ApolloSchemaOptions(
@@ -18,12 +26,10 @@ let options = ApolloSchemaOptions(
     outputFolderURL: cliFolderURL
 )
 
-do {
-    try ApolloSchemaDownloader.run(with: cliFolderURL,
-                                   options: options)
-} catch {
-    exit(1)
-}
+try ApolloSchemaDownloader.run(
+    with: cliFolderURL,
+    options: options
+)
 
 let sourceUrls = [
     sourceRootURL
