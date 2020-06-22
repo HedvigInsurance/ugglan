@@ -57,7 +57,7 @@ extension Forever: Presentable {
         }
 
         let button = Button(
-            title: "Share code",
+            title: L10n.ReferralsEmpty.shareCodeButton,
             type: .standard(
                 backgroundColor: .brand(.primaryButtonBackgroundColor),
                 textColor: .brand(.primaryButtonTextColor)

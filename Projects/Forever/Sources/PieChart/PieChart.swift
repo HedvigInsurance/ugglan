@@ -45,7 +45,6 @@ public struct PieChart {
     }
 
     func percentToRadian(_ percent: CGFloat) -> CGFloat {
-        // Because angle starts wtih X positive axis, add 270 degrees to rotate it to Y positive axis.
         var angle = 270 + percent * 360
         if angle >= 360 {
             angle -= 360

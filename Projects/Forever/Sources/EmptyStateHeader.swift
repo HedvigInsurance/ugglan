@@ -26,7 +26,7 @@ extension EmptyStateHeader: Viewable {
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
 
-        bag += isHiddenSignal.bindTo(stackView, \.isHidden)
+        bag += isHiddenSignal.bindTo(animate: SpringAnimationStyle.lightBounce(), stackView, \.animationSafeIsHidden)
 
         let title = MultilineLabel(value: L10n.ReferralsEmpty.headline, style: TextStyle.brand(.title1(color: .primary)).centerAligned)
         bag += stackView.addArranged(title)

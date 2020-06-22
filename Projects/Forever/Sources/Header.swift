@@ -38,6 +38,8 @@ extension Header: Viewable {
 
         let priceSection = PriceSection(grossAmountSignal: grossAmountSignal, netAmountSignal: netAmountSignal)
         bag += stackView.addArranged(priceSection)
+        
+        bag += stackView.addArranged(Spacing(height: 25))
 
         let discountCodeSection = DiscountCodeSection(discountCodeSignal: discountCodeSignal)
         bag += stackView.addArranged(discountCodeSection)
@@ -47,11 +49,13 @@ extension Header: Viewable {
             netAmountSignal.atOnce().compactMap { $0 },
             potentialDiscountAmountSignal.atOnce().compactMap { $0 }
         ).onValue { grossAmount, netAmount, potentialDiscountAmount in
-            pieChart.stateSignal.value = .init(
-                grossAmount: grossAmount,
-                netAmount: netAmount,
-                potentialDiscountAmount: potentialDiscountAmount
-            )
+            bag += Signal(after: 0.8).onValue { _ in
+                pieChart.stateSignal.value = .init(
+                    grossAmount: grossAmount,
+                    netAmount: netAmount,
+                    potentialDiscountAmount: potentialDiscountAmount
+                )
+            }
 
             emptyStateHeader.isHiddenSignal.value = grossAmount.amount != netAmount.amount
         }
