@@ -25,13 +25,13 @@ struct ShareButton {
 extension ShareButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<UIView>) {
         let bag = DisposeBag()
-        let containerView = UIView()
-        containerView.backgroundColor = .brand(.secondaryBackground())
+        let containerView = UIVisualEffectView()
+        containerView.effect = UIBlurEffect(style: .prominent)
         
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(inset: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
-        containerView.addSubview(stackView)
+        containerView.contentView.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
