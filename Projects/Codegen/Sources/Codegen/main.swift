@@ -11,7 +11,7 @@ let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomai
     .appendingPathComponent("Codegen")
     .appendingPathComponent("ApolloCLI")
 
-try FileManager.default.removeItem(at: cliFolderURL)
+try? FileManager.default.removeItem(at: cliFolderURL)
 
 try FileManager.default.createDirectory(
     at: cliFolderURL,
