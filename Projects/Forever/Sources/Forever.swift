@@ -29,7 +29,7 @@ extension Forever: Presentable {
         viewController.extendedLayoutIncludesOpaqueBars = true
         let bag = DisposeBag()
         
-        let infoBarButton = UIBarButtonItem(system: .action)
+        let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.info.image, style: .plain, target: nil, action: nil)
         
         bag += infoBarButton.onValue {
             viewController.present(InfoAndTerms(), style: .modal)
