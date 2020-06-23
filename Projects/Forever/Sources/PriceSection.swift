@@ -36,8 +36,8 @@ extension PriceSection: Viewable {
 
         discountStackView.addArrangedSubview(UILabel(value: L10n.ReferralsActive.Discount.Per.Month.title, style: .brand(.footnote(color: .tertiary))))
         bag += discountStackView.addArranged(AnimatedSavingsLabel(
-            from: combineLatest(grossAmountSignal, netAmountSignal).filter { grossAmount, netAmount in grossAmount != nil && netAmount != nil }.toVoid().map { _ in MonetaryAmount(amount: "0.00", currency: "SEK") }.readable(initial: nil),
-            to: combineLatest(grossAmountSignal, netAmountSignal).map { grossAmount, netAmount in MonetaryAmount(amount: (grossAmount?.value ?? 0) - (netAmount?.value ?? 0), currency: grossAmount?.currency ?? "") })
+            from: combineLatest(grossAmountSignal, netAmountSignal).filter { grossAmount, netAmount in grossAmount != nil && netAmount != nil }.toVoid().map { _ in MonetaryAmount(amount: "0.00", currency: "SEK") }.readable(initial: nil).map { $0?.negative },
+            to: combineLatest(grossAmountSignal, netAmountSignal).map { grossAmount, netAmount in MonetaryAmount(amount: (grossAmount?.value ?? 0) - (netAmount?.value ?? 0), currency: grossAmount?.currency ?? "") }.map { $0.negative })
         )
 
         let netAmountStackView = UIStackView()

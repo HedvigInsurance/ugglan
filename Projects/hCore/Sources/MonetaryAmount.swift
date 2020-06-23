@@ -36,6 +36,13 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
 }
 
 public extension MonetaryAmount {
+    /// returns a MonetaryAmount where amount is converted to a negative amount
+    var negative: Self {
+        MonetaryAmount(amount: -value, currency: currency)
+    }
+}
+
+public extension MonetaryAmount {
     /// amount formatted according to currency specifications, ready to be displayed
     var formattedAmount: String {
         let formatter = NumberFormatter()
