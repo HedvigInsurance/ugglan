@@ -28,6 +28,14 @@ extension Forever: Presentable {
         viewController.title = L10n.referralsScreenTitle
         viewController.extendedLayoutIncludesOpaqueBars = true
         let bag = DisposeBag()
+        
+        let infoBarButton = UIBarButtonItem(system: .action)
+        
+        bag += infoBarButton.onValue {
+            viewController.present(InfoAndTerms(), style: .modal)
+        }
+        
+        viewController.navigationItem.rightBarButtonItem = infoBarButton
 
         let tableKit = TableKit<String, InvitationRow>(holdIn: bag)
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in

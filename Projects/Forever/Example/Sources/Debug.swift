@@ -42,6 +42,10 @@ extension Debug: Presentable {
         bag += section.appendRow(title: "Invitation screen").onValue {
             viewController.present(InvitationScreen(), style: .modal, options: [])
         }
+        
+        bag += section.appendRow(title: "Info and terms screen").onValue {
+            viewController.present(InfoAndTerms(), style: .modal)
+        }
 
         bag += section.appendRow(title: "PieChart debugger").onValue {
             viewController.present(PieChartDebugger())
