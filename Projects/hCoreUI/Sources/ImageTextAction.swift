@@ -152,7 +152,17 @@ extension ImageTextAction: Viewable {
             make.width.height.centerY.centerX.equalToSuperview()
         }
 
-        bag += scrollView.embedPinned(buttonsContainer, edge: .bottom, minHeight: 70)
+        scrollView.addSubview(buttonsContainer)
+        
+        buttonsContainer.snp.makeConstraints { make in
+            make.bottom.equalTo(scrollView.safeAreaLayoutGuide.snp.bottom)
+            make.trailing.leading.equalToSuperview()
+        }
+        
+        bag += buttonsContainer.didLayoutSignal.onValue {
+            let size = buttonsContainer.systemLayoutSizeFitting(.zero)
+            scrollView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: size.height, right: 0)
+        }
 
         containerView.addArrangedSubview(view)
 
