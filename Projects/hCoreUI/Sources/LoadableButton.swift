@@ -8,17 +8,24 @@
 import Flow
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
 public struct LoadableButton {
-    let button: Button
+    public let button: Button
     let isLoadingSignal: ReadWriteSignal<Bool>
-    let onTapSignal: Signal<Void>
+    public let onTapSignal: Signal<Void>
     private let onTapCallbacker = Callbacker<Void>()
+    
+    public func startLoading() {
+        isLoadingSignal.value = true
+    }
+    
+    public func stopLoading() {
+        isLoadingSignal.value = false
+    }
 
     public init(button: Button, initialLoadingState: Bool = false) {
-        onTapSignal = onTapCallbacker.signal()
+        onTapSignal = onTapCallbacker.providedSignal
         self.button = button
         isLoadingSignal = ReadWriteSignal<Bool>(initialLoadingState)
     }

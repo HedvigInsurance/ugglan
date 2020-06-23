@@ -56,26 +56,30 @@ extension Forever: Presentable {
             tableKit.set(table)
         }
 
-        let button = Button(
+        let loadableButton = LoadableButton(button: Button(
             title: L10n.ReferralsEmpty.shareCodeButton,
             type: .standard(
                 backgroundColor: .brand(.primaryButtonBackgroundColor),
                 textColor: .brand(.primaryButtonTextColor)
             )
-        )
-        tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: button.type.value.height, right: 0)
+        ))
+        tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: loadableButton.button.type.value.height, right: 0)
 
-        bag += tableKit.view.add(button) { buttonView in
+        bag += tableKit.view.add(loadableButton) { buttonView in
             buttonView.layer.zPosition = 100
             
-            bag += button.onTapSignal.onValue { _ in
-                let activity = ActivityView(
-                    activityItems: [URL(string: "https://www.hedvig.com/referrals/\(self.service.dataSignal.value?.discountCode ?? "")?utm_source=ios") ?? ""],
-                    applicationActivities: nil,
-                    sourceView: buttonView,
-                    sourceRect: nil
-                )
-                viewController.present(activity)
+            bag += loadableButton.onTapSignal.onValue { _ in
+                loadableButton.startLoading()
+                viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
+                    let activity = ActivityView(
+                        activityItems: [URL(string: "https://www.hedvig.com/referrals/\(self.service.dataSignal.value?.discountCode ?? "")?utm_source=ios") ?? ""],
+                        applicationActivities: nil,
+                        sourceView: buttonView,
+                        sourceRect: nil
+                    )
+                    viewController.present(activity)
+                    loadableButton.stopLoading()
+                }
             }
 
             buttonView.snp.makeConstraints { make in
@@ -84,7 +88,7 @@ extension Forever: Presentable {
                 ).inset(20)
                 make.width.equalToSuperview().inset(15)
                 make.centerX.equalToSuperview()
-                make.height.equalTo(button.type.value.height)
+                make.height.equalTo(loadableButton.button.type.value.height)
             }
         }
 

@@ -11,6 +11,10 @@ import Foundation
 import StoreKit
 import UIKit
 
+public extension BarButtonStyle {
+    static var destructive = BarButtonStyle(text: .brand(.headline(color: .destructive)))
+}
+
 public extension DefaultStyling {
     static func installCustom() {
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())

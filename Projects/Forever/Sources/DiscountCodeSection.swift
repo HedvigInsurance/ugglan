@@ -50,8 +50,10 @@ extension DiscountCodeSection: Viewable {
         }
 
         bag += section.append(codeRow).onValue { _ in
-            UIPasteboard.general.string = self.discountCodeSignal.value ?? ""
-            bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
+            section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
+                UIPasteboard.general.string = self.discountCodeSignal.value ?? ""
+                bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
+            }
         }
 
         return (section, bag)
