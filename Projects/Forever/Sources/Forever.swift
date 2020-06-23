@@ -69,8 +69,15 @@ extension Forever: Presentable {
             discountCodeSignal: service.dataSignal.map { $0?.discountCode },
             potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }
         ), animated: false)
+        
+        let containerView = UIView()
+        viewController.view = containerView
 
-        bag += viewController.install(tableKit)
+        containerView.addSubview(tableKit.view)
+        
+        tableKit.view.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
 
         bag += service.dataSignal.atOnce().compactMap { $0?.invitations }.onValue { invitations in
             var table = Table(
@@ -86,20 +93,16 @@ extension Forever: Presentable {
         }
 
         let shareButton = ShareButton()
-        tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: shareButton.loadableButton.button.type.value.height, right: 0)
         
-        bag += tableKit.view.add(shareButton) { buttonView in
+        bag += containerView.add(shareButton) { buttonView in
             buttonView.layer.zPosition = 100
             buttonView.snp.makeConstraints { make in
-                make.bottom.equalTo(
-                    tableKit.view.safeAreaLayoutGuide.snp.bottom
-                )
-                make.trailing.equalTo(
-                    tableKit.view.safeAreaLayoutGuide.snp.trailing
-                )
-                make.leading.equalTo(
-                    tableKit.view.safeAreaLayoutGuide.snp.leading
-                )
+                make.bottom.leading.trailing.equalToSuperview()
+            }
+            
+            bag += buttonView.didLayoutSignal.onValue {
+                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: buttonView.frame.height - buttonView.safeAreaInsets.bottom, right: 0)
+                tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonView.frame.height - buttonView.safeAreaInsets.bottom, right: 0)
             }
         }.onValue { buttonView in
             shareButton.loadableButton.startLoading()

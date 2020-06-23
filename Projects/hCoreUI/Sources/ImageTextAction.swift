@@ -161,7 +161,8 @@ extension ImageTextAction: Viewable {
         
         bag += buttonsContainer.didLayoutSignal.onValue {
             let size = buttonsContainer.systemLayoutSizeFitting(.zero)
-            scrollView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: size.height, right: 0)
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
+            scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
         }
 
         containerView.addArrangedSubview(view)

@@ -26,6 +26,7 @@ extension ShareButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIView, Signal<UIView>) {
         let bag = DisposeBag()
         let containerView = UIVisualEffectView()
+        containerView.preservesSuperviewLayoutMargins = true
         containerView.effect = UIBlurEffect(style: .prominent)
         
         let stackView = UIStackView()
