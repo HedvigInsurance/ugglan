@@ -41,27 +41,6 @@ extension Forever: Presentable {
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
             tableKit.table[index].cellHeight
         }
-                
-        bag += tableKit.delegate.viewForHeaderInSection.set { sectionIndex -> UIView? in
-            let section = tableKit.table.sections[sectionIndex]
-            let style = DefaultStyling.current.sectionGrouped.styleGenerator(tableKit.view.traitCollection)
-            let label = UILabel(value: section.value, style: style.header.text)
-            
-            let combinedInsets = style.header.insets + style.rowInsets
-            
-            let container = UIStackView()
-            container.layoutMargins = UIEdgeInsets(
-                top: style.header.insets.top,
-                left: combinedInsets.left,
-                bottom: style.header.insets.bottom,
-                right: combinedInsets.right
-            )
-            container.isLayoutMarginsRelativeArrangement = true
-            container.addArrangedSubview(label)
-            container.isUserInteractionEnabled = false
-            
-            return container
-        }
 
         bag += tableKit.view.addTableHeaderView(Header(
             grossAmountSignal: service.dataSignal.map { $0?.grossAmount },
@@ -95,14 +74,14 @@ extension Forever: Presentable {
         let shareButton = ShareButton()
         
         bag += containerView.add(shareButton) { buttonView in
-            buttonView.layer.zPosition = 100
             buttonView.snp.makeConstraints { make in
                 make.bottom.leading.trailing.equalToSuperview()
             }
             
             bag += buttonView.didLayoutSignal.onValue {
-                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: buttonView.frame.height - buttonView.safeAreaInsets.bottom, right: 0)
-                tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonView.frame.height - buttonView.safeAreaInsets.bottom, right: 0)
+                let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
+                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+                tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
             }
         }.onValue { buttonView in
             shareButton.loadableButton.startLoading()
