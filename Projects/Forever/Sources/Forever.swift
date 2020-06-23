@@ -64,39 +64,33 @@ extension Forever: Presentable {
             tableKit.set(table)
         }
 
-        let loadableButton = LoadableButton(button: Button(
-            title: L10n.ReferralsEmpty.shareCodeButton,
-            type: .standard(
-                backgroundColor: .brand(.primaryButtonBackgroundColor),
-                textColor: .brand(.primaryButtonTextColor)
-            )
-        ))
-        tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: loadableButton.button.type.value.height, right: 0)
-
-        bag += tableKit.view.add(loadableButton) { buttonView in
+        let shareButton = ShareButton()
+        tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: shareButton.loadableButton.button.type.value.height, right: 0)
+        
+        bag += tableKit.view.add(shareButton) { buttonView in
             buttonView.layer.zPosition = 100
-            
-            bag += loadableButton.onTapSignal.onValue { _ in
-                loadableButton.startLoading()
-                viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
-                    let activity = ActivityView(
-                        activityItems: [URL(string: "https://www.hedvig.com/referrals/\(self.service.dataSignal.value?.discountCode ?? "")?utm_source=ios") ?? ""],
-                        applicationActivities: nil,
-                        sourceView: buttonView,
-                        sourceRect: nil
-                    )
-                    viewController.present(activity)
-                    loadableButton.stopLoading()
-                }
-            }
-
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(
                     tableKit.view.safeAreaLayoutGuide.snp.bottom
-                ).inset(20)
-                make.width.equalToSuperview().inset(15)
-                make.centerX.equalToSuperview()
-                make.height.equalTo(loadableButton.button.type.value.height)
+                )
+                make.trailing.equalTo(
+                    tableKit.view.safeAreaLayoutGuide.snp.trailing
+                )
+                make.leading.equalTo(
+                    tableKit.view.safeAreaLayoutGuide.snp.leading
+                )
+            }
+        }.onValue { buttonView in
+            shareButton.loadableButton.startLoading()
+            viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
+                let activity = ActivityView(
+                    activityItems: [URL(string: "https://www.hedvig.com/referrals/\(self.service.dataSignal.value?.discountCode ?? "")?utm_source=ios") ?? ""],
+                    applicationActivities: nil,
+                    sourceView: buttonView,
+                    sourceRect: nil
+                )
+                viewController.present(activity)
+                shareButton.loadableButton.stopLoading()
             }
         }
 
