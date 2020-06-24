@@ -66,18 +66,22 @@ extension PieChart: Viewable {
 
         stackView.addArrangedSubview(pieView)
 
-        let pieViewWidth: CGFloat = 100
+        let pieViewWidth: CGFloat = 125
+        
+        let radius = pieViewWidth * 3 / 8
 
         let path = UIBezierPath(arcCenter: pieView.center,
-                                radius: pieViewWidth * 3 / 8,
+                                radius: radius,
                                 startAngle: percentToRadian(0),
                                 endAngle: percentToRadian(0.999999),
                                 clockwise: true)
-
+                
+        let lineWidth = radius * 2
+        
         let filledLayer = CAShapeLayer()
         filledLayer.path = path.cgPath
         filledLayer.fillColor = nil
-        filledLayer.lineWidth = pieViewWidth - 25
+        filledLayer.lineWidth = lineWidth - (UIScreen.main.hairlineWidth)
         filledLayer.strokeStart = 0
         filledLayer.strokeEnd = 1
 
@@ -86,7 +90,7 @@ extension PieChart: Viewable {
         let sliceLayer = CAShapeLayer()
         sliceLayer.path = path.cgPath
         sliceLayer.fillColor = nil
-        sliceLayer.lineWidth = pieViewWidth - 24
+        sliceLayer.lineWidth = lineWidth
         sliceLayer.strokeStart = 0
         sliceLayer.strokeEnd = 0
 
@@ -95,7 +99,7 @@ extension PieChart: Viewable {
         let nextSliceLayer = CAShapeLayer()
         nextSliceLayer.path = path.cgPath
         nextSliceLayer.fillColor = nil
-        nextSliceLayer.lineWidth = pieViewWidth - 25
+        nextSliceLayer.lineWidth = lineWidth
         nextSliceLayer.strokeStart = 0
         nextSliceLayer.strokeEnd = 0
 
