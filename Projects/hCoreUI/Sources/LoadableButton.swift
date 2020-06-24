@@ -12,7 +12,7 @@ import UIKit
 
 public struct LoadableButton {
     public let button: Button
-    let isLoadingSignal: ReadWriteSignal<Bool>
+    public let isLoadingSignal: ReadWriteSignal<Bool>
     public let onTapSignal: Signal<Void>
     private let onTapCallbacker = Callbacker<Void>()
     

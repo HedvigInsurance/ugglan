@@ -12,7 +12,7 @@ import Presentation
 import UIKit
 
 extension PresentationStyle {
-    static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
+    public static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
         let future = Future<Void> { completion in
             from.present(viewController, animated: true) {
                 completion(.success)
@@ -31,7 +31,7 @@ public struct ActivityView {
     let sourceView: UIView?
     let sourceRect: CGRect?
 
-    let completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)>
+    public let completionSignal: ReadWriteSignal<(UIActivity.ActivityType?, Bool)>
 
     public init(
         activityItems: [Any],

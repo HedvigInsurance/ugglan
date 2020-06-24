@@ -11,6 +11,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import SafariServices
 import UIKit
