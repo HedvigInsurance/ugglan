@@ -13,7 +13,7 @@ import hCore
 public struct ForeverInvitation: Hashable, Codable {
     let name: String
     let state: State
-    let discount: MonetaryAmount
+    let discount: MonetaryAmount?
     let invitedByOther: Bool
 
     public enum State: String, Codable {

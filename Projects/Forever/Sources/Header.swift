@@ -31,7 +31,7 @@ extension Header: Viewable {
         let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
         bag += stackView.addArranged(pieChart)
 
-        let emptyStateHeader = EmptyStateHeader()
+        let emptyStateHeader = EmptyStateHeader(potentialDiscountAmountSignal: potentialDiscountAmountSignal)
         emptyStateHeader.isHiddenSignal.value = true
         
         bag += stackView.addArranged(emptyStateHeader)

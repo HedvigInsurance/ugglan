@@ -70,7 +70,7 @@ extension InvitationRow: Reusable {
             switch self.invitation.state {
             case .active:
                 iconImageView.image = Asset.activeInvite.image
-                discountAmountLabel.value = self.invitation.discount.formattedAmount
+                discountAmountLabel.value = self.invitation.discount?.formattedAmount ?? ""
                 nameLabel.style = .brand(.headline(color: .primary))
                 discountAmountLabel.style = .brand(.headline(color: .primary))
                 invitedByOtherLabel.style = .brand(.subHeadline(color: .secondary))

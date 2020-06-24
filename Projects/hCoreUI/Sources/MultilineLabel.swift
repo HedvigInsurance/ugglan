@@ -16,6 +16,12 @@ public struct MultilineLabel {
     public let styledTextSignal: ReadWriteSignal<StyledText>
     public let intrinsicContentSizeSignal: ReadSignal<CGSize>
     public let usePreferredMaxLayoutWidth: Bool
+    
+    public var valueSignal: ReadWriteSignal<DisplayableString> {
+        styledTextSignal.map { $0.text }.writable { value in
+            self.styledTextSignal.value = StyledText(text: value, style: self.styledTextSignal.value.style)
+        }
+    }
 
     private let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
         CGSize(width: 0, height: 0)

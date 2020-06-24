@@ -40,11 +40,70 @@ func getSection(
         }
 
         let currencyRow = section.appendRow(title: "Currency")
-        bag += currencyRow.append(
-            UITextField(value: monetaryAmount.currency, placeholder: "SEK", style: .default)
-        ).onValue { value in
+        let currencyValue = UILabel(value: monetaryAmount.currency, style: .brand(.headline(color: .primary)))
+        
+        currencyRow.append(currencyValue)
+        
+        let pickerView = UIPickerView()
+        pickerView.isHidden = true
+        pickerView.snp.makeConstraints { make in
+            make.height.equalTo(0)
+        }
+        
+        class DataSource: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
+            internal init(onSelect: @escaping (String) -> Void) {
+                self.onSelect = onSelect
+            }
+            
+            let currencies = ["SEK", "NOK"]
+            let onSelect: (_ value: String) -> Void
+            
+            func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+                return currencies.count
+            }
+            
+            func numberOfComponents(in pickerView: UIPickerView) -> Int {
+                return 1
+            }
+            
+            func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+                return currencies[row]
+            }
+            
+            func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+                onSelect(currencies[row])
+            }
+        }
+        
+        let dataSource = DataSource { value in
+            currencyValue.value = value
             monetaryAmount.currency = value
             setValue(monetaryAmount)
+        }
+        bag.hold(dataSource)
+        
+        pickerView.dataSource = dataSource
+        pickerView.delegate = dataSource
+        
+        if let indexOfSelected = dataSource.currencies.firstIndex(where: { $0 == monetaryAmount.currency }) {
+            pickerView.selectRow(indexOfSelected, inComponent: 0, animated: false)
+        }
+        
+        section.append(pickerView)
+        
+        bag += currencyRow.animated(style: SpringAnimationStyle.lightBounce()) {
+            pickerView.animationSafeIsHidden = !pickerView.animationSafeIsHidden
+        
+            if !pickerView.isHidden {
+                pickerView.snp.removeConstraints()
+            } else {
+                pickerView.snp.makeConstraints { make in
+                    make.height.equalTo(0)
+                }
+            }
+            
+            pickerView.layoutIfNeeded()
+            pickerView.layoutSuperviewsIfNeeded()
         }
 
         return (section, bag)

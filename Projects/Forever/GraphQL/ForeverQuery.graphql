@@ -1,5 +1,41 @@
-query ForeverQuery {
-    member {
-        id
+fragment MonetaryAmountFragment on MonetaryAmountV2 {
+  amount
+  currency
+}
+
+query Forever {
+  referralInformation {
+    costReducedIndefiniteDiscount {
+      monthlyNet {
+        ...MonetaryAmountFragment
+      }
+      monthlyGross {
+        ...MonetaryAmountFragment
+      }
     }
+    invitations {
+      ... on ActiveReferral {
+        name
+        discount {
+          ...MonetaryAmountFragment
+        }
+      }
+      ... on TerminatedReferral {
+        name
+      }
+      ... on InProgressReferral {
+        name
+      }
+    }
+    campaign {
+      code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
+    }
+  }
 }
