@@ -31,9 +31,9 @@ func getSection(
             footerView: UILabel(value: "", style: .default)
         )
         let amountRow = section.appendRow(title: "Amount")
-
+        
         bag += amountRow.append(
-            UITextField(value: monetaryAmount.amount, placeholder: "0.0", style: .default)
+            UITextField(value: monetaryAmount.amount, placeholder: "0.0", style: FieldStyle.default.keyboard(.decimalPad))
         ).onValue { value in
             monetaryAmount.amount = value
             setValue(monetaryAmount)
@@ -43,7 +43,7 @@ func getSection(
         bag += currencyRow.append(
             UITextField(value: monetaryAmount.currency, placeholder: "SEK", style: .default)
         ).onValue { value in
-            monetaryAmount.amount = value
+            monetaryAmount.currency = value
             setValue(monetaryAmount)
         }
 
