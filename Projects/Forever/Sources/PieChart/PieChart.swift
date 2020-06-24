@@ -61,7 +61,7 @@ extension PieChart: Viewable {
         let pieView = UIView()
 
         pieView.snp.makeConstraints { make in
-            make.height.width.equalTo(215)
+            make.height.width.equalTo(200)
         }
 
         stackView.addArrangedSubview(pieView)

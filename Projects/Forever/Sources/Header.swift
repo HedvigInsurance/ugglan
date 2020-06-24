@@ -11,6 +11,7 @@ import Foundation
 import hCore
 import hCoreUI
 import UIKit
+import Form
 
 struct Header {
     let grossAmountSignal: ReadSignal<MonetaryAmount?>
@@ -27,6 +28,15 @@ extension Header: Viewable {
         stackView.isLayoutMarginsRelativeArrangement = true
 
         let bag = DisposeBag()
+        
+        let piePrice = UILabel(value: "\u{00a0}", style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center))
+        piePrice.alpha = 0
+        stackView.addArrangedSubview(piePrice)
+        
+        bag += grossAmountSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { amount in
+            piePrice.value = amount.formattedAmount
+            piePrice.alpha = 1
+        }
 
         let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
         bag += stackView.addArranged(pieChart)
