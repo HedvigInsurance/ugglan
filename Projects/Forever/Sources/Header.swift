@@ -40,7 +40,7 @@ extension Header: Viewable {
         priceSection.isHiddenSignal.value = true
         bag += stackView.addArranged(priceSection)
         
-        bag += stackView.addArranged(Spacing(height: 25))
+        bag += stackView.addArranged(Spacing(height: 20))
 
         let discountCodeSection = DiscountCodeSection(discountCodeSignal: discountCodeSignal)
         bag += stackView.addArranged(discountCodeSection)

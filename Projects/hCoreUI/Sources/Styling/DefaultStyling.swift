@@ -216,6 +216,18 @@ extension DynamicSectionStyle {
             footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
         )
     }
+    
+    public static let brandGroupedNoBackground = DynamicSectionStyle { trait -> SectionStyle in
+        return Style(
+            rowInsets: .init(inset: 15),
+            itemSpacing: 10,
+            minRowHeight: 0,
+            background: .none,
+            selectedBackground: .none,
+            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
+            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
+        )
+    }
 }
 
 extension DynamicFormStyle {

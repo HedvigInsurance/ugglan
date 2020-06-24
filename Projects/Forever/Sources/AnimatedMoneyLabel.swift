@@ -10,10 +10,12 @@ import Flow
 import Foundation
 import hCore
 import UIKit
+import Form
 
 struct AnimatedSavingsLabel {
     let from: ReadSignal<MonetaryAmount?>
     let to: ReadSignal<MonetaryAmount?>
+    let textAlignment: NSTextAlignment
 }
 
 extension AnimatedSavingsLabel: Viewable {
@@ -41,7 +43,7 @@ extension AnimatedSavingsLabel: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        let fromLabel = UILabel(value: " ", style: .brand(.title2(color: .primary)))
+        let fromLabel = UILabel(value: " ", style: TextStyle.brand(.title2(color: .primary)).aligned(to: textAlignment))
         fromLabel.transform = CGAffineTransform(translationX: 0, y: -100)
         container.addArrangedSubview(fromLabel)
         
@@ -49,7 +51,7 @@ extension AnimatedSavingsLabel: Viewable {
             fromLabel.value = amount?.formattedAmount ?? " "
         }
         
-        let toLabel = UILabel(value: "", style: .brand(.title2(color: .primary)))
+        let toLabel = UILabel(value: "", style: TextStyle.brand(.title2(color: .primary)).aligned(to: textAlignment))
         toLabel.isHidden = true
         container.addArrangedSubview(toLabel)
         

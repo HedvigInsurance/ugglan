@@ -22,6 +22,7 @@ struct PriceSection {
 extension PriceSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let section = SectionView()
+        section.dynamicStyle = .brandGroupedNoBackground
         let bag = DisposeBag()
         let row = RowView()
         section.isHidden = isHiddenSignal.value
@@ -43,8 +44,9 @@ extension PriceSection: Viewable {
                 .map { $0?.negative },
             to: combineLatest(grossAmountSignal, netAmountSignal)
                 .map { grossAmount, netAmount in MonetaryAmount(amount: (grossAmount?.value ?? 0) - (netAmount?.value ?? 0), currency: grossAmount?.currency ?? "") }
-                .map { $0.negative })
-        )
+                .map { $0.negative },
+            textAlignment: .left
+        ))
 
         let netAmountStackView = UIStackView()
         netAmountStackView.spacing = 10
@@ -53,7 +55,7 @@ extension PriceSection: Viewable {
         row.append(netAmountStackView)
 
         netAmountStackView.addArrangedSubview(UILabel(value: L10n.ReferralsActive.Your.New.Price.title, style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .right)))
-        bag += netAmountStackView.addArranged(AnimatedSavingsLabel(from: grossAmountSignal, to: netAmountSignal))
+        bag += netAmountStackView.addArranged(AnimatedSavingsLabel(from: grossAmountSignal, to: netAmountSignal, textAlignment: .right))
 
         section.append(row)
 
