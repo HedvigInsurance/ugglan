@@ -13,6 +13,7 @@ import hCore
 import Mixpanel
 import Presentation
 import UIKit
+import Forever
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -45,7 +46,7 @@ extension LoggedIn: Presentable {
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
         let claims = Claims()
-        let referrals = Referrals()
+        let referrals = Forever(service: ForeverServiceGraphQL())
         let profile = Profile()
 
         let contractsPresentation = Presentation(

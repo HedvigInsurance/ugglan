@@ -21,8 +21,7 @@ extension ContactDetailsSection: Viewable {
 
         let section = SectionView(
             header: L10n.myInfoContactDetailsTitle,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
 
         let phoneNumberRow = PhoneNumberRow(

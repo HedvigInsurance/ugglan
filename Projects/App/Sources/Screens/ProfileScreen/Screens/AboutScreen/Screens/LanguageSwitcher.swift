@@ -95,7 +95,7 @@ extension LanguageSwitcher: Presentable {
         let form = FormView(sections: [], style: .defaultGrouped)
         bag += viewController.install(form)
 
-        let section = form.appendSection(header: nil, footer: nil, style: .sectionPlain)
+        let section = form.appendSection(header: nil, footer: nil)
 
         func reloadAllLabels() {
             UIApplication.shared.reloadAllLabels()

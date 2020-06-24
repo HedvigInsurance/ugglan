@@ -24,8 +24,7 @@ extension PastPaymentsSection: Viewable {
 
         let section = SectionView(
             header: L10n.paymentsSubtitlePaymentHistory,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
 
         let dataValueSignal = client.watch(query: MyPaymentQuery())

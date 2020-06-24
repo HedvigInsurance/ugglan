@@ -11,10 +11,9 @@ import Apollo
 import hCore
 import Flow
 
-class ForeverServiceGraphQL: ForeverService {
-    var dataSignal: ReadSignal<ForeverData?> {
+public class ForeverServiceGraphQL: ForeverService {
+    public var dataSignal: ReadSignal<ForeverData?> {
         client.watch(query: ForeverQuery()).map { result -> ForeverData in
-            
             let grossAmount = result.data?.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
             let grossAmountMonetary = MonetaryAmount(amount: grossAmount?.amount ?? "", currency: grossAmount?.currency ?? "")
             
@@ -36,9 +35,11 @@ class ForeverServiceGraphQL: ForeverService {
         }.readable(initial: nil)
     }
     
-    func refetch() {
+    public func refetch() {
         client.fetch(query: ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
     }
+    
+    public init() {}
     
     @Inject var client: ApolloClient
 }

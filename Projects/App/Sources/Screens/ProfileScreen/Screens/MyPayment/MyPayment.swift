@@ -72,7 +72,7 @@ extension MyPayment: Presentable {
 
         bag += form.append(updatingMessageSectionSpacing)
 
-        let updatingMessageSection = SectionView(style: .sectionPlain)
+        let updatingMessageSection = SectionView()
         updatingMessageSection.isHidden = true
 
         let updatingMessage = UpdatingMessage()

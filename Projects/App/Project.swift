@@ -28,6 +28,7 @@ let appDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
         .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
+        .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
     ],
     sdkFrameworks,
     ExternalDependencies.allCases.map { externalDependency in

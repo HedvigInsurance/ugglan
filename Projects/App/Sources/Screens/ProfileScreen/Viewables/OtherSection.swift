@@ -21,8 +21,7 @@ extension OtherSection: Viewable {
         let bag = DisposeBag()
         let section = SectionView(
             header: L10n.otherSectionTitle,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
 
         let aboutRow = AboutRow(presentingViewController: presentingViewController)

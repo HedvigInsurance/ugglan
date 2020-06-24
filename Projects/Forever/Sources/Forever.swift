@@ -27,6 +27,7 @@ extension Forever: Presentable {
         let viewController = UIViewController()
         viewController.title = L10n.referralsScreenTitle
         viewController.extendedLayoutIncludesOpaqueBars = true
+        viewController.edgesForExtendedLayout = [.top, .left, .right]
         let bag = DisposeBag()
         
         let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.info.image, style: .plain, target: nil, action: nil)

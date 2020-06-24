@@ -21,8 +21,7 @@ extension CardDetailsSection: Viewable {
 
         let section = SectionView(
             header: L10n.myPaymentCardRowLabel,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
         section.isHidden = true
 

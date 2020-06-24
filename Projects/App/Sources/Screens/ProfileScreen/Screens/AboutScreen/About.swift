@@ -40,8 +40,7 @@ extension About: Presentable {
         if state == .onboarding {
             let loginSection = form.appendSection(
                 headerView: nil,
-                footerView: nil,
-                style: .sectionPlain
+                footerView: nil
             )
 
             let loginRow = ButtonRow(
@@ -63,8 +62,7 @@ extension About: Presentable {
 
         let versionSection = form.appendSection(
             headerView: nil,
-            footerView: nil,
-            style: .sectionPlain
+            footerView: nil
         )
 
         let versionRow = VersionRow()
@@ -138,8 +136,7 @@ extension About: Presentable {
 
         let otherSection = form.appendSection(
             headerView: nil,
-            footerView: nil,
-            style: .sectionPlain
+            footerView: nil
         )
 
         let languageRow = LanguageRow(

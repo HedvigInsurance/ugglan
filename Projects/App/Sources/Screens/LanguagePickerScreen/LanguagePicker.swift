@@ -115,7 +115,7 @@ extension LanguagePicker: Presentable {
             make.trailing.leading.equalToSuperview()
         }
 
-        let section = form.appendSection(header: nil, footer: nil, style: .sectionPlainRounded)
+        let section = form.appendSection(header: nil, footer: nil)
 
         textContainer.transform = CGAffineTransform(translationX: 0, y: 125)
         textContainer.alpha = 0

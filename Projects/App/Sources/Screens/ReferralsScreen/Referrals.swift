@@ -18,6 +18,7 @@ import hCoreUI
 import Mixpanel
 import Presentation
 import UIKit
+import Forever
 
 enum ReferralsFailure: LocalizedError {
     case failedToCreateLink
@@ -236,6 +237,16 @@ extension Referrals: Presentable {
 }
 
 extension Referrals: Tabable {
+    func tabBarItem() -> UITabBarItem {
+        return UITabBarItem(
+            title: L10n.tabReferralsTitle,
+            image: Asset.referralsTab.image,
+            selectedImage: Asset.referralsTab.image
+        )
+    }
+}
+
+extension Forever: Tabable {
     func tabBarItem() -> UITabBarItem {
         return UITabBarItem(
             title: L10n.tabReferralsTitle,
