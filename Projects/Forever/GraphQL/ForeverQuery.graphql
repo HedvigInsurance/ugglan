@@ -27,6 +27,20 @@ query Forever {
         name
       }
     }
+    referredBy {
+      ... on ActiveReferral {
+        discount {
+          ...MonetaryAmountFragment
+        }
+        name
+      }
+      ... on InProgressReferral {
+        name
+      }
+      ... on TerminatedReferral {
+        name
+      }
+    }
     campaign {
       code
       incentive {
