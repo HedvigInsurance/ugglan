@@ -27,7 +27,7 @@ extension DiscountCodeSection: Viewable {
 
                 let label = MultilineLabel(
                     value: L10n.ReferralsEmpty.Code.footer,
-                    style: TextStyle.brand(.footnote(color: .tertiary))
+                    style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center)
                 )
 
                 bag += stackView.addArranged(label)
