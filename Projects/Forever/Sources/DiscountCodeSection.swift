@@ -38,6 +38,7 @@ extension DiscountCodeSection: Viewable {
         section.isHidden = true
 
         let codeRow = RowView()
+        codeRow.accessibilityLabel = L10n.referralsDiscountCodeAccessibility
         let codeLabel = UILabel(
             value: "",
             style: TextStyle.brand(.title3(color: .primary)).centerAligned
@@ -48,8 +49,8 @@ extension DiscountCodeSection: Viewable {
             section.animationSafeIsHidden = false
             codeLabel.value = code
         }
-
-        bag += section.append(codeRow).onValue { _ in
+        
+        bag += section.append(codeRow).trackedSignal.onValue { _ in
             section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
                 UIPasteboard.general.string = self.discountCodeSignal.value ?? ""
                 bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)

@@ -307,6 +307,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 )
             }
         }
+        RowAndProviderTracking.handler = { event in
+            Mixpanel.mainInstance().track(event: event)
+        }
 
         let launch = Launch(
             hasLoadedSignal: hasFinishedLoading.toVoid().plain()
