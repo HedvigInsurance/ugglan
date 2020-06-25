@@ -24,6 +24,10 @@ struct LoggedIn {
     }
 }
 
+extension Notification.Name {
+    static let shouldOpenReferrals = Notification.Name("shouldOpenReferrals")
+}
+
 extension LoggedIn {
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
         return NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in

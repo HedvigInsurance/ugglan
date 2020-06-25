@@ -359,23 +359,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     }
                     return
                 }
-            } else if notificationType == "REFERRAL_SUCCESS" {
-                guard let incentiveString = userInfo["DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT"] as? String else { return }
-                guard let name = userInfo["DATA_MESSAGE_REFERRED_SUCCESS_NAME"] as? String else { return }
-
-                let incentive = Int(Double(incentiveString) ?? 0)
-
-                let referralsNotification = ReferralsNotification(
-                    incentive: incentive,
-                    name: name
-                )
-
+            } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
-                    self.window.rootViewController?.present(
-                        referralsNotification,
-                        style: .modal,
-                        options: [.prefersNavigationBarHidden(false)]
-                    )
+                    NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
                 }
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
