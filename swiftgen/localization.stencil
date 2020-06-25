@@ -69,6 +69,7 @@ extension {{enumName}} {
      // swiftlint:disable:next nslocalizedstring_key
      let format = NSLocalizedString(key, tableName: table, bundle: Bundle(for: BundleToken.self), comment: "")
      var translation = NSString(format: format, locale: Foundation.Locale.current, arguments: args) as String
+     translation = translation == "" ? key : translation
      translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
      return translation
   }
@@ -78,6 +79,7 @@ extension {{enumName}} {
     let format = NSLocalizedString(key, tableName: table, bundle: Bundle(for: BundleToken.self), comment: "")
     
     var translation = String(format: format, locale: Foundation.Locale.current, arguments: args)
+    translation = translation == "" ? key : translation
     
     withVaList(args) { pointer in
         translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: pointer)
