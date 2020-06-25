@@ -29,7 +29,7 @@ extension Forever: Presentable {
         viewController.extendedLayoutIncludesOpaqueBars = true
         viewController.edgesForExtendedLayout = [.top, .left, .right]
         let bag = DisposeBag()
-                
+                        
         let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.info.image, style: .plain, target: nil, action: nil)
         
         bag += infoBarButton.onValue {
@@ -45,6 +45,15 @@ extension Forever: Presentable {
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
             tableKit.table[index].cellHeight
         }
+        
+        let refreshControl = UIRefreshControl()
+        
+        bag += refreshControl.onValue {
+            refreshControl.endRefreshing()
+            self.service.refetch()
+        }
+        
+        tableKit.view.refreshControl = refreshControl
 
         bag += tableKit.view.addTableHeaderView(Header(
             grossAmountSignal: service.dataSignal.map { $0?.grossAmount },
