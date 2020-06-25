@@ -248,6 +248,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         launchWindow?.backgroundColor = UIColor.transparent
 
         window.rootViewController = navigationController
+        
+        presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
+            let presentationEvent = event()
+            let message: String
+            var data: String?
+
+            switch presentationEvent {
+            case let .willEnqueue(presentableId, context):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_ENQUEUE", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) will enqueue modal presentation of \(presentableId)"
+            case let .willDequeue(presentableId, context):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_DEQUEUE", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) will dequeue modal presentation of \(presentableId)"
+            case let .willPresent(presentableId, context, styleName):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_PRESENT", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) will '\(styleName)' present: \(presentableId)"
+            case let .didCancel(presentableId, context):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_CANCEL", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) did cancel presentation of: \(presentableId)"
+            case let .didDismiss(presentableId, context, result):
+                switch result {
+                case .success(let result):
+                    Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_DISMISS_SUCCESS", properties: [
+                        "presentableId": presentableId.value
+                    ])
+                    message = "\(context) did end presentation of: \(presentableId)"
+                    data = "\(result)"
+                case .failure(let error):
+                    Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_DISMISS_FAILURE", properties: [
+                        "presentableId": presentableId.value
+                    ])
+                    message = "\(context) did end presentation of: \(presentableId)"
+                    data = "\(error)"
+                }
+            }
+
+            presentableLogPresentation(message, data, file, function, line)
+        }
+        
         viewControllerWasPresented = { viewController in
             if let debugPresentationTitle = viewController.debugPresentationTitle {
                 Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
