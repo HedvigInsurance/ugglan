@@ -82,7 +82,7 @@ public extension DefaultStyling {
 
         UINavigationBar.appearance().tintColor = .brand(.primaryTintColor)
 
-        UITabBar.appearance().unselectedItemTintColor = .brand(.tertiaryText)
+        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.5)
         UITabBar.appearance().tintColor = .brand(.primaryText())
 
         UITabBarItem.appearance().setTitleTextAttributes(
