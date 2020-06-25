@@ -25,7 +25,9 @@ extension UIApplication {
             for view in base.subviews {
                 if let label = view as? UILabel {
                     if let derivedFromL10n = label.text?.derivedFromL10n {
-                        label.text = derivedFromL10n.render()
+                        if label.text != "" {
+                            label.text = derivedFromL10n.render()
+                        }
                         label.layoutIfNeeded()
                         label.sizeToFit()
                     } else if let derivedFromL10n = label.value.displayValue.derivedFromL10n {
