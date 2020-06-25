@@ -31,11 +31,8 @@ public extension DefaultStyling {
         }
 
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
-        UINavigationBar.appearance().barTintColor = .brand(.primaryBackground())
 
         if #available(iOS 13.0, *) {
-            UINavigationBar.appearance().isTranslucent = false
-
             func generateAppearanceFor(userInterfaceLevel: UIUserInterfaceLevel) -> UINavigationBarAppearance {
                 let appearance = UINavigationBarAppearance()
                 appearance.backgroundColor = userInterfaceLevel == .elevated ? .brand(.secondaryBackground()) : .brand(.primaryBackground())
