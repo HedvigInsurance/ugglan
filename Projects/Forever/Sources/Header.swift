@@ -52,7 +52,10 @@ extension Header: Viewable {
         
         bag += stackView.addArranged(Spacing(height: 20))
 
-        let discountCodeSection = DiscountCodeSection(discountCodeSignal: discountCodeSignal)
+        let discountCodeSection = DiscountCodeSection(
+            discountCodeSignal: discountCodeSignal,
+            potentialDiscountAmountSignal: potentialDiscountAmountSignal
+        )
         bag += stackView.addArranged(discountCodeSection)
 
         bag += combineLatest(

@@ -14,7 +14,11 @@ import Presentation
 import UIKit
 
 public struct InvitationScreen {
-    public init() {}
+    let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
+    
+    public init(potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>) {
+        self.potentialDiscountAmountSignal = potentialDiscountAmountSignal
+    }
 }
 
 extension InvitationScreen: Presentable {
@@ -22,10 +26,10 @@ extension InvitationScreen: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        let imageTextAction = ImageTextAction<Void>(
+        var imageTextAction = ImageTextAction<Void>(
             image: ImageWithOptions(image: Asset.invitationIllustration.image),
             title: L10n.ReferralsIntroScreen.title,
-            body: L10n.ReferralsIntroScreen.body,
+            body: "",
             actions: [
                 (
                     (),
@@ -40,6 +44,10 @@ extension InvitationScreen: Presentable {
             ],
             showLogo: false
         )
+        
+        bag += potentialDiscountAmountSignal.compactMap { $0 }.onValue { amount in
+            imageTextAction.title = L10n.ReferralsIntroScreen.body(amount.formattedAmount)
+        }
 
         return (viewController, Future { completion in
             bag += viewController.install(imageTextAction).onValue {

@@ -15,6 +15,7 @@ import UIKit
 
 struct DiscountCodeSection {
     let discountCodeSignal: ReadSignal<String?>
+    let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
 }
 
 extension DiscountCodeSection: Viewable {
@@ -26,9 +27,13 @@ extension DiscountCodeSection: Viewable {
                 let stackView = UIStackView()
 
                 let label = MultilineLabel(
-                    value: L10n.ReferralsEmpty.Code.footer,
+                    value: "",
                     style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center)
                 )
+                
+                bag += potentialDiscountAmountSignal.compactMap { $0 }.onValue { monetaryAmount in
+                    label.valueSignal.value = L10n.ReferralsEmpty.Code.footer(monetaryAmount.formattedAmount)
+                }
 
                 bag += stackView.addArranged(label)
 

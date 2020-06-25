@@ -81,7 +81,7 @@ extension Forever: Presentable {
                 let hasShownInvitation = UserDefaults.standard.bool(forKey: defaultsKey)
                            
                if !hasShownInvitation {
-                   viewController.present(InvitationScreen(), style: .modal).onResult { _ in
+                   viewController.present(InvitationScreen(potentialDiscountAmountSignal: self.service.dataSignal.map { $0?.potentialDiscountAmount }), style: .modal).onResult { _ in
                        UserDefaults.standard.set(true, forKey: defaultsKey)
                        UserDefaults.standard.synchronize()
                    }
