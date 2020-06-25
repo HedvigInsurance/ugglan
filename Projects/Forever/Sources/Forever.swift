@@ -29,7 +29,7 @@ extension Forever: Presentable {
         viewController.extendedLayoutIncludesOpaqueBars = true
         viewController.edgesForExtendedLayout = [.top, .left, .right]
         let bag = DisposeBag()
-        
+                
         let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.info.image, style: .plain, target: nil, action: nil)
         
         bag += infoBarButton.onValue {
@@ -70,6 +70,20 @@ extension Forever: Presentable {
             )
             table.removeEmptySections()
             tableKit.set(table)
+        }
+        
+        if Localization.Locale.currentLocale.market == .no {
+            bag += tableKit.view.hasWindowSignal.filter(predicate: { $0 }).take(first: 1).onValue { _ in
+                let defaultsKey = "hasShownInvitation"
+                let hasShownInvitation = UserDefaults.standard.bool(forKey: defaultsKey)
+                           
+               if !hasShownInvitation {
+                   viewController.present(InvitationScreen(), style: .modal).onResult { _ in
+                       UserDefaults.standard.set(true, forKey: defaultsKey)
+                       UserDefaults.standard.synchronize()
+                   }
+               }
+            }
         }
 
         let shareButton = ShareButton()
