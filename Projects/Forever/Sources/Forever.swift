@@ -101,3 +101,13 @@ extension Forever: Presentable {
         return (viewController, bag)
     }
 }
+
+extension Forever: Tabable {
+    public func tabBarItem() -> UITabBarItem {
+        return UITabBarItem(
+            title: L10n.tabReferralsTitle,
+            image: Asset.tab.image,
+            selectedImage: Asset.tab.image
+        )
+    }
+}

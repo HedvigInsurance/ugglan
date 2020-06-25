@@ -10,10 +10,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-
-protocol Tabable {
-    func tabBarItem() -> UITabBarItem
-}
+import hCore
 
 extension UITabBarController {
     private func materializeTab<
