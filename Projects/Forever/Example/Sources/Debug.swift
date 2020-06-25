@@ -44,7 +44,7 @@ extension Debug: Presentable {
         }
         
         bag += section.appendRow(title: "Info and terms screen").onValue {
-            viewController.present(InfoAndTerms(), style: .modal)
+            viewController.present(InfoAndTerms(potentialDiscountAmountSignal: .init(.sek(10))), style: .modal)
         }
 
         bag += section.appendRow(title: "PieChart debugger").onValue {
