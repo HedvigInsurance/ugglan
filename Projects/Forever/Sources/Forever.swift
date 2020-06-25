@@ -33,7 +33,10 @@ extension Forever: Presentable {
         let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.info.image, style: .plain, target: nil, action: nil)
         
         bag += infoBarButton.onValue {
-            viewController.present(InfoAndTerms(), style: .modal)
+            viewController.present(
+                InfoAndTerms(potentialDiscountAmountSignal: self.service.dataSignal.map { $0?.potentialDiscountAmount }),
+                style: .modal
+            )
         }
         
         viewController.navigationItem.rightBarButtonItem = infoBarButton

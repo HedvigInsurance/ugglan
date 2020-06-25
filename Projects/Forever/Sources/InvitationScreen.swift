@@ -23,7 +23,7 @@ extension InvitationScreen: Presentable {
         let bag = DisposeBag()
 
         let imageTextAction = ImageTextAction<Void>(
-            image: .init(image: Asset.invitationIllustration.image),
+            image: ImageWithOptions(image: Asset.invitationIllustration.image),
             title: L10n.ReferralsIntroScreen.title,
             body: L10n.ReferralsIntroScreen.body,
             actions: [

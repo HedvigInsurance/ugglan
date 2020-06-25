@@ -30,12 +30,12 @@ public struct ImageWithOptions {
 }
 
 public struct ImageTextAction<ActionResult> {
-    let image: ImageWithOptions
-    let title: String
-    let body: String
-    let actions: [(ActionResult, Button)]
-    let showLogo: Bool
-
+    public let image: ImageWithOptions
+    @ReadWriteState public var title: String
+    @ReadWriteState public var body: String
+    public let actions: [(ActionResult, Button)]
+    public let showLogo: Bool
+    
     public init(
         image: ImageWithOptions,
         title: String,
@@ -111,13 +111,19 @@ extension ImageTextAction: Viewable {
             style: TextStyle.brand(.title1(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(titleLabel)
+        bag += $title.onValue { value in
+            titleLabel.valueSignal.value = value
+        }
 
         let bodyLabel = MultilineLabel(
             value: body,
             style: TextStyle.brand(.body(color: .secondary)).aligned(to: .center)
         )
         bag += view.addArranged(bodyLabel)
-
+        bag += $body.onValue { value in
+            bodyLabel.valueSignal.value = value
+        }
+        
         let buttonsContainer = UIStackView()
         buttonsContainer.axis = .vertical
         buttonsContainer.spacing = 15
