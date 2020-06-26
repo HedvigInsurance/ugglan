@@ -54,6 +54,7 @@ let project = Project(
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
+            entitlements: "Config/Test/Ugglan.entitlements",
             actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: ugglanConfigurations)
@@ -84,6 +85,7 @@ let project = Project(
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
+            entitlements: "Config/Production/Hedvig.entitlements",
             actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: hedvigConfigurations)
