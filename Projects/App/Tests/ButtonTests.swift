@@ -8,6 +8,7 @@
 import hCoreUI
 import SnapshotTesting
 @testable import Ugglan
+import Testing
 import hCore
 import UIKit
 import XCTest
