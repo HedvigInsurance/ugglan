@@ -63,7 +63,7 @@ extension PriceBubble: Viewable {
 
         bag += combineLatest(discountSignal.plain(), grossPriceSignal, grossCurrencySignal)
             .animated(style: SpringAnimationStyle.mediumBounce(), animations: { monthlyDiscount, monthlyGross, grossCurrency in
-                grossPriceLabel.styledText = StyledText(text: MonetaryAmount(amount: Float(monthlyGross), currency: grossCurrency).formattedAmount, style: TextStyle.priceBubbleGrossTitle)
+                grossPriceLabel.styledText = StyledText(text: "\(MonetaryAmount(amount: Float(monthlyGross), currency: grossCurrency).formattedAmount)\(L10n.perMonth)", style: TextStyle.priceBubbleGrossTitle)
                 grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
                 grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
             })
