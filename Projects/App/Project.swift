@@ -31,7 +31,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
     ],
     sdkFrameworks,
-    ExternalDependencies.allCases.map { externalDependency in
+    ExternalDependencies.allCases.filter { !$0.isTestDependency }.map { externalDependency in
         externalDependency.targetDependencies()
     }.flatMap { $0 },
 ].flatMap { $0 }

@@ -25,6 +25,10 @@ public enum ExternalDependencies: CaseIterable {
     case markdownkit
     case mixpanel
     case runtime
+    
+    public var isTestDependency: Bool {
+        return self == .runtime
+    }
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
