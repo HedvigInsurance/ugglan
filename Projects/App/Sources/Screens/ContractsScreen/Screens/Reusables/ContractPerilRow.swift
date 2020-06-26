@@ -34,7 +34,16 @@ struct ContractPerilRow: Hashable, Equatable {
 extension ContractPerilRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (ContractPerilRow) -> Disposable) {
         let view = UIControl()
-        view.backgroundColor = .secondaryBackground
+        
+        let backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
+            if #available(iOS 13.0, *) {
+                return trait.userInterfaceLevel == .elevated ? .primaryBackground : .secondaryBackground
+            } else {
+                return .secondaryBackground
+            }
+        })
+        
+        view.backgroundColor = backgroundColor
         view.layer.cornerRadius = 5
 
         let contentContainer = UIStackView()
@@ -64,11 +73,11 @@ extension ContractPerilRow: Reusable {
             bag += contentContainer.addArranged(title)
 
             bag += view.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25), animations: { _ in
-                view.backgroundColor = UIColor.primaryTintColor.withAlphaComponent(0.2)
+                view.backgroundColor = DefaultStyling.current.sectionBackgroundSelected.background.color.withAlphaComponent(0.2)
             })
 
             bag += view.delayedTouchCancel().animated(style: .easeOut(duration: 0.25), animations: { _ in
-                view.backgroundColor = .secondaryBackground
+                view.backgroundColor = backgroundColor
             })
 
             bag += view.trackedTouchUpInsideSignal.onValue { _ in
