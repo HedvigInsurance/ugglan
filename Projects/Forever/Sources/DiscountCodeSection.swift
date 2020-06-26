@@ -31,7 +31,7 @@ extension DiscountCodeSection: Viewable {
                     style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center)
                 )
                 
-                bag += potentialDiscountAmountSignal.compactMap { $0 }.onValue { monetaryAmount in
+                bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }.onValue { monetaryAmount in
                     label.valueSignal.value = L10n.ReferralsEmpty.Code.footer(monetaryAmount.formattedAmount)
                 }
 
