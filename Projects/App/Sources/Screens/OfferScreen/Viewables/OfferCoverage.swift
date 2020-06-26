@@ -27,8 +27,23 @@ extension OfferCoverage: Viewable {
 
         let bag = DisposeBag()
 
-        stackView.addArrangedSubview(UILabel(value: "Skyddet", style: .headlineLargeLargeCenter))
-        bag += stackView.addArranged(MultilineLabel(value: "Hedvigs hemförsäkring erbjuder ett bra skydd för din lägenhet, dina saker och din familj när ni är på resa utomlands.", style: .bodySmallSmallCenter))
+        stackView.addArrangedSubview(UILabel(value: L10n.offerScreenCoverageTitle, style: .headlineLargeLargeCenter))
+        
+        let bodyLabel = MultilineLabel(value: "", style: .bodySmallSmallCenter)
+        bag += stackView.addArranged(bodyLabel)
+        
+        bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.type }.onValue { type in
+            switch type {
+            case .brf, .studentBrf:
+                bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyBrf
+            case .rent, .studentRent:
+                bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyRental
+            case .house:
+                bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyHouse
+            case .__unknown(_):
+                break
+            }
+        }
 
         let perilFragmentsSignal = client.fetch(query: OfferQuery()).valueSignal
             .compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.perils.map { $0.fragments.perilFragment } }
@@ -44,7 +59,7 @@ extension OfferCoverage: Viewable {
 
         bag += stackView.addArranged(Spacing(height: 20))
 
-        stackView.addArrangedSubview(UILabel(value: "Mer information", style: .headlineLargeLargeCenter))
+        stackView.addArrangedSubview(UILabel(value: L10n.offerScreenInsuredAmountsTitle, style: .headlineLargeLargeCenter))
         bag += stackView.addArranged(ContractInsurableLimits(insurableLimitFragmentsSignal: insurableLimitFragmentsSignal))
 
         return (stackView, bag)
