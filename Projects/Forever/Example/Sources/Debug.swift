@@ -40,7 +40,7 @@ extension Debug: Presentable {
         }
 
         bag += section.appendRow(title: "Invitation screen").onValue {
-            viewController.present(InvitationScreen(), style: .modal, options: [])
+            viewController.present(InvitationScreen(potentialDiscountAmountSignal: .init(.sek(10))), style: .modal, options: [])
         }
         
         bag += section.appendRow(title: "Info and terms screen").onValue {

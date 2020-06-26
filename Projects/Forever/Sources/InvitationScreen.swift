@@ -45,7 +45,7 @@ extension InvitationScreen: Presentable {
             showLogo: false
         )
         
-        bag += potentialDiscountAmountSignal.compactMap { $0 }.onValue { amount in
+        bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }.onValue { amount in
             imageTextAction.title = L10n.ReferralsIntroScreen.body(amount.formattedAmount)
         }
 

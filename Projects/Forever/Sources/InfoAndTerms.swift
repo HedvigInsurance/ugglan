@@ -51,7 +51,7 @@ extension InfoAndTerms: Presentable {
             showLogo: false
         )
         
-        bag += potentialDiscountAmountSignal.compactMap { $0 }.map { L10n.ReferralsInfoSheet.body($0.formattedAmount) }.onValue { body in
+        bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }.map { L10n.ReferralsInfoSheet.body($0.formattedAmount) }.onValue { body in
             imageTextAction.body = body
         }
 
