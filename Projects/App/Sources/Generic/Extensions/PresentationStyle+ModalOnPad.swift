@@ -10,7 +10,7 @@ import Presentation
 
 extension PresentationStyle {
     static let defaultOrModal = PresentationStyle(name: "DefaultOrModal") { (viewController, from, options) -> PresentationStyle.Result in
-        if from.traitCollection.isPad {
+        if from.traitCollection.userInterfaceIdiom == .pad {
             return PresentationStyle.modally(
                 presentationStyle: .formSheet,
                 transitionStyle: nil,

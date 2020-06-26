@@ -11,75 +11,8 @@ import Foundation
 import hCore
 import UIKit
 
-struct Localization {
-    enum Locale: String, CaseIterable {
-        public static var currentLocale: Locale = .sv_SE
-        case sv_SE
-        case en_SE
-        case en_NO
-        case nb_NO
-
-        enum Market: String {
-            case no = "NO"
-            case se = "SE"
-        }
-
-        var market: Market {
-            switch self {
-            case .sv_SE:
-                return .se
-            case .en_SE:
-                return .se
-            case .en_NO:
-                return .no
-            case .nb_NO:
-                return .no
-            }
-        }
-
-        var acceptLanguageHeader: String {
-            switch self {
-            case .sv_SE:
-                return "sv-SE"
-            case .en_SE:
-                return "en-SE"
-            case .en_NO:
-                return "en-NO"
-            case .nb_NO:
-                return "nb-NO"
-            }
-        }
-
-        var code: String {
-            switch self {
-            case .sv_SE:
-                return "sv_SE"
-            case .en_SE:
-                return "en_SE"
-            case .en_NO:
-                return "en_NO"
-            case .nb_NO:
-                return "nb_NO"
-            }
-        }
-
-        var lprojCode: String {
-            switch self {
-            case .sv_SE:
-                return "sv-SE"
-            case .en_SE:
-                return "en-SE"
-            case .en_NO:
-                return "en-NO"
-            case .nb_NO:
-                return "nb-NO"
-            }
-        }
-    }
-}
-
 extension Localization.Locale {
-    func asGraphQLLocale() -> Locale {
+    public func asGraphQLLocale() -> Locale {
         switch self {
         case .sv_SE:
             return .svSe

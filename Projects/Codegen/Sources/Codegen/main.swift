@@ -11,6 +11,14 @@ let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomai
     .appendingPathComponent("Codegen")
     .appendingPathComponent("ApolloCLI")
 
+try? FileManager.default.removeItem(at: cliFolderURL)
+
+try FileManager.default.createDirectory(
+    at: cliFolderURL,
+    withIntermediateDirectories: true,
+    attributes: nil
+)
+
 let endpoint = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
 
 let options = ApolloSchemaOptions(
@@ -18,21 +26,26 @@ let options = ApolloSchemaOptions(
     outputFolderURL: cliFolderURL
 )
 
-do {
-    try ApolloSchemaDownloader.run(with: cliFolderURL,
-                                   options: options)
-} catch {
-    exit(1)
+try ApolloSchemaDownloader.run(
+    with: cliFolderURL,
+    options: options
+)
+
+func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
+    guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else {
+        return []
+    }
+            
+    let ownDirs = dirs.filter({ $0 == "GraphQL"}).map { URL(string: "file://\(basePath)/\($0)") }.compactMap { $0 }
+    
+    let nestedDirs = dirs.compactMap { $0 }.map { val -> [URL] in
+        findAllGraphQLFolders(basePath: "\(basePath)/\(val)")
+    }.flatMap { $0 }
+        
+    return [ownDirs, nestedDirs].flatMap { $0 }
 }
 
-let sourceUrls = [
-    sourceRootURL
-        .appendingPathComponent("App")
-        .appendingPathComponent("GraphQL"),
-    sourceRootURL
-        .appendingPathComponent("Embark")
-        .appendingPathComponent("GraphQL"),
-]
+let sourceUrls = findAllGraphQLFolders()
 
 sourceUrls.forEach { sourceUrl in
     let codegenOptions = ApolloCodegenOptions(
@@ -45,11 +58,9 @@ sourceUrls.forEach { sourceUrl in
         urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
     )
 
-    do {
-        try ApolloCodegen.run(from: sourceUrl,
-                              with: cliFolderURL,
-                              options: codegenOptions)
-    } catch {
-        exit(1)
-    }
+    try! ApolloCodegen.run(
+        from: sourceUrl,
+        with: cliFolderURL,
+        options: codegenOptions
+    )
 }

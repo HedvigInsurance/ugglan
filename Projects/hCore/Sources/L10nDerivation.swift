@@ -11,7 +11,7 @@ import Foundation
 public struct L10nDerivation {
     public let table: String
     public let key: String
-    public let args: [CVarArg]
+    public let args: CVaListPointer
 
     /// render the text key again, useful if you have changed the language during runtime
     public func render() -> String {

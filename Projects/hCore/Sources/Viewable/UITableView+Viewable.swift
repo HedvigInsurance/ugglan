@@ -36,7 +36,8 @@ extension UIView {
 
 extension UITableView {
     public func addTableHeaderView<V: Viewable, VMatter: UIView>(
-        _ viewable: V
+        _ viewable: V,
+        animated: Bool = true
     ) -> Disposable where
         V.Events == ViewableEvents,
         V.Matter == VMatter,
@@ -53,11 +54,21 @@ extension UITableView {
 
         let bag = DisposeBag()
 
-        bag += matter.anyDescendantDidLayoutSignal.animated(style: SpringAnimationStyle.lightBounce(), animations: { _ in
-            self.tableHeaderView = matter
+        func update() {
+            tableHeaderView = matter
             matter.layoutIfNeeded()
-            self.layoutIfNeeded()
-        })
+            layoutIfNeeded()
+        }
+
+        if animated {
+            bag += matter.anyDescendantDidLayoutSignal.animated(style: SpringAnimationStyle.lightBounce()) {
+                update()
+            }
+        } else {
+            bag += matter.anyDescendantDidLayoutSignal.onValue {
+                update()
+            }
+        }
 
         return Disposer {
             bag.dispose()

@@ -22,8 +22,7 @@ extension BankDetailsSection: Viewable {
 
         let section = SectionView(
             header: L10n.myPaymentBankRowLabel,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
         let row = KeyValueRow()
         row.valueStyleSignal.value = .rowTitleDisabled

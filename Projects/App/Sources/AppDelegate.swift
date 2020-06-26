@@ -12,7 +12,6 @@ import Disk
 import Firebase
 import FirebaseAnalytics
 import FirebaseMessaging
-import FirebaseRemoteConfig
 import Flow
 import Form
 import Foundation
@@ -50,10 +49,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let toastBag = bag.innerBag()
         let toasts = Toasts(toastSignal: toastSignal)
 
-        toastBag += keyWindow.add(toasts) { toastsView in
-            toastBag += toastSignal.atOnce().onValue { _ in
+        toastBag += keyWindow.add(toasts) { toastsView in            toastBag += toastSignal.atOnce().onValue { _ in
                 toastsView.snp.remakeConstraints { make in
-                    if #available(iOS 13, *), !keyWindow.traitCollection.isPad {
+                    if #available(iOS 13, *), keyWindow.traitCollection.userInterfaceIdiom != .pad {
                         if keyWindow.rootViewController?.presentedViewController != nil {
                             let safeAreaTop = keyWindow.safeAreaInsets.top
                             make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)
@@ -250,6 +248,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         launchWindow?.backgroundColor = UIColor.transparent
 
         window.rootViewController = navigationController
+        
+        presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
+            let presentationEvent = event()
+            let message: String
+            var data: String?
+
+            switch presentationEvent {
+            case let .willEnqueue(presentableId, context):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_ENQUEUE", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) will enqueue modal presentation of \(presentableId)"
+            case let .willDequeue(presentableId, context):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_DEQUEUE", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) will dequeue modal presentation of \(presentableId)"
+            case let .willPresent(presentableId, context, styleName):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_PRESENT", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) will '\(styleName)' present: \(presentableId)"
+            case let .didCancel(presentableId, context):
+                Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_CANCEL", properties: [
+                    "presentableId": presentableId.value
+                ])
+                message = "\(context) did cancel presentation of: \(presentableId)"
+            case let .didDismiss(presentableId, context, result):
+                switch result {
+                case .success(let result):
+                    Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_DISMISS_SUCCESS", properties: [
+                        "presentableId": presentableId.value
+                    ])
+                    message = "\(context) did end presentation of: \(presentableId)"
+                    data = "\(result)"
+                case .failure(let error):
+                    Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_DISMISS_FAILURE", properties: [
+                        "presentableId": presentableId.value
+                    ])
+                    message = "\(context) did end presentation of: \(presentableId)"
+                    data = "\(error)"
+                }
+            }
+
+            presentableLogPresentation(message, data, file, function, line)
+        }
+        
         viewControllerWasPresented = { viewController in
             if let debugPresentationTitle = viewController.debugPresentationTitle {
                 Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
@@ -261,6 +306,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     "ALERT_ACTION_TAP_\(localizationKey)"
                 )
             }
+        }
+        RowAndProviderTracking.handler = { event in
+            Mixpanel.mainInstance().track(event: event)
         }
 
         let launch = Launch(
@@ -361,23 +409,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     }
                     return
                 }
-            } else if notificationType == "REFERRAL_SUCCESS" {
-                guard let incentiveString = userInfo["DATA_MESSAGE_REFERRED_SUCCESS_INCENTIVE_AMOUNT"] as? String else { return }
-                guard let name = userInfo["DATA_MESSAGE_REFERRED_SUCCESS_NAME"] as? String else { return }
-
-                let incentive = Int(Double(incentiveString) ?? 0)
-
-                let referralsNotification = ReferralsNotification(
-                    incentive: incentive,
-                    name: name
-                )
-
+            } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
-                    self.window.rootViewController?.present(
-                        referralsNotification,
-                        style: .modal,
-                        options: [.prefersNavigationBarHidden(false)]
-                    )
+                    NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
                 }
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in

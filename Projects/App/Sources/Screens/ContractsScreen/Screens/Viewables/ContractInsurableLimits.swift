@@ -25,15 +25,14 @@ extension ContractInsurableLimits: Viewable {
         let bag = DisposeBag()
 
         bag += insurableLimitFragmentsSignal.atOnce().onValue { InsurableLimitFragments in
-
             collectionKit.set(Table(rows: InsurableLimitFragments.map { fragment -> ContractInsurableLimitRow in
                 .init(fragment: fragment)
-                       }))
+            }))
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let width = collectionKit.view.frame.size.width / 2 - 5
-            return CGSize(width: width, height: collectionKit.table[index].contentSize(CGSize(width: width, height: 0)).height)
+            return CGSize(width: width, height: collectionKit.table[index].contentSize(CGSize(width: width, height: 0)).height + 40)
         }
 
         bag += collectionKit.view.signal(for: \.contentSize).onValue { size in

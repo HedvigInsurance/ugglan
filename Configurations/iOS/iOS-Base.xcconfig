@@ -18,3 +18,8 @@ SDKROOT = iphoneos
 TARGETED_DEVICE_FAMILY = 1,2
 
 SWIFT_COMPILATION_MODE = wholemodule
+
+CONFIGURATION_BUILD_DIR=$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/$(PROJECT_NAME)
+
+// figure out why CRuntime does this
+SWIFT_INCLUDE_PATHS = $(inherited) $(PROJECT_DIR)/../../Carthage/Checkouts/Runtime/Sources/CRuntime/Include

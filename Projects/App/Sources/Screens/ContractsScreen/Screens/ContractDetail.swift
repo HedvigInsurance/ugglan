@@ -22,7 +22,6 @@ extension ContractDetail: Presentable {
         if let swedishApartment = contract.currentAgreement.asSwedishApartmentAgreement {
             let bag = DisposeBag()
             let apartmentInfoSection = SectionView()
-            apartmentInfoSection.dynamicStyle = .sectionPlain
 
             let livingSpaceRow = KeyValueRow()
             livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
@@ -61,7 +60,6 @@ extension ContractDetail: Presentable {
             bag += apartmentInfoSection.append(apartmentTypeRow)
 
             let coinsuredSection = SectionView()
-            coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
             coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
@@ -84,7 +82,6 @@ extension ContractDetail: Presentable {
             let bag = DisposeBag()
 
             let apartmentInfoSection = SectionView()
-            apartmentInfoSection.dynamicStyle = .sectionPlain
 
             let livingSpaceRow = KeyValueRow()
             livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
@@ -141,7 +138,6 @@ extension ContractDetail: Presentable {
                     headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .rowTitle),
                     footerView: nil
                 )
-                extraBuildingsSection.dynamicStyle = .sectionPlain
 
                 bag += swedishHouse.extraBuildings.compactMap { $0 }.map { extraBuilding in
                     extraBuildingsSection.append(
@@ -168,7 +164,6 @@ extension ContractDetail: Presentable {
         if let norwegianHomeContents = contract.currentAgreement.asNorwegianHomeContentAgreement {
             let bag = DisposeBag()
             let apartmentInfoSection = SectionView()
-            apartmentInfoSection.dynamicStyle = .sectionPlain
 
             let livingSpaceRow = KeyValueRow()
             livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
@@ -189,7 +184,6 @@ extension ContractDetail: Presentable {
             bag += apartmentInfoSection.append(postalCodeRow)
 
             let coinsuredSection = SectionView()
-            coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
             coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
@@ -218,7 +212,6 @@ extension ContractDetail: Presentable {
             let bag = DisposeBag()
 
             let coinsuredSection = SectionView()
-            coinsuredSection.dynamicStyle = .sectionPlain
 
             let coinsuredRow = KeyValueRow()
             coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle

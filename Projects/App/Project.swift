@@ -28,12 +28,17 @@ let appDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
         .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
+        .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
     ],
     sdkFrameworks,
     ExternalDependencies.allCases.map { externalDependency in
         externalDependency.targetDependencies()
     }.flatMap { $0 },
 ].flatMap { $0 }
+
+let targetActions: [TargetAction] = [
+    .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications"),
+]
 
 let project = Project(
     name: "Ugglan",
@@ -49,7 +54,7 @@ let project = Project(
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
-            actions: [],
+            actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: ugglanConfigurations)
         ),
@@ -62,6 +67,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
+            actions: targetActions,
             dependencies: [
                 [.target(name: "Ugglan"),
                  .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
@@ -78,6 +84,7 @@ let project = Project(
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
+            actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: hedvigConfigurations)
         ),
@@ -89,7 +96,7 @@ let project = Project(
             buildAction: BuildAction(targets: ["Ugglan"]),
             testAction: TestAction(
                 targets: [TestableTarget(target: TargetReference(stringLiteral: "AppTests"), parallelizable: true)],
-                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: [:])
+                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])
             ),
             runAction: RunAction(executable: "Ugglan")
         ),

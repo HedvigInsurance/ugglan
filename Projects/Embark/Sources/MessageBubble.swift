@@ -56,6 +56,7 @@ extension MessageBubble: Viewable {
 
         let containerView = UIStackView()
         containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.insetsLayoutMarginsFromSafeArea = false
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
 
         let bodyStyle: TextStyle = messageType == .replied ? .brand(.body(color: .primary(state: .negative))) : .brand(.body(color: .primary))

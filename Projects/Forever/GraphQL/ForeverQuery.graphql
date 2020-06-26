@@ -1,0 +1,55 @@
+fragment MonetaryAmountFragment on MonetaryAmountV2 {
+  amount
+  currency
+}
+
+query Forever {
+  referralInformation {
+    costReducedIndefiniteDiscount {
+      monthlyNet {
+        ...MonetaryAmountFragment
+      }
+      monthlyGross {
+        ...MonetaryAmountFragment
+      }
+    }
+    invitations {
+      ... on ActiveReferral {
+        name
+        discount {
+          ...MonetaryAmountFragment
+        }
+      }
+      ... on TerminatedReferral {
+        name
+      }
+      ... on InProgressReferral {
+        name
+      }
+    }
+    referredBy {
+      ... on ActiveReferral {
+        discount {
+          ...MonetaryAmountFragment
+        }
+        name
+      }
+      ... on InProgressReferral {
+        name
+      }
+      ... on TerminatedReferral {
+        name
+      }
+    }
+    campaign {
+      code
+      incentive {
+        ... on MonthlyCostDeduction {
+          amount {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
+    }
+  }
+}

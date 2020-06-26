@@ -28,8 +28,7 @@ extension PaymentsHistory: Presentable {
 
         let section = form.appendSection(
             header: nil,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
 
         let dataValueSignal = client.watch(query: MyPaymentQuery())

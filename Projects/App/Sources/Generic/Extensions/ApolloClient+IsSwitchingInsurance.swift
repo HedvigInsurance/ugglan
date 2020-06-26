@@ -8,6 +8,7 @@
 import Apollo
 import Flow
 import Foundation
+import hCore
 
 extension ApolloClient {
     var isSwitchingInsurance: Future<Bool> {

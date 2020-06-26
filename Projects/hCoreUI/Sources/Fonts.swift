@@ -12,6 +12,8 @@ import UIKit
 class FontBundleToken {}
 
 public struct Fonts {
+    private static let favoritStdBookFontName = "FavoritStd-Book"
+
     public static var favoritStdBook: UIFont = {
         let fontPath = Bundle(for: FontBundleToken.self).path(
             forResource: "FavoritStd-Book",
@@ -25,8 +27,19 @@ public struct Fonts {
         CTFontManagerRegisterGraphicsFont(font!, &error)
 
         return UIFont(
-            name: "FavoritStd-Book",
-            size: UIFont.systemFontSize
+            name: favoritStdBookFontName,
+            size: UIFont.labelFontSize
         )!
     }()
+
+    public static func fontFor(style: UIFont.TextStyle) -> UIFont {
+        let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: style)
+        let size = defaultDescriptor.pointSize
+        let fontDescriptor = UIFontDescriptor(fontAttributes: [
+            UIFontDescriptor.AttributeName.size: size,
+            UIFontDescriptor.AttributeName.family: favoritStdBook.familyName,
+        ])
+
+        return UIFont(descriptor: fontDescriptor, size: 0)
+    }
 }

@@ -3,16 +3,6 @@
     {
       "filename" : "icons-navigation-back-dark-gray.pdf",
       "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "filename" : "backWhite.pdf",
-      "idiom" : "universal"
     }
   ],
   "info" : {
@@ -21,6 +11,6 @@
   },
   "properties" : {
     "preserves-vector-representation" : true,
-    "template-rendering-intent" : "original"
+    "template-rendering-intent" : "template"
   }
 }

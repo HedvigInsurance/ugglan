@@ -13,6 +13,7 @@ import hCore
 import Mixpanel
 import Presentation
 import UIKit
+import Forever
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -21,6 +22,10 @@ struct LoggedIn {
     init(didSign: Bool = false) {
         self.didSign = didSign
     }
+}
+
+extension Notification.Name {
+    static let shouldOpenReferrals = Notification.Name("shouldOpenReferrals")
 }
 
 extension LoggedIn {
@@ -45,7 +50,7 @@ extension LoggedIn: Presentable {
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
         let claims = Claims()
-        let referrals = Referrals()
+        let referrals = Forever(service: ForeverServiceGraphQL())
         let profile = Profile()
 
         let contractsPresentation = Presentation(
@@ -78,7 +83,10 @@ extension LoggedIn: Presentable {
             options: [.defaults, .prefersLargeTitles(true)]
         )
 
-        bag += client.fetch(query: FeaturesQuery()).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
+        bag += client.fetch(
+            query: FeaturesQuery(),
+            cachePolicy: .fetchIgnoringCacheData
+        ).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
             if features.contains(.keyGear) {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(

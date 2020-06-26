@@ -11,6 +11,8 @@ Carthage
 *.xcodeproj
 UITestsImages/FailureDiffs
 Localizable.strings
+.githooks/release
+.githooks/bin
 
 ## Various settings
 *.pbxuser

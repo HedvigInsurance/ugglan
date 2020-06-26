@@ -34,8 +34,7 @@ extension PaymentDetailsSection: Viewable {
 
         let section = SectionView(
             header: L10n.myPaymentPaymentRowLabel,
-            footer: nil,
-            style: .sectionPlain
+            footer: nil
         )
 
         let grossPriceRow = KeyValueRow()
