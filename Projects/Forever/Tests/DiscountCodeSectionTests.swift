@@ -23,7 +23,10 @@ final class DiscountCodeSectionTests: XCTestCase {
     }
 
     func testScreenshot() {
-        let discountCodeSection = DiscountCodeSection(discountCodeSignal: .init("MOCK"))
+        let discountCodeSection = DiscountCodeSection(
+            discountCodeSignal: .init("MOCK"),
+            potentialDiscountAmountSignal: .init(.sek(10))
+        )
 
         materializeViewable(discountCodeSection) { view in
             view.snp.makeConstraints { make in
