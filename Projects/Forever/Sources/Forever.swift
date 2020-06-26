@@ -110,11 +110,11 @@ extension Forever: Presentable {
                 tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
                 tableKit.view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
             }
-        }.onValue { buttonView in
+        }.withLatestFrom(self.service.dataSignal.atOnce().compactMap { $0?.discountCode }).onValue { buttonView, discountCode in
             shareButton.loadableButton.startLoading()
             viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
                 let activity = ActivityView(
-                    activityItems: [URL(string: L10n.referralsLink(self.service.dataSignal.value?.discountCode ?? "")) ?? ""],
+                    activityItems: [URL(string: L10n.referralsLink(discountCode)) ?? ""],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: nil
