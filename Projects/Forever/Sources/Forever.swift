@@ -114,7 +114,7 @@ extension Forever: Presentable {
             shareButton.loadableButton.startLoading()
             viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
                 let activity = ActivityView(
-                    activityItems: [URL(string: "https://www.hedvig.com/referrals/\(self.service.dataSignal.value?.discountCode ?? "")?utm_source=ios") ?? ""],
+                    activityItems: [URL(string: L10n.referralsLink(self.service.dataSignal.value?.discountCode ?? "")) ?? ""],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: nil
