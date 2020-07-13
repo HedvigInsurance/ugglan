@@ -10,7 +10,6 @@ import Adyen
 import Apollo
 import Disk
 import Firebase
-import FirebaseAnalytics
 import FirebaseMessaging
 import Flow
 import Form

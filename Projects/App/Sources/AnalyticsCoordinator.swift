@@ -6,7 +6,6 @@
 //
 
 import Apollo
-import Firebase
 import Flow
 import Foundation
 import hCore
