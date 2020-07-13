@@ -46,12 +46,24 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .firebase:
             return [
+                .framework(path: "../../Carthage/Build/iOS/FirebaseCrashlytics.framework"),
                 .framework(path: "../../Carthage/Build/iOS/GoogleUtilities.framework"),
+                .framework(path: "../../Carthage/Build/iOS/GoogleAppMeasurement.framework"),
+                .framework(path: "../../Carthage/Build/iOS/Protobuf.framework"),
+                .framework(path: "../../Carthage/Build/iOS/BoringSSL-GRPC.framework"),
+                .framework(path: "../../Carthage/Build/iOS/leveldb-library.framework"),
+                .framework(path: "../../Carthage/Build/iOS/gRPC-Core.framework"),
+                .framework(path: "../../Carthage/Build/iOS/gRPC-C++.framework"),
                 .framework(path: "../../Carthage/Build/iOS/PromisesObjC.framework"),
+                .framework(path: "../../Carthage/Build/iOS/FirebaseInstallations.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseMessaging.framework"),
+                .framework(path: "../../Carthage/Build/iOS/FirebaseFirestore.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseInstanceID.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseDynamicLinks.framework"),
+                .framework(path: "../../Carthage/Build/iOS/FirebaseAnalytics.framework"),
                 .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),
+                .framework(path: "../../Carthage/Build/iOS/abseil.framework"),
+                .framework(path: "../../Carthage/Build/iOS/nanopb.framework"),
             ]
         case .fb:
             return [
