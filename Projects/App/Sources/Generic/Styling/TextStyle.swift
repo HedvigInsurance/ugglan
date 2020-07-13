@@ -26,6 +26,7 @@ extension TextStyle {
         style.font = HedvigFonts.favoritStdBook!.withSize(15)
         style.color = .primaryText
         style.lineSpacing = 5
+        style.lineBreakMode = .byWordWrapping
     }
 
     static let chatBodyUnderlined = TextStyle.chatBody.restyled { (_: inout TextStyle) in

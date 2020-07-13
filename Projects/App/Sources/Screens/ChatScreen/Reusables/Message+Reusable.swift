@@ -12,6 +12,7 @@ import Foundation
 import hCore
 import hCoreUI
 import Kingfisher
+import SafariServices
 import UIKit
 
 private let fiveMinutes: TimeInterval = 60 * 5
@@ -400,15 +401,22 @@ extension Message: Reusable {
 
                     let styledText = StyledText(text: text, style: textStyle)
 
-                    let label = MultilineLabel(styledText: styledText)
-                    bag += contentContainer.addArranged(label) { _ in
-                        let linkTapGestureRecognizer = UITapGestureRecognizer()
-                        bag += contentContainer.install(linkTapGestureRecognizer)
+                    let label = UILabel(styledText: styledText)
+                    label.numberOfLines = 0
+                    label.isUserInteractionEnabled = false
 
-                        bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
-                            guard let url = url else { return }
-                            message.onTapCallbacker.callAll(with: url)
-                        }
+                    contentContainer.addArrangedSubview(label)
+
+                    bag += {
+                        label.removeFromSuperview()
+                    }
+
+                    let linkTapGestureRecognizer = UITapGestureRecognizer()
+                    bag += contentContainer.install(linkTapGestureRecognizer)
+
+                    bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+                        guard let url = url else { return }
+                        label.viewController?.present(SFSafariViewController(url: url), animated: true)
                     }
                 case let .video(url):
                     let imageViewContainer = UIView()
@@ -458,18 +466,21 @@ extension Message: Reusable {
 
                     bag += videoTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
                         guard let url = url else { return }
-                        message.onTapCallbacker.callAll(with: url)
+                        imageView.viewController?.present(VideoPlayer(player: AVPlayer(url: url)), style: .modal, options: [])
                     }
 
                     bag += {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let label = MultilineLabel(
-                        value: message.body,
-                        style: TextStyle.chatBody.colored(messageTextColor)
-                    )
-                    bag += contentContainer.addArranged(label)
+                    let label = UILabel(value: message.body, style: TextStyle.chatBody.colored(messageTextColor))
+                    label.numberOfLines = 0
+
+                    contentContainer.addArrangedSubview(label)
+
+                    bag += {
+                        label.removeFromSuperview()
+                    }
                 }
 
                 if !message.type.isRichType {
