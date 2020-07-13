@@ -20,6 +20,7 @@ import Mixpanel
 import Presentation
 import UIKit
 import UserNotifications
+import Sentry
 
 let log = Logger.self
 
@@ -227,6 +228,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        SentrySDK.start { options in
+            options.dsn = "https://09505787f04f4c6ea7e560de075ba552@o123400.ingest.sentry.io/5208267"
+            #if DEBUG
+            options.debug = true
+            #endif
+            options.environment = ApplicationState.getTargetEnvironment().displayName
+            options.enableAutoSessionTracking = true
+        }
+        
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
         }
@@ -268,6 +278,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_PRESENT", properties: [
                     "presentableId": presentableId.value
                 ])
+                
+                SentrySDK.configureScope { scope in
+                    scope.setExtra(value: presentableId.value, key: "presentableId")
+                }
+                
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
             case let .didCancel(presentableId, context):
                 Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_CANCEL", properties: [
