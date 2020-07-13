@@ -25,8 +25,6 @@ extension ContractDocuments: Presentable {
         let form = FormView()
 
         let section = form.appendSection()
-        section.dynamicStyle = .sectionPlain
-
         let certificateRow = ButtonRow(text: L10n.myDocumentsInsuranceCertificate, style: .normalButton)
         bag += section.append(certificateRow)
 
