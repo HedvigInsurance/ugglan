@@ -26,7 +26,7 @@ extension InvitationScreen: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        var imageTextAction = ImageTextAction<Void>(
+        let imageTextAction = ImageTextAction<Void>(
             image: ImageWithOptions(image: Asset.invitationIllustration.image),
             title: L10n.ReferralsIntroScreen.title,
             body: "",
@@ -45,9 +45,10 @@ extension InvitationScreen: Presentable {
             showLogo: false
         )
         
-        bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }.onValue { amount in
-            imageTextAction.title = L10n.ReferralsIntroScreen.body(amount.formattedAmount)
-        }
+        bag += potentialDiscountAmountSignal.atOnce()
+            .compactMap { $0 }
+            .map { L10n.ReferralsIntroScreen.body($0.formattedAmount) }
+            .bindTo(imageTextAction.$body)
 
         return (viewController, Future { completion in
             bag += viewController.install(imageTextAction).onValue {
