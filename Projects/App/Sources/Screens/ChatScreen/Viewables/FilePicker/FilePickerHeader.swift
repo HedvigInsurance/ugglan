@@ -80,7 +80,9 @@ extension FilePickerHeader: Viewable {
                 ImagePicker(
                     sourceType: .camera,
                     mediaTypes: [.video, .photo]
-                )
+                ),
+                style: .modal,
+                options: []
             ).valueSignal.onValueDisposePrevious(processPickResult)
         }
 
@@ -90,7 +92,9 @@ extension FilePickerHeader: Viewable {
                 ImagePicker(
                     sourceType: .photoLibrary,
                     mediaTypes: [.video, .photo]
-                )
+                ),
+                style: .modal,
+                options: []
             ).valueSignal.onValueDisposePrevious(processPickResult)
         }
 
