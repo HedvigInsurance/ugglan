@@ -10,7 +10,6 @@ import Adyen
 import Apollo
 import Disk
 import Firebase
-import FirebaseAnalytics
 import FirebaseMessaging
 import Flow
 import Form
@@ -113,13 +112,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-
-        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(url) { link, _ in
-            guard let dynamicLinkUrl = link?.url else { return }
-            self.handleDeepLink(dynamicLinkUrl)
-        }
-
-        return handled
+        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
+        guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
+        guard let dynamicLinkUrl = URL(string: dynamicLink.value) else { return false }
+        
+        return self.handleDeepLink(dynamicLinkUrl)
     }
 
     func registerForPushNotifications() -> Future<Void> {
@@ -149,10 +146,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func handleDeepLink(_ dynamicLinkUrl: URL) {
+    func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
-            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
-            guard let rootViewController = window.rootViewController else { return }
+            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
+            guard let rootViewController = window.rootViewController else { return false }
+            
+            Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
 
             bag += rootViewController.present(
                 PaymentSetup(setupType: .initial),
@@ -160,14 +159,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 options: [.defaults]
             )
 
-            return
+            return true
         }
 
-        guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return }
-        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return }
+        guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return false }
+        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
 
-        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return }
-        guard let rootViewController = window.rootViewController else { return }
+        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return false }
+        guard let rootViewController = window.rootViewController else { return false }
         let innerBag = bag.innerBag()
 
         func presentReferralsAccept() {
@@ -198,6 +197,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 presentReferralsAccept()
             })
         }
+        
+        Mixpanel.mainInstance().track(event: "DEEP_LINK_REFERRALS")
+        
+        return true
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
@@ -207,11 +210,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return adyenRedirect
         }
 
-        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
-            guard let dynamicLinkUrl = dynamicLink.url else { return false }
-            handleDeepLink(dynamicLinkUrl)
-            return true
-        }
         return false
     }
 
