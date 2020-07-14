@@ -305,25 +305,28 @@ extension Message: Reusable {
                             .preloadAllAnimationData,
                             .processor(processor),
                             .backgroundDecode,
-                            .transition(.fade(1)),
+                            .transition(.fade(1))
                         ]
-                    ) { result in
-                        switch result {
-                        case let .success(imageResult):
-                            let width = imageResult.image.size.width
-                            let height = imageResult.image.size.height
-
-                            if width > height {
-                                imageViewContainer.snp.makeConstraints { make in
-                                    make.width.equalTo(300)
-                                }
-                            } else {
-                                imageViewContainer.snp.makeConstraints { make in
-                                    make.width.equalTo(150)
-                                }
+                    )
+                    
+                    bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }.onValue { image in
+                        let width = image.size.width
+                        let height = image.size.height
+                        
+                        if width > height {
+                            imageViewContainer.snp.remakeConstraints { make in
+                                make.height.equalTo(200)
+                                make.width.equalTo(300)
                             }
-                        case .failure:
-                            break
+                        } else {
+                            imageViewContainer.snp.remakeConstraints { make in
+                                make.height.equalTo(200)
+                                make.width.equalTo(150)
+                            }
+                        }
+                        
+                        UIView.performWithoutAnimation {
+                            imageViewContainer.layoutIfNeeded()
                         }
                     }
 
@@ -332,10 +335,6 @@ extension Message: Reusable {
                     imageView.snp.makeConstraints { make in
                         make.height.equalToSuperview()
                         make.width.equalToSuperview()
-                    }
-
-                    imageViewContainer.snp.makeConstraints { make in
-                        make.height.equalTo(200)
                     }
 
                     contentContainer.addArrangedSubview(imageViewContainer)
@@ -357,24 +356,26 @@ extension Message: Reusable {
                     imageView.kf.setImage(
                         with: url,
                         options: []
-                    ) { result in
-                        switch result {
-                        case let .success(imageResult):
-                            let width = imageResult.image.size.width
-                            let height = imageResult.image.size.height
-
-                            if width > height {
-                                imageViewContainer.snp.makeConstraints { make in
-                                    make.width.equalTo(300)
-                                }
-                            } else {
-                                imageViewContainer.snp.makeConstraints { make in
-                                    make.width.equalTo(150)
-                                }
+                    )
+                    
+                    bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }.onValue { image in
+                        let width = image.size.width
+                        let height = image.size.height
+                        
+                        if width > height {
+                            imageViewContainer.snp.remakeConstraints { make in
+                                make.height.equalTo(200)
+                                make.width.equalTo(300)
                             }
-
-                        case .failure:
-                            break
+                        } else {
+                            imageViewContainer.snp.remakeConstraints { make in
+                                make.height.equalTo(200)
+                                make.width.equalTo(150)
+                            }
+                        }
+                        
+                        UIView.performWithoutAnimation {
+                            imageViewContainer.layoutIfNeeded()
                         }
                     }
 
@@ -434,7 +435,7 @@ extension Message: Reusable {
                     )
 
                     if let url = url {
-                        let asset = AVURLAsset(url: url, options: nil)
+                        let asset = AVURLAsset(url: url)
                         imageView.kf.indicatorType = .custom(indicator: ImageActivityIndicator())
                         imageView.kf.setImage(
                             with: asset,
