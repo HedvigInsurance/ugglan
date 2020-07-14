@@ -473,10 +473,34 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let label = UILabel(value: message.body, style: TextStyle.chatBody.colored(messageTextColor))
+                    let textStyle = TextStyle.chatBody.colored(messageTextColor)
+                    let attributedString = NSMutableAttributedString(text: message.body, style: textStyle)
+                    
+                    message.body.links.forEach { linkRange in
+                        attributedString.addAttributes([
+                            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
+                            NSAttributedString.Key.underlineColor: messageTextColor,
+                        ], range: linkRange.range)
+                    }
+                    
+                    let label = UILabel()
+                    label.attributedText = attributedString
                     label.numberOfLines = 0
 
                     contentContainer.addArrangedSubview(label)
+                    
+                    let linkTapGestureRecognizer = UITapGestureRecognizer()
+                    bag += contentContainer.install(linkTapGestureRecognizer)
+
+                    bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+                        let tappedLink = message.body.links.first { result -> Bool in
+                            linkTapGestureRecognizer.didTapRange(in: label, range: result.range)
+                        }
+                        
+                        if let url = tappedLink?.url {
+                            label.viewController?.present(SFSafariViewController(url: url), animated: true)
+                        }
+                    }
 
                     bag += {
                         label.removeFromSuperview()

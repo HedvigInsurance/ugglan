@@ -371,7 +371,7 @@ struct Message: Equatable, Hashable {
             placeholder = text.placeholder
             keyboardType = UIKeyboardType.from(text.keyboard)
             textContentType = UITextContentType.from(text.textContentType)
-            if text.text.isValidURL {
+            if text.text.isGIFURL {
                 type = .gif(url: URL(string: text.text))
             } else {
                 type = .text
