@@ -19,7 +19,7 @@ extension AVURLAsset: ImageDataProvider {
     }
 
     public func data(handler: @escaping (Result<Data, Error>) -> Void) {
-        thumbnailImage.onValue(on: .main) { image in
+        thumbnailImage.onValue(on: .background) { image in
             guard let data = image.pngData() else {
                 handler(.failure(ImageDataProviderError.failedToRetrieveData))
                 return
