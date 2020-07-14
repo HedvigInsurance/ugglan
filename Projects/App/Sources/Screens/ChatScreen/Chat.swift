@@ -24,7 +24,7 @@ struct Chat {
     }
 }
 
-typealias ChatListContent = Either<Message, Either<TypingIndicator, SingleSelectList>>
+typealias ChatListContent = Either<Message, TypingIndicator>
 
 enum NavigationEvent {
     case dashboard, offer, login
@@ -107,7 +107,7 @@ extension Chat: Presentable {
                 return message.totalHeight
             }
 
-            if let typingIndicator = item.right?.left {
+            if let typingIndicator = item.right {
                 return typingIndicator.totalHeight
             }
 

@@ -32,9 +32,9 @@ class ChatState {
 
         if let paragraph = message.body.asMessageBodyParagraph {
             if !filteredListSignal.value.contains(where: { content -> Bool in
-                content.right?.left != nil
+                content.right != nil
             }) {
-                result.append(.make(.make(TypingIndicator(listSignal: filteredListSignal))))
+                result.append(.make(TypingIndicator(listSignal: filteredListSignal)))
             }
 
             if paragraph.text != "" {

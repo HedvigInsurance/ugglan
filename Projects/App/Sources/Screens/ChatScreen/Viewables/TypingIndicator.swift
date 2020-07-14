@@ -27,7 +27,7 @@ struct TypingIndicator: Hashable, Equatable {
     var previous: Message? {
         let list = listSignal.value
 
-        guard let myIndex = list.firstIndex(of: .right(.left(self))) else {
+        guard let myIndex = list.firstIndex(of: .right(self)) else {
             return nil
         }
         let previousIndex = myIndex + 1
