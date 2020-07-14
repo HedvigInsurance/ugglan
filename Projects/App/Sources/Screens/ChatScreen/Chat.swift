@@ -150,6 +150,7 @@ extension Chat: Presentable {
                 headerView.frame = CGRect(x: 0, y: 0, width: 0, height: keyboardInfo.height + 20)
                 tableKit.view.tableHeaderView = headerView
                 headerView.layoutIfNeeded()
+                tableKit.view.layoutIfNeeded()
             })
 
         bag += chatState.tableSignal.atOnce().onValue(on: .main) { table in
