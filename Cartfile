@@ -15,7 +15,7 @@ github "https://github.com/onevcat/Kingfisher" == 5.13.4
 github "adyen/adyen-ios" "3.3.0"
 github "mixpanel/mixpanel-swift"
 github "https://github.com/HedvigInsurance/Runtime" == 2.1.8
-github "getsentry/sentry-cocoa" "5.1.10-beta.0"
+github "getsentry/sentry-cocoa" "5.1.9"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"
