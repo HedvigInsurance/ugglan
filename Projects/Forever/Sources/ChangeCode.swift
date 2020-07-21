@@ -56,8 +56,18 @@ extension ChangeCode: Presentable {
             style.autocapitalization = .none
         })
                 
-        let textField = UITextField(value: "", placeholder: L10n.ReferralsChangeCodeSheet.textFieldPlaceholder, style: normalFieldStyle)
+        let textField = UITextField(
+            value: "",
+            placeholder: L10n.ReferralsChangeCodeSheet.textFieldPlaceholder,
+            style: normalFieldStyle
+        )
         textFieldRow.append(textField)
+        
+        bag += service.dataSignal
+            .atOnce()
+            .compactMap { $0?.discountCode }
+            .take(first: 1)
+            .bindTo(textField, \.value)
         
         textField.becomeFirstResponder()
         
