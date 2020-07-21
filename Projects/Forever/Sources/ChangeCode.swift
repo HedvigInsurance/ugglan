@@ -182,7 +182,7 @@ extension ChangeCode: Presentable {
                 }
             }
 
-            return bag
+            return DelayedDisposer(bag, delay: 2)
         })
     }
 }
