@@ -74,17 +74,17 @@ extension DiscountCodeSection: Viewable {
         }
         
         bag += section.append(codeRow).trackedSignal.onValueDisposePrevious { _ in
-            let bag = DisposeBag()
+            let innerBag = DisposeBag()
             
             section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
-                bag += self.service.dataSignal
+                innerBag += self.service.dataSignal
                     .atOnce()
                     .compactMap { $0?.discountCode }
                     .bindTo(UIPasteboard.general, \.string)
                 bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
             }
             
-            return bag
+            return innerBag
         }
 
         return (section, bag)

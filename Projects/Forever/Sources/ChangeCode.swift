@@ -53,10 +53,6 @@ extension ChangeCode: Presentable {
         let normalFieldStyle = FieldStyle.default.restyled({ (style: inout FieldStyle) in
             style.text.alignment = .center
         })
-        
-        let errorFieldStyle = normalFieldStyle.restyled { (style: inout FieldStyle) in
-            style.text.color = .brand(.regularCaution)
-        }
                 
         let textField = UITextField(value: "", placeholder: L10n.ReferralsChangeCodeSheet.textFieldPlaceholder, style: normalFieldStyle)
         textFieldRow.append(textField)
@@ -64,16 +60,8 @@ extension ChangeCode: Presentable {
         textField.becomeFirstResponder()
         
         let textFieldErrorSignal: ReadWriteSignal<ForeverChangeCodeError?> = ReadWriteSignal(nil).distinct()
-        
-        bag += textFieldErrorSignal.atOnce().map { error in
-            if error != nil {
-                return errorFieldStyle
-            }
-            
-            return normalFieldStyle
-        }.bindTo(animate: .easeOut(duration: 0.25), textField, \.style)
                         
-        bag += textField.animated(style: .easeOut(duration: 0.25)) { _ in
+        bag += textField.onValue { _ in
             textFieldErrorSignal.value = nil
         }
         
@@ -96,18 +84,22 @@ extension ChangeCode: Presentable {
                 errorMessageLabelView.animationSafeIsHidden = error == nil
             }
             
-            bag += textFieldErrorSignal.atOnce().animated(style: .easeOut(duration: 0.25)) { error in
+            bag += textFieldErrorSignal
+                .atOnce()
+                .animated(style: .easeOut(duration: 0.15)) { error in
                 if error == nil {
                     alphaAnimation(error)
                 } else {
                     isHiddenAnimation(error)
                 }
-            }.animated(style: .easeOut(duration: 0.25)) { error in
+            }.animated(style: .easeOut(duration: 0.15)) { error in
                 if error == nil {
                     isHiddenAnimation(error)
                 } else {
                     alphaAnimation(error)
                 }
+            }.onValue { _ in
+                viewController.navigationItem.setRightBarButton(saveBarButtonItem, animated: true)
             }
         }
         
@@ -116,9 +108,8 @@ extension ChangeCode: Presentable {
             activityIndicator.startAnimating()
             viewController.navigationItem.setRightBarButton(UIBarButtonItem(customView: activityIndicator), animated: true)
             
-            return service.changeDiscountCode(textField.value).atValue { result in
+            return service.changeDiscountCode(textField.value).delay(by: 0.25).atValue { result in
                 if let error = result.right {
-                    viewController.navigationItem.setRightBarButton(saveBarButtonItem, animated: true)
                     textFieldErrorSignal.value = error
                 }
             }
