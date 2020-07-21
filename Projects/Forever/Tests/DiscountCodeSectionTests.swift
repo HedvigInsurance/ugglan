@@ -14,6 +14,7 @@ import hCoreUI
 import SnapshotTesting
 import Testing
 import XCTest
+import ForeverTesting
 
 final class DiscountCodeSectionTests: XCTestCase {
     override func setUp() {
@@ -23,9 +24,18 @@ final class DiscountCodeSectionTests: XCTestCase {
     }
 
     func testScreenshot() {
+        
+        let data = ForeverData(
+            grossAmount: .sek(0),
+            netAmount: .sek(0),
+            potentialDiscountAmount: .sek(10),
+            discountCode: "MOCK",
+            invitations: []
+        )
+        let service = MockForeverService(data: data)
+        
         let discountCodeSection = DiscountCodeSection(
-            discountCodeSignal: .init("MOCK"),
-            potentialDiscountAmountSignal: .init(.sek(10))
+            service: service
         )
 
         materializeViewable(discountCodeSection) { view in

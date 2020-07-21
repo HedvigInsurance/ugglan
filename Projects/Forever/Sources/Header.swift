@@ -14,7 +14,7 @@ import UIKit
 import Form
 
 struct Header {
-    var service: ForeverService
+    let service: ForeverService
 }
 
 extension Header: Viewable {
@@ -50,9 +50,7 @@ extension Header: Viewable {
         bag += stackView.addArranged(Spacing(height: 20))
 
         let discountCodeSection = DiscountCodeSection(
-            service: service,
-            discountCodeSignal: service.dataSignal.map { $0?.discountCode },
-            potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }
+            service: service
         )
         bag += stackView.addArranged(discountCodeSection)
 

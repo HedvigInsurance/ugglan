@@ -159,6 +159,10 @@ extension Project {
             externalDependency.targetDependencies()
         }.flatMap { $0 })
 
+        if targets.contains(.testing) {
+            testsDependencies.append(.target(name: "\(name)Testing"))
+        }
+
         // Target dependencies
         var targetDependencies: [TargetDependency] = dependencies.map { .project(target: $0, path: .relativeToRoot("Projects/\($0)")) }
         targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
