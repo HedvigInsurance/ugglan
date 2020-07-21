@@ -160,7 +160,7 @@ public extension DefaultStyling {
             text: .brand(.body(color: .primary)),
             placeholder: .brand(.body(color: .secondary)),
             disabled: .brand(.body(color: .tertiary)),
-            cursorColor: .black
+            cursorColor: .brand(.primaryText())
         ),
         detailText: TextStyle.brand(.largeTitle(color: .primary)).centerAligned,
         titleSubtitle: .init(title: .brand(.headline(color: .primary)), subtitle: .brand(.subHeadline(color: .secondary)), spacing: 0, insets: .zero),
@@ -213,10 +213,10 @@ extension DynamicSectionStyle {
             footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
         )
     }
-    
+
     public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
         let backgroundColor: UIColor
-        
+
         if #available(iOS 13.0, *) {
             backgroundColor = trait.userInterfaceLevel == .elevated ? UIColor.brand(.primaryBackground()) : UIColor.brand(.secondaryBackground())
         } else {
@@ -241,9 +241,9 @@ extension DynamicSectionStyle {
             footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
         )
     }
-    
-    public static let brandGroupedNoBackground = DynamicSectionStyle { trait -> SectionStyle in
-        return Style(
+
+    public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
+        Style(
             rowInsets: .init(inset: 15),
             itemSpacing: 10,
             minRowHeight: 0,
