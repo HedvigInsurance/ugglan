@@ -12,6 +12,10 @@ import hCore
 import Flow
 
 public class ForeverServiceGraphQL: ForeverService {
+    public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
+        fatalError("not implemented")
+    }
+    
     public var dataSignal: ReadSignal<ForeverData?> {
         client.watch(query: ForeverQuery()).map { result -> ForeverData in
             let grossAmount = result.data?.referralInformation.costReducedIndefiniteDiscount?.monthlyGross

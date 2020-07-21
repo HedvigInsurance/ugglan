@@ -52,6 +52,7 @@ public extension UIColor {
         })
         static let darkGrayBorder = BrandColorBase.darkGray.withAlphaComponent(0.3)
         static let grayBorder = BrandColorBase.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
+        static let link = UIColor(red: 0.53, green: 0.37, blue: 0.77, alpha: 1.00)
     }
 
     enum BrandColor {
@@ -62,6 +63,7 @@ public extension UIColor {
         case secondaryText
         case tertiaryText
         case primaryTintColor
+        case link
         case primaryButtonBackgroundColor
         case primaryButtonTextColor
         case primaryShadowColor
@@ -124,6 +126,8 @@ public extension UIColor {
                 return BrandColorBase.coral500
             case .primaryBorderColor:
                 return BrandColorBase.primaryBorder
+            case .link:
+                return BrandColorBase.link
             }
         }
     }

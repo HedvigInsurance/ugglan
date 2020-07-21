@@ -67,7 +67,12 @@ public extension TextStyle {
                 return UIColor(red: 0.53, green: 0.369, blue: 0.771, alpha: 1)
 
             case .destructive:
-                return UIColor(red: 0.867, green: 0.153, blue: 0.153, alpha: 1)
+                return UIColor(
+                    red: 255.0 / 255.0,
+                    green: 138.0 / 255.0,
+                    blue: 128.0 / 255.0,
+                    alpha: 1.0
+                )
             }
         }
 
@@ -88,7 +93,12 @@ public extension TextStyle {
                 return UIColor(red: 0.745, green: 0.608, blue: 0.953, alpha: 1)
 
             case .destructive:
-                return UIColor(red: 0.886, green: 0.275, blue: 0.275, alpha: 1)
+                return UIColor(
+                    red: 255.0 / 255.0,
+                    green: 138.0 / 255.0,
+                    blue: 128.0 / 255.0,
+                    alpha: 1.0
+                )
             }
         }
 

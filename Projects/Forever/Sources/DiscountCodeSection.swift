@@ -14,6 +14,7 @@ import hCoreUI
 import UIKit
 
 struct DiscountCodeSection {
+    var service: ForeverService
     let discountCodeSignal: ReadSignal<String?>
     let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
 }
@@ -22,7 +23,26 @@ extension DiscountCodeSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(
-            headerView: UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default),
+            headerView: {
+                let stackView = UIStackView()
+                stackView.axis = .horizontal
+
+                let label = UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default)
+                stackView.addArrangedSubview(label)
+                
+                let changeButton = Button(
+                    title: L10n.ReferralsEmpty.Edit.Code.button,
+                    type: .outline(borderColor: .clear, textColor: .brand(.link))
+                )
+                                                
+                bag += changeButton.onTapSignal.onValue { _ in
+                    stackView.viewController?.present(ChangeCode(service: self.service), style: .modal)
+                }
+                
+                bag += stackView.addArranged(changeButton.wrappedIn(UIStackView()))
+                
+                return stackView
+            }(),
             footerView: {
                 let stackView = UIStackView()
 

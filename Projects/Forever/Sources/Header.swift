@@ -14,10 +14,7 @@ import UIKit
 import Form
 
 struct Header {
-    let grossAmountSignal: ReadSignal<MonetaryAmount?>
-    let netAmountSignal: ReadSignal<MonetaryAmount?>
-    let discountCodeSignal: ReadSignal<String?>
-    let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
+    var service: ForeverService
 }
 
 extension Header: Viewable {
@@ -33,7 +30,7 @@ extension Header: Viewable {
         piePrice.alpha = 0
         stackView.addArrangedSubview(piePrice)
         
-        bag += grossAmountSignal.compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { amount in
+        bag += service.dataSignal.compactMap { $0?.grossAmount }.animated(style: SpringAnimationStyle.lightBounce()) { amount in
             piePrice.value = amount.formattedAmount
             piePrice.alpha = 1
         }
@@ -41,27 +38,28 @@ extension Header: Viewable {
         let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
         bag += stackView.addArranged(pieChart)
 
-        let emptyStateHeader = EmptyStateHeader(potentialDiscountAmountSignal: potentialDiscountAmountSignal)
+        let emptyStateHeader = EmptyStateHeader(potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount })
         emptyStateHeader.isHiddenSignal.value = true
         
         bag += stackView.addArranged(emptyStateHeader)
 
-        let priceSection = PriceSection(grossAmountSignal: grossAmountSignal, netAmountSignal: netAmountSignal)
+        let priceSection = PriceSection(grossAmountSignal: service.dataSignal.map { $0?.grossAmount }, netAmountSignal: service.dataSignal.map { $0?.netAmount })
         priceSection.isHiddenSignal.value = true
         bag += stackView.addArranged(priceSection)
         
         bag += stackView.addArranged(Spacing(height: 20))
 
         let discountCodeSection = DiscountCodeSection(
-            discountCodeSignal: discountCodeSignal,
-            potentialDiscountAmountSignal: potentialDiscountAmountSignal
+            service: service,
+            discountCodeSignal: service.dataSignal.map { $0?.discountCode },
+            potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }
         )
         bag += stackView.addArranged(discountCodeSection)
 
         bag += combineLatest(
-            grossAmountSignal.atOnce().compactMap { $0 },
-            netAmountSignal.atOnce().compactMap { $0 },
-            potentialDiscountAmountSignal.atOnce().compactMap { $0 }
+            service.dataSignal.map { $0?.grossAmount }.atOnce().compactMap { $0 },
+            service.dataSignal.map { $0?.netAmount }.atOnce().compactMap { $0 },
+            service.dataSignal.map { $0?.potentialDiscountAmount }.atOnce().compactMap { $0 }
         ).onValue { grossAmount, netAmount, potentialDiscountAmount in
             bag += Signal(after: 0.8).onValue { _ in
                 pieChart.stateSignal.value = .init(

@@ -54,13 +54,8 @@ extension Forever: Presentable {
         }
         
         tableKit.view.refreshControl = refreshControl
-
-        bag += tableKit.view.addTableHeaderView(Header(
-            grossAmountSignal: service.dataSignal.map { $0?.grossAmount },
-            netAmountSignal: service.dataSignal.map { $0?.netAmount },
-            discountCodeSignal: service.dataSignal.map { $0?.discountCode },
-            potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }
-        ), animated: false)
+        
+        bag += tableKit.view.addTableHeaderView(Header(service: service), animated: false)
         
         let containerView = UIView()
         viewController.view = containerView
