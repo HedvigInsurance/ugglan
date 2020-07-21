@@ -116,9 +116,11 @@ extension ChangeCode: Presentable {
             activityIndicator.startAnimating()
             viewController.navigationItem.setRightBarButton(UIBarButtonItem(customView: activityIndicator), animated: true)
             
-            return service.changeDiscountCode(textField.value).atValue { _ in
-                viewController.navigationItem.setRightBarButton(saveBarButtonItem, animated: true)
-                textFieldErrorSignal.value = .nonUnique
+            return service.changeDiscountCode(textField.value).atValue { result in
+                if let error = result.right {
+                    viewController.navigationItem.setRightBarButton(saveBarButtonItem, animated: true)
+                    textFieldErrorSignal.value = error
+                }
             }
             .filter(predicate: { $0.left != nil })
             .toVoid()
