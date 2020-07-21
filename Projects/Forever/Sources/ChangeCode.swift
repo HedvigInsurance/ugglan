@@ -52,6 +52,8 @@ extension ChangeCode: Presentable {
         
         let normalFieldStyle = FieldStyle.default.restyled({ (style: inout FieldStyle) in
             style.text.alignment = .center
+            style.autocorrection = .no
+            style.autocapitalization = .none
         })
                 
         let textField = UITextField(value: "", placeholder: L10n.ReferralsChangeCodeSheet.textFieldPlaceholder, style: normalFieldStyle)
