@@ -25,6 +25,6 @@
 		<string>iCloud.com.hedvig.test.app</string>
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
-	<string>com.hedvig.test.app</string>
+	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 </dict>
 </plist>
