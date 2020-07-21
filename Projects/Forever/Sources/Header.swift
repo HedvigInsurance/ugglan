@@ -38,12 +38,12 @@ extension Header: Viewable {
         let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
         bag += stackView.addArranged(pieChart)
 
-        let emptyStateHeader = EmptyStateHeader(potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount })
+        let emptyStateHeader = EmptyStateHeader(potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }.atOnce())
         emptyStateHeader.isHiddenSignal.value = true
         
         bag += stackView.addArranged(emptyStateHeader)
 
-        let priceSection = PriceSection(grossAmountSignal: service.dataSignal.map { $0?.grossAmount }, netAmountSignal: service.dataSignal.map { $0?.netAmount })
+        let priceSection = PriceSection(grossAmountSignal: service.dataSignal.map { $0?.grossAmount }.atOnce(), netAmountSignal: service.dataSignal.map { $0?.netAmount }.atOnce())
         priceSection.isHiddenSignal.value = true
         bag += stackView.addArranged(priceSection)
         
