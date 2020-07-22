@@ -239,6 +239,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
         }
+        
+        AskForRating().registerSession()
 
         Button.trackingHandler = { button in
             if let localizationKey = button.title.value.derivedFromL10n?.key {
