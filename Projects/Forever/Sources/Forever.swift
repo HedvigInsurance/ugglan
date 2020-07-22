@@ -54,13 +54,8 @@ extension Forever: Presentable {
         }
         
         tableKit.view.refreshControl = refreshControl
-
-        bag += tableKit.view.addTableHeaderView(Header(
-            grossAmountSignal: service.dataSignal.map { $0?.grossAmount },
-            netAmountSignal: service.dataSignal.map { $0?.netAmount },
-            discountCodeSignal: service.dataSignal.map { $0?.discountCode },
-            potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }
-        ), animated: false)
+        
+        bag += tableKit.view.addTableHeaderView(Header(service: service), animated: false)
         
         let containerView = UIView()
         viewController.view = containerView
@@ -113,8 +108,9 @@ extension Forever: Presentable {
         }.withLatestFrom(self.service.dataSignal.atOnce().compactMap { $0?.discountCode }).onValue { buttonView, discountCode in
             shareButton.loadableButton.startLoading()
             viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
+                let encodedDiscountCode = discountCode.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                 let activity = ActivityView(
-                    activityItems: [URL(string: L10n.referralsLink(discountCode)) ?? ""],
+                    activityItems: [URL(string: L10n.referralsLink(encodedDiscountCode)) ?? ""],
                     applicationActivities: nil,
                     sourceView: buttonView,
                     sourceRect: nil

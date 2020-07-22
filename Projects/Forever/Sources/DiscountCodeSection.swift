@@ -14,15 +14,33 @@ import hCoreUI
 import UIKit
 
 struct DiscountCodeSection {
-    let discountCodeSignal: ReadSignal<String?>
-    let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
+    var service: ForeverService
 }
 
 extension DiscountCodeSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(
-            headerView: UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default),
+            headerView: {
+                let stackView = UIStackView()
+                stackView.axis = .horizontal
+
+                let label = UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default)
+                stackView.addArrangedSubview(label)
+                
+                let changeButton = Button(
+                    title: L10n.ReferralsEmpty.Edit.Code.button,
+                    type: .outline(borderColor: .clear, textColor: .brand(.link))
+                )
+                                                
+                bag += changeButton.onTapSignal.onValue { _ in
+                    stackView.viewController?.present(ChangeCode(service: self.service), style: .modal)
+                }
+                
+                bag += stackView.addArranged(changeButton.wrappedIn(UIStackView()))
+                
+                return stackView
+            }(),
             footerView: {
                 let stackView = UIStackView()
 
@@ -31,7 +49,7 @@ extension DiscountCodeSection: Viewable {
                     style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center)
                 )
                 
-                bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }.onValue { monetaryAmount in
+                bag += self.service.dataSignal.atOnce().compactMap { $0?.potentialDiscountAmount }.onValue { monetaryAmount in
                     label.valueSignal.value = L10n.ReferralsEmpty.Code.footer(monetaryAmount.formattedAmount)
                 }
 
@@ -50,16 +68,23 @@ extension DiscountCodeSection: Viewable {
         )
         codeRow.append(codeLabel)
 
-        bag += discountCodeSignal.atOnce().compactMap { $0 }.animated(style: SpringAnimationStyle.lightBounce()) { code in
+        bag += service.dataSignal.atOnce().compactMap { $0?.discountCode }.animated(style: SpringAnimationStyle.lightBounce()) { code in
             section.animationSafeIsHidden = false
             codeLabel.value = code
         }
         
-        bag += section.append(codeRow).trackedSignal.onValue { _ in
+        bag += section.append(codeRow).trackedSignal.onValueDisposePrevious { _ in
+            let innerBag = DisposeBag()
+            
             section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
-                UIPasteboard.general.string = self.discountCodeSignal.value ?? ""
+                innerBag += self.service.dataSignal
+                    .atOnce()
+                    .compactMap { $0?.discountCode }
+                    .bindTo(UIPasteboard.general, \.string)
                 bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
             }
+            
+            return innerBag
         }
 
         return (section, bag)

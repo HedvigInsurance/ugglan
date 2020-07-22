@@ -160,9 +160,9 @@ public extension DefaultStyling {
             text: .brand(.body(color: .primary)),
             placeholder: .brand(.body(color: .secondary)),
             disabled: .brand(.body(color: .tertiary)),
-            cursorColor: .black
+            cursorColor: .brand(.primaryText())
         ),
-        detailText: .brand(.callout(color: .primary)),
+        detailText: TextStyle.brand(.largeTitle(color: .primary)).centerAligned,
         titleSubtitle: .init(title: .brand(.headline(color: .primary)), subtitle: .brand(.subHeadline(color: .secondary)), spacing: 0, insets: .zero),
         button: .default,
         barButton: .init(text: .brand(.headline(color: .link))),
@@ -213,9 +213,37 @@ extension DynamicSectionStyle {
             footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
         )
     }
-    
-    public static let brandGroupedNoBackground = DynamicSectionStyle { trait -> SectionStyle in
+
+    public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
+        let backgroundColor: UIColor
+
+        if #available(iOS 13.0, *) {
+            backgroundColor = trait.userInterfaceLevel == .elevated ? UIColor.brand(.primaryBackground()) : UIColor.brand(.secondaryBackground())
+        } else {
+            backgroundColor = UIColor.brand(.secondaryBackground())
+        }
+
         return Style(
+            rowInsets: .init(inset: 15),
+            itemSpacing: 10,
+            minRowHeight: 0,
+            background: .init(style:
+                .init(background: .init(color: backgroundColor, border: .init(width: 1, color: UIColor.brand(.regularCaution), cornerRadius: 8, borderEdges: .all)),
+                      topSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
+                      bottomSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
+            ),
+            selectedBackground: .init(style:
+                .init(background: .init(color: UIColor.brand(.primaryButtonBackgroundColor).withAlphaComponent(0.2), border: .init(width: 1, color: UIColor.brand(.regularCaution), cornerRadius: 8, borderEdges: .all)),
+                      topSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
+                      bottomSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
+            ),
+            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
+            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
+        )
+    }
+
+    public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
+        Style(
             rowInsets: .init(inset: 15),
             itemSpacing: 10,
             minRowHeight: 0,

@@ -3,19 +3,35 @@ import Forever
 import Foundation
 
 public struct MockForeverService: ForeverService {
-    let data: ForeverData
+    public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
+        Signal(after: 0).atValue {
+            var data = self._dataSignal.value
+            data?.updateDiscountCode(value)
+            self._dataSignal.value = data
+        }.map { .left(()) }
+    }
+    
+    var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
     public var dataSignal: ReadSignal<ForeverData?> {
-        ReadSignal(data)
+        _dataSignal.readOnly()
     }
 
     public func refetch() {}
 
     public init(data: ForeverData) {
-        self.data = data
+        self._dataSignal.value = data
     }
 }
 
 public class MockDelayedForeverService: ForeverService {
+    public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
+        Signal(after: 0.5).atValue {
+            var data = self._dataSignal.value
+            data?.updateDiscountCode(value)
+            self._dataSignal.value = data
+        }.map { .left(()) }
+    }
+    
     var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
     let delay: TimeInterval
     public var dataSignal: ReadSignal<ForeverData?> {

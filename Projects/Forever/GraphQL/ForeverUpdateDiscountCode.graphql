@@ -1,0 +1,19 @@
+mutation ForeverUpdateDiscountCode($code: String!) {
+    updateReferralCampaignCode(code: $code) {
+        ... on SuccessfullyUpdatedCode {
+            code
+        }
+        ... on CodeAlreadyTaken {
+            code
+        }
+        ... on CodeTooLong {
+            maxCharacters
+        }
+        ... on CodeTooShort {
+            minCharacters
+        }
+        ... on ExceededMaximumUpdates {
+            maximumNumberOfUpdates
+        }
+    }
+}

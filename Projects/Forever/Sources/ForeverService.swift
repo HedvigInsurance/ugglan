@@ -41,11 +41,35 @@ public struct ForeverData: Codable {
     let grossAmount: MonetaryAmount
     let netAmount: MonetaryAmount
     let potentialDiscountAmount: MonetaryAmount
-    let discountCode: String
+    var discountCode: String
     let invitations: [ForeverInvitation]
+    
+    public mutating func updateDiscountCode(_ newValue: String) {
+        self.discountCode = newValue
+    }
+}
+
+public enum ForeverChangeCodeError: LocalizedError, Equatable {
+    case nonUnique, tooLong, tooShort, exceededMaximumUpdates(amount: Int), unknown
+    
+    var localizedDescription: String {
+        switch self {
+        case .nonUnique:
+            return L10n.ReferralsChange.Code.Sheet.Error.Claimed.code
+        case .tooLong:
+            return L10n.ReferralsChange.Code.Sheet.Error.Max.length
+        case .tooShort:
+            return L10n.ReferralsChange.Code.Sheet.General.error
+        case .exceededMaximumUpdates(let amount):
+            return L10n.ReferralsChange.Code.Sheet.Error.Change.Limit.reached(amount)
+        case .unknown:
+            return L10n.ReferralsChange.Code.Sheet.General.error
+        }
+    }
 }
 
 public protocol ForeverService {
     var dataSignal: ReadSignal<ForeverData?> { get }
     func refetch()
+    func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>>
 }

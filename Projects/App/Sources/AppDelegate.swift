@@ -160,6 +160,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             )
 
             return true
+        } else if dynamicLinkUrl.pathComponents.contains("forever") {
+            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
+            bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+               NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
+            }
+            
+            Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
+            
+            return true
         }
 
         guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return false }

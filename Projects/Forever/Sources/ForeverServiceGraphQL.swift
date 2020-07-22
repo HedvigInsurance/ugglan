@@ -12,6 +12,32 @@ import hCore
 import Flow
 
 public class ForeverServiceGraphQL: ForeverService {
+    public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
+        client.perform(mutation: ForeverUpdateDiscountCodeMutation(code: value)).valueSignal.map { result in
+            let updateReferralCampaignCode = result.data?.updateReferralCampaignCode
+            
+            if updateReferralCampaignCode?.asCodeAlreadyTaken != nil {
+                return .right(ForeverChangeCodeError.nonUnique)
+            } else if updateReferralCampaignCode?.asCodeTooLong != nil {
+                return .right(ForeverChangeCodeError.tooLong)
+            } else if updateReferralCampaignCode?.asCodeTooShort != nil {
+                return .right(ForeverChangeCodeError.tooShort)
+            } else if let maximumUpdates = updateReferralCampaignCode?.asExceededMaximumUpdates {
+                return .right(ForeverChangeCodeError.exceededMaximumUpdates(amount: maximumUpdates.maximumNumberOfUpdates))
+            } else if updateReferralCampaignCode?.asSuccessfullyUpdatedCode != nil {
+                self.store.withinReadWriteTransaction({ transaction in
+                    try transaction.update(query: ForeverQuery()) { (data: inout ForeverQuery.Data) in
+                        data.referralInformation.campaign.code = value
+                    }
+                })
+                
+                return .left(())
+            }
+            
+            return .right(ForeverChangeCodeError.unknown)
+        }.plain()
+    }
+    
     public var dataSignal: ReadSignal<ForeverData?> {
         client.watch(query: ForeverQuery()).map { result -> ForeverData in
             let grossAmount = result.data?.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
@@ -91,4 +117,5 @@ public class ForeverServiceGraphQL: ForeverService {
     public init() {}
     
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
 }
