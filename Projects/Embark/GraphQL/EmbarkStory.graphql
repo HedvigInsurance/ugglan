@@ -191,6 +191,7 @@ query EmbarkStory($name: String!) {
                     textActionData: data {
                         key
                         placeholder
+                        mask
                         link {
                             ...EmbarkLinkFragment
                         }

@@ -17,6 +17,15 @@ typealias EmbarkTextActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Actio
 struct EmbarkTextAction {
     let state: EmbarkState
     let data: EmbarkTextActionData
+    
+    var masking: Masking? {
+        if let mask = self.data.textActionData.mask,
+            let maskType = MaskType(rawValue: mask) {
+            return Masking(type: maskType)
+        }
+        
+        return nil
+    }
 }
 
 extension EmbarkTextAction: Viewable {
@@ -33,9 +42,11 @@ extension EmbarkTextAction: Viewable {
 
         var oldText = ""
         bag += textSignal.onValue { textValue in
-            let maskedValue = Masking().maskValue(text: textValue, type: .personalNumber, oldText: oldText)
-            textSignal.value = maskedValue
-            oldText = maskedValue
+            if let mask = self.masking {
+                let maskedValue = mask.maskValue(text: textValue, oldText: oldText)
+                textSignal.value = maskedValue
+                oldText = maskedValue
+            }
         }
 
         let button = Button(
@@ -57,10 +68,21 @@ extension EmbarkTextAction: Viewable {
                         value: textSignal.value
                     )
                 }
+                let unmaskedValue = self.masking?.unmaskedValue(text: textSignal.value) ?? textSignal.value
                 self.state.store.setValue(
                     key: self.data.textActionData.key,
-                    value: textSignal.value
+                    value: unmaskedValue
                 )
+                
+                if let derivedValues = self.masking?.derivedValues(text: textSignal.value) {
+                    derivedValues.forEach { (key, value) in
+                        self.state.store.setValue(
+                            key: "\(self.data.textActionData.key)\(key)",
+                            value: value
+                        )
+                    }
+                }
+                
                 callback(self.data.textActionData.link.fragments.embarkLinkFragment)
             }
 
