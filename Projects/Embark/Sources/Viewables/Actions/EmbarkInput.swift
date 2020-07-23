@@ -20,22 +20,25 @@ struct EmbarkInput {
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<String, Bool>()
     let insets: UIEdgeInsets
-    let allowedCharacters: CharacterSet
+    let masking: Masking?
+    let shouldAutoFocus: Bool
 
     init(
         placeholder: String,
-        keyboardTypeSignal: UIKeyboardType? = nil,
+        keyboardType: UIKeyboardType? = nil,
         textContentType: UITextContentType? = nil,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true,
-        allowedCharacters: CharacterSet = CharacterSet.alphanumerics
+        masking: Masking? = nil,
+        shouldAutoFocus: Bool = true
     ) {
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
-        self.keyboardTypeSignal = ReadWriteSignal(keyboardTypeSignal)
+        keyboardTypeSignal = ReadWriteSignal(keyboardType)
         textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
-        self.allowedCharacters = allowedCharacters
+        self.masking = masking
+        self.shouldAutoFocus = shouldAutoFocus
     }
 }
 
@@ -79,7 +82,7 @@ extension EmbarkInput: Viewable {
             placeholderLabel.alpha = value.isEmpty ? 1 : 0
         }
 
-        bag += textField.didMoveToWindowSignal.delay(by: 0.5).onValue { _ in
+        bag += textField.didMoveToWindowSignal.delay(by: 0.5).filter(predicate: { self.shouldAutoFocus }).onValue { _ in
             textField.becomeFirstResponder()
         }
 
@@ -87,8 +90,13 @@ extension EmbarkInput: Viewable {
             textField.becomeFirstResponder()
         }
 
-        bag += textField.distinct().onValue { value in
-            textField.value = value.components(separatedBy: self.allowedCharacters.inverted).joined()
+        var oldText = ""
+        bag += textField.distinct().onValue { textValue in
+            if let mask = self.masking {
+                let maskedValue = mask.maskValue(text: textValue, previousText: oldText)
+                textField.value = maskedValue
+                oldText = maskedValue
+            }
         }
 
         bag += textField.shouldReturn.set { value -> Bool in

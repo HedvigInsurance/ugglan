@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum MaskType: String {
     case personalNumber = "PersonalNumber"
@@ -14,6 +15,7 @@ enum MaskType: String {
     case birthDate = "BirthDate"
     case birthDateReverse = "BirthDateReverse"
     case norwegianPostalCode = "NorwegianPostalCode"
+    case digits = "Digits"
 }
 
 struct Masking {
@@ -89,6 +91,26 @@ struct Masking {
             return nil
         }
     }
+    
+    var keyboardType: UIKeyboardType {
+        switch type {
+        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode:
+            return .numberPad
+        case .email:
+            return .emailAddress
+        default:
+            return .default
+        }
+    }
+    
+    var textContentType: UITextContentType? {
+        switch type {
+        case .email:
+            return .emailAddress
+        default:
+            return nil
+        }
+    }
 
     func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
@@ -115,7 +137,7 @@ struct Masking {
                         return sanitizedText
                     }
                     
-                    return "\(textWithoutLast)-\(lastChar)"
+                    return "\(textWithoutLast)\(delimiter)\(lastChar)"
                 }
 
                 return sanitizedText
@@ -135,6 +157,8 @@ struct Masking {
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
         case .birthDateReverse:
             return delimitedDigits(delimiterPositions: [3, 6], maxCount: 10, delimiter: "-")
+        case .digits:
+            return text.filter { $0.isDigit }
         default:
             return text
         }

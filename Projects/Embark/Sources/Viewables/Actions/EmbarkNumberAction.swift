@@ -56,7 +56,7 @@ extension EmbarkNumberAction: Viewable {
                 callback(self.data.numberActionData.link.fragments.embarkLinkFragment)
             }
 
-            let textField = EmbarkInput(placeholder: self.data.numberActionData.placeholder, allowedCharacters: CharacterSet.decimalDigits)
+            let textField = EmbarkInput(placeholder: self.data.numberActionData.placeholder, masking: Masking(type: .digits))
             textField.keyboardTypeSignal.value = .numberPad
             let (textInputView, textSignal) = textField.materialize(events: events)
             boxStack.addArrangedSubview(textInputView)

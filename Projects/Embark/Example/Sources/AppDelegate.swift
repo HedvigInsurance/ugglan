@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Bundle.setLanguage("en-SE")
 
         bag += navigationController.present(Embark(
-            name: "Web Onboarding NO - English Travel"
+            name: "Web Onboarding - Swedish Needer"
         ))
 
         return true

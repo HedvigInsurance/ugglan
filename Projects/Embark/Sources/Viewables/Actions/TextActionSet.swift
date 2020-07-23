@@ -25,8 +25,22 @@ extension TextActionSet: Viewable {
         view.axis = .vertical
         let bag = DisposeBag()
 
-        let textActions = data.textActionSetData?.textActions.map { textAction -> (signal: ReadWriteSignal<String>, action: TextAction) in
-            let input = EmbarkInput(placeholder: textAction.data?.placeholder ?? "")
+        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, action: TextAction) in
+            var masking: Masking? {
+                guard let mask = textAction.data?.mask, let maskType = MaskType(rawValue: mask) else {
+                    return nil
+                }
+                
+                return Masking(type: maskType)
+            }
+            
+            let input = EmbarkInput(
+                placeholder: textAction.data?.placeholder ?? "",
+                keyboardType: masking?.keyboardType,
+                textContentType: masking?.textContentType,
+                masking: masking,
+                shouldAutoFocus: index == 0
+            )
             return (signal: view.addArranged(input), action: textAction)
         }
 

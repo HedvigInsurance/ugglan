@@ -35,19 +35,15 @@ extension EmbarkTextAction: Viewable {
         view.spacing = 10
         let bag = DisposeBag()
 
-        let textView = TextView(placeholder: data.textActionData.placeholder)
+        let textView = EmbarkInput(
+            placeholder: data.textActionData.placeholder,
+            keyboardType: masking?.keyboardType,
+            textContentType: masking?.textContentType,
+            masking: masking
+        )
         let (textInputView, textSignal) = textView.materialize(events: events)
 
         view.addArrangedSubview(textInputView)
-
-        var oldText = ""
-        bag += textSignal.onValue { textValue in
-            if let mask = self.masking {
-                let maskedValue = mask.maskValue(text: textValue, previousText: oldText)
-                textSignal.value = maskedValue
-                oldText = maskedValue
-            }
-        }
 
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
@@ -57,10 +53,6 @@ extension EmbarkTextAction: Viewable {
         bag += view.addArranged(button)
 
         return (view, Signal { callback in
-
-            bag += textSignal.onValue { _ in
-            }
-
             bag += button.onTapSignal.onValue { _ in
                 if let passageName = self.state.passageNameSignal.value {
                     self.state.store.setValue(

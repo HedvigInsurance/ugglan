@@ -218,7 +218,8 @@ query EmbarkStory($name: String!) {
                         textActions {
                             data {
                               key
-                                placeholder
+                              placeholder
+                              mask
                             }
                         }
                     }

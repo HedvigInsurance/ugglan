@@ -53,11 +53,14 @@ extension Action: Viewable {
         
         let isHiddenSignal = ReadWriteSignal(true)
         
-        bag += combineLatest(isHiddenSignal.atOnce().plain(), view.didLayoutSignal).onValue { isHidden, _ in
-            let extraPadding: CGFloat = 32
+        func handleViewState(_ isHidden: Bool) {
+            let extraPadding: CGFloat = 40
             let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + extraPadding
             view.transform = isHidden ? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
         }
+        
+        bag += view.didLayoutSignal.withLatestFrom(isHiddenSignal.atOnce().plain()).map { _, isHidden in isHidden }.onValue(handleViewState)
+        bag += isHiddenSignal.atOnce().onValue(handleViewState)
         
         let animationStyle = SpringAnimationStyle(
             duration: 0.5,
