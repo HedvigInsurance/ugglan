@@ -50,26 +50,35 @@ extension Action: Viewable {
         bag += view.addArranged(spacing)
 
         let actionDataSignal = state.currentPassageSignal.map { $0?.action }
+        
+        let isHiddenSignal = ReadWriteSignal(true)
+        
+        bag += combineLatest(isHiddenSignal.atOnce().plain(), view.didLayoutSignal).onValue { isHidden, _ in
+            let extraPadding: CGFloat = 32
+            let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + extraPadding
+            view.transform = isHidden ? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
+        }
+        
+        let animationStyle = SpringAnimationStyle(
+            duration: 0.5,
+            damping: 100,
+            velocity: 0.8,
+            delay: 0,
+            options: [.allowUserInteraction]
+        )
+        
+        let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: animationStyle) { actionData, _ in
+            isHiddenSignal.value = true
+            view.layoutIfNeeded()
+        }.delay(by: 0)
 
-        bag += actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: SpringAnimationStyle.lightBounce()) { actionData, _ in
-            if let selectAction = actionData?.asEmbarkSelectAction {
-                let stackView = UIStackView()
-                bag += stackView.addArranged(EmbarkSelectAction(
-                    state: self.state,
-                    data: selectAction
-                )).nil()
-
-                let height = stackView.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + 12
-                view.transform = CGAffineTransform(translationX: 0, y: height)
-            } else {
-                view.transform = CGAffineTransform(translationX: 0, y: 300)
-            }
-        }.delay(by: 0.25).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-            view.transform = CGAffineTransform.identity
+        bag += hideAnimationSignal.delay(by: 0.25).animated(style: animationStyle) { _ in
+            isHiddenSignal.value = false
+            view.layoutIfNeeded()
         }
 
         return (view, Signal { callback in
-            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).delay(by: 0.25).onValueDisposePrevious { actionData, _ in
+            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: hideAnimationSignal.map { _ in true }.readable(initial: false)).onValueDisposePrevious { actionData, _ in
                 let innerBag = DisposeBag()
 
                 if let selectAction = actionData?.asEmbarkSelectAction {

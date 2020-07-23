@@ -142,8 +142,10 @@ public enum ButtonType {
 
     var textStyle: TextStyle {
         switch self {
-        case .standard, .standardSmall, .outline, .standardIcon, .standardOutline:
+        case .standard, .outline, .standardIcon, .standardOutline:
             return TextStyle.brand(.body(color: .primary(state: .negative))).colored(textColor)
+        case .standardSmall:
+            return TextStyle.brand(.footnote(color: .primary(state: .negative))).colored(textColor)
         case .pillSemiTransparent:
             return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .iconTransparent:
