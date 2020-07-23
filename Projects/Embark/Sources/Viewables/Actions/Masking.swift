@@ -127,7 +127,7 @@ struct Masking {
                     .filter { $0.isDigit || $0 == delimiter }
                     .enumerated()
                     .filter { index, char in char == delimiter ? delimiterPositions.contains(index + 1) : true }
-                    .map { _, value in value }
+                    .map { _, char in char }
                 )
                                 
                 if !(sanitizedText.last?.isDigit ?? false) && !delimiterPositions.contains(sanitizedText.count) {
