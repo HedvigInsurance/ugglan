@@ -78,7 +78,9 @@ extension Action: Viewable {
         }
 
         return (view, Signal { callback in
-            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: hideAnimationSignal.map { _ in true }.readable(initial: false)).onValueDisposePrevious { actionData, _ in
+            let shouldUpdateUISignal = actionDataSignal.flatMapLatest { _ in hideAnimationSignal.map { _ in true }.readable(initial: false) }
+            
+            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: shouldUpdateUISignal).onValueDisposePrevious { actionData, _ in
                 let innerBag = DisposeBag()
 
                 if let selectAction = actionData?.asEmbarkSelectAction {
