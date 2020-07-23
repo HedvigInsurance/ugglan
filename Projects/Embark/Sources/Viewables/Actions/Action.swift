@@ -30,7 +30,6 @@ extension Action: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
-        view.transform = CGAffineTransform(translationX: 0, y: 300)
 
         let bag = DisposeBag()
 
