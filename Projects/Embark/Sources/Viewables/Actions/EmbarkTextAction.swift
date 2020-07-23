@@ -43,7 +43,7 @@ extension EmbarkTextAction: Viewable {
         var oldText = ""
         bag += textSignal.onValue { textValue in
             if let mask = self.masking {
-                let maskedValue = mask.maskValue(text: textValue, oldText: oldText)
+                let maskedValue = mask.maskValue(text: textValue, previousText: oldText)
                 textSignal.value = maskedValue
                 oldText = maskedValue
             }

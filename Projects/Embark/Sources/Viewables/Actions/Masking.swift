@@ -90,9 +90,9 @@ struct Masking {
         }
     }
 
-    func maskValue(text: String, oldText: String) -> String {
+    func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
-            if text.count < oldText.count {
+            if text.count < previousText.count {
                 if text.last == delimiter {
                     return String(text.dropLast(1))
                 }
@@ -104,7 +104,7 @@ struct Masking {
                 let sanitizedText = text.filter { $0.isDigit || $0 == delimiter }
                                 
                 if !(sanitizedText.last?.isDigit ?? false) && !delimiterPositions.contains(sanitizedText.count) {
-                    return oldText
+                    return previousText
                 }
                 
                 if delimiterPositions.contains(sanitizedText.count) {
@@ -120,7 +120,7 @@ struct Masking {
 
                 return sanitizedText
             } else {
-                return oldText
+                return previousText
             }
         }
         
