@@ -123,21 +123,19 @@ struct Masking {
             }
             
             if text.count <= maxCount {
-                let sanitizedText = text.filter { $0.isDigit || $0 == delimiter }
+                var sanitizedText = String(text
+                    .filter { $0.isDigit || $0 == delimiter }
+                    .enumerated()
+                    .filter { index, char in char == delimiter ? delimiterPositions.contains(index + 1) : true }
+                    .map { _, value in value }
+                )
                                 
                 if !(sanitizedText.last?.isDigit ?? false) && !delimiterPositions.contains(sanitizedText.count) {
                     return previousText
                 }
                 
-                if delimiterPositions.contains(sanitizedText.count) {
-                    let textWithoutLast = sanitizedText.dropLast(1)
-                    let lastChar = String(sanitizedText.last ?? Character(""))
-                    
-                    if lastChar.last == delimiter {
-                        return sanitizedText
-                    }
-                    
-                    return "\(textWithoutLast)\(delimiter)\(lastChar)"
+                delimiterPositions.map { $0 - 1 }.filter { sanitizedText.count > $0 }.filter { Array(sanitizedText)[$0] != delimiter }.forEach { index in
+                    sanitizedText.insert(delimiter, at: sanitizedText.index(sanitizedText.startIndex, offsetBy: index))
                 }
 
                 return sanitizedText
@@ -148,7 +146,7 @@ struct Masking {
         
         switch type {
         case .personalNumber:
-            if text.prefix(2) == "19" {
+            if (text.count > 11) && (text.prefix(2) == "19" || text.prefix(2) == "20") {
                 return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
             }
             
