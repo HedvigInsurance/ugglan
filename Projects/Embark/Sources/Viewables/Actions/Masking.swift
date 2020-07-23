@@ -148,6 +148,10 @@ struct Masking {
         
         switch type {
         case .personalNumber:
+            if text.prefix(2) == "19" {
+                return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
+            }
+            
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .postalCode:
             return delimitedDigits(delimiterPositions: [4], maxCount: 6, delimiter: " ")
