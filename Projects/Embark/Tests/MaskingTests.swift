@@ -52,12 +52,23 @@ final class MaskingTests: XCTestCase {
         let masking = Masking(type: .postalCode)
         XCTAssertEqual(masking.maskValue(text: "70354", previousText: ""), "703 54")
         XCTAssertEqual(masking.maskValue(text: "703-54", previousText: ""), "703 54")
+        XCTAssertEqual(masking.maskValue(text: "703-546", previousText: "703 54"), "703 54")
     }
     
     func testNorwegianPostalCode() {
         let masking = Masking(type: .norwegianPostalCode)
         XCTAssertEqual(masking.maskValue(text: "1234", previousText: ""), "1234")
         XCTAssertEqual(masking.maskValue(text: "12 4", previousText: ""), "124")
+    }
+    
+    func testKeyboardTypes() {
+        let maskingPersonalNumber = Masking(type: .personalNumber)
+        XCTAssertEqual(maskingPersonalNumber.keyboardType, UIKeyboardType.numberPad)
+        XCTAssertNil(maskingPersonalNumber.textContentType)
+        
+        let maskingEmail = Masking(type: .email)
+        XCTAssertEqual(maskingEmail.textContentType, UITextContentType.emailAddress)
+        XCTAssertEqual(maskingEmail.keyboardType, UIKeyboardType.emailAddress)
     }
 }
 
