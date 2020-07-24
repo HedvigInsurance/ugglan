@@ -22,7 +22,7 @@ struct EmbarkInput {
     let insets: UIEdgeInsets
     let masking: Masking?
     let shouldAutoFocus: Bool
-
+    
     init(
         placeholder: String,
         keyboardType: UIKeyboardType? = nil,

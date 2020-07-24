@@ -53,29 +53,38 @@ extension EmbarkTextAction: Viewable {
         bag += view.addArranged(button)
 
         return (view, Signal { callback in
-            bag += button.onTapSignal.onValue { _ in
+            func complete() {
                 if let passageName = self.state.passageNameSignal.value {
-                    self.state.store.setValue(
-                        key: "\(passageName)Result",
-                        value: textSignal.value
-                    )
-                }
-                let unmaskedValue = self.masking?.unmaskedValue(text: textSignal.value) ?? textSignal.value
-                self.state.store.setValue(
-                    key: self.data.textActionData.key,
-                    value: unmaskedValue
-                )
-                
-                if let derivedValues = self.masking?.derivedValues(text: textSignal.value) {
-                    derivedValues.forEach { (key, value) in
-                        self.state.store.setValue(
-                            key: "\(self.data.textActionData.key)\(key)",
-                            value: value
-                        )
-                    }
-                }
-                
-                callback(self.data.textActionData.link.fragments.embarkLinkFragment)
+                   self.state.store.setValue(
+                       key: "\(passageName)Result",
+                       value: textSignal.value
+                   )
+               }
+               let unmaskedValue = self.masking?.unmaskedValue(text: textSignal.value) ?? textSignal.value
+               self.state.store.setValue(
+                   key: self.data.textActionData.key,
+                   value: unmaskedValue
+               )
+               
+               if let derivedValues = self.masking?.derivedValues(text: textSignal.value) {
+                   derivedValues.forEach { (key, value) in
+                       self.state.store.setValue(
+                           key: "\(self.data.textActionData.key)\(key)",
+                           value: value
+                       )
+                   }
+               }
+               
+               callback(self.data.textActionData.link.fragments.embarkLinkFragment)
+            }
+            
+            bag += textView.shouldReturn.set { _ -> Bool in
+                complete()
+                return true
+            }
+            
+            bag += button.onTapSignal.onValue { _ in
+               complete()
             }
 
             return bag

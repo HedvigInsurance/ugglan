@@ -28,7 +28,7 @@ extension Embark: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-
+        
         let view = UIView()
         view.backgroundColor = .brand(.primaryBackground())
         viewController.view = view

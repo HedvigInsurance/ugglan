@@ -20,12 +20,12 @@ struct TextActionSet {
 private typealias TextAction = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet.TextActionSetDatum.TextAction
 
 extension TextActionSet: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         let bag = DisposeBag()
 
-        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, action: TextAction) in
+        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: TextAction) in
             var masking: Masking? {
                 guard let mask = textAction.data?.mask, let maskType = MaskType(rawValue: mask) else {
                     return nil
@@ -41,7 +41,7 @@ extension TextActionSet: Viewable {
                 masking: masking,
                 shouldAutoFocus: index == 0
             )
-            return (signal: view.addArranged(input), action: textAction)
+            return (signal: view.addArranged(input), shouldReturn: input.shouldReturn, action: textAction)
         }
 
         let button = Button(
@@ -51,20 +51,35 @@ extension TextActionSet: Viewable {
 
         bag += view.addArranged(button)
 
-        bag += button.onTapSignal.onValue { _ in
-            textActions?.forEach { signal, textAction in
-                self.state.store.setValue(key: textAction.data?.key, value: signal.value)
+       
+
+        return (view, Signal { callback in
+            func complete() {
+                textActions?.forEach { signal, _, textAction in
+                    self.state.store.setValue(key: textAction.data?.key, value: signal.value)
+                }
+
+                if let passageName = self.state.passageNameSignal.value {
+                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: " ") ?? "")
+                }
+
+                if let link = self.data.textActionSetData?.link {
+                    callback(link.fragments.embarkLinkFragment)
+                }
+            }
+            
+            bag += textActions?.map { _, shouldReturn, _ in
+                shouldReturn.set { value -> Bool in
+                    complete()
+                    return true
+                }
+            }
+            
+            bag += button.onTapSignal.onValue { _ in
+                complete()
             }
 
-            if let passageName = self.state.passageNameSignal.value {
-                self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: " ") ?? "")
-            }
-
-            if let linkName = self.data.textActionSetData?.link.name {
-                self.state.goTo(passageName: linkName)
-            }
-        }
-
-        return (view, bag)
+            return bag
+        })
     }
 }

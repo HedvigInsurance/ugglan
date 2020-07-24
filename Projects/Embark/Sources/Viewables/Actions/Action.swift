@@ -104,7 +104,7 @@ extension Action: Viewable {
                     innerBag += view.addArranged(TextActionSet(
                         state: self.state,
                         data: textActionSet
-                    ))
+                    )).onValue(callback)
                 }
 
                 return innerBag
