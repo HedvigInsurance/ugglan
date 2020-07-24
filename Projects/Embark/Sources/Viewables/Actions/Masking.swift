@@ -54,19 +54,23 @@ struct Masking {
         let unmaskedValue = self.unmaskedValue(text: text)
         
         func calculateAge(_ format: String, value: String) -> String? {
-            let dateFormatter = DateFormatter()
-           dateFormatter.dateFormat = format
-           
-           guard let dateOfBirth = dateFormatter.date(from: value) else {
-               return nil
-           }
-           
-           let components = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date())
-
-           guard let age = components.year else {
-               return nil
-           }
+            if (value.count == 0) {
+                return nil
+            }
             
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = format
+
+            guard let dateOfBirth = dateFormatter.date(from: value) else {
+               return nil
+            }
+
+            let components = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date())
+
+            guard let age = components.year else {
+               return nil
+            }
+
             return String(age)
         }
         
@@ -94,12 +98,10 @@ struct Masking {
     
     var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode:
+        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode, .digits:
             return .numberPad
         case .email:
             return .emailAddress
-        default:
-            return .default
         }
     }
     
@@ -130,18 +132,14 @@ struct Masking {
                     .map { _, char in char }
                 )
                                 
-                if !(sanitizedText.last?.isDigit ?? false) && !delimiterPositions.contains(sanitizedText.count) {
-                    return previousText
-                }
-                
                 delimiterPositions.map { $0 - 1 }.filter { sanitizedText.count > $0 }.filter { Array(sanitizedText)[$0] != delimiter }.forEach { index in
                     sanitizedText.insert(delimiter, at: sanitizedText.index(sanitizedText.startIndex, offsetBy: index))
                 }
 
                 return sanitizedText
-            } else {
-                return previousText
             }
+            
+            return previousText
         }
         
         switch type {
@@ -161,7 +159,7 @@ struct Masking {
             return delimitedDigits(delimiterPositions: [3, 6], maxCount: 10, delimiter: "-")
         case .digits:
             return text.filter { $0.isDigit }
-        default:
+        case .email:
             return text
         }
     }
