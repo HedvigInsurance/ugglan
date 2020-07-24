@@ -51,7 +51,7 @@ extension TextActionSet: Viewable {
 
         bag += view.addArranged(button)
 
-       
+        bag += view.chainAllControlResponders()
 
         return (view, Signal { callback in
             func complete() {
@@ -60,7 +60,7 @@ extension TextActionSet: Viewable {
                 }
 
                 if let passageName = self.state.passageNameSignal.value {
-                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: " ") ?? "")
+                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: ",") ?? "")
                 }
 
                 if let link = self.data.textActionSetData?.link {
@@ -68,10 +68,14 @@ extension TextActionSet: Viewable {
                 }
             }
             
-            bag += textActions?.map { _, shouldReturn, _ in
-                shouldReturn.set { value -> Bool in
-                    complete()
-                    return true
+            if let textActions = textActions {
+                bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { (offset, shouldReturn) in
+                    shouldReturn.set { value -> Bool in
+                        if offset == textActions.count - 1 {
+                            complete()
+                        }
+                        return true
+                    }
                 }
             }
             
