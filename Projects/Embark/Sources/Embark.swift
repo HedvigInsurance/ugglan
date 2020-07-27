@@ -56,7 +56,13 @@ extension Embark: Presentable {
             func updatePassageViewHeight() {
                 passageView.snp.updateConstraints { make in
                     make.top.bottom.leading.trailing.equalToSuperview()
-                    make.height.greaterThanOrEqualTo(scrollView.frame.height - scrollView.safeAreaInsets.top - scrollView.safeAreaInsets.bottom - keyboardHeight)
+                    make.height.greaterThanOrEqualTo(
+                        scrollView.frame.height -
+                        scrollView.safeAreaInsets.top -
+                        scrollView.safeAreaInsets.bottom -
+                        keyboardHeight
+                        - 20
+                    )
                 }
             }
             
@@ -70,7 +76,7 @@ extension Embark: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                keyboardHeight = keyboardInfo.height
+                keyboardHeight = keyboardInfo.height - scrollView.safeAreaInsets.bottom
                 updatePassageViewHeight()
                 passageView.layoutIfNeeded()
                 form.layoutIfNeeded()
@@ -95,10 +101,10 @@ extension Embark: Presentable {
 
         let progressView = UIProgressView()
         progressView.tintColor = .brand(.primaryButtonBackgroundColor)
-        form.addSubview(progressView)
+        scrollView.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
-            make.top.equalTo(form.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(scrollView.safeAreaLayoutGuide.snp.top)
             make.width.equalToSuperview()
             make.height.equalTo(2)
             make.centerX.equalToSuperview()
