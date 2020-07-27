@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct Passage {
@@ -17,9 +18,23 @@ struct Passage {
 
 extension Passage: Viewable {
     func goBackPanGesture(_ view: UIView, actionView: UIView) -> Disposable {
+        guard let scrollView = view.firstAncestor(ofType: FormScrollView.self) else {
+            return NilDisposer()
+        }
+        
         let bag = DisposeBag()
 
+        class PanDelegate: NSObject, UIGestureRecognizerDelegate {
+            func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+                return true
+            }
+        }
+        
         let panGestureRecognizer = UIPanGestureRecognizer()
+        let delegate = PanDelegate()
+        bag.hold(delegate)
+        panGestureRecognizer.delegate = delegate
+                
         let hasSentFeedback = ReadWriteSignal(false)
 
         let releaseToGoBackLabel = UILabel(
@@ -41,13 +56,16 @@ extension Passage: Viewable {
 
         bag += panGestureRecognizer.signal(forState: .began).onValue { _ in
             if panGestureRecognizer.translation(in: view).y < 0 {
-                panGestureRecognizer.state = .ended
+                panGestureRecognizer.state = .failed
             }
         }
 
         bag += panGestureRecognizer
             .signal(forState: .changed)
             .filter(predicate: { _ in self.state.canGoBackSignal.value })
+            .filter(predicate: { _ in
+                scrollView.contentOffset.y <= 0
+            })
             .onValue { _ in
                 let translationY = max(
                     panGestureRecognizer.translation(in: view).y,
@@ -121,7 +139,7 @@ extension Passage: Viewable {
 
         return (view, Signal { callback in
             bag += view.addArranged(action) { actionView in
-                //bag += self.goBackPanGesture(view, actionView: actionView)
+                bag += self.goBackPanGesture(view, actionView: actionView)
             }.onValue(callback)
             return bag
         })

@@ -76,6 +76,7 @@ extension Embark: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
                 keyboardHeight = keyboardInfo.height - scrollView.safeAreaInsets.bottom
                 updatePassageViewHeight()
                 passageView.layoutIfNeeded()
@@ -90,6 +91,7 @@ extension Embark: Presentable {
                     AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
                 }, animations: { _ in
                     keyboardHeight = 0
+                    scrollView.contentInset = .zero
                     updatePassageViewHeight()
                     passageView.layoutIfNeeded()
                     form.layoutIfNeeded()
