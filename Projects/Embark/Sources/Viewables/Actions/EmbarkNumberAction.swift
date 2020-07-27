@@ -29,7 +29,7 @@ extension EmbarkNumberAction: Viewable {
         view.spacing = 10
 
         let box = UIView()
-        box.backgroundColor = .white
+        box.backgroundColor = .brand(.primaryBackground())
         box.layer.cornerRadius = 10
         bag += box.applyShadow { _ -> UIView.ShadowProperties in
             UIView.ShadowProperties(

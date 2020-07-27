@@ -13,6 +13,7 @@ import hCoreUI
 import Presentation
 import SnapKit
 import UIKit
+import Form
 
 public struct Embark {
     @Inject var client: ApolloClient
@@ -29,16 +30,8 @@ extension Embark: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
-        let view = UIView()
-        view.backgroundColor = .brand(.primaryBackground())
-        viewController.view = view
-
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        view.addSubview(blurEffectView)
-        blurEffectView.snp.makeConstraints { make in
-            make.height.width.equalToSuperview()
-        }
+        let form = FormView()
+        bag += viewController.install(form)
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = hCoreUIAssets.wordmark.image
@@ -53,9 +46,10 @@ extension Embark: Presentable {
         let passage = Passage(
             state: state
         )
-        bag += view.add(passage) { passageView in
+        bag += form.append(passage) { passageView in
             passageView.snp.makeConstraints { make in
                 make.top.bottom.leading.trailing.equalToSuperview()
+                make.height.equalTo(viewController.view.safeAreaLayoutGuide.snp.height)
             }
         }.onValue { link in
             self.state.goTo(passageName: link.name)
@@ -63,10 +57,10 @@ extension Embark: Presentable {
 
         let progressView = UIProgressView()
         progressView.tintColor = .brand(.primaryButtonBackgroundColor)
-        view.addSubview(progressView)
+        form.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(form.safeAreaLayoutGuide.snp.top)
             make.width.equalToSuperview()
             make.height.equalTo(2)
             make.centerX.equalToSuperview()
@@ -81,7 +75,7 @@ extension Embark: Presentable {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
 
-        view.addSubview(activityIndicator)
+        form.addSubview(activityIndicator)
 
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()

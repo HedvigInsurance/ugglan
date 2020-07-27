@@ -39,7 +39,8 @@ extension TextActionSet: Viewable {
                 keyboardType: masking?.keyboardType,
                 textContentType: masking?.textContentType,
                 masking: masking,
-                shouldAutoFocus: index == 0
+                shouldAutoFocus: index == 0,
+                fieldStyle: .embarkInputSmall
             )
             return (signal: view.addArranged(input), shouldReturn: input.shouldReturn, action: textAction)
         }

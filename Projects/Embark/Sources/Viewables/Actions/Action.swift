@@ -33,7 +33,10 @@ extension Action: Viewable {
 
         let bag = DisposeBag()
 
-        let backButton = Button(title: L10n.embarkGoBackButton, type: .standardSmall(backgroundColor: .black, textColor: .white))
+        let backButton = Button(
+            title: L10n.embarkGoBackButton,
+            type: .standardSmall(backgroundColor: .brand(.secondaryBackground()), textColor: .brand(.primaryText()))
+        )
         bag += backButton.onTapSignal.onValue {
             self.state.goBack()
         }

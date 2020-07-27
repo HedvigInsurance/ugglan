@@ -22,6 +22,7 @@ struct EmbarkInput {
     let insets: UIEdgeInsets
     let masking: Masking?
     let shouldAutoFocus: Bool
+    let fieldStyle: FieldStyle
     
     init(
         placeholder: String,
@@ -30,7 +31,8 @@ struct EmbarkInput {
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true,
         masking: Masking? = nil,
-        shouldAutoFocus: Bool = true
+        shouldAutoFocus: Bool = true,
+        fieldStyle: FieldStyle = .embarkInputLarge
     ) {
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
@@ -39,6 +41,19 @@ struct EmbarkInput {
         enabledSignal = ReadWriteSignal(enabled)
         self.masking = masking
         self.shouldAutoFocus = shouldAutoFocus
+        self.fieldStyle = fieldStyle
+    }
+}
+
+extension FieldStyle {
+    static let embarkInputLarge = FieldStyle.default.restyled { (style: inout FieldStyle) in
+        style.text = TextStyle.brand(.largeTitle(color: .primary)).centerAligned
+        style.cursorColor = .brand(.primaryTintColor)
+    }
+    
+    static let embarkInputSmall = FieldStyle.default.restyled { (style: inout FieldStyle) in
+        style.text = TextStyle.brand(.headline(color: .primary)).centerAligned
+        style.cursorColor = .brand(.primaryTintColor)
     }
 }
 
@@ -60,10 +75,7 @@ extension EmbarkInput: Viewable {
             make.trailing.leading.top.bottom.equalToSuperview()
         }
 
-        let textField = UITextField()
-        textField.textAlignment = .center
-        textField.tintColor = .brand(.primaryTintColor)
-        textField.font = Fonts.favoritStdBook.withSize(38)
+        let textField = UITextField(value: "", placeholder: "", style: fieldStyle)
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
 
