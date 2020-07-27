@@ -30,8 +30,12 @@ extension Embark: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
+        let scrollView = FormScrollView()
+        scrollView.backgroundColor = .brand(.primaryBackground())
         let form = FormView()
-        bag += viewController.install(form)
+        bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
+            scrollView.alwaysBounceVertical = false
+        }
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = hCoreUIAssets.wordmark.image
@@ -47,10 +51,44 @@ extension Embark: Presentable {
             state: state
         )
         bag += form.append(passage) { passageView in
-            passageView.snp.makeConstraints { make in
-                make.top.bottom.leading.trailing.equalToSuperview()
-                make.height.equalTo(viewController.view.safeAreaLayoutGuide.snp.height)
+            var keyboardHeight: CGFloat = 0
+            
+            func updatePassageViewHeight() {
+                passageView.snp.updateConstraints { make in
+                    make.top.bottom.leading.trailing.equalToSuperview()
+                    make.height.greaterThanOrEqualTo(scrollView.frame.height - scrollView.safeAreaInsets.top - scrollView.safeAreaInsets.bottom - keyboardHeight)
+                }
             }
+            
+            bag += form.didLayoutSignal.onValue {
+                updatePassageViewHeight()
+            }
+            
+            bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+            }, animations: { keyboardInfo in
+                keyboardHeight = keyboardInfo.height
+                updatePassageViewHeight()
+                passageView.layoutIfNeeded()
+                form.layoutIfNeeded()
+                scrollView.layoutIfNeeded()
+            })
+            
+            bag += NotificationCenter.default
+                .signal(forName: UIResponder.keyboardWillHideNotification)
+                .compactMap { notification in notification.keyboardInfo }
+                .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
+                    AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
+                }, animations: { _ in
+                    keyboardHeight = 0
+                    updatePassageViewHeight()
+                    passageView.layoutIfNeeded()
+                    form.layoutIfNeeded()
+                    scrollView.layoutIfNeeded()
+            })
         }.onValue { link in
             self.state.goTo(passageName: link.name)
         }

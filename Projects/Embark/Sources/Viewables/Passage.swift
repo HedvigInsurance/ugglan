@@ -103,6 +103,7 @@ extension Passage: Viewable {
         view.distribution = .equalSpacing
         view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         view.isLayoutMarginsRelativeArrangement = true
+        view.spacing = 15
         let bag = DisposeBag()
 
         let embarkMessages = EmbarkMessages(
@@ -118,29 +119,9 @@ extension Passage: Viewable {
             print("API", passage?.api ?? " none")
         }
 
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
-                view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: keyboardInfo.height, right: 20)
-                view.layoutIfNeeded()
-        })
-
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillHideNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { _ in
-                view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-                view.layoutIfNeeded()
-        })
-
         return (view, Signal { callback in
             bag += view.addArranged(action) { actionView in
-                bag += self.goBackPanGesture(view, actionView: actionView)
+                //bag += self.goBackPanGesture(view, actionView: actionView)
             }.onValue(callback)
             return bag
         })
