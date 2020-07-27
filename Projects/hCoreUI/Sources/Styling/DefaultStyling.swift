@@ -265,7 +265,7 @@ extension DynamicFormStyle {
     }
 }
 
-final class FormScrollView: UIScrollView {}
+public final class FormScrollView: UIScrollView {}
 
 final class FormTableView: UITableView {
     override func didMoveToWindow() {
