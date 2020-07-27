@@ -51,7 +51,7 @@ extension Embark: Presentable {
             state: state
         )
         bag += form.append(passage) { passageView in
-            var keyboardHeight: CGFloat = 0
+            var keyboardHeight: CGFloat = 20
             
             func updatePassageViewHeight() {
                 passageView.snp.updateConstraints { make in
@@ -61,7 +61,6 @@ extension Embark: Presentable {
                         scrollView.safeAreaInsets.top -
                         scrollView.safeAreaInsets.bottom -
                         keyboardHeight
-                        - 20
                     )
                 }
             }
@@ -76,7 +75,18 @@ extension Embark: Presentable {
             .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                 AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
             }, animations: { keyboardInfo in
-                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardInfo.height, right: 0)
+                scrollView.contentInset = UIEdgeInsets(
+                    top: 0,
+                    left: 0,
+                    bottom: keyboardInfo.height - 20 - scrollView.safeAreaInsets.bottom,
+                    right: 0
+                )
+                scrollView.scrollIndicatorInsets = UIEdgeInsets(
+                    top: 0,
+                    left: 0,
+                    bottom: keyboardInfo.height,
+                    right: 0
+                )
                 keyboardHeight = keyboardInfo.height - scrollView.safeAreaInsets.bottom
                 updatePassageViewHeight()
                 passageView.layoutIfNeeded()
@@ -90,8 +100,9 @@ extension Embark: Presentable {
                 .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
                     AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
                 }, animations: { _ in
-                    keyboardHeight = 0
+                    keyboardHeight = 20
                     scrollView.contentInset = .zero
+                    scrollView.scrollIndicatorInsets = .zero
                     updatePassageViewHeight()
                     passageView.layoutIfNeeded()
                     form.layoutIfNeeded()

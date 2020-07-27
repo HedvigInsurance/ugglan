@@ -46,8 +46,16 @@ extension EmbarkSelectActionOption: Viewable {
         stackView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
+        
+        let valueLabel = UILabel(
+            value: data.link.fragments.embarkLinkFragment.label,
+            style: TextStyle.brand(.headline(color: .primary)).centerAligned
+        )
+        valueLabel.adjustsFontSizeToFitWidth = true
+        valueLabel.minimumScaleFactor = 0.5
+        valueLabel.numberOfLines = 1
 
-        bag += stackView.addArranged(MultilineLabel(value: data.link.fragments.embarkLinkFragment.label, style: TextStyle.brand(.headline(color: .primary)).centerAligned))
+        stackView.addArrangedSubview(valueLabel)
         bag += stackView.addArranged(MultilineLabel(value: L10n.embarkSelectOptionLabel, style: TextStyle.brand(.footnote(color: .link)).centerAligned))
 
         return (control, Signal { callback in

@@ -224,6 +224,7 @@ public extension TextStyle {
             return TextStyle.default.restyled { (style: inout TextStyle) in
                 style.font = font
                 style.color = color
+                style.adjustsFontForContentSizeCategory = true
             }
         }
     }
