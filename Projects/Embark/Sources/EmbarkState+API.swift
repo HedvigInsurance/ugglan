@@ -200,45 +200,65 @@ extension ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
 }
 
 extension EmbarkState {
+    func handleApi(apiFragment: ApiFragment) -> Future<EmbarkLinkFragment?> {
+        self.handleApiRequest(apiFragment: apiFragment).map { result in
+            if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
+                if result != nil {
+                    return queryApi.data.next?.fragments.embarkLinkFragment
+                }
+            } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
+                if result != nil {
+                    return mutationApi.data.next?.fragments.embarkLinkFragment
+                } else {
+                    return mutationApi.data.
+                }
+            }
+        }
+    }
+    
+    private func handleApiRequest(apiFragment: ApiFragment) -> Future<RAWGraphQLData?> {
+        if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
+            return self.client.fetch(
+                query: RAWGraphqlQuery(
+                    queryApi.data.query,
+                    variables: queryApi.data.graphQLVariables(store: self.store)
+                )
+            ).map { result in
+                result.data
+            }.onValue { result in
+                guard let result = result else {
+                    return
+                }
+
+                result.insertInto(store: self.store, basedOn: queryApi)
+            }
+        } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
+            return self.client.perform(
+                mutation: RAWGraphqlMutation(
+                    mutationApi.data.mutation,
+                    variables: mutationApi.data.graphQLVariables(store: self.store)
+                )
+            ).map { result in
+                result.data
+            }.onValue { result in
+                guard let result = result else {
+                    return
+                }
+
+                result.insertInto(store: self.store, basedOn: mutationApi)
+            }
+        }
+        
+        return Future(immediate: { nil })
+    }
+    
     var apiResponseSignal: ReadSignal<RAWGraphQLData?> {
         currentPassageSignal.compactMap { $0 }.mapLatestToFuture { passage -> Future<RAWGraphQLData?> in
             guard let apiFragment = passage.api?.fragments.apiFragment else {
                 return Future(immediate: { nil })
             }
-
-            if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
-                return self.client.fetch(
-                    query: RAWGraphqlQuery(
-                        queryApi.data.query,
-                        variables: queryApi.data.graphQLVariables(store: self.store)
-                    )
-                ).map { result in
-                    result.data
-                }.onValue { result in
-                    guard let result = result else {
-                        return
-                    }
-
-                    result.insertInto(store: self.store, basedOn: queryApi)
-                }
-            } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
-                return self.client.perform(
-                    mutation: RAWGraphqlMutation(
-                        mutationApi.data.mutation,
-                        variables: mutationApi.data.graphQLVariables(store: self.store)
-                    )
-                ).map { result in
-                    result.data
-                }.onValue { result in
-                    guard let result = result else {
-                        return
-                    }
-
-                    result.insertInto(store: self.store, basedOn: mutationApi)
-                }
-            }
-
-            return Future(immediate: { nil })
+            
+            return self.handleApiRequest(apiFragment: apiFragment)
         }.providedSignal.plain().readable(initial: nil)
     }
 }

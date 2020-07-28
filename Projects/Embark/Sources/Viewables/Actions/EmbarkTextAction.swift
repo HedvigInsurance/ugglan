@@ -74,8 +74,15 @@ extension EmbarkTextAction: Viewable {
                        )
                    }
                }
-               
-               callback(self.data.textActionData.link.fragments.embarkLinkFragment)
+                
+                if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
+                    self.state.handleApi(apiFragment: apiFragment).onValue { data in
+                        print(data ?? "")
+                        callback(self.data.textActionData.link.fragments.embarkLinkFragment)
+                    }
+                } else {
+                    callback(self.data.textActionData.link.fragments.embarkLinkFragment)
+                }
             }
             
             bag += textView.shouldReturn.set { _ -> Bool in

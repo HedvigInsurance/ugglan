@@ -192,6 +192,9 @@ query EmbarkStory($name: String!) {
                         key
                         placeholder
                         mask
+                        api {
+                            ...ApiFragment
+                        }
                         link {
                             ...EmbarkLinkFragment
                         }
