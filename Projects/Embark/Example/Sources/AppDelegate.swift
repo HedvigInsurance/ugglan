@@ -17,7 +17,7 @@ import UIKit
 extension ApolloClient {
     static func createClient(token _: String?) -> (ApolloStore, ApolloClient) {
         let httpAdditionalHeaders = [
-            "Authorization": "SXjDmWsfPNG4Dw==.1dCSCrv8Te5PpQ==.yHXEgngWUvfcUA==",
+            "Authorization": "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==",
             "User-Agent": "iOS",
         ]
 
@@ -44,6 +44,10 @@ extension ApolloClient {
 
         let store = ApolloStore(cache: InMemoryNormalizedCache())
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+        
+        Dependencies.shared.add(module: Module { () -> URLSessionClient in
+            urlSessionClient
+        })
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             client

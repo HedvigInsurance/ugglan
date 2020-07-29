@@ -13,6 +13,7 @@ import hCore
 
 struct EmbarkState {
     @Inject var client: ApolloClient
+    @Inject var urlSessionClient: URLSessionClient
 
     let store = EmbarkStore()
     let storySignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory?>(nil)

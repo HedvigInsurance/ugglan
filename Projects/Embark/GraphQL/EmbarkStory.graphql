@@ -110,6 +110,12 @@ fragment ApiFragment on EmbarkApi {
                 key
                 as
             }
+            queryErrors: errors {
+                contains
+                next {
+                    ...EmbarkLinkFragment
+                }
+            }
         }
     }
     ... on EmbarkApiGraphQLMutation {
@@ -124,6 +130,12 @@ fragment ApiFragment on EmbarkApi {
             mutationResults: results {
                key
                as
+            }
+            mutationErrors: errors {
+                contains
+                next {
+                    ...EmbarkLinkFragment
+                }
             }
         }
     }

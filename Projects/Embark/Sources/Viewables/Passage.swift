@@ -50,10 +50,6 @@ extension Passage: Viewable {
             make.left.right.equalToSuperview()
         }
 
-        bag += state.apiResponseSignal.onValue { data in
-            print("got api response", data ?? "")
-        }
-
         bag += panGestureRecognizer.signal(forState: .began).onValue { _ in
             if panGestureRecognizer.translation(in: view).y < 0 {
                 panGestureRecognizer.state = .failed
@@ -135,6 +131,10 @@ extension Passage: Viewable {
 
         bag += state.currentPassageSignal.onValue { passage in
             print("API", passage?.api ?? " none")
+        }
+        
+        bag += state.apiResponseSignal.onValue { data in
+            print("got api response", data ?? "")
         }
 
         return (view, Signal { callback in

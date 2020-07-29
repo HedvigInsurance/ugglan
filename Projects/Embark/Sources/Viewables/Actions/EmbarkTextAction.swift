@@ -75,10 +75,14 @@ extension EmbarkTextAction: Viewable {
                    }
                }
                 
+                self.state.store.createRevision()
+                
                 if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
-                    self.state.handleApi(apiFragment: apiFragment).onValue { data in
-                        print(data ?? "")
-                        callback(self.data.textActionData.link.fragments.embarkLinkFragment)
+                    self.state.handleApi(apiFragment: apiFragment).onValue { link in
+                        guard let link = link else {
+                            return
+                        }
+                        callback(link)
                     }
                 } else {
                     callback(self.data.textActionData.link.fragments.embarkLinkFragment)
