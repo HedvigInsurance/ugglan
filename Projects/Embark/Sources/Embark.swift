@@ -18,10 +18,11 @@ import Form
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
-    let state = EmbarkState()
+    let state: EmbarkState
 
-    public init(name: String) {
+    public init(name: String, state: EmbarkState) {
         self.name = name
+        self.state = state
     }
 }
 

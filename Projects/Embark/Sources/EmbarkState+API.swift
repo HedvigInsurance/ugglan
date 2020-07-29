@@ -201,7 +201,7 @@ extension EmbarkState {
     
     private func handleApiRequest(apiFragment: ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
-            var urlRequest = URLRequest(url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!)
+            var urlRequest = URLRequest(url: apolloEnvironment.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = try! JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
@@ -274,13 +274,13 @@ extension EmbarkState {
         }
     }
     
-    var apiResponseSignal: ReadSignal<ResultMap?> {
-        currentPassageSignal.compactMap { $0 }.mapLatestToFuture { passage -> Future<ResultMap?> in
+    var apiResponseSignal: ReadSignal<EmbarkLinkFragment?> {
+        currentPassageSignal.compactMap { $0 }.mapLatestToFuture { passage -> Future<EmbarkLinkFragment?> in
             guard let apiFragment = passage.api?.fragments.apiFragment else {
                 return Future(error: ApiError.noApi)
             }
             
-            return self.handleApiRequest(apiFragment: apiFragment)
+            return self.handleApi(apiFragment: apiFragment)
         }.providedSignal.plain().readable(initial: nil)
     }
 }

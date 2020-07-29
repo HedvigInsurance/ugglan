@@ -133,8 +133,11 @@ extension Passage: Viewable {
             print("API", passage?.api ?? " none")
         }
         
-        bag += state.apiResponseSignal.onValue { data in
-            print("got api response", data ?? "")
+        bag += state.apiResponseSignal.onValue { link in
+            guard let link = link else {
+                return
+            }
+            self.state.goTo(passageName: link.name)
         }
 
         return (view, Signal { callback in

@@ -26,14 +26,24 @@ extension ApolloClient {
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
 
         let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
+        
+        let environment = ApolloEnvironmentConfig(
+            endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+            assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+        )
+        
+        Dependencies.shared.add(module: Module { () -> ApolloEnvironmentConfig in
+            environment
+        })
 
         let httpNetworkTransport = HTTPNetworkTransport(
-            url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+            url: environment.endpointURL,
             client: urlSessionClient
         )
 
         let websocketNetworkTransport = WebSocketTransport(
-            request: URLRequest(url: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!),
+            request: URLRequest(url: environment.wsEndpointURL),
             connectingPayload: httpAdditionalHeaders as GraphQLMap
         )
 
@@ -78,7 +88,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Bundle.setLanguage("en-SE")
 
         bag += navigationController.present(Embark(
-            name: "Web Onboarding - Swedish Needer"
+            name: "Web Onboarding NO - Norwegian Travel", state: EmbarkState { externalRedirect in
+                print(externalRedirect)
+            }
         ))
 
         return true
