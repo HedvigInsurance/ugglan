@@ -204,7 +204,7 @@ extension EmbarkState {
             var urlRequest = URLRequest(url: apolloEnvironment.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = try! JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
+            urlRequest.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
                         
             return Future { completion in
                 self.urlSessionClient.sendRequest(urlRequest) { result in
