@@ -114,26 +114,31 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
             box.layoutIfNeeded()
         }
         
-        bag += Signal(just: ()).animated(style: .easeOut(duration: 0.35)) {
+        bag += Animated.now.animated(style: .easeOut(duration: 0.35)) {
             button.alpha = 0
             button.isHidden = true
             button.transform = CGAffineTransform(translationX: 0, y: 50)
             layoutAllContainers()
         }
 
-        bag += Signal(just: ()).animated(style: .lightBounce(duration: 0.25)) {
+        let inputAndLoader = Animated.now.animated(style: .lightBounce(duration: 0.25)) {
             input.alpha = 0
-            layoutAllContainers()
-        }.animated(style: .heavyBounce(duration: 0.5)) {
-            input.isHidden = true
-            view.alignment = .center
-            boxStack.addArrangedSubview(activityIndicator)
-            layoutAllContainers()
-        }.animated(style: .easeIn(duration: 0.5)) {
-            activityIndicator.layoutIfNeeded()
             layoutAllContainers()
         }
         
+        bag += inputAndLoader.atValue { _ in
+            boxStack.addArrangedSubview(activityIndicator)
+        }.animated(style: .easeIn(duration: 0.25, delay: 0.20)) {
+            activityIndicator.alpha = 1
+        }
+        
+        bag += inputAndLoader.animated(style: .lightBounce(duration: 0.5)) {
+            input.isHidden = true
+            boxStack.alignment = .center
+            view.alignment = .center
+            layoutAllContainers()
+        }
+                
         return bag
     }
 }
@@ -221,7 +226,7 @@ extension EmbarkTextAction: Viewable {
                 
                 if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
                     animator.state = .loading
-                    self.state.handleApi(apiFragment: apiFragment).delay(by: 0.5).onValue { link in
+                    self.state.handleApi(apiFragment: apiFragment).delay(by: 10).onValue { link in
                         guard let link = link else {
                             return
                         }
