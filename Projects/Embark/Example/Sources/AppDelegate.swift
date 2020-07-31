@@ -88,7 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Bundle.setLanguage("en-SE")
 
         bag += navigationController.present(Embark(
-            name: "Web Onboarding NO - Norwegian Travel", state: EmbarkState { externalRedirect in
+            name: "Web Onboarding - Swedish Needer", state: EmbarkState { externalRedirect in
                 print(externalRedirect)
             }
         ))

@@ -115,15 +115,6 @@ extension EmbarkInput: Viewable {
             self.shouldReturn.call(value) ?? false
         }
 
-        return (view, Signal { callback in
-            bag += textField.providedSignal.onValue { value in
-                callback(value)
-            }
-
-            return bag
-        }.readable(getValue: { textField.value }).writable(setValue: { newValue in
-            placeholderLabel.alpha = newValue.isEmpty ? 1 : 0
-            textField.value = newValue
-        }))
+        return (view, textField.providedSignal.hold(bag))
     }
 }

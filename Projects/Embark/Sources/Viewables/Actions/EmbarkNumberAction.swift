@@ -29,7 +29,7 @@ extension EmbarkNumberAction: Viewable {
         view.spacing = 10
 
         let box = UIView()
-        box.backgroundColor = .brand(.primaryBackground())
+        box.backgroundColor = .brand(.secondaryBackground())
         box.layer.cornerRadius = 10
         bag += box.applyShadow { _ -> UIView.ShadowProperties in
             UIView.ShadowProperties(
@@ -56,8 +56,13 @@ extension EmbarkNumberAction: Viewable {
                 callback(self.data.numberActionData.link.fragments.embarkLinkFragment)
             }
 
-            let textField = EmbarkInput(placeholder: self.data.numberActionData.placeholder, masking: Masking(type: .digits))
-            textField.keyboardTypeSignal.value = .numberPad
+            let masking = Masking(type: .digits)
+            let textField = EmbarkInput(
+                placeholder: self.data.numberActionData.placeholder,
+                keyboardType: masking.keyboardType,
+                textContentType: masking.textContentType,
+                masking: masking
+            )
             let (textInputView, textSignal) = textField.materialize(events: events)
             boxStack.addArrangedSubview(textInputView)
 
