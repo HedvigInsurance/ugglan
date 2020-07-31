@@ -229,7 +229,11 @@ extension EmbarkState {
                                 completion(.failure(ApiError.unknown))
                             }
                         } else {
-                            completion(.failure(ApiError.failed(reason: String(data: data, encoding: .utf8)!)))
+                            if let reason = String(data: data, encoding: .utf8) {
+                                completion(.failure(ApiError.failed(reason: reason)))
+                            } else {
+                                completion(.failure(ApiError.unknown))
+                            }
                         }
                     }
                 }
