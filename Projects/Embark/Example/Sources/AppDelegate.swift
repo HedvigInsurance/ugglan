@@ -84,12 +84,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = ApolloClient.createClient(token: nil)
 
         let navigationController = UINavigationController()
+        navigationController.navigationBar.prefersLargeTitles = true
         window?.rootViewController = navigationController
 
         Bundle.setLanguage("en-SE")
         DefaultStyling.installCustom()
 
-        bag += navigationController.present(StoryList())
+        bag += navigationController.present(
+            StoryList(),
+            options: [.defaults, .largeTitleDisplayMode(.always)]
+        )
 
         return true
     }
