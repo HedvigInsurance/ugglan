@@ -181,14 +181,14 @@ extension EmbarkState {
                 if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
                     return queryApi.data.queryErrors.first { queryError -> Bool in
                         guard let contains = queryError.contains else {
-                            return false
+                            return true
                         }
                         return error.localizedDescription.contains(contains)
                     }?.next.fragments.embarkLinkFragment
                 } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
                     return mutationApi.data.mutationErrors.first { mutationError -> Bool in
                         guard let contains = mutationError.contains else {
-                            return false
+                            return true
                         }
                         return error.localizedDescription.contains(contains)
                     }?.next.fragments.embarkLinkFragment
@@ -214,6 +214,7 @@ extension EmbarkState {
                     case let .success((data, response)):
                         if response.statusCode == 200 {
                             if let result = try? JSONSerialization.jsonObject(with: data, options: []) as? ResultMap {
+                                print(result)
                                 if let errors = result["errors"] as? [ResultMap] {
                                     if let error = errors.first, let message = error["message"] as? String {
                                         completion(.failure(ApiError.failed(reason: message)))
