@@ -26,18 +26,18 @@ extension StoryList: Presentable {
         viewController.title = "Embark Stories"
         let bag = DisposeBag()
         
-        let tableKit = TableKit<EmptySection, String>(holdIn: bag)
+        let tableKit = TableKit<EmptySection, StringRow>(holdIn: bag)
         bag += viewController.install(tableKit)
         
         bag += tableKit.delegate.didSelectRow.onValue { storyName in
             viewController.present(Embark(
-                name: storyName, state: EmbarkState { externalRedirect in
+                name: storyName.value, state: EmbarkState { externalRedirect in
                     print(externalRedirect)
                 }
-            ))
+            ), options: [.defaults, .largeTitleDisplayMode(.never)])
         }
         
-        bag += client.fetch(query: EmbarkStoryNamesQuery()).map { $0.data?.embarkStoryNames }.valueSignal.compactMap { $0 }.onValue({ storyNames in
+        bag += client.fetch(query: EmbarkStoryNamesQuery()).valueSignal.map { $0.data?.embarkStoryNames }.compactMap { $0 }.map { $0.map { value in StringRow(value: value) }}.onValue({ storyNames in
             tableKit.set(Table(rows: storyNames))
         })
         

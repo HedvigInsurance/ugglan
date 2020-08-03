@@ -34,6 +34,9 @@ extension Embark: Presentable {
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
         let form = FormView()
+        form.dynamicStyle = DynamicFormStyle.default.restyled({ (style: inout FormStyle) in
+            style.insets = .zero
+        })
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
             scrollView.alwaysBounceVertical = false
         }
