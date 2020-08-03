@@ -31,7 +31,7 @@ struct EmbarkTextAction {
 protocol ViewableAnimatorHandler {
     associatedtype Views
     associatedtype State
-    func animate(animator: ViewableAnimator<Self>) -> Disposable
+    func animate(animator: ViewableAnimator<Self>) -> ReadSignal<Bool>
 }
 
 class ViewableAnimator<AnimatorHandler: ViewableAnimatorHandler> {
@@ -48,10 +48,11 @@ class ViewableAnimator<AnimatorHandler: ViewableAnimatorHandler> {
     private let handler: AnimatorHandler
     var views: AnimatorHandler.Views
     private var bag = DisposeBag()
-    var state: AnimatorHandler.State {
-        didSet {
-            bag += self.handler.animate(animator: self)
-        }
+    private(set) var state: AnimatorHandler.State
+    
+    func setState(_ state: AnimatorHandler.State) -> ReadSignal<Bool> {
+        self.state = state
+        return self.handler.animate(animator: self)
     }
     
     func register<View: UIView>(key: WritableKeyPath<AnimatorHandler.Views, View>, value: View) {
@@ -91,9 +92,9 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
         case notLoading
     }
     
-    func animate(animator: ViewableAnimator<Self>) -> Disposable {
+    func animate(animator: ViewableAnimator<Self>) -> ReadSignal<Bool> {
         guard animator.state == .loading else {
-            return NilDisposer()
+            return ReadSignal(true)
         }
         
         let bag = DisposeBag()
@@ -103,6 +104,8 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
         let box = animator.views.box
         let button = animator.views.button
         let input = animator.views.input
+        
+        let dummyActivityIndicator = UIView()
         
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
@@ -127,19 +130,32 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
         }
         
         bag += inputAndLoader.atValue { _ in
-            boxStack.addArrangedSubview(activityIndicator)
+            boxStack.addArrangedSubview(dummyActivityIndicator)
+            boxStack.addSubview(activityIndicator)
+            
+            activityIndicator.snp.makeConstraints { make in
+                make.center.equalTo(box.snp.center)
+            }
+            
+            dummyActivityIndicator.snp.makeConstraints { make in
+                make.width.height.equalTo(activityIndicator)
+            }
+            
+            dummyActivityIndicator.layoutIfNeeded()
+            activityIndicator.layoutIfNeeded()
         }.animated(style: .easeIn(duration: 0.25, delay: 0.20)) {
             activityIndicator.alpha = 1
+            activityIndicator.layoutIfNeeded()
         }
         
-        bag += inputAndLoader.animated(style: .lightBounce(duration: 0.5)) {
+        let completionSignal = inputAndLoader.animated(style: .lightBounce(duration: 0.5)) {
             input.isHidden = true
             boxStack.alignment = .center
             view.alignment = .center
             layoutAllContainers()
         }
                 
-        return bag
+        return completionSignal.hold(bag).boolean()
     }
 }
 
@@ -225,8 +241,7 @@ extension EmbarkTextAction: Viewable {
                 self.state.store.createRevision()
                 
                 if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
-                    animator.state = .loading
-                    self.state.handleApi(apiFragment: apiFragment).delay(by: 10).onValue { link in
+                    bag += self.state.handleApi(apiFragment: apiFragment).valueSignal.wait(until: animator.setState(.loading)).onValue { link in
                         guard let link = link else {
                             return
                         }
