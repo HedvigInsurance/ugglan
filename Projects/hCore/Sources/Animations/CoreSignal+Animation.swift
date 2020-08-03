@@ -10,8 +10,8 @@ import Flow
 import Foundation
 import UIKit
 
-public func +=<SignalKind, SignalValue>(_ bag: DisposeBag, _ signal: CoreSignal<SignalKind, SignalValue>) {
-    bag += signal.nil()
+public func +=<SignalKind, SignalValue>(_ bag: DisposeBag, _ signal: CoreSignal<SignalKind, SignalValue>?) {
+    bag += signal?.nil()
 }
 
 public struct Animated: SignalProvider {

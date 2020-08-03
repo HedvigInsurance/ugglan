@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCoreUI
+import hCore
 import Presentation
 import UIKit
 
