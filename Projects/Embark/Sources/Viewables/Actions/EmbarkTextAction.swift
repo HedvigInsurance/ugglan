@@ -105,6 +105,8 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
         let button = animator.views.button
         let input = animator.views.input
         
+        input.endEditing(true)
+        
         let dummyActivityIndicator = UIView()
         
         let activityIndicator = UIActivityIndicatorView()
