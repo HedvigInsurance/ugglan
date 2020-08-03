@@ -12,7 +12,8 @@ import Foundation
 import hCore
 
 public enum ExternalRedirect {
-    case email
+    case mailingList
+    case offer
 }
 
 public struct EmbarkState {
@@ -67,8 +68,10 @@ public struct EmbarkState {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
             if let externalRedirect = resultingPassage.externalRedirect {
                 switch externalRedirect {
-                case .email:
-                    externalRedirectHandler(ExternalRedirect.email)
+                case .mailingList:
+                    externalRedirectHandler(ExternalRedirect.mailingList)
+                case .offer:
+                    externalRedirectHandler(ExternalRedirect.offer)
                 case .__unknown:
                     fatalError("Can't external redirect to location")
                 }

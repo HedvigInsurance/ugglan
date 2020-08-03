@@ -13,6 +13,7 @@ import Foundation
 import hCore
 import Presentation
 import UIKit
+import Form
 
 extension ApolloClient {
     static func createClient(token _: String?) -> (ApolloStore, ApolloClient) {
@@ -86,12 +87,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = navigationController
 
         Bundle.setLanguage("en-SE")
+        DefaultStyling.installCustom()
 
-        bag += navigationController.present(Embark(
-            name: "Web Onboarding - Swedish Needer", state: EmbarkState { externalRedirect in
-                print(externalRedirect)
-            }
-        ))
+        bag += navigationController.present(StoryList())
 
         return true
     }
