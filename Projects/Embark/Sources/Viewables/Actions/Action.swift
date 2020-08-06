@@ -110,8 +110,9 @@ extension Action: Viewable {
                     )).onValue(callback)
                 } else if let externalInsuranceProviderAction = actionData?.asEmbarkExternalInsuranceProviderAction {
                     innerBag += view.addArranged(InsuranceProviderAction(
+                        state: self.state,
                         data: externalInsuranceProviderAction
-                    ))
+                    )).onValue(callback)
                 }
 
                 return innerBag

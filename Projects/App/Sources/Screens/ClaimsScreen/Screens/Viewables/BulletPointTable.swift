@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct BulletPointTable {
@@ -46,7 +47,7 @@ extension BulletPointTable: Viewable {
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,
-                icon: RemoteVectorIcon($0.icon.fragments.iconFragment),
+                icon: RemoteVectorIcon(hCoreUI.IconFragment(unsafeResultMap: $0.icon.fragments.iconFragment.resultMap)),
                 description: $0.description
             )
         }
