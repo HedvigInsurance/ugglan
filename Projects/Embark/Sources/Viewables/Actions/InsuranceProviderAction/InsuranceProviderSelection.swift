@@ -33,7 +33,7 @@ extension InsuranceProviderFragment: Reusable {
             )
             bag += containerView.addArranged(remoteVectorIcon) { view in
                 view.snp.makeConstraints { make in
-                    make.width.equalTo(60)
+                    make.width.equalTo(35)
                 }
             }
             

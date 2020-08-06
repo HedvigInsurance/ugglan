@@ -39,9 +39,16 @@ extension InsuranceProviderAction: Viewable {
                 let (selectionViewController, didPickInsuranceProviderFuture) = InsuranceProviderSelection().materialize()
                 
                 bag += didPickInsuranceProviderFuture.onValue { provider in
+                    if let passageName = self.state.passageNameSignal.value {
+                        self.state.store.setValue(
+                            key: "\(passageName)Result",
+                            value: provider.name
+                        )
+                    }
+                    
                     self.state.store.setValue(key: "previousInsurer", value: provider.name)
                     callback(self.data.externalInsuranceProviderData.next.fragments.embarkLinkFragment)
-                }
+                }.disposable
                 
                 let childViewController = selectionViewController.embededInNavigationController(options)
                     
@@ -62,16 +69,14 @@ extension InsuranceProviderAction: Viewable {
                 
                 childViewController.view.layer.cornerRadius = 8
                 
-                bag += childViewController.signal(for: \.preferredContentSize).atOnce().animated(style: SpringAnimationStyle.lightBounce()) { size in
+                bag += childViewController.signal(for: \.preferredContentSize).atOnce().onValue { size in
                     view.snp.remakeConstraints { make in
                         make.height.equalTo(size.height)
                     }
-                    view.layoutIfNeeded()
-                    childViewController.view.layoutIfNeeded()
                 }
             }
             
-            bag += view.didMoveToWindowSignal.take(first: 1).onValue(renderChildViewController)
+            bag += view.didMoveToWindowSignal.atOnce().take(first: 1).onValue(renderChildViewController)
             
             return bag
         })
