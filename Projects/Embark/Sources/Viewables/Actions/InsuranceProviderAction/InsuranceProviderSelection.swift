@@ -18,6 +18,16 @@ struct InsuranceProviderSelection {
     @Inject var client: ApolloClient
 }
 
+extension InsuranceProviderFragment: Reusable {
+    public static func makeAndConfigure() -> (make: UIView, configure: (InsuranceProviderFragment) -> Disposable) {
+        let label = UILabel(value: "", style: .brand(.body(color: .primary)))
+        return (label, { `self` in
+            label.value = self.name
+            return NilDisposer()
+        })
+    }
+}
+
 extension InsuranceProviderSelection: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -25,15 +35,19 @@ extension InsuranceProviderSelection: Presentable {
         viewController.preferredContentSize = CGSize(width: 300, height: 250)
         let bag = DisposeBag()
         
-        let form = FormView()
+        let tableKit = TableKit<EmptySection, InsuranceProviderFragment>()
         
-        let section = form.appendSection()
-        bag += section.appendRow(title: "Bolag").onValue { _ in
-            viewController.present(InsuranceProviderLoginDetails())
+        bag += tableKit.delegate.didSelectRow.onValue { row in
+            viewController.present(InsuranceProviderCollectionAgreement(provider: row))
         }
         
-        bag += viewController.install(form)
+        bag += client.fetch(query: InsuranceProvidersQuery(locale: .svSe)).valueSignal.compactMap { $0.data?.insuranceProviders }.onValue { providers in
+            tableKit.table = Table(rows: providers.map { $0.fragments.insuranceProviderFragment })
+        }
+        
+        bag += viewController.install(tableKit)
         
         return (viewController, bag)
     }
 }
+

@@ -18,18 +18,8 @@ fragment InsuranceProviderFragment on InsuranceProvider {
     }
 }
 
-query SwedishInsuranceProviders {
-    insuranceProviders {
-        swedish {
-            ...InsuranceProviderFragment
-        }
-    }
-}
-
-query NorwegianInsuranceProviders {
-    insuranceProviders {
-        norwegian {
-            ...InsuranceProviderFragment
-        }
+query InsuranceProviders($locale: Locale!) {
+    insuranceProviders(locale: $locale) {
+        ...InsuranceProviderFragment
     }
 }

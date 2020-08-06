@@ -27,13 +27,20 @@ extension Passage: Viewable {
         let bag = DisposeBag()
 
         class PanDelegate: NSObject, UIGestureRecognizerDelegate {
+            let scrollView: UIScrollView
+            
+            init(scrollView: UIScrollView) {
+                self.scrollView = scrollView
+                super.init()
+            }
+            
             func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-                return true
+                return scrollView.panGestureRecognizer == otherGestureRecognizer
             }
         }
         
         let panGestureRecognizer = UIPanGestureRecognizer()
-        let delegate = PanDelegate()
+        let delegate = PanDelegate(scrollView: scrollView)
         bag.hold(delegate)
         panGestureRecognizer.delegate = delegate
                 
