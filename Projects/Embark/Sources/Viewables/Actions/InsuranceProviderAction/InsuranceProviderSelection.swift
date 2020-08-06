@@ -31,14 +31,17 @@ extension InsuranceProviderFragment: Reusable {
 extension InsuranceProviderSelection: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = "Välj försäkringsbolag"
+        viewController.title = L10n.Embark.ExternalInsuranceAction.listTitle
         viewController.preferredContentSize = CGSize(width: 300, height: 250)
         let bag = DisposeBag()
         
         let tableKit = TableKit<EmptySection, InsuranceProviderFragment>()
         
         bag += tableKit.delegate.didSelectRow.onValue { row in
-            viewController.present(InsuranceProviderCollectionAgreement(provider: row))
+            viewController.present(
+                InsuranceProviderCollectionAgreement(provider: row),
+                style: .modally()
+            )
         }
         
         bag += client.fetch(query: InsuranceProvidersQuery(locale: .svSe)).valueSignal.compactMap { $0.data?.insuranceProviders }.onValue { providers in

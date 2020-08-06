@@ -33,8 +33,9 @@ extension InsuranceProviderAction: Viewable {
         }
                 
         func renderChildViewController() {
+            let options: PresentationOptions = [.defaults]
             let selectionViewController = InsuranceProviderSelection().materialize(into: bag)
-            let childViewController = selectionViewController.embededInNavigationController([.defaults])
+            let childViewController = selectionViewController.embededInNavigationController(options)
                 
             view.viewController?.addChild(childViewController)
             

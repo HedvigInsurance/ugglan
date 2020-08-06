@@ -10,7 +10,15 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    externalDependencies: [.flow, .form, .snapkit, .presentation, .dynamiccolor, .flowfeedback],
+    externalDependencies: [
+        .flow,
+        .form,
+        .snapkit,
+        .presentation,
+        .dynamiccolor,
+        .flowfeedback,
+        .markdownkit
+    ],
     dependencies: ["hCore"],
     sdks: ["UIKit.framework"],
     includesGraphQL: true
