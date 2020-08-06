@@ -16,6 +16,8 @@ struct Passage {
     let state: EmbarkState
 }
 
+typealias EmbarkPassage = EmbarkStoryQuery.Data.EmbarkStory.Passage
+
 extension Passage: Viewable {
     func goBackPanGesture(_ view: UIView, actionView: UIView) -> Disposable {
         guard let scrollView = view.firstAncestor(ofType: FormScrollView.self) else {

@@ -12,7 +12,7 @@ import hCoreUI
 import Presentation
 import UIKit
 
-typealias EmbarkTextActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction
+typealias EmbarkTextActionData = EmbarkPassage.Action.AsEmbarkTextAction
 
 struct EmbarkTextAction {
     let state: EmbarkState

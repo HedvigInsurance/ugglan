@@ -30,7 +30,7 @@ extension Embark: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
         let form = FormView()
@@ -40,7 +40,7 @@ extension Embark: Presentable {
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
             scrollView.alwaysBounceVertical = false
         }
-
+        
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = hCoreUIAssets.wordmark.image
         titleHedvigLogo.contentMode = .scaleAspectFit
