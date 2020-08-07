@@ -224,7 +224,7 @@ extension Project {
                                          bundleId: "com.hedvig.\(name)Example",
                                          deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                                          infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
-                                         sources: ["Example/Sources/**/*.swift", "Sources/Derived/**/*.swift"],
+                                         sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                                          resources: "Example/Resources/**",
                                          actions: targetActions,
                                          dependencies: [[.target(name: "\(name)"), .project(target: "ExampleUtil", path: .relativeToRoot("Projects/ExampleUtil"))], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
