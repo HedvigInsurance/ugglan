@@ -1,0 +1,10 @@
+fragment IconFragment on Icon {
+    variants {
+        dark {
+            pdfUrl
+        }
+        light {
+            pdfUrl
+        }
+    }
+}

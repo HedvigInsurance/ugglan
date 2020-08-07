@@ -14,12 +14,6 @@ import Foundation
 import hCore
 import UIKit
 
-struct ApolloEnvironmentConfig {
-    let endpointURL: URL
-    let wsEndpointURL: URL
-    let assetsEndpointURL: URL
-}
-
 extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
         ApplicationState.getTargetEnvironment().apolloEnvironmentConfig

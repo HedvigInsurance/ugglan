@@ -13,11 +13,12 @@ import Foundation
 import hCore
 import Presentation
 import UIKit
+import Form
 
 extension ApolloClient {
     static func createClient(token _: String?) -> (ApolloStore, ApolloClient) {
         let httpAdditionalHeaders = [
-            "Authorization": "SXjDmWsfPNG4Dw==.1dCSCrv8Te5PpQ==.yHXEgngWUvfcUA==",
+            "Authorization": "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==",
             "User-Agent": "iOS",
         ]
 
@@ -26,14 +27,24 @@ extension ApolloClient {
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
 
         let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
+        
+        let environment = ApolloEnvironmentConfig(
+            endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+            assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+        )
+        
+        Dependencies.shared.add(module: Module { () -> ApolloEnvironmentConfig in
+            environment
+        })
 
         let httpNetworkTransport = HTTPNetworkTransport(
-            url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+            url: environment.endpointURL,
             client: urlSessionClient
         )
 
         let websocketNetworkTransport = WebSocketTransport(
-            request: URLRequest(url: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!),
+            request: URLRequest(url: environment.wsEndpointURL),
             connectingPayload: httpAdditionalHeaders as GraphQLMap
         )
 
@@ -44,6 +55,10 @@ extension ApolloClient {
 
         let store = ApolloStore(cache: InMemoryNormalizedCache())
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+        
+        Dependencies.shared.add(module: Module { () -> URLSessionClient in
+            urlSessionClient
+        })
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             client
@@ -69,13 +84,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = ApolloClient.createClient(token: nil)
 
         let navigationController = UINavigationController()
+        navigationController.navigationBar.prefersLargeTitles = true
         window?.rootViewController = navigationController
 
         Bundle.setLanguage("en-SE")
+        DefaultStyling.installCustom()
 
-        bag += navigationController.present(Embark(
-            name: "Web Onboarding NO - English Travel"
-        ))
+        bag += navigationController.present(
+            StoryList(),
+            options: [.defaults, .largeTitleDisplayMode(.always)]
+        )
 
         return true
     }

@@ -128,7 +128,8 @@ extension EmbarkMessages: Viewable {
 
             innerBag += messages.map { self.parseMessage(message: $0.fragments.messageFragment) }.compactMap { $0 }.enumerated().map { (arg) -> Disposable in
                 let (index, messageText) = arg
-                return view.addArranged(MessageBubble(text: messageText, delay: 0, animated: true, animationDelay: TimeInterval(index)))
+                let text = self.replacePlaceholders(message: messageText)
+                return view.addArranged(MessageBubble(text: text, delay: 0, animated: true, animationDelay: TimeInterval(index)))
             }
 
             return innerBag

@@ -9,17 +9,41 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct Passage {
     let state: EmbarkState
 }
 
+typealias EmbarkPassage = EmbarkStoryQuery.Data.EmbarkStory.Passage
+
 extension Passage: Viewable {
     func goBackPanGesture(_ view: UIView, actionView: UIView) -> Disposable {
+        guard let scrollView = view.firstAncestor(ofType: FormScrollView.self) else {
+            return NilDisposer()
+        }
+        
         let bag = DisposeBag()
 
+        class PanDelegate: NSObject, UIGestureRecognizerDelegate {
+            let scrollView: UIScrollView
+            
+            init(scrollView: UIScrollView) {
+                self.scrollView = scrollView
+                super.init()
+            }
+            
+            func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+                return scrollView.panGestureRecognizer == otherGestureRecognizer
+            }
+        }
+        
         let panGestureRecognizer = UIPanGestureRecognizer()
+        let delegate = PanDelegate(scrollView: scrollView)
+        bag.hold(delegate)
+        panGestureRecognizer.delegate = delegate
+                
         let hasSentFeedback = ReadWriteSignal(false)
 
         let releaseToGoBackLabel = UILabel(
@@ -35,19 +59,18 @@ extension Passage: Viewable {
             make.left.right.equalToSuperview()
         }
 
-        bag += state.apiResponseSignal.onValue { data in
-            print("got api response", data ?? "")
-        }
-
         bag += panGestureRecognizer.signal(forState: .began).onValue { _ in
             if panGestureRecognizer.translation(in: view).y < 0 {
-                panGestureRecognizer.state = .ended
+                panGestureRecognizer.state = .failed
             }
         }
 
         bag += panGestureRecognizer
             .signal(forState: .changed)
             .filter(predicate: { _ in self.state.canGoBackSignal.value })
+            .filter(predicate: { _ in
+                scrollView.contentOffset.y <= 0
+            })
             .onValue { _ in
                 let translationY = max(
                     panGestureRecognizer.translation(in: view).y,
@@ -103,6 +126,7 @@ extension Passage: Viewable {
         view.distribution = .equalSpacing
         view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         view.isLayoutMarginsRelativeArrangement = true
+        view.spacing = 15
         let bag = DisposeBag()
 
         let embarkMessages = EmbarkMessages(
@@ -117,26 +141,13 @@ extension Passage: Viewable {
         bag += state.currentPassageSignal.onValue { passage in
             print("API", passage?.api ?? " none")
         }
-
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { keyboardInfo in
-                view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: keyboardInfo.height, right: 20)
-                view.layoutIfNeeded()
-        })
-
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillHideNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(mapStyle: { (keyboardInfo) -> AnimationStyle in
-                AnimationStyle(options: keyboardInfo.animationCurve, duration: keyboardInfo.animationDuration, delay: 0)
-            }, animations: { _ in
-                view.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-                view.layoutIfNeeded()
-        })
+        
+        bag += state.apiResponseSignal.onValue { link in
+            guard let link = link else {
+                return
+            }
+            self.state.goTo(passageName: link.name)
+        }
 
         return (view, Signal { callback in
             bag += view.addArranged(action) { actionView in

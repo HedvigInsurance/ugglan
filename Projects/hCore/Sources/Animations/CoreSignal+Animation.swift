@@ -10,6 +10,23 @@ import Flow
 import Foundation
 import UIKit
 
+public func +=<SignalKind, SignalValue>(_ bag: DisposeBag, _ signal: CoreSignal<SignalKind, SignalValue>?) {
+    bag += signal?.nil()
+}
+
+public struct Animated: SignalProvider {
+    public typealias Value = Void
+    public typealias Kind = Plain
+    
+    public var providedSignal: CoreSignal<Plain, Void> {
+        return Self.now
+    }
+    
+    public static var now: CoreSignal<Plain, Void> {
+        return Signal(just: ())
+    }
+}
+
 extension SignalProvider {
     /// explicitly ignore any value emitted by a signal
     public func `nil`() -> Disposable {
@@ -105,14 +122,6 @@ extension SignalProvider {
 
     public func animated(
         on scheduler: Scheduler = .current,
-        mapStyle: @escaping (_ value: Value) -> AnimationStyle,
-        animations: @escaping (_ value: Value) -> Void
-    ) -> Disposable {
-        animated(on: scheduler, mapStyle: mapStyle, animations: animations).nil()
-    }
-
-    public func animated(
-        on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
     ) -> Signal<Value> {
@@ -177,14 +186,6 @@ extension SignalProvider {
 
     public func animated(
         on scheduler: Scheduler = .current,
-        style: AnimationStyle,
-        animations: @escaping (_ value: Value) -> Void
-    ) -> Disposable {
-        animated(on: scheduler, style: style, animations: animations).nil()
-    }
-
-    public func animated(
-        on scheduler: Scheduler = .current,
         style: SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
     ) -> Signal<Value> {
@@ -209,13 +210,5 @@ extension SignalProvider {
 
             return bag
         }
-    }
-
-    public func animated(
-        on scheduler: Scheduler = .current,
-        style: SpringAnimationStyle,
-        animations: @escaping (_ value: Value) -> Void
-    ) -> Disposable {
-        animated(on: scheduler, style: style, animations: animations).nil()
     }
 }

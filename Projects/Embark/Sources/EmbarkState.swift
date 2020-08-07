@@ -11,14 +11,26 @@ import Flow
 import Foundation
 import hCore
 
-struct EmbarkState {
+public enum ExternalRedirect {
+    case mailingList
+    case offer
+}
+
+public struct EmbarkState {
     @Inject var client: ApolloClient
+    @Inject var urlSessionClient: URLSessionClient
+    @Inject var apolloEnvironment: ApolloEnvironmentConfig
 
     let store = EmbarkStore()
     let storySignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let passagesSignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
+    let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
+    
+    public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
+        self.externalRedirectHandler = externalRedirectHandler
+    }
 
     enum AnimationDirection {
         case forwards
@@ -53,7 +65,19 @@ struct EmbarkState {
         if let newPassage = passagesSignal.value.first(where: { passage -> Bool in
             passage.name == passageName
         }) {
-            currentPassageSignal.value = handleRedirects(passage: newPassage) ?? newPassage
+            let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
+            if let externalRedirect = resultingPassage.externalRedirect {
+                switch externalRedirect {
+                case .mailingList:
+                    externalRedirectHandler(ExternalRedirect.mailingList)
+                case .offer:
+                    externalRedirectHandler(ExternalRedirect.offer)
+                case .__unknown:
+                    fatalError("Can't external redirect to location")
+                }
+            } else {
+                currentPassageSignal.value = resultingPassage
+            }
         }
     }
 

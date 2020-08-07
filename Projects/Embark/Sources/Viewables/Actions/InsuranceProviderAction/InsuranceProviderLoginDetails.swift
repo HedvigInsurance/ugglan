@@ -1,0 +1,43 @@
+//
+//  InsuranceProviderLoginDetails.swift
+//  Embark
+//
+//  Created by sam on 5.8.20.
+//  Copyright © 2020 Hedvig AB. All rights reserved.
+//
+
+import Foundation
+import Flow
+import Form
+import hCore
+import hCoreUI
+import Presentation
+import Apollo
+
+struct InsuranceProviderLoginDetails {
+    @Inject var client: ApolloClient
+    let provider: InsuranceProviderFragment
+}
+
+extension InsuranceProviderLoginDetails: Presentable {
+    func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        viewController.title = "Login to"
+        viewController.preferredContentSize = CGSize(width: 300, height: 150)
+
+        let bag = DisposeBag()
+        
+        let form = FormView()
+        
+        bag += form.addArranged(EmbarkInput(placeholder: "Personal number", masking: Masking(type: .personalNumber))).nil()
+        
+        bag += form.addArranged(Button(
+            title: "Next",
+            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)
+        )))
+        
+        bag += viewController.install(form)
+        
+        return (viewController, bag)
+    }
+}

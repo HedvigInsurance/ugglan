@@ -239,7 +239,7 @@ extension CommonClaimCard: Viewable {
         }
 
         let remoteVectorIcon = RemoteVectorIcon()
-        remoteVectorIcon.iconSignal.value = data.icon.fragments.iconFragment
+        remoteVectorIcon.iconSignal.value = hCoreUI.IconFragment(unsafeResultMap: data.icon.fragments.iconFragment.resultMap)
 
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints { make in

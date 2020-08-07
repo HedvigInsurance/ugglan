@@ -104,21 +104,21 @@ public extension TextStyle {
 
         var dynamicColor: UIColor {
             return UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .light {
-                    return self.positiveColor
+                if trait.userInterfaceStyle == .dark {
+                    return self.negativeColor
                 }
 
-                return self.negativeColor
+                return self.positiveColor
             })
         }
 
         var dynamicReversedColor: UIColor {
             return UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .light {
-                    return self.negativeColor
+                if trait.userInterfaceStyle == .dark {
+                    return self.dynamicColor
                 }
 
-                return self.dynamicColor
+                return self.negativeColor
             })
         }
 
@@ -224,6 +224,7 @@ public extension TextStyle {
             return TextStyle.default.restyled { (style: inout TextStyle) in
                 style.font = font
                 style.color = color
+                style.adjustsFontForContentSizeCategory = true
             }
         }
     }

@@ -1,0 +1,25 @@
+fragment IconFragment on Icon {
+    variants {
+        dark {
+            pdfUrl
+        }
+        light {
+            pdfUrl
+        }
+    }
+}
+
+fragment InsuranceProviderFragment on InsuranceProvider {
+    name
+    externalCollectionId
+    hasExternalCapabilities
+    logo {
+        ...IconFragment
+    }
+}
+
+query InsuranceProviders($locale: Locale!) {
+    insuranceProviders(locale: $locale) {
+        ...InsuranceProviderFragment
+    }
+}

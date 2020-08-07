@@ -21,7 +21,7 @@ extension EmbarkSelectActionOption: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<ActionResponseData>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .white
+        control.backgroundColor = .brand(.secondaryBackground())
         control.layer.cornerRadius = 10
         bag += control.applyShadow { _ -> UIView.ShadowProperties in
             UIView.ShadowProperties(
@@ -46,9 +46,17 @@ extension EmbarkSelectActionOption: Viewable {
         stackView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
+        
+        let valueLabel = UILabel(
+            value: data.link.fragments.embarkLinkFragment.label,
+            style: TextStyle.brand(.headline(color: .primary)).centerAligned
+        )
+        valueLabel.adjustsFontSizeToFitWidth = true
+        valueLabel.minimumScaleFactor = 0.5
+        valueLabel.numberOfLines = 1
 
-        bag += stackView.addArranged(MultilineLabel(value: data.link.fragments.embarkLinkFragment.label, style: TextStyle.brand(.title3(color: .primary)).centerAligned))
-        bag += stackView.addArranged(MultilineLabel(value: L10n.embarkSelectOptionLabel, style: TextStyle.brand(.callout(color: .link)).centerAligned))
+        stackView.addArrangedSubview(valueLabel)
+        bag += stackView.addArranged(MultilineLabel(value: L10n.embarkSelectOptionLabel, style: TextStyle.brand(.footnote(color: .link)).centerAligned))
 
         return (control, Signal { callback in
             bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in

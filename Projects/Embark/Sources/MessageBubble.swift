@@ -75,10 +75,12 @@ extension MessageBubble: Viewable {
                     .map { StyledText(text: $0, style: bodyStyle) }
                     .delay(by: delay)
                     .onValue { styledText in
-                        label.styledTextSignal.value = styledText
-                        containerStackView.isHidden = false
-                        stylingView.alpha = 1
-                        labelView.alpha = 1
+                        UIView.performWithoutAnimation {
+                            label.styledTextSignal.value = styledText
+                            containerStackView.isHidden = false
+                            stylingView.alpha = 1
+                            labelView.alpha = 1
+                        }
                     }
             } else {
                 bag += textSignal

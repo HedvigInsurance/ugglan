@@ -110,6 +110,12 @@ fragment ApiFragment on EmbarkApi {
                 key
                 as
             }
+            queryErrors: errors {
+                contains
+                next {
+                    ...EmbarkLinkFragment
+                }
+            }
         }
     }
     ... on EmbarkApiGraphQLMutation {
@@ -124,6 +130,12 @@ fragment ApiFragment on EmbarkApi {
             mutationResults: results {
                key
                as
+            }
+            mutationErrors: errors {
+                contains
+                next {
+                    ...EmbarkLinkFragment
+                }
             }
         }
     }
@@ -167,6 +179,7 @@ query EmbarkStory($name: String!) {
         passages {
             id
             name
+            externalRedirect
             allLinks {
                 ...EmbarkLinkFragment
             }
@@ -191,6 +204,10 @@ query EmbarkStory($name: String!) {
                     textActionData: data {
                         key
                         placeholder
+                        mask
+                        api {
+                            ...ApiFragment
+                        }
                         link {
                             ...EmbarkLinkFragment
                         }
@@ -217,7 +234,8 @@ query EmbarkStory($name: String!) {
                         textActions {
                             data {
                               key
-                                placeholder
+                              placeholder
+                              mask
                             }
                         }
                     }
@@ -232,6 +250,30 @@ query EmbarkStory($name: String!) {
                                 ...EmbarkLinkFragment
                             }
                         }
+                    }
+                }
+                ... on EmbarkExternalInsuranceProviderAction {
+                    component
+                    externalInsuranceProviderData: data {
+                        next {
+                            ...EmbarkLinkFragment
+                        }
+                        skip {
+                            ...EmbarkLinkFragment
+                        }
+                    }
+                }
+                ... on EmbarkPreviousInsuranceProviderAction {
+                    component
+                    previousInsuranceProviderData: data {
+                        next {
+                            ...EmbarkLinkFragment
+                        }
+                        skip {
+                            ...EmbarkLinkFragment
+                        }
+                        providers
+                        storeKey
                     }
                 }
             }

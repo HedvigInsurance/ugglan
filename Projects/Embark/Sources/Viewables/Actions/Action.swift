@@ -30,11 +30,13 @@ extension Action: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
-        view.transform = CGAffineTransform(translationX: 0, y: 300)
 
         let bag = DisposeBag()
 
-        let backButton = Button(title: L10n.embarkGoBackButton, type: .standardSmall(backgroundColor: .black, textColor: .white))
+        let backButton = Button(
+            title: L10n.embarkGoBackButton,
+            type: .standardSmall(backgroundColor: .brand(.secondaryBackground()), textColor: .brand(.primaryText()))
+        )
         bag += backButton.onTapSignal.onValue {
             self.state.goBack()
         }
@@ -50,26 +52,40 @@ extension Action: Viewable {
         bag += view.addArranged(spacing)
 
         let actionDataSignal = state.currentPassageSignal.map { $0?.action }
+        
+        let isHiddenSignal = ReadWriteSignal(true)
+        
+        func handleViewState(_ isHidden: Bool) {
+            let extraPadding: CGFloat = 40
+            let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + extraPadding
+            view.transform = isHidden ? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
+        }
+        
+        bag += view.didLayoutSignal.withLatestFrom(isHiddenSignal.atOnce().plain()).map { _, isHidden in isHidden }.onValue(handleViewState)
+        bag += isHiddenSignal.atOnce().onValue(handleViewState)
+        
+        let animationStyle = SpringAnimationStyle(
+            duration: 0.5,
+            damping: 100,
+            velocity: 0.8,
+            delay: 0,
+            options: [.allowUserInteraction]
+        )
+        
+        let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: animationStyle) { actionData, _ in
+            isHiddenSignal.value = true
+            view.layoutIfNeeded()
+        }.delay(by: 0)
 
-        bag += actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: SpringAnimationStyle.lightBounce()) { actionData, _ in
-            if let selectAction = actionData?.asEmbarkSelectAction {
-                let stackView = UIStackView()
-                bag += stackView.addArranged(EmbarkSelectAction(
-                    state: self.state,
-                    data: selectAction
-                )).nil()
-
-                let height = stackView.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + 12
-                view.transform = CGAffineTransform(translationX: 0, y: height)
-            } else {
-                view.transform = CGAffineTransform(translationX: 0, y: 300)
-            }
-        }.delay(by: 0.25).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-            view.transform = CGAffineTransform.identity
+        bag += hideAnimationSignal.delay(by: 0.25).animated(style: animationStyle) { _ in
+            isHiddenSignal.value = false
+            view.layoutIfNeeded()
         }
 
         return (view, Signal { callback in
-            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).delay(by: 0.25).onValueDisposePrevious { actionData, _ in
+            let shouldUpdateUISignal = actionDataSignal.flatMapLatest { _ in hideAnimationSignal.map { _ in true }.readable(initial: false) }
+            
+            bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: shouldUpdateUISignal).onValueDisposePrevious { actionData, _ in
                 let innerBag = DisposeBag()
 
                 if let selectAction = actionData?.asEmbarkSelectAction {
@@ -91,7 +107,12 @@ extension Action: Viewable {
                     innerBag += view.addArranged(TextActionSet(
                         state: self.state,
                         data: textActionSet
-                    ))
+                    )).onValue(callback)
+                } else if let externalInsuranceProviderAction = actionData?.asEmbarkExternalInsuranceProviderAction {
+                    innerBag += view.addArranged(InsuranceProviderAction(
+                        state: self.state,
+                        data: externalInsuranceProviderAction
+                    )).onValue(callback)
                 }
 
                 return innerBag

@@ -13,25 +13,25 @@ import hCore
 import Kingfisher
 import UIKit
 
-struct RemoteVectorIcon {
-    let iconSignal = ReadWriteSignal<IconFragment?>(nil)
-    let finishedLoadingSignal: Signal<Void>
-    let finishedLoadingCallback = Callbacker<Void>()
+public struct RemoteVectorIcon {
+    public let iconSignal = ReadWriteSignal<IconFragment?>(nil)
+    public let finishedLoadingSignal: Signal<Void>
+    public let finishedLoadingCallback = Callbacker<Void>()
     @Inject var environment: ApolloEnvironmentConfig
-    let threaded: Bool
+    public let threaded: Bool
 
-    init(
+    public init(
         _ icon: IconFragment? = nil,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon
-        finishedLoadingSignal = finishedLoadingCallback.signal()
+        finishedLoadingSignal = finishedLoadingCallback.providedSignal
         self.threaded = threaded ?? false
     }
 }
 
-struct PDFProcessor: ImageProcessor {
-    func process(item: ImageProcessItem, options _: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
+public struct PDFProcessor: ImageProcessor {
+    public func process(item: ImageProcessItem, options _: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
         switch item {
         case let .image(image):
             return image
@@ -56,11 +56,11 @@ struct PDFProcessor: ImageProcessor {
         }
     }
 
-    let identifier: String
+    public let identifier: String
 }
 
 extension RemoteVectorIcon: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit

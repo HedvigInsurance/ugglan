@@ -12,13 +12,29 @@ import hCore
 import MarkdownKit
 import UIKit
 
-struct MarkdownText {
-    let textSignal: ReadWriteSignal<String>
-    let style: TextStyle
+public struct MarkdownText {
+    public let textSignal: ReadWriteSignal<String>
+    public let style: TextStyle
+    
+    public init(
+        textSignal: ReadWriteSignal<String>,
+        style: TextStyle
+    ) {
+        self.textSignal = textSignal
+        self.style = style
+    }
+    
+    public init(
+        value: String,
+        style: TextStyle
+    ) {
+        self.textSignal = ReadWriteSignal(value)
+        self.style = style
+    }
 }
 
 extension MarkdownText: Viewable {
-    func materialize(events _: ViewableEvents) -> (UILabel, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UILabel, Disposable) {
         let bag = DisposeBag()
 
         let markdownParser = MarkdownParser(font: style.font, color: style.color)

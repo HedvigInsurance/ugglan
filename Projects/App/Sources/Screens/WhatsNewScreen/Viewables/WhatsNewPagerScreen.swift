@@ -45,7 +45,7 @@ extension WhatsNewPagerScreen: Presentable {
         innerContainerView.spacing = 8
         innerContainerView.isLayoutMarginsRelativeArrangement = true
 
-        let remoteVectorIcon = RemoteVectorIcon(icon, threaded: true)
+        let remoteVectorIcon = RemoteVectorIcon(hCoreUI.IconFragment(unsafeResultMap: icon.resultMap), threaded: true)
 
         containerView.addArrangedSubview(innerContainerView)
 
