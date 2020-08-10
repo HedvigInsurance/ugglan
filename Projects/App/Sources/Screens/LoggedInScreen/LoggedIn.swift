@@ -49,7 +49,6 @@ extension LoggedIn: Presentable {
 
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
-        let claims = Claims()
         let referrals = Forever(service: ForeverServiceGraphQL())
         let profile = Profile()
 
@@ -63,12 +62,6 @@ extension LoggedIn: Presentable {
             keyGear,
             style: .default,
             options: [.prefersLargeTitles(true)]
-        )
-
-        let claimsPresentation = Presentation(
-            claims,
-            style: .default,
-            options: [.defaults, .prefersLargeTitles(true)]
         )
 
         let referralsPresentation = Presentation(
@@ -92,7 +85,6 @@ extension LoggedIn: Presentable {
                     bag += tabBarController.presentTabs(
                         contractsPresentation,
                         keyGearPresentation,
-                        claimsPresentation,
                         referralsPresentation,
                         profilePresentation
                     )
@@ -100,7 +92,6 @@ extension LoggedIn: Presentable {
                     bag += tabBarController.presentTabs(
                         contractsPresentation,
                         keyGearPresentation,
-                        claimsPresentation,
                         profilePresentation
                     )
                 }
@@ -108,14 +99,12 @@ extension LoggedIn: Presentable {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(
                         contractsPresentation,
-                        claimsPresentation,
                         referralsPresentation,
                         profilePresentation
                     )
                 } else {
                     bag += tabBarController.presentTabs(
                         contractsPresentation,
-                        claimsPresentation,
                         profilePresentation
                     )
                 }
