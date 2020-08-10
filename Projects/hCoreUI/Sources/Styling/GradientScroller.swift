@@ -26,8 +26,8 @@ extension GradientScroller {
             let gradientLayer = CAGradientLayer()
             gradientLayer.zPosition = -1
             gradientLayer.locations = [0, 1]
-            gradientLayer.startPoint = CGPoint.zero
-            gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+            gradientLayer.startPoint = CGPoint(x: 0.25, y: 0.5)
+            gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
             
             let originalTransform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
             gradientLayer.transform = CATransform3DMakeAffineTransform(originalTransform)
@@ -38,9 +38,9 @@ extension GradientScroller {
                 gradientLayer.removeFromSuperlayer()
             }
             
-            bag += didLayoutSignal.onValue({ _ in
+            bag += didLayoutSignal.onValue {
                 gradientLayer.frame = self.bounds
-            })
+            }
             
             bag += traitCollectionSignal.atOnce().onValue({ traitCollection in
                 if #available(iOS 13.0, *) {
@@ -65,11 +65,17 @@ extension GradientScroller {
                 }
             })
             
-            bag += signal(for: \.contentOffset).onValue { contentOffset in
+            bag += signal(for: \.contentOffset).atOnce().onValue { contentOffset in
                 CATransaction.begin()
                 CATransaction.setDisableActions(true)
-                let layerInsetY = min(contentOffset.y + self.safeAreaInsets.top, 0)
-                gradientLayer.frame = self.bounds.insetBy(dx: 0, dy: layerInsetY)
+                let navigationBarHeight = navigationController.navigationBar.frame.height
+                
+                gradientLayer.transform = CATransform3DMakeAffineTransform(
+                    originalTransform.concatenating(
+                        CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
+                    )
+                )
+               
                 CATransaction.commit()
             }
         }
