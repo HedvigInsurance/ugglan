@@ -31,7 +31,7 @@ func getSection(
             footerView: UILabel(value: "", style: .default)
         )
         let amountRow = section.appendRow(title: "Amount")
-        
+
         bag += amountRow.append(
             UITextField(value: monetaryAmount.amount, placeholder: "0.0", style: FieldStyle.default.keyboard(.decimalPad))
         ).onValue { value in
@@ -41,59 +41,59 @@ func getSection(
 
         let currencyRow = section.appendRow(title: "Currency")
         let currencyValue = UILabel(value: monetaryAmount.currency, style: .brand(.headline(color: .primary)))
-        
+
         currencyRow.append(currencyValue)
-        
+
         let pickerView = UIPickerView()
         pickerView.isHidden = true
         pickerView.snp.makeConstraints { make in
             make.height.equalTo(0)
         }
-        
+
         class DataSource: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
             internal init(onSelect: @escaping (String) -> Void) {
                 self.onSelect = onSelect
             }
-            
+
             let currencies = ["SEK", "NOK"]
             let onSelect: (_ value: String) -> Void
-            
-            func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+
+            func pickerView(_: UIPickerView, numberOfRowsInComponent _: Int) -> Int {
                 return currencies.count
             }
-            
-            func numberOfComponents(in pickerView: UIPickerView) -> Int {
+
+            func numberOfComponents(in _: UIPickerView) -> Int {
                 return 1
             }
-            
-            func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+
+            func pickerView(_: UIPickerView, titleForRow row: Int, forComponent _: Int) -> String? {
                 return currencies[row]
             }
-            
-            func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+
+            func pickerView(_: UIPickerView, didSelectRow row: Int, inComponent _: Int) {
                 onSelect(currencies[row])
             }
         }
-        
+
         let dataSource = DataSource { value in
             currencyValue.value = value
             monetaryAmount.currency = value
             setValue(monetaryAmount)
         }
         bag.hold(dataSource)
-        
+
         pickerView.dataSource = dataSource
         pickerView.delegate = dataSource
-        
+
         if let indexOfSelected = dataSource.currencies.firstIndex(where: { $0 == monetaryAmount.currency }) {
             pickerView.selectRow(indexOfSelected, inComponent: 0, animated: false)
         }
-        
+
         section.append(pickerView)
-        
+
         bag += currencyRow.animated(style: SpringAnimationStyle.lightBounce()) {
             pickerView.animationSafeIsHidden = !pickerView.animationSafeIsHidden
-        
+
             if !pickerView.isHidden {
                 pickerView.snp.removeConstraints()
             } else {
@@ -101,7 +101,7 @@ func getSection(
                     make.height.equalTo(0)
                 }
             }
-            
+
             pickerView.layoutIfNeeded()
             pickerView.layoutSuperviewsIfNeeded()
         }
@@ -203,12 +203,12 @@ func getSection(
 
             let segmentControl = UISegmentedControl(titles: info.cases.map { $0.name })
             segmentControl.value = 0
-            
-             if let runtimeEnum = property.type as? RuntimeEnum.Type {
-                 let caseValue = info.cases[0]
-                 setValue(runtimeEnum.fromName(caseValue.name))
-             }
-            
+
+            if let runtimeEnum = property.type as? RuntimeEnum.Type {
+                let caseValue = info.cases[0]
+                setValue(runtimeEnum.fromName(caseValue.name))
+            }
+
             row.append(segmentControl)
 
             bag += segmentControl.onValue { index in

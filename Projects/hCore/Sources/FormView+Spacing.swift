@@ -6,14 +6,14 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Form
+import Foundation
 
 extension FormView {
     public enum SpacingType {
         case top
         case inbetween
-        
+
         var height: CGFloat {
             switch self {
             case .top:
@@ -23,14 +23,14 @@ extension FormView {
             }
         }
     }
-    
+
     public func appendSpacing(_ type: SpacingType) {
         let view = UIView()
-        
+
         view.snp.makeConstraints { make in
             make.height.equalTo(type.height)
         }
-        
+
         append(view)
     }
 }

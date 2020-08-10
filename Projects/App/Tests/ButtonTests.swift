@@ -5,11 +5,11 @@
 //  Created by Sam Pettersson on 2019-03-30.
 //
 
+import hCore
 import hCoreUI
 import SnapshotTesting
-@testable import Ugglan
 import Testing
-import hCore
+@testable import Ugglan
 import UIKit
 import XCTest
 

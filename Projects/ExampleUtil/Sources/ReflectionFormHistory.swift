@@ -129,7 +129,7 @@ extension ReflectionFormHistory: Presentable {
                 fields: [
                     Alert.Field(initial: item.name ?? "") { textField in
                         textField.style = .default
-                    }
+                    },
                 ],
                 actions: [.init(title: "Change", action: { values in
                     item.name = values.first

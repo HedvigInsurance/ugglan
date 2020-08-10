@@ -18,7 +18,7 @@ let project = Project.framework(
         .dynamiccolor,
         .flowfeedback,
         .markdownkit,
-        .kingfisher
+        .kingfisher,
     ],
     dependencies: ["hCore"],
     sdks: ["UIKit.framework"],

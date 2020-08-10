@@ -15,7 +15,7 @@ import UIKit
 public struct MarkdownText {
     public let textSignal: ReadWriteSignal<String>
     public let style: TextStyle
-    
+
     public init(
         textSignal: ReadWriteSignal<String>,
         style: TextStyle
@@ -23,12 +23,12 @@ public struct MarkdownText {
         self.textSignal = textSignal
         self.style = style
     }
-    
+
     public init(
         value: String,
         style: TextStyle
     ) {
-        self.textSignal = ReadWriteSignal(value)
+        textSignal = ReadWriteSignal(value)
         self.style = style
     }
 }

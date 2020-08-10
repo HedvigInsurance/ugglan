@@ -46,7 +46,7 @@ extension EmbarkSelectActionOption: Viewable {
         stackView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
-        
+
         let valueLabel = UILabel(
             value: data.link.fragments.embarkLinkFragment.label,
             style: TextStyle.brand(.headline(color: .primary)).centerAligned

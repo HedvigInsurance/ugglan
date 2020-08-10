@@ -14,11 +14,11 @@ extension String {
         let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
 
         guard let detect = detector else {
-           return []
+            return []
         }
 
-        let matches = detect.matches(in: self, options: .reportCompletion, range: NSRange(location: 0, length: self.count))
-        
+        let matches = detect.matches(in: self, options: .reportCompletion, range: NSRange(location: 0, length: count))
+
         return matches
     }
 }

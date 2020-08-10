@@ -23,27 +23,27 @@ extension Passage: Viewable {
         guard let scrollView = view.firstAncestor(ofType: FormScrollView.self) else {
             return NilDisposer()
         }
-        
+
         let bag = DisposeBag()
 
         class PanDelegate: NSObject, UIGestureRecognizerDelegate {
             let scrollView: UIScrollView
-            
+
             init(scrollView: UIScrollView) {
                 self.scrollView = scrollView
                 super.init()
             }
-            
-            func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+
+            func gestureRecognizer(_: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
                 return scrollView.panGestureRecognizer == otherGestureRecognizer
             }
         }
-        
+
         let panGestureRecognizer = UIPanGestureRecognizer()
         let delegate = PanDelegate(scrollView: scrollView)
         bag.hold(delegate)
         panGestureRecognizer.delegate = delegate
-                
+
         let hasSentFeedback = ReadWriteSignal(false)
 
         let releaseToGoBackLabel = UILabel(
@@ -141,7 +141,7 @@ extension Passage: Viewable {
         bag += state.currentPassageSignal.onValue { passage in
             print("API", passage?.api ?? " none")
         }
-        
+
         bag += state.apiResponseSignal.onValue { link in
             guard let link = link else {
                 return

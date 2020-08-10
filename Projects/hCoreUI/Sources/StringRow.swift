@@ -6,15 +6,15 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import Form
 import Flow
+import Form
+import Foundation
 import UIKit
 
 public struct StringRow {
     public let value: String
     public let style: TextStyle
-    
+
     public init(value: String, style: TextStyle = .brand(.body(color: .primary))) {
         self.value = value
         self.style = style
@@ -33,10 +33,10 @@ extension StringRow: Reusable {
         view.isLayoutMarginsRelativeArrangement = true
         view.insetsLayoutMarginsFromSafeArea = false
         view.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-        
+
         let label = UILabel(value: "", style: .default)
         view.addArrangedSubview(label)
-        
+
         return (view, { `self` in
             label.style = self.style
             label.value = self.value

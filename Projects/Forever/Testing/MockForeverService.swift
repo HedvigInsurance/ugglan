@@ -10,7 +10,7 @@ public struct MockForeverService: ForeverService {
             self._dataSignal.value = data
         }.map { .left(()) }
     }
-    
+
     var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
     public var dataSignal: ReadSignal<ForeverData?> {
         _dataSignal.readOnly()
@@ -19,7 +19,7 @@ public struct MockForeverService: ForeverService {
     public func refetch() {}
 
     public init(data: ForeverData) {
-        self._dataSignal.value = data
+        _dataSignal.value = data
     }
 }
 
@@ -31,7 +31,7 @@ public class MockDelayedForeverService: ForeverService {
             self._dataSignal.value = data
         }.map { .left(()) }
     }
-    
+
     var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
     let delay: TimeInterval
     public var dataSignal: ReadSignal<ForeverData?> {
@@ -39,12 +39,12 @@ public class MockDelayedForeverService: ForeverService {
     }
 
     public func refetch() {}
-    
+
     func timer(data: ForeverData) {
         let bag = DisposeBag()
         bag += Signal(after: delay).onValue {
             self._dataSignal.value = data
-          bag.dispose()
+            bag.dispose()
         }
     }
 

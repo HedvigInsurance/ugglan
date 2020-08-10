@@ -13,7 +13,7 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
         self.amount = amount
         self.currency = currency
     }
-    
+
     public init(amount: Float, currency: String) {
         self.amount = String(amount)
         self.currency = currency

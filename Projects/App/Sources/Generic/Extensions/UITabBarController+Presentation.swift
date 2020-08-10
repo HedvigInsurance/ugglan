@@ -8,9 +8,9 @@
 
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 extension UITabBarController {
     private func materializeTab<

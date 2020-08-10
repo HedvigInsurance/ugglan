@@ -30,10 +30,10 @@ extension TextActionSet: Viewable {
                 guard let mask = textAction.data?.mask, let maskType = MaskType(rawValue: mask) else {
                     return nil
                 }
-                
+
                 return Masking(type: maskType)
             }
-            
+
             let input = EmbarkInput(
                 placeholder: textAction.data?.placeholder ?? "",
                 keyboardType: masking?.keyboardType,
@@ -68,10 +68,10 @@ extension TextActionSet: Viewable {
                     callback(link.fragments.embarkLinkFragment)
                 }
             }
-            
+
             if let textActions = textActions {
-                bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { (offset, shouldReturn) in
-                    shouldReturn.set { value -> Bool in
+                bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { offset, shouldReturn in
+                    shouldReturn.set { _ -> Bool in
                         if offset == textActions.count - 1 {
                             complete()
                         }
@@ -79,7 +79,7 @@ extension TextActionSet: Viewable {
                     }
                 }
             }
-            
+
             bag += button.onTapSignal.onValue { _ in
                 complete()
             }

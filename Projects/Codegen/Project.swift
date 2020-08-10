@@ -9,7 +9,7 @@ let project = Project(
             name: "Codegen",
             platform: .macOS,
             product: .app,
-            bundleId: "com.hedvig.codegen",
+            bundleId: "com.hedvig.codegen",
             infoPlist: "Info.plist",
             sources: ["Sources/**"],
             resources: [],

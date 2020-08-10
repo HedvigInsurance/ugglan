@@ -305,14 +305,14 @@ extension Message: Reusable {
                             .preloadAllAnimationData,
                             .processor(processor),
                             .backgroundDecode,
-                            .transition(.fade(1))
+                            .transition(.fade(1)),
                         ]
                     )
-                    
+
                     bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }.onValue { image in
                         let width = image.size.width
                         let height = image.size.height
-                        
+
                         if width > height {
                             imageViewContainer.snp.remakeConstraints { make in
                                 make.height.equalTo(200)
@@ -324,7 +324,7 @@ extension Message: Reusable {
                                 make.width.equalTo(150)
                             }
                         }
-                        
+
                         UIView.performWithoutAnimation {
                             imageViewContainer.layoutIfNeeded()
                         }
@@ -357,11 +357,11 @@ extension Message: Reusable {
                         with: url,
                         options: []
                     )
-                    
+
                     bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }.onValue { image in
                         let width = image.size.width
                         let height = image.size.height
-                        
+
                         if width > height {
                             imageViewContainer.snp.remakeConstraints { make in
                                 make.height.equalTo(200)
@@ -373,7 +373,7 @@ extension Message: Reusable {
                                 make.width.equalTo(150)
                             }
                         }
-                        
+
                         UIView.performWithoutAnimation {
                             imageViewContainer.layoutIfNeeded()
                         }
@@ -476,20 +476,20 @@ extension Message: Reusable {
                 case .text:
                     let textStyle = TextStyle.chatBody.colored(messageTextColor)
                     let attributedString = NSMutableAttributedString(text: message.body, style: textStyle)
-                    
+
                     message.body.links.forEach { linkRange in
                         attributedString.addAttributes([
                             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
                             NSAttributedString.Key.underlineColor: messageTextColor,
                         ], range: linkRange.range)
                     }
-                    
+
                     let label = UILabel()
                     label.attributedText = attributedString
                     label.numberOfLines = 0
 
                     contentContainer.addArrangedSubview(label)
-                    
+
                     let linkTapGestureRecognizer = UITapGestureRecognizer()
                     bag += contentContainer.install(linkTapGestureRecognizer)
 
@@ -497,7 +497,7 @@ extension Message: Reusable {
                         let tappedLink = message.body.links.first { result -> Bool in
                             linkTapGestureRecognizer.didTapRange(in: label, range: result.range)
                         }
-                        
+
                         if let url = tappedLink?.url {
                             label.viewController?.present(SFSafariViewController(url: url), animated: true)
                         }

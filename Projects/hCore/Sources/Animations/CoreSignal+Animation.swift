@@ -10,18 +10,18 @@ import Flow
 import Foundation
 import UIKit
 
-public func +=<SignalKind, SignalValue>(_ bag: DisposeBag, _ signal: CoreSignal<SignalKind, SignalValue>?) {
+public func += <SignalKind, SignalValue>(_ bag: DisposeBag, _ signal: CoreSignal<SignalKind, SignalValue>?) {
     bag += signal?.nil()
 }
 
 public struct Animated: SignalProvider {
     public typealias Value = Void
     public typealias Kind = Plain
-    
+
     public var providedSignal: CoreSignal<Plain, Void> {
         return Self.now
     }
-    
+
     public static var now: CoreSignal<Plain, Void> {
         return Signal(just: ())
     }

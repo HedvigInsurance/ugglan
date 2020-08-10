@@ -6,11 +6,11 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Flow
-import UIKit
+import Foundation
 import hCore
 import hCoreUI
+import UIKit
 
 struct ShareButton {
     let loadableButton = LoadableButton(button: Button(
@@ -23,23 +23,23 @@ struct ShareButton {
 }
 
 extension ShareButton: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Signal<UIView>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<UIView>) {
         let bag = DisposeBag()
         let containerView = UIVisualEffectView()
         containerView.preservesSuperviewLayoutMargins = true
         containerView.effect = UIBlurEffect(style: .prominent)
-        
+
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(inset: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
         containerView.contentView.addSubview(stackView)
-        
+
         stackView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
-        
+
         bag += stackView.addArranged(loadableButton)
-        
+
         return (containerView, loadableButton.onTapSignal.hold(bag).map { containerView })
     }
 }

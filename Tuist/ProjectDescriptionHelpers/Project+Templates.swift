@@ -26,7 +26,7 @@ public enum ExternalDependencies: CaseIterable {
     case mixpanel
     case runtime
     case sentry
-    
+
     public var isTestDependency: Bool {
         return self == .runtime
     }
@@ -35,7 +35,7 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .sentry:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Sentry.framework")
+                .framework(path: "../../Carthage/Build/iOS/Sentry.framework"),
             ]
         case .adyen:
             return [
@@ -109,8 +109,8 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .runtime:
             return [
-                 .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
-                 .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
+                .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
+                .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
             ]
         }
     }

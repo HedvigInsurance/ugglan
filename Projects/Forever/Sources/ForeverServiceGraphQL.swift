@@ -6,16 +6,16 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Apollo
-import hCore
 import Flow
+import Foundation
+import hCore
 
 public class ForeverServiceGraphQL: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
         client.perform(mutation: ForeverUpdateDiscountCodeMutation(code: value)).valueSignal.map { result in
             let updateReferralCampaignCode = result.data?.updateReferralCampaignCode
-            
+
             if updateReferralCampaignCode?.asCodeAlreadyTaken != nil {
                 return .right(ForeverChangeCodeError.nonUnique)
             } else if updateReferralCampaignCode?.asCodeTooLong != nil {
@@ -30,27 +30,27 @@ public class ForeverServiceGraphQL: ForeverService {
                         data.referralInformation.campaign.code = value
                     }
                 })
-                
+
                 return .left(())
             }
-            
+
             return .right(ForeverChangeCodeError.unknown)
         }.plain()
     }
-    
+
     public var dataSignal: ReadSignal<ForeverData?> {
         client.watch(query: ForeverQuery()).map { result -> ForeverData in
             let grossAmount = result.data?.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
             let grossAmountMonetary = MonetaryAmount(amount: grossAmount?.amount ?? "", currency: grossAmount?.currency ?? "")
-            
+
             let netAmount = result.data?.referralInformation.costReducedIndefiniteDiscount?.monthlyNet
             let netAmountMonetary = MonetaryAmount(amount: netAmount?.amount ?? "", currency: netAmount?.currency ?? "")
-            
+
             let potentialDiscountAmount = result.data?.referralInformation.campaign.incentive?.asMonthlyCostDeduction?.amount
             let potentialDiscountAmountMonetary = MonetaryAmount(amount: potentialDiscountAmount?.amount ?? "", currency: potentialDiscountAmount?.currency ?? "")
-            
+
             let discountCode = result.data?.referralInformation.campaign.code ?? ""
-            
+
             var invitations = result.data?.referralInformation.invitations.map { invitation -> ForeverInvitation? in
                 if let inProgress = invitation.asInProgressReferral {
                     return .init(name: inProgress.name ?? "", state: .pending, discount: nil, invitedByOther: false)
@@ -70,12 +70,12 @@ public class ForeverServiceGraphQL: ForeverService {
                         invitedByOther: false
                     )
                 }
-                
+
                 return nil
             }.compactMap { $0 }
-            
+
             let referredBy = result.data?.referralInformation.referredBy
-            
+
             if let inProgress = referredBy?.asInProgressReferral {
                 invitations?.insert(.init(
                     name: inProgress.name ?? "",
@@ -99,7 +99,7 @@ public class ForeverServiceGraphQL: ForeverService {
                     invitedByOther: true
                 ), at: 0)
             }
-            
+
             return .init(
                 grossAmount: grossAmountMonetary,
                 netAmount: netAmountMonetary,
@@ -109,13 +109,13 @@ public class ForeverServiceGraphQL: ForeverService {
             )
         }.readable(initial: nil)
     }
-    
+
     public func refetch() {
         client.fetch(query: ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
     }
-    
+
     public init() {}
-    
+
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 }

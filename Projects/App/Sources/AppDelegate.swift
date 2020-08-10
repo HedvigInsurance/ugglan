@@ -18,9 +18,9 @@ import hCore
 import hCoreUI
 import Mixpanel
 import Presentation
+import Sentry
 import UIKit
 import UserNotifications
-import Sentry
 
 let log = Logger.self
 
@@ -49,24 +49,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let toastBag = bag.innerBag()
         let toasts = Toasts(toastSignal: toastSignal)
 
-        toastBag += keyWindow.add(toasts) { toastsView in            toastBag += toastSignal.atOnce().onValue { _ in
-                toastsView.snp.remakeConstraints { make in
-                    if #available(iOS 13, *), keyWindow.traitCollection.userInterfaceIdiom != .pad {
-                        if keyWindow.rootViewController?.presentedViewController != nil {
-                            let safeAreaTop = keyWindow.safeAreaInsets.top
-                            make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)
-                        } else {
-                            let safeAreaTop = keyWindow.safeAreaInsets.top
-                            make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
-                        }
+        toastBag += keyWindow.add(toasts) { toastsView in toastBag += toastSignal.atOnce().onValue { _ in
+            toastsView.snp.remakeConstraints { make in
+                if #available(iOS 13, *), keyWindow.traitCollection.userInterfaceIdiom != .pad {
+                    if keyWindow.rootViewController?.presentedViewController != nil {
+                        let safeAreaTop = keyWindow.safeAreaInsets.top
+                        make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)
                     } else {
                         let safeAreaTop = keyWindow.safeAreaInsets.top
                         make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
                     }
-
-                    make.centerX.equalToSuperview()
+                } else {
+                    let safeAreaTop = keyWindow.safeAreaInsets.top
+                    make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
                 }
+
+                make.centerX.equalToSuperview()
             }
+        }
         }
 
         toastBag += toasts.idleSignal.onValue { _ in
@@ -115,8 +115,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
         guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
         guard let dynamicLinkUrl = URL(string: dynamicLink.value) else { return false }
-        
-        return self.handleDeepLink(dynamicLinkUrl)
+
+        return handleDeepLink(dynamicLinkUrl)
     }
 
     func registerForPushNotifications() -> Future<Void> {
@@ -150,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
             guard let rootViewController = window.rootViewController else { return false }
-            
+
             Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
 
             bag += rootViewController.present(
@@ -163,11 +163,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else if dynamicLinkUrl.pathComponents.contains("forever") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
             bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
-               NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
+                NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
             }
-            
+
             Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
-            
+
             return true
         }
 
@@ -206,9 +206,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 presentReferralsAccept()
             })
         }
-        
+
         Mixpanel.mainInstance().track(event: "DEEP_LINK_REFERRALS")
-        
+
         return true
     }
 
@@ -239,16 +239,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SentrySDK.start { options in
             options.dsn = "https://09505787f04f4c6ea7e560de075ba552@o123400.ingest.sentry.io/5208267"
             #if DEBUG
-            options.debug = true
+                options.debug = true
             #endif
             options.environment = ApplicationState.getTargetEnvironment().displayName
             options.enableAutoSessionTracking = true
         }
-        
+
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
         }
-        
+
         AskForRating().registerSession()
 
         Button.trackingHandler = { button in
@@ -267,7 +267,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         launchWindow?.backgroundColor = UIColor.transparent
 
         window.rootViewController = navigationController
-        
+
         presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
             let presentationEvent = event()
             let message: String
@@ -276,40 +276,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             switch presentationEvent {
             case let .willEnqueue(presentableId, context):
                 Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_ENQUEUE", properties: [
-                    "presentableId": presentableId.value
+                    "presentableId": presentableId.value,
                 ])
                 message = "\(context) will enqueue modal presentation of \(presentableId)"
             case let .willDequeue(presentableId, context):
                 Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_DEQUEUE", properties: [
-                    "presentableId": presentableId.value
+                    "presentableId": presentableId.value,
                 ])
                 message = "\(context) will dequeue modal presentation of \(presentableId)"
             case let .willPresent(presentableId, context, styleName):
                 Mixpanel.mainInstance().track(event: "PRESENTABLE_WILL_PRESENT", properties: [
-                    "presentableId": presentableId.value
+                    "presentableId": presentableId.value,
                 ])
-                
+
                 SentrySDK.configureScope { scope in
                     scope.setExtra(value: presentableId.value, key: "presentableId")
                 }
-                
+
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
             case let .didCancel(presentableId, context):
                 Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_CANCEL", properties: [
-                    "presentableId": presentableId.value
+                    "presentableId": presentableId.value,
                 ])
                 message = "\(context) did cancel presentation of: \(presentableId)"
             case let .didDismiss(presentableId, context, result):
                 switch result {
-                case .success(let result):
+                case let .success(result):
                     Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_DISMISS_SUCCESS", properties: [
-                        "presentableId": presentableId.value
+                        "presentableId": presentableId.value,
                     ])
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(result)"
-                case .failure(let error):
+                case let .failure(error):
                     Mixpanel.mainInstance().track(event: "PRESENTABLE_DID_DISMISS_FAILURE", properties: [
-                        "presentableId": presentableId.value
+                        "presentableId": presentableId.value,
                     ])
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
@@ -318,7 +318,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             presentableLogPresentation(message, data, file, function, line)
         }
-        
+
         viewControllerWasPresented = { viewController in
             if let debugPresentationTitle = viewController.debugPresentationTitle {
                 Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")

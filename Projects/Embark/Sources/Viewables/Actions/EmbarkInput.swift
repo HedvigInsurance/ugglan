@@ -23,7 +23,7 @@ struct EmbarkInput {
     let masking: Masking?
     let shouldAutoFocus: Bool
     let fieldStyle: FieldStyle
-    
+
     init(
         placeholder: String,
         keyboardType: UIKeyboardType? = nil,
@@ -50,7 +50,7 @@ extension FieldStyle {
         style.text = TextStyle.brand(.largeTitle(color: .primary)).centerAligned
         style.cursorColor = .brand(.primaryTintColor)
     }
-    
+
     static let embarkInputSmall = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.text = TextStyle.brand(.headline(color: .primary)).centerAligned
         style.cursorColor = .brand(.primaryTintColor)

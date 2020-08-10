@@ -6,9 +6,9 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
-import Form
 import Flow
+import Form
+import Foundation
 
 public struct RowAndProviderTracking {
     public static var handler: (_ name: String) -> Void = { _ in }
@@ -16,7 +16,7 @@ public struct RowAndProviderTracking {
 
 extension RowAndProvider {
     public var trackedSignal: CoreSignal<Provider.Kind, Provider.Value> {
-        providedSignal.atValue { value in
+        providedSignal.atValue { _ in
             if let derivedFromL10N = self.row.accessibilityLabel?.derivedFromL10n {
                 RowAndProviderTracking.handler("tap_\(derivedFromL10N.key)")
             }

@@ -35,7 +35,7 @@ public struct ImageTextAction<ActionResult> {
     @ReadWriteState public var body: String
     public let actions: [(ActionResult, Button)]
     public let showLogo: Bool
-    
+
     public init(
         image: ImageWithOptions,
         title: String,
@@ -123,7 +123,7 @@ extension ImageTextAction: Viewable {
         bag += $body.onValue { value in
             bodyLabel.valueSignal.value = value
         }
-        
+
         let buttonsContainer = UIStackView()
         buttonsContainer.axis = .vertical
         buttonsContainer.spacing = 15
@@ -159,12 +159,12 @@ extension ImageTextAction: Viewable {
         }
 
         scrollView.addSubview(buttonsContainer)
-        
+
         buttonsContainer.snp.makeConstraints { make in
             make.bottom.equalTo(scrollView.safeAreaLayoutGuide.snp.bottom)
             make.trailing.leading.equalToSuperview()
         }
-        
+
         bag += buttonsContainer.didLayoutSignal.onValue {
             let size = buttonsContainer.systemLayoutSizeFitting(.zero)
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)

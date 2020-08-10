@@ -27,7 +27,7 @@ public struct EmbarkState {
     let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
-    
+
     public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
         self.externalRedirectHandler = externalRedirectHandler
     }

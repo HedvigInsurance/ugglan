@@ -8,13 +8,13 @@
 
 import Flow
 @testable import Forever
+import ForeverTesting
 import Form
 import Foundation
 import hCoreUI
 import SnapshotTesting
 import Testing
 import XCTest
-import ForeverTesting
 
 final class DiscountCodeSectionTests: XCTestCase {
     override func setUp() {
@@ -24,7 +24,6 @@ final class DiscountCodeSectionTests: XCTestCase {
     }
 
     func testScreenshot() {
-        
         let data = ForeverData(
             grossAmount: .sek(0),
             netAmount: .sek(0),
@@ -33,7 +32,7 @@ final class DiscountCodeSectionTests: XCTestCase {
             invitations: []
         )
         let service = MockForeverService(data: data)
-        
+
         let discountCodeSection = DiscountCodeSection(
             service: service
         )

@@ -26,7 +26,7 @@ extension PriceSection: Viewable {
         let bag = DisposeBag()
         let row = RowView()
         section.isHidden = isHiddenSignal.value
-        
+
         bag += isHiddenSignal.bindTo(animate: SpringAnimationStyle.lightBounce(), section, \.animationSafeIsHidden)
 
         let discountStackView = UIStackView()

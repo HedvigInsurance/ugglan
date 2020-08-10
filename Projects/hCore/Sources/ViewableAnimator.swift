@@ -6,9 +6,9 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
 import Foundation
 import UIKit
-import Flow
 
 public protocol ViewableAnimatorHandler {
     associatedtype Views
@@ -26,16 +26,16 @@ public class ViewableAnimator<AnimatorHandler: ViewableAnimatorHandler> {
         self.state = state
         self.views = views
     }
-    
+
     private let handler: AnimatorHandler
     public var views: AnimatorHandler.Views
-    private(set) public var state: AnimatorHandler.State
-    
+    public private(set) var state: AnimatorHandler.State
+
     public func setState(_ state: AnimatorHandler.State) -> ReadSignal<Bool> {
         self.state = state
-        return self.handler.animate(animator: self)
+        return handler.animate(animator: self)
     }
-    
+
     public func register<View: UIView>(key: WritableKeyPath<AnimatorHandler.Views, View>, value: View) {
         views[keyPath: key] = value
     }
@@ -43,7 +43,7 @@ public class ViewableAnimator<AnimatorHandler: ViewableAnimatorHandler> {
 
 @propertyWrapper
 public struct ViewableAnimatedView<View: UIView> {
-    private var inner: View? = nil
+    private var inner: View?
     public var wrappedValue: View {
         get {
             return inner ?? View()
@@ -52,6 +52,6 @@ public struct ViewableAnimatedView<View: UIView> {
             inner = newValue
         }
     }
-    
+
     public init() {}
 }

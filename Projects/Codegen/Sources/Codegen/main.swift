@@ -35,13 +35,13 @@ func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
     guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else {
         return []
     }
-            
-    let ownDirs = dirs.filter({ $0 == "GraphQL"}).map { URL(string: "file://\(basePath)/\($0)") }.compactMap { $0 }
-    
+
+    let ownDirs = dirs.filter { $0 == "GraphQL" }.map { URL(string: "file://\(basePath)/\($0)") }.compactMap { $0 }
+
     let nestedDirs = dirs.compactMap { $0 }.map { val -> [URL] in
         findAllGraphQLFolders(basePath: "\(basePath)/\(val)")
     }.flatMap { $0 }
-        
+
     return [ownDirs, nestedDirs].flatMap { $0 }
 }
 

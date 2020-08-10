@@ -73,7 +73,7 @@ extension SectionView {
 
     public func append<V: Viewable, View: RowView & SignalProvider>(
         _ viewable: V,
-        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, ()>>) -> Void = { _ in }
+        onCreate: @escaping (_ row: RowAndProvider<CoreSignal<Plain, Void>>) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == View,
         V.Result == Disposable,
@@ -81,7 +81,7 @@ extension SectionView {
         let (matter, result, disposable) = materializeViewable(
             viewable: viewable
         )
-                        
+
         let rowAndProvider = append(matter)
 
         let bag = DisposeBag()

@@ -6,13 +6,13 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
+import Apollo
 import Flow
 import Form
+import Foundation
 import hCore
 import hCoreUI
 import Presentation
-import Apollo
 
 struct InsuranceProviderLoginDetails {
     @Inject var client: ApolloClient
@@ -26,18 +26,18 @@ extension InsuranceProviderLoginDetails: Presentable {
         viewController.preferredContentSize = CGSize(width: 300, height: 150)
 
         let bag = DisposeBag()
-        
+
         let form = FormView()
-        
+
         bag += form.addArranged(EmbarkInput(placeholder: "Personal number", masking: Masking(type: .personalNumber))).nil()
-        
+
         bag += form.addArranged(Button(
             title: "Next",
-            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)
-        )))
-        
+            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+        ))
+
         bag += viewController.install(form)
-        
+
         return (viewController, bag)
     }
 }

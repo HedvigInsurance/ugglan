@@ -6,13 +6,13 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Flow
 import Form
+import Foundation
 import hCore
 import hCoreUI
-import UIKit
 import Presentation
+import UIKit
 
 struct InsuranceProviderAction {
     let state: EmbarkState
@@ -20,7 +20,7 @@ struct InsuranceProviderAction {
 }
 
 extension InsuranceProviderAction: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
         let bag = DisposeBag()
         let view = UIView()
         bag += view.applyShadow { _ -> UIView.ShadowProperties in
@@ -32,12 +32,12 @@ extension InsuranceProviderAction: Viewable {
                 path: nil
             )
         }
-        
+
         return (view, Signal { callback in
             func renderChildViewController() {
                 let options: PresentationOptions = [.defaults]
                 let (selectionViewController, didPickInsuranceProviderFuture) = InsuranceProviderSelection().materialize()
-                
+
                 bag += didPickInsuranceProviderFuture.onValue { provider in
                     if let passageName = self.state.passageNameSignal.value {
                         self.state.store.setValue(
@@ -45,39 +45,39 @@ extension InsuranceProviderAction: Viewable {
                             value: provider.name
                         )
                     }
-                    
+
                     self.state.store.setValue(key: "previousInsurer", value: provider.name)
                     callback(self.data.externalInsuranceProviderData.next.fragments.embarkLinkFragment)
                 }.disposable
-                
+
                 let childViewController = selectionViewController.embededInNavigationController(options)
-                    
+
                 view.viewController?.addChild(childViewController)
-                
+
                 if #available(iOS 13.0, *) {
                     view.viewController?.setOverrideTraitCollection(UITraitCollection(userInterfaceLevel: .elevated), forChild: childViewController)
                 }
-                
+
                 view.addSubview(childViewController.view)
-                
+
                 childViewController.view.snp.makeConstraints { make in
                     make.top.bottom.leading.trailing.equalToSuperview()
                 }
-                
+
                 childViewController.becomeFirstResponder()
                 childViewController.didMove(toParent: view.viewController ?? UIViewController())
-                
+
                 childViewController.view.layer.cornerRadius = 8
-                
+
                 bag += childViewController.signal(for: \.preferredContentSize).atOnce().onValue { size in
                     view.snp.remakeConstraints { make in
                         make.height.equalTo(size.height)
                     }
                 }
             }
-            
+
             bag += view.didMoveToWindowSignal.atOnce().take(first: 1).onValue(renderChildViewController)
-            
+
             return bag
         })
     }

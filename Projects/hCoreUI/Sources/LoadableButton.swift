@@ -15,11 +15,11 @@ public struct LoadableButton {
     public let isLoadingSignal: ReadWriteSignal<Bool>
     public let onTapSignal: Signal<Void>
     private let onTapCallbacker = Callbacker<Void>()
-    
+
     public func startLoading() {
         isLoadingSignal.value = true
     }
-    
+
     public func stopLoading() {
         isLoadingSignal.value = false
     }

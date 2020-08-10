@@ -6,9 +6,9 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import ExampleUtil
 import Forever
 import Foundation
-import ExampleUtil
 import Runtime
 
 extension ForeverInvitation.State: DefaultConstructor {

@@ -52,18 +52,18 @@ extension Action: Viewable {
         bag += view.addArranged(spacing)
 
         let actionDataSignal = state.currentPassageSignal.map { $0?.action }
-        
+
         let isHiddenSignal = ReadWriteSignal(true)
-        
+
         func handleViewState(_ isHidden: Bool) {
             let extraPadding: CGFloat = 40
             let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + extraPadding
             view.transform = isHidden ? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
         }
-        
+
         bag += view.didLayoutSignal.withLatestFrom(isHiddenSignal.atOnce().plain()).map { _, isHidden in isHidden }.onValue(handleViewState)
         bag += isHiddenSignal.atOnce().onValue(handleViewState)
-        
+
         let animationStyle = SpringAnimationStyle(
             duration: 0.5,
             damping: 100,
@@ -71,8 +71,8 @@ extension Action: Viewable {
             delay: 0,
             options: [.allowUserInteraction]
         )
-        
-        let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: animationStyle) { actionData, _ in
+
+        let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: animationStyle) { _, _ in
             isHiddenSignal.value = true
             view.layoutIfNeeded()
         }.delay(by: 0)
@@ -84,7 +84,7 @@ extension Action: Viewable {
 
         return (view, Signal { callback in
             let shouldUpdateUISignal = actionDataSignal.flatMapLatest { _ in hideAnimationSignal.map { _ in true }.readable(initial: false) }
-            
+
             bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: shouldUpdateUISignal).onValueDisposePrevious { actionData, _ in
                 let innerBag = DisposeBag()
 

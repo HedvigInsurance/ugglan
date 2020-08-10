@@ -6,17 +6,17 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Flow
-import UIKit
-import Presentation
+import Foundation
 import hCore
 import hCoreUI
+import Presentation
 import SafariServices
+import UIKit
 
 public struct InfoAndTerms {
     let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
-    
+
     public init(
         potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
     ) {
@@ -38,19 +38,19 @@ extension InfoAndTerms: Presentable {
             body: "",
             actions: [
                 (
-                  (),
-                  Button(
-                      title: L10n.ReferralsInfoSheet.fullTermsAndConditions,
-                      type: .standard(
-                          backgroundColor: .brand(.primaryButtonBackgroundColor),
-                          textColor: .brand(.primaryButtonTextColor)
-                      )
-                  )
+                    (),
+                    Button(
+                        title: L10n.ReferralsInfoSheet.fullTermsAndConditions,
+                        type: .standard(
+                            backgroundColor: .brand(.primaryButtonBackgroundColor),
+                            textColor: .brand(.primaryButtonTextColor)
+                        )
+                    )
                 ),
             ],
             showLogo: false
         )
-        
+
         bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }.map { L10n.ReferralsInfoSheet.body($0.formattedAmount) }.onValue { body in
             imageTextAction.body = body
         }

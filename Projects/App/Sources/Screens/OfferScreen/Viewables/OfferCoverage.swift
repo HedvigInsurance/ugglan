@@ -28,10 +28,10 @@ extension OfferCoverage: Viewable {
         let bag = DisposeBag()
 
         stackView.addArrangedSubview(UILabel(value: L10n.offerScreenCoverageTitle, style: .headlineLargeLargeCenter))
-        
+
         let bodyLabel = MultilineLabel(value: "", style: .bodySmallSmallCenter)
         bag += stackView.addArranged(bodyLabel)
-        
+
         bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.type }.onValue { type in
             switch type {
             case .brf, .studentBrf:
@@ -40,7 +40,7 @@ extension OfferCoverage: Viewable {
                 bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyRental
             case .house:
                 bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyHouse
-            case .__unknown(_):
+            case .__unknown:
                 break
             }
         }

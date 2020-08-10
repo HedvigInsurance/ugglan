@@ -67,7 +67,7 @@ extension PieChart: Viewable {
         stackView.addArrangedSubview(pieView)
 
         let pieViewWidth: CGFloat = 125
-        
+
         let radius = pieViewWidth * 3 / 8
 
         let path = UIBezierPath(arcCenter: pieView.center,
@@ -75,13 +75,13 @@ extension PieChart: Viewable {
                                 startAngle: percentToRadian(0),
                                 endAngle: percentToRadian(0.999999),
                                 clockwise: true)
-                
+
         let lineWidth = radius * 2
-        
+
         let filledLayer = CAShapeLayer()
         filledLayer.path = path.cgPath
         filledLayer.fillColor = nil
-        filledLayer.lineWidth = lineWidth - (UIScreen.main.hairlineWidth)
+        filledLayer.lineWidth = lineWidth - UIScreen.main.hairlineWidth
         filledLayer.strokeStart = 0
         filledLayer.strokeEnd = 1
 

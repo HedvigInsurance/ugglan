@@ -27,18 +27,18 @@ extension DiscountCodeSection: Viewable {
 
                 let label = UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default)
                 stackView.addArrangedSubview(label)
-                
+
                 let changeButton = Button(
                     title: L10n.ReferralsEmpty.Edit.Code.button,
                     type: .outline(borderColor: .clear, textColor: .brand(.link))
                 )
-                                                
+
                 bag += changeButton.onTapSignal.onValue { _ in
                     stackView.viewController?.present(ChangeCode(service: self.service), style: .modal)
                 }
-                
+
                 bag += stackView.addArranged(changeButton.wrappedIn(UIStackView()))
-                
+
                 return stackView
             }(),
             footerView: {
@@ -48,7 +48,7 @@ extension DiscountCodeSection: Viewable {
                     value: "",
                     style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center)
                 )
-                
+
                 bag += self.service.dataSignal.atOnce().compactMap { $0?.potentialDiscountAmount }.onValue { monetaryAmount in
                     label.valueSignal.value = L10n.ReferralsEmpty.Code.footer(monetaryAmount.formattedAmount)
                 }
@@ -72,10 +72,10 @@ extension DiscountCodeSection: Viewable {
             section.animationSafeIsHidden = false
             codeLabel.value = code
         }
-        
+
         bag += section.append(codeRow).trackedSignal.onValueDisposePrevious { _ in
             let innerBag = DisposeBag()
-            
+
             section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
                 innerBag += self.service.dataSignal
                     .atOnce()
@@ -83,7 +83,7 @@ extension DiscountCodeSection: Viewable {
                     .bindTo(UIPasteboard.general, \.string)
                 bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
             }
-            
+
             return innerBag
         }
 

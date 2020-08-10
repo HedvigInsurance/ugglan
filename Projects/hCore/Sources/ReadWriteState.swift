@@ -6,8 +6,8 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Flow
+import Foundation
 
 @propertyWrapper public struct ReadWriteState<T> {
     var signal: ReadWriteSignal<T>
@@ -20,6 +20,6 @@ import Flow
     }
 
     public init(wrappedValue value: T) {
-        self.signal = ReadWriteSignal(value)
+        signal = ReadWriteSignal(value)
     }
 }

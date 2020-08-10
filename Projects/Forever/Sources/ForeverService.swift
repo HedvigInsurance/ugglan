@@ -43,15 +43,15 @@ public struct ForeverData: Codable {
     let potentialDiscountAmount: MonetaryAmount
     var discountCode: String
     let invitations: [ForeverInvitation]
-    
+
     public mutating func updateDiscountCode(_ newValue: String) {
-        self.discountCode = newValue
+        discountCode = newValue
     }
 }
 
 public enum ForeverChangeCodeError: LocalizedError, Equatable {
     case nonUnique, tooLong, tooShort, exceededMaximumUpdates(amount: Int), unknown
-    
+
     var localizedDescription: String {
         switch self {
         case .nonUnique:
@@ -60,7 +60,7 @@ public enum ForeverChangeCodeError: LocalizedError, Equatable {
             return L10n.ReferralsChange.Code.Sheet.Error.Max.length
         case .tooShort:
             return L10n.ReferralsChange.Code.Sheet.General.error
-        case .exceededMaximumUpdates(let amount):
+        case let .exceededMaximumUpdates(amount):
             return L10n.ReferralsChange.Code.Sheet.Error.Change.Limit.reached(amount)
         case .unknown:
             return L10n.ReferralsChange.Code.Sheet.General.error

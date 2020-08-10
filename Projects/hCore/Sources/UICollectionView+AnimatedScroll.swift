@@ -87,7 +87,7 @@ extension CAMediaTimingFunction {
 
         // Approximate a root by using the Newton-Raphson method
         var y = 0
-        while y <= kMaximumSteps && fabs(lastX - x) > kApproximationTolerance {
+        while y <= kMaximumSteps, fabs(lastX - x) > kApproximationTolerance {
             lastX = x
             x = x - (cubicFunctionValue(a: a, b, c, d, x) / cubicDerivativeValue(a: a, b, c, d, x))
             y += 1

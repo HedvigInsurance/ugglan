@@ -7,11 +7,11 @@
 //
 
 import Flow
+import Form
 import Foundation
 import hCore
 import hCoreUI
 import UIKit
-import Form
 
 struct Header {
     let service: ForeverService
@@ -25,11 +25,11 @@ extension Header: Viewable {
         stackView.isLayoutMarginsRelativeArrangement = true
 
         let bag = DisposeBag()
-        
+
         let piePrice = UILabel(value: "\u{00a0}", style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center))
         piePrice.alpha = 0
         stackView.addArrangedSubview(piePrice)
-        
+
         bag += service.dataSignal.compactMap { $0?.grossAmount }.animated(style: SpringAnimationStyle.lightBounce()) { amount in
             piePrice.value = amount.formattedAmount
             piePrice.alpha = 1
@@ -40,13 +40,13 @@ extension Header: Viewable {
 
         let emptyStateHeader = EmptyStateHeader(potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }.atOnce())
         emptyStateHeader.isHiddenSignal.value = true
-        
+
         bag += stackView.addArranged(emptyStateHeader)
 
         let priceSection = PriceSection(grossAmountSignal: service.dataSignal.map { $0?.grossAmount }.atOnce(), netAmountSignal: service.dataSignal.map { $0?.netAmount }.atOnce())
         priceSection.isHiddenSignal.value = true
         bag += stackView.addArranged(priceSection)
-        
+
         bag += stackView.addArranged(Spacing(height: 20))
 
         let discountCodeSection = DiscountCodeSection(

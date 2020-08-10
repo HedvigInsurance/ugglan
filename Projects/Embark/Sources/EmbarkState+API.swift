@@ -13,13 +13,13 @@ import Foundation
 extension ResultMap {
     func deepFind(_ path: String) -> String? {
         let splittedPath = path.split(separator: ".")
-                
+
         if splittedPath.count > 1 {
-            if let firstPath = splittedPath.first, let range = Range.init(NSRange(location: firstPath.startIndex.utf16Offset(in: path), length: firstPath.endIndex.utf16Offset(in: path)), in: path) {
+            if let firstPath = splittedPath.first, let range = Range(NSRange(location: firstPath.startIndex.utf16Offset(in: path), length: firstPath.endIndex.utf16Offset(in: path)), in: path) {
                 let resultMap = self[String(firstPath)] as? ResultMap
                 return resultMap?.deepFind(String(path.replacingCharacters(in: range, with: "").dropFirst()))
             }
-            
+
             return nil
         }
 
@@ -167,9 +167,9 @@ extension ResultMap {
     }
 }
 
-extension EmbarkState {    
+extension EmbarkState {
     func handleApi(apiFragment: ApiFragment) -> Future<EmbarkLinkFragment?> {
-        self.handleApiRequest(apiFragment: apiFragment).mapResult { result in
+        handleApiRequest(apiFragment: apiFragment).mapResult { result in
             switch result {
             case .success:
                 if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
@@ -194,22 +194,22 @@ extension EmbarkState {
                     }?.next.fragments.embarkLinkFragment
                 }
             }
-            
+
             return nil
         }
     }
-    
+
     private func handleApiRequest(apiFragment: ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
             var urlRequest = URLRequest(url: apolloEnvironment.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
-                        
+
             return Future { completion in
                 self.urlSessionClient.sendRequest(urlRequest) { result in
                     switch result {
-                    case .failure(_):
+                    case .failure:
                         break
                     case let .success((data, response)):
                         if response.statusCode == 200 {
@@ -238,35 +238,35 @@ extension EmbarkState {
                         }
                     }
                 }
-                
+
                 return NilDisposer()
             }
         }
-        
+
         if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
-            return performHTTPCall(queryApi.data.query, variables: queryApi.data.graphQLVariables(store: self.store)).onValue { resultMap in
+            return performHTTPCall(queryApi.data.query, variables: queryApi.data.graphQLVariables(store: store)).onValue { resultMap in
                 guard let resultMap = resultMap else {
                     return
                 }
-                
+
                 resultMap.insertInto(store: self.store, basedOn: queryApi)
             }
         } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
-            return performHTTPCall(mutationApi.data.mutation, variables: mutationApi.data.graphQLVariables(store: self.store)).onValue { resultMap in
+            return performHTTPCall(mutationApi.data.mutation, variables: mutationApi.data.graphQLVariables(store: store)).onValue { resultMap in
                 guard let resultMap = resultMap else {
                     return
                 }
-                
+
                 resultMap.insertInto(store: self.store, basedOn: mutationApi)
             }
         }
-        
+
         return Future(immediate: { nil })
     }
-    
+
     enum ApiError: Error {
         case noApi, failed(reason: String), unknown
-        
+
         var localizedDescription: String {
             switch self {
             case .noApi:
@@ -278,13 +278,13 @@ extension EmbarkState {
             }
         }
     }
-    
+
     var apiResponseSignal: ReadSignal<EmbarkLinkFragment?> {
         currentPassageSignal.compactMap { $0 }.mapLatestToFuture { passage -> Future<EmbarkLinkFragment?> in
             guard let apiFragment = passage.api?.fragments.apiFragment else {
                 return Future(error: ApiError.noApi)
             }
-            
+
             return self.handleApi(apiFragment: apiFragment)
         }.providedSignal.plain().readable(initial: nil)
     }

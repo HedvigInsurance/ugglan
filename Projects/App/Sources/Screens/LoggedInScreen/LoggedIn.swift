@@ -8,12 +8,12 @@
 
 import Apollo
 import Flow
+import Forever
 import Foundation
 import hCore
 import Mixpanel
 import Presentation
 import UIKit
-import Forever
 
 struct LoggedIn {
     @Inject var client: ApolloClient

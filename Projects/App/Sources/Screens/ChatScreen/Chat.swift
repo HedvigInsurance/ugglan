@@ -167,7 +167,7 @@ extension Chat: Presentable {
         }
 
         bag += viewController.install(tableKit)
-        
+
         bag += DelayedDisposer(
             Disposer {
                 AskForRating().ask()

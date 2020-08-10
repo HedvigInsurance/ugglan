@@ -9,11 +9,11 @@ import Apollo
 import ApolloWebSocket
 import Embark
 import Flow
+import Form
 import Foundation
 import hCore
 import Presentation
 import UIKit
-import Form
 
 extension ApolloClient {
     static func createClient(token _: String?) -> (ApolloStore, ApolloClient) {
@@ -27,13 +27,13 @@ extension ApolloClient {
         configuration.httpAdditionalHeaders = httpAdditionalHeaders
 
         let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
-        
+
         let environment = ApolloEnvironmentConfig(
             endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
             wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
             assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
         )
-        
+
         Dependencies.shared.add(module: Module { () -> ApolloEnvironmentConfig in
             environment
         })
@@ -55,7 +55,7 @@ extension ApolloClient {
 
         let store = ApolloStore(cache: InMemoryNormalizedCache())
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-        
+
         Dependencies.shared.add(module: Module { () -> URLSessionClient in
             urlSessionClient
         })

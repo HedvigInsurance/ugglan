@@ -51,7 +51,7 @@ extension PriceBubble: Viewable {
             .compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
             .compactMap { $0 }
-        
+
         let grossCurrencySignal = dataSignal
             .compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyGross.currency }
 

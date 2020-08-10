@@ -8,8 +8,8 @@
 import Flow
 import Form
 import Foundation
-import hCoreUI
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -35,15 +35,15 @@ struct ContractPerilRow: Hashable, Equatable {
 extension ContractPerilRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (ContractPerilRow) -> Disposable) {
         let view = UIControl()
-        
-        let backgroundColor = UIColor.init(dynamic: { trait -> UIColor in
+
+        let backgroundColor = UIColor(dynamic: { trait -> UIColor in
             if #available(iOS 13.0, *) {
                 return trait.userInterfaceLevel == .elevated ? .primaryBackground : .secondaryBackground
             } else {
                 return .secondaryBackground
             }
         })
-        
+
         view.backgroundColor = backgroundColor
         view.layer.cornerRadius = 5
 

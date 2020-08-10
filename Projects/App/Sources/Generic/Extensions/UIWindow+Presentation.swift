@@ -73,7 +73,7 @@ extension UIWindow {
         presentablePresentationEventHandler(presentationEvent, #file, #function, #line)
 
         rootViewController = viewController.embededInNavigationController(options)
-            
+
         viewControllerWasPresented(viewController)
 
         return result

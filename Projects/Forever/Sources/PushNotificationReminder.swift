@@ -6,10 +6,10 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Flow
-import hCoreUI
+import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -20,15 +20,15 @@ extension PushNotificationReminder: Conditional, Presentable {
         case skipped
         case failed
     }
-    
+
     func condition() -> Bool {
         !UIApplication.shared.isRegisteredForRemoteNotifications
     }
-    
+
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         let skipBarButton = UIBarButtonItem(title: L10n.NavBar.skip, style: .destructive)
         viewController.navigationItem.rightBarButtonItem = skipBarButton
 
@@ -54,7 +54,7 @@ extension PushNotificationReminder: Conditional, Presentable {
         return (viewController, Future { completion in
             bag += viewController.install(imageTextAction).onValue {
                 let center = UNUserNotificationCenter.current()
-                center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                center.requestAuthorization(options: [.alert, .sound, .badge]) { _, error in
                     DispatchQueue.main.async {
                         if error != nil {
                             completion(.failure(PushNotificationReminderError.failed))
@@ -64,7 +64,7 @@ extension PushNotificationReminder: Conditional, Presentable {
                     }
                 }
             }
-            
+
             bag += skipBarButton.onValue {
                 completion(.failure(PushNotificationReminderError.skipped))
             }

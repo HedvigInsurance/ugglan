@@ -15,7 +15,7 @@ import UIKit
 
 public struct InvitationScreen {
     let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>
-    
+
     public init(potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>) {
         self.potentialDiscountAmountSignal = potentialDiscountAmountSignal
     }
@@ -44,7 +44,7 @@ extension InvitationScreen: Presentable {
             ],
             showLogo: false
         )
-        
+
         bag += potentialDiscountAmountSignal.atOnce()
             .compactMap { $0 }
             .map { L10n.ReferralsIntroScreen.body($0.formattedAmount) }
