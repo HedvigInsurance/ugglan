@@ -11,7 +11,7 @@ import UIKit
 
 class Icon: UIView {
     let image = UIImageView()
-    var icon: ImageAsset {
+    var icon: UIImage {
         didSet {
             setup()
         }
@@ -33,7 +33,7 @@ class Icon: UIView {
         }
     }
 
-    init(frame: CGRect = .zero, icon: ImageAsset, iconWidth: CGFloat) {
+    init(frame: CGRect = .zero, icon: UIImage, iconWidth: CGFloat) {
         self.icon = icon
         self.iconWidth = iconWidth
         super.init(frame: frame)
@@ -52,7 +52,7 @@ class Icon: UIView {
         image.isUserInteractionEnabled = false
         isUserInteractionEnabled = false
 
-        image.image = icon.image
+        image.image = icon
         addSubview(image)
 
         image.contentMode = .scaleAspectFit

@@ -68,7 +68,6 @@ extension MarketPicker {
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
-            section.dynamicStyle = .sectionPlainRounded
 
             let pickedMarketCallbacker = Callbacker<Market>()
 
@@ -121,7 +120,6 @@ extension MarketPicker {
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
-            section.dynamicStyle = .sectionPlainRounded
 
             func pickLanguage(locale: Localization.Locale) {
                 ApplicationState.setPreferredLocale(locale)
@@ -147,13 +145,13 @@ extension MarketPicker {
                     innerBag += section.append(norwegianRow).onValue { _ in
                         pickLanguage(locale: .nb_NO)
                     }
-                    norwegianRow.append(Asset.chevronRight.image)
+                    norwegianRow.append(hCoreUIAssets.chevronRight.image)
 
                     let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
                     innerBag += section.append(englishRow).onValue { _ in
                         pickLanguage(locale: .en_NO)
                     }
-                    englishRow.append(Asset.chevronRight.image)
+                    englishRow.append(hCoreUIAssets.chevronRight.image)
 
                     innerBag += Disposer {
                         section.remove(englishRow)
@@ -168,13 +166,13 @@ extension MarketPicker {
                     innerBag += section.append(swedishRow).onValue { _ in
                         pickLanguage(locale: .sv_SE)
                     }
-                    swedishRow.append(Asset.chevronRight.image)
+                    swedishRow.append(hCoreUIAssets.chevronRight.image)
 
                     let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
                     innerBag += section.append(englishRow).onValue { _ in
                         pickLanguage(locale: .en_SE)
                     }
-                    englishRow.append(Asset.chevronRight.image)
+                    englishRow.append(hCoreUIAssets.chevronRight.image)
 
                     innerBag += Disposer {
                         section.remove(englishRow)
@@ -198,7 +196,6 @@ extension MarketPicker: Presentable {
         ApplicationState.preserveState(.marketPicker)
 
         let form = FormView()
-        form.dynamicStyle = .defaultPlain
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image

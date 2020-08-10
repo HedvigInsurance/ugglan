@@ -44,7 +44,7 @@ struct KeyGearItem {
 
         navigationBar.tintColor = UIColor.clear
         navigationBar.barTintColor = UIColor.clear
-        navigationBar.backIndicatorImage = Asset.backButtonWhite.image
+        navigationBar.backIndicatorImage = hCoreUIAssets.backButton.image
         navigationBar.isTranslucent = true
         navigationBar.shadowImage = UIImage()
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
@@ -112,7 +112,7 @@ extension KeyGearItem: Presentable {
         viewController.navigationItem.rightBarButtonItem = optionsButton
 
         let backButton = UIButton(type: .custom)
-        backButton.setImage(Asset.backButtonWhite.image, for: .normal)
+        backButton.setImage(hCoreUIAssets.backButton.image, for: .normal)
         backButton.tintColor = .white
 
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
@@ -206,7 +206,7 @@ extension KeyGearItem: Presentable {
         claimsSection.dynamicStyle = .sectionPlain
 
         let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .rowTitle)
-        claimsRow.append(Asset.chevronRight.image)
+        claimsRow.append(hCoreUIAssets.chevronRight.image)
 
         bag += claimsSection.append(claimsRow).onValue { _ in
             viewController.present(

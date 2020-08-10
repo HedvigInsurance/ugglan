@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -108,7 +109,7 @@ extension LanguagePicker: Presentable {
         let descriptionLabel = UILabel(value: "You can change this later in settings.", style: .rowSubtitle)
         textContainer.addArrangedSubview(descriptionLabel)
 
-        let form = FormView(sections: [], style: .defaultGrouped)
+        let form = FormView()
         middleContent.addArrangedSubview(form)
 
         form.snp.makeConstraints { make in
@@ -150,7 +151,7 @@ extension LanguagePicker: Presentable {
             }
 
             englishRow.prepend(Asset.flagGB.image)
-            englishRow.append(Asset.chevronRight.image)
+            englishRow.append(hCoreUIAssets.chevronRight.image)
 
             let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
             bag += section.append(swedishRow).onValue { _ in
@@ -158,7 +159,7 @@ extension LanguagePicker: Presentable {
             }
 
             swedishRow.prepend(Asset.flagSE.image)
-            swedishRow.append(Asset.chevronRight.image)
+            swedishRow.append(hCoreUIAssets.chevronRight.image)
 
             return bag
         })

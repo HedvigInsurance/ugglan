@@ -33,7 +33,7 @@ extension KeyGearAddReceiptRow: Viewable {
         stackView.distribution = .fill
         stackView.alignment = .leading
 
-        let icon = Icon(icon: Asset.receipt, iconWidth: 40)
+        let icon = Icon(icon: Asset.receipt.image, iconWidth: 40)
 
         let receiptText = MultilineLabel(value: L10n.keyGearItemViewReceiptTableTitle, style: .smallTitle)
 

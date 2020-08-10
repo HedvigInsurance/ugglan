@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -68,7 +69,7 @@ extension OfferStartDateButton: Viewable {
         let valueLabel = UILabel(value: "", style: .bodyBookButtonText)
         stackView.addArrangedSubview(valueLabel)
 
-        let iconView = Icon(icon: Asset.chevronRight, iconWidth: 20)
+        let iconView = Icon(icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
         iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
         stackView.addArrangedSubview(iconView)
 

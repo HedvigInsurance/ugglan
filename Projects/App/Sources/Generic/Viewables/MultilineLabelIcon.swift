@@ -41,7 +41,7 @@ extension MultilineLabelIcon: Viewable {
         }
 
         let icon = Icon(
-            icon: iconAsset,
+            icon: iconAsset.image,
             iconWidth: iconWidth
         )
         iconContainer.addSubview(icon)

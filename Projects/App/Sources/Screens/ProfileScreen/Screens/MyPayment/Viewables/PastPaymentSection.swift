@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -57,7 +58,7 @@ extension PastPaymentsSection: Viewable {
             let moreRow = RowView()
             moreRow.append(UILabel(value: L10n.paymentsBtnHistory, style: .rowTitle))
 
-            let arrow = Icon(frame: .zero, icon: Asset.chevronRight, iconWidth: 20)
+            let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
 
             moreRow.append(arrow)
 
