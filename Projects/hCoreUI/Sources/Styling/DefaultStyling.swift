@@ -58,7 +58,7 @@ public extension DefaultStyling {
             func standardAppearance() -> UINavigationBarAppearance {
                 let appearance = UINavigationBarAppearance()
                 appearance.configureWithDefaultBackground()
-                appearance.shadowImage = UIColor.clear.asImage()
+                appearance.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
                 appearance.titleTextAttributes = [
                     NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                     NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
@@ -79,7 +79,7 @@ public extension DefaultStyling {
             func compactAppearance() -> UINavigationBarAppearance {
                 let appearance = UINavigationBarAppearance()
                 appearance.backgroundColor = UIColor.white
-                appearance.shadowImage = UIColor.clear.asImage()
+                appearance.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
                 appearance.titleTextAttributes = [
                     NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                     NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
