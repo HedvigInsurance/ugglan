@@ -23,7 +23,7 @@ struct Logger {
         // don't send anything when debugging
         #else
             let client: ApolloClient = Dependencies.shared.resolve()
-            client.perform(mutation: LogMutation(input: input), queue: queue).onValue { _ in }
+            client.perform(mutation: GraphQL.LogMutation(input: input), queue: queue).onValue { _ in }
         #endif
     }
 
