@@ -90,6 +90,10 @@ extension ContractTable: Viewable {
 
         tableKit.view.backgroundColor = .brand(.primaryBackground())
         tableKit.view.alwaysBounceVertical = true
+        
+        bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
+            ContextGradient.currentOption.value = .blue
+        }
 
         let loadingIndicatorBag = DisposeBag()
 

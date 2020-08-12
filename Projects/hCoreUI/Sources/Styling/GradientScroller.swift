@@ -42,7 +42,10 @@ extension GradientScroller {
                 gradientLayer.frame = self.bounds
             }
             
-            bag += traitCollectionSignal.atOnce().onValue({ traitCollection in
+            bag += combineLatest(
+                traitCollectionSignal.atOnce().plain(),
+                ContextGradient.currentOption.atOnce().latestTwo()
+            ).onValue({ traitCollection, option in
                 if #available(iOS 13.0, *) {
                     if traitCollection.userInterfaceLevel == .elevated {
                         gradientLayer.isHidden = true
@@ -52,17 +55,25 @@ extension GradientScroller {
                     }
                 }
                 
-                if traitCollection.userInterfaceStyle == .dark {
-                    gradientLayer.colors = [
-                        UIColor(red: 0.745, green: 0.608, blue: 0.953, alpha: 0.55).cgColor,
-                        UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0).cgColor
-                    ]
-                } else {
-                    gradientLayer.colors = [
-                        UIColor(red: 0.863, green: 0.871, blue: 0.961, alpha: 1).cgColor,
-                        UIColor(red: 0.965, green: 0.965, blue: 0.965, alpha: 0).cgColor
-                    ]
+                let (prevOption, option) = option
+                
+                if gradientLayer.colors == nil {
+                    gradientLayer.colors = option.colors.map { $0.cgColor }
+                    return
                 }
+                                                                                
+                let animation = CABasicAnimation(keyPath: "colors")
+                
+                gradientLayer.colors = option.colors.map { $0.cgColor }
+
+                animation.fromValue = prevOption.colors.map { $0.cgColor }
+                animation.toValue = option.colors.map { $0.cgColor }
+                animation.duration = 0.5
+                animation.isRemovedOnCompletion = true
+                animation.fillMode = CAMediaTimingFillMode.forwards
+                animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+
+                gradientLayer.add(animation, forKey:"animateGradient")
             })
             
             bag += signal(for: \.contentOffset).atOnce().onValue { contentOffset in
