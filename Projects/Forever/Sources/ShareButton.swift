@@ -27,6 +27,15 @@ extension ShareButton: Viewable {
         let bag = DisposeBag()
         let containerView = UIView()
         
+        let separator = UIView()
+        separator.backgroundColor = UIColor.brand(.primaryBorderColor)
+        containerView.addSubview(separator)
+        
+        separator.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(UIScreen.main.hairlineWidth)
+        }
+        
         bag += containerView.didMoveToWindowSignal.onValue { _ in
             if let tabBarController = containerView.viewController?.navigationController?.tabBarController {
                 tabBarController.tabBar.shadowImage = UIColor.clear.asImage()
@@ -35,7 +44,7 @@ extension ShareButton: Viewable {
         
         bag += containerView.didMoveFromWindowSignal.onValue { _ in
             if let tabBarController = containerView.viewController?.navigationController?.tabBarController {
-                tabBarController.tabBar.shadowImage = UITabBar.appearance(for: containerView.traitCollection).shadowImage
+                tabBarController.tabBar.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
             }
         }
         

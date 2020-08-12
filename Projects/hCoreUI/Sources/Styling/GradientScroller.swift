@@ -26,6 +26,30 @@ extension GradientScroller {
                 return
             }
             
+            if navigationController.navigationBar.viewWithTag(colorViewTag) == nil {
+                let navigationBar = navigationController.navigationBar
+                let firstSubView = navigationBar.subviews.first!
+                let effectView = firstSubView.subviews[1]
+                
+                let colorView = UIView()
+                colorView.tag = colorViewTag
+                firstSubView.addSubview(colorView)
+                                
+                colorView.snp.makeConstraints { make in
+                    make.top.bottom.trailing.leading.equalToSuperview()
+                }
+                
+                colorView.alpha = effectView.alpha
+                
+                bag += effectView.signal(for: \.alpha).distinct().onValue { alpha in
+                    colorView.alpha = alpha
+                }
+                
+                bag += ContextGradient.currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
+                    colorView.backgroundColor = option.colors.first?.withAlphaComponent(0.15)
+                }
+            }
+            
             if let tabBarController = navigationController.tabBarController, tabBarController.tabBar.viewWithTag(colorViewTag) == nil {
                 let colorView = UIView()
                 colorView.tag = colorViewTag

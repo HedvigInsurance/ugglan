@@ -17,6 +17,86 @@ public extension BarButtonStyle {
 }
 
 public extension DefaultStyling {
+    static let tabBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
+        if trait.userInterfaceStyle == .dark {
+            return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
+        }
+        
+        return UIColor.white
+    })
+    
+    @available(iOS 13, *)
+    static func setNavigationBarAppearance() {
+        func scrollEdgeAppearance() -> UINavigationBarAppearance {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithTransparentBackground()
+            appearance.shadowImage = UIColor.clear.asImage()
+            appearance.titleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
+            ]
+            appearance.largeTitleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+            ]
+
+            appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
+            appearance.backButtonAppearance.normal.titleTextAttributes = [
+                .foregroundColor: UIColor.clear,
+            ]
+            
+            return appearance
+        }
+        
+        func standardAppearance() -> UINavigationBarAppearance {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithDefaultBackground()
+            appearance.backgroundColor = tabBarBackgroundColor
+            appearance.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
+            appearance.titleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
+            ]
+            appearance.largeTitleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+            ]
+
+            appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
+            appearance.backButtonAppearance.normal.titleTextAttributes = [
+                .foregroundColor: UIColor.clear,
+            ]
+            
+            return appearance
+        }
+        
+        func compactAppearance() -> UINavigationBarAppearance {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithDefaultBackground()
+            appearance.backgroundColor = tabBarBackgroundColor
+            appearance.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
+            appearance.titleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
+            ]
+            appearance.largeTitleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+            ]
+
+            appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
+            appearance.backButtonAppearance.normal.titleTextAttributes = [
+                .foregroundColor: UIColor.clear,
+            ]
+            
+            return appearance
+        }
+        
+        UINavigationBar.appearance().standardAppearance = standardAppearance()
+        UINavigationBar.appearance().compactAppearance = compactAppearance()
+        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
+    }
+    
     static func installCustom() {
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
@@ -34,72 +114,7 @@ public extension DefaultStyling {
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
 
         if #available(iOS 13.0, *) {
-            func scrollEdgeAppearance() -> UINavigationBarAppearance {
-                let appearance = UINavigationBarAppearance()
-                appearance.configureWithTransparentBackground()
-                appearance.shadowImage = UIColor.clear.asImage()
-                appearance.titleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
-                ]
-                appearance.largeTitleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-                ]
-
-                appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
-                appearance.backButtonAppearance.normal.titleTextAttributes = [
-                    .foregroundColor: UIColor.clear,
-                ]
-                
-                return appearance
-            }
-            
-            func standardAppearance() -> UINavigationBarAppearance {
-                let appearance = UINavigationBarAppearance()
-                appearance.configureWithDefaultBackground()
-                appearance.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
-                appearance.titleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
-                ]
-                appearance.largeTitleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-                ]
-
-                appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
-                appearance.backButtonAppearance.normal.titleTextAttributes = [
-                    .foregroundColor: UIColor.clear,
-                ]
-                
-                return appearance
-            }
-            
-            func compactAppearance() -> UINavigationBarAppearance {
-                let appearance = UINavigationBarAppearance()
-                appearance.backgroundColor = UIColor.white
-                appearance.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
-                appearance.titleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
-                ]
-                appearance.largeTitleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-                ]
-
-                appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
-                appearance.backButtonAppearance.normal.titleTextAttributes = [
-                    .foregroundColor: UIColor.clear,
-                ]
-                
-                return appearance
-            }
-            
-            UINavigationBar.appearance().standardAppearance = standardAppearance()
-            UINavigationBar.appearance().compactAppearance = compactAppearance()
-            UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
+            setNavigationBarAppearance()
         } else {
             UINavigationBar.appearance().shadowImage = UIColor.clear.asImage()
             UINavigationBar.appearance().titleTextAttributes = [
@@ -111,14 +126,6 @@ public extension DefaultStyling {
                 NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
             ]
         }
-        
-        let tabBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
-            if trait.userInterfaceStyle == .dark {
-                return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
-            }
-            
-            return UIColor.white
-        })
 
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
         UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
