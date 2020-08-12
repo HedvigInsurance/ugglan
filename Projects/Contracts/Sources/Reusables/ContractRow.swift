@@ -402,6 +402,8 @@ extension ContractRow: Reusable {
         let header = UIStackView()
         header.axis = .vertical
         header.spacing = 10
+        header.layoutMargins = UIEdgeInsets(inset: 15)
+        header.isLayoutMarginsRelativeArrangement = true
         header.addArrangedSubview(UILabel(
             value: displayName,
             style: .brand(.headline(color: .primary))

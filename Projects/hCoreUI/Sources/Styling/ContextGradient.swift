@@ -15,7 +15,7 @@ public struct ContextGradient {
         case blue
         case orange
         
-        var colors: [UIColor] {
+        public var colors: [UIColor] {
             switch self {
             case .blue:
                 return [

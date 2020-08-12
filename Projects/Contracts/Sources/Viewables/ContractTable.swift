@@ -57,8 +57,6 @@ extension ContractTable: Viewable {
     func materialize(events _: ViewableEvents) -> (UITableView, Disposable) {
         let bag = DisposeBag()
 
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 0
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 10,
