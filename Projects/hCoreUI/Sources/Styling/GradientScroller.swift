@@ -9,8 +9,11 @@
 import Foundation
 import UIKit
 import Flow
+import hCore
 
 protocol GradientScroller where Self: UIScrollView {}
+
+let colorViewTag = 88888
 
 extension GradientScroller {
     func addGradient(into bag: DisposeBag) {
@@ -21,6 +24,20 @@ extension GradientScroller {
         if let navigationController = self.viewController?.navigationController {
             if navigationController.viewControllers.count != 1 {
                 return
+            }
+            
+            if let tabBarController = navigationController.tabBarController, tabBarController.tabBar.viewWithTag(colorViewTag) == nil {
+                let colorView = UIView()
+                colorView.tag = colorViewTag
+                tabBarController.tabBar.insertSubview(colorView, at: 0)
+                
+                colorView.snp.makeConstraints { make in
+                    make.top.bottom.leading.trailing.equalToSuperview()
+                }
+                
+                bag += ContextGradient.currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
+                    colorView.backgroundColor = option.colors.first?.withAlphaComponent(0.15)
+                }
             }
             
             let gradientLayer = CAGradientLayer()

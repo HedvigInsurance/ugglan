@@ -38,14 +38,14 @@ public struct ContextGradient {
                 return [
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 1)
+                        return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 1).darkened(amount: 0.1)
                     }
                     
                     return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 1)
                 }),
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 0)
+                        return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 0).darkened(amount: 0.1)
                     }
                     
                     return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 0)
