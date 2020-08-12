@@ -27,8 +27,12 @@ extension ShareButton: Viewable {
         let bag = DisposeBag()
         let containerView = UIVisualEffectView()
         containerView.preservesSuperviewLayoutMargins = true
-        containerView.effect = UIBlurEffect(style: .prominent)
-
+        if #available(iOS 13.0, *) {
+            containerView.effect = UIBlurEffect(style: .systemChromeMaterial)
+        } else {
+            containerView.effect = UIBlurEffect(style: .prominent)
+        }
+        
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(inset: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
