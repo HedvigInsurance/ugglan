@@ -57,6 +57,14 @@ extension GradientScroller {
                 
                 let (prevOption, option) = option
                 
+                func optionToColors(_ option: ContextGradient.Option) -> [CGColor] {
+                    if #available(iOS 13, *) {
+                        return option.colors.map { $0.resolvedColor(with: traitCollection).cgColor }
+                    } else {
+                        return option.colors.map { $0.cgColor }
+                    }
+                }
+                
                 if gradientLayer.colors == nil {
                     gradientLayer.colors = option.colors.map { $0.cgColor }
                     return
@@ -64,10 +72,10 @@ extension GradientScroller {
                                                                                 
                 let animation = CABasicAnimation(keyPath: "colors")
                 
-                gradientLayer.colors = option.colors.map { $0.cgColor }
+                gradientLayer.colors = optionToColors(option)
 
-                animation.fromValue = prevOption.colors.map { $0.cgColor }
-                animation.toValue = option.colors.map { $0.cgColor }
+                animation.fromValue = optionToColors(prevOption)
+                animation.toValue = optionToColors(option)
                 animation.duration = 0.5
                 animation.isRemovedOnCompletion = true
                 animation.fillMode = CAMediaTimingFillMode.forwards

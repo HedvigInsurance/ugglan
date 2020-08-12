@@ -21,14 +21,14 @@ public struct ContextGradient {
                 return [
                     UIColor(dynamic: { trait -> UIColor in
                         if trait.userInterfaceStyle == .dark {
-                            return UIColor(red: 0.863, green: 0.871, blue: 0.961, alpha: 1)
+                            return UIColor(red: 0.745, green: 0.608, blue: 0.953, alpha: 0.55)
                         }
                         
                         return UIColor(red: 0.745, green: 0.608, blue: 0.953, alpha: 0.55)
                     }),
                     UIColor(dynamic: { trait -> UIColor in
                         if trait.userInterfaceStyle == .dark {
-                            return UIColor(red: 0.965, green: 0.965, blue: 0.965, alpha: 0)
+                            return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0)
                         }
                         
                         return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0)
@@ -38,18 +38,18 @@ public struct ContextGradient {
                 return [
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.863, green: 0.871, blue: 0.961, alpha: 1)
+                        return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 1)
                     }
                     
-                    return UIColor(red: 0.98, green: 0.93, blue: 0.87, alpha: 1.00)
+                    return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 1)
                 }),
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.965, green: 0.965, blue: 0.965, alpha: 0)
+                        return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 0)
                     }
                     
-                    return UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 0)
-                })
+                    return UIColor(red: 0.988, green: 0.729, blue: 0.553, alpha: 0)
+                }),
                 ]
             }
         }
