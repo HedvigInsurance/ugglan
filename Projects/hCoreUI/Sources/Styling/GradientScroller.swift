@@ -76,7 +76,7 @@ extension GradientScroller {
 
                 animation.fromValue = optionToColors(prevOption)
                 animation.toValue = optionToColors(option)
-                animation.duration = 0.5
+                animation.duration = 1
                 animation.isRemovedOnCompletion = true
                 animation.fillMode = CAMediaTimingFillMode.forwards
                 animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
