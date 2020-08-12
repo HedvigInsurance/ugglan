@@ -11,9 +11,11 @@ import Flow
 import Forever
 import Foundation
 import hCore
+import hGraphQL
 import Mixpanel
 import Presentation
 import UIKit
+import Contracts
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -77,7 +79,7 @@ extension LoggedIn: Presentable {
         )
 
         bag += client.fetch(
-            query: FeaturesQuery(),
+            query: GraphQL.FeaturesQuery(),
             cachePolicy: .fetchIgnoringCacheData
         ).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
             if features.contains(.keyGear) {
@@ -118,7 +120,7 @@ extension LoggedIn: Presentable {
             ApplicationState.setLastNewsSeen()
 
             bag += client
-                .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+                .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                 .compactMap { $0.data }
                 .filter { $0.welcome.count > 0 }
                 .onValue { data in
@@ -127,7 +129,7 @@ extension LoggedIn: Presentable {
                 }
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
-                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
+                .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .compactMap { $0.data }
                 .filter { $0.news.count > 0 }
                 .onValue { data in

@@ -10,9 +10,10 @@ import Form
 import Foundation
 import Kingfisher
 import UIKit
+import hGraphQL
 
 struct KeyGearImageCarouselItem {
-    let resource: Either<URL, KeyGearItemCategory>
+    let resource: Either<URL, GraphQL.KeyGearItemCategory>
 }
 
 extension KeyGearImageCarouselItem: Reusable {

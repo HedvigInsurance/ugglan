@@ -11,16 +11,17 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import StoreKit
 import UIKit
 
 struct Welcome {
-    let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>
+    let dataSignal: ReadWriteSignal<GraphQL.WelcomeQuery.Data?>
     let endWithReview: Bool
 
-    init(data: WelcomeQuery.Data?, endWithReview: Bool) {
-        dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(data)
+    init(data: GraphQL.WelcomeQuery.Data?, endWithReview: Bool) {
+        dataSignal = ReadWriteSignal<GraphQL.WelcomeQuery.Data?>(data)
         self.endWithReview = endWithReview
     }
 }

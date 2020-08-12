@@ -10,6 +10,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct WelcomePagerProceedButton {
@@ -18,7 +19,7 @@ struct WelcomePagerProceedButton {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
-    let dataSignal: ReadWriteSignal<WelcomeQuery.Data?> = ReadWriteSignal(nil)
+    let dataSignal: ReadWriteSignal<GraphQL.WelcomeQuery.Data?> = ReadWriteSignal(nil)
     let onScrolledToPageIndexSignal = ReadWriteSignal<Int>(0)
 
     init(button: Button) {

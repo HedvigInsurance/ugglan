@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -32,7 +33,7 @@ extension CallMeChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += client.perform(mutation: TriggerCallMeChatMutation()).onValue { _ in
+        bag += client.perform(mutation: GraphQL.TriggerCallMeChatMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
         }
 

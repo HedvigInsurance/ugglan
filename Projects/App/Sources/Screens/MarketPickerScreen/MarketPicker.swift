@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -128,7 +129,7 @@ extension MarketPicker {
                 ApolloClient.initClient().always {}
                 Bundle.setLanguage(locale.lprojCode)
                 presentingViewController.present(Marketing())
-                bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
+                bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
                     self.didFinish()
                 }
             }
@@ -217,7 +218,7 @@ extension MarketPicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += client.fetch(query: GeoQuery()).valueSignal.compactMap { $0.data?.geo.countryIsoCode }.onValue { countryISOCode in
+        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap { $0.data?.geo.countryIsoCode }.onValue { countryISOCode in
             switch countryISOCode {
             case "SE":
                 pickedMarketSignal.value = .sweden

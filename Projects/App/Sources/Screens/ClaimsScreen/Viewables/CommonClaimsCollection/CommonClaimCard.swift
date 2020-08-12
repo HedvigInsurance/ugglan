@@ -13,9 +13,10 @@ import hCore
 import hCoreUI
 import Presentation
 import UIKit
+import hGraphQL
 
 struct CommonClaimCard {
-    let data: CommonClaimsQuery.Data.CommonClaim
+    let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
     let index: TableIndex
     let presentingViewController: UIViewController
     @Inject var client: ApolloClient
@@ -87,7 +88,7 @@ struct CommonClaimCard {
     }
 
     init(
-        data: CommonClaimsQuery.Data.CommonClaim,
+        data: GraphQL.CommonClaimsQuery.Data.CommonClaim,
         index: TableIndex,
         presentingViewController: UIViewController
     ) {
@@ -239,7 +240,7 @@ extension CommonClaimCard: Viewable {
         }
 
         let remoteVectorIcon = RemoteVectorIcon()
-        remoteVectorIcon.iconSignal.value = hCoreUI.IconFragment(unsafeResultMap: data.icon.fragments.iconFragment.resultMap)
+        remoteVectorIcon.iconSignal.value = data.icon.fragments.iconFragment
 
         bag += contentView.add(remoteVectorIcon) { imageView in
             imageView.snp.makeConstraints { make in
@@ -324,7 +325,7 @@ extension CommonClaimCard: Viewable {
             bag += view.add(claimButton) { claimButtonView in
                 claimButtonView.alpha = 0
 
-                let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
+                let isEligibleDataSignal = client.watch(query: GraphQL.EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
                 bag += isEligibleDataSignal.bindTo(claimButtonView, \.isUserInteractionEnabled)
 

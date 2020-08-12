@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Kingfisher
 import UIKit
 
@@ -17,7 +18,7 @@ struct KeyGearListItem {
     let imageUrl: URL?
     let name: String?
     let wasAddedAutomatically: Bool
-    let category: KeyGearItemCategory
+    let category: GraphQL.KeyGearItemCategory
 
     private let callbacker = Callbacker<Void>()
 }

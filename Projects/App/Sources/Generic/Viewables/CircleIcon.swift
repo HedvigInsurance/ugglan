@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct CircleIcon {

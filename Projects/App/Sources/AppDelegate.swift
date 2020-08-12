@@ -16,6 +16,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Mixpanel
 import Presentation
 import Sentry
@@ -258,6 +259,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 ])
             }
         }
+        UIControl.trackingHandler = { control in
+            if let accessibilityLabel = control.accessibilityLabel {
+                if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
+                    Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
+                        "context": "UIControl",
+                    ])
+                }
+            } else if let accessibilityIdentifier = control.accessibilityIdentifier {
+                Mixpanel.mainInstance().track(event: "TAP_\(accessibilityIdentifier)", properties: [
+                    "context": "UIControl",
+                ])
+            }
+        }
+        ButtonRow.trackingHandler = { buttonRow in
+            if let localizationKey = buttonRow.text.value.derivedFromL10n?.key {
+                Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
+                    "context": "ButtonRow",
+                ])
+            }
+        }
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
@@ -367,7 +388,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }.delay(by: 0.1).onValue { _ in
             let client: ApolloClient = Dependencies.shared.resolve()
-            self.bag += client.fetch(query: FeaturesQuery()).onValue { _ in
+            self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
                 self.hasFinishedLoading.value = true
             }
         }
@@ -384,7 +405,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
         let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(mutation: RegisterPushTokenMutation(pushToken: token)).onValue { result in
+        client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { result in
             if result.data?.registerPushToken != nil {
                 log.info("Did register push token for user")
             } else {

@@ -11,6 +11,7 @@ import Foundation
 import hCore
 import Presentation
 import UIKit
+import hGraphQL
 
 struct OfferChat {
     @Inject var client: ApolloClient
@@ -67,7 +68,7 @@ extension OfferChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += client.perform(mutation: OfferClosedMutation()).onValue { _ in
+        bag += client.perform(mutation: GraphQL.OfferClosedMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                 chat.chatState.subscribe()
             }

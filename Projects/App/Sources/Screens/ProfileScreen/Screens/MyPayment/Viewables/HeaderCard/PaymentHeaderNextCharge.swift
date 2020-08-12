@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct PaymentHeaderNextCharge {
@@ -35,7 +36,7 @@ extension PaymentHeaderNextCharge: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        bag += client.watch(query: MyPaymentQuery()).map { $0.data?.nextChargeDate }.onValue { nextChargeDate in
+        bag += client.watch(query: GraphQL.MyPaymentQuery()).map { $0.data?.nextChargeDate }.onValue { nextChargeDate in
             if let nextChargeDate = nextChargeDate {
                 let dateParsingFormatter = DateFormatter()
                 dateParsingFormatter.dateFormat = "yyyy-MM-dd"

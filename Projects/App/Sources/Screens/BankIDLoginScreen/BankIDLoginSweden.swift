@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -83,7 +84,7 @@ extension BankIDLoginSweden: Presentable {
         bag += closeButtonContainer.addArranged(closeButton)
 
         let statusSignal = client.subscribe(
-            subscription: BankIdAuthSubscriptionSubscription()
+            subscription: GraphQL.BankIdAuthSubscriptionSubscription()
         ).compactMap { $0.data?.authStatus?.status }
 
         bag += statusSignal.skip(first: 1).onValue { authStatus in
@@ -105,7 +106,7 @@ extension BankIDLoginSweden: Presentable {
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
         }
 
-        bag += client.perform(mutation: BankIdAuthMutation()).delay(by: 0.5).valueSignal.compactMap { result in result.data?.bankIdAuth.autoStartToken }.onValue { autoStartToken in
+        bag += client.perform(mutation: GraphQL.BankIdAuthMutation()).delay(by: 0.5).valueSignal.compactMap { result in result.data?.bankIdAuth.autoStartToken }.onValue { autoStartToken in
             let urlScheme = Bundle.main.urlScheme ?? ""
             guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
 

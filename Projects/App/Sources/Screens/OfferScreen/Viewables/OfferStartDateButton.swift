@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -37,7 +38,7 @@ extension OfferStartDateButton: Viewable {
 
         containerStackView.addArrangedSubview(button)
 
-        let dataSignal = client.watch(query: OfferQuery())
+        let dataSignal = client.watch(query: GraphQL.OfferQuery())
 
         bag += dataSignal.take(first: 1).animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) { _ in
             button.transform = CGAffineTransform.identity
@@ -89,7 +90,7 @@ extension OfferStartDateButton: Viewable {
                                       })])
 
         bag += touchUpInside.onValue { _ in
-            bag += self.client.fetch(query: OfferQuery()).map { $0.data }.onValue { result in
+            bag += self.client.fetch(query: GraphQL.OfferQuery()).map { $0.data }.onValue { result in
                 if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                     self.presentingViewController.present(alert)
                 } else {
@@ -101,7 +102,7 @@ extension OfferStartDateButton: Viewable {
             }
         }
 
-        bag += client.watch(query: OfferQuery()).map { $0.data }.onValue { result in
+        bag += client.watch(query: GraphQL.OfferQuery()).map { $0.data }.onValue { result in
             if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                 valueLabel.value = L10n.startDateExpires
             } else if result?.insurance.previousInsurer == nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {

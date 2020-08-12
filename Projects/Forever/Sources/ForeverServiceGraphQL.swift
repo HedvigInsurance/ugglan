@@ -10,10 +10,11 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 
 public class ForeverServiceGraphQL: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
-        client.perform(mutation: ForeverUpdateDiscountCodeMutation(code: value)).valueSignal.map { result in
+        client.perform(mutation: GraphQL.ForeverUpdateDiscountCodeMutation(code: value)).valueSignal.map { result in
             let updateReferralCampaignCode = result.data?.updateReferralCampaignCode
 
             if updateReferralCampaignCode?.asCodeAlreadyTaken != nil {
@@ -26,7 +27,7 @@ public class ForeverServiceGraphQL: ForeverService {
                 return .right(ForeverChangeCodeError.exceededMaximumUpdates(amount: maximumUpdates.maximumNumberOfUpdates))
             } else if updateReferralCampaignCode?.asSuccessfullyUpdatedCode != nil {
                 self.store.withinReadWriteTransaction({ transaction in
-                    try transaction.update(query: ForeverQuery()) { (data: inout ForeverQuery.Data) in
+                    try transaction.update(query: GraphQL.ForeverQuery()) { (data: inout GraphQL.ForeverQuery.Data) in
                         data.referralInformation.campaign.code = value
                     }
                 })
@@ -39,7 +40,7 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public var dataSignal: ReadSignal<ForeverData?> {
-        client.watch(query: ForeverQuery()).map { result -> ForeverData in
+        client.watch(query: GraphQL.ForeverQuery()).map { result -> ForeverData in
             let grossAmount = result.data?.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
             let grossAmountMonetary = MonetaryAmount(amount: grossAmount?.amount ?? "", currency: grossAmount?.currency ?? "")
 
@@ -111,7 +112,7 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public func refetch() {
-        client.fetch(query: ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+        client.fetch(query: GraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
     }
 
     public init() {}

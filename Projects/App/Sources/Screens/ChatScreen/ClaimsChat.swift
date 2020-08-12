@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -24,7 +25,7 @@ extension ClaimsChat: Presentable {
         let (viewController, future) = chat.materialize()
         viewController.navigationItem.hidesBackButton = true
 
-        bag += client.perform(mutation: TriggerClaimChatMutation()).onValue { _ in
+        bag += client.perform(mutation: GraphQL.TriggerClaimChatMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
         }
 

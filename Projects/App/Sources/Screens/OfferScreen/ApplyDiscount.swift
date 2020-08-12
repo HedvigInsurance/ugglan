@@ -12,15 +12,16 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 struct ApplyDiscount {
     @Inject var client: ApolloClient
 
-    private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
+    private let didRedeemValidCodeCallbacker = Callbacker<GraphQL.RedeemCodeMutation.Data.RedeemCode>()
 
-    var didRedeemValidCodeSignal: Signal<RedeemCodeMutation.Data.RedeemCode> {
+    var didRedeemValidCodeSignal: Signal<GraphQL.RedeemCodeMutation.Data.RedeemCode> {
         return didRedeemValidCodeCallbacker.providedSignal
     }
 }
@@ -99,7 +100,7 @@ extension ApplyDiscount: Presentable {
                     loadableSubmitButton.isLoadingSignal.value = true
                 }
                 .withLatestFrom(textField.value.plain())
-                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: RedeemCodeMutation(code: discountCode)) }
+                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode)) }
                 .delay(by: 0.5)
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false

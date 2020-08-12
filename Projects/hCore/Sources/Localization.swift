@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import hGraphQL
 
 public struct Localization {
     public enum Locale: String, CaseIterable {
@@ -71,6 +72,21 @@ public struct Localization {
             case .nb_NO:
                 return "nb-NO"
             }
+        }
+    }
+}
+
+extension Localization.Locale {
+    public func asGraphQLLocale() -> hGraphQL.GraphQL.Locale {
+        switch self {
+        case .sv_SE:
+            return .svSe
+        case .en_SE:
+            return .enSe
+        case .nb_NO:
+            return .nbNo
+        case .en_NO:
+            return .enNo
         }
     }
 }

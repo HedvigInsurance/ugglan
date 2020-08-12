@@ -10,18 +10,19 @@ import Disk
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Kingfisher
 import UIKit
 
 public struct RemoteVectorIcon {
-    public let iconSignal = ReadWriteSignal<IconFragment?>(nil)
+    public let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
     public let finishedLoadingSignal: Signal<Void>
     public let finishedLoadingCallback = Callbacker<Void>()
     @Inject var environment: ApolloEnvironmentConfig
     public let threaded: Bool
 
     public init(
-        _ icon: IconFragment? = nil,
+        _ icon: GraphQL.IconFragment? = nil,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon

@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 import WatchConnectivity
@@ -41,13 +42,13 @@ struct KeyGearOverview {
                     if session.isPaired {
                         let bag = DisposeBag()
 
-                        bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap { $0.data?.member.id }.onValue { memberId in
+                        bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap { $0.data?.member.id }.onValue { memberId in
                             bag += self.client.perform(
-                                mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [], category: .smartWatch, physicalReferenceHash: "apple-watch-\(memberId)"))
+                                mutation: GraphQL.CreateKeyGearItemMutation(input: GraphQL.CreateKeyGearItemInput(photos: [], category: .smartWatch, physicalReferenceHash: "apple-watch-\(memberId)"))
                             ).valueSignal.compactMap { $0.data?.createKeyGearItem.id }
                                 .onValue { itemId in
-                                    self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: itemId, name: "Apple Watch")).onValue { _ in
-                                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+                                    self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: itemId, name: "Apple Watch")).onValue { _ in
+                                        self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
                                         bag.dispose()
                                     }
                                 }
@@ -69,15 +70,15 @@ struct KeyGearOverview {
 
         let bag = DisposeBag()
 
-        let category: KeyGearItemCategory = viewController.traitCollection.userInterfaceIdiom == .pad ? .tablet : .phone
+        let category: GraphQL.KeyGearItemCategory = viewController.traitCollection.userInterfaceIdiom == .pad ? .tablet : .phone
 
-        bag += client.perform(mutation: CreateKeyGearItemMutation(
-            input: CreateKeyGearItemInput(photos: [], category: category, physicalReferenceHash: deviceId))
+        bag += client.perform(mutation: GraphQL.CreateKeyGearItemMutation(
+            input: GraphQL.CreateKeyGearItemInput(photos: [], category: category, physicalReferenceHash: deviceId))
         ).valueSignal
             .compactMap { $0.data?.createKeyGearItem.id }
             .onValue { itemId in
-                self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: itemId, name: UIDevice.current.name)).onValue { _ in
-                    self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+                self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: itemId, name: UIDevice.current.name)).onValue { _ in
+                    self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
                     bag.dispose()
                 }
             }
@@ -130,7 +131,7 @@ extension KeyGearOverview: Presentable {
 
         bag += viewController.install(KeyGearListCollection()) { collectionView in
             let refreshControl = UIRefreshControl()
-            bag += client.refetchOnRefresh(query: KeyGearItemsQuery(), refreshControl: refreshControl)
+            bag += client.refetchOnRefresh(query: GraphQL.KeyGearItemsQuery(), refreshControl: refreshControl)
 
             collectionView.refreshControl = refreshControl
 

@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct AttachFileButton {

@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct PaymentHeaderCard {
@@ -42,7 +43,7 @@ extension PaymentHeaderCard: Viewable {
         leftTopViewStack.axis = .vertical
         leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.blockRowTitle.colored(.white)))
 
-        let dataSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+        let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
 
         let grossPriceSignal = dataSignal
             .map { $0.data?.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }
@@ -67,7 +68,7 @@ extension PaymentHeaderCard: Viewable {
             if let freeMonths = incentiveFragment?.asFreeMonths {
                 return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
             } else if let monthlyDeduction = incentiveFragment?.asMonthlyCostDeduction {
-                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.formattedAmount ?? "")
+                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount ?? "")
             } else if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
                 return CampaignBubble.CampaignType.percentageDiscount(value: percentageDiscount.percentageDiscount, months: percentageDiscount.percentageNumberOfMonths)
             }

@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -28,7 +29,7 @@ extension PastPaymentsSection: Viewable {
             footer: nil
         )
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery())
+        let dataValueSignal = client.watch(query: GraphQL.MyPaymentQuery())
         bag += dataValueSignal.map { $0.data?.chargeHistory.isEmpty ?? true }.bindTo(section, \.isHidden)
 
         let dataSignal = dataValueSignal.compactMap { $0.data }
@@ -38,7 +39,7 @@ extension PastPaymentsSection: Viewable {
 
             innerBag += data.chargeHistory.prefix(2).map { chargeHistory -> Disposable in
                 let row = KeyValueRow()
-                row.valueStyleSignal.value = .rowTitleDisabled
+                row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
                 let dateParsingFormatter = DateFormatter()
                 dateParsingFormatter.dateFormat = "yyyy-MM-dd"
@@ -50,7 +51,7 @@ extension PastPaymentsSection: Viewable {
                     row.keySignal.value = dateDisplayFormatter.string(from: date)
                 }
 
-                row.valueSignal.value = chargeHistory.amount.fragments.monetaryAmountFragment.formattedAmount
+                row.valueSignal.value = chargeHistory.amount.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount
 
                 return section.append(row)
             }

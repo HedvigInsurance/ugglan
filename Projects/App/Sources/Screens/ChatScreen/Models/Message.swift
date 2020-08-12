@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import UIKit
+import hGraphQL
 
 struct Message: Equatable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {
@@ -310,7 +311,7 @@ struct Message: Equatable, Hashable {
         }
     }
 
-    init(from message: MessageData, listSignal: ReadSignal<[ChatListContent]>?) {
+    init(from message: GraphQL.MessageData, listSignal: ReadSignal<[ChatListContent]>?) {
         globalId = message.globalId
         id = message.id
         richTextCompatible = message.header.richTextChatCompatible

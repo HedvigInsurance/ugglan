@@ -8,6 +8,7 @@ let testableTargets = [
     TestableTarget(target: .project(path: "Projects/hCoreUI", target: "hCoreUITests"), parallelizable: true),
     TestableTarget(target: .project(path: "Projects/Forever", target: "ForeverTests"), parallelizable: true),
     TestableTarget(target: .project(path: "Projects/ExampleUtil", target: "ExampleUtilTests"), parallelizable: true),
+    TestableTarget(target: .project(path: "Projects/Contracts", target: "ContractsTests"), parallelizable: true)
 ]
 
 let workspace = Workspace(
@@ -19,13 +20,19 @@ let workspace = Workspace(
         "Projects/Testing",
         "Projects/hCore",
         "Projects/hCoreUI",
+        "Projects/hGraphQL",
         "Projects/Forever",
         "Projects/ExampleUtil",
+        "Projects/Contracts",
     ],
     schemes: [
         Scheme(name: "WorkspaceApps",
                shared: true,
-               buildAction: BuildAction(targets: [.project(path: "Projects/App", target: "Ugglan"), .project(path: "Projects/Embark", target: "EmbarkExample"), .project(path: "Projects/Forever", target: "ForeverExample")]),
+               buildAction: BuildAction(targets: [
+                .project(path: "Projects/App", target: "Ugglan"),
+                .project(path: "Projects/Embark", target: "EmbarkExample"),
+                .project(path: "Projects/Forever", target: "ForeverExample")
+               ]),
                testAction: nil,
                runAction: nil,
                archiveAction: nil),

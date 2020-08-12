@@ -11,21 +11,6 @@ import Foundation
 import hCore
 import UIKit
 
-extension Localization.Locale {
-    public func asGraphQLLocale() -> Locale {
-        switch self {
-        case .sv_SE:
-            return .svSe
-        case .en_SE:
-            return .enSe
-        case .nb_NO:
-            return .nbNo
-        case .en_NO:
-            return .enNo
-        }
-    }
-}
-
 struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 

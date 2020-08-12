@@ -13,6 +13,7 @@ import Flow
 import Foundation
 import hCore
 import UIKit
+import hGraphQL
 
 extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
@@ -98,14 +99,14 @@ extension ApolloClient {
     static func createClientFromNewSession() -> Future<Void> {
         ApplicationState.setLastNewsSeen()
 
-        let campaign = CampaignInput(
+        let campaign = GraphQL.CampaignInput(
             source: nil,
             medium: nil,
             term: nil,
             content: nil,
             name: nil
         )
-        let mutation = CreateSessionMutation(campaign: campaign, trackingId: nil)
+        let mutation = GraphQL.CreateSessionMutation(campaign: campaign, trackingId: nil)
 
         return Future { completion in
             let (_, client) = self.createClient(token: nil)

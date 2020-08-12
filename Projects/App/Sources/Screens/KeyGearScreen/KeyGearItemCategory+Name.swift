@@ -7,8 +7,9 @@
 
 import Foundation
 import hCore
+import hGraphQL
 
-extension KeyGearItemCategory {
+extension GraphQL.KeyGearItemCategory {
     var name: String {
         switch self {
         case .computer:

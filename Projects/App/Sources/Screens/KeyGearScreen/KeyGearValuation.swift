@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -51,13 +52,13 @@ extension KeyGearValuation: Presentable {
         )
         bag += form.append(descriptionLabel)
 
-        bag += client.watch(query: KeyGearItemQuery(id: itemId), cachePolicy: .returnCacheDataAndFetch).map { $0.data?.keyGearItem }.onValue { item in
+        bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId), cachePolicy: .returnCacheDataAndFetch).map { $0.data?.keyGearItem }.onValue { item in
             if let fixed = item?.valuation?.asKeyGearItemValuationFixed {
                 descriptionLabel.textSignal.value = L10n.keyGearItemViewValuationBody(
                     item?.category.name.localizedLowercase ?? "",
                     fixed.ratio,
-                    item?.purchasePrice?.fragments.monetaryAmountFragment.formattedAmount ?? "",
-                    fixed.valuation.fragments.monetaryAmountFragment.formattedAmount
+                    item?.purchasePrice?.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount ?? "",
+                    fixed.valuation.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount
                 )
 
                 totalPercentageLabel.value = "\(fixed.ratio)%"

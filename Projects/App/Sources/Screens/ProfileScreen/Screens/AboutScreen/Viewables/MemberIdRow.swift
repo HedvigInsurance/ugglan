@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -23,14 +24,14 @@ extension MemberIdRow: Viewable {
 
         let row = RowView(title: L10n.aboutMemberIdRowKey, style: .rowTitle)
 
-        let valueLabel = UILabel(value: "", style: .rowTitleDisabled)
+        let valueLabel = UILabel(value: "", style: .brand(.headline(color: .quartenary)))
         row.append(valueLabel)
 
         bag += valueLabel.copySignal.onValue { _ in
             UIPasteboard.general.value = valueLabel.text
         }
 
-        bag += client.fetch(query: MemberIdQuery()).valueSignal.compactMap {
+        bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap {
             $0.data?.member.id
         }.bindTo(valueLabel, \.value)
 

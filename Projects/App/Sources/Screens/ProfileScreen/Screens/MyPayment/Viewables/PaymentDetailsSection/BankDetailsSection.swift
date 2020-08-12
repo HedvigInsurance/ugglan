@@ -11,6 +11,8 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient
@@ -25,11 +27,11 @@ extension BankDetailsSection: Viewable {
             footer: nil
         )
         let row = KeyValueRow()
-        row.valueStyleSignal.value = .rowTitleDisabled
+        row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
         bag += section.append(row)
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery())
+        let dataValueSignal = client.watch(query: GraphQL.MyPaymentQuery())
         let noBankAccountSignal = dataValueSignal.filter {
             $0.data?.bankAccount == nil
         }

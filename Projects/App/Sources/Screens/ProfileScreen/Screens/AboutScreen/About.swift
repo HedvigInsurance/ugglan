@@ -11,6 +11,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import SwiftUI
 import UIKit
@@ -122,7 +123,7 @@ extension About: Presentable {
 
             bag += showWelcome.onSelect.onValue { _ in
                 bag += self.client
-                    .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+                    .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                     .compactMap { $0.data }
                     .filter { $0.welcome.count > 0 }
                     .onValue { data in

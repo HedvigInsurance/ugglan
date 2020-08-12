@@ -9,11 +9,13 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import Contracts
+import hGraphQL
 
 extension ApolloClient {
     var isSwitchingInsurance: Future<Bool> {
         fetch(
-            query: ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+            query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
             cachePolicy: .fetchIgnoringCacheData
         ).map { result -> Bool in
             guard let data = result.data else { return false }

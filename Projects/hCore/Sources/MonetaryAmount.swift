@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import hGraphQL
 
 public struct MonetaryAmount: Equatable, Hashable, Codable {
     public init(amount: String, currency: String) {
@@ -72,7 +73,7 @@ public extension MonetaryAmount {
     }
 }
 
-extension MonetaryAmountFragment {
+extension GraphQL.MonetaryAmountFragment {
     public var monetaryAmount: MonetaryAmount {
         .init(amount: amount, currency: currency)
     }

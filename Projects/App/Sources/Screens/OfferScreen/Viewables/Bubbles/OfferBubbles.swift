@@ -8,11 +8,12 @@
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct OfferBubbles {
     let containerScrollView: UIScrollView
-    let insuranceSignal = ReadWriteSignal<OfferQuery.Data.Insurance?>(nil)
+    let insuranceSignal = ReadWriteSignal<GraphQL.OfferQuery.Data.Insurance?>(nil)
 }
 
 extension OfferBubbles: Viewable {

@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -69,7 +70,7 @@ extension ReferralsReceiverConsent: Presentable {
             }.onValue { result in
                 switch result {
                 case .accept:
-                    self.client.perform(mutation: RedeemCodeMutation(code: self.referralCode))
+                    self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: self.referralCode))
                         .onValue { result in
                             if result.errors != nil {
                                 let alert = Alert(

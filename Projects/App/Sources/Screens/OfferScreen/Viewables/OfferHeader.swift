@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct OfferHeader {
@@ -88,7 +89,7 @@ extension OfferHeader: Viewable {
 
         bag += stackView.addArranged(signButton)
 
-        let offerSignal = client.watch(query: OfferQuery())
+        let offerSignal = client.watch(query: GraphQL.OfferQuery())
 
         bag += offerSignal
             .compactMap { $0.data }

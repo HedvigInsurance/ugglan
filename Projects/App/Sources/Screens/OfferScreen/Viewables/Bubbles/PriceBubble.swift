@@ -11,10 +11,11 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct PriceBubble {
-    let dataSignal = ReadWriteSignal<OfferQuery.Data?>(nil)
+    let dataSignal = ReadWriteSignal<GraphQL.OfferQuery.Data?>(nil)
 }
 
 extension PriceBubble: Viewable {

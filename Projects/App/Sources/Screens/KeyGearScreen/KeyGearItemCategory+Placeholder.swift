@@ -7,8 +7,9 @@
 
 import Foundation
 import UIKit
+import hGraphQL
 
-extension KeyGearItemCategory {
+extension GraphQL.KeyGearItemCategory {
     var image: UIImage? {
         switch self {
         case .phone:

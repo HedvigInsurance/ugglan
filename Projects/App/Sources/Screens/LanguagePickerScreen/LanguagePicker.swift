@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -142,7 +143,7 @@ extension LanguagePicker: Presentable {
                 ApolloClient.initClient().always {
                     completion(.success)
                 }
-                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
+                bag += self.client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }
 
             let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)

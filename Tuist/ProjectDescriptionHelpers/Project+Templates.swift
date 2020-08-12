@@ -170,6 +170,12 @@ extension Project {
         targetDependencies.append(contentsOf: externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
         }.flatMap { $0 })
+        
+        let hGraphQLName = "hGraphQL"
+        
+        if includesGraphQL && !dependencies.contains(hGraphQLName) && name != hGraphQLName {
+            targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
+        }
 
         let targetActions: [TargetAction] = [
             .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications"),

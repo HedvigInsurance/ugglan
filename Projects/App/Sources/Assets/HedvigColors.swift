@@ -9,8 +9,9 @@
 import DynamicColor
 import Foundation
 import UIKit
+import hGraphQL
 
-extension HedvigColor: Decodable {}
+extension GraphQL.HedvigColor: Decodable {}
 
 extension UIColor {
     static var primaryBackground: UIColor {
@@ -188,7 +189,7 @@ extension UIColor {
     static let grayBorder = UIColor.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
 
     // swiftlint:disable cyclomatic_complexity
-    static func from(apollo color: HedvigColor) -> UIColor {
+    static func from(apollo color: GraphQL.HedvigColor) -> UIColor {
         switch color {
         case .pink:
             return .pink

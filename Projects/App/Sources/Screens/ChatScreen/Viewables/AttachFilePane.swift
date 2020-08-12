@@ -12,6 +12,7 @@ import Foundation
 import hCore
 import Photos
 import UIKit
+import hGraphQL
 
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>
@@ -44,7 +45,7 @@ struct FileUpload {
 
         return Future { completion in
             client.upload(
-                operation: UploadFileMutation(file: "image"),
+                operation: GraphQL.UploadFileMutation(file: "image"),
                 files: [file],
                 queue: DispatchQueue.global(qos: .background)
             ).onValue { result in

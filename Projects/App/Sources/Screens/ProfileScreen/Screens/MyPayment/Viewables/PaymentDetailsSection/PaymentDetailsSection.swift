@@ -11,6 +11,8 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -30,7 +32,7 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let dataValueSignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         let section = SectionView(
             header: L10n.myPaymentPaymentRowLabel,
@@ -39,7 +41,7 @@ extension PaymentDetailsSection: Viewable {
 
         let grossPriceRow = KeyValueRow()
         grossPriceRow.keySignal.value = L10n.profilePaymentPriceLabel
-        grossPriceRow.valueStyleSignal.value = .rowTitleDisabled
+        grossPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
         bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
@@ -56,7 +58,7 @@ extension PaymentDetailsSection: Viewable {
 
         let discountRow = KeyValueRow()
         discountRow.keySignal.value = L10n.profilePaymentDiscountLabel
-        discountRow.valueStyleSignal.value = .rowTitleDisabled
+        discountRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
         bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }
             .toInt()
@@ -73,7 +75,7 @@ extension PaymentDetailsSection: Viewable {
 
         let netPriceRow = KeyValueRow()
         netPriceRow.keySignal.value = L10n.profilePaymentFinalCostLabel
-        netPriceRow.valueStyleSignal.value = .rowTitleDisabled
+        netPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
         bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
@@ -94,11 +96,11 @@ extension PaymentDetailsSection: Viewable {
             let applyDiscount = ApplyDiscount()
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                self.store.update(query: GraphQL.MyPaymentQuery(), updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
                     data.insuranceCost?.fragments.costFragment = result.cost.fragments.costFragment
                 })
 
-                self.store.update(query: ReferralsScreenQuery(), updater: { (data: inout ReferralsScreenQuery.Data) in
+                self.store.update(query: GraphQL.ReferralsScreenQuery(), updater: { (data: inout GraphQL.ReferralsScreenQuery.Data) in
                     data.insuranceCost?.fragments.costFragment = result.cost.fragments.costFragment
                 })
 

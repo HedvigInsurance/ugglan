@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct ClaimsHeader {
@@ -120,7 +121,7 @@ extension ClaimsHeader.InactiveMessage: Viewable {
             }
         }
 
-        let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
+        let isEligibleDataSignal = client.watch(query: GraphQL.EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
 
         bag += isEligibleDataSignal
             .wait(until: view.hasWindowSignal)
@@ -185,7 +186,7 @@ extension ClaimsHeader: Viewable {
         }
 
         bag += view.addArranged(button.wrappedIn(UIStackView())) { stackView in
-            let isEligibleDataSignal = client.watch(query: EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
+            let isEligibleDataSignal = client.watch(query: GraphQL.EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
             bag += isEligibleDataSignal.bindTo(stackView, \.isUserInteractionEnabled)
             bag += isEligibleDataSignal
                 .map { $0 ? 1 : 0.5 }

@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 class ChatState {
@@ -26,7 +27,7 @@ class ChatState {
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
 
-    private func parseMessage(message: MessageData) -> [ChatListContent] {
+    private func parseMessage(message: GraphQL.MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
         let newMessage = Message(from: message, listSignal: filteredListSignal)
 
@@ -47,7 +48,7 @@ class ChatState {
         return result
     }
 
-    private func handleFirstMessage(message: MessageData) {
+    private func handleFirstMessage(message: GraphQL.MessageData) {
         if message.body.asMessageBodyParagraph != nil {
             bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
@@ -90,12 +91,12 @@ class ChatState {
         hasFetched: @escaping () -> Void = {}
     ) {
         bag += client.fetch(
-            query: ChatMessagesQuery(),
+            query: GraphQL.ChatMessagesQuery(),
             cachePolicy: cachePolicy,
             queue: DispatchQueue.global(qos: .background)
         )
         .valueSignal
-        .compactMap(on: .concurrentBackground) { messages -> [MessageData]? in
+        .compactMap(on: .concurrentBackground) { messages -> [GraphQL.MessageData]? in
             messages.data?.messages.compactMap { message in message?.fragments.messageData }
         }
         .map { messages in
@@ -132,7 +133,7 @@ class ChatState {
     func subscribe() {
         subscriptionBag.dispose()
         subscriptionBag += client.subscribe(
-            subscription: ChatMessagesSubscriptionSubscription(),
+            subscription: GraphQL.ChatMessagesSubscriptionSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
         .compactMap(on: .concurrentBackground) { $0.data?.message.fragments.messageData }
@@ -156,7 +157,7 @@ class ChatState {
     func reset() {
         handledGlobalIds = []
         listSignal.value = []
-        bag += client.perform(mutation: TriggerResetChatMutation()).onValue { _ in
+        bag += client.perform(mutation: GraphQL.TriggerResetChatMutation()).onValue { _ in
             self.fetch(cachePolicy: .fetchIgnoringCacheData)
         }
     }
@@ -164,7 +165,7 @@ class ChatState {
     func sendSingleSelectResponse(selectedValue: GraphQLID) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.perform(
-                mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: selectedValue)
+                mutation: GraphQL.SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: selectedValue)
             ).onValue { _ in
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
             }
@@ -177,7 +178,7 @@ class ChatState {
 
             innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.take(first: 1).onValue { globalId in
                 innerBag += self.client.perform(
-                    mutation: SendChatTextResponseMutation(globalId: globalId, text: text)
+                    mutation: GraphQL.SendChatTextResponseMutation(globalId: globalId, text: text)
                 ).onValue { _ in
                     callback(())
                     self.fetch(cachePolicy: .fetchIgnoringCacheData)
@@ -191,7 +192,7 @@ class ChatState {
     func sendChatFileResponseMutation(key: String, mimeType: String) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.perform(
-                mutation: SendChatFileResponseMutation(globalID: globalId, key: key, mimeType: mimeType)
+                mutation: GraphQL.SendChatFileResponseMutation(globalID: globalId, key: key, mimeType: mimeType)
             ).onValue { _ in
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
             }
@@ -205,7 +206,7 @@ class ChatState {
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.upload(
-                operation: SendChatAudioResponseMutation(globalID: globalId, file: "file"),
+                operation: GraphQL.SendChatAudioResponseMutation(globalID: globalId, file: "file"),
                 files: [
                     file,
                 ]
@@ -258,7 +259,7 @@ class ChatState {
                         offset > firstIndex
                     }.map { $0.1 }
 
-                    self.bag += self.client.perform(mutation: EditLastResponseMutation()).onValue { _ in
+                    self.bag += self.client.perform(mutation: GraphQL.EditLastResponseMutation()).onValue { _ in
                         self.fetch()
                     }
                 } ?? DisposeBag()

@@ -9,6 +9,7 @@ import Apollo
 import Foundation
 import hCore
 import UIKit
+import hGraphQL
 
 private struct LogMessage: Encodable {
     let text: String
@@ -17,7 +18,7 @@ private struct LogMessage: Encodable {
 struct Logger {
     private static let queue = DispatchQueue(label: "Logger")
 
-    private static func log(input: LoggingInput) {
+    private static func log(input: GraphQL.LoggingInput) {
         #if DEBUG
         // don't send anything when debugging
         #else
@@ -34,7 +35,7 @@ struct Logger {
         print("DEBUG 💛 \(Date()) - \(message)")
 
         if let json = try? JSONEncoder().encode(LogMessage(text: message)), let jsonString = String(data: json, encoding: .utf8) {
-            log(input: LoggingInput(timestamp: Date().currentTimeMillis().description, source: .ios, payload: jsonString, severity: .debug))
+            log(input: GraphQL.LoggingInput(timestamp: Date().currentTimeMillis.description, source: .ios, payload: jsonString, severity: .debug))
         }
     }
 
@@ -46,7 +47,7 @@ struct Logger {
         print("INFO 💙 \(Date()) - \(message)")
 
         if let json = try? JSONEncoder().encode(LogMessage(text: message)), let jsonString = String(data: json, encoding: .utf8) {
-            log(input: LoggingInput(timestamp: Date().currentTimeMillis().description, source: .ios, payload: jsonString, severity: .info))
+            log(input: GraphQL.LoggingInput(timestamp: Date().currentTimeMillis.description, source: .ios, payload: jsonString, severity: .info))
         }
     }
 
@@ -58,7 +59,7 @@ struct Logger {
         print("WARNING 💜 \(Date()) - \(message)")
 
         if let json = try? JSONEncoder().encode(LogMessage(text: message)), let jsonString = String(data: json, encoding: .utf8) {
-            log(input: LoggingInput(timestamp: Date().currentTimeMillis().description, source: .ios, payload: jsonString, severity: .warning))
+            log(input: GraphQL.LoggingInput(timestamp: Date().currentTimeMillis.description, source: .ios, payload: jsonString, severity: .warning))
         }
     }
 
@@ -70,7 +71,7 @@ struct Logger {
         print("ERROR 💥 \(Date()) - \(message)")
 
         if let json = try? JSONEncoder().encode(LogMessage(text: message)), let jsonString = String(data: json, encoding: .utf8) {
-            log(input: LoggingInput(timestamp: Date().currentTimeMillis().description, source: .ios, payload: jsonString, severity: .error))
+            log(input: GraphQL.LoggingInput(timestamp: Date().currentTimeMillis.description, source: .ios, payload: jsonString, severity: .error))
         }
     }
 }

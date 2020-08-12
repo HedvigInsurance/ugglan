@@ -11,6 +11,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -50,7 +51,7 @@ extension Profile: Presentable {
 
         bag += form.append(logoutSection)
 
-        let query = ProfileQuery()
+        let query = GraphQL.ProfileQuery()
 
         bag += client.watch(query: query)
             .compactMap { $0.data }

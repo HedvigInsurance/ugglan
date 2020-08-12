@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import UIKit
 
 struct InsuranceSummarySection {
@@ -50,7 +52,7 @@ extension InsuranceSummarySection: Viewable {
 
         stackView.addArrangedSubview(sectionView)
 
-        bag += client.watch(query: MyHomeQuery()).onValueDisposePrevious { result in
+        bag += client.watch(query: GraphQL.MyHomeQuery()).onValueDisposePrevious { result in
             let innerBag = DisposeBag()
 
             if let insurance = result.data?.insurance {
@@ -58,7 +60,7 @@ extension InsuranceSummarySection: Viewable {
                     let livingSpaceRow = KeyValueRow()
                     livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
                     livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(livingSpace))
-                    livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
+                    livingSpaceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                     innerBag += sectionView.append(livingSpaceRow)
                 }
 
@@ -66,7 +68,7 @@ extension InsuranceSummarySection: Viewable {
                     let ancillaryAreaRow = KeyValueRow()
                     ancillaryAreaRow.keySignal.value = L10n.myHomeRowAncillaryAreaKey
                     ancillaryAreaRow.valueSignal.value = L10n.myHomeRowAncillaryAreaValue(String(ancillaryArea))
-                    ancillaryAreaRow.valueStyleSignal.value = .rowTitleDisabled
+                    ancillaryAreaRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                     innerBag += sectionView.append(ancillaryAreaRow)
                 }
 
@@ -74,7 +76,7 @@ extension InsuranceSummarySection: Viewable {
                     let yearOfConstructionRow = KeyValueRow()
                     yearOfConstructionRow.keySignal.value = L10n.myHomeRowConstructionYearKey
                     yearOfConstructionRow.valueSignal.value = String(yearOfConstruction)
-                    yearOfConstructionRow.valueStyleSignal.value = .rowTitleDisabled
+                    yearOfConstructionRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                     innerBag += sectionView.append(yearOfConstructionRow)
                 }
 
@@ -82,7 +84,7 @@ extension InsuranceSummarySection: Viewable {
                     let numberOfBathroomsRow = KeyValueRow()
                     numberOfBathroomsRow.keySignal.value = L10n.myHomeRowBathroomsKey
                     numberOfBathroomsRow.valueSignal.value = String(numberOfBathrooms)
-                    numberOfBathroomsRow.valueStyleSignal.value = .rowTitleDisabled
+                    numberOfBathroomsRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                     innerBag += sectionView.append(numberOfBathroomsRow)
                 }
 
@@ -92,25 +94,25 @@ extension InsuranceSummarySection: Viewable {
                     isSubletedRow.valueSignal.value = isSubleted ?
                         L10n.myHomeRowSubletedValueYes :
                         L10n.myHomeRowSubletedValueNo
-                    isSubletedRow.valueStyleSignal.value = .rowTitleDisabled
+                    isSubletedRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                     innerBag += sectionView.append(isSubletedRow)
                 }
 
                 let adressRow = KeyValueRow()
                 adressRow.keySignal.value = L10n.myHomeAddressRowKey
                 adressRow.valueSignal.value = insurance.address ?? ""
-                adressRow.valueStyleSignal.value = .rowTitleDisabled
+                adressRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                 innerBag += sectionView.append(adressRow)
 
                 let postalCodeRow = KeyValueRow()
                 postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
                 postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
-                postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
+                postalCodeRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                 innerBag += sectionView.append(postalCodeRow)
 
                 let apartmentTypeRow = KeyValueRow()
                 apartmentTypeRow.keySignal.value = L10n.myHomeRowTypeKey
-                apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
+                apartmentTypeRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
                 if let insuranceType = insurance.type {
                     switch insuranceType {

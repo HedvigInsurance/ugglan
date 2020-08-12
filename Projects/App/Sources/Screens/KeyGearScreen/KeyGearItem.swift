@@ -13,6 +13,7 @@ import hCore
 import hCoreUI
 import Presentation
 import UIKit
+import hGraphQL
 
 struct KeyGearItem {
     let id: String
@@ -122,7 +123,7 @@ extension KeyGearItem: Presentable {
         viewController.view = view
 
         let dataSignal = client.watch(
-            query: KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
+            query: GraphQL.KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
             cachePolicy: .returnCacheDataAndFetch
         ).compactMap { $0.data?.keyGearItem }
 
@@ -156,7 +157,7 @@ extension KeyGearItem: Presentable {
 
         scrollView.embedView(form, scrollAxis: .vertical)
 
-        let imagesSignal = dataSignal.map { (images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category) }.compactMap { data -> [Either<URL, KeyGearItemCategory>] in
+        let imagesSignal = dataSignal.map { (images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category) }.compactMap { data -> [Either<URL, GraphQL.KeyGearItemCategory>] in
             if data.images.isEmpty {
                 return [.right(data.category)]
             }
@@ -276,7 +277,7 @@ extension KeyGearItem: Presentable {
         bag += nameSection.append(nameRow).onValue { name in
             viewController.navigationItem.title = name
             navigationBar.items = [viewController.navigationItem]
-            self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
+            self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
         }
 
         bag += dataSignal.onValue { data in
@@ -313,8 +314,8 @@ extension KeyGearItem: Presentable {
                         throw GenericError.cancelled
                     }),
                 ]), style: .sheet(from: optionsButton.view, rect: nil)).onValue { _ in
-                    self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
-                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                    self.client.perform(mutation: GraphQL.DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
+                        self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                             completion(.success)
                         }
                     }

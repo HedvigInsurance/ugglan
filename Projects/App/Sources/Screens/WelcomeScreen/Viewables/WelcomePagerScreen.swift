@@ -10,13 +10,14 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 struct WelcomePagerScreen {
     let title: String
     let paragraph: String
-    let icon: IconFragment
+    let icon: GraphQL.IconFragment
 }
 
 extension WelcomePagerScreen: Presentable {
@@ -45,7 +46,7 @@ extension WelcomePagerScreen: Presentable {
         innerContainerView.spacing = 8
         innerContainerView.isLayoutMarginsRelativeArrangement = true
 
-        let remoteVectorIcon = RemoteVectorIcon(hCoreUI.IconFragment(unsafeResultMap: icon.resultMap), threaded: true)
+        let remoteVectorIcon = RemoteVectorIcon(icon, threaded: true)
 
         containerView.addArrangedSubview(innerContainerView)
 

@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -96,7 +97,7 @@ extension TypingIndicator: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        func getDot(color: HedvigColor) -> UIView {
+        func getDot(color: GraphQL.HedvigColor) -> UIView {
             let dot = UIView()
             dot.snp.makeConstraints { make in
                 make.width.height.equalTo(5)

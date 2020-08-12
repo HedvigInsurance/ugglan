@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -53,7 +54,7 @@ extension CommonClaimsCollection: Viewable {
 
         func fetchData() {
             bag += client.fetch(
-                query: CommonClaimsQuery(
+                query: GraphQL.CommonClaimsQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )

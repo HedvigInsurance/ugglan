@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct AddressCircle {
@@ -23,7 +24,7 @@ extension AddressCircle: Viewable {
 
         let circleText = DynamicString()
 
-        bag += client.fetch(query: MyHomeQuery()).valueSignal.map { result -> String in
+        bag += client.fetch(query: GraphQL.MyHomeQuery()).valueSignal.map { result -> String in
             if let address = result.data?.insurance.address {
                 return address
             }

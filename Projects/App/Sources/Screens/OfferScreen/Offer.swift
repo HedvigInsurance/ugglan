@@ -10,6 +10,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -91,7 +92,7 @@ extension Offer {
         }
 
         bag += client
-            .fetch(query: OfferQuery())
+            .fetch(query: GraphQL.OfferQuery())
             .valueSignal
             .compactMap { $0.data?.insurance }
             .atValue { insurance in
@@ -118,7 +119,7 @@ extension Offer {
     }
 }
 
-extension OfferQuery {
+extension GraphQL.OfferQuery {
     convenience init() {
         self.init(locale: Localization.Locale.currentLocale.asGraphQLLocale())
     }
@@ -138,7 +139,7 @@ extension Offer: Presentable {
 
         let scrollView = UIScrollView()
 
-        let offerSignal = client.watch(query: OfferQuery())
+        let offerSignal = client.watch(query: GraphQL.OfferQuery())
 
         let insuranceSignal = offerSignal
             .compactMap { $0.data?.insurance }

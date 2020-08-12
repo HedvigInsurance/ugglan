@@ -14,6 +14,7 @@ import Presentation
 import SafariServices
 import UIKit
 import WebKit
+import hGraphQL
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
@@ -129,7 +130,7 @@ extension DirectDebitSetup: Presentable {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
 
-            bag += client.perform(mutation: StartDirectDebitRegistrationMutation())
+            bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation())
                 .valueSignal
                 .compactMap { $0.data?.startDirectDebitRegistration }
                 .onValue { startDirectDebitRegistration in
@@ -156,7 +157,7 @@ extension DirectDebitSetup: Presentable {
 
                 bag += viewController.present(alert).onValue { shouldDismiss in
                     if shouldDismiss {
-                        self.client.perform(mutation: CancelDirectDebitRequestMutation()).onValue { _ in }
+                        self.client.perform(mutation: GraphQL.CancelDirectDebitRequestMutation()).onValue { _ in }
                         completion(.success)
                     }
                 }
@@ -174,7 +175,7 @@ extension DirectDebitSetup: Presentable {
 
                 switch type {
                 case .success:
-                    self.store.update(query: MyPaymentQuery(), updater: { (data: inout MyPaymentQuery.Data) in
+                    self.store.update(query: GraphQL.MyPaymentQuery(), updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
                         data.payinMethodStatus = .pending
                     })
                     ClearDirectDebitStatus.clear()
@@ -216,7 +217,7 @@ extension DirectDebitSetup: Presentable {
 
             // if user is closing app in the middle of process make sure to inform backend
             bag += self.applicationWillTerminateSignal.onValue {
-                self.client.perform(mutation: CancelDirectDebitRequestMutation()).onValue { _ in }
+                self.client.perform(mutation: GraphQL.CancelDirectDebitRequestMutation()).onValue { _ in }
             }
 
             return DelayedDisposer(bag, delay: 1)

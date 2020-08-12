@@ -11,14 +11,15 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 struct WhatsNew {
-    let dataSignal: ReadWriteSignal<WhatsNewQuery.Data?>
+    let dataSignal: ReadWriteSignal<GraphQL.WhatsNewQuery.Data?>
 
-    init(data: WhatsNewQuery.Data?) {
-        dataSignal = ReadWriteSignal<WhatsNewQuery.Data?>(data)
+    init(data: GraphQL.WhatsNewQuery.Data?) {
+        dataSignal = ReadWriteSignal<GraphQL.WhatsNewQuery.Data?>(data)
     }
 }
 

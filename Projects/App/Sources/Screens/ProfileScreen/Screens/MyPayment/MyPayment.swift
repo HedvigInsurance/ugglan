@@ -13,6 +13,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -24,7 +25,7 @@ extension MyPayment: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: MyPaymentQuery()).map { $0.data }
+        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery()).map { $0.data }
         let failedChargesSignalData = dataSignal.map { $0?.balance.failedCharges }
         let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
 
@@ -103,7 +104,7 @@ extension MyPayment: Presentable {
         )
         bag += form.append(buttonSection)
 
-        let myPaymentQuerySignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let myPaymentQuerySignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         bag += myPaymentQuerySignal.onValueDisposePrevious { result in
             let innerBag = bag.innerBag()

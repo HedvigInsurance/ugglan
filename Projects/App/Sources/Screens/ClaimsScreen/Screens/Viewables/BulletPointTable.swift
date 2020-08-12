@@ -10,10 +10,11 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct BulletPointTable {
-    let bulletPoints: [CommonClaimsQuery.Data.CommonClaim.Layout.AsTitleAndBulletPoints.BulletPoint]
+    let bulletPoints: [GraphQL.CommonClaimsQuery.Data.CommonClaim.Layout.AsTitleAndBulletPoints.BulletPoint]
 }
 
 extension BulletPointTable: Viewable {
@@ -47,7 +48,7 @@ extension BulletPointTable: Viewable {
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,
-                icon: RemoteVectorIcon(hCoreUI.IconFragment(unsafeResultMap: $0.icon.fragments.iconFragment.resultMap)),
+                icon: RemoteVectorIcon($0.icon.fragments.iconFragment),
                 description: $0.description
             )
         }

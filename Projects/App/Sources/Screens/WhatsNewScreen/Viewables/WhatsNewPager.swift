@@ -9,11 +9,12 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
 struct WhatsNewPager {
-    let dataSignal = ReadWriteSignal<WhatsNewQuery.Data?>(nil)
+    let dataSignal = ReadWriteSignal<GraphQL.WhatsNewQuery.Data?>(nil)
     let scrollToNextCallbacker: Callbacker<Void>
     let scrolledToPageIndexCallbacker: Callbacker<Int>
     let scrolledToEndCallbacker: Callbacker<Void>

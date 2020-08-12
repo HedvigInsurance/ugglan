@@ -10,8 +10,10 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
+import Contracts
 
 struct OfferCoverage {
     @Inject var client: ApolloClient
@@ -32,7 +34,7 @@ extension OfferCoverage: Viewable {
         let bodyLabel = MultilineLabel(value: "", style: .bodySmallSmallCenter)
         bag += stackView.addArranged(bodyLabel)
 
-        bag += client.fetch(query: OfferQuery()).valueSignal.compactMap { $0.data?.insurance.type }.onValue { type in
+        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.data?.insurance.type }.onValue { type in
             switch type {
             case .brf, .studentBrf:
                 bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyBrf
@@ -45,14 +47,14 @@ extension OfferCoverage: Viewable {
             }
         }
 
-        let perilFragmentsSignal = client.fetch(query: OfferQuery()).valueSignal
+        let perilFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal
             .compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.perils.map { $0.fragments.perilFragment } }
             .plain()
             .readable(initial: [])
 
         bag += stackView.addArranged(ContractPerilCollection(presentDetailStyle: .modallyWithCloseButton, perilFragmentsSignal: perilFragmentsSignal))
 
-        let insurableLimitFragmentsSignal = client.fetch(query: OfferQuery()).valueSignal
+        let insurableLimitFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal
             .compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.insurableLimits.map { $0.fragments.insurableLimitFragment } }
             .plain()
             .readable(initial: [])

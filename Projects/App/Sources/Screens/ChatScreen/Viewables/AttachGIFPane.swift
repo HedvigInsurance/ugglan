@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct AttachGIFPane {
@@ -120,7 +121,7 @@ extension AttachGIFPane: Viewable {
         }
 
         bag += searchBarValue.mapLatestToFuture { value in
-            self.client.fetch(query: GifQuery(query: value))
+            self.client.fetch(query: GraphQL.GifQuery(query: value))
         }.compactMap { result in
             result.data?.gifs.compactMap { $0 }
         }.onValue { gifs in

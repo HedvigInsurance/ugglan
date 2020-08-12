@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -55,7 +56,7 @@ struct MyInfoState {
                     let innerBag = bag.innerBag()
 
                     innerBag += self.client.perform(
-                        mutation: UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
+                        mutation: GraphQL.UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
                     ).onValue { result in
                         if result.errors?.count != nil {
                             completion(.failure(MyInfoSaveError.phoneNumberMalformed))
@@ -86,7 +87,7 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.client.perform(mutation: UpdateEmailMutation(email: email)).onValue { result in
+                    innerBag += self.client.perform(mutation: GraphQL.UpdateEmailMutation(email: email)).onValue { result in
                         if result.errors?.count != nil {
                             completion(.failure(MyInfoSaveError.emailMalformed))
                             return
@@ -94,7 +95,7 @@ struct MyInfoState {
 
                         completion(.success)
 
-                        self.store.update(query: MyInfoQuery()) { (data: inout MyInfoQuery.Data) in
+                        self.store.update(query: GraphQL.MyInfoQuery()) { (data: inout GraphQL.MyInfoQuery.Data) in
                             data.member.email = email
                         }
                     }
@@ -128,7 +129,7 @@ struct MyInfoState {
         let bag = DisposeBag()
 
         let dataSignal = client.watch(
-            query: MyInfoQuery(),
+            query: GraphQL.MyInfoQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
 
