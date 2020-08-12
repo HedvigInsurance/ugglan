@@ -41,6 +41,8 @@ extension MarkdownText: Viewable {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = style.lineSpacing
+        paragraphStyle.alignment = style.alignment
+        paragraphStyle.lineSpacing = 3
 
         let markdownText = UILabel()
         markdownText.numberOfLines = 0

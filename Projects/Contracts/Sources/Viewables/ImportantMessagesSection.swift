@@ -31,9 +31,14 @@ extension ImportantMessagesSection {
         func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
             let bag = DisposeBag()
 
-            let containerView = UIView()
-            containerView.backgroundColor = .brand(.secondaryBackground())
+            let containerView = UIVisualEffectView()
+            if #available(iOS 13.0, *) {
+                containerView.effect = UIBlurEffect(style: .systemChromeMaterial)
+            } else {
+                containerView.effect = UIBlurEffect(style: .prominent)
+            }
             containerView.layer.cornerRadius = 6
+            containerView.layer.masksToBounds = true
 
             let containerStackView = UIStackView()
             containerStackView.axis = .vertical
@@ -42,16 +47,22 @@ extension ImportantMessagesSection {
             containerStackView.layoutMargins = UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)
             containerStackView.isLayoutMarginsRelativeArrangement = true
 
-            containerView.addSubview(containerStackView)
+            containerView.contentView.addSubview(containerStackView)
 
             containerStackView.snp.makeConstraints { make in
                 make.height.width.centerX.centerY.equalToSuperview()
             }
 
-            let titleLabel = MultilineLabel(value: title, style: TextStyle.brand(.headline(color: .primary)).centerAligned)
+            let titleLabel = MultilineLabel(
+                value: title,
+                style: TextStyle.brand(.title3(color: .primary)).centerAligned
+            )
             bag += containerStackView.addArranged(titleLabel)
 
-            let infoLabel = MarkdownText(value: message, style: TextStyle.brand(.body(color: .primary)).centerAligned)
+            let infoLabel = MarkdownText(
+                value: message,
+                style: TextStyle.brand(.body(color: .primary)).centerAligned
+            )
             bag += containerStackView.addArranged(infoLabel)
 
             let buttonContainer = UIView()
