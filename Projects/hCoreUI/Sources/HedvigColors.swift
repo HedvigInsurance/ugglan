@@ -19,7 +19,7 @@ public extension UIColor {
         static let white = UIColor.white
         static let black = UIColor.black
         static let transparent = UIColor.clear
-        static let darkGray = UIColor(red: 0.61, green: 0.61, blue: 0.67, alpha: 1.0)
+        static let darkGray = UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15)
         static let lightGray = UIColor(red: 0.91, green: 0.93, blue: 0.94, alpha: 1.0)
         static let tertiaryText = UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ?
@@ -51,7 +51,7 @@ public extension UIColor {
             trait.userInterfaceStyle == .dark ? BrandColorBase.darkGrayBorder : BrandColorBase.grayBorder
         })
         static let darkGrayBorder = BrandColorBase.darkGray.withAlphaComponent(0.3)
-        static let grayBorder = BrandColorBase.darkGray.lighter(amount: 0.15).withAlphaComponent(0.3)
+        static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
         static let link = UIColor(red: 0.53, green: 0.37, blue: 0.77, alpha: 1.00)
     }
 
