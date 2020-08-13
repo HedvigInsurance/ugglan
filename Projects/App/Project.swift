@@ -31,6 +31,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "hGraphQL", path: .relativeToRoot("Projects/hGraphQL")),
         .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
         .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
+        .project(target: "Home", path: .relativeToRoot("Projects/Home")),
     ],
     sdkFrameworks,
     ExternalDependencies.allCases.filter { !$0.isTestDependency }.map { externalDependency in

@@ -273,7 +273,7 @@ extension DynamicSectionStyle {
     
     public static func brandGrouped(separatorType: SeparatorType) -> DynamicSectionStyle {
         return DynamicSectionStyle { trait -> SectionStyle in
-            let selectedBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.2)
+            let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
             
             return Style(
                 rowInsets: .init(inset: 15),

@@ -16,19 +16,25 @@ struct Toast: Viewable {
     let value: String
 
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIView()
-        view.layer.cornerRadius = 8
-        view.backgroundColor = UIColor(dynamic: { trait -> UIColor in
-            if trait.userInterfaceStyle == .dark {
-                return .brand(.secondaryBackground())
-            }
-
-            return .brand(.primaryBackground(true))
-        })
-
+        let containerView = UIView()
+        
+        let effectView = UIVisualEffectView()
+        effectView.layer.cornerRadius = 8
+        effectView.layer.masksToBounds = true
+        if #available(iOS 13.0, *) {
+            effectView.effect = UIBlurEffect(style: .systemChromeMaterial)
+        } else {
+            effectView.effect = UIBlurEffect(style: .prominent)
+        }
+        containerView.addSubview(effectView)
+        
+        effectView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+        
         let bag = DisposeBag()
 
-        bag += view.applyShadow { _ -> UIView.ShadowProperties in
+        bag += effectView.applyShadow { _ -> UIView.ShadowProperties in
             .init(
                 opacity: 0.1,
                 offset: CGSize(width: 0, height: 4),
@@ -42,7 +48,7 @@ struct Toast: Viewable {
         contentView.layoutMargins = UIEdgeInsets(inset: 15)
         contentView.isLayoutMarginsRelativeArrangement = true
         contentView.insetsLayoutMarginsFromSafeArea = false
-        view.addSubview(contentView)
+        effectView.contentView.addSubview(contentView)
 
         contentView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
@@ -50,7 +56,7 @@ struct Toast: Viewable {
 
         bag += contentView.addArranged(MultilineLabel(value: value, style: TextStyle.brand(.headline(color: .primary(state: .dynamicReversed))).centerAligned))
 
-        return (view, bag)
+        return (containerView, bag)
     }
 }
 

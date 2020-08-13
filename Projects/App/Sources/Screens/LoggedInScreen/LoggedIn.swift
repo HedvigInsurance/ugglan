@@ -16,6 +16,7 @@ import Mixpanel
 import Presentation
 import UIKit
 import Contracts
+import Home
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -49,10 +50,17 @@ extension LoggedIn: Presentable {
 
         let bag = DisposeBag()
 
+        let home = Home()
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
         let referrals = Forever(service: ForeverServiceGraphQL())
         let profile = Profile()
+        
+        let homePresentation = Presentation(
+            home,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
 
         let contractsPresentation = Presentation(
             contracts,
@@ -85,6 +93,7 @@ extension LoggedIn: Presentable {
             if features.contains(.keyGear) {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
                         keyGearPresentation,
                         referralsPresentation,
@@ -92,6 +101,7 @@ extension LoggedIn: Presentable {
                     )
                 } else {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
                         keyGearPresentation,
                         profilePresentation
@@ -100,12 +110,14 @@ extension LoggedIn: Presentable {
             } else {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
                         referralsPresentation,
                         profilePresentation
                     )
                 } else {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
                         profilePresentation
                     )
