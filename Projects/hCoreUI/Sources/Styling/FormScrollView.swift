@@ -12,8 +12,11 @@ import Flow
 
 public final class FormScrollView: UIScrollView, GradientScroller {
     let bag = DisposeBag()
+    public var appliesGradient: Bool = true
     
     public override func didMoveToWindow() {
-        addGradient(into: bag)
+        if appliesGradient {
+            addGradient(into: bag)
+        }
     }
 }

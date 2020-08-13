@@ -79,7 +79,7 @@ extension ChatPreview: Viewable {
         ))
 
         let messagesBubbleBag = DisposeBag()
-        var handledMessageGlobalIds: [GraphQLID] = []
+        //var handledMessageGlobalIds: [GraphQLID] = []
 
         func animateVisibility(visible: Bool) {
             bag += containerView.hasWindowSignal
@@ -92,7 +92,7 @@ extension ChatPreview: Viewable {
                     containerView.layoutSuperviewsIfNeeded()
                 }).onValue { _ in
                     if !visible {
-                        handledMessageGlobalIds = []
+                        //handledMessageGlobalIds = []
                         messagesBubbleBag.dispose()
                     }
                 }
