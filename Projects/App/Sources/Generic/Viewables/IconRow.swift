@@ -11,17 +11,21 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Form
 import UIKit
 
 struct IconRow {
     enum Options {
-        case defaults, withArrow, disabled, hidden, whiteContent
+        case defaults, withArrow, disabled, hidden
     }
 
     let iconAsset: ImageAsset
     let iconWidth: CGFloat
-    let title: ReadWriteSignal<String>
-    let subtitle: ReadWriteSignal<String>
+    let iconTint: UIColor?
+    let title: ReadWriteSignal<DisplayableString>
+    let titleTextStyle = ReadWriteSignal(TextStyle.brand(.headline(color: .primary)))
+    let subtitle: ReadWriteSignal<DisplayableString>
+    let subtitleTextStyle = ReadWriteSignal(TextStyle.brand(.subHeadline(color: .secondary)))
 
     let options: ReadWriteSignal<[IconRow.Options]>
 
@@ -30,12 +34,14 @@ struct IconRow {
         subtitle: String,
         iconAsset: ImageAsset,
         iconWidth: CGFloat = 40,
+        iconTint: UIColor? = nil,
         options: [IconRow.Options] = [.defaults]
     ) {
         self.title = ReadWriteSignal(title)
         self.subtitle = ReadWriteSignal(subtitle)
         self.iconAsset = iconAsset
         self.iconWidth = iconWidth
+        self.iconTint = iconTint
         self.options = ReadWriteSignal(options)
     }
 }
@@ -46,16 +52,25 @@ extension IconRow: Viewable {
 
         let rowView = RowView()
         let icon = Icon(frame: .zero, icon: iconAsset.image, iconWidth: iconWidth)
+        if let iconTint = iconTint {
+            icon.image.tintColor = iconTint
+        }
         let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
 
         let labelsContainer = UIStackView()
         labelsContainer.axis = .vertical
+        labelsContainer.spacing = 4
 
-        let titleLabel = UILabel(value: "", style: .rowTitle)
-        bag += title.atOnce().bindTo(titleLabel, \.text)
+        let titleLabel = UILabel(value: "", style: .default)
+        bag += combineLatest(title.atOnce(), titleTextStyle.atOnce()).onValue({ value, style in
+            titleLabel.styledText = StyledText(text: value, style: style)
+        })
 
-        let subtitleLabel = UILabel(value: "", style: .rowSubtitle)
-        bag += subtitle.atOnce().bindTo(subtitleLabel, \.text)
+        let subtitleLabel = UILabel(value: "", style: .default)
+        bag += combineLatest(subtitle.atOnce(), subtitleTextStyle.atOnce()).onValue({ value, style in
+            subtitleLabel.isHidden = value.isEmpty
+            subtitleLabel.styledText = StyledText(text: value, style: style)
+        })
 
         labelsContainer.addArrangedSubview(titleLabel)
         labelsContainer.addArrangedSubview(subtitleLabel)
@@ -81,28 +96,6 @@ extension IconRow: Viewable {
                 row.isHidden = true
             } else {
                 row.isHidden = false
-            }
-
-            if newOptions.contains(.whiteContent) {
-                titleLabel.styledText = StyledText(
-                    text: titleLabel.text ?? "",
-                    style: .rowTitleSecondary
-                )
-                subtitleLabel.styledText = StyledText(
-                    text: subtitleLabel.text ?? "",
-                    style: .rowSubtitlePrimary
-                )
-                arrow.icon = hCoreUIAssets.chevronRight.image
-            } else {
-                titleLabel.styledText = StyledText(
-                    text: titleLabel.text ?? "",
-                    style: .rowTitle
-                )
-                subtitleLabel.styledText = StyledText(
-                    text: subtitleLabel.text ?? "",
-                    style: .rowSubtitle
-                )
-                arrow.icon = hCoreUIAssets.chevronRight.image
             }
         }
 

@@ -1,5 +1,5 @@
 //
-//  LogoutSection.swift
+//  LogoutRow.swift
 //  Hedvig
 //
 //  Created by Sam Pettersson on 2019-01-17.
@@ -14,20 +14,25 @@ import hCoreUI
 import Presentation
 import UIKit
 
-struct LogoutSection {
+struct LogoutRow {
     let presentingViewController: UIViewController
 }
 
-extension LogoutSection: Viewable {
-    func materialize(events _: ViewableEvents) -> (ButtonSection, Disposable) {
+extension LogoutRow: Viewable {
+    func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
+        
+        let textStyle = TextStyle.brand(.headline(color: .destructive))
 
-        let logoutButtonSection = ButtonSection(
-            text: L10n.logoutButton,
-            style: .danger
+        let logoutRow = IconRow(
+            title: L10n.logoutButton,
+            subtitle: "",
+            iconAsset: Asset.logoutIcon,
+            iconTint: textStyle.color
         )
+        logoutRow.titleTextStyle.value = textStyle
 
-        bag += logoutButtonSection.onSelect.onValue { _ in
+        bag += events.onSelect.onValue { _ in
             let alert = Alert<Bool>(
                 title: L10n.logoutAlertTitle,
                 message: nil,
@@ -52,6 +57,6 @@ extension LogoutSection: Viewable {
             }
         }
 
-        return (logoutButtonSection, bag)
+        return (logoutRow, bag)
     }
 }

@@ -37,19 +37,10 @@ extension Profile: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        let otherSection = OtherSection(
+        let settingsSection = SettingsSection(
             presentingViewController: viewController
         )
-
-        bag += form.append(otherSection)
-
-        bag += form.append(Spacing(height: 20))
-
-        let logoutSection = LogoutSection(
-            presentingViewController: viewController
-        )
-
-        bag += form.append(logoutSection)
+        bag += form.append(settingsSection)
 
         let query = GraphQL.ProfileQuery()
 

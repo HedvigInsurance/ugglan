@@ -58,9 +58,7 @@ extension ShareButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        bag += ContextGradient.currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
-            colorView.backgroundColor = option.colors.first?.withAlphaComponent(0.15)
-        }
+        bag += ContextGradient.animateBarColor(colorView)
         
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(inset: 15)

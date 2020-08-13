@@ -12,15 +12,15 @@ import Foundation
 import hCore
 import UIKit
 
-struct OtherSection {
+struct SettingsSection {
     let presentingViewController: UIViewController
 }
 
-extension OtherSection: Viewable {
+extension SettingsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView(
-            header: L10n.otherSectionTitle,
+            header: L10n.Profile.AppSettingsSection.title,
             footer: nil
         )
 
@@ -31,7 +31,10 @@ extension OtherSection: Viewable {
                 previewable: aboutRow
             )
         }
-
+        
+        let logoutRow = LogoutRow(presentingViewController: presentingViewController)
+        bag += section.append(logoutRow)
+        
         return (section, bag)
     }
 }

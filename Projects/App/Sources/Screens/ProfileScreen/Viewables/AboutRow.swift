@@ -19,19 +19,15 @@ struct AboutRow {
 }
 
 extension AboutRow: Viewable {
-    func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
+    func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
-        let row = RowView()
-        row.append(UILabel(value: L10n.profileAboutRow, style: .rowTitle))
-
-        let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
-
-        row.append(arrow)
-
-        arrow.snp.makeConstraints { make in
-            make.width.equalTo(20)
-        }
+        let row = IconRow(
+            title: L10n.Profile.AppSettingsSection.Row.headline,
+            subtitle: L10n.Profile.AppSettingsSection.Row.subheadline,
+            iconAsset: Asset.settingsIcon,
+            options: [.withArrow]
+        )
 
         bag += events.onSelect.onValue {
             let about = About(state: .loggedIn)

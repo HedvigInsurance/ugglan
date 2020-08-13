@@ -15,6 +15,10 @@ public struct ContextGradient {
         case blue
         case orange
         
+        public var barColor: UIColor {
+            return colors.first!.withAlphaComponent(0.2)
+        }
+        
         public var colors: [UIColor] {
             switch self {
             case .blue:
@@ -56,4 +60,10 @@ public struct ContextGradient {
     }
     
     public static let currentOption = ReadWriteSignal<Option>(.blue).distinct()
+    
+    public static func animateBarColor(_ view: UIView) -> Disposable {
+        currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
+            view.backgroundColor = option.barColor
+        }.nil()
+    }
 }

@@ -45,9 +45,7 @@ extension GradientScroller {
                     colorView.alpha = alpha
                 }
                 
-                bag += ContextGradient.currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
-                    colorView.backgroundColor = option.colors.first?.withAlphaComponent(0.15)
-                }
+                bag += ContextGradient.animateBarColor(colorView)
             }
             
             if let tabBarController = navigationController.tabBarController, tabBarController.tabBar.viewWithTag(colorViewTag) == nil {
@@ -59,9 +57,7 @@ extension GradientScroller {
                     make.top.bottom.leading.trailing.equalToSuperview()
                 }
                 
-                bag += ContextGradient.currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
-                    colorView.backgroundColor = option.colors.first?.withAlphaComponent(0.15)
-                }
+                bag += ContextGradient.animateBarColor(colorView)
             }
             
             let gradientLayer = CAGradientLayer()
@@ -79,7 +75,7 @@ extension GradientScroller {
                 gradientLayer.removeFromSuperlayer()
             }
             
-            bag += signal(for: \.bounds).onValue { bounds in
+            bag += signal(for: \.bounds).atOnce().onValue { bounds in
                 CATransaction.begin()
                 CATransaction.setDisableActions(true)
                 gradientLayer.frame = bounds
