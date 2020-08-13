@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import Form
 import UIKit
 
 struct ShareButton {
@@ -48,14 +49,7 @@ extension ShareButton: Viewable {
             }
         }
         
-        let tabBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
-            if trait.userInterfaceStyle == .dark {
-                return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
-            }
-            
-            return UIColor.white
-        })
-        containerView.backgroundColor = tabBarBackgroundColor
+        containerView.backgroundColor = DefaultStyling.tabBarBackgroundColor
         
         let colorView = UIView()
         containerView.insertSubview(colorView, at: 0)
