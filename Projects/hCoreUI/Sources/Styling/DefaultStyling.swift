@@ -240,7 +240,7 @@ public extension DefaultStyling {
         barButton: .init(text: .brand(.headline(color: .link))),
         switch: .init(onTintColor: .brand(.primaryButtonBackgroundColor), thumbTintColor: .white, onImage: nil, offImage: nil),
         segmentedControl: .default,
-        sectionGrouped: .brandGrouped,
+        sectionGrouped: .brandGrouped(separatorType: .standard),
         sectionPlain: .brandPlain,
         formGrouped: .brandGrouped,
         formPlain: .brandPlain,
@@ -257,71 +257,86 @@ extension DynamicSectionStyle {
     static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in
         fatalError("never use plain style")
     }
-
-    static let brandGrouped = DynamicSectionStyle { trait -> SectionStyle in
-        let selectedBackgroundColor: UIColor = .brand(.primaryBorderColor)
-
-        return Style(
-            rowInsets: .init(inset: 15),
-            itemSpacing: 10,
-            minRowHeight: 0,
-            background: .init(style:
-                .init(
-                    background: .init(
-                        color: .clear,
-                        border: .init(
-                            width: 0,
-                            color: UIColor.clear,
-                            cornerRadius: 0,
-                            borderEdges: .all
+    
+    public enum SeparatorType {
+        case largeIcons, standard
+        
+        var left: CGFloat {
+            switch self {
+            case .largeIcons:
+                return 75
+            case .standard:
+                return 15
+            }
+        }
+    }
+    
+    public static func brandGrouped(separatorType: SeparatorType) -> DynamicSectionStyle {
+        return DynamicSectionStyle { trait -> SectionStyle in
+            let selectedBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.2)
+            
+            return Style(
+                rowInsets: .init(inset: 15),
+                itemSpacing: 10,
+                minRowHeight: 0,
+                background: .init(style:
+                    .init(
+                        background: .init(
+                            color: .clear,
+                            border: .init(
+                                width: 0,
+                                color: UIColor.clear,
+                                cornerRadius: 0,
+                                borderEdges: .all
+                            )
+                        ),
+                        topSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: UIColor.brand(.primaryBorderColor)
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
+                        ),
+                        bottomSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: UIColor.brand(.primaryBorderColor)
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
                         )
-                    ),
-                    topSeparator: .init(
-                        style: .init(
-                            width: 1 / UIScreen.main.scale,
-                            color: UIColor.brand(.primaryBorderColor)
-                        ),
-                        insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-                    ),
-                    bottomSeparator: .init(
-                        style: .init(
-                            width: 1 / UIScreen.main.scale,
-                            color: UIColor.brand(.primaryBorderColor)
-                        ),
-                        insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
                     )
-                )
-            ),
-            selectedBackground: .init(style:
-                .init(
-                    background: .init(
-                        color: selectedBackgroundColor,
-                        border: .init(
-                            width: 0,
-                            color: UIColor.clear,
-                            cornerRadius: 0,
-                            borderEdges: .all
+                ),
+                selectedBackground: .init(style:
+                    .init(
+                        background: .init(
+                            color: selectedBackgroundColor,
+                            border: .init(
+                                width: 0,
+                                color: UIColor.clear,
+                                cornerRadius: 0,
+                                borderEdges: .all
+                            )
+                        ),
+                        topSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: UIColor.brand(.primaryBorderColor)
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
+                        ),
+                        bottomSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: UIColor.brand(.primaryBorderColor)
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
                         )
-                    ),
-                    topSeparator: .init(
-                        style: .init(
-                            width: 1 / UIScreen.main.scale,
-                            color: UIColor.brand(.primaryBorderColor)
-                        ),
-                        insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-                    ),
-                    bottomSeparator: .init(
-                        style: .init(
-                            width: 1 / UIScreen.main.scale,
-                            color: UIColor.brand(.primaryBorderColor)
-                        ),
-                        insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
                     )
-                )
-            ),
-            header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
-            footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 15))
-        )
+                ),
+                header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
+                footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 15))
+            )
+        }
     }
 
     public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
