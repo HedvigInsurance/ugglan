@@ -79,8 +79,11 @@ extension GradientScroller {
                 gradientLayer.removeFromSuperlayer()
             }
             
-            bag += didLayoutSignal.onValue {
-                gradientLayer.frame = self.bounds
+            bag += signal(for: \.bounds).onValue { bounds in
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                gradientLayer.frame = bounds
+                CATransaction.commit()
             }
             
             bag += combineLatest(
