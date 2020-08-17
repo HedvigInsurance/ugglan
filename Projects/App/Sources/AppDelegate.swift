@@ -87,7 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func displayToast(
         _ toast: Toast
     ) -> Future<Void> {
-        return Future { completion in
+        Future { completion in
             self.bag += Signal(after: 0).withLatestFrom(self.toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
                 if self.toastSignal.value == nil {
                     self.presentToasts()
@@ -121,7 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func registerForPushNotifications() -> Future<Void> {
-        return Future { completion in
+        Future { completion in
             UNUserNotificationCenter.current().getNotificationSettings { settings in
                 guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
                 if settings.authorizationStatus == .denied {
@@ -224,13 +224,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return application(app, open: url,
-                           sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-                           annotation: "")
+        application(app, open: url,
+                    sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                    annotation: "")
     }
 
     var mixpanelToken: String? {
-        return Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String
+        Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String
     }
 
     func application(
@@ -278,6 +278,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     "context": "ButtonRow",
                 ])
             }
+        }
+        ChatButton.openChatHandler = { chatButton in
+            chatButton.presentingViewController.present(
+                FreeTextChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: false
+                )
+            )
         }
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale

@@ -6,17 +6,23 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
 import Foundation
 import UIKit
-import Flow
 
 public final class FormScrollView: UIScrollView, GradientScroller {
     let bag = DisposeBag()
     public var appliesGradient: Bool = true
-    
-    public override func didMoveToWindow() {
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+
         if appliesGradient {
             addGradient(into: bag)
         }
+    }
+
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

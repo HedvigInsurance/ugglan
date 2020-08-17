@@ -6,11 +6,11 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
 import Form
 import Foundation
 import StoreKit
 import UIKit
-import Flow
 
 public extension BarButtonStyle {
     static var destructive = BarButtonStyle(text: .brand(.headline(color: .destructive)))
@@ -21,71 +21,72 @@ public extension DefaultStyling {
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
         }
-        
+
         return UIColor.white
     })
-    
+
+    @available(iOS 13, *)
+    static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
+        ]
+        appearance.largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+        ]
+
+        appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
+        appearance.backButtonAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.clear,
+        ]
+    }
+
     @available(iOS 13, *)
     static func setNavigationBarAppearance() {
-        func applyCommonStyling(_ appearance: UINavigationBarAppearance) {
-            appearance.titleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
-            ]
-            appearance.largeTitleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-            ]
-
-            appearance.setBackIndicatorImage(hCoreUIAssets.backButton.image, transitionMaskImage: hCoreUIAssets.backButton.image)
-            appearance.backButtonAppearance.normal.titleTextAttributes = [
-                .foregroundColor: UIColor.clear,
-            ]
-        }
-        
         func scrollEdgeAppearance() -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
             appearance.shadowImage = UIColor.clear.asImage()
-            
-            applyCommonStyling(appearance)
-            
+
+            applyCommonNavigationBarStyling(appearance)
+
             return appearance
         }
-        
+
         func shadowImage(for traitCollection: UITraitCollection) -> UIImage? {
             if traitCollection.userInterfaceLevel == .elevated {
                 return UIColor.clear.asImage()
             }
-            
+
             return UIColor.brand(.primaryBorderColor).resolvedColor(with: traitCollection).asImage()
         }
-        
+
         func standardAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithDefaultBackground()
             appearance.backgroundColor = tabBarBackgroundColor
             appearance.shadowImage = shadowImage(for: traitCollection)
-            
-            applyCommonStyling(appearance)
-            
+
+            applyCommonNavigationBarStyling(appearance)
+
             return appearance
         }
-        
+
         func compactAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithDefaultBackground()
             appearance.backgroundColor = tabBarBackgroundColor
             appearance.shadowImage = shadowImage(for: traitCollection)
-            
-            applyCommonStyling(appearance)
-            
+
+            applyCommonNavigationBarStyling(appearance)
+
             return appearance
         }
-    
+
         let lightAndBaseTrait = UITraitCollection(traitsFrom: [
             UITraitCollection(userInterfaceStyle: .light),
-            UITraitCollection(userInterfaceLevel: .base)
+            UITraitCollection(userInterfaceLevel: .base),
         ])
         UINavigationBar.appearance(
             for: lightAndBaseTrait
@@ -93,10 +94,10 @@ public extension DefaultStyling {
         UINavigationBar.appearance(
             for: lightAndBaseTrait
         ).compactAppearance = compactAppearance(for: lightAndBaseTrait)
-        
+
         let darkAndBaseTrait = UITraitCollection(traitsFrom: [
             UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(userInterfaceLevel: .base)
+            UITraitCollection(userInterfaceLevel: .base),
         ])
         UINavigationBar.appearance(
             for: darkAndBaseTrait
@@ -104,10 +105,10 @@ public extension DefaultStyling {
         UINavigationBar.appearance(
             for: darkAndBaseTrait
         ).compactAppearance = compactAppearance(for: darkAndBaseTrait)
-        
+
         let lightAndElevatedTrait = UITraitCollection(traitsFrom: [
             UITraitCollection(userInterfaceStyle: .light),
-            UITraitCollection(userInterfaceLevel: .elevated)
+            UITraitCollection(userInterfaceLevel: .elevated),
         ])
         UINavigationBar.appearance(
             for: lightAndElevatedTrait
@@ -115,10 +116,10 @@ public extension DefaultStyling {
         UINavigationBar.appearance(
             for: lightAndElevatedTrait
         ).compactAppearance = compactAppearance(for: lightAndElevatedTrait)
-        
+
         let darkAndElevatedTrait = UITraitCollection(traitsFrom: [
             UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(userInterfaceLevel: .elevated)
+            UITraitCollection(userInterfaceLevel: .elevated),
         ])
         UINavigationBar.appearance(
             for: darkAndElevatedTrait
@@ -126,11 +127,10 @@ public extension DefaultStyling {
         UINavigationBar.appearance(
             for: darkAndElevatedTrait
         ).compactAppearance = compactAppearance(for: darkAndElevatedTrait)
-        
-        
+
         UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
     }
-    
+
     static func installCustom() {
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
@@ -164,27 +164,27 @@ public extension DefaultStyling {
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
         UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
         UITabBar.appearance().tintColor = .brand(.primaryText())
-        
+
         if #available(iOS 13.0, *) {
-          UITabBar.appearance(
-              for: UITraitCollection(userInterfaceStyle: .dark)
-          ).backgroundImage = tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).backgroundImage = tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
-          UITabBar.appearance(
-              for: UITraitCollection(userInterfaceStyle: .light)
-          ).backgroundImage = tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).backgroundImage = tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
-          UITabBar.appearance(
-              for: UITraitCollection(userInterfaceStyle: .dark)
-          ).shadowImage = UIColor.brand(.primaryBorderColor).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .dark)
+            ).shadowImage = UIColor.brand(.primaryBorderColor).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
-          UITabBar.appearance(
-              for: UITraitCollection(userInterfaceStyle: .light)
-          ).shadowImage = UIColor.brand(.primaryBorderColor).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-      } else {
-          UITabBar.appearance().backgroundImage = tabBarBackgroundColor.asImage()
-          UITabBar.appearance().shadowImage = UIColor.brand(.primaryBorderColor).asImage()
-      }
+            UITabBar.appearance(
+                for: UITraitCollection(userInterfaceStyle: .light)
+            ).shadowImage = UIColor.brand(.primaryBorderColor).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
+        } else {
+            UITabBar.appearance().backgroundImage = tabBarBackgroundColor.asImage()
+            UITabBar.appearance().shadowImage = UIColor.brand(.primaryBorderColor).asImage()
+        }
 
         UITabBarItem.appearance().setTitleTextAttributes(
             [
@@ -257,10 +257,10 @@ extension DynamicSectionStyle {
     static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in
         fatalError("never use plain style")
     }
-    
+
     public enum SeparatorType {
         case largeIcons, standard
-        
+
         var left: CGFloat {
             switch self {
             case .largeIcons:
@@ -270,11 +270,11 @@ extension DynamicSectionStyle {
             }
         }
     }
-    
+
     public static func brandGrouped(separatorType: SeparatorType) -> DynamicSectionStyle {
-        return DynamicSectionStyle { trait -> SectionStyle in
+        DynamicSectionStyle { _ -> SectionStyle in
             let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-            
+
             return Style(
                 rowInsets: .init(inset: 15),
                 itemSpacing: 10,

@@ -1,0 +1,10 @@
+query Home {
+    member {
+        firstName
+    }
+    contracts {
+        status {
+            ...ContractStatusFragment
+        }
+    }
+}

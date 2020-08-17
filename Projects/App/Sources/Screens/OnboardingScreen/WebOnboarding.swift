@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 import WebKit
@@ -17,7 +18,7 @@ struct WebOnboarding {}
 
 final class WebOnboardingWebView: WKWebView, UIScrollViewDelegate {
     func viewForZooming(in _: UIScrollView) -> UIView? {
-        return nil
+        nil
     }
 }
 

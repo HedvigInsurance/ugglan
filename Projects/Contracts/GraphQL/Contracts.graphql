@@ -17,28 +17,7 @@ query Contracts($locale: Locale!) {
             url
         }
         status {
-            ... on PendingStatus {
-                pendingSince
-            }
-            ... on ActiveInFutureStatus {
-                futureInception
-            }
-            ... on ActiveStatus {
-                pastInception
-            }
-            ... on ActiveInFutureAndTerminatedInFutureStatus {
-                futureInception
-                futureTermination
-            }
-            ... on TerminatedInFutureStatus {
-                futureTermination
-            }
-            ... on TerminatedTodayStatus {
-                today
-            }
-            ... on TerminatedStatus {
-                termination
-            }
+           ...ContractStatusFragment
         }
         currentAgreement {
             ... on AgreementCore {
