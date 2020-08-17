@@ -20,6 +20,9 @@ extension Home: Presentable {
         
         bag += viewController.install(form)
         
+        bag += form.didMoveToWindowSignal.onValue {
+            ContextGradient.currentOption = .home
+        }
         
         return (viewController, bag)
     }

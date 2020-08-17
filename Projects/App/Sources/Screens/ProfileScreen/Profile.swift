@@ -28,6 +28,10 @@ extension Profile: Presentable {
         viewController.installChatButton()
 
         let form = FormView()
+        
+        bag += form.didMoveToWindowSignal.onValue {
+            ContextGradient.currentOption = .profile
+        }
 
         let profileSection = ProfileSection(
             presentingViewController: viewController

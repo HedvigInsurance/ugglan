@@ -89,7 +89,7 @@ extension ContractTable: Viewable {
         tableKit.view.alwaysBounceVertical = true
         
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            ContextGradient.currentOption.value = .blue
+            ContextGradient.currentOption = .insurance
         }
 
         let loadingIndicatorBag = DisposeBag()

@@ -47,7 +47,7 @@ extension Forever: Presentable {
         }
         
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            ContextGradient.currentOption.value = .orange
+            ContextGradient.currentOption = .forever
         }
 
         let refreshControl = UIRefreshControl()

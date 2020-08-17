@@ -58,7 +58,7 @@ extension ShareButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
-        bag += ContextGradient.animateBarColor(colorView)
+        bag += ContextGradient.animateTabBarColor(colorView)
         
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(inset: 15)

@@ -45,7 +45,7 @@ extension GradientScroller {
                     colorView.alpha = alpha
                 }
                 
-                bag += ContextGradient.animateBarColor(colorView)
+                bag += ContextGradient.animateNavigationBarColor(colorView)
             }
             
             if let tabBarController = navigationController.tabBarController, tabBarController.tabBar.viewWithTag(colorViewTag) == nil {
@@ -57,7 +57,7 @@ extension GradientScroller {
                     make.top.bottom.leading.trailing.equalToSuperview()
                 }
                 
-                bag += ContextGradient.animateBarColor(colorView)
+                bag += ContextGradient.animateTabBarColor(colorView)
             }
             
             let gradientLayer = CAGradientLayer()
@@ -75,16 +75,9 @@ extension GradientScroller {
                 gradientLayer.removeFromSuperlayer()
             }
             
-            bag += signal(for: \.bounds).atOnce().onValue { bounds in
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                gradientLayer.frame = bounds
-                CATransaction.commit()
-            }
-            
             bag += combineLatest(
                 traitCollectionSignal.atOnce().plain(),
-                ContextGradient.currentOption.atOnce().latestTwo()
+                ContextGradient.$currentOption.atOnce().latestTwo()
             ).onValue({ traitCollection, option in
                 if #available(iOS 13.0, *) {
                     if traitCollection.userInterfaceLevel == .elevated {
@@ -99,16 +92,18 @@ extension GradientScroller {
                 
                 func optionToColors(_ option: ContextGradient.Option) -> [CGColor] {
                     if #available(iOS 13, *) {
-                        return option.colors.map { $0.resolvedColor(with: traitCollection).cgColor }
+                        return option.colors(for: traitCollection).map { $0.resolvedColor(with: traitCollection).cgColor }
                     } else {
-                        return option.colors.map { $0.cgColor }
+                        return option.colors(for: traitCollection).map { $0.cgColor }
                     }
                 }
                 
                 if gradientLayer.colors == nil {
-                    gradientLayer.colors = option.colors.map { $0.cgColor }
+                    gradientLayer.colors = option.colors(for: traitCollection).map { $0.cgColor }
                     return
                 }
+                
+                gradientLayer.locations = option.locations(for: traitCollection)
                                                                                 
                 let animation = CABasicAnimation(keyPath: "colors")
                 
@@ -121,10 +116,13 @@ extension GradientScroller {
                 animation.fillMode = CAMediaTimingFillMode.forwards
                 animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 
-                gradientLayer.add(animation, forKey:"animateGradient")
+                gradientLayer.add(animation, forKey: "animateGradient")
             })
             
-            bag += signal(for: \.contentOffset).atOnce().onValue { contentOffset in
+            bag += combineLatest(
+                signal(for: \.contentOffset).atOnce(),
+                signal(for: \.bounds).atOnce()
+            ).onValue { contentOffset, bounds in
                 CATransaction.begin()
                 CATransaction.setDisableActions(true)
                 let navigationBarHeight = navigationController.navigationBar.frame.height
@@ -134,6 +132,7 @@ extension GradientScroller {
                         CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
                     )
                 )
+                gradientLayer.frame = bounds
                
                 CATransaction.commit()
             }
