@@ -1,1 +1,2 @@
-sh -c "$(curl -fsSL https://r.viktoradam.net/githooks)" -- --non-interactive --single
+ln -sfn "${PWD}/.githooks/pre-commit" "${PWD}/.git/hooks/pre-commit"
+echo "Git pre-commit hook initialised"

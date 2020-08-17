@@ -1,5 +1,10 @@
 #!/bin/bash
 
+git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).swift$' | while read line; do
+  swiftformat "${line}";
+  git add "$line";
+done
+
 #Path to swiftlint
 SWIFT_LINT=/usr/local/bin/swiftlint
 
@@ -49,8 +54,3 @@ if [[ -e "${SWIFT_LINT}" ]]; then
 else
     echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
 fi
-
-git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).swift$' | while read line; do
-  swiftformat "${line}";
-  git add "$line";
-done
