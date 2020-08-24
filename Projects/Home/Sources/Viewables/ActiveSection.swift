@@ -49,7 +49,7 @@ extension ActiveSection: Viewable {
 
         bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
 
-        section.appendSpacing(.inbetween)
+        section.appendSpacing(.custom(80))
 
         bag += section.append(CommonClaimsCollection())
 

@@ -12,9 +12,12 @@ import Foundation
 public enum SpacingType {
     case top
     case inbetween
+    case custom(_ height: CGFloat)
 
     var height: CGFloat {
         switch self {
+        case let .custom(height):
+            return height
         case .top:
             return 40
         case .inbetween:

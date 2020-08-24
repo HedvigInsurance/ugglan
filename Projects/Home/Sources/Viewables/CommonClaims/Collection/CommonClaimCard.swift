@@ -21,72 +21,6 @@ struct CommonClaimCard {
     let index: TableIndex
     @Inject var client: ApolloClient
 
-    enum State {
-        case normal, expanded
-    }
-
-    let backgroundStateSignal = ReadWriteSignal<State>(.normal)
-    let cornerRadiusSignal = ReadWriteSignal<CGFloat>(8)
-    let iconTopPaddingStateSignal = ReadWriteSignal<State>(.normal)
-    let titleLabelStateSignal = ReadWriteSignal<State>(.normal)
-    let controlIsEnabledSignal = ReadWriteSignal<Bool>(true)
-    let shadowOpacitySignal = ReadWriteSignal<Float>(0.05)
-    let showTitleCloseButton = ReadWriteSignal<Bool>(false)
-    let showClaimButtonSignal = ReadWriteSignal<Bool>(false)
-    let scrollPositionSignal = ReadWriteSignal<CGPoint>(CGPoint(x: 0, y: 0))
-
-    let claimButtonTapSignal: Signal<Void>
-    let closeSignal: Signal<Void>
-    private let closeCallbacker: Callbacker<Void>
-    private let claimButtonTapCallbacker: Callbacker<Void>
-
-    func iconTopPadding(state: State) -> CGFloat {
-        state == .normal ? 15 : 65 + safeAreaTop
-    }
-
-    func height(state: State) -> CGFloat {
-        let attributedString = NSAttributedString(styledText: StyledText(
-            text: layoutTitle,
-            style: .brand(.title3(color: .primary))
-        ))
-
-        let size = attributedString.boundingRect(
-            with: CGSize(width: UIScreen.main.bounds.width - 40, height: 1000),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            context: nil
-        )
-
-        let buttonPadding: CGFloat = includeButton ? 70 : 0
-
-        return state == .normal ? 0 : (size.height + iconTopPadding(state: state) + 60 + buttonPadding)
-    }
-
-    var isFirstInRow: Bool {
-        let dividedIndex = Double(index.row) / 2
-        return rint(dividedIndex) == dividedIndex
-    }
-
-    var layoutTitle: String {
-        if let title = data.layout.asTitleAndBulletPoints?.title {
-            return title
-        }
-
-        if let title = data.layout.asEmergency?.title {
-            return title
-        }
-
-        return ""
-    }
-
-    var safeAreaTop: CGFloat {
-        let keyWindow = UIApplication.shared.keyWindow
-        return keyWindow?.safeAreaInsets.top ?? 0
-    }
-
-    var includeButton: Bool {
-        data.layout.asTitleAndBulletPoints != nil
-    }
-
     static var cardModifier: HeroModifier {
         .spring(stiffness: 350, damping: 50)
     }
@@ -97,10 +31,6 @@ struct CommonClaimCard {
     ) {
         self.index = index
         self.data = data
-        closeCallbacker = Callbacker()
-        closeSignal = closeCallbacker.providedSignal
-        claimButtonTapCallbacker = Callbacker()
-        claimButtonTapSignal = claimButtonTapCallbacker.providedSignal
     }
 }
 
@@ -113,6 +43,16 @@ extension CommonClaimCard: Viewable {
         containerView.hero.modifiers = [Self.cardModifier]
         containerView.backgroundColor = .brand(.secondaryBackground())
 
+        bag += containerView.applyShadow { _ in
+            UIView.ShadowProperties(
+                opacity: 0.1,
+                offset: CGSize(width: 0, height: 1),
+                radius: 2,
+                color: .brand(.primaryShadowColor),
+                path: nil
+            )
+        }
+
         bag += containerView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
         bag += containerView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -124,19 +64,11 @@ extension CommonClaimCard: Viewable {
         }
 
         bag += containerView.trackedTouchUpInsideSignal.onValue {
-            if data.layout.asEmergency != nil {
-                containerView.viewController?.present(
-                    CommonClaimEmergency(data: data, index: index).withCloseButton,
-                    style: .hero,
-                    options: [.defaults]
-                )
-            } else {
-                containerView.viewController?.present(
-                    CommonClaimTitleAndBulletPoints(data: data, index: index).withCloseButton,
-                    style: .hero,
-                    options: [.defaults]
-                )
-            }
+            containerView.viewController?.present(
+                CommonClaimDetail(data: data, index: index).withCloseButton,
+                style: .hero,
+                options: [.defaults]
+            )
         }
 
         let contentView = UIStackView()
@@ -162,7 +94,8 @@ extension CommonClaimCard: Viewable {
 
         let label = MultilineLabel(value: data.title, style: .brand(.headline(color: .primary)))
         bag += contentView.addArranged(label) { labelView in
-            labelView.hero.modifiers = []
+            labelView.hero.id = "LabelView_\(index.row)"
+            labelView.hero.modifiers = [.fade, .delay(0.15)]
         }
 
         return (containerView, bag)
