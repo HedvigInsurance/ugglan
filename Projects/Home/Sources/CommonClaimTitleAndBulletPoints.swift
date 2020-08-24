@@ -9,82 +9,90 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import Hero
+import hGraphQL
 import Presentation
 import UIKit
 
 struct CommonClaimTitleAndBulletPoints {
-    let commonClaimCard: CommonClaimCard
-    let originView: UIView
+    let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
+    let index: TableIndex
 }
 
 extension CommonClaimTitleAndBulletPoints: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.title = data.title
         let bag = DisposeBag()
 
         let view = UIStackView()
         view.axis = .vertical
 
-        commonClaimCard.backgroundStateSignal.value = .expanded
-        commonClaimCard.cornerRadiusSignal.value = 0
-        commonClaimCard.iconTopPaddingStateSignal.value = .expanded
-        commonClaimCard.titleLabelStateSignal.value = .expanded
-        commonClaimCard.controlIsEnabledSignal.value = false
-        commonClaimCard.shadowOpacitySignal.value = 0
-        commonClaimCard.showTitleCloseButton.value = true
-        commonClaimCard.showClaimButtonSignal.value = true
+        let topCard = UIView()
+        topCard.hero.id = "TopCard_\(index.row)"
+        topCard.hero.modifiers = [CommonClaimCard.cardModifier]
+        topCard.backgroundColor = .brand(.primaryBackground())
+        view.addArrangedSubview(topCard)
 
-        bag += commonClaimCard.claimButtonTapSignal.onValue { _ in
-            // todo
-//            let overlay = DraggableOverlay(
-//                presentable: HonestyPledge(),
-//                presentationOptions: [
-//                    .defaults,
-//                    .prefersLargeTitles(false),
-//                    .largeTitleDisplayMode(.never),
-//                    .prefersNavigationBarHidden(true),
-//                ],
-//                adjustsToKeyboard: false
-//            )
-//            viewController.present(overlay)
+        let topCardContentView = UIStackView()
+        topCardContentView.axis = .vertical
+        topCardContentView.spacing = 15
+        topCardContentView.layoutMargins = UIEdgeInsets(inset: 15)
+        topCardContentView.isLayoutMarginsRelativeArrangement = true
+        topCard.addSubview(topCardContentView)
+
+        topCardContentView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
         }
 
-        bag += view.addArranged(commonClaimCard) { commonClaimCardView in
-            commonClaimCardView.snp.makeConstraints { make in
-                make.height.equalTo(commonClaimCard.height(state: .expanded))
+        let icon = RemoteVectorIcon(data.icon.fragments.iconFragment, threaded: true)
+        bag += topCardContentView.addArranged(icon.alignedTo(.leading, configure: { iconView in
+            iconView.snp.makeConstraints { make in
+                make.height.width.equalTo(30)
             }
 
-            bag += commonClaimCardView.didLayoutSignal.onValue { _ in
-                view.bringSubviewToFront(commonClaimCardView)
-            }
+            iconView.hero.id = "IconView_\(index.row)"
+            iconView.hero.modifiers = [CommonClaimCard.cardModifier]
+        }))
+
+        let sharedModifiers: [HeroModifier] = [
+            .whenAppearing(.translate(x: 0, y: 25, z: 0), .fade, CommonClaimCard.cardModifier, .delay(0.15)),
+            .whenDisappearing(.translate(x: 0, y: 25, z: 0), .fade, CommonClaimCard.cardModifier),
+        ]
+
+        let layoutTitle = MultilineLabel(value: data.layout.asTitleAndBulletPoints?.title ?? "", style: .brand(.title1(color: .primary)))
+        bag += topCardContentView.addArranged(layoutTitle) { layoutTitle in
+            layoutTitle.hero.modifiers = sharedModifiers
         }
 
-        if let bulletPoints = commonClaimCard.data.layout.asTitleAndBulletPoints?.bulletPoints {
+        let claimButton = Button(
+            title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
+            type: .standard(
+                backgroundColor: .brand(.primaryButtonBackgroundColor),
+                textColor: .brand(.primaryButtonTextColor)
+            )
+        )
+        bag += topCardContentView.addArranged(claimButton) { buttonView in
+            buttonView.hero.modifiers = sharedModifiers
+        }
+
+        bag += claimButton.onTapSignal.onValue { _ in
+            Home.openClaimsHandler(viewController)
+        }
+
+        if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
             bag += view.addArranged(BulletPointTable(
                 bulletPoints: bulletPoints
             )) { tableView in
-                bag += tableView.didLayoutSignal.onValue { _ in
-                    tableView.snp.remakeConstraints { make in
-                        make.height.equalTo(tableView.contentSize.height + 20)
-                    }
-                }
+                tableView.hero.modifiers = sharedModifiers
             }
         }
 
-        bag += viewController.install(view) { scrollView in
-            scrollView.backgroundColor = .clear
-            bag += scrollView.signal(for: \.contentOffset).bindTo(self.commonClaimCard.scrollPositionSignal)
-            scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
-            scrollView.insetsLayoutMarginsFromSafeArea = false
-            scrollView.contentInsetAdjustmentBehavior = .never
-        }
+        bag += viewController.install(view)
 
-        return (viewController, Future { completion in
-            bag += self.commonClaimCard.closeSignal.onValue {
-                completion(.success)
-            }
-
-            return DelayedDisposer(bag, delay: 1)
+        return (viewController, Future { _ in
+            DelayedDisposer(bag, delay: 1)
         })
     }
 }

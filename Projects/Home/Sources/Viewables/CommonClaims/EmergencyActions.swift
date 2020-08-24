@@ -105,9 +105,9 @@ extension EmergencyActions: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 5,
-                left: 0,
+                left: 15,
                 bottom: 5,
-                right: 0
+                right: 15
             ),
             itemSpacing: 0,
             minRowHeight: 10,
@@ -137,15 +137,7 @@ extension EmergencyActions: Viewable {
         )
 
         bag += callMeAction.onValue {
-            // TODO:
-//            self.presentingViewController.present(
-//                CallMeChat().withCloseButton,
-//                style: .modally(
-//                    presentationStyle: .pageSheet,
-//                    transitionStyle: nil,
-//                    capturesStatusBarAppearance: true
-//                )
-//            )
+            Home.openCallMeChatHandler(presentingViewController)
         }
 
         let emergencyAbroadAction = EmergencyAction(
@@ -178,15 +170,7 @@ extension EmergencyActions: Viewable {
         )
 
         bag += unsureAction.onValue {
-            // todo
-//            self.presentingViewController.present(
-//                FreeTextChat().withCloseButton,
-//                style: .modally(
-//                    presentationStyle: .pageSheet,
-//                    transitionStyle: nil,
-//                    capturesStatusBarAppearance: true
-//                )
-//            )
+            Home.openFreeTextChatHandler(presentingViewController)
         }
 
         let rows = [
@@ -197,6 +181,14 @@ extension EmergencyActions: Viewable {
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
         tableKit.view.backgroundColor = .brand(.primaryBackground())
+
+        bag += tableKit.view.signal(for: \.contentSize).onValue { contentSize in
+            tableKit.view.snp.updateConstraints { make in
+                make.height.equalTo(
+                    contentSize.height
+                )
+            }
+        }
 
         return (tableKit.view, bag)
     }

@@ -63,5 +63,27 @@ struct CrossFrameworkCoordinator {
                 )
             )
         }
+
+        Home.openCallMeChatHandler = { viewController in
+            viewController.present(
+                CallMeChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: false
+                )
+            )
+        }
+
+        Home.openFreeTextChatHandler = { viewController in
+            viewController.present(
+                FreeTextChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: false
+                )
+            )
+        }
     }
 }

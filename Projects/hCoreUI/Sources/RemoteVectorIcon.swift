@@ -97,3 +97,26 @@ extension RemoteVectorIcon: Viewable {
         return (imageView, bag)
     }
 }
+
+extension RemoteVectorIcon {
+    public func alignedTo(
+        _: UIStackView.Alignment,
+        configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
+    ) -> ContainerStackViewable<ContainerStackViewable<RemoteVectorIcon, UIImageView, UIStackView>, UIStackView, UIStackView> {
+        wrappedIn({
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.alignment = .leading
+            stackView.distribution = .equalSpacing
+            return stackView
+        }(), configure: { iconView in
+            configure(iconView)
+        }).wrappedIn({
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.distribution = .equalSpacing
+            stackView.alignment = .leading
+            return stackView
+        }())
+    }
+}

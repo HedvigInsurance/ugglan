@@ -175,7 +175,8 @@ extension ImageTextAction: Viewable {
 
         return (scrollView, Signal { callback in
             bag += self.actions.map { _, button in
-                buttonsContainer.addArranged(button.wrappedIn(UIStackView())) { stackView in
+                let buttonInStackView = button.wrappedIn(UIStackView())
+                return buttonsContainer.addArranged(buttonInStackView) { stackView in
                     stackView.axis = .vertical
                     stackView.alignment = .fill
                     stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)

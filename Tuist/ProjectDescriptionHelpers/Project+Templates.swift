@@ -26,9 +26,10 @@ public enum ExternalDependencies: CaseIterable {
     case mixpanel
     case runtime
     case sentry
+    case hero
 
     public var isTestDependency: Bool {
-        return self == .runtime
+        self == .runtime
     }
 
     public func targetDependencies() -> [TargetDependency] {
@@ -112,6 +113,10 @@ public enum ExternalDependencies: CaseIterable {
                 .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
                 .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
             ]
+        case .hero:
+            return [
+                .framework(path: "../../Carthage/Build/iOS/Hero.framework"),
+            ]
         }
     }
 }
@@ -170,10 +175,10 @@ extension Project {
         targetDependencies.append(contentsOf: externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
         }.flatMap { $0 })
-        
+
         let hGraphQLName = "hGraphQL"
-        
-        if includesGraphQL && !dependencies.contains(hGraphQLName) && name != hGraphQLName {
+
+        if includesGraphQL, !dependencies.contains(hGraphQLName), name != hGraphQLName {
             targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
         }
 

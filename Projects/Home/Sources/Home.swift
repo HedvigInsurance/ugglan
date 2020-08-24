@@ -8,6 +8,9 @@ import UIKit
 
 public struct Home {
     public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
+    public static var openCallMeChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
+    public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
+
     public init() {}
 }
 
@@ -23,7 +26,6 @@ extension Home: Presentable {
             scrollEdgeAppearance.configureWithTransparentBackground()
             scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes.merging([
                 NSAttributedString.Key.foregroundColor: UIColor.clear,
-
             ], uniquingKeysWith: takeRight)
 
             viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance

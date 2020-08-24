@@ -23,6 +23,7 @@ extension GradientScroller {
 
         bag += didLayoutSignal
             .filter(predicate: { self.layer.sublayers?.first { $0.name == "gradientLayer" } == nil })
+            .filter(predicate: { self.viewController?.presentingViewController == nil })
             .onValue { _ in
                 if let navigationController = self.viewController?.navigationController {
                     if navigationController.viewControllers.count != 1 {
