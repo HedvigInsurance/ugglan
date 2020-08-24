@@ -95,7 +95,18 @@ extension CommonClaimCard: Viewable {
         let label = MultilineLabel(value: data.title, style: .brand(.headline(color: .primary)))
         bag += contentView.addArranged(label) { labelView in
             labelView.hero.id = "LabelView_\(index.row)"
-            labelView.hero.modifiers = [.fade, .delay(0.15)]
+            labelView.hero.modifiers = [
+                .when({ context -> Bool in
+                    context.isAppearing && context.isAncestorViewMatched
+                }, [
+                    .fade, .delay(0.15),
+                ]),
+                .when({ context -> Bool in
+                    !context.isAppearing && context.isAncestorViewMatched
+                }, [
+                    .fade, .translate(x: 0, y: -20, z: 0), .duration(0.10), .useGlobalCoordinateSpace,
+                ]),
+            ]
         }
 
         return (containerView, bag)
