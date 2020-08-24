@@ -38,6 +38,8 @@ extension CommonClaimDetail: Presentable {
 
         let view = UIStackView()
         view.axis = .vertical
+        view.layoutMargins = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
+        view.isLayoutMarginsRelativeArrangement = true
 
         let topCard = UIView()
         topCard.hero.id = "TopCard_\(index.row)"
