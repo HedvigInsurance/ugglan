@@ -21,7 +21,7 @@ class DismissCardAnimationController: NSObject, UIViewControllerAnimatedTransiti
     }
 
     func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.5
+        0.5
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {

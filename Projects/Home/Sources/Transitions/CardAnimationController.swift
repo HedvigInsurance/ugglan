@@ -21,7 +21,7 @@ class CardAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     }
 
     func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.8
+        0.8
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {

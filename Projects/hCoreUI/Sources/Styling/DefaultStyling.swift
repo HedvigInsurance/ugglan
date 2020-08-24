@@ -259,7 +259,16 @@ extension DynamicSectionStyle {
     }
 
     public enum SeparatorType {
-        case largeIcons, standard
+        case largeIcons, standard, none
+
+        var color: UIColor {
+            switch self {
+            case .largeIcons, .standard:
+                return UIColor.brand(.primaryBorderColor)
+            case .none:
+                return UIColor.clear
+            }
+        }
 
         var left: CGFloat {
             switch self {
@@ -267,6 +276,8 @@ extension DynamicSectionStyle {
                 return 75
             case .standard:
                 return 15
+            case .none:
+                return 0
             }
         }
     }
@@ -293,14 +304,14 @@ extension DynamicSectionStyle {
                         topSeparator: .init(
                             style: .init(
                                 width: 1 / UIScreen.main.scale,
-                                color: UIColor.brand(.primaryBorderColor)
+                                color: separatorType.color
                             ),
                             insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
                         ),
                         bottomSeparator: .init(
                             style: .init(
                                 width: 1 / UIScreen.main.scale,
-                                color: UIColor.brand(.primaryBorderColor)
+                                color: separatorType.color
                             ),
                             insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
                         )
@@ -320,14 +331,14 @@ extension DynamicSectionStyle {
                         topSeparator: .init(
                             style: .init(
                                 width: 1 / UIScreen.main.scale,
-                                color: UIColor.brand(.primaryBorderColor)
+                                color: separatorType.color
                             ),
                             insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
                         ),
                         bottomSeparator: .init(
                             style: .init(
                                 width: 1 / UIScreen.main.scale,
-                                color: UIColor.brand(.primaryBorderColor)
+                                color: separatorType.color
                             ),
                             insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
                         )

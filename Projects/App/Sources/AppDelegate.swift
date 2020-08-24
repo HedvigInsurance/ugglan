@@ -251,44 +251,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         AskForRating().registerSession()
-
-        Button.trackingHandler = { button in
-            if let localizationKey = button.title.value.derivedFromL10n?.key {
-                Mixpanel.mainInstance().track(event: localizationKey, properties: [
-                    "context": "Button",
-                ])
-            }
-        }
-        UIControl.trackingHandler = { control in
-            if let accessibilityLabel = control.accessibilityLabel {
-                if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
-                    Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
-                        "context": "UIControl",
-                    ])
-                }
-            } else if let accessibilityIdentifier = control.accessibilityIdentifier {
-                Mixpanel.mainInstance().track(event: "TAP_\(accessibilityIdentifier)", properties: [
-                    "context": "UIControl",
-                ])
-            }
-        }
-        ButtonRow.trackingHandler = { buttonRow in
-            if let localizationKey = buttonRow.text.value.derivedFromL10n?.key {
-                Mixpanel.mainInstance().track(event: "TAP_\(localizationKey)", properties: [
-                    "context": "ButtonRow",
-                ])
-            }
-        }
-        ChatButton.openChatHandler = { chatButton in
-            chatButton.presentingViewController.present(
-                FreeTextChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
-            )
-        }
+        CrossFrameworkCoordinator.setup()
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)

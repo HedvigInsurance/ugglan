@@ -17,13 +17,6 @@ import UIKit
 
 struct CommonClaimsCollection {
     @Inject var client: ApolloClient
-    let presentingViewController: UIViewController
-
-    init(
-        presentingViewController: UIViewController
-    ) {
-        self.presentingViewController = presentingViewController
-    }
 }
 
 extension CommonClaimsCollection: Viewable {
@@ -39,7 +32,7 @@ extension CommonClaimsCollection: Viewable {
             holdIn: bag
         )
         collectionKit.view.clipsToBounds = false
-        collectionKit.view.backgroundColor = .primaryBackground
+        collectionKit.view.backgroundColor = .clear
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(
@@ -64,8 +57,7 @@ extension CommonClaimsCollection: Viewable {
                 let rows = commonClaims.enumerated().map {
                     CommonClaimCard(
                         data: $0.element,
-                        index: TableIndex(section: 0, row: $0.offset),
-                        presentingViewController: self.presentingViewController
+                        index: TableIndex(section: 0, row: $0.offset)
                     )
                 }
 
@@ -78,16 +70,10 @@ extension CommonClaimsCollection: Viewable {
 
         fetchData()
 
-        bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
-            fetchData()
-        }
-
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15)
-        stackView.isLayoutMarginsRelativeArrangement = true
 
-        let titleLabel = MultilineLabel(value: L10n.claimsQuickChoiceHeader, style: .blockRowTitle)
+        let titleLabel = MultilineLabel(value: L10n.claimsQuickChoiceHeader, style: .brand(.headline(color: .primary)))
         bag += stackView.addArranged(titleLabel.wrappedIn(UIStackView())) { containerStackView in
             containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
             containerStackView.isLayoutMarginsRelativeArrangement = true
@@ -95,7 +81,13 @@ extension CommonClaimsCollection: Viewable {
 
         stackView.addArrangedSubview(collectionKit.view)
 
-        bag += collectionKit.view.didLayoutSignal.onValue { _ in
+        collectionKit.view.snp.updateConstraints { make in
+            make.height.equalTo(
+                140
+            )
+        }
+
+        bag += collectionKit.view.signal(for: \.contentSize).onValue { _ in
             collectionKit.view.snp.updateConstraints { make in
                 make.height.equalTo(
                     collectionKit.view.collectionViewLayout.collectionViewContentSize.height

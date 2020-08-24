@@ -18,10 +18,10 @@ class CardControllerTransitioningDelegate: NSObject, UIViewControllerTransitioni
     }
 
     func animationController(forPresented _: UIViewController, presenting _: UIViewController, source _: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return CardAnimationController(originView: originView, commonClaimCard: commonClaimCard)
+        CardAnimationController(originView: originView, commonClaimCard: commonClaimCard)
     }
 
     func animationController(forDismissed _: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return DismissCardAnimationController(originView: originView, commonClaimCard: commonClaimCard)
+        DismissCardAnimationController(originView: originView, commonClaimCard: commonClaimCard)
     }
 }

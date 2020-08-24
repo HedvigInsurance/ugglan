@@ -11,14 +11,13 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
-import hGraphQL
 
 struct CommonClaimCard {
     let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
     let index: TableIndex
-    let presentingViewController: UIViewController
     @Inject var client: ApolloClient
 
     enum State {
@@ -41,13 +40,13 @@ struct CommonClaimCard {
     private let claimButtonTapCallbacker: Callbacker<Void>
 
     func iconTopPadding(state: State) -> CGFloat {
-        return state == .normal ? 15 : 65 + safeAreaTop
+        state == .normal ? 15 : 65 + safeAreaTop
     }
 
     func height(state: State) -> CGFloat {
         let attributedString = NSAttributedString(styledText: StyledText(
             text: layoutTitle,
-            style: .standaloneLargeTitle
+            style: .brand(.title3(color: .primary))
         ))
 
         let size = attributedString.boundingRect(
@@ -84,54 +83,57 @@ struct CommonClaimCard {
     }
 
     var includeButton: Bool {
-        return data.layout.asTitleAndBulletPoints != nil
+        data.layout.asTitleAndBulletPoints != nil
     }
 
     init(
         data: GraphQL.CommonClaimsQuery.Data.CommonClaim,
-        index: TableIndex,
-        presentingViewController: UIViewController
+        index: TableIndex
     ) {
         self.index = index
         self.data = data
-        self.presentingViewController = presentingViewController
         closeCallbacker = Callbacker()
-        closeSignal = closeCallbacker.signal()
+        closeSignal = closeCallbacker.providedSignal
         claimButtonTapCallbacker = Callbacker()
-        claimButtonTapSignal = claimButtonTapCallbacker.signal()
+        claimButtonTapSignal = claimButtonTapCallbacker.providedSignal
     }
 }
 
 extension CommonClaimCard: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let view = UIStackView()
-
         let bag = DisposeBag()
+        let containerView = UIView()
 
-        func backgroundColorFromData() -> UIColor {
-            return UIColor.primaryBackground
+        let view = UIVisualEffectView()
+        view.layer.masksToBounds = true
+        containerView.addSubview(view)
+
+        view.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
+        if #available(iOS 13.0, *) {
+            view.effect = UIBlurEffect(style: .systemThickMaterial)
+        } else {
+            view.effect = UIBlurEffect(style: .prominent)
         }
 
         let contentView = UIControl()
         bag += controlIsEnabledSignal.atOnce().bindTo(contentView, \.isEnabled)
-        bag += backgroundStateSignal.atOnce().map {
-            $0 == .normal ? UIColor.secondaryBackground : backgroundColorFromData()
-        }.bindTo(contentView, \.backgroundColor)
-        bag += cornerRadiusSignal.atOnce().bindTo(contentView, \.layer.cornerRadius)
+        bag += cornerRadiusSignal.atOnce().bindTo(view, \.layer.cornerRadius)
+        bag += shadowOpacitySignal.atOnce().bindTo(view, \.layer.shadowOpacity)
 
-        bag += shadowOpacitySignal.atOnce().bindTo(contentView, \.layer.shadowOpacity)
-
-        bag += contentView.applyShadow { _ in
+        bag += containerView.applyShadow { _ in
             UIView.ShadowProperties(
-                opacity: self.shadowOpacitySignal.value,
-                offset: CGSize(width: 0, height: 16),
-                radius: 30,
-                color: .primaryShadowColor,
+                opacity: 0.2,
+                offset: CGSize(width: 0, height: 2),
+                radius: 2,
+                color: .black,
                 path: nil
             )
         }
 
-        view.addArrangedSubview(contentView)
+        view.contentView.addSubview(contentView)
 
         contentView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
@@ -139,12 +141,9 @@ extension CommonClaimCard: Viewable {
         }
 
         let expandedHeaderView = UIView()
-        bag += backgroundStateSignal.atOnce().map {
-            $0 == .normal ? UIColor.white : backgroundColorFromData()
-        }.bindTo(expandedHeaderView, \.backgroundColor)
         expandedHeaderView.alpha = 0
 
-        view.addSubview(expandedHeaderView)
+        view.contentView.addSubview(expandedHeaderView)
 
         expandedHeaderView.snp.makeConstraints { make in
             make.height.equalTo(safeAreaTop)
@@ -153,7 +152,7 @@ extension CommonClaimCard: Viewable {
             make.width.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: data.title, style: .rowTitle)
+        let titleLabel = UILabel(value: data.title, style: .brand(.headline(color: .primary)))
         titleLabel.numberOfLines = 0
         titleLabel.layer.zPosition = 2
 
@@ -161,7 +160,7 @@ extension CommonClaimCard: Viewable {
             titleLabel.preferredMaxLayoutWidth = titleLabel.frame.width
         }
 
-        view.addSubview(titleLabel)
+        view.contentView.addSubview(titleLabel)
 
         bag += scrollPositionSignal.onValue { point in
             titleLabel.transform = CGAffineTransform(translationX: 0, y: point.y)
@@ -213,7 +212,7 @@ extension CommonClaimCard: Viewable {
 
         let layoutTitleLabel = MultilineLabel(styledText: StyledText(
             text: layoutTitle,
-            style: .standaloneLargeTitle
+            style: .brand(.title3(color: .primary))
         ))
         bag += contentView.add(layoutTitleLabel) { view in
             view.snp.makeConstraints { make in
@@ -277,7 +276,7 @@ extension CommonClaimCard: Viewable {
 
         let closeButton = CloseButton()
 
-        bag += view.add(closeButton) { closeButtonView in
+        bag += view.contentView.add(closeButton) { closeButtonView in
             bag += showTitleCloseButton.atOnce().map { !$0 }.bindTo(closeButtonView, \.isHidden)
             bag += showTitleCloseButton.atOnce().map { $0 ? 1 : 0 }.bindTo(closeButtonView, \.alpha)
 
@@ -315,14 +314,17 @@ extension CommonClaimCard: Viewable {
         if includeButton {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                type: .standard(
+                    backgroundColor: .brand(.primaryButtonBackgroundColor),
+                    textColor: .brand(.primaryButtonTextColor)
+                )
             )
 
             bag += claimButton.onTapSignal.onValue {
                 self.claimButtonTapCallbacker.callAll()
             }
 
-            bag += view.add(claimButton) { claimButtonView in
+            bag += view.contentView.add(claimButton) { claimButtonView in
                 claimButtonView.alpha = 0
 
                 let isEligibleDataSignal = client.watch(query: GraphQL.EligibleToCreateClaimQuery()).compactMap { $0.data?.isEligibleToCreateClaim }
@@ -356,9 +358,9 @@ extension CommonClaimCard: Viewable {
 
         bag += contentView.signal(for: .touchUpInside).onValue { _ in
             if let _ = self.data.layout.asTitleAndBulletPoints {
-                self.presentingViewController.present(
+                contentView.viewController?.present(
                     CommonClaimTitleAndBulletPoints(
-                        commonClaimCard: CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController),
+                        commonClaimCard: CommonClaimCard(data: self.data, index: self.index),
                         originView: view
                     ),
                     style: .modally(
@@ -368,7 +370,7 @@ extension CommonClaimCard: Viewable {
                     ),
                     options: [],
                     configure: { vc, bag in
-                        let newCommonClaimCard = CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
+                        let newCommonClaimCard = CommonClaimCard(data: self.data, index: self.index)
                         let delegate = CardControllerTransitioningDelegate(
                             originView: contentView,
                             commonClaimCard: newCommonClaimCard
@@ -380,9 +382,9 @@ extension CommonClaimCard: Viewable {
             }
 
             if let _ = self.data.layout.asEmergency {
-                self.presentingViewController.present(
+                contentView.viewController?.present(
                     CommonClaimEmergency(
-                        commonClaimCard: CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
+                        commonClaimCard: CommonClaimCard(data: self.data, index: self.index)
                     ),
                     style: .modally(
                         presentationStyle: .custom,
@@ -391,7 +393,10 @@ extension CommonClaimCard: Viewable {
                     ),
                     options: [],
                     configure: { vc, bag in
-                        let newCommonClaimCard = CommonClaimCard(data: self.data, index: self.index, presentingViewController: self.presentingViewController)
+                        let newCommonClaimCard = CommonClaimCard(
+                            data: self.data,
+                            index: self.index
+                        )
                         let delegate = CardControllerTransitioningDelegate(
                             originView: contentView,
                             commonClaimCard: newCommonClaimCard
@@ -405,7 +410,7 @@ extension CommonClaimCard: Viewable {
 
         view.bringSubviewToFront(expandedHeaderView)
 
-        return (view, bag)
+        return (containerView, bag)
     }
 }
 

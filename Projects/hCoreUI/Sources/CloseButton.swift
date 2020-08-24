@@ -52,7 +52,7 @@ extension CloseButton: Viewable {
         )
 
         let icon = Icon(icon: hCoreUIAssets.close.image, iconWidth: 15)
-        icon.image.tintColor = .brand(.primaryTextMuted)
+        icon.image.tintColor = .brand(.primaryText())
         button.addSubview(icon)
 
         icon.snp.makeConstraints { make in

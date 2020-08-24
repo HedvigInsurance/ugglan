@@ -24,14 +24,14 @@ extension BulletPointTable: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 5,
-                left: 0,
+                left: 15,
                 bottom: 5,
-                right: 0
+                right: 15
             ),
             itemSpacing: 0,
             minRowHeight: 10,
-            background: .invisible,
-            selectedBackground: .invisible,
+            background: .none,
+            selectedBackground: .none,
             header: .none,
             footer: .none
         )
@@ -58,7 +58,7 @@ extension BulletPointTable: Viewable {
         }
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .primaryBackground
+        tableKit.view.backgroundColor = .clear
 
         return (tableKit.view, bag)
     }

@@ -54,7 +54,7 @@ extension CommonClaimEmergency: Presentable {
         }
 
         bag += viewController.install(view) { scrollView in
-            bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
+            bag += scrollView.signal(for: \.contentOffset).bindTo(self.commonClaimCard.scrollPositionSignal)
             scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
             scrollView.insetsLayoutMarginsFromSafeArea = false
             scrollView.contentInsetAdjustmentBehavior = .never

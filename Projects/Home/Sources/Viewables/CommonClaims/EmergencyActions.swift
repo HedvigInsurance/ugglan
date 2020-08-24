@@ -24,7 +24,7 @@ struct EmergencyAction: Reusable, SignalProvider {
     private let onClickButtonCallbacker = Callbacker<Void>()
 
     var providedSignal: Signal<Void> {
-        return onClickButtonCallbacker.signal()
+        onClickButtonCallbacker.providedSignal
     }
 
     static func makeAndConfigure() -> (make: UIView, configure: (EmergencyAction) -> Disposable) {
@@ -32,7 +32,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .secondaryBackground
+        cardContainer.backgroundColor = .brand(.secondaryBackground())
         cardContainer.layer.cornerRadius = 8
 
         view.addArrangedSubview(cardContainer)
@@ -53,7 +53,7 @@ struct EmergencyAction: Reusable, SignalProvider {
             make.bottom.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "", style: .blockRowTitle)
+        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
         contentView.addArrangedSubview(titleLabel)
 
         return (view, { action in
@@ -64,17 +64,26 @@ struct EmergencyAction: Reusable, SignalProvider {
                     opacity: 0.05,
                     offset: CGSize(width: 0, height: 16),
                     radius: 30,
-                    color: .primaryShadowColor,
+                    color: .brand(.primaryShadowColor),
                     path: nil
                 )
             }
 
             titleLabel.text = action.title
 
-            let descriptionLabel = MultilineLabel(value: action.description, style: .blockRowDescription)
+            let descriptionLabel = MultilineLabel(
+                value: action.description,
+                style: .brand(.body(color: .secondary))
+            )
             bag += contentView.addArranged(descriptionLabel)
 
-            let button = Button(title: action.buttonTitle, type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor))
+            let button = Button(
+                title: action.buttonTitle,
+                type: .standard(
+                    backgroundColor: .brand(.primaryButtonBackgroundColor),
+                    textColor: .brand(.primaryButtonTextColor)
+                )
+            )
             bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
                 stackView.alignment = .center
                 stackView.axis = .vertical
@@ -102,8 +111,8 @@ extension EmergencyActions: Viewable {
             ),
             itemSpacing: 0,
             minRowHeight: 10,
-            background: .invisible,
-            selectedBackground: .invisible,
+            background: .none,
+            selectedBackground: .none,
             header: .none,
             footer: .none
         )
@@ -128,14 +137,15 @@ extension EmergencyActions: Viewable {
         )
 
         bag += callMeAction.onValue {
-            self.presentingViewController.present(
-                CallMeChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: true
-                )
-            )
+            // TODO:
+//            self.presentingViewController.present(
+//                CallMeChat().withCloseButton,
+//                style: .modally(
+//                    presentationStyle: .pageSheet,
+//                    transitionStyle: nil,
+//                    capturesStatusBarAppearance: true
+//                )
+//            )
         }
 
         let emergencyAbroadAction = EmergencyAction(
@@ -168,14 +178,15 @@ extension EmergencyActions: Viewable {
         )
 
         bag += unsureAction.onValue {
-            self.presentingViewController.present(
-                FreeTextChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: true
-                )
-            )
+            // todo
+//            self.presentingViewController.present(
+//                FreeTextChat().withCloseButton,
+//                style: .modally(
+//                    presentationStyle: .pageSheet,
+//                    transitionStyle: nil,
+//                    capturesStatusBarAppearance: true
+//                )
+//            )
         }
 
         let rows = [
@@ -185,7 +196,7 @@ extension EmergencyActions: Viewable {
         ]
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .primaryBackground
+        tableKit.view.backgroundColor = .brand(.primaryBackground())
 
         return (tableKit.view, bag)
     }

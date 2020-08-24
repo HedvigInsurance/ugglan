@@ -23,7 +23,7 @@ extension BulletPointCard: Reusable {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .secondaryBackground
+        cardContainer.backgroundColor = .brand(.secondaryBackground())
         cardContainer.layer.cornerRadius = 8
 
         view.addArrangedSubview(cardContainer)
@@ -34,6 +34,7 @@ extension BulletPointCard: Reusable {
         contentView.spacing = 5
         contentView.layoutMargins = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 20)
         contentView.isLayoutMarginsRelativeArrangement = true
+        contentView.insetsLayoutMarginsFromSafeArea = false
 
         cardContainer.addSubview(contentView)
 
@@ -44,10 +45,10 @@ extension BulletPointCard: Reusable {
             make.bottom.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "", style: .blockRowTitle)
+        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
         contentView.addArrangedSubview(titleLabel)
 
-        let descriptionLabel = MultilineLabel(styledText: StyledText(text: "", style: .blockRowDescription))
+        let descriptionLabel = MultilineLabel(styledText: StyledText(text: "", style: .brand(.body(color: .secondary))))
 
         return (view, { bulletPointCard in
             let bag = DisposeBag()
@@ -57,7 +58,7 @@ extension BulletPointCard: Reusable {
                     opacity: 0.05,
                     offset: CGSize(width: 0, height: 16),
                     radius: 30,
-                    color: .primaryShadowColor,
+                    color: .brand(.primaryShadowColor),
                     path: nil
                 )
             }
@@ -67,7 +68,7 @@ extension BulletPointCard: Reusable {
             titleLabel.text = bulletPointCard.title
             descriptionLabel.styledTextSignal.value = StyledText(
                 text: bulletPointCard.description,
-                style: .blockRowDescription
+                style: .brand(.body(color: .primary))
             )
 
             bag += cardContainer.add(bulletPointCard.icon) { iconView in

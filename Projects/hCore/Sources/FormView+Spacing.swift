@@ -1,5 +1,5 @@
 //
-//  FormView+Spacing.swift
+//  SubviewOrderable+Spacing.swift
 //  hCore
 //
 //  Created by sam on 21.7.20.
@@ -9,21 +9,21 @@
 import Form
 import Foundation
 
-extension FormView {
-    public enum SpacingType {
-        case top
-        case inbetween
+public enum SpacingType {
+    case top
+    case inbetween
 
-        var height: CGFloat {
-            switch self {
-            case .top:
-                return 40
-            case .inbetween:
-                return 16
-            }
+    var height: CGFloat {
+        switch self {
+        case .top:
+            return 40
+        case .inbetween:
+            return 16
         }
     }
+}
 
+extension SubviewOrderable {
     public func appendSpacing(_ type: SpacingType) {
         let view = UIView()
 

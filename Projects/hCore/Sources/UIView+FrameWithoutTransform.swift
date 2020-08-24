@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 extension UIView {
-    var frameWithoutTransform: CGRect {
+    public var frameWithoutTransform: CGRect {
         let size = bounds.size
 
         return CGRect(x: center.x - size.width / 2,

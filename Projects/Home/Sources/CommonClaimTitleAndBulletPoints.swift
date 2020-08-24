@@ -24,7 +24,6 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
 
         let view = UIStackView()
         view.axis = .vertical
-        view.backgroundColor = .offWhite
 
         commonClaimCard.backgroundStateSignal.value = .expanded
         commonClaimCard.cornerRadiusSignal.value = 0
@@ -36,17 +35,18 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         commonClaimCard.showClaimButtonSignal.value = true
 
         bag += commonClaimCard.claimButtonTapSignal.onValue { _ in
-            let overlay = DraggableOverlay(
-                presentable: HonestyPledge(),
-                presentationOptions: [
-                    .defaults,
-                    .prefersLargeTitles(false),
-                    .largeTitleDisplayMode(.never),
-                    .prefersNavigationBarHidden(true),
-                ],
-                adjustsToKeyboard: false
-            )
-            viewController.present(overlay)
+            // todo
+//            let overlay = DraggableOverlay(
+//                presentable: HonestyPledge(),
+//                presentationOptions: [
+//                    .defaults,
+//                    .prefersLargeTitles(false),
+//                    .largeTitleDisplayMode(.never),
+//                    .prefersNavigationBarHidden(true),
+//                ],
+//                adjustsToKeyboard: false
+//            )
+//            viewController.present(overlay)
         }
 
         bag += view.addArranged(commonClaimCard) { commonClaimCardView in
@@ -72,7 +72,8 @@ extension CommonClaimTitleAndBulletPoints: Presentable {
         }
 
         bag += viewController.install(view) { scrollView in
-            bag += scrollView.contentOffsetSignal.bindTo(self.commonClaimCard.scrollPositionSignal)
+            scrollView.backgroundColor = .clear
+            bag += scrollView.signal(for: \.contentOffset).bindTo(self.commonClaimCard.scrollPositionSignal)
             scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 90, left: 0, bottom: 40, right: 0)
             scrollView.insetsLayoutMarginsFromSafeArea = false
             scrollView.contentInsetAdjustmentBehavior = .never

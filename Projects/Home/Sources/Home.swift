@@ -7,6 +7,7 @@ import Presentation
 import UIKit
 
 public struct Home {
+    public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public init() {}
 }
 
@@ -22,6 +23,7 @@ extension Home: Presentable {
             scrollEdgeAppearance.configureWithTransparentBackground()
             scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes.merging([
                 NSAttributedString.Key.foregroundColor: UIColor.clear,
+
             ], uniquingKeysWith: takeRight)
 
             viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
@@ -36,14 +38,14 @@ extension Home: Presentable {
         let titleRow = RowView()
         titleRow.layoutMargins = UIEdgeInsets(
             top: 0,
-            left: 24,
+            left: 25,
             bottom: 0,
-            right: 24
+            right: 25
         )
         titleRow.isLayoutMarginsRelativeArrangement = true
         titleSection.append(titleRow)
 
-        bag += titleRow.append()
+        bag += titleRow.append(ActiveSection())
 
         bag += form.didMoveToWindowSignal.onValue {
             ContextGradient.currentOption = .home
