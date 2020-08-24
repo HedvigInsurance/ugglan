@@ -60,7 +60,8 @@ struct CrossFrameworkCoordinator {
                     presentationStyle: .pageSheet,
                     transitionStyle: nil,
                     capturesStatusBarAppearance: false
-                )
+                ),
+                options: [.defaults, .allowSwipeDismissAlways]
             )
         }
 
