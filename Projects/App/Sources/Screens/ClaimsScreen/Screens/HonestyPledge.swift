@@ -48,11 +48,12 @@ struct HonestyPledge {
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.title = L10n.honestyPledgeTitle
 
         let bag = DisposeBag()
 
         let containerStackView = UIStackView()
-        containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
+        containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.axis = .vertical
         containerStackView.distribution = .equalSpacing
@@ -62,9 +63,6 @@ extension HonestyPledge: Presentable {
         topContentStackView.spacing = 10
 
         containerStackView.addArrangedSubview(topContentStackView)
-
-        let titleLabel = MultilineLabel(value: L10n.honestyPledgeTitle, style: .draggableOverlayTitle)
-        bag += topContentStackView.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: L10n.honestyPledgeDescription,

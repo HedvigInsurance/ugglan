@@ -61,19 +61,27 @@ extension PresentationStyle {
 
     public static func detented(_ detents: Detents..., modally: Bool = true) -> PresentationStyle {
         PresentationStyle(name: "detented") { viewController, from, options in
-            if modally {
-                let vc = viewController.embededInNavigationController(options)
+            if #available(iOS 13, *) {
+                if modally {
+                    let vc = viewController.embededInNavigationController(options)
 
-                let delegate = TransitioningDelegate(detents: detents)
-                vc.transitioningDelegate = delegate
-                vc.modalPresentationStyle = .custom
+                    let delegate = TransitioningDelegate(detents: detents)
+                    vc.transitioningDelegate = delegate
+                    vc.modalPresentationStyle = .custom
 
-                return from.modallyPresentQueued(vc, options: options) {
-                    modalPresentationDismissalSetup(for: vc, options: options)
+                    return from.modallyPresentQueued(vc, options: options) {
+                        modalPresentationDismissalSetup(for: vc, options: options)
+                    }
+                } else {
+                    if let presentationController = from.navigationController?.presentationController {
+                        Self.Detents.set(detents, on: presentationController)
+                    }
+
+                    return PresentationStyle.default.present(viewController, from: from, options: options)
                 }
             } else {
-                if let presentationController = from.navigationController?.presentationController {
-                    Self.Detents.set(detents, on: presentationController)
+                if modally {
+                    return PresentationStyle.modal.present(viewController, from: from, options: options)
                 }
 
                 return PresentationStyle.default.present(viewController, from: from, options: options)

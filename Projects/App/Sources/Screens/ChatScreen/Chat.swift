@@ -42,6 +42,7 @@ extension Chat: Presentable {
         )
 
         let viewController = AccessoryViewController(accessoryView: chatInput)
+        viewController.navigationItem.largeTitleDisplayMode = .never
         viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
 
         bag += navigateCallbacker.onValue { navigationEvent in
@@ -183,6 +184,6 @@ extension Chat: Presentable {
 
 extension Chat: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
+        UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
     }
 }
