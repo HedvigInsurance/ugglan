@@ -65,7 +65,7 @@ extension CommonClaimCard: Viewable {
 
         bag += containerView.trackedTouchUpInsideSignal.onValue {
             containerView.viewController?.present(
-                CommonClaimDetail(data: data, index: index).withCloseButton,
+                CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
                 style: .hero,
                 options: [.defaults]
             )
