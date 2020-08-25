@@ -12,6 +12,7 @@ import Presentation
 import UIKit
 
 public struct Contracts {
+    public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public init() {}
 }
 
@@ -30,7 +31,7 @@ extension Contracts: Presentable {
 
 extension Contracts: Tabable {
     public func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(
+        UITabBarItem(
             title: L10n.tabDashboardTitle,
             image: Asset.tab.image,
             selectedImage: nil

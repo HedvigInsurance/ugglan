@@ -311,17 +311,9 @@ extension ContractDetail: Presentable {
             )
 
             viewController.present(alert).onValue { shouldContinue in
-// TODO
-//                if shouldContinue {
-//                    viewController.present(
-//                        FreeTextChat().withCloseButton,
-//                        style: .modally(
-//                            presentationStyle: .pageSheet,
-//                            transitionStyle: nil,
-//                            capturesStatusBarAppearance: true
-//                        )
-//                    )
-//                }
+                if shouldContinue {
+                    Contracts.openFreeTextChatHandler(viewController)
+                }
             }
         }
 

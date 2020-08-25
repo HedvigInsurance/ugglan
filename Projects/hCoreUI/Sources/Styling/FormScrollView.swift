@@ -25,4 +25,13 @@ public final class FormScrollView: UIScrollView, GradientScroller {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    public override func didMoveToWindow() {
+        super.didMoveToWindow()
+
+        // fix large titles being collapsed on load
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.navigationController?.navigationBar.sizeToFit()
+        }
+    }
 }

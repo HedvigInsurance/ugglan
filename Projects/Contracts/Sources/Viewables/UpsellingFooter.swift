@@ -64,9 +64,8 @@ extension UpsellingFooter {
                 )
             )
 
-            bag += button.onTapSignal.onValue { _ in
-                //TODO
-//                //stackView.viewController?.present(FreeTextChat().withCloseButton, style: .modally())
+            bag += button.onTapSignal.compactMap { stackView.viewController }.onValue { viewController in
+                Contracts.openFreeTextChatHandler(viewController)
             }
 
             bag += stackView.addArranged(button.wrappedIn(UIStackView())) { view in
@@ -107,7 +106,7 @@ extension UpsellingFooter: Viewable {
             switch Localization.Locale.currentLocale.market {
             case .no:
                 let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
-                    contract.currentAgreement.asNorwegianTravelAgreement != nil // todo
+                    contract.currentAgreement.asNorwegianTravelAgreement != nil
                     })
 
                 if !hasTravelAgreement {

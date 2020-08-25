@@ -20,10 +20,7 @@ extension CharityInformation: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
-
-        let containerStackView = UIStackView()
-        containerStackView.alignment = .leading
-        bag += containerStackView.applySafeAreaBottomLayoutMargin()
+        viewController.title = L10n.profileMyCharityInfoTitle
 
         let containerView = UIStackView()
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
@@ -31,17 +28,10 @@ extension CharityInformation: Presentable {
         containerView.axis = .vertical
         containerView.spacing = 15
 
-        containerStackView.addArrangedSubview(containerView)
-
-        let titleLabel = MultilineLabel(value: L10n.profileMyCharityInfoTitle, style: .draggableOverlayTitle)
-        bag += containerView.addArranged(titleLabel)
-
         let body = MarkdownText(textSignal: .static(L10n.profileMyCharityInfoBody), style: .bodyOffBlack)
         bag += containerView.addArranged(body)
 
-        bag += containerStackView.applyPreferredContentSize(on: viewController)
-
-        viewController.view = containerStackView
+        bag += viewController.install(containerView)
 
         return (viewController, Future { _ in
             bag

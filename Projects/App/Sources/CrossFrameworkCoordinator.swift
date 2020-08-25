@@ -6,6 +6,7 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Contracts
 import Foundation
 import hCore
 import hCoreUI
@@ -56,11 +57,7 @@ struct CrossFrameworkCoordinator {
         Home.openClaimsHandler = { viewController in
             viewController.present(
                 HonestyPledge().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                ),
+                style: .detented(.medium),
                 options: [.defaults, .allowSwipeDismissAlways]
             )
         }
@@ -77,6 +74,17 @@ struct CrossFrameworkCoordinator {
         }
 
         Home.openFreeTextChatHandler = { viewController in
+            viewController.present(
+                FreeTextChat().withCloseButton,
+                style: .modally(
+                    presentationStyle: .pageSheet,
+                    transitionStyle: nil,
+                    capturesStatusBarAppearance: false
+                )
+            )
+        }
+
+        Contracts.openFreeTextChatHandler = { viewController in
             viewController.present(
                 FreeTextChat().withCloseButton,
                 style: .modally(

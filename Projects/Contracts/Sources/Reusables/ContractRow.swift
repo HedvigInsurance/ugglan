@@ -131,7 +131,7 @@ extension ContractRow: Reusable {
 
         if let status = contract.status.asActiveInFutureStatus {
             let row = RowView()
-            
+
             let date = status
                 .futureInception?
                 .localDateToDate?
@@ -285,7 +285,7 @@ extension ContractRow: Reusable {
         bag += section.append(row).onValue { _ in
             section.viewController?.present(
                 ContractDetail(contract: self.contract).withCloseButton,
-                style: .modally()
+                style: .detented(.medium, .large)
             )
         }
 
@@ -338,7 +338,7 @@ extension ContractRow: Reusable {
                 perilFragments: self.contract.perils.compactMap { $0.fragments.perilFragment },
                 insurableLimitFragments: self.contract.insurableLimits.compactMap { $0.fragments.insurableLimitFragment }
             )
-            section.viewController?.present(contractCoverage.withCloseButton, style: .modally())
+            section.viewController?.present(contractCoverage.withCloseButton, style: .modal)
         }
 
         return (bag, [
@@ -388,7 +388,7 @@ extension ContractRow: Reusable {
         bag += section.append(row).onValue { _ in
             section.viewController?.present(
                 ContractDocuments(contract: self.contract).withCloseButton,
-                style: .modally()
+                style: .detented(.medium, .large)
             )
         }
 

@@ -75,7 +75,7 @@ extension ContractTable: Viewable {
         let dynamicSectionStyle = DynamicSectionStyle { _ in
             sectionStyle
         }
-        
+
         let noInsets = DynamicFormStyle { _ -> FormStyle in
             FormStyle(insets: .zero)
         }
@@ -87,7 +87,7 @@ extension ContractTable: Viewable {
 
         tableKit.view.backgroundColor = .brand(.primaryBackground())
         tableKit.view.alwaysBounceVertical = true
-        
+
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
             ContextGradient.currentOption = .insurance
         }
@@ -127,11 +127,6 @@ extension ContractTable: Viewable {
         }
 
         loadContracts()
-
-        // todo
-        //bag += NotificationCenter.default.signal(forName: .localeSwitched).onValue { _ in
-        //    loadContracts()
-        //}
 
         return (tableKit.view, bag)
     }
