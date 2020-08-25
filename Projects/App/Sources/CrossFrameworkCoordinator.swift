@@ -58,7 +58,6 @@ struct CrossFrameworkCoordinator {
             viewController.present(
                 HonestyPledge().withCloseButton,
                 style: .detented(.custom { _ -> Double in
-
                     280
                 }),
                 options: [.defaults, .allowSwipeDismissAlways, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]

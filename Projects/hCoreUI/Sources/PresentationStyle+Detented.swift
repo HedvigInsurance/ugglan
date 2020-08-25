@@ -11,11 +11,28 @@ import Foundation
 import Presentation
 import UIKit
 
-class TransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    var detents: [PresentationStyle.Detents]
+func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
+    let grabberKey = [
+        "_", "setWants", "Grabber:",
+    ]
 
-    init(detents: [PresentationStyle.Detents]) {
+    let selector = NSSelectorFromString(grabberKey.joined())
+
+    if presentationController.responds(to: selector) {
+        presentationController.perform(selector, with: value)
+    }
+}
+
+class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    var detents: [PresentationStyle.Detents]
+    var wantsGrabber: Bool
+
+    init(
+        detents: [PresentationStyle.Detents],
+        wantsGrabber: Bool
+    ) {
         self.detents = detents
+        self.wantsGrabber = wantsGrabber
         super.init()
     }
 
@@ -28,8 +45,15 @@ class TransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
 
         PresentationStyle.Detents.set(detents, on: presentationController)
 
+        setGrabber(on: presentationController, to: wantsGrabber)
+
         return presentationController
     }
+}
+
+extension PresentationOptions {
+    // adds a grabber to DetentedModals
+    public static let wantsGrabber = PresentationOptions()
 }
 
 extension PresentationStyle {
@@ -103,7 +127,10 @@ extension PresentationStyle {
                 if modally {
                     let vc = viewController.embededInNavigationController(options)
 
-                    let delegate = TransitioningDelegate(detents: detents)
+                    let delegate = DetentedTransitioningDelegate(
+                        detents: detents,
+                        wantsGrabber: options.contains(.wantsGrabber)
+                    )
                     vc.transitioningDelegate = delegate
                     vc.modalPresentationStyle = .custom
 
@@ -113,6 +140,7 @@ extension PresentationStyle {
                 } else {
                     if let presentationController = from.navigationController?.presentationController {
                         Self.Detents.set(detents, on: presentationController)
+                        setGrabber(on: presentationController, to: options.contains(.wantsGrabber))
                     }
 
                     return PresentationStyle.default.present(viewController, from: from, options: options)
