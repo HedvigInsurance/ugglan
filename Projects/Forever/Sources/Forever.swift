@@ -45,7 +45,7 @@ extension Forever: Presentable {
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
             tableKit.table[index].cellHeight
         }
-        
+
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
             ContextGradient.currentOption = .forever
         }
@@ -117,7 +117,7 @@ extension Forever: Presentable {
                     activityItems: [URL(string: L10n.referralsLink(encodedDiscountCode)) ?? ""],
                     applicationActivities: nil,
                     sourceView: buttonView,
-                    sourceRect: nil
+                    sourceRect: buttonView.bounds
                 )
                 viewController.present(activity)
                 shareButton.loadableButton.stopLoading()
@@ -130,7 +130,7 @@ extension Forever: Presentable {
 
 extension Forever: Tabable {
     public func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(
+        UITabBarItem(
             title: L10n.tabReferralsTitle,
             image: Asset.tab.image,
             selectedImage: Asset.tab.image
