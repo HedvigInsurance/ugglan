@@ -145,5 +145,7 @@ extension GradientScroller {
                     }
                 }
             }
+
+        layoutIfNeeded()
     }
 }

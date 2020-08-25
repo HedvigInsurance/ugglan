@@ -52,7 +52,7 @@ extension Chat: Presentable {
             case .dashboard:
                 viewController.present(LoggedIn())
             case .login:
-                viewController.present(DraggableOverlay(presentable: BankIDLogin()))
+                viewController.present(BankIDLogin(), style: .detented(.medium))
             }
         }
 

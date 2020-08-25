@@ -38,11 +38,7 @@ extension OnboardingChat: Presentable {
         bag += settingsButton.onValue { _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
-                style: .modally(
-                    presentationStyle: .formSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                ),
+                style: .detented(.medium, .large),
                 options: [.allowSwipeDismissAlways, .defaults]
             )
         }
