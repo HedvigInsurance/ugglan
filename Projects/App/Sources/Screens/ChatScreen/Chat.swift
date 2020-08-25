@@ -122,12 +122,20 @@ extension Chat: Presentable {
 
         // hack to fix modal dismissing when dragging up in scrollView
         if #available(iOS 13.0, *) {
+            func setSheetInteractionState(_ enabled: Bool) {
+                let presentationController = viewController.navigationController?.presentationController
+                let sheetInteraction = presentationController?.value(forKey: "_sheetInteraction") as? NSObject
+                sheetInteraction?.setValue(enabled, forKey: "enabled")
+            }
+
             bag += tableKit.delegate.willBeginDragging.onValue { _ in
                 viewController.isModalInPresentation = true
+                setSheetInteractionState(false)
             }
 
             bag += tableKit.delegate.willEndDragging.onValue { _ in
                 viewController.isModalInPresentation = false
+                setSheetInteractionState(true)
             }
         }
 
