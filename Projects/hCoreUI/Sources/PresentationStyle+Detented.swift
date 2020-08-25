@@ -33,8 +33,8 @@ class TransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
 }
 
 extension PresentationStyle {
-    public enum Detents: String {
-        case medium, large
+    public enum Detents {
+        case medium, large, custom(_ containerViewBlock: (_ containerView: UIView) -> Double)
 
         static func set(_ detents: [Detents], on presentationController: UIPresentationController) {
             let key = [
@@ -56,13 +56,44 @@ extension PresentationStyle {
             )
         }
 
+        var rawValue: String {
+            switch self {
+            case .large:
+                return "large"
+            case .medium:
+                return "medium"
+            case .custom:
+                return "custom"
+            }
+        }
+
         var getDetent: NSObject {
             let key = [
                 "_", "U", "I", "S", "h", "e", "e", "t", "D", "e", "t", "e", "n", "t",
             ]
-            let detents = NSClassFromString(key.joined()) as! NSObject.Type
 
-            return detents.value(forKey: "_\(rawValue)Detent") as! NSObject
+            let DetentsClass = NSClassFromString(key.joined()) as! NSObject.Type
+
+            switch self {
+            case .large, .medium:
+                return DetentsClass.value(forKey: "_\(rawValue)Detent") as! NSObject
+            case let .custom(containerViewBlock):
+                typealias ContainerViewBlockMethod = @convention(c) (
+                    NSObject.Type,
+                    Selector,
+                    @escaping (_ containerView: UIView) -> Double
+                ) -> NSObject
+                let customKey = [
+                    "_detent",
+                    "WithContainerViewBlock",
+                    ":",
+                ]
+                let selector = NSSelectorFromString(customKey.joined())
+                let method = DetentsClass.method(for: selector)
+                let castedMethod = unsafeBitCast(method, to: ContainerViewBlockMethod.self)
+
+                return castedMethod(DetentsClass, selector, containerViewBlock)
+            }
         }
     }
 
