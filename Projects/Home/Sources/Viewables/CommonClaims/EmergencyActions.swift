@@ -137,7 +137,7 @@ extension EmergencyActions: Viewable {
         )
 
         bag += callMeAction.onValue {
-            Home.openCallMeChatHandler(presentingViewController)
+            Home.openCallMeChatHandler(self.presentingViewController)
         }
 
         let emergencyAbroadAction = EmergencyAction(
@@ -170,7 +170,7 @@ extension EmergencyActions: Viewable {
         )
 
         bag += unsureAction.onValue {
-            Home.openFreeTextChatHandler(presentingViewController)
+            Home.openFreeTextChatHandler(self.presentingViewController)
         }
 
         let rows = [

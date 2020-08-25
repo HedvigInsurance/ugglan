@@ -88,13 +88,13 @@ extension CommonClaimCard: Viewable {
             iconView.snp.makeConstraints { make in
                 make.height.width.equalTo(30)
             }
-            iconView.hero.id = "IconView_\(index.row)"
+            iconView.hero.id = "IconView_\(self.index.row)"
             iconView.hero.modifiers = [Self.cardModifier]
         }))
 
         let label = MultilineLabel(value: data.title, style: .brand(.headline(color: .primary)))
         bag += contentView.addArranged(label) { labelView in
-            labelView.hero.id = "LabelView_\(index.row)"
+            labelView.hero.id = "LabelView_\(self.index.row)"
             labelView.hero.modifiers = [
                 .when({ context -> Bool in
                     context.isAppearing && context.isAncestorViewMatched

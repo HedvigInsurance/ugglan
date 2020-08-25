@@ -67,7 +67,7 @@ extension CommonClaimDetail: Presentable {
                 make.height.width.equalTo(30)
             }
 
-            iconView.hero.id = "IconView_\(index.row)"
+            iconView.hero.id = "IconView_\(self.index.row)"
             iconView.hero.modifiers = [CommonClaimCard.cardModifier]
         }))
 
