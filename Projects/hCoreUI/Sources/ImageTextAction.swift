@@ -171,24 +171,6 @@ extension ImageTextAction: Viewable {
             scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
         }
 
-        bag += buttonsContainer.didMoveToWindowSignal.onValue {
-            // let detentsArr = presentationController.value(forKey: "_detents") as! NSArray
-            // print(detentsArr)
-
-//            let setIndex = NSSelectorFromString("_setIndexOfCurrentDetent:")
-//
-//            typealias setIndexOfCurrentDetentMethod = @convention(c) (UIPresentationController, Selector, Int64) -> Int64
-//
-//            let methodIMP = presentationController.method(for: setIndex)
-//
-//            let method = unsafeBitCast(methodIMP, to: setIndexOfCurrentDetentMethod.self)
-//
-//            print(method(presentationController, setIndex, 0))
-//
-            // let update = NSSelectorFromString("_layoutPresentedViewAndContainerViewIfNeeded")
-            // presentationController.perform(update)
-        }
-
         containerView.addArrangedSubview(view)
 
         return (scrollView, Signal { callback in
