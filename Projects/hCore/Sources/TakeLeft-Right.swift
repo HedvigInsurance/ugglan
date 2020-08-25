@@ -1,5 +1,5 @@
 //
-//  TakeLeft:Right.swift
+//  TakeLeft-Right.swift
 //  hCore
 //
 //  Created by Sam Pettersson on 2020-08-17.
