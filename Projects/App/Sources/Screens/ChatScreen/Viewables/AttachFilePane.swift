@@ -10,9 +10,9 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Photos
 import UIKit
-import hGraphQL
 
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>
@@ -71,8 +71,6 @@ extension AttachFilePane: Viewable {
             view.animationSafeIsHidden = isHidden
             view.layoutSuperviewsIfNeeded()
         })
-
-        view.backgroundColor = .purple
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
