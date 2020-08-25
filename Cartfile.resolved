@@ -5,7 +5,6 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json" "6.30.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json" "6.30.0"
 github "HedvigInsurance/Runtime" "2.1.8"
-github "HeroTransitions/Hero" "1.5.0"
 github "SnapKit/SnapKit" "5.0.1"
 github "adyen/adyen-3ds2-ios" "2.1.0-rc.5"
 github "adyen/adyen-ios" "3.3.0"

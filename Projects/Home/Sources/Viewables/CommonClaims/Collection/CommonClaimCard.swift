@@ -11,7 +11,6 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
-import Hero
 import hGraphQL
 import Presentation
 import UIKit
@@ -20,10 +19,6 @@ struct CommonClaimCard {
     let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
     let index: TableIndex
     @Inject var client: ApolloClient
-
-    static var cardModifier: HeroModifier {
-        .spring(stiffness: 350, damping: 50)
-    }
 
     init(
         data: GraphQL.CommonClaimsQuery.Data.CommonClaim,
@@ -39,8 +34,6 @@ extension CommonClaimCard: Viewable {
         let bag = DisposeBag()
         let containerView = UIControl()
         containerView.layer.cornerRadius = 8
-        containerView.hero.id = "TopCard_\(index.row)"
-        containerView.hero.modifiers = [Self.cardModifier]
         containerView.backgroundColor = .brand(.secondaryBackground())
 
         bag += containerView.applyShadow { _ in
@@ -66,7 +59,7 @@ extension CommonClaimCard: Viewable {
         bag += containerView.trackedTouchUpInsideSignal.onValue {
             containerView.viewController?.present(
                 CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
-                style: .hero,
+                style: .detented(.medium, .large),
                 options: [.defaults]
             )
         }
@@ -88,26 +81,10 @@ extension CommonClaimCard: Viewable {
             iconView.snp.makeConstraints { make in
                 make.height.width.equalTo(30)
             }
-            iconView.hero.id = "IconView_\(self.index.row)"
-            iconView.hero.modifiers = [Self.cardModifier]
         }))
 
         let label = MultilineLabel(value: data.title, style: .brand(.headline(color: .primary)))
-        bag += contentView.addArranged(label) { labelView in
-            labelView.hero.id = "LabelView_\(self.index.row)"
-            labelView.hero.modifiers = [
-                .when({ context -> Bool in
-                    context.isAppearing && context.isAncestorViewMatched
-                }, [
-                    .fade, .delay(0.15),
-                ]),
-                .when({ context -> Bool in
-                    !context.isAppearing && context.isAncestorViewMatched
-                }, [
-                    .fade, .translate(x: 0, y: -20, z: 0), .duration(0.10), .useGlobalCoordinateSpace,
-                ]),
-            ]
-        }
+        bag += contentView.addArranged(label)
 
         return (containerView, bag)
     }

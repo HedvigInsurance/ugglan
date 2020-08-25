@@ -23,7 +23,7 @@ extension BulletPointCard: Reusable {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .brand(.secondaryBackground())
+        cardContainer.backgroundColor = .brand(.primaryBackground())
         cardContainer.layer.cornerRadius = 8
 
         view.addArrangedSubview(cardContainer)

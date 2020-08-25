@@ -16,7 +16,6 @@ github "adyen/adyen-ios" "3.3.0"
 github "mixpanel/mixpanel-swift"
 github "https://github.com/HedvigInsurance/Runtime" == 2.1.8
 github "getsentry/sentry-cocoa" "5.1.9"
-github "HeroTransitions/Hero"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"

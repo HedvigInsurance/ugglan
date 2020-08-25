@@ -10,7 +10,6 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
-import Hero
 import hGraphQL
 import Presentation
 import UIKit
@@ -29,10 +28,9 @@ struct CommonClaimDetail {
 }
 
 extension CommonClaimDetail: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = data.title
-        viewController.hero.isEnabled = true
 
         let bag = DisposeBag()
 
@@ -42,13 +40,7 @@ extension CommonClaimDetail: Presentable {
         view.isLayoutMarginsRelativeArrangement = true
 
         let topCard = UIView()
-        topCard.hero.id = "TopCard_\(index.row)"
-        topCard.hero.modifiers = [CommonClaimCard.cardModifier]
-        topCard.backgroundColor = .brand(.primaryBackground())
         view.addArrangedSubview(topCard)
-
-        let panGesture = UIPanGestureRecognizer()
-        bag += topCard.install(panGesture)
 
         let topCardContentView = UIStackView()
         topCardContentView.axis = .vertical
@@ -66,54 +58,10 @@ extension CommonClaimDetail: Presentable {
             iconView.snp.makeConstraints { make in
                 make.height.width.equalTo(30)
             }
-
-            iconView.hero.id = "IconView_\(self.index.row)"
-            iconView.hero.modifiers = [CommonClaimCard.cardModifier]
         }))
 
-        let sharedModifiers: [HeroModifier] = [
-            .whenAppearing(.translate(x: 0, y: 25, z: 0), .fade, CommonClaimCard.cardModifier, .delay(0.15)),
-            .whenDisappearing(.translate(x: 0, y: 25, z: 0), .fade, .duration(0.25)),
-        ]
-
-        let shouldComplete = Callbacker<Void>()
-
-        let panGestureSignal = panGesture.providedSignal
-
-        bag += panGestureSignal.onValue { _ in
-            let translation = panGesture.translation(in: view)
-            switch panGesture.state {
-            case .began:
-                viewController.dismiss(animated: true, completion: nil)
-            case .changed:
-                Hero.shared.update(translation.y / view.bounds.height)
-            default:
-                let velocity = panGesture.velocity(in: view)
-                if ((translation.y + velocity.y) / view.bounds.height) > 0.5 {
-                    Hero.shared.finish()
-                    shouldComplete.callAll()
-                } else {
-                    Hero.shared.cancel()
-                    Hero.shared.containerColor = .clear
-                }
-            }
-        }
-
-        func updateOpacityModifier(forState state: UIPanGestureRecognizer.State, in view: UIView) {
-            if state != .ended {
-                let translation = panGesture.translation(in: topCard)
-                Hero.shared.apply(modifiers: [.opacity(1 - (translation.y / 50))], to: view)
-            }
-        }
-
-        let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title1(color: .primary)))
-        bag += topCardContentView.addArranged(layoutTitle) { layoutTitleView in
-            layoutTitleView.hero.modifiers = [sharedModifiers, [.useGlobalCoordinateSpace]].flatMap { $0 }
-
-            bag += panGestureSignal.onValue { state in
-                updateOpacityModifier(forState: state, in: layoutTitleView)
-            }
-        }
+        let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
+        bag += topCardContentView.addArranged(layoutTitle)
 
         if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
             let claimButton = Button(
@@ -123,13 +71,7 @@ extension CommonClaimDetail: Presentable {
                     textColor: .brand(.primaryButtonTextColor)
                 )
             )
-            bag += topCardContentView.addArranged(claimButton) { buttonView in
-                buttonView.hero.modifiers = [sharedModifiers, [.useGlobalCoordinateSpace]].flatMap { $0 }
-
-                bag += panGestureSignal.onValue { state in
-                    updateOpacityModifier(forState: state, in: buttonView)
-                }
-            }
+            bag += topCardContentView.addArranged(claimButton)
 
             bag += claimButton.onTapSignal.onValue { _ in
                 Home.openClaimsHandler(viewController)
@@ -137,32 +79,14 @@ extension CommonClaimDetail: Presentable {
 
             bag += view.addArranged(BulletPointTable(
                 bulletPoints: bulletPoints
-            )) { tableView in
-                tableView.hero.modifiers = sharedModifiers
-
-                bag += panGestureSignal.onValue { state in
-                    updateOpacityModifier(forState: state, in: tableView)
-                }
-            }
+            ))
         } else {
             let emergencyActions = EmergencyActions(presentingViewController: viewController)
-            bag += view.addArranged(emergencyActions) { emergencyActionsView in
-                emergencyActionsView.hero.modifiers = sharedModifiers
-
-                bag += panGestureSignal.onValue { state in
-                    updateOpacityModifier(forState: state, in: emergencyActionsView)
-                }
-            }
+            bag += view.addArranged(emergencyActions)
         }
 
         bag += viewController.install(view)
 
-        return (viewController, Future { completion in
-            bag += shouldComplete.onValue {
-                completion(.success)
-            }
-
-            return DelayedDisposer(bag, delay: 1)
-        })
+        return (viewController, bag)
     }
 }

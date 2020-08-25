@@ -19,7 +19,11 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
     let selector = NSSelectorFromString(grabberKey.joined())
 
     if presentationController.responds(to: selector) {
-        presentationController.perform(selector, with: value)
+        if value {
+            presentationController.perform(selector, with: value)
+        } else {
+            presentationController.perform(selector, with: nil)
+        }
     }
 }
 

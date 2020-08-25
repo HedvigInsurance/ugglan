@@ -15,7 +15,8 @@ extension PresentationStyle {
             let vc = viewController.embededInNavigationController(options)
 
             vc.hero.isEnabled = true
-            vc.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .pageSheet
+            vc.transitioningDelegate = nil
 
             return from.modallyPresentQueued(vc, options: options) {
                 modalPresentationDismissalSetup(for: vc, options: options)

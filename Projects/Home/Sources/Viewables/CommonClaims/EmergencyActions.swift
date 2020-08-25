@@ -32,7 +32,7 @@ struct EmergencyAction: Reusable, SignalProvider {
         view.axis = .vertical
 
         let cardContainer = UIView()
-        cardContainer.backgroundColor = .brand(.secondaryBackground())
+        cardContainer.backgroundColor = .brand(.primaryBackground())
         cardContainer.layer.cornerRadius = 8
 
         view.addArrangedSubview(cardContainer)
@@ -180,7 +180,6 @@ extension EmergencyActions: Viewable {
         ]
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
-        tableKit.view.backgroundColor = .brand(.primaryBackground())
 
         bag += tableKit.view.signal(for: \.contentSize).onValue { contentSize in
             tableKit.view.snp.updateConstraints { make in
