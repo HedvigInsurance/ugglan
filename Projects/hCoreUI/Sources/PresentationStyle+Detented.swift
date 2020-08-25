@@ -43,10 +43,17 @@ extension PresentationStyle {
             let selector = NSSelectorFromString(key.joined())
             presentationController.perform(selector, with: NSArray(array: detents.map { $0.getDetent }))
 
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 5, initialSpringVelocity: 1, options: .allowUserInteraction) {
-                presentationController.presentedViewController.view.layoutIfNeeded()
-                presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
-            }
+            UIView.animate(
+                withDuration: 0.5,
+                delay: 0,
+                usingSpringWithDamping: 5,
+                initialSpringVelocity: 1,
+                options: .allowUserInteraction,
+                animations: {
+                    presentationController.presentedViewController.view.layoutIfNeeded()
+                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                }, completion: nil
+            )
         }
 
         var getDetent: NSObject {
