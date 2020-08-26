@@ -222,7 +222,7 @@ public struct Toasts {
         let window = UIApplication.shared.keyWindow!
         window.rootView.addSubview(view)
 
-        view.layer.zPosition = .greatestFiniteMagnitude - 1
+        view.layer.zPosition = .greatestFiniteMagnitude
 
         view.snp.makeConstraints { make in
             make.top.equalTo(window.safeAreaLayoutGuide.snp.top).priority(.medium)
@@ -247,8 +247,22 @@ extension Toasts: Viewable {
             containerView.parent?.bringSubviewToFront(containerView)
         }
 
+        containerView.snp.makeConstraints { make in
+            make.height.equalTo(0)
+        }
+
         self.bag += containerView.subviewsSignal.onValue { subviews in
-            containerView.isHidden = subviews.count == 0
+            containerView.isHidden = subviews.isEmpty
+
+            containerView.snp.updateConstraints { make in
+                make.height.equalTo(subviews.max { (lhs, rhs) -> Bool in
+                    if lhs.frame.height > rhs.frame.height {
+                        return true
+                    }
+
+                    return false
+                }?.frame.height ?? 0)
+            }
         }
 
         bag += toastCallbacker

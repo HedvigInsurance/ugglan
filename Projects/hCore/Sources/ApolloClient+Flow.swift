@@ -14,7 +14,7 @@ import UIKit
 
 private extension Error {
     var isIgnorable: Bool {
-        return localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
+        localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
     }
 }
 
@@ -24,7 +24,7 @@ public extension ApolloClient {
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Future<GraphQLResult<Query.Data>> {
-        return fetch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
+        fetch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
     }
 
     private func fetch<Query: GraphQLQuery>(
@@ -33,7 +33,7 @@ public extension ApolloClient {
         queue: DispatchQueue = DispatchQueue.main,
         numberOfRetries: Int = 0
     ) -> Future<GraphQLResult<Query.Data>> {
-        return Future<GraphQLResult<Query.Data>> { completion in
+        Future<GraphQLResult<Query.Data>> { completion in
             let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) { [unowned self] result in
                 switch result {
                 case let .success(result):
@@ -73,7 +73,7 @@ public extension ApolloClient {
         refreshControl: UIRefreshControl,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Disposable {
-        return refreshControl.onValue { [unowned self] _ in
+        refreshControl.onValue { [unowned self] _ in
             self.fetch(query: query, cachePolicy: .fetchIgnoringCacheData, queue: queue).onValue { _ in
                 refreshControl.endRefreshing()
             }
@@ -84,7 +84,7 @@ public extension ApolloClient {
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Future<GraphQLResult<Mutation.Data>> {
-        return perform(mutation: mutation, queue: queue, numberOfRetries: 0)
+        perform(mutation: mutation, queue: queue, numberOfRetries: 0)
     }
 
     private func perform<Mutation: GraphQLMutation>(
@@ -92,7 +92,7 @@ public extension ApolloClient {
         queue: DispatchQueue = DispatchQueue.main,
         numberOfRetries: Int = 0
     ) -> Future<GraphQLResult<Mutation.Data>> {
-        return Future<GraphQLResult<Mutation.Data>> { completion in
+        Future<GraphQLResult<Mutation.Data>> { completion in
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
@@ -131,7 +131,7 @@ public extension ApolloClient {
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Signal<GraphQLResult<Query.Data>> {
-        return watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
+        watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
     }
 
     private func watch<Query: GraphQLQuery>(
@@ -140,7 +140,7 @@ public extension ApolloClient {
         queue: DispatchQueue = DispatchQueue.main,
         numberOfRetries: Int = 0
     ) -> Signal<GraphQLResult<Query.Data>> {
-        return Signal { callbacker in
+        Signal { callbacker in
             let bag = DisposeBag()
 
             let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { [unowned self] result in
@@ -228,17 +228,16 @@ public extension ApolloClient {
                 switch result {
                 case let .success(result):
                     callbacker(result)
-                case let .failure(error):
-                    if !error.isIgnorable {
-                        // log it
-                    }
+                case .failure:
+                    break
                 }
             })
 
-            return Disposer {
+            bag += {
                 subscriber.cancel()
-                bag.dispose()
             }
+
+            return bag
         }
     }
 }
