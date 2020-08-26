@@ -7,16 +7,17 @@
 //
 
 import Apollo
+import Contracts
 import Flow
 import Forever
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
+import Home
 import Mixpanel
 import Presentation
 import UIKit
-import Contracts
-import Home
 
 struct LoggedIn {
     @Inject var client: ApolloClient
@@ -33,7 +34,7 @@ extension Notification.Name {
 
 extension LoggedIn {
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
-        return NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
+        NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
             tabBarController.selectedIndex = 2
         }
     }
@@ -55,7 +56,7 @@ extension LoggedIn: Presentable {
         let keyGear = KeyGearOverview()
         let referrals = Forever(service: ForeverServiceGraphQL())
         let profile = Profile()
-        
+
         let homePresentation = Presentation(
             home,
             style: .default,
@@ -157,6 +158,8 @@ extension LoggedIn: Presentable {
                 Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
             }
         }
+
+        bag += ChatState.shared.activateNewMessageToasts(tabBarController)
 
         return (tabBarController, bag)
     }

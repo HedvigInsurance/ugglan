@@ -35,45 +35,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let applicationWillTerminateSignal: Signal<Void>
     let hasFinishedLoading = ReadWriteSignal<Bool>(false)
 
-    let toastSignal = ReadWriteSignal<Toast?>(nil)
-
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
-    }
-
-    func presentToasts() {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
-
-        let toastBag = bag.innerBag()
-        let toasts = Toasts(toastSignal: toastSignal)
-
-        toastBag += keyWindow.add(toasts) { toastsView in toastBag += toastSignal.atOnce().onValue { _ in
-            toastsView.snp.remakeConstraints { make in
-                if #available(iOS 13, *), keyWindow.traitCollection.userInterfaceIdiom != .pad {
-                    if keyWindow.rootViewController?.presentedViewController != nil {
-                        let safeAreaTop = keyWindow.safeAreaInsets.top
-                        make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)
-                    } else {
-                        let safeAreaTop = keyWindow.safeAreaInsets.top
-                        make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
-                    }
-                } else {
-                    let safeAreaTop = keyWindow.safeAreaInsets.top
-                    make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
-                }
-
-                make.centerX.equalToSuperview()
-            }
-        }
-        }
-
-        toastBag += toasts.idleSignal.onValue { _ in
-            self.toastSignal.value = nil
-            toastBag.dispose()
-        }
     }
 
     func logout() {
@@ -81,28 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += ApolloClient.createClientFromNewSession().onValue { _ in
             self.bag.dispose()
             self.bag += ApplicationState.presentRootViewController(self.window)
-        }
-    }
-
-    func displayToast(
-        _ toast: Toast
-    ) -> Future<Void> {
-        Future { completion in
-            self.bag += Signal(after: 0).withLatestFrom(self.toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
-                if self.toastSignal.value == nil {
-                    self.presentToasts()
-                }
-
-                if toast != previousToast {
-                    self.toastSignal.value = toast
-                }
-
-                self.bag += self.toastSignal.take(first: 1).onValue { _ in
-                    completion(.success)
-                }
-            }
-
-            return NilDisposer()
         }
     }
 
@@ -353,11 +295,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.bag += ApplicationState.presentRootViewController(self.window)
 
             if ApplicationState.hasOverridenTargetEnvironment {
-                self.displayToast(Toast(
+                Toasts.shared.displayToast(toast: Toast(
                     symbol: .character("🧙‍♂️"),
                     body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
-                )
-                ).onValue { _ in }
+                ))
             }
         }.delay(by: 0.1).onValue { _ in
             let client: ApolloClient = Dependencies.shared.resolve()

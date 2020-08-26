@@ -10,16 +10,19 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 import UIKit
 
 class ChatState {
+    public static let shared = ChatState()
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
     @Inject private var client: ApolloClient
     private var handledGlobalIds: [GraphQLID] = []
     private var hasShownStatusMessage = false
+    var allowNewMessageToast = true
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
@@ -62,13 +65,13 @@ class ChatState {
             func createToast() -> Toast {
                 if UIApplication.shared.isRegisteredForRemoteNotifications {
                     return Toast(
-                        symbol: .character("✉️"),
+                        symbol: .icon(hCoreUIAssets.chat.image),
                         body: statusMessage
                     )
                 }
 
                 return Toast(
-                    symbol: .character("✉️"),
+                    symbol: .icon(hCoreUIAssets.chat.image),
                     body: statusMessage,
                     subtitle: L10n.chatToastPushNotificationsSubtitle
                 )
@@ -80,9 +83,7 @@ class ChatState {
                 UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
             }
 
-            bag += UIApplication.shared.appDelegate.displayToast(toast).onValue { _ in
-                innerBag.dispose()
-            }
+            Toasts.shared.displayToast(toast: toast)
         }
     }
 
@@ -130,9 +131,9 @@ class ChatState {
         }
     }
 
-    func subscribe() {
+    @discardableResult func subscribe() -> CoreSignal<Plain.DropReadWrite, GraphQL.MessageData> {
         subscriptionBag.dispose()
-        subscriptionBag += client.subscribe(
+        let signal = client.subscribe(
             subscription: GraphQL.ChatMessagesSubscriptionSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
@@ -148,9 +149,23 @@ class ChatState {
         })
         .atValue { message in
             self.handleFirstMessage(message: message)
-        }
-        .onValue { message in
             self.listSignal.value.insert(contentsOf: self.parseMessage(message: message), at: 0)
+        }
+
+        subscriptionBag += signal.nil()
+
+        return signal
+    }
+
+    func activateNewMessageToasts(_ viewController: UIViewController) -> Disposable {
+        subscribe().filter { _ in self.allowNewMessageToast }.filter { !$0.header.fromMyself }.onValue { message in
+            let toast = Toast(symbol: .icon(hCoreUIAssets.chat.image), body: L10n.Toast.newMessage, subtitle: message.body.asMessageBodyText?.text)
+
+            self.bag += toast.onTap.onValue { _ in
+                viewController.present(FreeTextChat().withCloseButton)
+            }
+
+            Toasts.shared.displayToast(toast: toast)
         }
     }
 

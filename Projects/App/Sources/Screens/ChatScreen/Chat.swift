@@ -17,7 +17,7 @@ import UIKit
 struct Chat {
     @Inject var client: ApolloClient
     let reloadChatCallbacker = Callbacker<Void>()
-    let chatState = ChatState()
+    let chatState = ChatState.shared
 
     private var reloadChatSignal: Signal<Void> {
         reloadChatCallbacker.providedSignal
@@ -33,6 +33,12 @@ enum NavigationEvent {
 extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
+
+        chatState.allowNewMessageToast = false
+
+        bag += {
+            chatState.allowNewMessageToast = true
+        }
 
         let navigateCallbacker = Callbacker<NavigationEvent>()
 

@@ -9,6 +9,7 @@
 import Flow
 import Form
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -58,10 +59,10 @@ extension MyInfo: Presentable {
                 saveButton.remove()
                 viewController.navigationItem.setLeftBarButtonItems([], animated: true)
 
-                UIApplication.shared.appDelegate.displayToast(Toast(
+                Toasts.shared.displayToast(toast: Toast(
                     symbol: .character(Character(L10n.profileMyInfoSaveSuccessToastSymbol)),
                     body: L10n.profileMyInfoSaveSuccessToastBody
-                )).onValue { _ in }
+                ))
             } else {
                 saveButton.stopAnimating()
             }
