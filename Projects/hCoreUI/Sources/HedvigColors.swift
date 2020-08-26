@@ -65,7 +65,9 @@ public extension UIColor {
         case primaryTintColor
         case link
         case primaryButtonBackgroundColor
+        case secondaryButtonBackgroundColor
         case primaryButtonTextColor
+        case secondaryButtonTextColor
         case primaryShadowColor
         case regularCaution
         case primaryBorderColor
@@ -112,6 +114,14 @@ public extension UIColor {
                 return BrandColorBase.lavender
             case .primaryButtonTextColor:
                 return BrandColorBase.black
+            case .secondaryButtonBackgroundColor:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.lavender : BrandColorBase.black
+                })
+            case .secondaryButtonTextColor:
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBase.black : BrandColorBase.white
+                })
             case .primaryShadowColor:
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark ?
@@ -133,6 +143,6 @@ public extension UIColor {
     }
 
     static func brand(_ color: BrandColor) -> UIColor {
-        return color.color
+        color.color
     }
 }

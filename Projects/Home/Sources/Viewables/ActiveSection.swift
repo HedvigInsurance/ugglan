@@ -41,9 +41,8 @@ extension ActiveSection: Viewable {
         let button = Button(
             title: L10n.HomeTab.claimButtonText,
             type: .standard(
-                backgroundColor: .brand(.primaryButtonBackgroundColor),
-                textColor: .brand(.primaryButtonTextColor
-                )
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
             )
         )
         bag += section.append(button)
