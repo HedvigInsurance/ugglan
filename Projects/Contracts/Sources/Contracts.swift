@@ -19,7 +19,7 @@ public struct Contracts {
 extension Contracts: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = L10n.dashboardScreenTitle
+        viewController.title = L10n.InsurancesTab.title
 
         let bag = DisposeBag()
 
@@ -32,7 +32,7 @@ extension Contracts: Presentable {
 extension Contracts: Tabable {
     public func tabBarItem() -> UITabBarItem {
         UITabBarItem(
-            title: L10n.tabDashboardTitle,
+            title: L10n.InsurancesTab.title,
             image: Asset.tab.image,
             selectedImage: nil
         )
