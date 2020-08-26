@@ -77,7 +77,7 @@ extension Date {
 
 extension ContractRow: Reusable {
     func makeStateIndicator() -> UILabel {
-        let label = UILabel(value: "", style: .brand(.body(color: .secondary)))
+        let label = UILabel(value: "", style: .brand(.subHeadline(color: .secondary)))
 
         if let _ = contract.status.asPendingStatus {
             label.value = L10n.dashboardInsuranceStatusInactiveNoStartdate
@@ -124,7 +124,7 @@ extension ContractRow: Reusable {
                     value: L10n.dashboardPendingHasDate(
                         date
                     ),
-                    style: .brand(.body(color: .primary))
+                    style: .brand(.subHeadline(color: .primary))
                 )
             )
 
@@ -135,7 +135,7 @@ extension ContractRow: Reusable {
             bag += row.append(
                 MultilineLabel(
                     value: L10n.dashboardPendingNoDate,
-                    style: .brand(.body(color: .primary))
+                    style: .brand(.subHeadline(color: .primary))
                 )
             )
 
@@ -201,7 +201,7 @@ extension ContractRow: Reusable {
         bag += textContainer.addArranged(
             MultilineLabel(
                 value: L10n.dashboardRenewalPrompterBody(daysUntilRenewal ?? 0),
-                style: .brand(.body(color: .primary))
+                style: .brand(.subHeadline(color: .secondary))
             )
         )
 
@@ -259,7 +259,7 @@ extension ContractRow: Reusable {
             UILabel(value: L10n.dashboardMyInfoTitle, style: .brand(.headline(color: .primary)))
         )
         textContainer.addArrangedSubview(
-            UILabel(value: contract.currentAgreement.summary ?? "", style: .brand(.body(color: .primary)))
+            UILabel(value: contract.currentAgreement.summary ?? "", style: .brand(.subHeadline(color: .secondary)))
         )
 
         row.append(textContainer)
@@ -310,7 +310,7 @@ extension ContractRow: Reusable {
         textContainer.addArrangedSubview(
             UILabel(
                 value: L10n.dashboardMyCoverageSubtitle,
-                style: .brand(.body(color: .secondary))
+                style: .brand(.subHeadline(color: .secondary))
             )
         )
 
@@ -363,7 +363,7 @@ extension ContractRow: Reusable {
         textContainer.addArrangedSubview(
             UILabel(
                 value: L10n.dashboardMyDocumentsSubtitle,
-                style: .brand(.body(color: .primary))
+                style: .brand(.subHeadline(color: .secondary))
             )
         )
 
