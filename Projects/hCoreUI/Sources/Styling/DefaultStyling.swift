@@ -282,6 +282,74 @@ extension DynamicSectionStyle {
         }
     }
 
+    public static func brandGroupedInset(separatorType: SeparatorType) -> DynamicSectionStyle {
+        DynamicSectionStyle { _ -> SectionStyle in
+            let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
+
+            return Style(
+                rowInsets: .init(inset: 15),
+                itemSpacing: 10,
+                minRowHeight: 0,
+                background: .init(style:
+                    .init(
+                        background: .init(
+                            color: .brand(.secondaryBackground()),
+                            border: .init(
+                                width: 0,
+                                color: UIColor.clear,
+                                cornerRadius: 8,
+                                borderEdges: .all
+                            )
+                        ),
+                        topSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: separatorType.color
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
+                        ),
+                        bottomSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: separatorType.color
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
+                        )
+                    )
+                ),
+                selectedBackground: .init(style:
+                    .init(
+                        background: .init(
+                            color: selectedBackgroundColor,
+                            border: .init(
+                                width: 0,
+                                color: UIColor.clear,
+                                cornerRadius: 8,
+                                borderEdges: .all
+                            )
+                        ),
+                        topSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: separatorType.color
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
+                        ),
+                        bottomSeparator: .init(
+                            style: .init(
+                                width: 1 / UIScreen.main.scale,
+                                color: separatorType.color
+                            ),
+                            insets: UIEdgeInsets(top: 0, left: separatorType.left, bottom: 0, right: 0)
+                        )
+                    )
+                ),
+                header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
+                footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 15))
+            )
+        }
+    }
+
     public static func brandGrouped(separatorType: SeparatorType) -> DynamicSectionStyle {
         DynamicSectionStyle { _ -> SectionStyle in
             let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)

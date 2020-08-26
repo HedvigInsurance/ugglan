@@ -60,6 +60,8 @@ struct ContractRow: Hashable {
 
         return size
     }
+
+    let sectionStyle = DynamicSectionStyle.brandGroupedInset(separatorType: .none)
 }
 
 extension Date {
@@ -74,50 +76,29 @@ extension Date {
 }
 
 extension ContractRow: Reusable {
-    func makeStateIndicator() -> UIStackView {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 10
-
-        let imageView = UIImageView()
-        stackView.addArrangedSubview(imageView)
-
-        imageView.snp.makeConstraints { make in
-            make.width.equalTo(15)
-            make.height.equalTo(15)
-        }
-
-        let label = UILabel(value: "", style: .brand(.body(color: .primary)))
-        stackView.addArrangedSubview(label)
+    func makeStateIndicator() -> UILabel {
+        let label = UILabel(value: "", style: .brand(.body(color: .secondary)))
 
         if let _ = contract.status.asPendingStatus {
-            imageView.image = Asset.clock.image
             label.value = L10n.dashboardInsuranceStatusInactiveNoStartdate
         } else if let status = contract.status.asActiveInFutureStatus {
-            imageView.image = Asset.clock.image
             label.value = L10n.dashboardInsuranceStatusInactiveStartdate(status.futureInception?.localDateToDate?.localizationDescription ?? "")
         } else if let _ = contract.status.asActiveStatus {
-            imageView.image = Asset.circularCheckmark.image
             label.value = L10n.dashboardInsuranceStatusActive
         } else if let status = contract.status.asActiveInFutureAndTerminatedInFutureStatus {
-            imageView.image = Asset.clock.image
             label.value = L10n.dashboardInsuranceStatusInactiveStartdateTerminatedInFuture(
                 status.futureInception?.localDateToDate?.localizationDescription ?? "",
                 status.futureTermination?.localDateToDate?.localizationDescription ?? ""
             )
         } else if let status = contract.status.asTerminatedInFutureStatus {
-            imageView.image = Asset.redClock.image
             label.value = L10n.dashboardInsuranceStatusActiveTerminationdate(status.futureTermination?.localDateToDate?.localizationDescription ?? "")
         } else if let _ = contract.status.asTerminatedTodayStatus {
-            imageView.image = Asset.redClock.image
             label.value = L10n.dashboardInsuranceStatusTerminatedToday
         } else if let _ = contract.status.asTerminatedStatus {
-            imageView.image = Asset.redCross.image
             label.value = L10n.dashboardInsuranceStatusTerminated
         }
 
-        return stackView
+        return label
     }
 
     func makeSwitcherRow() -> (Disposable, [ThreeEither<SectionView, UIView, Spacing>]) {
@@ -128,6 +109,7 @@ extension ContractRow: Reusable {
         let bag = DisposeBag()
 
         let section = SectionView()
+        section.dynamicStyle = sectionStyle
 
         if let status = contract.status.asActiveInFutureStatus {
             let row = RowView()
@@ -200,6 +182,7 @@ extension ContractRow: Reusable {
         let bag = DisposeBag()
 
         let section = SectionView()
+        section.dynamicStyle = sectionStyle
         let row = RowView()
 
         let textContainer = UIStackView()
@@ -245,6 +228,7 @@ extension ContractRow: Reusable {
         let bag = DisposeBag()
 
         let section = SectionView()
+        section.dynamicStyle = sectionStyle
         let row = RowView()
 
         let imageView = UIImageView()
@@ -298,6 +282,7 @@ extension ContractRow: Reusable {
         let bag = DisposeBag()
 
         let section = SectionView()
+        section.dynamicStyle = sectionStyle
         let row = RowView()
 
         let imageView = UIImageView()
@@ -350,6 +335,7 @@ extension ContractRow: Reusable {
         let bag = DisposeBag()
 
         let section = SectionView()
+        section.dynamicStyle = sectionStyle
         let row = RowView()
 
         let imageView = UIImageView()
@@ -402,8 +388,6 @@ extension ContractRow: Reusable {
         let header = UIStackView()
         header.axis = .vertical
         header.spacing = 10
-        header.layoutMargins = UIEdgeInsets(inset: 15)
-        header.isLayoutMarginsRelativeArrangement = true
         header.addArrangedSubview(UILabel(
             value: displayName,
             style: .brand(.headline(color: .primary))
@@ -448,6 +432,10 @@ extension ContractRow: Reusable {
         let view = UIView()
 
         let form = FormView()
+        form.dynamicStyle = .init(generateStyle: { _ in
+            .init(insets: UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15))
+        })
+
         view.addSubview(form)
 
         form.snp.makeConstraints { make in
