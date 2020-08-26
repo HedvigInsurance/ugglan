@@ -15,7 +15,7 @@ import UIKit
 
 struct SlideToClaim: SignalProvider {
     var providedSignal: CoreSignal<Finite, Void> {
-        return providedSignalCallbacker.signal().take(first: 1)
+        providedSignalCallbacker.signal().take(first: 1)
     }
 
     private let providedSignalCallbacker = Callbacker<Void>()
@@ -46,7 +46,7 @@ extension SlideToClaim: Viewable {
 
         let trackLabel = UILabel(
             value: L10n.claimsPledgeSlideLabel,
-            style: TextStyle.body.centerAligned
+            style: TextStyle.brand(.subHeadline(color: .primary)).centerAligned
         )
         view.addSubview(trackLabel)
 
@@ -89,7 +89,7 @@ extension SlideToClaim: Viewable {
         bag += providedSignal.feedback(type: .success)
 
         var handleCenterX: CGFloat {
-            return handle.frame.width / 2
+            handle.frame.width / 2
         }
 
         bag += pan.signal(forState: .changed).onValue {

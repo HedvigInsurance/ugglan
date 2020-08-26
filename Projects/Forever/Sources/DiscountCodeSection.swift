@@ -59,6 +59,7 @@ extension DiscountCodeSection: Viewable {
             }()
         )
         section.isHidden = true
+        section.dynamicStyle = .brandGroupedInset(separatorType: .none)
 
         let codeRow = RowView()
         codeRow.accessibilityLabel = L10n.referralsDiscountCodeAccessibility

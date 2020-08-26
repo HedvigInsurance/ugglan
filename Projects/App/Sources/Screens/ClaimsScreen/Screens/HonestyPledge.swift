@@ -53,7 +53,7 @@ extension HonestyPledge: Presentable {
         let bag = DisposeBag()
 
         let containerStackView = UIStackView()
-        containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
+        containerStackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 15, right: 15)
         containerStackView.isLayoutMarginsRelativeArrangement = true
         containerStackView.axis = .vertical
         containerStackView.distribution = .equalSpacing
@@ -66,7 +66,7 @@ extension HonestyPledge: Presentable {
 
         let descriptionLabel = MultilineLabel(
             value: L10n.honestyPledgeDescription,
-            style: .bodyOffBlack
+            style: .brand(.body(color: .secondary))
         )
         bag += topContentStackView.addArranged(descriptionLabel)
 
