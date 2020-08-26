@@ -29,7 +29,6 @@ struct ContractPerilRow: Hashable, Equatable {
         hasher.combine(fragment.title)
     }
 
-    let presentDetailStyle: PresentationStyle
     let fragment: GraphQL.PerilFragment
 }
 
@@ -90,7 +89,7 @@ extension ContractPerilRow: Reusable {
 
             bag += view.trackedTouchUpInsideSignal.onValue { _ in
                 let detail = PerilDetail(title: self.fragment.title, description: self.fragment.description, icon: remoteVectorIcon)
-                view.viewController?.present(detail, style: self.presentDetailStyle)
+                view.viewController?.present(detail.withCloseButton, style: .detented(.scrollViewContentSize(20), .large))
             }
 
             return bag

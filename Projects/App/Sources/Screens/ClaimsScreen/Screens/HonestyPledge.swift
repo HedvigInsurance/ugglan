@@ -85,6 +85,10 @@ extension HonestyPledge: Presentable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
+        bag += containerStackView.didLayoutSignal.onValue { _ in
+            viewController.preferredContentSize = containerStackView.systemLayoutSizeFitting(.zero)
+        }
+
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
                 func presentClaimsChat() {

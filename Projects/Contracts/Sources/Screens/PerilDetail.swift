@@ -39,11 +39,11 @@ extension PerilDetail: Presentable {
 
         bag += stackView.addArranged(icon) { iconView in
             iconView.snp.makeConstraints { make in
-                make.height.width.equalTo(130)
+                make.height.width.equalTo(80)
             }
         }
 
-        bag += stackView.addArranged(Spacing(height: 80))
+        bag += stackView.addArranged(Spacing(height: 20))
 
         stackView.addArrangedSubview(UILabel(
             value: title,

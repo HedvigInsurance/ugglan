@@ -9,16 +9,14 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
-import hGraphQL
 
 public struct ContractPerilCollection {
-    let presentDetailStyle: PresentationStyle
     let perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>
-    
-    public init(presentDetailStyle: PresentationStyle, perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>) {
-        self.presentDetailStyle = presentDetailStyle
+
+    public init(perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>) {
         self.perilFragmentsSignal = perilFragmentsSignal
     }
 }
@@ -34,7 +32,7 @@ extension ContractPerilCollection: Viewable {
         bag += perilFragmentsSignal.atOnce().onValue { perilFragments in
             collectionKit.set(
                 Table(rows: perilFragments.map { fragment -> ContractPerilRow in
-                    .init(presentDetailStyle: self.presentDetailStyle, fragment: fragment)
+                    .init(fragment: fragment)
                 })
             )
         }

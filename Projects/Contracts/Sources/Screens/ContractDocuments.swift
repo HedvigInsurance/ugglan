@@ -32,15 +32,15 @@ extension ContractDocuments: Presentable {
             style: .brand(.body(color: .primary))
         )
         bag += section.append(certificateRow)
-        
+
         bag += certificateRow.onSelect.onValue { _ in
             guard let url = URL(string: self.contract.currentAgreement.certificateUrl) else {
                 return
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate),
-                style: .default,
+                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
+                style: .detented(.large),
                 options: [.defaults, .allowSwipeDismissAlways]
             )
         }
@@ -57,8 +57,8 @@ extension ContractDocuments: Presentable {
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: self.contract.termsAndConditions.displayName),
-                style: .default,
+                InsuranceDocument(url: url, title: self.contract.termsAndConditions.displayName).withCloseButton,
+                style: .detented(.large),
                 options: [.defaults, .allowSwipeDismissAlways]
             )
         }

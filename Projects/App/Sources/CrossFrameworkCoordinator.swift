@@ -57,9 +57,7 @@ struct CrossFrameworkCoordinator {
         Home.openClaimsHandler = { viewController in
             viewController.present(
                 HonestyPledge().withCloseButton,
-                style: .detented(.custom { _ -> Double in
-                    280
-                }),
+                style: .detented(.preferredContentSize),
                 options: [.defaults, .allowSwipeDismissAlways, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
             )
         }

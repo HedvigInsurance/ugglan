@@ -28,15 +28,18 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
 }
 
 class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    var detents: [PresentationStyle.Detents]
+    var detents: [PresentationStyle.Detent]
     var wantsGrabber: Bool
+    var viewController: UIViewController
 
     init(
-        detents: [PresentationStyle.Detents],
-        wantsGrabber: Bool
+        detents: [PresentationStyle.Detent],
+        wantsGrabber: Bool,
+        viewController: UIViewController
     ) {
         self.detents = detents
         self.wantsGrabber = wantsGrabber
+        self.viewController = viewController
         super.init()
     }
 
@@ -47,8 +50,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         let sheetPresentationController = NSClassFromString(key.joined()) as! UIPresentationController.Type
         let presentationController = sheetPresentationController.init(presentedViewController: presented, presenting: presenting)
 
-        PresentationStyle.Detents.set(detents, on: presentationController)
-
+        PresentationStyle.Detent.set(detents, on: presentationController, viewController: viewController)
         setGrabber(on: presentationController, to: wantsGrabber)
 
         return presentationController
@@ -61,15 +63,31 @@ extension PresentationOptions {
 }
 
 extension PresentationStyle {
-    public enum Detents {
-        case medium, large, custom(_ containerViewBlock: (_ containerView: UIView) -> Double)
+    public enum Detent {
+        case medium, large, custom(_ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat)
 
-        static func set(_ detents: [Detents], on presentationController: UIPresentationController) {
+        public static func scrollViewContentSize(_ extraPadding: CGFloat = 0) -> Detent {
+            .custom { viewController, containerView in
+                guard let scrollView = viewController.view as? UIScrollView else {
+                    return 0
+                }
+
+                return scrollView.contentSize.height + containerView.safeAreaInsets.bottom + extraPadding
+            }
+        }
+
+        public static var preferredContentSize: Detent {
+            .custom { viewController, _ in
+                viewController.preferredContentSize.height
+            }
+        }
+
+        static func set(_ detents: [Detent], on presentationController: UIPresentationController, viewController: UIViewController) {
             let key = [
                 "_", "set", "Detents", ":",
             ]
             let selector = NSSelectorFromString(key.joined())
-            presentationController.perform(selector, with: NSArray(array: detents.map { $0.getDetent }))
+            presentationController.perform(selector, with: NSArray(array: detents.map { $0.getDetent(viewController) }))
 
             UIView.animate(
                 withDuration: 0.5,
@@ -95,7 +113,7 @@ extension PresentationStyle {
             }
         }
 
-        var getDetent: NSObject {
+        func getDetent(_ presentedViewController: UIViewController) -> NSObject {
             let key = [
                 "_", "U", "I", "S", "h", "e", "e", "t", "D", "e", "t", "e", "n", "t",
             ]
@@ -120,12 +138,14 @@ extension PresentationStyle {
                 let method = DetentsClass.method(for: selector)
                 let castedMethod = unsafeBitCast(method, to: ContainerViewBlockMethod.self)
 
-                return castedMethod(DetentsClass, selector, containerViewBlock)
+                return castedMethod(DetentsClass, selector) { view in
+                    Double(containerViewBlock(presentedViewController, view))
+                }
             }
         }
     }
 
-    public static func detented(_ detents: Detents..., modally: Bool = true) -> PresentationStyle {
+    public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
         PresentationStyle(name: "detented") { viewController, from, options in
             if #available(iOS 13, *) {
                 if modally {
@@ -133,7 +153,8 @@ extension PresentationStyle {
 
                     let delegate = DetentedTransitioningDelegate(
                         detents: detents,
-                        wantsGrabber: options.contains(.wantsGrabber)
+                        wantsGrabber: options.contains(.wantsGrabber),
+                        viewController: viewController
                     )
                     vc.transitioningDelegate = delegate
                     vc.modalPresentationStyle = .custom
@@ -143,7 +164,11 @@ extension PresentationStyle {
                     }
                 } else {
                     if let presentationController = from.navigationController?.presentationController {
-                        Self.Detents.set(detents, on: presentationController)
+                        Self.Detent.set(
+                            detents,
+                            on: presentationController,
+                            viewController: viewController
+                        )
                         setGrabber(on: presentationController, to: options.contains(.wantsGrabber))
                     }
 

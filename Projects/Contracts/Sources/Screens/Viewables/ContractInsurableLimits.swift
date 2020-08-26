@@ -9,13 +9,13 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
-import hGraphQL
 
 public struct ContractInsurableLimits {
     let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
-    
+
     public init(insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>) {
         self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal
     }
@@ -37,7 +37,7 @@ extension ContractInsurableLimits: Viewable {
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let width = collectionKit.view.frame.size.width / 2 - 5
-            return CGSize(width: width, height: collectionKit.table[index].contentSize(CGSize(width: width, height: 0)).height + 40)
+            return CGSize(width: width, height: collectionKit.table[index].contentSize(CGSize(width: width, height: 0)).height)
         }
 
         bag += collectionKit.view.signal(for: \.contentSize).onValue { size in

@@ -6,6 +6,7 @@
 //
 
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import hCore
@@ -13,7 +14,6 @@ import hCoreUI
 import hGraphQL
 import Presentation
 import UIKit
-import Contracts
 
 struct OfferCoverage {
     @Inject var client: ApolloClient
@@ -52,7 +52,7 @@ extension OfferCoverage: Viewable {
             .plain()
             .readable(initial: [])
 
-        bag += stackView.addArranged(ContractPerilCollection(presentDetailStyle: .modallyWithCloseButton, perilFragmentsSignal: perilFragmentsSignal))
+        bag += stackView.addArranged(ContractPerilCollection(perilFragmentsSignal: perilFragmentsSignal))
 
         let insurableLimitFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal
             .compactMap { $0.data?.lastQuoteOfMember.asCompleteQuote?.insurableLimits.map { $0.fragments.insurableLimitFragment } }

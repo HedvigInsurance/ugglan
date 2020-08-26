@@ -31,7 +31,7 @@ extension ContractInsurableLimitRow: Reusable {
         let bag = DisposeBag()
 
         bag += contentContainer.addArranged(MultilineLabel(value: fragment.label, style: .brand(.headline(color: .primary))))
-        bag += contentContainer.addArranged(MultilineLabel(value: fragment.limit, style: .brand(.body(color: .primary))))
+        bag += contentContainer.addArranged(MultilineLabel(value: fragment.limit, style: .brand(.body(color: .secondary))))
 
         return bag
     }

@@ -48,11 +48,25 @@ public struct ContainerViewable<V: Viewable, Matter: UIView, ContainerView: UIVi
 }
 
 extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposable, Self.Matter: UIView {
-    public func wrappedIn(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> ContainerStackViewable<Self, Self.Matter, UIStackView> {
+    public typealias StackContainer = ContainerStackViewable<Self, Self.Matter, UIStackView>
+
+    public func wrappedIn(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> StackContainer {
         ContainerStackViewable(viewable: self, container: stackView, configure: configure)
     }
 
-    public func wrappedIn(_ view: UIView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> ContainerViewable<Self, Self.Matter, UIView> {
+    public func insetted(_ layoutMargins: UIEdgeInsets) -> StackContainer {
+        wrappedIn({
+            let stackView = UIStackView()
+            stackView.layoutMargins = layoutMargins
+            stackView.isLayoutMarginsRelativeArrangement = true
+            stackView.insetsLayoutMarginsFromSafeArea = false
+            return stackView
+        }())
+    }
+
+    public typealias Container = ContainerViewable<Self, Self.Matter, UIView>
+
+    public func wrappedIn(_ view: UIView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> Container {
         ContainerViewable(viewable: self, container: view, configure: configure)
     }
 }
@@ -60,5 +74,15 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
 extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
     public func wrappedIn<SignalValue>(_ stackView: UIStackView) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
         ContainerStackViewableSignal(viewable: self, container: stackView)
+    }
+
+    public func insetted<SignalValue>(_ layoutMargins: UIEdgeInsets) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
+        wrappedIn({
+            let stackView = UIStackView()
+            stackView.layoutMargins = layoutMargins
+            stackView.isLayoutMarginsRelativeArrangement = true
+            stackView.insetsLayoutMarginsFromSafeArea = false
+            return stackView
+        }())
     }
 }

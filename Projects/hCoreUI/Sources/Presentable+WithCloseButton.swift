@@ -58,6 +58,11 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
                 let closeButton = CloseButton()
                 let closeButtonItem = UIBarButtonItem(viewable: closeButton)
 
+                // move over any barButtonItems to the other side
+                if viewController.navigationItem.rightBarButtonItems != nil {
+                    viewController.navigationItem.leftBarButtonItems = viewController.navigationItem.rightBarButtonItems
+                }
+
                 viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
                 bag += closeButton.onTapSignal.onValue { _ in
@@ -91,6 +96,11 @@ extension Presentable where Matter: UIViewController, Result == Future<Void> {
 
                 let closeButton = CloseButton()
                 let closeButtonItem = UIBarButtonItem(viewable: closeButton)
+
+                // move over any barButtonItems to the other side
+                if viewController.navigationItem.rightBarButtonItems != nil {
+                    viewController.navigationItem.leftBarButtonItems = viewController.navigationItem.rightBarButtonItems
+                }
 
                 viewController.navigationItem.rightBarButtonItem = closeButtonItem
 
