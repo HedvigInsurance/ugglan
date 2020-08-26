@@ -11,9 +11,9 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
-import hGraphQL
 
 struct KeyGearItem {
     let id: String
@@ -83,7 +83,7 @@ struct KeyGearItem {
 
     class KeyGearItemViewController: UIViewController {
         override var preferredStatusBarStyle: UIStatusBarStyle {
-            return .lightContent
+            .lightContent
         }
 
         init() {
@@ -212,7 +212,7 @@ extension KeyGearItem: Presentable {
         bag += claimsSection.append(claimsRow).onValue { _ in
             viewController.present(
                 HonestyPledge(),
-                style: .modally(),
+                style: .detented(.preferredContentSize),
                 options: [.defaults]
             )
         }
