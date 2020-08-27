@@ -199,6 +199,7 @@ public struct Toasts {
 
     let bag = DisposeBag()
     let toastCallbacker = Callbacker<Toast>()
+    let window = UIApplication.shared.keyWindow!
 
     public func displayToast(toast: Toast) {
         toastCallbacker.callAll(with: toast)
@@ -207,18 +208,7 @@ public struct Toasts {
     init() {
         let (view, disposable) = materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
         bag += disposable
-
-        let window = UIApplication.shared.keyWindow!
         window.rootView.addSubview(view)
-
-        view.layer.zPosition = .greatestFiniteMagnitude
-
-        view.snp.makeConstraints { make in
-            make.top.equalTo(window.safeAreaLayoutGuide.snp.top).priority(.medium)
-            make.top.greaterThanOrEqualTo(5).priority(.required)
-            make.width.equalToSuperview().inset(10)
-            make.centerX.equalToSuperview()
-        }
     }
 }
 
@@ -227,6 +217,19 @@ extension Toasts: Viewable {
         let bag = DisposeBag()
 
         let containerView = PassTroughView()
+
+        containerView.layer.zPosition = .greatestFiniteMagnitude
+
+        bag += containerView.didMoveToWindowSignal.take(first: 1).onValue {
+            containerView.snp.makeConstraints { make in
+                make.top.equalTo(self.window.safeAreaLayoutGuide.snp.top).priority(.medium)
+                make.top.greaterThanOrEqualTo(5).priority(.required)
+                make.width.equalToSuperview().inset(10).priority(.high)
+                make.width.lessThanOrEqualToSuperview().inset(10).priority(.required)
+                make.width.lessThanOrEqualTo(400).priority(.required)
+                make.centerX.equalToSuperview()
+            }
+        }
 
         let hideBag = DisposeBag()
         let pauseSignal = ReadWriteSignal<Bool>(false)
