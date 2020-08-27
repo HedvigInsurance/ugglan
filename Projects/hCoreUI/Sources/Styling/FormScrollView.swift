@@ -33,8 +33,8 @@ public final class FormScrollView: UIScrollView, GradientScroller {
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.navigationController?.navigationBar.sizeToFit()
 
-            if (self?.contentOffset.y ?? 0) < 0 {
-                let contentInsetTop = self?.adjustedContentInset.top ?? 0
+            let contentInsetTop = self?.adjustedContentInset.top ?? 0
+            if (self?.contentOffset.y ?? 0) < contentInsetTop {
                 self?.setContentOffset(CGPoint(x: 0, y: -contentInsetTop), animated: true)
             }
         }
