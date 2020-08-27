@@ -27,7 +27,9 @@ final class FormTableView: UITableView, GradientScroller {
 
         // fix large titles being collapsed on load
         DispatchQueue.main.async { [weak self] in
-            self?.viewController?.navigationController?.navigationBar.sizeToFit()
+            if !(self?.viewController?.navigationController?.isBeingDismissed ?? false) {
+                self?.viewController?.navigationController?.navigationBar.sizeToFit()
+            }
         }
     }
 }
