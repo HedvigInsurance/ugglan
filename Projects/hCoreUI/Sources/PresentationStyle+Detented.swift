@@ -6,6 +6,7 @@
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
+import Flow
 import Form
 import Foundation
 import Presentation
@@ -62,6 +63,31 @@ extension PresentationOptions {
     public static let wantsGrabber = PresentationOptions()
 }
 
+extension UIViewController {
+    private static var _appliedDetents: UInt8 = 1
+
+    var appliedDetents: [PresentationStyle.Detent] {
+        get {
+            if let appliedDetents = objc_getAssociatedObject(
+                self,
+                &UIViewController._appliedDetents
+            ) as? [PresentationStyle.Detent] {
+                return appliedDetents
+            }
+
+            return []
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &UIViewController._appliedDetents,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+}
+
 extension PresentationStyle {
     public enum Detent {
         case medium, large, custom(_ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat)
@@ -87,6 +113,7 @@ extension PresentationStyle {
                 "_", "set", "Detents", ":",
             ]
             let selector = NSSelectorFromString(key.joined())
+            viewController.appliedDetents = detents
             presentationController.perform(selector, with: NSArray(array: detents.map { $0.getDetent(viewController) }))
 
             UIView.animate(
@@ -163,16 +190,37 @@ extension PresentationStyle {
                         modalPresentationDismissalSetup(for: vc, options: options)
                     }
                 } else {
-                    if let presentationController = from.navigationController?.presentationController {
+                    let bag = DisposeBag()
+
+                    if let navigationController = from.navigationController, let presentationController = navigationController.presentationController {
                         Self.Detent.set(
                             detents,
                             on: presentationController,
                             viewController: viewController
                         )
                         setGrabber(on: presentationController, to: options.contains(.wantsGrabber))
+
+                        bag += from.navigationController?.willPopViewControllerSignal.debug().filter(predicate: { $0 == viewController }).onValue { _ in
+                            guard let viewController = navigationController.viewControllers.last else {
+                                return
+                            }
+
+                            navigationController.view.backgroundColor = viewController.view.backgroundColor
+
+                            Self.Detent.set(
+                                viewController.appliedDetents,
+                                on: presentationController,
+                                viewController: viewController
+                            )
+                        }
                     }
 
-                    return PresentationStyle.default.present(viewController, from: from, options: options)
+                    let defaultPresentation = PresentationStyle.default.present(viewController, from: from, options: options)
+
+                    return (defaultPresentation.result, {
+                        bag.dispose()
+                        return defaultPresentation.dismisser()
+                    })
                 }
             } else {
                 if modally {

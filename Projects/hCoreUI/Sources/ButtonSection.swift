@@ -40,11 +40,10 @@ extension ButtonSection: Viewable {
         let section = SectionView(headerView: nil, footerView: nil)
 
         bag += isHiddenSignal.bindTo(section, \.isHidden)
-        
 
         let buttonRow = ButtonRow(
             text: "",
-            style: style == .normal ? .brand(.body(color: .primary)) : .brand(.body(color: .destructive))
+            style: style == .normal ? .brand(.body(color: .link)) : .brand(.body(color: .destructive))
         )
 
         bag += text.atOnce().bindTo(buttonRow.text)

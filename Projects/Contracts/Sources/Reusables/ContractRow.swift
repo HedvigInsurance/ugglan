@@ -374,7 +374,8 @@ extension ContractRow: Reusable {
         bag += section.append(row).onValue { _ in
             section.viewController?.present(
                 ContractDocuments(contract: self.contract).withCloseButton,
-                style: .detented(.scrollViewContentSize(20), .large)
+                style: .detented(.scrollViewContentSize(20), .large),
+                options: [.defaults, .allowSwipeDismissAlways]
             )
         }
 

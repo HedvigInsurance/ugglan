@@ -27,39 +27,38 @@ extension ContractDocuments: Presentable {
         let form = FormView()
 
         let section = form.appendSection()
-        let certificateRow = ButtonRow(
-            text: L10n.myDocumentsInsuranceCertificate,
+
+        let certificateRow = RowView(
+            title: L10n.myDocumentsInsuranceCertificate,
             style: .brand(.body(color: .primary))
         )
-        bag += section.append(certificateRow)
+        certificateRow.append(hCoreUIAssets.chevronRight.image)
 
-        bag += certificateRow.onSelect.onValue { _ in
+        bag += section.append(certificateRow).onValue { _ in
             guard let url = URL(string: self.contract.currentAgreement.certificateUrl) else {
                 return
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
-                style: .detented(.large),
-                options: [.defaults, .allowSwipeDismissAlways]
+                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate),
+                style: .detented(.large, modally: false)
             )
         }
 
-        let insuranceTermsRow = ButtonRow(
-            text: contract.termsAndConditions.displayName,
+        let insuranceTermsRow = RowView(
+            title: L10n.myDocumentsInsuranceTerms,
             style: .brand(.body(color: .primary))
         )
-        bag += section.append(insuranceTermsRow)
+        insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
 
-        bag += insuranceTermsRow.onSelect.onValue { _ in
+        bag += section.append(insuranceTermsRow).onValue { _ in
             guard let url = URL(string: self.contract.termsAndConditions.url) else {
                 return
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: self.contract.termsAndConditions.displayName).withCloseButton,
-                style: .detented(.large),
-                options: [.defaults, .allowSwipeDismissAlways]
+                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceTerms),
+                style: .detented(.large, modally: false)
             )
         }
 

@@ -90,7 +90,7 @@ extension PaymentDetailsSection: Viewable {
 
         bag += section.append(netPriceRow)
 
-        let applyDiscountButtonRow = ButtonRow(text: L10n.referralAddcouponHeadline, style: .normalButton)
+        let applyDiscountButtonRow = ButtonRow(text: L10n.referralAddcouponHeadline, style: .brand(.headline(color: .link)))
 
         bag += applyDiscountButtonRow.onSelect.onValue { _ in
             let applyDiscount = ApplyDiscount()

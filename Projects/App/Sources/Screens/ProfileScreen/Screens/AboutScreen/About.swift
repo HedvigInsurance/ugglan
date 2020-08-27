@@ -90,7 +90,7 @@ extension About: Presentable {
         if state == .loggedIn {
             let activatePushNotificationsRow = ButtonRow(
                 text: L10n.aboutPushRow,
-                style: .normalButton
+                style: .brand(.headline(color: .link))
             )
 
             bag += versionSection.append(activatePushNotificationsRow)
