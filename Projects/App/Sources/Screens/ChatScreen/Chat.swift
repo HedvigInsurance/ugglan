@@ -37,7 +37,7 @@ extension Chat: Presentable {
         chatState.allowNewMessageToast = false
 
         bag += {
-            chatState.allowNewMessageToast = true
+            self.chatState.allowNewMessageToast = true
         }
 
         let navigateCallbacker = Callbacker<NavigationEvent>()
