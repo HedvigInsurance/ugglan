@@ -75,8 +75,7 @@ extension Toast: Viewable {
     var symbolView: UIView {
         switch symbol {
         case let .character(character):
-            let view = UILabel()
-            view.text = String(character)
+            let view = UILabel(value: String(character), style: .brand(.headline(color: .primary)))
             view.minimumScaleFactor = 0.5
             view.adjustsFontSizeToFitWidth = true
             return view
@@ -141,7 +140,7 @@ extension Toast: Viewable {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
-        stackView.spacing = 15
+        stackView.spacing = 12.5
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
 
