@@ -36,7 +36,7 @@ extension Launch: Presentable {
         }
 
         return (containerView, Future { completion in
-            bag += completeAnimationCallbacker.delay(
+            bag += self.completeAnimationCallbacker.delay(
                 by: 0.6
             ).animated(
                 style: AnimationStyle.easeOut(duration: 0.5)
