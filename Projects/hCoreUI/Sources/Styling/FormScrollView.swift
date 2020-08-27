@@ -31,8 +31,11 @@ public final class FormScrollView: UIScrollView, GradientScroller {
 
         // fix large titles being collapsed on load
         DispatchQueue.main.async { [weak self] in
-            if !(self?.viewController?.navigationController?.isBeingDismissed ?? false) {
-                self?.viewController?.navigationController?.navigationBar.sizeToFit()
+            self?.viewController?.navigationController?.navigationBar.sizeToFit()
+
+            if (self?.contentOffset.y ?? 0) < 0 {
+                let contentInsetTop = self?.adjustedContentInset.top ?? 0
+                self?.setContentOffset(CGPoint(x: 0, y: -contentInsetTop), animated: true)
             }
         }
     }
