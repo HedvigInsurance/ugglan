@@ -13,7 +13,7 @@ import Presentation
 import UIKit
 
 struct Launch {
-    let hasLoadedSignal: Signal<Void>
+    let completeAnimationCallbacker = Callbacker<Void>()
 }
 
 extension Launch: Presentable {
@@ -36,7 +36,7 @@ extension Launch: Presentable {
         }
 
         return (containerView, Future { completion in
-            bag += self.hasLoadedSignal.delay(
+            bag += completeAnimationCallbacker.delay(
                 by: 0.6
             ).animated(
                 style: AnimationStyle.easeOut(duration: 0.5)

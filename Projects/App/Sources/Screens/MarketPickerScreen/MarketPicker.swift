@@ -235,7 +235,7 @@ extension MarketPicker: Presentable {
             bag += form.append(Spacing(height: 20))
             bag += form.append(LanguageSection(pickedMarketSignal: pickedMarketSignal.atOnce().compactMap { $0 }, presentingViewController: viewController, didFinish: self.didFinish))
 
-            bag += UIApplication.shared.appDelegate.hasFinishedLoading.atOnce()
+            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                 .delay(by: 1.25)
                 .take(first: 1)
                 .animated(style: .lightBounce(duration: 0.75), animations: { _ in

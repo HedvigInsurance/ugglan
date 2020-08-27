@@ -17,7 +17,7 @@ import UIKit
 
 extension UIView {
     var isPossiblyVisible: Signal<Bool> {
-        return windowSignal.atOnce().filter { window in
+        windowSignal.atOnce().filter { window in
             guard let window = window else {
                 return false
             }
@@ -124,7 +124,7 @@ extension LanguagePicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += UIApplication.shared.appDelegate.hasFinishedLoading
+        bag += ApplicationContext.shared.$hasFinishedBootstrapping
             .delay(by: 1.25)
             .take(first: 1)
             .animated(style: .lightBounce(duration: 0.75), animations: { _ in

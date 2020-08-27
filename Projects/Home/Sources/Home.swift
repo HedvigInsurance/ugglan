@@ -1,8 +1,10 @@
+import Apollo
 import Flow
 import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -10,6 +12,8 @@ public struct Home {
     public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public static var openCallMeChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
+
+    @Inject var client: ApolloClient
 
     public init() {}
 }
@@ -34,7 +38,17 @@ extension Home: Presentable {
         let bag = DisposeBag()
 
         let form = FormView()
-        bag += viewController.install(form)
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.performEntryAnimation(
+                contentView: form,
+                onLoadSignal: self.client
+                    .fetch(query: GraphQL.HomeQuery())
+                    .valueSignal
+                    .wait(until: scrollView.safeToPerformEntryAnimationSignal)
+                    .delay(by: 0.1)
+                    .toVoid()
+            )
+        }
 
         let titleSection = form.appendSection()
         let titleRow = RowView()
@@ -46,7 +60,6 @@ extension Home: Presentable {
         )
         titleRow.isLayoutMarginsRelativeArrangement = true
         titleSection.append(titleRow)
-
         bag += titleRow.append(ActiveSection())
 
         bag += form.didMoveToWindowSignal.onValue {

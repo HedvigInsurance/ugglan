@@ -33,7 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let window = UIWindow(frame: UIScreen.main.bounds)
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
-    let hasFinishedLoading = ReadWriteSignal<Bool>(false)
 
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
@@ -105,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         } else if dynamicLinkUrl.pathComponents.contains("forever") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                 NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
             }
 
@@ -268,9 +267,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Mixpanel.mainInstance().track(event: event)
         }
 
-        let launch = Launch(
-            hasLoadedSignal: hasFinishedLoading.toVoid().plain()
-        )
+        let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
         window.rootView.addSubview(launchView)
@@ -291,8 +288,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let toast = Toast(
                 symbol: .icon(hCoreUIAssets.settingsIcon.image),
                 body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
-                backgroundColor: .yellow,
-                duration: 10
+                backgroundColor: .yellow
             )
 
             if #available(iOS 13, *) {
@@ -316,15 +312,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AnalyticsCoordinator().setUserId()
 
             self.bag += ApplicationState.presentRootViewController(self.window)
-        }.delay(by: 0.1).onValue { _ in
+        }.onValue { _ in
             let client: ApolloClient = Dependencies.shared.resolve()
             self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
-                self.hasFinishedLoading.value = true
+                launch.completeAnimationCallbacker.callAll()
             }
         }
 
         bag += launchFuture.onValue { _ in
             launchView.removeFromSuperview()
+            ApplicationContext.shared.hasFinishedBootstrapping = true
         }
 
         return true
@@ -359,7 +356,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 if ApplicationState.currentState == .onboardingChat {
                     return
                 } else if ApplicationState.currentState == .offer {
-                    bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             OfferChat(),
                             style: .modally(
@@ -371,7 +368,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     }
                     return
                 } else if ApplicationState.currentState == .loggedIn {
-                    bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             FreeTextChat(),
                             style: .modally(
@@ -384,11 +381,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     return
                 }
             } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
                 }
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
-                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
                         PaymentSetup(setupType: .initial),
                         style: .modal,
@@ -396,7 +393,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     )
                 }
             } else if notificationType == "PAYMENT_FAILED" {
-                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
                         PaymentSetup(setupType: .replacement),
                         style: .modal,
