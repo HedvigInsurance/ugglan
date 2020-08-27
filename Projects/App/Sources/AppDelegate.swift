@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
-    var launchWindow: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
     let hasFinishedLoading = ReadWriteSignal<Bool>(false)
@@ -200,9 +199,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
 
-        launchWindow?.isOpaque = false
-        launchWindow?.backgroundColor = UIColor.transparent
-
         window.rootViewController = navigationController
 
         presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
@@ -276,15 +272,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             hasLoadedSignal: hasFinishedLoading.toVoid().plain()
         )
 
-        let (launchViewController, launchFuture) = launch.materialize()
-        launchWindow?.rootViewController = launchViewController
+        let (launchView, launchFuture) = launch.materialize()
+        window.rootView.addSubview(launchView)
+        launchView.layer.zPosition = .greatestFiniteMagnitude - 2
+
         window.makeKeyAndVisible()
-        launchWindow?.makeKeyAndVisible()
+
+        launchView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
 
         DefaultStyling.installCustom()
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
+
+        if ApplicationState.hasOverridenTargetEnvironment {
+            let toast = Toast(
+                symbol: .icon(hCoreUIAssets.settingsIcon.image),
+                body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
+                backgroundColor: .yellow,
+                duration: 10
+            )
+
+            if #available(iOS 13, *) {
+                self.bag += toast.onTap.onValue {
+                    self.window.rootViewController?.present(
+                        UIHostingController(rootView: Debug()),
+                        style: .detented(.medium, .large),
+                        options: []
+                    )
+                }
+            }
+
+            Toasts.shared.displayToast(toast: toast)
+        }
 
         bag += ApolloClient.initClient().valueSignal.map { _ in true }.plain().atValue { _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
@@ -302,29 +324,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         bag += launchFuture.onValue { _ in
-            self.window.makeKeyAndVisible()
-            self.launchWindow = nil
-
-            if ApplicationState.hasOverridenTargetEnvironment {
-                let toast = Toast(
-                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
-                    body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
-                    backgroundColor: .yellow,
-                    duration: 10
-                )
-
-                if #available(iOS 13, *) {
-                    self.bag += toast.onTap.onValue {
-                        self.window.rootViewController?.present(
-                            UIHostingController(rootView: Debug()),
-                            style: .detented(.medium, .large),
-                            options: []
-                        )
-                    }
-                }
-
-                Toasts.shared.displayToast(toast: toast)
-            }
+            launchView.removeFromSuperview()
         }
 
         return true

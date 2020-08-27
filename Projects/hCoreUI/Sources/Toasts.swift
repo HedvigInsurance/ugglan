@@ -231,8 +231,10 @@ extension Toasts: Viewable {
         let hideBag = DisposeBag()
         let pauseSignal = ReadWriteSignal<Bool>(false)
 
-        self.bag += containerView.parent?.subviewsSignal.onValue { _ in
-            containerView.parent?.bringSubviewToFront(containerView)
+        self.bag += containerView.didLayoutSignal.onValue { _ in
+            if let parent = containerView.parent {
+                parent.bringSubviewToFront(containerView)
+            }
         }
 
         containerView.snp.makeConstraints { make in
