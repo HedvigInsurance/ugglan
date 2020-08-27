@@ -28,10 +28,6 @@ extension Profile: Presentable {
         viewController.installChatButton()
 
         let form = FormView()
-        
-        bag += form.didMoveToWindowSignal.onValue {
-            ContextGradient.currentOption = .profile
-        }
 
         let profileSection = ProfileSection(
             presentingViewController: viewController
@@ -66,7 +62,7 @@ extension Profile: Presentable {
 
 extension Profile: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(
+        UITabBarItem(
             title: L10n.tabProfileTitle,
             image: Asset.profileTab.image,
             selectedImage: nil

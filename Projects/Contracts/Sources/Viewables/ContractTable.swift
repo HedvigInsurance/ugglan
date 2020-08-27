@@ -88,10 +88,6 @@ extension ContractTable: Viewable {
         tableKit.view.backgroundColor = .brand(.primaryBackground())
         tableKit.view.alwaysBounceVertical = true
 
-        bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            ContextGradient.currentOption = .insurance
-        }
-
         let loadingIndicatorBag = DisposeBag()
 
         let loadingIndicator = LoadingIndicator(showAfter: 0.5, color: .brand(.primaryTintColor))

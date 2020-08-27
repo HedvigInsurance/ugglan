@@ -153,7 +153,20 @@ extension LoggedIn: Presentable {
 
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
-        bag += tabBarController.signal(for: \.selectedViewController).onValue { viewController in
+        bag += tabBarController.signal(for: \.selectedViewController).atOnce().onValue { viewController in
+            switch tabBarController.selectedIndex {
+            case 0:
+                ContextGradient.currentOption = .home
+            case 1:
+                ContextGradient.currentOption = .insurance
+            case 2:
+                ContextGradient.currentOption = .forever
+            case 3:
+                ContextGradient.currentOption = .profile
+            default:
+                break
+            }
+
             if let debugPresentationTitle = viewController?.debugPresentationTitle {
                 Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
             }

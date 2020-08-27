@@ -62,10 +62,6 @@ extension Home: Presentable {
         titleSection.append(titleRow)
         bag += titleRow.append(ActiveSection())
 
-        bag += form.didMoveToWindowSignal.onValue {
-            ContextGradient.currentOption = .home
-        }
-
         return (viewController, bag)
     }
 }

@@ -46,10 +46,6 @@ extension Forever: Presentable {
             tableKit.table[index].cellHeight
         }
 
-        bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            ContextGradient.currentOption = .forever
-        }
-
         let refreshControl = UIRefreshControl()
 
         bag += refreshControl.onValue {

@@ -13,6 +13,7 @@ import UIKit
 
 public struct ContextGradient {
     public enum Option {
+        case none
         case home
         case insurance
         case forever
@@ -36,6 +37,8 @@ public struct ContextGradient {
 
         public func locations(for traitCollection: UITraitCollection) -> [NSNumber] {
             switch self {
+            case .none:
+                return [0, 0.5, 1]
             case .home:
                 if traitCollection.userInterfaceStyle == .dark {
                     return [
@@ -97,6 +100,8 @@ public struct ContextGradient {
 
         public func colors(for traitCollection: UITraitCollection) -> [UIColor] {
             switch self {
+            case .none:
+                return [.clear, .clear, .clear]
             case .home:
                 if traitCollection.userInterfaceStyle == .dark {
                     return [
@@ -157,7 +162,7 @@ public struct ContextGradient {
         }
     }
 
-    @ReadWriteState public static var currentOption: Option = .home
+    @ReadWriteState public static var currentOption: Option = .none
 
     public static func animateTabBarColor(_ view: UIView) -> Disposable {
         combineLatest(
