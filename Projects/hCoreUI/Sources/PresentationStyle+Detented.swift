@@ -200,19 +200,31 @@ extension PresentationStyle {
                         )
                         setGrabber(on: presentationController, to: options.contains(.wantsGrabber))
 
-                        bag += from.navigationController?.willPopViewControllerSignal.debug().filter(predicate: { $0 == viewController }).onValue { _ in
-                            guard let viewController = navigationController.viewControllers.last else {
-                                return
+                        bag += navigationController.willPopViewControllerSignal.wait(
+                            until: navigationController.interactivePopGestureRecognizer?.map { $0 == .possible || $0 == .ended } ?? ReadSignal(true)
+                        ).debug()
+                            .filter(predicate: { $0 == viewController })
+                            .onValue { _ in
+                                guard let previousViewController = navigationController.viewControllers.last else {
+                                    return
+                                }
+
+                                func handleDismiss() {
+                                    navigationController.view.backgroundColor = previousViewController.view.backgroundColor
+
+                                    Self.Detent.set(
+                                        previousViewController.appliedDetents,
+                                        on: presentationController,
+                                        viewController: previousViewController
+                                    )
+                                }
+
+                                if navigationController.interactivePopGestureRecognizer?.state == .ended, !(navigationController.transitionCoordinator?.isCancelled ?? false) {
+                                    handleDismiss()
+                                } else if navigationController.interactivePopGestureRecognizer?.state == .possible {
+                                    handleDismiss()
+                                }
                             }
-
-                            navigationController.view.backgroundColor = viewController.view.backgroundColor
-
-                            Self.Detent.set(
-                                viewController.appliedDetents,
-                                on: presentationController,
-                                viewController: viewController
-                            )
-                        }
                     }
 
                     let defaultPresentation = PresentationStyle.default.present(viewController, from: from, options: options)
