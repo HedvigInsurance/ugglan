@@ -288,6 +288,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let toast = Toast(
                 symbol: .icon(hCoreUIAssets.settingsIcon.image),
                 body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
+                textColor: .black,
                 backgroundColor: .yellow
             )
 

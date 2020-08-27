@@ -26,7 +26,7 @@ extension Offer {
             style: .modally(),
             options: [.defaults]
         ).onValue { _ in
-            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [.defaults, .prefersNavigationBarHidden(true)])
+            viewController.present(PostOnboarding(), style: .detented(.large), options: [.defaults, .prefersNavigationBarHidden(true)])
         }
     }
 

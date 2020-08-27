@@ -41,6 +41,7 @@ public struct Toast: Equatable {
     let symbol: ToastSymbol?
     let body: String
     let subtitle: String?
+    let textColor: UIColor
     let backgroundColor: UIColor
     let duration: TimeInterval
     public var onTap: Signal<Void> {
@@ -54,12 +55,14 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
+        textColor: UIColor = .brand(.primaryText()),
         backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
         self.body = body
         self.subtitle = subtitle
+        self.textColor = textColor
         self.backgroundColor = backgroundColor
         self.duration = duration
     }
@@ -76,6 +79,7 @@ extension Toast: Viewable {
         case let .icon(icon):
             let view = UIImageView()
             view.image = icon
+            view.tintColor = textColor
             view.contentMode = .scaleAspectFit
 
             view.snp.makeConstraints { make in
@@ -164,17 +168,18 @@ extension Toast: Viewable {
         textContainer.insetsLayoutMarginsFromSafeArea = false
         textContainer.spacing = 5
 
-        let bodyLabel = UILabel(value: body, style: TextStyle.brand(.headline(color: .primary)))
+        let bodyLabel = UILabel(value: body, style: TextStyle.brand(.headline(color: .primary)).colored(textColor))
         textContainer.addArrangedSubview(bodyLabel)
 
         if let subtitle = subtitle {
-            let bodySubtitleLabel = UILabel(value: subtitle, style: TextStyle.brand(.subHeadline(color: .secondary)))
+            let bodySubtitleLabel = UILabel(value: subtitle, style: TextStyle.brand(.subHeadline(color: .secondary)).colored(textColor))
             textContainer.addArrangedSubview(bodySubtitleLabel)
         }
 
         stackView.addArrangedSubview(textContainer)
 
         let chevronImageView = UIImageView()
+        chevronImageView.tintColor = textColor
         chevronImageView.contentMode = .scaleAspectFit
         chevronImageView.isHidden = true
         chevronImageView.snp.makeConstraints { make in

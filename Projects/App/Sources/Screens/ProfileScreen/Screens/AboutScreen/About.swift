@@ -39,6 +39,8 @@ extension About: Presentable {
         let form = FormView()
 
         if state == .onboarding {
+            form.appendSpacing(.inbetween)
+
             let loginSection = form.appendSection(
                 headerView: nil,
                 footerView: nil
@@ -46,7 +48,7 @@ extension About: Presentable {
 
             let loginRow = ButtonRow(
                 text: L10n.settingsLoginRow,
-                style: .normalButton
+                style: .brand(.headline(color: .link))
             )
             bag += loginSection.append(loginRow)
 
@@ -132,7 +134,7 @@ extension About: Presentable {
                     .filter { $0.welcome.count > 0 }
                     .onValue { data in
                         let welcome = Welcome(data: data, endWithReview: false)
-                        viewController.present(welcome, options: [.prefersNavigationBarHidden(true)])
+                        viewController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
                     }
             }
         }

@@ -17,7 +17,13 @@ enum ScrollTo {
 
 extension CollectionKit {
     func currentIndex() -> Int {
-        return Int(view.contentOffset.x / view.frame.size.width)
+        let double = view.contentOffset.x / view.frame.size.width
+
+        if double.isNaN {
+            return 0
+        }
+
+        return Int(double)
     }
 
     func scrollToFirstItem() {
@@ -29,7 +35,7 @@ extension CollectionKit {
     }
 
     func hasScrolledToEnd() -> Bool {
-        return view.contentOffset.x == view.frame.size.width
+        view.contentOffset.x == view.frame.size.width
     }
 
     func scrollToNextItem() {

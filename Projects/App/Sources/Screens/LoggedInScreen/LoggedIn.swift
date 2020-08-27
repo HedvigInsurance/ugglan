@@ -35,7 +35,7 @@ extension Notification.Name {
 extension LoggedIn {
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
         NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
-            tabBarController.selectedIndex = 2
+            tabBarController.selectedIndex = 3
         }
     }
 }
@@ -137,8 +137,8 @@ extension LoggedIn: Presentable {
                 .compactMap { $0.data }
                 .filter { $0.welcome.count > 0 }
                 .onValue { data in
-                    let whatsNew = Welcome(data: data, endWithReview: true)
-                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                    let welcome = Welcome(data: data, endWithReview: true)
+                    tabBarController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
                 }
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
@@ -147,7 +147,7 @@ extension LoggedIn: Presentable {
                 .filter { $0.news.count > 0 }
                 .onValue { data in
                     let whatsNew = WhatsNew(data: data)
-                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                    tabBarController.present(whatsNew, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
                 }
         }
 

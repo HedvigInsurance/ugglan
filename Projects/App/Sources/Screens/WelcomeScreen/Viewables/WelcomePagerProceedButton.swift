@@ -49,16 +49,9 @@ extension WelcomePagerProceedButton: Viewable {
         bag += buttonTitleSignal
             .distinct()
             .delay(by: 0.25)
-            .animated(style: SpringAnimationStyle.lightBounce(duration: 0.15)) { title in
-                buttonView.setTitle(title)
-
-                buttonView.snp.remakeConstraints { make in
-                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset)
-                    make.height.equalTo(self.button.type.value.height)
-                }
-
-                buttonView.layoutIfNeeded()
-            }
+            .transition(style: .crossDissolve(duration: 0.25), with: buttonView, animations: { title in
+                button.title.value = title
+            })
 
         bag += pageAmountSignal
             .take(first: 1)
