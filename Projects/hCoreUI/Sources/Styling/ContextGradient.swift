@@ -19,11 +19,19 @@ public struct ContextGradient {
         case profile
 
         public func tabBarColor(for traitCollection: UITraitCollection) -> UIColor {
-            colors(for: traitCollection).last!.withAlphaComponent(0.2)
+            if traitCollection.userInterfaceStyle == .dark {
+                return colors(for: traitCollection).last!.withAlphaComponent(0.2)
+            }
+
+            return colors(for: traitCollection).first!.withAlphaComponent(0.2)
         }
 
         public func navigationBarColor(for traitCollection: UITraitCollection) -> UIColor {
-            colors(for: traitCollection).first!.withAlphaComponent(0.2)
+            if traitCollection.userInterfaceStyle == .dark {
+                return colors(for: traitCollection).last!.withAlphaComponent(0.2)
+            }
+
+            return colors(for: traitCollection).first!.withAlphaComponent(0.2)
         }
 
         public func locations(for traitCollection: UITraitCollection) -> [NSNumber] {
@@ -152,14 +160,38 @@ public struct ContextGradient {
     @ReadWriteState public static var currentOption: Option = .home
 
     public static func animateTabBarColor(_ view: UIView) -> Disposable {
-        $currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
-            view.backgroundColor = option.tabBarColor(for: view.traitCollection)
+        combineLatest(
+            $currentOption.atOnce(),
+            view.traitCollectionSignal.atOnce()
+        ).animated(style: .easeOut(duration: 1)) { option, traitCollection in
+            view.backgroundColor = option.tabBarColor(for: traitCollection)
         }.nil()
     }
 
     public static func animateNavigationBarColor(_ view: UIView) -> Disposable {
-        $currentOption.atOnce().animated(style: .easeOut(duration: 1)) { option in
-            view.backgroundColor = option.navigationBarColor(for: view.traitCollection)
+        combineLatest(
+            $currentOption.atOnce(),
+            view.traitCollectionSignal.atOnce()
+        ).animated(style: .easeOut(duration: 1)) { option, traitCollection in
+            view.backgroundColor = option.navigationBarColor(for: traitCollection)
         }.nil()
+    }
+
+    public enum ColorViewLocation {
+        case navigationBar, tabBar
+    }
+
+    public static func makeColorView(into bag: DisposeBag, for location: ColorViewLocation) -> UIView {
+        let colorView = UIView()
+        colorView.tag = colorViewTag
+
+        switch location {
+        case .navigationBar:
+            bag += ContextGradient.animateNavigationBarColor(colorView)
+        case .tabBar:
+            bag += ContextGradient.animateTabBarColor(colorView)
+        }
+
+        return colorView
     }
 }
