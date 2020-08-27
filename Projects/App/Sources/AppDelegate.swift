@@ -293,13 +293,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AnalyticsCoordinator().setUserId()
 
             self.bag += ApplicationState.presentRootViewController(self.window)
-
-            if ApplicationState.hasOverridenTargetEnvironment {
-                Toasts.shared.displayToast(toast: Toast(
-                    symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
-                ))
-            }
         }.delay(by: 0.1).onValue { _ in
             let client: ApolloClient = Dependencies.shared.resolve()
             self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
@@ -310,6 +303,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += launchFuture.onValue { _ in
             self.window.makeKeyAndVisible()
             self.launchWindow = nil
+
+            if ApplicationState.hasOverridenTargetEnvironment {
+                Toasts.shared.displayToast(toast: Toast(
+                    symbol: .character("🧙‍♂️"),
+                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
+                ))
+            }
         }
 
         return true
