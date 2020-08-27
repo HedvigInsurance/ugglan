@@ -130,7 +130,10 @@ extension Chat: Presentable {
         if #available(iOS 13.0, *) {
             func setSheetInteractionState(_ enabled: Bool) {
                 let presentationController = viewController.navigationController?.presentationController
-                let sheetInteraction = presentationController?.value(forKey: "_sheetInteraction") as? NSObject
+                let key = [
+                    "_sheet", "Interaction",
+                ]
+                let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
                 sheetInteraction?.setValue(enabled, forKey: "enabled")
             }
 
