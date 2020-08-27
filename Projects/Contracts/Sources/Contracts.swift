@@ -20,6 +20,7 @@ extension Contracts: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.InsurancesTab.title
+        viewController.installChatButton()
 
         let bag = DisposeBag()
 
