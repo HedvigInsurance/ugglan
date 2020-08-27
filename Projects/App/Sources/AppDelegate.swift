@@ -20,6 +20,7 @@ import hGraphQL
 import Mixpanel
 import Presentation
 import Sentry
+import SwiftUI
 import UIKit
 import UserNotifications
 
@@ -305,10 +306,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.launchWindow = nil
 
             if ApplicationState.hasOverridenTargetEnvironment {
-                Toasts.shared.displayToast(toast: Toast(
-                    symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
-                ))
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
+                    body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
+                    backgroundColor: .yellow,
+                    duration: 10
+                )
+
+                if #available(iOS 13, *) {
+                    self.bag += toast.onTap.onValue {
+                        self.window.rootViewController?.present(
+                            UIHostingController(rootView: Debug()),
+                            style: .detented(.medium, .large),
+                            options: []
+                        )
+                    }
+                }
+
+                Toasts.shared.displayToast(toast: toast)
             }
         }
 

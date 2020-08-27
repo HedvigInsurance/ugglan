@@ -41,8 +41,6 @@ public struct Toast: Equatable {
     let symbol: ToastSymbol?
     let body: String
     let subtitle: String?
-    let textColor: UIColor
-    let subtitleColor: UIColor
     let backgroundColor: UIColor
     let duration: TimeInterval
     public var onTap: Signal<Void> {
@@ -56,16 +54,12 @@ public struct Toast: Equatable {
         symbol: ToastSymbol?,
         body: String,
         subtitle: String? = nil,
-        textColor: UIColor = UIColor.brand(.primaryText()),
-        subtitleColor: UIColor = UIColor.brand(.link),
         backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
         duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
         self.body = body
         self.subtitle = subtitle
-        self.textColor = textColor
-        self.subtitleColor = subtitleColor
         self.backgroundColor = backgroundColor
         self.duration = duration
     }
@@ -176,10 +170,6 @@ extension Toast: Viewable {
         if let subtitle = subtitle {
             let bodySubtitleLabel = UILabel(value: subtitle, style: TextStyle.brand(.subHeadline(color: .secondary)))
             textContainer.addArrangedSubview(bodySubtitleLabel)
-
-            bodySubtitleLabel.snp.makeConstraints { make in
-                make.width.lessThanOrEqualTo(200)
-            }
         }
 
         stackView.addArrangedSubview(textContainer)
@@ -226,9 +216,8 @@ public struct Toasts {
         view.snp.makeConstraints { make in
             make.top.equalTo(window.safeAreaLayoutGuide.snp.top).priority(.medium)
             make.top.greaterThanOrEqualTo(5).priority(.required)
-            make.width.equalToSuperview().inset(10).priority(.medium)
+            make.width.equalToSuperview().inset(10)
             make.centerX.equalToSuperview()
-            make.width.lessThanOrEqualTo(400).priority(.required)
         }
     }
 }

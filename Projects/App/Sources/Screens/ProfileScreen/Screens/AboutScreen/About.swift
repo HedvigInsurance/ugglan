@@ -75,7 +75,11 @@ extension About: Presentable {
 
             bag += tapGestureRecongnizer.signal(forState: .recognized).onValue { _ in
                 if #available(iOS 13, *) {
-                    viewController.present(UIHostingController(rootView: Debug()), style: .modally(), options: [])
+                    viewController.present(
+                        UIHostingController(rootView: Debug()),
+                        style: .detented(.medium, .large),
+                        options: []
+                    )
                 }
             }
         }
