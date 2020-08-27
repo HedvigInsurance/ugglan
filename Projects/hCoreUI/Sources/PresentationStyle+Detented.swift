@@ -28,6 +28,31 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
     }
 }
 
+func getDetentIndex(on presentationController: UIPresentationController) -> Int {
+    let key = [
+        "_", "indexOf", "CurrentDetent",
+    ]
+
+    return presentationController.value(forKey: key.joined()) as? Int ?? 0
+}
+
+func setDetentIndex(on presentationController: UIPresentationController, index: Int) {
+    let key = [
+        "_set", "IndexOf", "CurrentDetent:",
+    ]
+            
+    typealias SetIndexMethod = @convention(c) (
+        UIPresentationController,
+        Selector,
+        Int
+    ) -> Void
+    let selector = NSSelectorFromString(key.joined())
+    let method = presentationController.method(for: selector)
+    let castedMethod = unsafeBitCast(method, to: SetIndexMethod.self)
+
+    castedMethod(presentationController, selector, index)
+}
+
 class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var detents: [PresentationStyle.Detent]
     var wantsGrabber: Bool
@@ -86,6 +111,29 @@ extension UIViewController {
             )
         }
     }
+    
+    private static var _lastDetentIndex: UInt8 = 1
+    
+    var lastDetentIndex: Int? {
+        get {
+            if let lastDetentIndex = objc_getAssociatedObject(
+                self,
+                &UIViewController._lastDetentIndex
+            ) as? Int {
+                return lastDetentIndex
+            }
+
+            return nil
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &UIViewController._lastDetentIndex,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
 }
 
 extension PresentationStyle {
@@ -108,13 +156,17 @@ extension PresentationStyle {
             }
         }
 
-        static func set(_ detents: [Detent], on presentationController: UIPresentationController, viewController: UIViewController) {
+        static func set(_ detents: [Detent], on presentationController: UIPresentationController, viewController: UIViewController, lastDetentIndex: Int? = nil) {
             let key = [
                 "_", "set", "Detents", ":",
             ]
             let selector = NSSelectorFromString(key.joined())
             viewController.appliedDetents = detents
             presentationController.perform(selector, with: NSArray(array: detents.map { $0.getDetent(viewController) }))
+            
+            if let lastDetentIndex = lastDetentIndex {
+                setDetentIndex(on: presentationController, index: lastDetentIndex)
+            }
 
             UIView.animate(
                 withDuration: 0.5,
@@ -193,6 +245,8 @@ extension PresentationStyle {
                     let bag = DisposeBag()
 
                     if let navigationController = from.navigationController, let presentationController = navigationController.presentationController {
+                        from.lastDetentIndex = getDetentIndex(on: presentationController)
+
                         Self.Detent.set(
                             detents,
                             on: presentationController,
@@ -211,11 +265,11 @@ extension PresentationStyle {
 
                                 func handleDismiss() {
                                     navigationController.view.backgroundColor = previousViewController.view.backgroundColor
-
                                     Self.Detent.set(
                                         previousViewController.appliedDetents,
                                         on: presentationController,
-                                        viewController: previousViewController
+                                        viewController: previousViewController,
+                                        lastDetentIndex: previousViewController.lastDetentIndex
                                     )
                                 }
 
