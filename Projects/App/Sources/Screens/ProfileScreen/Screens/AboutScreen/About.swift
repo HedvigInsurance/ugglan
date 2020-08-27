@@ -121,7 +121,7 @@ extension About: Presentable {
 
             let showWelcome = ButtonRow(
                 text: L10n.aboutShowIntroRow,
-                style: .normalButton
+                style: .brand(.headline(color: .link))
             )
             bag += versionSection.append(showWelcome)
 
