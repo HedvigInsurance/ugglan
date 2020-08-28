@@ -40,7 +40,7 @@ func setDetentIndex(on presentationController: UIPresentationController, index: 
     let key = [
         "_set", "IndexOf", "CurrentDetent:",
     ]
-            
+
     typealias SetIndexMethod = @convention(c) (
         UIPresentationController,
         Selector,
@@ -53,10 +53,33 @@ func setDetentIndex(on presentationController: UIPresentationController, index: 
     castedMethod(presentationController, selector, index)
 }
 
+private extension Notification {
+    var endFrame: CGRect? {
+        (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+    }
+}
+
 class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var detents: [PresentationStyle.Detent]
     var wantsGrabber: Bool
     var viewController: UIViewController
+    let bag = DisposeBag()
+    var keyboardFrame: CGRect = .zero
+
+    func listenToKeyboardFrame() {
+        bag += viewController.view.keyboardSignal(priority: .highest).onValue { event in
+            switch event {
+            case let .willShow(frame, _):
+                self.keyboardFrame = frame
+            case .willHide:
+                self.keyboardFrame = .zero
+            }
+
+            if let presentationController = self.viewController.navigationController?.presentationController {
+                PresentationStyle.Detent.set(self.detents, on: presentationController, viewController: self.viewController, keyboardAnimation: event.animation)
+            }
+        }
+    }
 
     init(
         detents: [PresentationStyle.Detent],
@@ -67,6 +90,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         self.wantsGrabber = wantsGrabber
         self.viewController = viewController
         super.init()
+        listenToKeyboardFrame()
     }
 
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source _: UIViewController) -> UIPresentationController? {
@@ -111,9 +135,9 @@ extension UIViewController {
             )
         }
     }
-    
+
     private static var _lastDetentIndex: UInt8 = 1
-    
+
     var lastDetentIndex: Int? {
         get {
             if let lastDetentIndex = objc_getAssociatedObject(
@@ -146,7 +170,10 @@ extension PresentationStyle {
                     return 0
                 }
 
-                return scrollView.contentSize.height + containerView.safeAreaInsets.bottom + extraPadding
+                let transitioningDelegate = viewController.navigationController?.transitioningDelegate as? DetentedTransitioningDelegate
+                let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
+
+                return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top + containerView.safeAreaInsets.bottom + extraPadding
             }
         }
 
@@ -156,29 +183,39 @@ extension PresentationStyle {
             }
         }
 
-        static func set(_ detents: [Detent], on presentationController: UIPresentationController, viewController: UIViewController, lastDetentIndex: Int? = nil) {
+        static func set(_ detents: [Detent], on presentationController: UIPresentationController, viewController: UIViewController, lastDetentIndex: Int? = nil, keyboardAnimation: KeyboardAnimation? = nil) {
             let key = [
                 "_", "set", "Detents", ":",
             ]
             let selector = NSSelectorFromString(key.joined())
             viewController.appliedDetents = detents
             presentationController.perform(selector, with: NSArray(array: detents.map { $0.getDetent(viewController) }))
-            
+
             if let lastDetentIndex = lastDetentIndex {
                 setDetentIndex(on: presentationController, index: lastDetentIndex)
             }
 
-            UIView.animate(
-                withDuration: 0.5,
-                delay: 0,
-                usingSpringWithDamping: 5,
-                initialSpringVelocity: 1,
-                options: .allowUserInteraction,
-                animations: {
-                    presentationController.presentedViewController.view.layoutIfNeeded()
-                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
-                }, completion: nil
-            )
+            func forceLayout() {
+                presentationController.presentedViewController.view.layoutIfNeeded()
+                presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+            }
+
+            if let keyboardAnimation = keyboardAnimation {
+                keyboardAnimation.animate {
+                    forceLayout()
+                }
+            } else {
+                UIView.animate(
+                    withDuration: 0.5,
+                    delay: 0,
+                    usingSpringWithDamping: 5,
+                    initialSpringVelocity: 1,
+                    options: .allowUserInteraction,
+                    animations: {
+                        forceLayout()
+                    }, completion: nil
+                )
+            }
         }
 
         var rawValue: String {
@@ -227,19 +264,27 @@ extension PresentationStyle {
     public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
         PresentationStyle(name: "detented") { viewController, from, options in
             if #available(iOS 13, *) {
+                viewController.setLargeTitleDisplayMode(options)
+
                 if modally {
                     let vc = viewController.embededInNavigationController(options)
+
+                    let bag = DisposeBag()
 
                     let delegate = DetentedTransitioningDelegate(
                         detents: detents,
                         wantsGrabber: options.contains(.wantsGrabber),
                         viewController: viewController
                     )
+                    bag.hold(delegate)
                     vc.transitioningDelegate = delegate
                     vc.modalPresentationStyle = .custom
 
                     return from.modallyPresentQueued(vc, options: options) {
-                        modalPresentationDismissalSetup(for: vc, options: options)
+                        return Future { completion in
+                            modalPresentationDismissalSetup(for: vc, options: options).onResult(completion)
+                            return bag
+                        }
                     }
                 } else {
                     let bag = DisposeBag()
