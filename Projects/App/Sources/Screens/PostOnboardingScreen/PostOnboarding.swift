@@ -105,6 +105,7 @@ extension PostOnboarding: Presentable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.isScrollEnabled = false
         collectionKit.view.contentInsetAdjustmentBehavior = .never
+        collectionKit.view.backgroundColor = .secondaryBackground
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             collectionKit.view.bounds.size

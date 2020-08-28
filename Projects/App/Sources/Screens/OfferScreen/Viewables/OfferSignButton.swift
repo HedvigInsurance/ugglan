@@ -13,10 +13,11 @@ import UIKit
 
 struct OfferSignButton {
     private let callbacker = Callbacker<Void>()
-
     var onTapSignal: Signal<Void> {
-        return callbacker.providedSignal
+        callbacker.providedSignal
     }
+
+    let scrollView: UIScrollView
 }
 
 extension OfferSignButton: Viewable {
@@ -24,7 +25,6 @@ extension OfferSignButton: Viewable {
         let bag = DisposeBag()
         let view = UIView()
         view.backgroundColor = .secondaryBackground
-        view.layer.cornerRadius = 5
 
         let contentContainer = UIStackView()
         contentContainer.isLayoutMarginsRelativeArrangement = true
@@ -33,6 +33,10 @@ extension OfferSignButton: Viewable {
 
         contentContainer.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
+        }
+
+        bag += scrollView.didLayoutSignal.onValue { _ in
+            contentContainer.layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: scrollView.safeAreaInsets.bottom + 10, right: 16)
         }
 
         let button = Button(

@@ -77,7 +77,7 @@ extension OfferStartDateButton: Viewable {
                                           Alert.Action(title: L10n.alertContinue, action: {
                                               self.presentingViewController.present(
                                                   chooseStartDate.withCloseButton,
-                                                  style: .detented(.medium, .large),
+                                                  style: .detented(.scrollViewContentSize(20), .large),
                                                   options: [
                                                       .defaults,
                                                       .prefersLargeTitles(true),
@@ -93,7 +93,7 @@ extension OfferStartDateButton: Viewable {
                 } else {
                     self.presentingViewController.present(
                         chooseStartDate.withCloseButton,
-                        style: .detented(.medium, .large),
+                        style: .detented(.scrollViewContentSize(20), .large),
                         options: [
                             .defaults,
                             .prefersLargeTitles(true),

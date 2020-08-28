@@ -21,18 +21,18 @@ public struct ContextGradient {
 
         public func tabBarColor(for traitCollection: UITraitCollection) -> UIColor {
             if traitCollection.userInterfaceStyle == .dark {
-                return colors(for: traitCollection).last!.withAlphaComponent(0.2)
+                return colors(for: traitCollection).last?.withAlphaComponent(0.2) ?? .clear
             }
 
-            return colors(for: traitCollection).first!.withAlphaComponent(0.2)
+            return colors(for: traitCollection).first?.withAlphaComponent(0.2) ?? .clear
         }
 
         public func navigationBarColor(for traitCollection: UITraitCollection) -> UIColor {
             if traitCollection.userInterfaceStyle == .dark {
-                return colors(for: traitCollection).last!.withAlphaComponent(0.2)
+                return colors(for: traitCollection).last?.withAlphaComponent(0.2) ?? .clear
             }
 
-            return colors(for: traitCollection).first!.withAlphaComponent(0.2)
+            return colors(for: traitCollection).first?.withAlphaComponent(0.2) ?? .clear
         }
 
         public func locations(for traitCollection: UITraitCollection) -> [NSNumber] {
@@ -101,7 +101,7 @@ public struct ContextGradient {
         public func colors(for traitCollection: UITraitCollection) -> [UIColor] {
             switch self {
             case .none:
-                return [.clear, .clear, .clear]
+                return []
             case .home:
                 if traitCollection.userInterfaceStyle == .dark {
                     return [
