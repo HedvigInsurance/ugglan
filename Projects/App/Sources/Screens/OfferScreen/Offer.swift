@@ -23,10 +23,17 @@ extension Offer {
     func startSignProcess(_ viewController: UIViewController) {
         viewController.present(
             BankIdSign().withCloseButton,
-            style: .modally(),
+            style: .detented(.medium, .large),
             options: [.defaults]
         ).onValue { _ in
-            viewController.present(PostOnboarding(), style: .detented(.large), options: [.defaults, .prefersNavigationBarHidden(true)])
+            viewController.present(
+                PostOnboarding(),
+                style: .detented(.large, modally: false),
+                options: [
+                    .defaults,
+                    .prefersNavigationBarHidden(true),
+                ]
+            )
         }
     }
 

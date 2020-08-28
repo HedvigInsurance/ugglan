@@ -456,7 +456,7 @@ extension Button: Viewable {
                 \.style
             )
 
-        bag += button.hasWindowSignal.take(first: 1).onValue { _ in
+        bag += button.didLayoutSignal.take(first: 1).onValue { _ in
             button.snp.makeConstraints { make in
                 make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset)
                 make.height.equalTo(self.type.value.height)

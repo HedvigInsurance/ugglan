@@ -461,11 +461,15 @@ extension DynamicSectionStyle {
 
 extension DynamicFormStyle {
     static let brandPlain = DynamicFormStyle { _ -> FormStyle in
-        .init(insets: UIEdgeInsets(inset: 0))
+        .init(insets: .zero)
     }
 
     static let brandGrouped = DynamicFormStyle { _ -> FormStyle in
-        .init(insets: UIEdgeInsets(inset: 0))
+        .init(insets: .zero)
+    }
+
+    public static let insetted = DynamicFormStyle { _ -> FormStyle in
+        FormStyle(insets: UIEdgeInsets(horizontalInset: 15, verticalInset: 0))
     }
 }
 

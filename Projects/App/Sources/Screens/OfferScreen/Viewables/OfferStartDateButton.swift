@@ -64,19 +64,11 @@ extension OfferStartDateButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let keyLabel = UILabel(value: L10n.startDateBtn, style: .bodyButtonText)
+        let keyLabel = UILabel(value: L10n.startDateBtn, style: .brand(.headline(color: .primary)))
         stackView.addArrangedSubview(keyLabel)
 
-        let valueLabel = UILabel(value: "", style: .bodyBookButtonText)
+        let valueLabel = UILabel(value: "", style: .brand(.headline(color: .link)))
         stackView.addArrangedSubview(valueLabel)
-
-        let iconView = Icon(icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
-        iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
-        stackView.addArrangedSubview(iconView)
-
-        iconView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-        }
 
         let alert = Alert<Void>(title: L10n.alertTitleStartdate,
                                 message: L10n.alertDescriptionStartdate,
@@ -85,7 +77,12 @@ extension OfferStartDateButton: Viewable {
                                           Alert.Action(title: L10n.alertContinue, action: {
                                               self.presentingViewController.present(
                                                   chooseStartDate.withCloseButton,
-                                                  style: .modally()
+                                                  style: .detented(.medium, .large),
+                                                  options: [
+                                                      .defaults,
+                                                      .prefersLargeTitles(true),
+                                                      .largeTitleDisplayMode(.always),
+                                                  ]
                                               )
                                       })])
 
@@ -96,7 +93,12 @@ extension OfferStartDateButton: Viewable {
                 } else {
                     self.presentingViewController.present(
                         chooseStartDate.withCloseButton,
-                        style: .modally()
+                        style: .detented(.medium, .large),
+                        options: [
+                            .defaults,
+                            .prefersLargeTitles(true),
+                            .largeTitleDisplayMode(.always),
+                        ]
                     )
                 }
             }

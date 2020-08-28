@@ -245,6 +245,10 @@ extension MarketPicker: Presentable {
             })
         }
 
+        bag += form.didMoveToWindowSignal.onValue {
+            ContextGradient.currentOption = .none
+        }
+
         return (viewController, bag)
     }
 }

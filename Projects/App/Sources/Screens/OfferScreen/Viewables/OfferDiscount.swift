@@ -98,10 +98,11 @@ extension OfferDiscount: Viewable {
                     })
                 }
 
-                bag += self.presentingViewController.present(
+                self.presentingViewController.present(
                     applyDiscount.withCloseButton,
-                    style: .modally()
-                ).disposable
+                    style: .detented(.scrollViewContentSize(20), .large),
+                    options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                )
             }
 
         bag += removeButton.onTapSignal.onValue { _ in

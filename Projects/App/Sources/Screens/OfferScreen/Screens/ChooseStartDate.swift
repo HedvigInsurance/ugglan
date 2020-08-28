@@ -7,6 +7,7 @@
 
 import Apollo
 import Flow
+import Form
 import Foundation
 import hCore
 import hCoreUI
@@ -23,19 +24,17 @@ struct ChooseStartDate {
 extension ChooseStartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.title = L10n.draggableStartdateTitle
         let bag = DisposeBag()
 
-        let view = UIView()
-        view.backgroundColor = .primaryBackground
-
-        viewController.view = view
+        let form = FormView()
 
         let containerView = UIStackView()
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.axis = .vertical
 
-        view.addSubview(containerView)
+        form.append(containerView)
 
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -43,47 +42,36 @@ extension ChooseStartDate: Presentable {
 
         let textStackView = UIStackView()
         textStackView.spacing = 8
-        textStackView.axis = .vertical
-        textStackView.layoutMargins = UIEdgeInsets(top: 32, left: 0, bottom: 32, right: 0)
+        textStackView.axis = .horizontal
+        textStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
         textStackView.isLayoutMarginsRelativeArrangement = true
         containerView.addArrangedSubview(textStackView)
 
         let pickerStackView = UIStackView()
         pickerStackView.spacing = 8
         pickerStackView.axis = .vertical
-        pickerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
-        pickerStackView.isLayoutMarginsRelativeArrangement = true
         pickerStackView.alignment = .fill
         pickerStackView.isUserInteractionEnabled = true
 
         containerView.addArrangedSubview(pickerStackView)
 
         let actionStackView = UIStackView()
-        actionStackView.spacing = 24
+        actionStackView.spacing = 10
         actionStackView.axis = .vertical
-        actionStackView.alignment = .center
-        actionStackView.layoutMargins = UIEdgeInsets(top: 32, left: 0, bottom: 10, right: 0)
+        actionStackView.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         actionStackView.isLayoutMarginsRelativeArrangement = true
         actionStackView.isUserInteractionEnabled = true
 
         containerView.addArrangedSubview(actionStackView)
 
-        let titleLabel = MultilineLabel(
-            value: L10n.draggableStartdateTitle,
-            style: .draggableOverlayTitle
-        )
-
-        bag += textStackView.addArranged(titleLabel)
-
         let descriptionLabel = MultilineLabel(
             value: L10n.draggableStartdateDescription,
-            style: .draggableOverlayDescription
+            style: .brand(.body(color: .secondary))
         )
-
         bag += textStackView.addArranged(descriptionLabel)
 
         let picker = UIDatePicker()
-
+        picker.tintColor = .brand(.link)
         picker.calendar = Calendar.current
         picker.datePickerMode = .date
         picker.minimumDate = Date()
@@ -96,16 +84,16 @@ extension ChooseStartDate: Presentable {
         bag += client.watch(query: GraphQL.OfferQuery())
             .map { ($0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate) }
             .onValue { date in
-            if let date = date {
-                picker.date = date
-            } else {
-                picker.date = Date()
+                if let date = date {
+                    picker.date = date
+                } else {
+                    picker.date = Date()
+                }
             }
-        }
 
         let chooseDateButton = Button(title: L10n.chooseDateBtn,
-                                      type: .standard(backgroundColor: .primaryButtonBackgroundColor,
-                                                      textColor: .white))
+                                      type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor),
+                                                      textColor: .brand(.primaryButtonTextColor)))
 
         let loadableChooseDateButton = LoadableButton(button: chooseDateButton,
                                                       initialLoadingState: false)
@@ -116,8 +104,8 @@ extension ChooseStartDate: Presentable {
         let loadableActivateButton = LoadableButton(button: activateNowButton,
                                                     initialLoadingState: false)
 
-        bag += actionStackView.addArranged(loadableChooseDateButton.wrappedIn(UIStackView()))
-        bag += actionStackView.addArranged(loadableActivateButton.wrappedIn(UIStackView()))
+        bag += actionStackView.addArranged(loadableChooseDateButton)
+        bag += actionStackView.addArranged(loadableActivateButton)
 
         func updateStartDateCache(startDate: String?) {
             store.update(query: GraphQL.OfferQuery()) { (data: inout GraphQL.OfferQuery.Data) in
@@ -125,10 +113,10 @@ extension ChooseStartDate: Presentable {
             }
         }
 
+        bag += viewController.install(form)
+
         return (viewController, Future { completion in
-
             bag += loadableChooseDateButton.onTapSignal.onValue { _ in
-
                 loadableChooseDateButton.isLoadingSignal.value = true
 
                 bag += self.client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap {

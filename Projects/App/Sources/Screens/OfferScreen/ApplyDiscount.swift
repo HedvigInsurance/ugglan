@@ -22,50 +22,34 @@ struct ApplyDiscount {
     private let didRedeemValidCodeCallbacker = Callbacker<GraphQL.RedeemCodeMutation.Data.RedeemCode>()
 
     var didRedeemValidCodeSignal: Signal<GraphQL.RedeemCodeMutation.Data.RedeemCode> {
-        return didRedeemValidCodeCallbacker.providedSignal
+        didRedeemValidCodeCallbacker.providedSignal
     }
 }
 
 extension ApplyDiscount: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.title = L10n.referralAddcouponHeadline
 
         let bag = DisposeBag()
 
-        let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
-        viewController.view = containerView
-
-        let view = UIStackView()
-        view.spacing = 5
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
-        view.isLayoutMarginsRelativeArrangement = true
-        view.axis = .vertical
-
-        containerView.addSubview(view)
-
-        view.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-        }
-
-        let titleLabel = MultilineLabel(
-            value: L10n.referralAddcouponHeadline,
-            style: .draggableOverlayTitle
-        )
-        bag += view.addArranged(titleLabel)
+        let form = FormView()
+        form.dynamicStyle = .insetted
 
         let descriptionLabel = MultilineLabel(
             value: L10n.referralAddcouponBody,
             style: .bodyOffBlack
         )
-        bag += view.addArranged(descriptionLabel)
+        bag += form.append(descriptionLabel)
 
         let textField = TextField(value: "", placeholder: L10n.referralAddcouponInputplaceholder)
-        bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
+        bag += form.append(textField.wrappedIn({
+            let stackView = UIStackView()
             stackView.isUserInteractionEnabled = true
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
-        }
+            return stackView
+        }()))
 
         let submitButton = Button(
             title: L10n.referralAddcouponBtnSubmit,
@@ -74,14 +58,10 @@ extension ApplyDiscount: Presentable {
 
         let loadableSubmitButton = LoadableButton(button: submitButton)
         bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
-
-        bag += view.addArranged(loadableSubmitButton.wrappedIn(UIStackView())) { stackView in
-            stackView.axis = .vertical
-            stackView.alignment = .center
-        }
+        bag += form.append(loadableSubmitButton)
 
         let terms = DiscountTerms()
-        bag += view.addArranged(terms)
+        bag += form.append(terms)
 
         let shouldSubmitCallbacker = Callbacker<Void>()
         bag += loadableSubmitButton.onTapSignal.onValue { _ in
@@ -93,6 +73,8 @@ extension ApplyDiscount: Presentable {
             shouldSubmitCallbacker.callAll()
             return true
         }
+
+        bag += viewController.install(form)
 
         return (viewController, Future { completion in
             bag += shouldSubmitCallbacker
