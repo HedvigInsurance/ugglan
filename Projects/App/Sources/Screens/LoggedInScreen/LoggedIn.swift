@@ -51,6 +51,16 @@ extension LoggedIn: Presentable {
 
         let bag = DisposeBag()
 
+        enum Tab {
+            case home
+            case contracts
+            case keyGear
+            case forever
+            case profile
+        }
+
+        let indexForTabsSignal = ReadWriteSignal<[Int: Tab]>([:])
+
         let home = Home()
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
@@ -100,6 +110,14 @@ extension LoggedIn: Presentable {
                         referralsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .keyGear,
+                        3: .forever,
+                        4: .profile,
+                    ]
                 } else {
                     bag += tabBarController.presentTabs(
                         homePresentation,
@@ -107,6 +125,13 @@ extension LoggedIn: Presentable {
                         keyGearPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .keyGear,
+                        3: .profile,
+                    ]
                 }
             } else {
                 if features.contains(.referrals) {
@@ -116,12 +141,25 @@ extension LoggedIn: Presentable {
                         referralsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .forever,
+                        3: .profile,
+                    ]
                 } else {
                     bag += tabBarController.presentTabs(
                         homePresentation,
                         contractsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .profile,
+                    ]
                 }
             }
         }
@@ -151,18 +189,22 @@ extension LoggedIn: Presentable {
 
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
-        bag += tabBarController.signal(for: \.selectedViewController).atOnce().onValue { viewController in
-            switch tabBarController.selectedIndex {
-            case 0:
+        bag += combineLatest(tabBarController.signal(for: \.selectedViewController), indexForTabsSignal).atOnce().onValue { viewController, indexForTabs in
+            let tab = indexForTabs[tabBarController.selectedIndex]
+
+            switch tab {
+            case .home:
                 ContextGradient.currentOption = .home
-            case 1:
+            case .contracts:
                 ContextGradient.currentOption = .insurance
-            case 2:
+            case .forever:
                 ContextGradient.currentOption = .forever
-            case 3:
+            case .profile:
                 ContextGradient.currentOption = .profile
-            default:
-                break
+            case .keyGear:
+                ContextGradient.currentOption = .none
+            case .none:
+                ContextGradient.currentOption = .none
             }
 
             if let debugPresentationTitle = viewController?.debugPresentationTitle {
