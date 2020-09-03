@@ -34,6 +34,11 @@ extension ChatButton: Viewable {
         let bag = DisposeBag()
 
         let chatButtonView = UIControl()
+        chatButtonView.backgroundColor = .brand(.primaryBackground())
+
+        bag += chatButtonView.signal(for: \.bounds).atOnce().onValue { frame in
+            chatButtonView.layer.cornerRadius = frame.height / 2
+        }
 
         bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
@@ -47,18 +52,18 @@ extension ChatButton: Viewable {
         chatIcon.tintColor = .brand(.primaryText())
 
         bag += chatButtonView.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25), animations: { _ in
-            chatIcon.tintColor = UIColor.brand(.primaryText()).lighter(amount: 0.25)
+            chatButtonView.backgroundColor = UIColor.brand(.primaryBackground()).darkened(amount: 0.1)
         })
 
         bag += chatButtonView.delayedTouchCancel().animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            chatIcon.tintColor = .brand(.primaryText())
+            chatButtonView.backgroundColor = .brand(.primaryBackground())
         }
 
         chatButtonView.addSubview(chatIcon)
 
         chatIcon.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.5)
-            make.height.equalToSuperview().multipliedBy(0.5)
+            make.width.equalToSuperview().multipliedBy(0.45)
+            make.height.equalToSuperview().multipliedBy(0.45)
             make.center.equalToSuperview()
         }
 
