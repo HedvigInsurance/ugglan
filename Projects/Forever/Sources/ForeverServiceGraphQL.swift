@@ -26,11 +26,11 @@ public class ForeverServiceGraphQL: ForeverService {
             } else if let maximumUpdates = updateReferralCampaignCode.asExceededMaximumUpdates {
                 return .right(ForeverChangeCodeError.exceededMaximumUpdates(amount: maximumUpdates.maximumNumberOfUpdates))
             } else if updateReferralCampaignCode.asSuccessfullyUpdatedCode != nil {
-                self.store.withinReadWriteTransaction { transaction in
+                self.store.withinReadWriteTransaction({ transaction in
                     try transaction.update(query: GraphQL.ForeverQuery()) { (data: inout GraphQL.ForeverQuery.Data) in
                         data.referralInformation.campaign.code = value
                     }
-                }
+                }, completion: nil)
 
                 return .left(())
             }
