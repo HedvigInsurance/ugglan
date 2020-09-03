@@ -41,13 +41,8 @@ extension BankIDLoginQR: Presentable {
                 .init(
                     title: L10n.demoModeStart,
                     action: {
-                        viewController.present(
+                        UIApplication.shared.appDelegate.bag += UIApplication.shared.keyWindow?.present(
                             LoggedIn(),
-                            style: .modally(
-                                presentationStyle: .overFullScreen,
-                                transitionStyle: nil,
-                                capturesStatusBarAppearance: true
-                            ),
                             options: []
                         )
                     }
