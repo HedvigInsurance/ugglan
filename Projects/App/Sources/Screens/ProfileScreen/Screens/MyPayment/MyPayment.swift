@@ -33,11 +33,13 @@ extension MyPayment: Presentable {
         viewController.title = L10n.myPaymentTitle
 
         let form = FormView()
-        bag += viewController.install(form)
-
-        form.alpha = 0
-        form.transform = CGAffineTransform(translationX: 0, y: 100)
-
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.performEntryAnimation(
+                contentView: form,
+                onLoad: client.fetch(query: GraphQL.MyPaymentQuery()),
+                onError: { _ in }
+            )
+        }
         bag += dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
             form.alpha = 1
             form.transform = CGAffineTransform.identity

@@ -56,18 +56,10 @@ struct EmergencyAction: Reusable, SignalProvider {
         let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
         contentView.addArrangedSubview(titleLabel)
 
+        contentView.setCustomSpacing(8, after: titleLabel)
+
         return (view, { action in
             let bag = DisposeBag()
-
-            bag += cardContainer.applyShadow { _ in
-                UIView.ShadowProperties(
-                    opacity: 0.05,
-                    offset: CGSize(width: 0, height: 16),
-                    radius: 30,
-                    color: .brand(.primaryShadowColor),
-                    path: nil
-                )
-            }
 
             titleLabel.text = action.title
 
@@ -77,19 +69,16 @@ struct EmergencyAction: Reusable, SignalProvider {
             )
             bag += contentView.addArranged(descriptionLabel)
 
+            bag += contentView.addArranged(Spacing(height: 24))
+
             let button = Button(
                 title: action.buttonTitle,
                 type: .standard(
-                    backgroundColor: .brand(.primaryButtonBackgroundColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
                 )
             )
-            bag += contentView.addArranged(button.wrappedIn(UIStackView())) { stackView in
-                stackView.alignment = .center
-                stackView.axis = .vertical
-                stackView.edgeInsets = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
-                stackView.isLayoutMarginsRelativeArrangement = true
-            }
+            bag += contentView.addArranged(button)
 
             bag += button.onTapSignal.onValue { _ in action.onClickButtonCallbacker.callAll() }
 
@@ -130,16 +119,6 @@ extension EmergencyActions: Viewable {
             cell.layer.zPosition = CGFloat(indexPath.row)
         }
 
-        let callMeAction = EmergencyAction(
-            title: L10n.emergencyCallMeTitle,
-            description: L10n.emergencyCallMeDescription,
-            buttonTitle: L10n.emergencyCallMeButton
-        )
-
-        bag += callMeAction.onValue {
-            Home.openCallMeChatHandler(self.presentingViewController)
-        }
-
         let emergencyAbroadAction = EmergencyAction(
             title: L10n.emergencyAbroadTitle,
             description: L10n.emergencyAbroadDescription,
@@ -163,20 +142,8 @@ extension EmergencyActions: Viewable {
             }
         }
 
-        let unsureAction = EmergencyAction(
-            title: L10n.emergencyUnsureTitle,
-            description: L10n.emergencyUnsureDescription,
-            buttonTitle: L10n.emergencyUnsureButton
-        )
-
-        bag += unsureAction.onValue {
-            Home.openFreeTextChatHandler(self.presentingViewController)
-        }
-
         let rows = [
-            callMeAction,
             emergencyAbroadAction,
-            unsureAction,
         ]
 
         tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })

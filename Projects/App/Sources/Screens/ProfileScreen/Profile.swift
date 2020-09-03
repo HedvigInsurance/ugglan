@@ -63,7 +63,7 @@ extension Profile: Tabable {
         UITabBarItem(
             title: L10n.tabProfileTitle,
             image: Asset.profileTab.image,
-            selectedImage: nil
+            selectedImage: Asset.profileTabActive.image
         )
     }
 }

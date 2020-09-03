@@ -1,19 +1,18 @@
 //
-//  UIScrollView+EntryAnimation.swift
-//  Home
+//  UIScrollView+PerformEntryAnimation.swift
+//  hCoreUI
 //
-//  Created by sam on 27.8.20.
+//  Created by sam on 3.9.20.
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
 import Flow
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
 extension UIScrollView {
-    func performEntryAnimation<Value>(
+    public func performEntryAnimation<Value>(
         contentView: UIView,
         onLoad: Future<Value>,
         onError: @escaping (_ error: Error) -> Void

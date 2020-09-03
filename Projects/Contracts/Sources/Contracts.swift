@@ -35,7 +35,7 @@ extension Contracts: Tabable {
         UITabBarItem(
             title: L10n.InsurancesTab.title,
             image: Asset.tab.image,
-            selectedImage: nil
+            selectedImage: Asset.tabActive.image
         )
     }
 }
