@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -29,7 +30,7 @@ struct EmbarkTextAction {
 }
 
 extension EmbarkTextAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 10

@@ -8,6 +8,7 @@
 
 @testable import Embark
 import Foundation
+import hGraphQL
 import SnapshotTesting
 import Testing
 import XCTest
@@ -20,10 +21,10 @@ final class SelectActionOptionTests: XCTestCase {
 
     func testSelectActionOption() {
         let selectActionOption = EmbarkSelectActionOption(
-            data: EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option(
+            data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option(
                 keys: ["test"],
                 values: ["test"],
-                link: EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option.Link(
+                link: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option.Link(
                     name: "somewhere",
                     label: "This is a label"
                 )

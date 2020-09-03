@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import SnapKit
 import UIKit
@@ -142,7 +143,7 @@ extension Embark: Presentable {
             make.center.equalToSuperview()
         }
 
-        bag += client.fetch(query: EmbarkStoryQuery(name: name)).valueSignal.compactMap { $0.data?.embarkStory }.onValue { embarkStory in
+        bag += client.fetch(query: GraphQL.EmbarkStoryQuery(name: name)).valueSignal.compactMap { $0.embarkStory }.onValue { embarkStory in
             activityIndicator.removeFromSuperview()
 
             self.state.storySignal.value = embarkStory

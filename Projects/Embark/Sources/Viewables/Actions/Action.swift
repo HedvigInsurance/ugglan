@@ -9,6 +9,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct Action {
@@ -16,7 +17,7 @@ struct Action {
 }
 
 struct ActionResponse {
-    let link: EmbarkLinkFragment
+    let link: GraphQL.EmbarkLinkFragment
     let data: ActionResponseData
 }
 
@@ -27,7 +28,7 @@ struct ActionResponseData {
 }
 
 extension Action: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
 

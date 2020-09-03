@@ -8,10 +8,11 @@
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
-typealias EmbarkSelectActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
+typealias EmbarkSelectActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
 
 struct EmbarkSelectAction {
     let state: EmbarkState
@@ -19,7 +20,7 @@ struct EmbarkSelectAction {
 }
 
 extension EmbarkSelectAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 10

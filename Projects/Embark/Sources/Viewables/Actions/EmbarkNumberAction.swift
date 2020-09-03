@@ -10,10 +10,11 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
-typealias EmbarkNumberActionData = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
+typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
 
 struct EmbarkNumberAction {
     let state: EmbarkState
@@ -21,7 +22,7 @@ struct EmbarkNumberAction {
 }
 
 extension EmbarkNumberAction: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
 
         let view = UIStackView()

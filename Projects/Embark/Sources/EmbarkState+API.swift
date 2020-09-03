@@ -9,6 +9,7 @@
 import Apollo
 import Flow
 import Foundation
+import hGraphQL
 
 extension ResultMap {
     func deepFind(_ path: String) -> String? {
@@ -27,7 +28,7 @@ extension ResultMap {
     }
 }
 
-extension ApiSingleVariableFragment {
+extension GraphQL.ApiSingleVariableFragment {
     func graphQLMap(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -46,7 +47,7 @@ extension ApiSingleVariableFragment {
     }
 }
 
-extension ApiGeneratedVariableFragment {
+extension GraphQL.ApiGeneratedVariableFragment {
     func graphQLMap(store _: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -61,7 +62,7 @@ extension ApiGeneratedVariableFragment {
     }
 }
 
-extension ApiMultiActionVariableFragment {
+extension GraphQL.ApiMultiActionVariableFragment {
     func graphQLMap(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -96,7 +97,7 @@ extension ApiMultiActionVariableFragment {
     }
 }
 
-extension ApiVariablesFragment {
+extension GraphQL.ApiVariablesFragment {
     func graphQLMap(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -121,7 +122,7 @@ extension ApiVariablesFragment {
     }
 }
 
-extension ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
+extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -136,7 +137,7 @@ extension ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
     }
 }
 
-extension ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
+extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -152,14 +153,14 @@ extension ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
 }
 
 extension ResultMap {
-    func insertInto(store: EmbarkStore, basedOn query: ApiFragment.AsEmbarkApiGraphQlQuery) {
+    func insertInto(store: EmbarkStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
         query.data.queryResults.forEach { queryResult in
             let value = deepFind(queryResult.key)
             store.setValue(key: queryResult.as, value: value)
         }
     }
 
-    func insertInto(store: EmbarkStore, basedOn mutation: ApiFragment.AsEmbarkApiGraphQlMutation) {
+    func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
         mutation.data.mutationResults.compactMap { $0 }.forEach { mutationResult in
             let value = deepFind(mutationResult.key)
             store.setValue(key: mutationResult.as, value: value)
@@ -168,7 +169,7 @@ extension ResultMap {
 }
 
 extension EmbarkState {
-    func handleApi(apiFragment: ApiFragment) -> Future<EmbarkLinkFragment?> {
+    func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<GraphQL.EmbarkLinkFragment?> {
         handleApiRequest(apiFragment: apiFragment).mapResult { result in
             switch result {
             case .success:
@@ -199,7 +200,7 @@ extension EmbarkState {
         }
     }
 
-    private func handleApiRequest(apiFragment: ApiFragment) -> Future<ResultMap?> {
+    private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
             var urlRequest = URLRequest(url: apolloEnvironment.endpointURL)
             urlRequest.httpMethod = "POST"
@@ -279,8 +280,8 @@ extension EmbarkState {
         }
     }
 
-    var apiResponseSignal: ReadSignal<EmbarkLinkFragment?> {
-        currentPassageSignal.compactMap { $0 }.mapLatestToFuture { passage -> Future<EmbarkLinkFragment?> in
+    var apiResponseSignal: ReadSignal<GraphQL.EmbarkLinkFragment?> {
+        currentPassageSignal.compactMap { $0 }.mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
             guard let apiFragment = passage.api?.fragments.apiFragment else {
                 return Future(error: ApiError.noApi)
             }

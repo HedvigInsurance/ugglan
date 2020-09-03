@@ -12,10 +12,11 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 
 struct InsuranceProviderCollectionAgreement {
-    let provider: InsuranceProviderFragment
+    let provider: GraphQL.InsuranceProviderFragment
 }
 
 extension InsuranceProviderCollectionAgreement: Presentable {

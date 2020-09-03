@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct EmbarkMessages {
@@ -15,7 +16,7 @@ struct EmbarkMessages {
 }
 
 extension EmbarkMessages: Viewable {
-    func parseMessage(message: MessageFragment) -> String? {
+    func parseMessage(message: GraphQL.MessageFragment) -> String? {
         if message.expressions.count == 0 {
             return message.text
         }
@@ -86,7 +87,7 @@ extension EmbarkMessages: Viewable {
         let bag = DisposeBag()
 
         let previousResponseSignal: ReadWriteSignal<(
-            response: ResponseFragment?,
+            response: GraphQL.ResponseFragment?,
             passageName: String?
         )?> = ReadWriteSignal(nil)
 

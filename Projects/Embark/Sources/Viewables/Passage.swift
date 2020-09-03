@@ -10,13 +10,14 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct Passage {
     let state: EmbarkState
 }
 
-typealias EmbarkPassage = EmbarkStoryQuery.Data.EmbarkStory.Passage
+typealias EmbarkPassage = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
 
 extension Passage: Viewable {
     func goBackPanGesture(_ view: UIView, actionView: UIView) -> Disposable {
@@ -35,7 +36,7 @@ extension Passage: Viewable {
             }
 
             func gestureRecognizer(_: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-                return scrollView.panGestureRecognizer == otherGestureRecognizer
+                scrollView.panGestureRecognizer == otherGestureRecognizer
             }
         }
 
@@ -120,7 +121,7 @@ extension Passage: Viewable {
         return bag
     }
 
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.distribution = .equalSpacing

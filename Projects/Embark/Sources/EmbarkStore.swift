@@ -7,6 +7,7 @@
 
 import Flow
 import Foundation
+import hGraphQL
 
 class EmbarkStore {
     var revisions: [[String: String]] = [[:]]
@@ -74,7 +75,7 @@ class EmbarkStore {
         }
     }
 
-    func passes(expression: BasicExpressionFragment) -> Bool {
+    func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
         guard let store = revisions.last else {
             return false
         }
@@ -136,7 +137,7 @@ class EmbarkStore {
         return false
     }
 
-    func passes(expression: ExpressionFragment) -> Bool {
+    func passes(expression: GraphQL.ExpressionFragment) -> Bool {
         if let multiple = expression.asEmbarkExpressionMultiple {
             switch multiple.expressionMultipleType {
             case .and:
@@ -155,11 +156,11 @@ class EmbarkStore {
         return passes(expression: expression.fragments.basicExpressionFragment)
     }
 
-    func passes(expression: MessageFragment.Expression) -> Bool {
+    func passes(expression: GraphQL.MessageFragment.Expression) -> Bool {
         passes(expression: expression.fragments.expressionFragment)
     }
 
-    func shouldRedirectTo(redirect: EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
+    func shouldRedirectTo(redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
         guard let store = revisions.last else {
             return nil
         }

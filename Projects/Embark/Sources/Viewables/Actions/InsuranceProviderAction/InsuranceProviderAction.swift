@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -20,7 +21,7 @@ struct InsuranceProviderAction {
 }
 
 extension InsuranceProviderAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
         let view = UIView()
         bag += view.applyShadow { _ -> UIView.ShadowProperties in
