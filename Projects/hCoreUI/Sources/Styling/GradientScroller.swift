@@ -31,7 +31,7 @@ extension GradientScroller {
             traitCollectionSignal.atOnce().plain(),
             ContextGradient.$currentOption.atOnce().latestTwo()
         ).onValue { traitCollection, option in
-            if #available(iOS 13.0, *) {
+            if #available(iOS 13.0, *), ContextGradient.rules.contains(.disallowOnElevatedTraits) {
                 if traitCollection.userInterfaceLevel == .elevated {
                     gradientLayer.isHidden = true
                     return
@@ -105,12 +105,18 @@ extension GradientScroller {
         let tabBarColorView = ContextGradient.makeColorView(into: bag, for: .tabBar)
 
         bag += didMoveToWindowSignal
-            .filter(predicate: { self.layer.sublayers?.first { $0.name == "gradientLayer" } == nil })
-            .filter(predicate: { self.viewController?.presentingViewController == nil })
+            .filter(predicate: { !(self.layer.sublayers?.contains(where: { $0.name == "gradientLayer" }) ?? false) })
+            .filter(predicate: {
+                if ContextGradient.rules.contains(.disallowOnFirstLevelModals) {
+                    return self.viewController?.presentingViewController == nil
+                }
+
+                return self.viewController?.presentingViewController?.presentingViewController == nil
+            })
             .take(first: 1)
             .onValue { _ in
                 if let navigationController = self.viewController?.navigationController {
-                    if navigationController.viewControllers.count != 1 {
+                    if navigationController.viewControllers.count != 1, ContextGradient.rules.contains(.disallowOnNestedViewControllersInNavigationControllers) {
                         return
                     }
 

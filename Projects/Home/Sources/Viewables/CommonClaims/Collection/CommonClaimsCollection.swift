@@ -52,9 +52,8 @@ extension CommonClaimsCollection: Viewable {
                 )
             )
             .valueSignal
-            .compactMap { $0.data?.commonClaims }
-            .onValue { commonClaims in
-                let rows = commonClaims.enumerated().map {
+            .onValue { data in
+                let rows = data.commonClaims.enumerated().map {
                     CommonClaimCard(
                         data: $0.element,
                         index: TableIndex(section: 0, row: $0.offset)

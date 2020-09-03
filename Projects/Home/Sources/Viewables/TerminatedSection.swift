@@ -1,8 +1,8 @@
 //
-//  ActiveSection.swift
+//  TerminatedSection.swift
 //  Home
 //
-//  Created by Sam Pettersson on 2020-08-17.
+//  Created by sam on 1.9.20.
 //  Copyright © 2020 Hedvig AB. All rights reserved.
 //
 
@@ -16,42 +16,46 @@ import hGraphQL
 import Presentation
 import UIKit
 
-struct ActiveSection {
+struct TerminatedSection {
     @Inject var client: ApolloClient
 }
 
-extension ActiveSection: Viewable {
+extension TerminatedSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-        let label = MultilineLabel(
+        let titleLabel = MultilineLabel(
             value: "",
             style: .brand(.largeTitle(color: .primary))
         )
-        bag += section.append(label)
+        bag += section.append(titleLabel)
+
+        section.appendSpacing(.inbetween)
 
         client.fetch(query: GraphQL.HomeQuery()).onValue { data in
-            label.valueSignal.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "")
+            titleLabel.valueSignal.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
         }
+
+        let subtitleLabel = MultilineLabel(
+            value: L10n.HomeTab.terminatedBody,
+            style: .brand(.body(color: .secondary))
+        )
+        bag += section.append(subtitleLabel)
 
         section.appendSpacing(.top)
 
         let button = Button(
             title: L10n.HomeTab.claimButtonText,
-            type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
+            type: .standardOutline(
+                borderColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonBackgroundColor)
             )
         )
         bag += section.append(button)
 
         bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
-
-        section.appendSpacing(.custom(80))
-
-        bag += section.append(CommonClaimsCollection())
 
         return (section, bag)
     }

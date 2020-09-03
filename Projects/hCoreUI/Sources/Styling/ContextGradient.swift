@@ -162,6 +162,17 @@ public struct ContextGradient {
         }
     }
 
+    public enum Rule {
+        case disallowOnElevatedTraits
+        case disallowOnNestedViewControllersInNavigationControllers
+        case disallowOnFirstLevelModals
+    }
+
+    @ReadWriteState public static var rules: Set<Rule> = [
+        .disallowOnElevatedTraits,
+        .disallowOnNestedViewControllersInNavigationControllers,
+        .disallowOnFirstLevelModals,
+    ]
     @ReadWriteState public static var currentOption: Option = .none
 
     public static func animateTabBarColor(_ view: UIView) -> Disposable {

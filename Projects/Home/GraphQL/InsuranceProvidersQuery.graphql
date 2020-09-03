@@ -1,0 +1,6 @@
+query HomeInsuranceProviders($locale: Locale!) {
+    insuranceProviders(locale: $locale) {
+        name
+        switchable
+    }
+}

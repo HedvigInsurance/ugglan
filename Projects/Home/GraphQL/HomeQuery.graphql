@@ -3,6 +3,7 @@ query Home {
         firstName
     }
     contracts {
+        switchedFromInsuranceProvider
         status {
             ...ContractStatusFragment
         }
