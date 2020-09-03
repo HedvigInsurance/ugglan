@@ -97,8 +97,8 @@ class ChatState {
             queue: DispatchQueue.global(qos: .background)
         )
         .valueSignal
-        .compactMap(on: .concurrentBackground) { messages -> [GraphQL.MessageData]? in
-            messages.data?.messages.compactMap { message in message?.fragments.messageData }
+        .compactMap(on: .concurrentBackground) { data -> [GraphQL.MessageData]? in
+            data.messages.compactMap { message in message?.fragments.messageData }
         }
         .map { messages in
             messages.filter { message -> Bool in
@@ -137,7 +137,7 @@ class ChatState {
             subscription: GraphQL.ChatMessagesSubscriptionSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
-        .compactMap(on: .concurrentBackground) { $0.data?.message.fragments.messageData }
+        .compactMap(on: .concurrentBackground) { $0.message.fragments.messageData }
         .filter(predicate: { message -> Bool in
             if self.handledGlobalIds.contains(message.globalId) {
                 return false

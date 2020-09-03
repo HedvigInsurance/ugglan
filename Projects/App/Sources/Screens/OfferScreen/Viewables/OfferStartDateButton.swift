@@ -87,8 +87,8 @@ extension OfferStartDateButton: Viewable {
                                       })])
 
         bag += touchUpInside.onValue { _ in
-            bag += self.client.fetch(query: GraphQL.OfferQuery()).map { $0.data }.onValue { result in
-                if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+            bag += self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in
+                if data.insurance.previousInsurer != nil, data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                     self.presentingViewController.present(alert)
                 } else {
                     self.presentingViewController.present(
@@ -104,17 +104,17 @@ extension OfferStartDateButton: Viewable {
             }
         }
 
-        bag += client.watch(query: GraphQL.OfferQuery()).map { $0.data }.onValue { result in
-            if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+        bag += client.watch(query: GraphQL.OfferQuery()).onValue { data in
+            if data.insurance.previousInsurer != nil, data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                 valueLabel.value = L10n.startDateExpires
-            } else if result?.insurance.previousInsurer == nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+            } else if data.insurance.previousInsurer == nil, data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                 valueLabel.value = L10n.chooseDateBtn
             } else {
-                valueLabel.value = result?.lastQuoteOfMember.asCompleteQuote?.startDate ?? ""
+                valueLabel.value = data.lastQuoteOfMember.asCompleteQuote?.startDate ?? ""
             }
         }
 
-        bag += dataSignal.map { $0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }.onValue { startDay in
+        bag += dataSignal.map { $0.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }.onValue { startDay in
             if let startDate = startDay {
                 if Calendar.current.isDateInToday(startDate) {
                     valueLabel.value = L10n.startDateToday

@@ -32,8 +32,7 @@ extension CardDetailsSection: Viewable {
 
         bag += section.append(row)
 
-        let dataValueSignal = client.watch(query: GraphQL.ActivePaymentMethodsQuery())
-        let dataSignal = dataValueSignal.compactMap { $0.data }
+        let dataSignal = client.watch(query: GraphQL.ActivePaymentMethodsQuery())
 
         bag += dataSignal.map { $0.activePaymentMethods == nil }.bindTo(
             animate: SpringAnimationStyle.lightBounce(),

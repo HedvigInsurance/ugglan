@@ -66,7 +66,7 @@ extension KeyGearAddReceiptRow: Viewable {
         }
 
         let keyGearItemQuery = GraphQL.KeyGearItemQuery(id: itemId, languageCode: Localization.Locale.currentLocale.code)
-        let receiptsSignal = client.watch(query: keyGearItemQuery).compactMap { $0.data?.keyGearItem?.receipts }.readable(initial: [])
+        let receiptsSignal = client.watch(query: keyGearItemQuery).compactMap { $0.keyGearItem?.receipts }.readable(initial: [])
 
         bag += receiptsSignal.map { receipts in
             !receipts.isEmpty
@@ -90,12 +90,13 @@ extension KeyGearAddReceiptRow: Viewable {
                     return
                 }
 
-                self.client.upload(operation: GraphQL.UploadFileMutation(file: "file"), files: [file]).onValue { value in
-                    if let key = value.data?.uploadFile.key, let bucket = value.data?.uploadFile.bucket {
-                        self.client.perform(mutation: GraphQL.AddReceiptMutation(id: self.itemId, file: GraphQL.S3FileInput(bucket: bucket, key: key))).onValue { _ in
-                            self.client.fetch(query: keyGearItemQuery, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
-                                button.isLoadingSignal.value = false
-                            }
+                self.client.upload(operation: GraphQL.UploadFileMutation(file: "file"), files: [file]).onValue { data in
+                    let key = data.uploadFile.key
+                    let bucket = data.uploadFile.bucket
+
+                    self.client.perform(mutation: GraphQL.AddReceiptMutation(id: self.itemId, file: GraphQL.S3FileInput(bucket: bucket, key: key))).onValue { _ in
+                        self.client.fetch(query: keyGearItemQuery, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                            button.isLoadingSignal.value = false
                         }
                     }
                 }
@@ -116,12 +117,13 @@ extension KeyGearAddReceiptRow: Viewable {
                 getFileUpload().onValue { fileUpload in
                     let file = GraphQLFile(fieldName: "file", originalName: fileUpload.fileName, data: fileUpload.data)
 
-                    self.client.upload(operation: GraphQL.UploadFileMutation(file: "file"), files: [file]).onValue { value in
-                        if let key = value.data?.uploadFile.key, let bucket = value.data?.uploadFile.bucket {
-                            self.client.perform(mutation: GraphQL.AddReceiptMutation(id: self.itemId, file: GraphQL.S3FileInput(bucket: bucket, key: key))).onValue { _ in
-                                self.client.fetch(query: keyGearItemQuery, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
-                                    button.isLoadingSignal.value = false
-                                }
+                    self.client.upload(operation: GraphQL.UploadFileMutation(file: "file"), files: [file]).onValue { data in
+                        let key = data.uploadFile.key
+                        let bucket = data.uploadFile.bucket
+
+                        self.client.perform(mutation: GraphQL.AddReceiptMutation(id: self.itemId, file: GraphQL.S3FileInput(bucket: bucket, key: key))).onValue { _ in
+                            self.client.fetch(query: keyGearItemQuery, cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                                button.isLoadingSignal.value = false
                             }
                         }
                     }

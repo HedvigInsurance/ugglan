@@ -87,22 +87,19 @@ extension ApplyDiscount: Presentable {
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
-                .onValue { result in
-                    if result.errors != nil {
-                        let alert = Alert(
-                            title: L10n.referralErrorMissingcodeHeadline,
-                            message: L10n.referralErrorMissingcodeBody,
-                            actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
-                        )
+                .atError { _ in
+                    let alert = Alert(
+                        title: L10n.referralErrorMissingcodeHeadline,
+                        message: L10n.referralErrorMissingcodeBody,
+                        actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
+                    )
 
-                        viewController.present(alert)
-                        return
-                    }
-
-                    if let redeemCode = result.data?.redeemCode {
-                        self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
-                        completion(.success)
-                    }
+                    viewController.present(alert)
+                }
+                .map { $0.redeemCode }
+                .onValue { redeemCode in
+                    self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                    completion(.success)
                 }
 
             return bag

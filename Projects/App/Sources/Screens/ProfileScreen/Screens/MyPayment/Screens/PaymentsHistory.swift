@@ -33,10 +33,7 @@ extension PaymentsHistory: Presentable {
             footer: nil
         )
 
-        let dataValueSignal = client.watch(query: GraphQL.MyPaymentQuery())
-        let dataSignal = dataValueSignal.compactMap { $0.data }
-
-        bag += dataSignal.onValueDisposePrevious { data -> Disposable? in
+        bag += client.watch(query: GraphQL.MyPaymentQuery()).onValueDisposePrevious { data -> Disposable? in
             let innerBag = DisposeBag()
 
             innerBag += data.chargeHistory.map { chargeHistory -> Disposable in

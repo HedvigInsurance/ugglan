@@ -82,7 +82,7 @@ extension ChooseStartDate: Presentable {
         pickerStackView.addArrangedSubview(picker)
 
         bag += client.watch(query: GraphQL.OfferQuery())
-            .map { ($0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate) }
+            .map { $0.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }
             .onValue { date in
                 if let date = date {
                     picker.date = date
@@ -120,40 +120,39 @@ extension ChooseStartDate: Presentable {
                 loadableChooseDateButton.isLoadingSignal.value = true
 
                 bag += self.client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap {
-                    $0.data?.lastQuoteOfMember.asCompleteQuote?.id
+                    $0.lastQuoteOfMember.asCompleteQuote?.id
                 }
                 .plain()
                 .withLatestFrom(picker.atOnce().plain())
                 .mapLatestToFuture { id, pickedStartDate in
                     self.client.perform(mutation: GraphQL.ChangeStartDateMutationMutation(id: id, startDate: pickedStartDate.localDateString ?? ""))
-                }.onValue { result in
-
+                }.onValue { data in
                     bag += Signal(after: 0.5).onValue { _ in
                         loadableChooseDateButton.isLoadingSignal.value = false
                         completion(.success)
                     }
 
-                    updateStartDateCache(startDate: result.data?.editQuote.asCompleteQuote?.startDate)
+                    updateStartDateCache(startDate: data.editQuote.asCompleteQuote?.startDate)
                 }
             }
 
-            bag += self.client.fetch(query: GraphQL.OfferQuery()).map { $0.data?.insurance.previousInsurer }.onValue { previousInsurer in
+            bag += self.client.fetch(query: GraphQL.OfferQuery()).map { $0.insurance.previousInsurer }.onValue { previousInsurer in
                 if previousInsurer == nil {
                     activateNowButton.title.value = L10n.activateTodayBtn
 
                     bag += loadableActivateButton.onTapSignal.onValue { _ in
                         loadableActivateButton.isLoadingSignal.value = true
 
-                        self.client.fetch(query: GraphQL.OfferQuery()).onValue { result in
-                            guard let id = result.data?.lastQuoteOfMember.asCompleteQuote?.id else { return }
+                        self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in
+                            guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else { return }
 
-                            self.client.perform(mutation: GraphQL.ChangeStartDateMutationMutation(id: id, startDate: Date().localDateString ?? "")).onValue { result in
+                            self.client.perform(mutation: GraphQL.ChangeStartDateMutationMutation(id: id, startDate: Date().localDateString ?? "")).onValue { data in
                                 bag += Signal(after: 0.5).onValue { _ in
                                     loadableActivateButton.isLoadingSignal.value = false
                                     completion(.success)
                                 }
 
-                                updateStartDateCache(startDate: result.data?.editQuote.asCompleteQuote?.startDate)
+                                updateStartDateCache(startDate: data.editQuote.asCompleteQuote?.startDate)
                             }
                         }
                     }
@@ -163,8 +162,8 @@ extension ChooseStartDate: Presentable {
                     bag += loadableActivateButton.onTapSignal.onValue { _ in
                         loadableActivateButton.isLoadingSignal.value = true
 
-                        self.client.fetch(query: GraphQL.OfferQuery()).onValue { result in
-                            guard let quoteId = result.data?.lastQuoteOfMember.asCompleteQuote?.id else { return }
+                        self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in
+                            guard let quoteId = data.lastQuoteOfMember.asCompleteQuote?.id else { return }
 
                             self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId)).onValue { _ in
                                 updateStartDateCache(startDate: nil)

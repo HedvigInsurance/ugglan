@@ -90,7 +90,7 @@ extension LoggedIn: Presentable {
         bag += client.fetch(
             query: GraphQL.FeaturesQuery(),
             cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
+        ).valueSignal.compactMap { $0.member.features }.onValue { features in
             if features.contains(.keyGear) {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(
@@ -134,7 +134,6 @@ extension LoggedIn: Presentable {
 
             bag += client
                 .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                .compactMap { $0.data }
                 .filter { $0.welcome.count > 0 }
                 .onValue { data in
                     let welcome = Welcome(data: data, endWithReview: true)
@@ -143,7 +142,6 @@ extension LoggedIn: Presentable {
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
                 .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-                .compactMap { $0.data }
                 .filter { $0.news.count > 0 }
                 .onValue { data in
                     let whatsNew = WhatsNew(data: data)

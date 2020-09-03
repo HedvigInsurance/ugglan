@@ -28,7 +28,7 @@ extension AddKeyGearItem {
     }
 
     func classifyImage(_ image: UIImage) -> Future<GraphQL.KeyGearItemCategory?> {
-        return Future { completion in
+        Future { completion in
             let bag = DisposeBag()
 
             bag += VNCoreMLModel.keyGearClassifier.onValue { model in
@@ -153,7 +153,7 @@ extension VNCoreMLModel {
                 return bag
             }
 
-            bag += client.fetch(query: GraphQL.KeyGearClassifierQuery()).map { result in result.data?.coreMlModels.first??.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in
+            bag += client.fetch(query: GraphQL.KeyGearClassifierQuery()).map { data in data.coreMlModels.first??.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in
                 downloadModel(url)
             }
 

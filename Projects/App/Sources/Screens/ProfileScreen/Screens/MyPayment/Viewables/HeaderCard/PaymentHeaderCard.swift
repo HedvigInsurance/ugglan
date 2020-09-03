@@ -46,19 +46,19 @@ extension PaymentHeaderCard: Viewable {
         let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
 
         let grossPriceSignal = dataSignal
-            .map { $0.data?.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }
+            .map { $0.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }
             .toInt()
             .plain()
             .compactMap { $0 }
             .readable(initial: 0)
-        let discountSignal = dataSignal.map { $0.data?.chargeEstimation.discount.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
-        let netSignal = dataSignal.map { $0.data?.chargeEstimation.charge.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
+        let discountSignal = dataSignal.map { $0.chargeEstimation.discount.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
+        let netSignal = dataSignal.map { $0.chargeEstimation.charge.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
 
         bag += leftTopViewStack.addArranged(PaymentHeaderPrice(grossPriceSignal: grossPriceSignal, discountSignal: discountSignal, monthlyNetPriceSignal: netSignal))
 
         topViewStack.addArrangedSubview(leftTopViewStack)
 
-        let campaignTypeSignal = dataSignal.map { $0.data?.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
+        let campaignTypeSignal = dataSignal.map { $0.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
             guard let campaign = campaign else {
                 return nil
             }

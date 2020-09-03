@@ -155,7 +155,7 @@ public extension ApolloClient {
     func subscribe<Subscription>(
         subscription: Subscription,
         queue: DispatchQueue = DispatchQueue.main,
-        onError: @escaping (_ error: Error) -> Void
+        onError: @escaping (_ error: Error) -> Void = { _ in }
     ) -> Signal<Subscription.Data> where Subscription: GraphQLSubscription {
         return Signal { callbacker in
             let bag = DisposeBag()

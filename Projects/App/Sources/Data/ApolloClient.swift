@@ -12,8 +12,8 @@ import Disk
 import Flow
 import Foundation
 import hCore
-import UIKit
 import hGraphQL
+import UIKit
 
 extension ApolloClient {
     static var environment: ApolloEnvironmentConfig {
@@ -21,7 +21,7 @@ extension ApolloClient {
     }
 
     static var userAgent: String {
-        return "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
+        "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
 
     static var cache = InMemoryNormalizedCache()
@@ -80,7 +80,7 @@ extension ApolloClient {
     }
 
     static func retreiveToken() -> AuthorizationToken? {
-        return try? Disk.retrieve(
+        try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
             as: AuthorizationToken.self
@@ -111,13 +111,11 @@ extension ApolloClient {
         return Future { completion in
             let (_, client) = self.createClient(token: nil)
 
-            client.perform(mutation: mutation).onValue { result in
-                if let token = result.data?.createSession {
-                    self.saveToken(token: token)
-                }
+            client.perform(mutation: mutation).onValue { data in
+                self.saveToken(token: data.createSession)
 
                 _ = self.createClient(
-                    token: result.data?.createSession
+                    token: data.createSession
                 )
 
                 completion(.success)
@@ -128,7 +126,7 @@ extension ApolloClient {
     }
 
     static func initClient() -> Future<Void> {
-        return Future { completion in
+        Future { completion in
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {

@@ -97,7 +97,7 @@ extension CharityPicker: Viewable {
         bag += client.watch(
             query: GraphQL.CharityOptionsQuery()
         ).compactMap {
-            $0.data?.cashbackOptions.compactMap { $0 }
+            $0.cashbackOptions.compactMap { $0 }
         }.onValue { cashbackOptions in
             let charityOptions = cashbackOptions.map { cashbackOption in
                 CharityOption(

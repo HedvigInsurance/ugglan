@@ -25,9 +25,9 @@ extension MyPayment: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery()).map { $0.data }
-        let failedChargesSignalData = dataSignal.map { $0?.balance.failedCharges }
-        let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
+        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())
+        let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
+        let nextPaymentSignalData = dataSignal.map { $0.nextChargeDate }
 
         let viewController = UIViewController()
         viewController.title = L10n.myPaymentTitle
@@ -106,10 +106,10 @@ extension MyPayment: Presentable {
 
         let myPaymentQuerySignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
-        bag += myPaymentQuerySignal.onValueDisposePrevious { result in
+        bag += myPaymentQuerySignal.onValueDisposePrevious { data in
             let innerBag = bag.innerBag()
 
-            let hasAlreadyConnected = result.data?.payinMethodStatus != .needsSetup
+            let hasAlreadyConnected = data.payinMethodStatus != .needsSetup
             buttonSection.text.value = hasAlreadyConnected ? L10n.myPaymentDirectDebitReplaceButton : L10n.myPaymentDirectDebitButton
 
             innerBag += buttonSection.onSelect.onValue {
@@ -119,7 +119,7 @@ extension MyPayment: Presentable {
                 viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
             }
 
-            if result.data?.payinMethodStatus == .pending {
+            if data.payinMethodStatus == .pending {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true

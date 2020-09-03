@@ -29,7 +29,7 @@ extension Charity: Presentable {
         containerView.backgroundColor = .primaryBackground
 
         bag += client.watch(query: GraphQL.SelectedCharityQuery())
-            .map { $0.data?.cashback }
+            .map { $0.cashback }
             .buffer()
             .onValue { cashbacks in
                 guard let cashback = cashbacks.last else { return }

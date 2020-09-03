@@ -87,7 +87,7 @@ extension BankIdSign: Presentable {
 
         let statusSignal = client.subscribe(
             subscription: GraphQL.SignStatusSubscription()
-        ).compactMap { $0.data?.signStatus?.status }
+        ).compactMap { $0.signStatus?.status }
 
         bag += statusSignal.compactMap { $0.collectStatus }.skip(first: 1).onValue { collectStatus in
             let statusText: String
@@ -106,7 +106,7 @@ extension BankIdSign: Presentable {
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
         }
 
-        bag += client.perform(mutation: GraphQL.SignOfferMutation()).valueSignal.compactMap { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
+        bag += client.perform(mutation: GraphQL.SignOfferMutation()).valueSignal.compactMap { $0.signOfferV2.autoStartToken }.onValue { autoStartToken in
             let urlScheme = Bundle.main.urlScheme ?? ""
             guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
 

@@ -6,10 +6,10 @@
 //
 
 import Apollo
+import Contracts
 import Flow
 import Foundation
 import hCore
-import Contracts
 import hGraphQL
 
 extension ApolloClient {
@@ -17,9 +17,8 @@ extension ApolloClient {
         fetch(
             query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
             cachePolicy: .fetchIgnoringCacheData
-        ).map { result -> Bool in
-            guard let data = result.data else { return false }
-            return data.contracts.contains { contract -> Bool in
+        ).map { data -> Bool in
+            data.contracts.contains { contract -> Bool in
                 contract.switchedFromInsuranceProvider != nil
             }
         }

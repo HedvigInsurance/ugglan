@@ -22,11 +22,7 @@ public struct AnalyticsCoordinator {
         client.fetch(
             query: GraphQL.MemberIdQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
-        ).map { $0.data?.member.id }.onValue { id in
-            guard let id = id else {
-                return
-            }
-
+        ).compactMap { $0.member.id }.onValue { id in
             Mixpanel.mainInstance().identify(distinctId: id)
         }
     }

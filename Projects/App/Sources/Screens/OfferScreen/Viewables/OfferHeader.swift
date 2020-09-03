@@ -91,12 +91,10 @@ extension OfferHeader: Viewable {
 
         let offerSignal = client.watch(query: GraphQL.OfferQuery())
 
-        bag += offerSignal
-            .compactMap { $0.data }
-            .bindTo(priceBubble.dataSignal)
+        bag += offerSignal.bindTo(priceBubble.dataSignal)
 
         let offerDiscount = OfferDiscount(presentingViewController: presentingViewController)
-        bag += offerSignal.compactMap { $0.data?.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
+        bag += offerSignal.compactMap { $0.redeemedCampaigns }.bindTo(offerDiscount.redeemedCampaignsSignal)
 
         bag += stackView.addArranged(offerDiscount)
 

@@ -10,8 +10,8 @@ import Flow
 import Form
 import Foundation
 import hCore
-import UIKit
 import hGraphQL
+import UIKit
 
 struct KeyGearListCollection {
     @Inject var client: ApolloClient
@@ -55,8 +55,8 @@ extension KeyGearListCollection: Viewable {
             CGSize(width: collectionKit.view.frame.width / 2 - 20, height: 120)
         }
 
-        bag += client.watch(query: GraphQL.KeyGearItemsQuery()).map { $0.data?.keyGearItems }.onValue { items in
-            guard let items = items, !items.isEmpty else {
+        bag += client.watch(query: GraphQL.KeyGearItemsQuery()).map { $0.keyGearItems }.onValue { items in
+            guard !items.isEmpty else {
                 collectionKit.set(Table(rows: [.make(addButton)]))
                 return
             }

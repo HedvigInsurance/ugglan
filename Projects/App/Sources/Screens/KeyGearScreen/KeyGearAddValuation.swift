@@ -57,7 +57,7 @@ struct PurchasePrice: Viewable {
 
         let amountSignal = client
             .watch(query: GraphQL.KeyGearItemQuery(id: id))
-            .compactMap { $0.data?.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
+            .compactMap { $0.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
             .readable(initial: "0")
 
         bag += combineLatest(textField, amountSignal).animated(style: SpringAnimationStyle.lightBounce()) { value, amount in

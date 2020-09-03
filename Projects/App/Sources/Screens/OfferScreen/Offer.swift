@@ -81,7 +81,7 @@ extension Offer: Presentable {
         let offerSignal = client.watch(query: GraphQL.OfferQuery())
 
         let insuranceSignal = offerSignal
-            .compactMap { $0.data?.insurance }
+            .compactMap { $0.insurance }
 
         let offerHeader = OfferHeader(
             containerScrollView: scrollView,

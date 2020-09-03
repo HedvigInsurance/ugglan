@@ -122,8 +122,8 @@ extension AttachGIFPane: Viewable {
 
         bag += searchBarValue.mapLatestToFuture { value in
             self.client.fetch(query: GraphQL.GifQuery(query: value))
-        }.compactMap { result in
-            result.data?.gifs.compactMap { $0 }
+        }.compactMap { data in
+            data.gifs.compactMap { $0 }
         }.onValue { gifs in
             let attachGIFImages = gifs.compactMap { gif -> AttachGIFImage? in
                 guard let url = URL(string: gif.url) else {

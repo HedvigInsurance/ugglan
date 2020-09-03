@@ -125,7 +125,7 @@ extension KeyGearItem: Presentable {
         let dataSignal = client.watch(
             query: GraphQL.KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
             cachePolicy: .returnCacheDataAndFetch
-        ).compactMap { $0.data?.keyGearItem }
+        ).compactMap { $0.keyGearItem }
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)

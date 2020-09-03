@@ -51,7 +51,7 @@ extension AdyenSetup: Presentable {
         viewController.view = view
 
         return (viewController, Future { completion in
-            bag += self.client.fetch(query: GraphQL.AdyenAvailableMethodsQuery()).valueSignal.compactMap { $0.data }.onValue { data in
+            bag += self.client.fetch(query: GraphQL.AdyenAvailableMethodsQuery()).onValue { data in
                 let configuration = DropInComponent.PaymentMethodsConfiguration()
                 configuration.card.publicKey = data.adyenPublicKey
                 configuration.card.showsStorePaymentMethodField = false
@@ -128,11 +128,11 @@ extension AdyenSetup: Presentable {
                             mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
                                 request: GraphQL.TokenizationRequest(paymentMethodDetails: json.replacingOccurrences(of: "applepay.token", with: "applepayToken"), channel: .ios, returnUrl: "\(urlScheme)://adyen")
                             )
-                        ).onValue { result in
-                            if result.data?.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
+                        ).onValue { data in
+                            if data.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
-                            } else if let data = result.data?.tokenizePaymentDetails?.asTokenizationResponseAction {
+                            } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
                                 guard let jsonData = data.action.data(using: .utf8) else {
                                     return
                                 }
@@ -155,11 +155,11 @@ extension AdyenSetup: Presentable {
                             return
                         }
 
-                        self.client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { result in
-                            if result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
+                        self.client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { data in
+                            if data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
-                            } else if let data = result.data?.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseAction {
+                            } else if let data = data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseAction {
                                 guard let jsonData = data.action.data(using: .utf8) else {
                                     return
                                 }

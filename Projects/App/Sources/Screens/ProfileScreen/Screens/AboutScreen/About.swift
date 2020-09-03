@@ -130,7 +130,6 @@ extension About: Presentable {
             bag += showWelcome.onSelect.onValue { _ in
                 bag += self.client
                     .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                    .compactMap { $0.data }
                     .filter { $0.welcome.count > 0 }
                     .onValue { data in
                         let welcome = Welcome(data: data, endWithReview: false)

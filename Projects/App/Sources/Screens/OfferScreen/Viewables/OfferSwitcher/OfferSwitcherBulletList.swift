@@ -74,7 +74,7 @@ extension OfferSwitcherBulletList: Viewable {
 
         bag += client.fetch(query: GraphQL.OfferQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.previousInsurer }
+            .compactMap { $0.insurance.previousInsurer }
             .onValueDisposePrevious { previousInsurer -> Disposable? in
                 let innerBag = DisposeBag()
 

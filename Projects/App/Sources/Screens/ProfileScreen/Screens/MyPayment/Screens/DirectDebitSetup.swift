@@ -10,11 +10,11 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import SafariServices
 import UIKit
 import WebKit
-import hGraphQL
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
@@ -132,7 +132,7 @@ extension DirectDebitSetup: Presentable {
 
             bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation())
                 .valueSignal
-                .compactMap { $0.data?.startDirectDebitRegistration }
+                .compactMap { $0.startDirectDebitRegistration }
                 .onValue { startDirectDebitRegistration in
                     webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
                 }

@@ -32,7 +32,7 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataValueSignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         let section = SectionView(
             header: L10n.myPaymentPaymentRowLabel,
@@ -43,7 +43,7 @@ extension PaymentDetailsSection: Viewable {
         grossPriceRow.keySignal.value = L10n.profilePaymentPriceLabel
         grossPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-        bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyGross.amount }
+        bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyGross.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -60,7 +60,7 @@ extension PaymentDetailsSection: Viewable {
         discountRow.keySignal.value = L10n.profilePaymentDiscountLabel
         discountRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-        bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }
+        bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -77,7 +77,7 @@ extension PaymentDetailsSection: Viewable {
         netPriceRow.keySignal.value = L10n.profilePaymentFinalCostLabel
         netPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-        bag += dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
+        bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyNet.amount }
             .toInt()
             .map { amount in
                 if let amount = amount {
@@ -117,8 +117,8 @@ extension PaymentDetailsSection: Viewable {
 
         bag += section.append(applyDiscountButtonRow)
 
-        let hidePriceRowsSignal = dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map { $0 == 0 }
-        let hasFreeMonths = dataValueSignal.map { $0.data?.insuranceCost?.fragments.costFragment.freeUntil != nil }
+        let hidePriceRowsSignal = dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map { $0 == 0 }
+        let hasFreeMonths = dataSignal.map { $0.insuranceCost?.fragments.costFragment.freeUntil != nil }
         bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
         bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)

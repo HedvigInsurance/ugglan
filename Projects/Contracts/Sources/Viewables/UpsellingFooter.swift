@@ -93,7 +93,7 @@ extension UpsellingFooter: Viewable {
             query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
             cachePolicy: .fetchIgnoringCacheData
         )
-        .compactMap { $0.data?.contracts }
+        .compactMap { $0.contracts }
         .delay(by: 0.5)
         .onValueDisposePrevious { contracts in
             let innerBag = DisposeBag()

@@ -42,10 +42,10 @@ struct KeyGearOverview {
                     if session.isPaired {
                         let bag = DisposeBag()
 
-                        bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap { $0.data?.member.id }.onValue { memberId in
+                        bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap { $0.member.id }.onValue { memberId in
                             bag += self.client.perform(
                                 mutation: GraphQL.CreateKeyGearItemMutation(input: GraphQL.CreateKeyGearItemInput(photos: [], category: .smartWatch, physicalReferenceHash: "apple-watch-\(memberId)"))
-                            ).valueSignal.compactMap { $0.data?.createKeyGearItem.id }
+                            ).valueSignal.compactMap { $0.createKeyGearItem.id }
                                 .onValue { itemId in
                                     self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: itemId, name: "Apple Watch")).onValue { _ in
                                         self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
@@ -75,7 +75,7 @@ struct KeyGearOverview {
         bag += client.perform(mutation: GraphQL.CreateKeyGearItemMutation(
             input: GraphQL.CreateKeyGearItemInput(photos: [], category: category, physicalReferenceHash: deviceId))
         ).valueSignal
-            .compactMap { $0.data?.createKeyGearItem.id }
+            .compactMap { $0.createKeyGearItem.id }
             .onValue { itemId in
                 self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: itemId, name: UIDevice.current.name)).onValue { _ in
                     self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
@@ -152,7 +152,7 @@ extension KeyGearOverview: Presentable {
 
 extension KeyGearOverview: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(
+        UITabBarItem(
             title: L10n.keyGearTabTitle,
             image: Asset.keyGearTabIcon.image,
             selectedImage: Asset.keyGearTabIcon.image

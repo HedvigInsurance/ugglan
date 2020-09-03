@@ -29,10 +29,8 @@ extension PastPaymentsSection: Viewable {
             footer: nil
         )
 
-        let dataValueSignal = client.watch(query: GraphQL.MyPaymentQuery())
-        bag += dataValueSignal.map { $0.data?.chargeHistory.isEmpty ?? true }.bindTo(section, \.isHidden)
-
-        let dataSignal = dataValueSignal.compactMap { $0.data }
+        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())
+        bag += dataSignal.map { $0.chargeHistory.isEmpty }.bindTo(section, \.isHidden)
 
         bag += dataSignal.onValueDisposePrevious { data -> Disposable? in
             let innerBag = DisposeBag()

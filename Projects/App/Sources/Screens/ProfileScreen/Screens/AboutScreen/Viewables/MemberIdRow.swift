@@ -32,7 +32,7 @@ extension MemberIdRow: Viewable {
         }
 
         bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap {
-            $0.data?.member.id
+            $0.member.id
         }.bindTo(valueLabel, \.value)
 
         return (row, bag)

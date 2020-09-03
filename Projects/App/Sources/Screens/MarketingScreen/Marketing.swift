@@ -58,8 +58,7 @@ extension Marketing: Presentable {
         }
 
         bag += client.fetch(query: GraphQL.MarketingQuery())
-            .valueSignal
-            .compactMap { $0.data?.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
+            .compactMap { $0.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
             .compactMap { $0 }
             .onValue { marketingImage in
                 guard let url = URL(string: marketingImage.image?.url ?? "") else {

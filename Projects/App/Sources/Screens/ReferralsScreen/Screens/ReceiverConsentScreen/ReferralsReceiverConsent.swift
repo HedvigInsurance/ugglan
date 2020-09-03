@@ -71,18 +71,17 @@ extension ReferralsReceiverConsent: Presentable {
                 switch result {
                 case .accept:
                     self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: self.referralCode))
-                        .onValue { result in
-                            if result.errors != nil {
-                                let alert = Alert(
-                                    title: L10n.referralErrorMissingcodeHeadline,
-                                    message: L10n.referralErrorMissingcodeBody,
-                                    actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
-                                )
+                        .onValue { _ in
+                            completion(.success(.accept))
+                        }
+                        .onError { _ in
+                            let alert = Alert(
+                                title: L10n.referralErrorMissingcodeHeadline,
+                                message: L10n.referralErrorMissingcodeBody,
+                                actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
+                            )
 
-                                viewController.present(alert)
-                            } else {
-                                completion(.success(.accept))
-                            }
+                            viewController.present(alert)
                         }
                 case .decline:
                     completion(.success(.decline))

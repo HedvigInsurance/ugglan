@@ -48,11 +48,9 @@ struct FileUpload {
                 operation: GraphQL.UploadFileMutation(file: "image"),
                 files: [file],
                 queue: DispatchQueue.global(qos: .background)
-            ).onValue { result in
-                guard let key = result.data?.uploadFile.key, let bucket = result.data?.uploadFile.bucket else {
-                    return
-                }
-
+            ).onValue { data in
+                let key = data.uploadFile.key
+                let bucket = data.uploadFile.bucket
                 completion(.success((key, bucket)))
             }.disposable
         }

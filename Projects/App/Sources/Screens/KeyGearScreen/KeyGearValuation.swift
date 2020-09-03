@@ -52,7 +52,7 @@ extension KeyGearValuation: Presentable {
         )
         bag += form.append(descriptionLabel)
 
-        bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId), cachePolicy: .returnCacheDataAndFetch).map { $0.data?.keyGearItem }.onValue { item in
+        bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId), cachePolicy: .returnCacheDataAndFetch).map { $0.keyGearItem }.onValue { item in
             if let fixed = item?.valuation?.asKeyGearItemValuationFixed {
                 descriptionLabel.textSignal.value = L10n.keyGearItemViewValuationBody(
                     item?.category.name.localizedLowercase ?? "",

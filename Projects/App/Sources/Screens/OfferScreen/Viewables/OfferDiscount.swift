@@ -112,7 +112,7 @@ extension OfferDiscount: Viewable {
                 actions: [
                     Alert.Action(title: L10n.offerRemoveDiscountAlertCancel) {},
                     Alert.Action(title: L10n.offerRemoveDiscountAlertRemove, style: .destructive) {
-                        bag += self.client.perform(mutation: GraphQL.RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue { result in
+                        bag += self.client.perform(mutation: GraphQL.RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.removeDiscountCode }.onValue { result in
                             self.store.update(query: GraphQL.OfferQuery()) { (data: inout GraphQL.OfferQuery.Data) in
                                 data.redeemedCampaigns = result.campaigns.compactMap {
                                     try? GraphQL.OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)

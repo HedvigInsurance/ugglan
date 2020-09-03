@@ -24,12 +24,8 @@ extension AddressCircle: Viewable {
 
         let circleText = DynamicString()
 
-        bag += client.fetch(query: GraphQL.MyHomeQuery()).valueSignal.map { result -> String in
-            if let address = result.data?.insurance.address {
-                return address
-            }
-
-            return ""
+        bag += client.fetch(query: GraphQL.MyHomeQuery()).valueSignal.map { data in
+            data.insurance.address ?? ""
         }.bindTo(circleText)
 
         let circleLabel = CircleLabel(

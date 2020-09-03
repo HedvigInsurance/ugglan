@@ -51,7 +51,7 @@ extension OfferCoverageSwitcher: Viewable {
 
         bag += client.fetch(query: GraphQL.OfferQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.previousInsurer }
+            .compactMap { $0.insurance.previousInsurer }
             .map { previousInsurer in
                 if !previousInsurer.switchable {
                     return L10n.offerSwitchTitleNonSwitchableApp

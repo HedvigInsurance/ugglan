@@ -111,7 +111,7 @@ extension AddKeyGearItem: Presentable {
                 fileUpload.upload().onValue { key, bucket in
                     self.client.perform(mutation: GraphQL.CreateKeyGearItemMutation(input: GraphQL.CreateKeyGearItemInput(photos: [
                         GraphQL.S3FileInput(bucket: bucket, key: key),
-                    ], category: .computer))).onValue { result in
+                    ], category: .computer))).onValue { data in
                         self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                             let bubbleLoading = BubbleLoading(
                                 originatingView: saveButtonContainer,
@@ -127,7 +127,7 @@ extension AddKeyGearItem: Presentable {
                                 ),
                                 options: [.unanimated]
                             ).onValue { _ in
-                                completion(.success(result.data?.createKeyGearItem.id ?? ""))
+                                completion(.success(data.createKeyGearItem.id))
                             }
                         }
                     }

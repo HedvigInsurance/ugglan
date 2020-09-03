@@ -34,7 +34,6 @@ extension ApolloMultilineLabel: Viewable {
 
         bag += client
             .watch(query: query)
-            .compactMap { $0.data }
             .map { self.mapDataAndStyle($0) }
             .bindTo(multilineLabel.styledTextSignal)
 

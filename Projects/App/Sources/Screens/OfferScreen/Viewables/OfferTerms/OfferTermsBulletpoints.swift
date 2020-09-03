@@ -138,7 +138,7 @@ extension OfferTermsBulletPoints: Viewable {
         bag += client
             .fetch(query: GraphQL.OfferQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.type }
+            .compactMap { $0.insurance.type }
             .onValueDisposePrevious { insuranceType in
                 let innerBag = DisposeBag()
 

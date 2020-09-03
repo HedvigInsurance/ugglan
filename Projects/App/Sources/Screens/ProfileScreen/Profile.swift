@@ -44,9 +44,7 @@ extension Profile: Presentable {
 
         let query = GraphQL.ProfileQuery()
 
-        bag += client.watch(query: query)
-            .compactMap { $0.data }
-            .bindTo(profileSection.dataSignal)
+        bag += client.watch(query: query).bindTo(profileSection.dataSignal)
 
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()

@@ -332,8 +332,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
         let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { result in
-            if result.data?.registerPushToken != nil {
+        client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
+            if data.registerPushToken != nil {
                 log.info("Did register push token for user")
             } else {
                 log.info("Failed to register push token for user")
