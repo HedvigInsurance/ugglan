@@ -156,13 +156,6 @@ extension About: Presentable {
             )
         }
 
-        let licensesRow = LicensesRow(
-            presentingViewController: viewController
-        )
-
-        bag += otherSection.append(licensesRow) { _ in
-        }
-
         bag += form.append(Spacing(height: 15))
 
         let year = Calendar.current.component(.year, from: Date())
