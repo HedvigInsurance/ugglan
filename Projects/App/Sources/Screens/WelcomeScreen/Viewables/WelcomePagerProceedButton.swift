@@ -50,7 +50,7 @@ extension WelcomePagerProceedButton: Viewable {
             .distinct()
             .delay(by: 0.25)
             .transition(style: .crossDissolve(duration: 0.25), with: buttonView, animations: { title in
-                button.title.value = title
+                self.button.title.value = title
             })
 
         bag += pageAmountSignal

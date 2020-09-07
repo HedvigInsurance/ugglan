@@ -36,7 +36,7 @@ extension OfferSignButton: Viewable {
         }
 
         bag += scrollView.didLayoutSignal.onValue { _ in
-            contentContainer.layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: scrollView.safeAreaInsets.bottom + 10, right: 16)
+            contentContainer.layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: self.scrollView.safeAreaInsets.bottom + 10, right: 16)
         }
 
         let button = Button(

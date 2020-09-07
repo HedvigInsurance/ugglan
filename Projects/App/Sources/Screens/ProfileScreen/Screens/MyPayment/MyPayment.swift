@@ -36,7 +36,7 @@ extension MyPayment: Presentable {
         bag += viewController.install(form) { scrollView in
             bag += scrollView.performEntryAnimation(
                 contentView: form,
-                onLoad: client.fetch(query: GraphQL.MyPaymentQuery()),
+                onLoad: self.client.fetch(query: GraphQL.MyPaymentQuery()),
                 onError: { _ in }
             )
         }

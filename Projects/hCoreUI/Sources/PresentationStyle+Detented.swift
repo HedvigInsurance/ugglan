@@ -173,7 +173,9 @@ extension PresentationStyle {
                 let transitioningDelegate = viewController.navigationController?.transitioningDelegate as? DetentedTransitioningDelegate
                 let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
-                return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top + containerView.safeAreaInsets.bottom + extraPadding
+                let padPadding: CGFloat = containerView.traitCollection.userInterfaceIdiom == .pad ? 30 : 0
+
+                return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top + containerView.safeAreaInsets.bottom + extraPadding + padPadding
             }
         }
 
