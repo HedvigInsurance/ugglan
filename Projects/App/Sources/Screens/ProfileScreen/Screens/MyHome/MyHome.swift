@@ -59,11 +59,7 @@ extension MyHome: Presentable {
                 if shouldContinue {
                     viewController.present(
                         FreeTextChat().withCloseButton,
-                        style: .modally(
-                            presentationStyle: .pageSheet,
-                            transitionStyle: nil,
-                            capturesStatusBarAppearance: true
-                        )
+                        style: .detented(.large)
                     )
                 }
             }

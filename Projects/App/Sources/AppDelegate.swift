@@ -372,11 +372,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             FreeTextChat(),
-                            style: .modally(
-                                presentationStyle: .pageSheet,
-                                transitionStyle: nil,
-                                capturesStatusBarAppearance: true
-                            )
+                            style: .detented(.large)
                         )
                     }
                     return

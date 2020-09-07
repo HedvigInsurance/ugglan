@@ -53,6 +53,22 @@ func setDetentIndex(on presentationController: UIPresentationController, index: 
     castedMethod(presentationController, selector, index)
 }
 
+func setWantsBottomAttachedInCompactHeight(on presentationController: UIPresentationController, to value: Bool) {
+    let key = [
+        "_", "setWants", "BottomAttachedInCompactHeight:",
+    ]
+
+    let selector = NSSelectorFromString(key.joined())
+
+    if presentationController.responds(to: selector) {
+        if value {
+            presentationController.perform(selector, with: value)
+        } else {
+            presentationController.perform(selector, with: nil)
+        }
+    }
+}
+
 private extension Notification {
     var endFrame: CGRect? {
         (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -188,6 +204,10 @@ extension PresentationStyle {
         }
 
         static func set(_ detents: [Detent], on presentationController: UIPresentationController, viewController: UIViewController, lastDetentIndex: Int? = nil, keyboardAnimation: KeyboardAnimation? = nil) {
+            guard !detents.isEmpty else {
+                return
+            }
+
             let key = [
                 "_", "set", "Detents", ":",
             ]
@@ -203,6 +223,8 @@ extension PresentationStyle {
                 presentationController.presentedViewController.view.layoutIfNeeded()
                 presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
             }
+
+            setWantsBottomAttachedInCompactHeight(on: presentationController, to: true)
 
             if let keyboardAnimation = keyboardAnimation {
                 keyboardAnimation.animate {

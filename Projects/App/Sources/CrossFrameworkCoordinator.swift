@@ -46,11 +46,7 @@ struct CrossFrameworkCoordinator {
         ChatButton.openChatHandler = { chatButton in
             chatButton.presentingViewController.present(
                 FreeTextChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
+                style: .detented(.large)
             )
         }
 
@@ -76,22 +72,14 @@ struct CrossFrameworkCoordinator {
         Home.openFreeTextChatHandler = { viewController in
             viewController.present(
                 FreeTextChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
+                style: .detented(.large)
             )
         }
 
         Contracts.openFreeTextChatHandler = { viewController in
             viewController.present(
                 FreeTextChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
+                style: .detented(.large)
             )
         }
     }
