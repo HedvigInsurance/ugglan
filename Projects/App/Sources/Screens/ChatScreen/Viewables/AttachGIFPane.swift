@@ -72,6 +72,7 @@ extension AttachGIFPane: Viewable {
         bag += searchBarValue.onValue { _ in }
 
         let searchBarContainer = UIStackView()
+        searchBarContainer.isLayoutMarginsRelativeArrangement = true
         searchBarContainer.addArrangedSubview(searchBarView)
 
         view.addSubview(searchBarContainer)
@@ -156,12 +157,18 @@ extension AttachGIFPane: Viewable {
             return innerBag
         }
 
-        bag += view.didMoveToWindowSignal.onValue { _ in
+        bag += view.traitCollectionSignal.atOnce().wait(until: view.hasWindowSignal).onValue { trait in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
-                make.height.equalTo(300)
+
+                if trait.verticalSizeClass == .compact {
+                    make.height.equalTo(100)
+                } else {
+                    make.height.equalTo(300)
+                }
             }
         }
+
         return (view, bag)
     }
 }
