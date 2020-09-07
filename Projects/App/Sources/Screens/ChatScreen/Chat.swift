@@ -99,7 +99,7 @@ extension Chat: Presentable {
         let tableKit = TableKit<EmptySection, ChatListContent>(
             table: Table(),
             style: style,
-            view: nil,
+            view: UITableView(),
             headerForSection: nil,
             footerForSection: nil
         )
@@ -171,7 +171,7 @@ extension Chat: Presentable {
                 tableKit.view.layoutIfNeeded()
             })
 
-        bag += chatState.tableSignal.atOnce().onValue(on: .main) { table in
+        bag += chatState.tableSignal.atOnce().delay(by: 0.5).onValue { table in
             if tableKit.table.isEmpty {
                 tableKit.set(table, animation: .fade)
             } else {
@@ -184,7 +184,7 @@ extension Chat: Presentable {
             self.chatState.reset()
         }
 
-        bag += viewController.install(tableKit)
+        viewController.view = tableKit.view
 
         bag += DelayedDisposer(
             Disposer {

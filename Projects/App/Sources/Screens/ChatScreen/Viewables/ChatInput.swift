@@ -26,7 +26,7 @@ struct ChatInput {
 
 class ViewWithFixedIntrinsicSize: UIView {
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: 0, height: 0)
+        CGSize(width: 0, height: 0)
     }
 }
 
@@ -91,8 +91,7 @@ extension ChatInput: Viewable {
             bag += combineLatest(
                 chatState.currentMessageSignal,
                 attachGIFPaneIsOpenSignal
-            ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachGIFPaneIsOpen in
-
+            ).atOnce().animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachGIFPaneIsOpen in
                 var isHidden: Bool
 
                 if attachGIFPaneIsOpen {
@@ -132,7 +131,7 @@ extension ChatInput: Viewable {
             bag += combineLatest(
                 chatState.currentMessageSignal,
                 attachFilePaneIsOpenSignal
-            ).animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachFilePaneIsOpen in
+            ).atOnce().animated(style: SpringAnimationStyle.lightBounce()) { currentMessage, attachFilePaneIsOpen in
 
                 var isHidden: Bool
 

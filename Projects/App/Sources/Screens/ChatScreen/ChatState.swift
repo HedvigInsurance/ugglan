@@ -255,7 +255,7 @@ class ChatState {
         }
 
         currentMessageSignal = listSignal.atOnce().map { list in list.first?.left }
-        tableSignal = filteredListSignal.atOnce().map(on: .background) { Table(rows: $0) }
+        tableSignal = filteredListSignal.atOnce().distinct().map(on: .background) { Table(rows: $0) }
 
         editBag += listSignal.atOnce().onValueDisposePrevious(on: .background) { messages -> Disposable? in
             let innerBag = DisposeBag()
