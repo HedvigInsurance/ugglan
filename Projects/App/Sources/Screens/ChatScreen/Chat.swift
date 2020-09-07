@@ -36,7 +36,7 @@ extension Chat: Presentable {
 
         chatState.allowNewMessageToast = false
 
-        bag += {
+        bag += Disposer {
             self.chatState.allowNewMessageToast = true
         }
 
@@ -49,7 +49,6 @@ extension Chat: Presentable {
 
         let viewController = AccessoryViewController(accessoryView: chatInput)
         viewController.navigationItem.largeTitleDisplayMode = .never
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
 
         bag += navigateCallbacker.onValue { navigationEvent in
             switch navigationEvent {
@@ -99,7 +98,7 @@ extension Chat: Presentable {
         let tableKit = TableKit<EmptySection, ChatListContent>(
             table: Table(),
             style: style,
-            view: UITableView(),
+            view: nil,
             headerForSection: nil,
             footerForSection: nil
         )
@@ -184,7 +183,7 @@ extension Chat: Presentable {
             self.chatState.reset()
         }
 
-        viewController.view = tableKit.view
+        bag += viewController.install(tableKit, options: [])
 
         bag += DelayedDisposer(
             Disposer {
