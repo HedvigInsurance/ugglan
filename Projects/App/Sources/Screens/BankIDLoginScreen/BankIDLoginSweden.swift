@@ -19,6 +19,23 @@ struct BankIDLoginSweden {
     @Inject var client: ApolloClient
 }
 
+extension BankIDLoginSweden {
+    enum AutoStartTokenError: Error {
+        case failedToGenerate
+    }
+
+    func generateAutoStartToken() -> Future<URL> {
+        client.perform(mutation: GraphQL.BankIdAuthMutation()).compactMap { $0.bankIdAuth.autoStartToken }.flatMap { autoStartToken in
+            let urlScheme = Bundle.main.urlScheme ?? ""
+            guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else {
+                return Future(error: AutoStartTokenError.failedToGenerate)
+            }
+
+            return Future(url)
+        }
+    }
+}
+
 extension BankIDLoginSweden: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
@@ -106,14 +123,11 @@ extension BankIDLoginSweden: Presentable {
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
         }
 
-        bag += client.perform(mutation: GraphQL.BankIdAuthMutation()).delay(by: 0.5).valueSignal.compactMap { $0.bankIdAuth.autoStartToken }.onValue { autoStartToken in
-            let urlScheme = Bundle.main.urlScheme ?? ""
-            guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
-
+        generateAutoStartToken().onValue { url in
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
-                viewController.present(BankIDLoginQR(autoStartURL: url), options: [.prefersNavigationBarHidden(false)])
+                viewController.present(BankIDLoginQR())
             }
         }
 
