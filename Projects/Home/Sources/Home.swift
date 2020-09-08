@@ -83,6 +83,10 @@ extension Home: Presentable {
         titleRow.isLayoutMarginsRelativeArrangement = true
         titleSection.append(titleRow)
 
+        bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
+            .mapLatestToFuture { _ in client.fetch(query: GraphQL.HomeQuery()) }
+            .nil()
+
         bag += client
             .watch(query: GraphQL.HomeQuery())
             .onValueDisposePrevious { data in
