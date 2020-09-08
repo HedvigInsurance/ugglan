@@ -26,7 +26,7 @@ extension PaymentHeaderCard: Viewable {
         let bag = DisposeBag()
 
         let topView = UIView()
-        topView.backgroundColor = .black
+        topView.backgroundColor = .brand(.secondaryBackground())
 
         bag += topView.didLayoutSignal.onValue { _ in
             topView.applyRadiusMaskFor(topLeft: 10, bottomLeft: 0, bottomRight: 0, topRight: 10)
@@ -43,7 +43,7 @@ extension PaymentHeaderCard: Viewable {
 
         let leftTopViewStack = UIStackView()
         leftTopViewStack.axis = .vertical
-        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.blockRowTitle.colored(.white)))
+        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.title1(color: .primary))))
 
         let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
 
