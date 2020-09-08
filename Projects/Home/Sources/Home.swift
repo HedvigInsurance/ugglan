@@ -84,7 +84,7 @@ extension Home: Presentable {
         titleSection.append(titleRow)
 
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
-            .mapLatestToFuture { _ in self.client.fetch(query: GraphQL.HomeQuery()) }
+            .mapLatestToFuture { _ in self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData) }
             .nil()
 
         bag += client
