@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct PaymentHeaderNextCharge {
@@ -28,14 +29,14 @@ extension PaymentHeaderNextCharge: Viewable {
         contentContainer.distribution = .equalSpacing
         view.addSubview(contentContainer)
 
-        let label = UILabel(value: "", style: TextStyle.body.zeroedLineSpacing)
+        let label = UILabel(value: "", style: TextStyle.brand(.subHeadline(color: .primary)))
         contentContainer.addArrangedSubview(label)
 
         contentContainer.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        bag += client.watch(query: MyPaymentQuery()).map { $0.data?.nextChargeDate }.onValue { nextChargeDate in
+        bag += client.watch(query: GraphQL.MyPaymentQuery()).map { $0.nextChargeDate }.onValue { nextChargeDate in
             if let nextChargeDate = nextChargeDate {
                 let dateParsingFormatter = DateFormatter()
                 dateParsingFormatter.dateFormat = "yyyy-MM-dd"

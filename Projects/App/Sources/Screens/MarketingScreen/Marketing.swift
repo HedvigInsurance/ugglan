@@ -10,6 +10,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import SnapKit
 import UIKit
@@ -21,7 +22,7 @@ struct Marketing {
 
 extension Marketing {
     func prefetch() {
-        client.fetch(query: MarketingQuery()).onValue { _ in }
+        client.fetch(query: GraphQL.MarketingQuery()).onValue { _ in }
     }
 }
 
@@ -56,9 +57,8 @@ extension Marketing: Presentable {
             make.height.equalTo(40)
         }
 
-        bag += client.fetch(query: MarketingQuery())
-            .valueSignal
-            .compactMap { $0.data?.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
+        bag += client.fetch(query: GraphQL.MarketingQuery())
+            .compactMap { $0.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
             .compactMap { $0 }
             .onValue { marketingImage in
                 guard let url = URL(string: marketingImage.image?.url ?? "") else {
@@ -101,7 +101,7 @@ extension Marketing: Presentable {
         let loginButton = Button(title: L10n.marketingLogin, type: .standardOutline(borderColor: .white, textColor: .white))
 
         bag += loginButton.onTapSignal.onValue { _ in
-            viewController.present(BankIDLogin(), style: .modally())
+            viewController.present(BankIDLogin(), style: .detented(.medium, .large), options: [.defaults, .allowSwipeDismissAlways])
         }
 
         bag += contentStackView.addArranged(loginButton)

@@ -11,6 +11,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -36,25 +37,14 @@ extension Profile: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        let otherSection = OtherSection(
+        let settingsSection = SettingsSection(
             presentingViewController: viewController
         )
+        bag += form.append(settingsSection)
 
-        bag += form.append(otherSection)
+        let query = GraphQL.ProfileQuery()
 
-        bag += form.append(Spacing(height: 20))
-
-        let logoutSection = LogoutSection(
-            presentingViewController: viewController
-        )
-
-        bag += form.append(logoutSection)
-
-        let query = ProfileQuery()
-
-        bag += client.watch(query: query)
-            .compactMap { $0.data }
-            .bindTo(profileSection.dataSignal)
+        bag += client.watch(query: query).bindTo(profileSection.dataSignal)
 
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()
@@ -70,10 +60,10 @@ extension Profile: Presentable {
 
 extension Profile: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(
+        UITabBarItem(
             title: L10n.tabProfileTitle,
             image: Asset.profileTab.image,
-            selectedImage: nil
+            selectedImage: Asset.profileTabActive.image
         )
     }
 }

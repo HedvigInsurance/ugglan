@@ -12,11 +12,12 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 
 struct InsuranceProviderLoginDetails {
     @Inject var client: ApolloClient
-    let provider: InsuranceProviderFragment
+    let provider: GraphQL.InsuranceProviderFragment
 }
 
 extension InsuranceProviderLoginDetails: Presentable {

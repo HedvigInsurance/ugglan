@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -44,7 +45,7 @@ struct KeyGearItem {
 
         navigationBar.tintColor = UIColor.clear
         navigationBar.barTintColor = UIColor.clear
-        navigationBar.backIndicatorImage = Asset.backButtonWhite.image
+        navigationBar.backIndicatorImage = hCoreUIAssets.backButton.image
         navigationBar.isTranslucent = true
         navigationBar.shadowImage = UIImage()
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
@@ -82,7 +83,7 @@ struct KeyGearItem {
 
     class KeyGearItemViewController: UIViewController {
         override var preferredStatusBarStyle: UIStatusBarStyle {
-            return .lightContent
+            .lightContent
         }
 
         init() {
@@ -112,7 +113,7 @@ extension KeyGearItem: Presentable {
         viewController.navigationItem.rightBarButtonItem = optionsButton
 
         let backButton = UIButton(type: .custom)
-        backButton.setImage(Asset.backButtonWhite.image, for: .normal)
+        backButton.setImage(hCoreUIAssets.backButton.image, for: .normal)
         backButton.tintColor = .white
 
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
@@ -122,9 +123,9 @@ extension KeyGearItem: Presentable {
         viewController.view = view
 
         let dataSignal = client.watch(
-            query: KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
+            query: GraphQL.KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
             cachePolicy: .returnCacheDataAndFetch
-        ).compactMap { $0.data?.keyGearItem }
+        ).compactMap { $0.keyGearItem }
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
@@ -156,7 +157,7 @@ extension KeyGearItem: Presentable {
 
         scrollView.embedView(form, scrollAxis: .vertical)
 
-        let imagesSignal = dataSignal.map { (images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category) }.compactMap { data -> [Either<URL, KeyGearItemCategory>] in
+        let imagesSignal = dataSignal.map { (images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category) }.compactMap { data -> [Either<URL, GraphQL.KeyGearItemCategory>] in
             if data.images.isEmpty {
                 return [.right(data.category)]
             }
@@ -206,12 +207,12 @@ extension KeyGearItem: Presentable {
         claimsSection.dynamicStyle = .sectionPlain
 
         let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .rowTitle)
-        claimsRow.append(Asset.chevronRight.image)
+        claimsRow.append(hCoreUIAssets.chevronRight.image)
 
         bag += claimsSection.append(claimsRow).onValue { _ in
             viewController.present(
                 HonestyPledge(),
-                style: .modally(),
+                style: .detented(.preferredContentSize),
                 options: [.defaults]
             )
         }
@@ -276,7 +277,7 @@ extension KeyGearItem: Presentable {
         bag += nameSection.append(nameRow).onValue { name in
             viewController.navigationItem.title = name
             navigationBar.items = [viewController.navigationItem]
-            self.client.perform(mutation: UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
+            self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: self.id, name: name)).onValue { _ in }
         }
 
         bag += dataSignal.onValue { data in
@@ -313,8 +314,8 @@ extension KeyGearItem: Presentable {
                         throw GenericError.cancelled
                     }),
                 ]), style: .sheet(from: optionsButton.view, rect: nil)).onValue { _ in
-                    self.client.perform(mutation: DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
-                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                    self.client.perform(mutation: GraphQL.DeleteKeyGearItemMutation(id: self.id)).onValue { _ in
+                        self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                             completion(.success)
                         }
                     }

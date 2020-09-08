@@ -47,7 +47,7 @@ extension LatePaymentHeaderSection: Viewable {
             make.top.bottom.equalToSuperview()
         }
 
-        let icon = Icon(icon: Asset.pinkCircularExclamationPoint, iconWidth: 15)
+        let icon = Icon(icon: Asset.pinkCircularExclamationPoint.image, iconWidth: 15)
         containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in

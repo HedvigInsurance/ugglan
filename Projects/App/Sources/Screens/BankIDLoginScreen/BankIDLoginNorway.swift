@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 import WebKit
@@ -62,7 +63,7 @@ extension BankIDLoginNorway: Presentable {
             return .allow
         }
 
-        bag += client.subscribe(subscription: BankIdAuthSubscriptionSubscription()).compactMap { $0.data?.authStatus?.status }.filter(predicate: { status -> Bool in
+        bag += client.subscribe(subscription: GraphQL.BankIdAuthSubscriptionSubscription()).compactMap { $0.authStatus?.status }.filter(predicate: { status -> Bool in
             status == .success
         }).take(first: 1).onValue { _ in
             let appDelegate = UIApplication.shared.appDelegate
@@ -79,8 +80,8 @@ extension BankIDLoginNorway: Presentable {
 
         func loadBankID() {
             bag += client.perform(
-                mutation: BankIdNorwayAuthMutation()
-            ).valueSignal.compactMap { $0.data?.norwegianBankIdAuth.redirectUrl }.onValue { urlString in
+                mutation: GraphQL.BankIdNorwayAuthMutation()
+            ).valueSignal.compactMap { $0.norwegianBankIdAuth.redirectUrl }.onValue { urlString in
                 guard let url = URL(string: urlString) else {
                     return
                 }

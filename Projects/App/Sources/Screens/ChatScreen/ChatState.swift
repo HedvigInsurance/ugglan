@@ -10,15 +10,19 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import UIKit
 
 class ChatState {
+    public static let shared = ChatState()
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
     @Inject private var client: ApolloClient
     private var handledGlobalIds: [GraphQLID] = []
     private var hasShownStatusMessage = false
+    var allowNewMessageToast = true
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
@@ -26,7 +30,7 @@ class ChatState {
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
 
-    private func parseMessage(message: MessageData) -> [ChatListContent] {
+    private func parseMessage(message: GraphQL.MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
         let newMessage = Message(from: message, listSignal: filteredListSignal)
 
@@ -47,7 +51,7 @@ class ChatState {
         return result
     }
 
-    private func handleFirstMessage(message: MessageData) {
+    private func handleFirstMessage(message: GraphQL.MessageData) {
         if message.body.asMessageBodyParagraph != nil {
             bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000)).onValue { _ in
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
@@ -61,13 +65,13 @@ class ChatState {
             func createToast() -> Toast {
                 if UIApplication.shared.isRegisteredForRemoteNotifications {
                     return Toast(
-                        symbol: .character("✉️"),
+                        symbol: .icon(hCoreUIAssets.chat.image),
                         body: statusMessage
                     )
                 }
 
                 return Toast(
-                    symbol: .character("✉️"),
+                    symbol: .icon(hCoreUIAssets.chat.image),
                     body: statusMessage,
                     subtitle: L10n.chatToastPushNotificationsSubtitle
                 )
@@ -79,9 +83,7 @@ class ChatState {
                 UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in }
             }
 
-            bag += UIApplication.shared.appDelegate.displayToast(toast).onValue { _ in
-                innerBag.dispose()
-            }
+            Toasts.shared.displayToast(toast: toast)
         }
     }
 
@@ -90,13 +92,13 @@ class ChatState {
         hasFetched: @escaping () -> Void = {}
     ) {
         bag += client.fetch(
-            query: ChatMessagesQuery(),
+            query: GraphQL.ChatMessagesQuery(),
             cachePolicy: cachePolicy,
             queue: DispatchQueue.global(qos: .background)
         )
         .valueSignal
-        .compactMap(on: .concurrentBackground) { messages -> [MessageData]? in
-            messages.data?.messages.compactMap { message in message?.fragments.messageData }
+        .compactMap(on: .concurrentBackground) { data -> [GraphQL.MessageData]? in
+            data.messages.compactMap { message in message?.fragments.messageData }
         }
         .map { messages in
             messages.filter { message -> Bool in
@@ -129,13 +131,13 @@ class ChatState {
         }
     }
 
-    func subscribe() {
+    @discardableResult func subscribe() -> CoreSignal<Plain.DropReadWrite, GraphQL.MessageData> {
         subscriptionBag.dispose()
-        subscriptionBag += client.subscribe(
-            subscription: ChatMessagesSubscriptionSubscription(),
+        let signal = client.subscribe(
+            subscription: GraphQL.ChatMessagesSubscriptionSubscription(),
             queue: DispatchQueue.global(qos: .background)
         )
-        .compactMap(on: .concurrentBackground) { $0.data?.message.fragments.messageData }
+        .compactMap(on: .concurrentBackground) { $0.message.fragments.messageData }
         .filter(predicate: { message -> Bool in
             if self.handledGlobalIds.contains(message.globalId) {
                 return false
@@ -147,16 +149,32 @@ class ChatState {
         })
         .atValue { message in
             self.handleFirstMessage(message: message)
-        }
-        .onValue { message in
             self.listSignal.value.insert(contentsOf: self.parseMessage(message: message), at: 0)
+        }
+
+        subscriptionBag += signal.nil()
+
+        return signal
+    }
+
+    func activateNewMessageToasts(_ viewController: UIViewController) -> Disposable {
+        fetch()
+
+        return subscribe().filter { _ in self.allowNewMessageToast }.filter { !$0.header.fromMyself }.onValue { message in
+            let toast = Toast(symbol: .icon(hCoreUIAssets.chat.image), body: L10n.Toast.newMessage, subtitle: message.body.asMessageBodyText?.text)
+
+            self.bag += toast.onTap.onValue { _ in
+                viewController.present(FreeTextChat().withCloseButton)
+            }
+
+            Toasts.shared.displayToast(toast: toast)
         }
     }
 
     func reset() {
         handledGlobalIds = []
         listSignal.value = []
-        bag += client.perform(mutation: TriggerResetChatMutation()).onValue { _ in
+        bag += client.perform(mutation: GraphQL.TriggerResetChatMutation()).onValue { _ in
             self.fetch(cachePolicy: .fetchIgnoringCacheData)
         }
     }
@@ -164,7 +182,7 @@ class ChatState {
     func sendSingleSelectResponse(selectedValue: GraphQLID) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.perform(
-                mutation: SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: selectedValue)
+                mutation: GraphQL.SendChatSingleSelectResponseMutation(globalId: globalId, selectedValue: selectedValue)
             ).onValue { _ in
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
             }
@@ -177,7 +195,7 @@ class ChatState {
 
             innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.take(first: 1).onValue { globalId in
                 innerBag += self.client.perform(
-                    mutation: SendChatTextResponseMutation(globalId: globalId, text: text)
+                    mutation: GraphQL.SendChatTextResponseMutation(globalId: globalId, text: text)
                 ).onValue { _ in
                     callback(())
                     self.fetch(cachePolicy: .fetchIgnoringCacheData)
@@ -191,7 +209,7 @@ class ChatState {
     func sendChatFileResponseMutation(key: String, mimeType: String) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.perform(
-                mutation: SendChatFileResponseMutation(globalID: globalId, key: key, mimeType: mimeType)
+                mutation: GraphQL.SendChatFileResponseMutation(globalID: globalId, key: key, mimeType: mimeType)
             ).onValue { _ in
                 self.fetch(cachePolicy: .fetchIgnoringCacheData)
             }
@@ -205,7 +223,7 @@ class ChatState {
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }.onValue { globalId in
             self.bag += self.client.upload(
-                operation: SendChatAudioResponseMutation(globalID: globalId, file: "file"),
+                operation: GraphQL.SendChatAudioResponseMutation(globalID: globalId, file: "file"),
                 files: [
                     file,
                 ]
@@ -237,7 +255,7 @@ class ChatState {
         }
 
         currentMessageSignal = listSignal.atOnce().map { list in list.first?.left }
-        tableSignal = filteredListSignal.atOnce().map(on: .background) { Table(rows: $0) }
+        tableSignal = filteredListSignal.atOnce().distinct().map(on: .background) { Table(rows: $0) }
 
         editBag += listSignal.atOnce().onValueDisposePrevious(on: .background) { messages -> Disposable? in
             let innerBag = DisposeBag()
@@ -258,7 +276,7 @@ class ChatState {
                         offset > firstIndex
                     }.map { $0.1 }
 
-                    self.bag += self.client.perform(mutation: EditLastResponseMutation()).onValue { _ in
+                    self.bag += self.client.perform(mutation: GraphQL.EditLastResponseMutation()).onValue { _ in
                         self.fetch()
                     }
                 } ?? DisposeBag()

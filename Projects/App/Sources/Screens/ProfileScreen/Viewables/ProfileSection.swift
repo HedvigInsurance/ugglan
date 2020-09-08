@@ -10,17 +10,19 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct ProfileSection {
-    let dataSignal: ReadWriteSignal<ProfileQuery.Data?> = ReadWriteSignal(nil)
+    let dataSignal: ReadWriteSignal<GraphQL.ProfileQuery.Data?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
 }
 
 extension ProfileSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
-        let section = SectionView(header: nil, footer: nil, style: .sectionPlainLargeIcons)
+        let section = SectionView(header: nil, footer: nil)
+        section.dynamicStyle = .brandGrouped(separatorType: .largeIcons)
         section.isHidden = true
 
         bag += dataSignal.map { $0 == nil }.bindTo(section, \.isHidden)

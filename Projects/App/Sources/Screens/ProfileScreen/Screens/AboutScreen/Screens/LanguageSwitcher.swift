@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -111,7 +112,7 @@ extension LanguageSwitcher: Presentable {
                 reloadAllLabels()
                 NotificationCenter.default.post(Notification(name: .localeSwitched))
             }
-            bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
+            bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
         }
 
         switch Localization.Locale.currentLocale.market {

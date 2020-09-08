@@ -11,6 +11,7 @@ import Disk
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 import Vision
 
@@ -26,8 +27,8 @@ extension AddKeyGearItem {
             computer = "Computer"
     }
 
-    func classifyImage(_ image: UIImage) -> Future<KeyGearItemCategory?> {
-        return Future { completion in
+    func classifyImage(_ image: UIImage) -> Future<GraphQL.KeyGearItemCategory?> {
+        Future { completion in
             let bag = DisposeBag()
 
             bag += VNCoreMLModel.keyGearClassifier.onValue { model in
@@ -45,21 +46,21 @@ extension AddKeyGearItem {
 
                             switch category {
                             case .smartWatch:
-                                completion(.success(KeyGearItemCategory.smartWatch))
+                                completion(.success(GraphQL.KeyGearItemCategory.smartWatch))
                             case .watch:
-                                completion(.success(KeyGearItemCategory.jewelry))
+                                completion(.success(GraphQL.KeyGearItemCategory.jewelry))
                             case .appliance:
                                 completion(.success(nil))
                             case .camera:
                                 completion(.success(nil))
                             case .phone:
-                                completion(.success(KeyGearItemCategory.phone))
+                                completion(.success(GraphQL.KeyGearItemCategory.phone))
                             case .bicycle:
-                                completion(.success(KeyGearItemCategory.bike))
+                                completion(.success(GraphQL.KeyGearItemCategory.bike))
                             case .computer:
-                                completion(.success(KeyGearItemCategory.computer))
+                                completion(.success(GraphQL.KeyGearItemCategory.computer))
                             case .jewelry:
-                                completion(.success(KeyGearItemCategory.jewelry))
+                                completion(.success(GraphQL.KeyGearItemCategory.jewelry))
                             }
                         } else {
                             completion(.success(nil))
@@ -152,7 +153,7 @@ extension VNCoreMLModel {
                 return bag
             }
 
-            bag += client.fetch(query: KeyGearClassifierQuery()).map { result in result.data?.coreMlModels.first??.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in
+            bag += client.fetch(query: GraphQL.KeyGearClassifierQuery()).map { data in data.coreMlModels.first??.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in
                 downloadModel(url)
             }
 

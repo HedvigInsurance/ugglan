@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Form
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -32,7 +33,7 @@ extension FreeTextChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += client.perform(mutation: TriggerFreeTextChatMutation()).onValue { _ in
+        bag += client.perform(mutation: GraphQL.TriggerFreeTextChatMutation()).onValue { _ in
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                 chat.chatState.subscribe()
             }

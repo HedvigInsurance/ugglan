@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -55,14 +56,11 @@ struct MyInfoState {
                     let innerBag = bag.innerBag()
 
                     innerBag += self.client.perform(
-                        mutation: UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
-                    ).onValue { result in
-                        if result.errors?.count != nil {
-                            completion(.failure(MyInfoSaveError.phoneNumberMalformed))
-                            return
-                        }
-
+                        mutation: GraphQL.UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
+                    ).onValue { _ in
                         completion(.success)
+                    }.onError { _ in
+                        completion(.failure(MyInfoSaveError.phoneNumberMalformed))
                     }
 
                     return innerBag
@@ -86,17 +84,14 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.client.perform(mutation: UpdateEmailMutation(email: email)).onValue { result in
-                        if result.errors?.count != nil {
-                            completion(.failure(MyInfoSaveError.emailMalformed))
-                            return
-                        }
-
+                    innerBag += self.client.perform(mutation: GraphQL.UpdateEmailMutation(email: email)).onValue { _ in
                         completion(.success)
 
-                        self.store.update(query: MyInfoQuery()) { (data: inout MyInfoQuery.Data) in
+                        self.store.update(query: GraphQL.MyInfoQuery()) { (data: inout GraphQL.MyInfoQuery.Data) in
                             data.member.email = email
                         }
+                    }.onError { _ in
+                        completion(.failure(MyInfoSaveError.emailMalformed))
                     }
 
                     return innerBag
@@ -128,12 +123,12 @@ struct MyInfoState {
         let bag = DisposeBag()
 
         let dataSignal = client.watch(
-            query: MyInfoQuery(),
+            query: GraphQL.MyInfoQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
 
-        bag += dataSignal.compactMap { $0.data?.member.email }.bindTo(emailSignal)
-        bag += dataSignal.compactMap { $0.data?.member.phoneNumber }.bindTo(phoneNumberSignal)
+        bag += dataSignal.compactMap { $0.member.email }.bindTo(emailSignal)
+        bag += dataSignal.compactMap { $0.member.phoneNumber }.bindTo(phoneNumberSignal)
 
         return bag
     }

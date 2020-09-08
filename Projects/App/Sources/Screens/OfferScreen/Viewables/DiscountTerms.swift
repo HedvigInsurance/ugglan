@@ -57,6 +57,9 @@ extension DiscountTerms: Viewable {
             label.preferredMaxLayoutWidth = label.frame.size.width
         }
 
+        label.setNeedsLayout()
+        label.layoutIfNeeded()
+
         containerStackView.addArrangedSubview(label)
 
         return (view, bag)

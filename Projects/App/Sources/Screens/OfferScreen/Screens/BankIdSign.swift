@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -28,7 +29,7 @@ extension BankIdSign: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .secondaryBackground
         viewController.view = view
 
         let containerStackView = UIStackView()
@@ -85,8 +86,8 @@ extension BankIdSign: Presentable {
         bag += closeButtonContainer.addArranged(closeButton)
 
         let statusSignal = client.subscribe(
-            subscription: SignStatusSubscription()
-        ).compactMap { $0.data?.signStatus?.status }
+            subscription: GraphQL.SignStatusSubscription()
+        ).compactMap { $0.signStatus?.status }
 
         bag += statusSignal.compactMap { $0.collectStatus }.skip(first: 1).onValue { collectStatus in
             let statusText: String
@@ -105,7 +106,7 @@ extension BankIdSign: Presentable {
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
         }
 
-        bag += client.perform(mutation: SignOfferMutation()).valueSignal.compactMap { result in result.data?.signOfferV2.autoStartToken }.onValue { autoStartToken in
+        bag += client.perform(mutation: GraphQL.SignOfferMutation()).valueSignal.compactMap { $0.signOfferV2.autoStartToken }.onValue { autoStartToken in
             let urlScheme = Bundle.main.urlScheme ?? ""
             guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
 

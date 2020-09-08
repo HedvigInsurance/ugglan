@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct OfferCoverageSwitcher {
@@ -48,9 +49,9 @@ extension OfferCoverageSwitcher: Viewable {
             }
         }
 
-        bag += client.fetch(query: OfferQuery())
+        bag += client.fetch(query: GraphQL.OfferQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.previousInsurer }
+            .compactMap { $0.insurance.previousInsurer }
             .map { previousInsurer in
                 if !previousInsurer.switchable {
                     return L10n.offerSwitchTitleNonSwitchableApp

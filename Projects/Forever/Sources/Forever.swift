@@ -35,7 +35,7 @@ extension Forever: Presentable {
         bag += infoBarButton.onValue {
             viewController.present(
                 InfoAndTerms(potentialDiscountAmountSignal: self.service.dataSignal.map { $0?.potentialDiscountAmount }),
-                style: .modal
+                style: .detented(.large)
             )
         }
 
@@ -85,7 +85,7 @@ extension Forever: Presentable {
                 let hasShownInvitation = UserDefaults.standard.bool(forKey: defaultsKey)
 
                 if !hasShownInvitation {
-                    viewController.present(InvitationScreen(potentialDiscountAmountSignal: self.service.dataSignal.map { $0?.potentialDiscountAmount }), style: .modal).onResult { _ in
+                    viewController.present(InvitationScreen(potentialDiscountAmountSignal: self.service.dataSignal.map { $0?.potentialDiscountAmount }), style: .detented(.large)).onResult { _ in
                         UserDefaults.standard.set(true, forKey: defaultsKey)
                         UserDefaults.standard.synchronize()
                     }
@@ -107,13 +107,13 @@ extension Forever: Presentable {
             }
         }.withLatestFrom(service.dataSignal.atOnce().compactMap { $0?.discountCode }).onValue { buttonView, discountCode in
             shareButton.loadableButton.startLoading()
-            viewController.presentConditionally(PushNotificationReminder(), style: .modal).onResult { _ in
+            viewController.presentConditionally(PushNotificationReminder(), style: .detented(.large)).onResult { _ in
                 let encodedDiscountCode = discountCode.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                 let activity = ActivityView(
                     activityItems: [URL(string: L10n.referralsLink(encodedDiscountCode)) ?? ""],
                     applicationActivities: nil,
                     sourceView: buttonView,
-                    sourceRect: nil
+                    sourceRect: buttonView.bounds
                 )
                 viewController.present(activity)
                 shareButton.loadableButton.stopLoading()
@@ -126,7 +126,7 @@ extension Forever: Presentable {
 
 extension Forever: Tabable {
     public func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(
+        UITabBarItem(
             title: L10n.tabReferralsTitle,
             image: Asset.tab.image,
             selectedImage: Asset.tab.image

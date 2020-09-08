@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct MultilineLabelIcon {
@@ -41,7 +42,7 @@ extension MultilineLabelIcon: Viewable {
         }
 
         let icon = Icon(
-            icon: iconAsset,
+            icon: iconAsset.image,
             iconWidth: iconWidth
         )
         iconContainer.addSubview(icon)

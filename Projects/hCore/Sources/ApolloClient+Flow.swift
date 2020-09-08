@@ -14,8 +14,12 @@ import UIKit
 
 private extension Error {
     var isIgnorable: Bool {
-        return localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
+        localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
     }
+}
+
+struct GraphQLError: Error {
+    var errors: [Error]
 }
 
 public extension ApolloClient {
@@ -23,42 +27,20 @@ public extension ApolloClient {
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
-    ) -> Future<GraphQLResult<Query.Data>> {
-        return fetch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
-    }
-
-    private func fetch<Query: GraphQLQuery>(
-        query: Query,
-        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
-        queue: DispatchQueue = DispatchQueue.main,
-        numberOfRetries: Int = 0
-    ) -> Future<GraphQLResult<Query.Data>> {
-        return Future<GraphQLResult<Query.Data>> { completion in
-            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) { [unowned self] result in
+    ) -> Future<Query.Data> {
+        Future<Query.Data> { completion in
+            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) { result in
                 switch result {
                 case let .success(result):
-                    completion(.success(result))
-                case let .failure(error):
-                    if error.isIgnorable {
-                        return
-                    }
-
-                    let retryHandler = { [unowned self] () -> Void in
-                        self.fetch(
-                            query: query,
-                            cachePolicy: cachePolicy,
-                            queue: queue,
-                            numberOfRetries: numberOfRetries + 1
-                        ).onResult { result in
-                            completion(result)
-                        }
-                    }
-
-                    if numberOfRetries == 0 {
-                        retryHandler()
+                    if let data = result.data {
+                        completion(.success(data))
+                    } else if let errors = result.errors {
+                        completion(.failure(GraphQLError(errors: errors)))
                     } else {
-                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        fatalError("Invalid GraphQL state")
                     }
+                case let .failure(error):
+                    completion(.failure(error))
                 }
             }
 
@@ -73,7 +55,7 @@ public extension ApolloClient {
         refreshControl: UIRefreshControl,
         queue: DispatchQueue = DispatchQueue.main
     ) -> Disposable {
-        return refreshControl.onValue { [unowned self] _ in
+        refreshControl.onValue { [unowned self] _ in
             self.fetch(query: query, cachePolicy: .fetchIgnoringCacheData, queue: queue).onValue { _ in
                 refreshControl.endRefreshing()
             }
@@ -83,39 +65,23 @@ public extension ApolloClient {
     func perform<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
-    ) -> Future<GraphQLResult<Mutation.Data>> {
-        return perform(mutation: mutation, queue: queue, numberOfRetries: 0)
-    }
-
-    private func perform<Mutation: GraphQLMutation>(
-        mutation: Mutation,
-        queue: DispatchQueue = DispatchQueue.main,
-        numberOfRetries: Int = 0
-    ) -> Future<GraphQLResult<Mutation.Data>> {
-        return Future<GraphQLResult<Mutation.Data>> { completion in
+    ) -> Future<Mutation.Data> {
+        Future<Mutation.Data> { completion in
             let cancellable = self.perform(
                 mutation: mutation,
                 queue: queue,
-                resultHandler: { [unowned self] result in
+                resultHandler: { result in
                     switch result {
                     case let .success(result):
-                        completion(.success(result))
-                    case let .failure(error):
-                        if error.isIgnorable {
-                            return
-                        }
-
-                        let retryHandler = { [unowned self] () -> Void in
-                            self.perform(mutation: mutation, queue: queue, numberOfRetries: numberOfRetries + 1).onResult { result in
-                                completion(result)
-                            }
-                        }
-
-                        if numberOfRetries == 0 {
-                            retryHandler()
+                        if let data = result.data {
+                            completion(.success(data))
+                        } else if let errors = result.errors {
+                            completion(.failure(GraphQLError(errors: errors)))
                         } else {
-                            self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                            fatalError("Invalid GraphQL state")
                         }
+                    case let .failure(error):
+                        completion(.failure(error))
                     }
                 }
             )
@@ -129,42 +95,26 @@ public extension ApolloClient {
     func watch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
-        queue: DispatchQueue = DispatchQueue.main
-    ) -> Signal<GraphQLResult<Query.Data>> {
-        return watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: 0)
-    }
-
-    private func watch<Query: GraphQLQuery>(
-        query: Query,
-        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main,
-        numberOfRetries: Int = 0
-    ) -> Signal<GraphQLResult<Query.Data>> {
-        return Signal { callbacker in
+        onError: @escaping (_ error: Error) -> Void = { _ in }
+    ) -> Signal<Query.Data> {
+        Signal { callbacker in
             let bag = DisposeBag()
 
-            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue) { [unowned self] result in
+            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue, resultHandler: { result in
                 switch result {
                 case let .success(result):
-                    callbacker(result)
-                case let .failure(error):
-                    if error.isIgnorable {
-                        return
-                    }
-
-                    let retryHandler = { [unowned self] in
-                        bag += self.watch(query: query, cachePolicy: cachePolicy, queue: queue, numberOfRetries: numberOfRetries + 1).onValue { result in
-                            callbacker(result)
-                        }
-                    }
-
-                    if numberOfRetries == 0 {
-                        retryHandler()
+                    if let data = result.data {
+                        callbacker(data)
+                    } else if let errors = result.errors {
+                        onError(GraphQLError(errors: errors))
                     } else {
-                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        fatalError("Invalid GraphQL state")
                     }
+                case let .failure(error):
+                    onError(error)
                 }
-            }
+            })
 
             return Disposer {
                 watcher.cancel()
@@ -177,39 +127,21 @@ public extension ApolloClient {
         operation: Mutation,
         files: [GraphQLFile],
         queue: DispatchQueue = DispatchQueue.main
-    ) -> Future<GraphQLResult<Mutation.Data>> {
-        upload(operation: operation, files: files, queue: queue, numberOfRetries: 0)
-    }
-
-    private func upload<Mutation: GraphQLMutation>(
-        operation: Mutation,
-        files: [GraphQLFile],
-        queue: DispatchQueue = DispatchQueue.main,
-        numberOfRetries: Int = 0
-    ) -> Future<GraphQLResult<Mutation.Data>> {
+    ) -> Future<Mutation.Data> {
         Future { completion in
             let bag = DisposeBag()
-            let cancellable = self.upload(operation: operation, context: nil, files: files, queue: queue) { [unowned self] result in
-                print(result)
+            let cancellable = self.upload(operation: operation, context: nil, files: files, queue: queue) { result in
                 switch result {
                 case let .success(result):
-                    completion(.success(result))
-                case let .failure(error):
-                    if error.isIgnorable {
-                        return
-                    }
-
-                    let retryHandler = { [unowned self] () -> Void in
-                        bag += self.upload(operation: operation, files: files, queue: queue).onValue { result in
-                            completion(.success(result))
-                        }
-                    }
-
-                    if numberOfRetries == 0 {
-                        retryHandler()
+                    if let data = result.data {
+                        completion(.success(data))
+                    } else if let errors = result.errors {
+                        completion(.failure(GraphQLError(errors: errors)))
                     } else {
-                        self.showNetworkErrorMessage(queue: queue, onRetry: retryHandler)
+                        fatalError("Invalid GraphQL state")
                     }
+                case let .failure(error):
+                    completion(.failure(error))
                 }
             }
 
@@ -220,25 +152,34 @@ public extension ApolloClient {
         }
     }
 
-    func subscribe<Subscription>(subscription: Subscription, queue: DispatchQueue = DispatchQueue.main) -> Signal<GraphQLResult<Subscription.Data>> where Subscription: GraphQLSubscription {
+    func subscribe<Subscription>(
+        subscription: Subscription,
+        queue: DispatchQueue = DispatchQueue.main,
+        onError: @escaping (_ error: Error) -> Void = { _ in }
+    ) -> Signal<Subscription.Data> where Subscription: GraphQLSubscription {
         return Signal { callbacker in
             let bag = DisposeBag()
 
             let subscriber = self.subscribe(subscription: subscription, queue: queue, resultHandler: { result in
                 switch result {
                 case let .success(result):
-                    callbacker(result)
-                case let .failure(error):
-                    if !error.isIgnorable {
-                        // log it
+                    if let data = result.data {
+                        callbacker(data)
+                    } else if let errors = result.errors {
+                        onError(GraphQLError(errors: errors))
+                    } else {
+                        fatalError("Invalid GraphQL state")
                     }
+                case let .failure(error):
+                    onError(error)
                 }
             })
 
-            return Disposer {
+            bag += {
                 subscriber.cancel()
-                bag.dispose()
             }
+
+            return bag
         }
     }
 }

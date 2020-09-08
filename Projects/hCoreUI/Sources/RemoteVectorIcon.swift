@@ -10,18 +10,19 @@ import Disk
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Kingfisher
 import UIKit
 
 public struct RemoteVectorIcon {
-    public let iconSignal = ReadWriteSignal<IconFragment?>(nil)
+    public let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
     public let finishedLoadingSignal: Signal<Void>
     public let finishedLoadingCallback = Callbacker<Void>()
     @Inject var environment: ApolloEnvironmentConfig
     public let threaded: Bool
 
     public init(
-        _ icon: IconFragment? = nil,
+        _ icon: GraphQL.IconFragment? = nil,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon
@@ -94,5 +95,28 @@ extension RemoteVectorIcon: Viewable {
         }
 
         return (imageView, bag)
+    }
+}
+
+extension RemoteVectorIcon {
+    public func alignedTo(
+        _: UIStackView.Alignment,
+        configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
+    ) -> ContainerStackViewable<ContainerStackViewable<RemoteVectorIcon, UIImageView, UIStackView>, UIStackView, UIStackView> {
+        wrappedIn({
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.alignment = .leading
+            stackView.distribution = .equalSpacing
+            return stackView
+        }(), configure: { iconView in
+            configure(iconView)
+        }).wrappedIn({
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.distribution = .equalSpacing
+            stackView.alignment = .leading
+            return stackView
+        }())
     }
 }

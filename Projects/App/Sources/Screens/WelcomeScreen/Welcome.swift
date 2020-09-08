@@ -11,16 +11,17 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import StoreKit
 import UIKit
 
 struct Welcome {
-    let dataSignal: ReadWriteSignal<WelcomeQuery.Data?>
+    let dataSignal: ReadWriteSignal<GraphQL.WelcomeQuery.Data?>
     let endWithReview: Bool
 
-    init(data: WelcomeQuery.Data?, endWithReview: Bool) {
-        dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(data)
+    init(data: GraphQL.WelcomeQuery.Data?, endWithReview: Bool) {
+        dataSignal = ReadWriteSignal<GraphQL.WelcomeQuery.Data?>(data)
         self.endWithReview = endWithReview
     }
 }
@@ -43,7 +44,7 @@ extension Welcome: Presentable {
         viewController.navigationItem.rightBarButtonItem = item
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .secondaryBackground
 
         let containerView = UIStackView()
         containerView.axis = .vertical
@@ -109,8 +110,12 @@ extension Welcome: Presentable {
         bag += pager.scrolledToPageIndexCallbacker.bindTo(pagerDots.pageIndexSignal)
         bag += pager.scrolledToPageIndexCallbacker.bindTo(proceedButton.onScrolledToPageIndexSignal)
 
-        bag += proceedButton.onTapSignal.onValue {
-            scrollToNextCallbacker.callAll()
+        bag += combineLatest(proceedButton.onScrolledToPageIndexSignal, dataSignal).driven(by: proceedButton.onTapSignal).onValue { index, data in
+            if index == ((data?.welcome.count ?? 0) - 1) {
+                scrolledToEndCallbacker.callAll()
+            } else {
+                scrollToNextCallbacker.callAll()
+            }
         }
 
         viewController.view = view
@@ -126,7 +131,7 @@ extension Welcome: Presentable {
                 completion(.success)
             }
 
-            return bag
+            return DelayedDisposer(bag, delay: 2)
         })
     }
 }

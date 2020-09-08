@@ -11,21 +11,6 @@ import Foundation
 import hCore
 import UIKit
 
-extension Localization.Locale {
-    public func asGraphQLLocale() -> Locale {
-        switch self {
-        case .sv_SE:
-            return .svSe
-        case .en_SE:
-            return .enSe
-        case .nb_NO:
-            return .nbNo
-        case .en_NO:
-            return .enNo
-        }
-    }
-}
-
 struct ApplicationState {
     public static let lastNewsSeenKey = "lastNewsSeen"
 
@@ -53,7 +38,7 @@ struct ApplicationState {
     }
 
     static func hasPreviousState() -> Bool {
-        return UserDefaults.standard.value(forKey: key) as? String != nil
+        UserDefaults.standard.value(forKey: key) as? String != nil
     }
 
     private static let firebaseMessagingTokenKey = "firebaseMessagingToken"
@@ -67,11 +52,11 @@ struct ApplicationState {
     }
 
     static func hasLastNewsSeen() -> Bool {
-        return UserDefaults.standard.value(forKey: lastNewsSeenKey) as? String != nil
+        UserDefaults.standard.value(forKey: lastNewsSeenKey) as? String != nil
     }
 
     static func getLastNewsSeen() -> String {
-        return UserDefaults.standard.string(forKey: ApplicationState.lastNewsSeenKey) ?? "2.8.3"
+        UserDefaults.standard.string(forKey: ApplicationState.lastNewsSeenKey) ?? "2.8.3"
     }
 
     static func setLastNewsSeen() {
@@ -85,7 +70,7 @@ struct ApplicationState {
     }
 
     static var hasPreferredLocale: Bool {
-        return UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
+        UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
     }
 
     static var preferredLocale: Localization.Locale {
@@ -205,7 +190,7 @@ struct ApplicationState {
     }
 
     static var hasOverridenTargetEnvironment: Bool {
-        return UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
+        UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
     }
 
     static func getTargetEnvironment() -> Environment {
@@ -257,7 +242,7 @@ struct ApplicationState {
         case .offer:
             return window.present(
                 Offer(),
-                options: [.defaults, .prefersNavigationBarHidden(true)],
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)],
                 animated: false
             )
         case .loggedIn:

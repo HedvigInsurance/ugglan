@@ -24,7 +24,7 @@ extension VersionRow: Viewable {
 
         let appVersion = Bundle.main.appVersion
 
-        row.append(UILabel(value: appVersion, style: .rowTitleDisabled))
+        row.append(UILabel(value: appVersion, style: .brand(.headline(color: .quartenary))))
 
         return (row, bag)
     }

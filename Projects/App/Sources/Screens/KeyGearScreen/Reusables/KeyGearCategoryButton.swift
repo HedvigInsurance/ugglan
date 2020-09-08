@@ -9,6 +9,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 extension CGSize {
@@ -18,7 +19,7 @@ extension CGSize {
 }
 
 struct KeyGearCategoryButton: SignalProvider {
-    let category: KeyGearItemCategory
+    let category: GraphQL.KeyGearItemCategory
     let selectedSignal = ReadWriteSignal<Bool>(false)
     private let callbacker = Callbacker<Void>()
 

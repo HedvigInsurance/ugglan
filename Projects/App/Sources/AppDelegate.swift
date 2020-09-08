@@ -16,9 +16,11 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Mixpanel
 import Presentation
 import Sentry
+import SwiftUI
 import UIKit
 import UserNotifications
 
@@ -29,50 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
-    var launchWindow: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
     private let applicationWillTerminateCallbacker = Callbacker<Void>()
     let applicationWillTerminateSignal: Signal<Void>
-    let hasFinishedLoading = ReadWriteSignal<Bool>(false)
-
-    let toastSignal = ReadWriteSignal<Toast?>(nil)
 
     override init() {
         applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
         super.init()
-    }
-
-    func presentToasts() {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
-
-        let toastBag = bag.innerBag()
-        let toasts = Toasts(toastSignal: toastSignal)
-
-        toastBag += keyWindow.add(toasts) { toastsView in toastBag += toastSignal.atOnce().onValue { _ in
-            toastsView.snp.remakeConstraints { make in
-                if #available(iOS 13, *), keyWindow.traitCollection.userInterfaceIdiom != .pad {
-                    if keyWindow.rootViewController?.presentedViewController != nil {
-                        let safeAreaTop = keyWindow.safeAreaInsets.top
-                        make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop + 20)
-                    } else {
-                        let safeAreaTop = keyWindow.safeAreaInsets.top
-                        make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
-                    }
-                } else {
-                    let safeAreaTop = keyWindow.safeAreaInsets.top
-                    make.top.equalTo(safeAreaTop == 0 ? 10 : safeAreaTop)
-                }
-
-                make.centerX.equalToSuperview()
-            }
-        }
-        }
-
-        toastBag += toasts.idleSignal.onValue { _ in
-            self.toastSignal.value = nil
-            toastBag.dispose()
-        }
     }
 
     func logout() {
@@ -80,28 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += ApolloClient.createClientFromNewSession().onValue { _ in
             self.bag.dispose()
             self.bag += ApplicationState.presentRootViewController(self.window)
-        }
-    }
-
-    func displayToast(
-        _ toast: Toast
-    ) -> Future<Void> {
-        return Future { completion in
-            self.bag += Signal(after: 0).withLatestFrom(self.toastSignal.atOnce().plain()).onValue(on: .main) { _, previousToast in
-                if self.toastSignal.value == nil {
-                    self.presentToasts()
-                }
-
-                if toast != previousToast {
-                    self.toastSignal.value = toast
-                }
-
-                self.bag += self.toastSignal.take(first: 1).onValue { _ in
-                    completion(.success)
-                }
-            }
-
-            return NilDisposer()
         }
     }
 
@@ -120,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func registerForPushNotifications() -> Future<Void> {
-        return Future { completion in
+        Future { completion in
             UNUserNotificationCenter.current().getNotificationSettings { settings in
                 guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
                 if settings.authorizationStatus == .denied {
@@ -162,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         } else if dynamicLinkUrl.pathComponents.contains("forever") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                 NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
             }
 
@@ -223,13 +165,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return application(app, open: url,
-                           sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-                           annotation: "")
+        application(app, open: url,
+                    sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                    annotation: "")
     }
 
     var mixpanelToken: String? {
-        return Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String
+        Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String
     }
 
     func application(
@@ -250,21 +192,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         AskForRating().registerSession()
-
-        Button.trackingHandler = { button in
-            if let localizationKey = button.title.value.derivedFromL10n?.key {
-                Mixpanel.mainInstance().track(event: localizationKey, properties: [
-                    "context": "Button",
-                ])
-            }
-        }
+        CrossFrameworkCoordinator.setup()
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
-
-        launchWindow?.isOpaque = false
-        launchWindow?.backgroundColor = UIColor.transparent
 
         window.rootViewController = navigationController
 
@@ -335,19 +267,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Mixpanel.mainInstance().track(event: event)
         }
 
-        let launch = Launch(
-            hasLoadedSignal: hasFinishedLoading.toVoid().plain()
-        )
+        let launch = Launch()
 
-        let (launchViewController, launchFuture) = launch.materialize()
-        launchWindow?.rootViewController = launchViewController
+        let (launchView, launchFuture) = launch.materialize()
+        window.rootView.addSubview(launchView)
+        launchView.layer.zPosition = .greatestFiniteMagnitude - 2
+
         window.makeKeyAndVisible()
-        launchWindow?.makeKeyAndVisible()
+
+        launchView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
 
         DefaultStyling.installCustom()
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
+
+        if ApplicationState.hasOverridenTargetEnvironment {
+            let toast = Toast(
+                symbol: .icon(hCoreUIAssets.settingsIcon.image),
+                body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
+                textColor: .black,
+                backgroundColor: .yellow
+            )
+
+            if #available(iOS 13, *) {
+                self.bag += toast.onTap.onValue {
+                    self.window.rootViewController?.present(
+                        UIHostingController(rootView: Debug()),
+                        style: .detented(.medium, .large),
+                        options: []
+                    )
+                }
+            }
+
+            Toasts.shared.displayToast(toast: toast)
+        }
 
         bag += ApolloClient.initClient().valueSignal.map { _ in true }.plain().atValue { _ in
             Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
@@ -357,24 +313,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             AnalyticsCoordinator().setUserId()
 
             self.bag += ApplicationState.presentRootViewController(self.window)
-
-            if ApplicationState.hasOverridenTargetEnvironment {
-                self.displayToast(Toast(
-                    symbol: .character("🧙‍♂️"),
-                    body: "You are using the \(ApplicationState.getTargetEnvironment().displayName) environment."
-                )
-                ).onValue { _ in }
-            }
-        }.delay(by: 0.1).onValue { _ in
+        }.onValue { _ in
             let client: ApolloClient = Dependencies.shared.resolve()
-            self.bag += client.fetch(query: FeaturesQuery()).onValue { _ in
-                self.hasFinishedLoading.value = true
+            self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
+                launch.completeAnimationCallbacker.callAll()
             }
         }
 
         bag += launchFuture.onValue { _ in
-            self.window.makeKeyAndVisible()
-            self.launchWindow = nil
+            launchView.removeFromSuperview()
+            ApplicationContext.shared.hasFinishedBootstrapping = true
         }
 
         return true
@@ -384,8 +332,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
         let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(mutation: RegisterPushTokenMutation(pushToken: token)).onValue { result in
-            if result.data?.registerPushToken != nil {
+        client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
+            if data.registerPushToken != nil {
                 log.info("Did register push token for user")
             } else {
                 log.info("Failed to register push token for user")
@@ -409,7 +357,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 if ApplicationState.currentState == .onboardingChat {
                     return
                 } else if ApplicationState.currentState == .offer {
-                    bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             OfferChat(),
                             style: .modally(
@@ -421,24 +369,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     }
                     return
                 } else if ApplicationState.currentState == .loggedIn {
-                    bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                    bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                         self.window.rootViewController?.present(
                             FreeTextChat(),
-                            style: .modally(
-                                presentationStyle: .pageSheet,
-                                transitionStyle: nil,
-                                capturesStatusBarAppearance: true
-                            )
+                            style: .detented(.large)
                         )
                     }
                     return
                 }
             } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
                 }
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
-                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
                         PaymentSetup(setupType: .initial),
                         style: .modal,
@@ -446,7 +390,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     )
                 }
             } else if notificationType == "PAYMENT_FAILED" {
-                bag += hasFinishedLoading.atOnce().filter { $0 }.onValue { _ in
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
                         PaymentSetup(setupType: .replacement),
                         style: .modal,

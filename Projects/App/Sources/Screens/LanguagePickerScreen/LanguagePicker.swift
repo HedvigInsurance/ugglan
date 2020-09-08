@@ -10,12 +10,14 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 extension UIView {
     var isPossiblyVisible: Signal<Bool> {
-        return windowSignal.atOnce().filter { window in
+        windowSignal.atOnce().filter { window in
             guard let window = window else {
                 return false
             }
@@ -108,7 +110,7 @@ extension LanguagePicker: Presentable {
         let descriptionLabel = UILabel(value: "You can change this later in settings.", style: .rowSubtitle)
         textContainer.addArrangedSubview(descriptionLabel)
 
-        let form = FormView(sections: [], style: .defaultGrouped)
+        let form = FormView()
         middleContent.addArrangedSubview(form)
 
         form.snp.makeConstraints { make in
@@ -122,7 +124,7 @@ extension LanguagePicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += UIApplication.shared.appDelegate.hasFinishedLoading
+        bag += ApplicationContext.shared.$hasFinishedBootstrapping
             .delay(by: 1.25)
             .take(first: 1)
             .animated(style: .lightBounce(duration: 0.75), animations: { _ in
@@ -141,7 +143,7 @@ extension LanguagePicker: Presentable {
                 ApolloClient.initClient().always {
                     completion(.success)
                 }
-                bag += self.client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
+                bag += self.client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }
 
             let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
@@ -150,7 +152,7 @@ extension LanguagePicker: Presentable {
             }
 
             englishRow.prepend(Asset.flagGB.image)
-            englishRow.append(Asset.chevronRight.image)
+            englishRow.append(hCoreUIAssets.chevronRight.image)
 
             let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
             bag += section.append(swedishRow).onValue { _ in
@@ -158,7 +160,7 @@ extension LanguagePicker: Presentable {
             }
 
             swedishRow.prepend(Asset.flagSE.image)
-            swedishRow.append(Asset.chevronRight.image)
+            swedishRow.append(hCoreUIAssets.chevronRight.image)
 
             return bag
         })

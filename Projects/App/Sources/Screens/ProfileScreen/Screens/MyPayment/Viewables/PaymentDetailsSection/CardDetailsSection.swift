@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 
 struct CardDetailsSection {
     @Inject var client: ApolloClient
@@ -26,12 +28,11 @@ extension CardDetailsSection: Viewable {
         section.isHidden = true
 
         let row = KeyValueRow()
-        row.valueStyleSignal.value = .rowTitleDisabled
+        row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
         bag += section.append(row)
 
-        let dataValueSignal = client.watch(query: ActivePaymentMethodsQuery())
-        let dataSignal = dataValueSignal.compactMap { $0.data }
+        let dataSignal = client.watch(query: GraphQL.ActivePaymentMethodsQuery())
 
         bag += dataSignal.map { $0.activePaymentMethods == nil }.bindTo(
             animate: SpringAnimationStyle.lightBounce(),

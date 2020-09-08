@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct AttachGIFPane {
@@ -71,6 +72,7 @@ extension AttachGIFPane: Viewable {
         bag += searchBarValue.onValue { _ in }
 
         let searchBarContainer = UIStackView()
+        searchBarContainer.isLayoutMarginsRelativeArrangement = true
         searchBarContainer.addArrangedSubview(searchBarView)
 
         view.addSubview(searchBarContainer)
@@ -120,9 +122,9 @@ extension AttachGIFPane: Viewable {
         }
 
         bag += searchBarValue.mapLatestToFuture { value in
-            self.client.fetch(query: GifQuery(query: value))
-        }.compactMap { result in
-            result.data?.gifs.compactMap { $0 }
+            self.client.fetch(query: GraphQL.GifQuery(query: value))
+        }.compactMap { data in
+            data.gifs.compactMap { $0 }
         }.onValue { gifs in
             let attachGIFImages = gifs.compactMap { gif -> AttachGIFImage? in
                 guard let url = URL(string: gif.url) else {
@@ -155,12 +157,18 @@ extension AttachGIFPane: Viewable {
             return innerBag
         }
 
-        bag += view.didMoveToWindowSignal.onValue { _ in
+        bag += view.traitCollectionSignal.atOnce().wait(until: view.hasWindowSignal).onValue { trait in
             view.snp.remakeConstraints { make in
                 make.width.equalToSuperview()
-                make.height.equalTo(300)
+
+                if trait.verticalSizeClass == .compact {
+                    make.height.equalTo(100)
+                } else {
+                    make.height.equalTo(300)
+                }
             }
         }
+
         return (view, bag)
     }
 }

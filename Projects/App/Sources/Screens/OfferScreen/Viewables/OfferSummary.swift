@@ -10,6 +10,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct OfferSummary {}
@@ -36,7 +37,7 @@ extension OfferSummary: Viewable {
             make.trailing.leading.top.bottom.equalToSuperview()
         }
 
-        let titleLabel = ApolloMultilineLabel(query: OfferQuery()) {
+        let titleLabel = ApolloMultilineLabel(query: GraphQL.OfferQuery()) {
             StyledText(text: $0.insurance.address ?? "", style: TextStyle.headlineLargeLargeCenter.aligned(to: .center))
         }
         bag += stackView.addArranged(titleLabel)

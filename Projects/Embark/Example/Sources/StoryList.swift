@@ -13,6 +13,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -37,7 +38,7 @@ extension StoryList: Presentable {
             ), options: [.defaults, .largeTitleDisplayMode(.never)])
         }
 
-        bag += client.fetch(query: EmbarkStoryNamesQuery()).valueSignal.map { $0.data?.embarkStoryNames }.compactMap { $0 }.map { $0.map { value in StringRow(value: value) } }.onValue { storyNames in
+        bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery()).valueSignal.map { $0.embarkStoryNames }.compactMap { $0 }.map { $0.map { value in StringRow(value: value) } }.onValue { storyNames in
             tableKit.set(Table(rows: storyNames))
         }
 

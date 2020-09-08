@@ -13,6 +13,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -24,19 +25,21 @@ extension MyPayment: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: MyPaymentQuery()).map { $0.data }
-        let failedChargesSignalData = dataSignal.map { $0?.balance.failedCharges }
-        let nextPaymentSignalData = dataSignal.map { $0?.nextChargeDate }
+        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())
+        let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
+        let nextPaymentSignalData = dataSignal.map { $0.nextChargeDate }
 
         let viewController = UIViewController()
         viewController.title = L10n.myPaymentTitle
 
         let form = FormView()
-        bag += viewController.install(form)
-
-        form.alpha = 0
-        form.transform = CGAffineTransform(translationX: 0, y: 100)
-
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.performEntryAnimation(
+                contentView: form,
+                onLoad: self.client.fetch(query: GraphQL.MyPaymentQuery()),
+                onError: { _ in }
+            )
+        }
         bag += dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
             form.alpha = 1
             form.transform = CGAffineTransform.identity
@@ -103,12 +106,12 @@ extension MyPayment: Presentable {
         )
         bag += form.append(buttonSection)
 
-        let myPaymentQuerySignal = client.watch(query: MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let myPaymentQuerySignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
 
-        bag += myPaymentQuerySignal.onValueDisposePrevious { result in
+        bag += myPaymentQuerySignal.onValueDisposePrevious { data in
             let innerBag = bag.innerBag()
 
-            let hasAlreadyConnected = result.data?.payinMethodStatus != .needsSetup
+            let hasAlreadyConnected = data.payinMethodStatus != .needsSetup
             buttonSection.text.value = hasAlreadyConnected ? L10n.myPaymentDirectDebitReplaceButton : L10n.myPaymentDirectDebitButton
 
             innerBag += buttonSection.onSelect.onValue {
@@ -118,7 +121,7 @@ extension MyPayment: Presentable {
                 viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
             }
 
-            if result.data?.payinMethodStatus == .pending {
+            if data.payinMethodStatus == .pending {
                 updatingMessageSectionSpacing.isHiddenSignal.value = false
                 updatingMessageSection.isHidden = false
                 buttonSection.isHiddenSignal.value = true

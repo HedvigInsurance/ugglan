@@ -14,6 +14,14 @@ xcassets:
       outputs:
         templateName: swift4
         output: Projects/Forever/Sources/Derived/Assets.swift
+    - inputs: Projects/Contracts/Resources/Assets.xcassets
+      outputs:
+        templateName: swift4
+        output: Projects/Contracts/Sources/Derived/Assets.swift
+    - inputs: Projects/Home/Resources/Assets.xcassets
+      outputs:
+        templateName: swift4
+        output: Projects/Home/Sources/Derived/Assets.swift
 strings:
   inputs: 
     - Projects/hCore/Resources/en-SE.lproj/Localizable.strings

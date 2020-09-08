@@ -1,0 +1,11 @@
+query Home {
+    member {
+        firstName
+    }
+    contracts {
+        switchedFromInsuranceProvider
+        status {
+            ...ContractStatusFragment
+        }
+    }
+}

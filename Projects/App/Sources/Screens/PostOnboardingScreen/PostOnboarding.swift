@@ -90,6 +90,9 @@ extension PostOnboarding: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.navigationItem.hidesBackButton = true
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
 
         ApplicationState.preserveState(.loggedIn)
 
@@ -102,6 +105,7 @@ extension PostOnboarding: Presentable {
         collectionKit.view.isPagingEnabled = true
         collectionKit.view.isScrollEnabled = false
         collectionKit.view.contentInsetAdjustmentBehavior = .never
+        collectionKit.view.backgroundColor = .secondaryBackground
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             collectionKit.view.bounds.size

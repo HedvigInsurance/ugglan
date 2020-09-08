@@ -9,6 +9,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 import WebKit
@@ -17,7 +18,7 @@ struct WebOnboarding {}
 
 final class WebOnboardingWebView: WKWebView, UIScrollViewDelegate {
     func viewForZooming(in _: UIScrollView) -> UIView? {
-        return nil
+        nil
     }
 }
 
@@ -35,12 +36,13 @@ extension WebOnboarding: Presentable {
         bag += settingsButton.onValue { _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
-                style: .modally(
-                    presentationStyle: .formSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                ),
-                options: [.allowSwipeDismissAlways, .defaults]
+                style: .detented(.scrollViewContentSize(20), .large),
+                options: [
+                    .allowSwipeDismissAlways,
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
             )
         }
 

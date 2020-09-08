@@ -11,12 +11,13 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 struct KeyGearAddValuation {
     let id: String
-    let category: KeyGearItemCategory
+    let category: GraphQL.KeyGearItemCategory
     let state = State()
     @Inject var client: ApolloClient
 
@@ -28,7 +29,7 @@ struct KeyGearAddValuation {
 
 struct PurchasePrice: Viewable {
     let id: String
-    let category: KeyGearItemCategory
+    let category: GraphQL.KeyGearItemCategory
     @Inject var client: ApolloClient
 
     func materialize(events _: ViewableEvents) -> (SectionView, Signal<Int>) {
@@ -55,8 +56,8 @@ struct PurchasePrice: Viewable {
         bag += textField.addDoneToolbar()
 
         let amountSignal = client
-            .watch(query: KeyGearItemQuery(id: id))
-            .compactMap { $0.data?.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
+            .watch(query: GraphQL.KeyGearItemQuery(id: id))
+            .compactMap { $0.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
             .readable(initial: "0")
 
         bag += combineLatest(textField, amountSignal).animated(style: SpringAnimationStyle.lightBounce()) { value, amount in
@@ -166,9 +167,9 @@ extension KeyGearAddValuation: Presentable {
                 button.isLoadingSignal.value = true
 
                 self.client.perform(
-                    mutation: UpdateKeyGearValuationMutation(
+                    mutation: GraphQL.UpdateKeyGearValuationMutation(
                         itemId: self.id,
-                        purchasePrice: MonetaryAmountV2Input(amount: self.state.purchasePriceSignal.value.description, currency: "SEK"),
+                        purchasePrice: GraphQL.MonetaryAmountV2Input(amount: self.state.purchasePriceSignal.value.description, currency: "SEK"),
                         purchaseDate: self.state.purchaseDateSignal.value.localDateString ?? ""
                     )
                 ).onValue { _ in

@@ -1,14 +1,3 @@
-fragment IconFragment on Icon {
-    variants {
-        dark {
-            pdfUrl
-        }
-        light {
-            pdfUrl
-        }
-    }
-}
-
 fragment InsuranceProviderFragment on InsuranceProvider {
     name
     externalCollectionId

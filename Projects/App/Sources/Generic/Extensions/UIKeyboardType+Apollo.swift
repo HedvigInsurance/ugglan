@@ -8,9 +8,10 @@
 import Apollo
 import Foundation
 import UIKit
+import hGraphQL
 
 extension UIKeyboardType {
-    static func from(_ keyboardType: KeyboardType?) -> UIKeyboardType? {
+    static func from(_ keyboardType: GraphQL.KeyboardType?) -> UIKeyboardType? {
         guard let keyboardType = keyboardType else {
             return nil
         }

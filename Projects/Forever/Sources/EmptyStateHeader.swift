@@ -24,7 +24,7 @@ extension EmptyStateHeader: Viewable {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 16
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
+        stackView.layoutMargins = UIEdgeInsets(top: 24, left: 0, bottom: 24, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.isHidden = isHiddenSignal.value
 

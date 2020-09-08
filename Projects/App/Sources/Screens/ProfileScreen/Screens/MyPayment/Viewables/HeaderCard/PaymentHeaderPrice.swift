@@ -27,23 +27,23 @@ extension PaymentHeaderPrice: Viewable {
         stackView.axis = .vertical
         stackView.alignment = .leading
 
-        let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
+        let priceLabel = UILabel(value: "", style: TextStyle.brand(.title2(color: .secondary)))
         stackView.addArrangedSubview(priceLabel)
 
-        let grossPriceLabel = UILabel(value: "", style: TextStyle.priceBubbleGrossTitle)
+        let grossPriceLabel = UILabel(value: "", style: TextStyle.brand(.title3(color: .tertiary)))
         grossPriceLabel.animationSafeIsHidden = true
 
         stackView.addArrangedSubview(grossPriceLabel)
 
         bag += combineLatest(discountSignal, grossPriceSignal)
             .animated(style: SpringAnimationStyle.mediumBounce(), animations: { monthlyDiscount, monthlyGross in
-                grossPriceLabel.styledText = StyledText(text: "\(monthlyGross) kr", style: TextStyle.priceBubbleGrossTitle.colored(.white))
+                grossPriceLabel.value = "\(monthlyGross) kr"
                 grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
                 grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
             })
 
         bag += monthlyNetPriceSignal.onValue { amount in
-            priceLabel.styledText = StyledText(text: "\(String(Int(amount))) kr", style: TextStyle.largePriceBubbleTitle.colored(.white))
+            priceLabel.value = "\(String(Int(amount))) kr"
             priceLabel.layoutIfNeeded()
         }
 

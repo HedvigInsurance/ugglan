@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import UIKit
 
 struct CircleIcon {
@@ -31,7 +32,7 @@ extension CircleIcon: Viewable {
             circleView.layer.cornerRadius = circleView.frame.width / 2
         }
 
-        let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
+        let icon = Icon(frame: .zero, icon: iconAsset.image, iconWidth: iconWidth)
         circleView.addSubview(icon)
 
         circleView.layer.shadowOpacity = 0.2

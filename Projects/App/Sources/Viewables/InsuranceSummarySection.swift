@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import UIKit
 
 struct InsuranceSummarySection {
@@ -50,106 +52,107 @@ extension InsuranceSummarySection: Viewable {
 
         stackView.addArrangedSubview(sectionView)
 
-        bag += client.watch(query: MyHomeQuery()).onValueDisposePrevious { result in
+        bag += client.watch(query: GraphQL.MyHomeQuery()).onValueDisposePrevious { data in
             let innerBag = DisposeBag()
 
-            if let insurance = result.data?.insurance {
-                if let livingSpace = insurance.livingSpace {
-                    let livingSpaceRow = KeyValueRow()
-                    livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
-                    livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(livingSpace))
-                    livingSpaceRow.valueStyleSignal.value = .rowTitleDisabled
-                    innerBag += sectionView.append(livingSpaceRow)
-                }
+            let insurance = data.insurance
 
-                if let ancillaryArea = insurance.ancillaryArea {
-                    let ancillaryAreaRow = KeyValueRow()
-                    ancillaryAreaRow.keySignal.value = L10n.myHomeRowAncillaryAreaKey
-                    ancillaryAreaRow.valueSignal.value = L10n.myHomeRowAncillaryAreaValue(String(ancillaryArea))
-                    ancillaryAreaRow.valueStyleSignal.value = .rowTitleDisabled
-                    innerBag += sectionView.append(ancillaryAreaRow)
-                }
+            if let livingSpace = insurance.livingSpace {
+                let livingSpaceRow = KeyValueRow()
+                livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
+                livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(livingSpace))
+                livingSpaceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+                innerBag += sectionView.append(livingSpaceRow)
+            }
 
-                if let yearOfConstruction = insurance.yearOfConstruction {
-                    let yearOfConstructionRow = KeyValueRow()
-                    yearOfConstructionRow.keySignal.value = L10n.myHomeRowConstructionYearKey
-                    yearOfConstructionRow.valueSignal.value = String(yearOfConstruction)
-                    yearOfConstructionRow.valueStyleSignal.value = .rowTitleDisabled
-                    innerBag += sectionView.append(yearOfConstructionRow)
-                }
+            if let ancillaryArea = insurance.ancillaryArea {
+                let ancillaryAreaRow = KeyValueRow()
+                ancillaryAreaRow.keySignal.value = L10n.myHomeRowAncillaryAreaKey
+                ancillaryAreaRow.valueSignal.value = L10n.myHomeRowAncillaryAreaValue(String(ancillaryArea))
+                ancillaryAreaRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+                innerBag += sectionView.append(ancillaryAreaRow)
+            }
 
-                if let numberOfBathrooms = insurance.numberOfBathrooms {
-                    let numberOfBathroomsRow = KeyValueRow()
-                    numberOfBathroomsRow.keySignal.value = L10n.myHomeRowBathroomsKey
-                    numberOfBathroomsRow.valueSignal.value = String(numberOfBathrooms)
-                    numberOfBathroomsRow.valueStyleSignal.value = .rowTitleDisabled
-                    innerBag += sectionView.append(numberOfBathroomsRow)
-                }
+            if let yearOfConstruction = insurance.yearOfConstruction {
+                let yearOfConstructionRow = KeyValueRow()
+                yearOfConstructionRow.keySignal.value = L10n.myHomeRowConstructionYearKey
+                yearOfConstructionRow.valueSignal.value = String(yearOfConstruction)
+                yearOfConstructionRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+                innerBag += sectionView.append(yearOfConstructionRow)
+            }
 
-                if let isSubleted = insurance.isSubleted {
-                    let isSubletedRow = KeyValueRow()
-                    isSubletedRow.keySignal.value = L10n.myHomeRowSubletedKey
-                    isSubletedRow.valueSignal.value = isSubleted ?
-                        L10n.myHomeRowSubletedValueYes :
-                        L10n.myHomeRowSubletedValueNo
-                    isSubletedRow.valueStyleSignal.value = .rowTitleDisabled
-                    innerBag += sectionView.append(isSubletedRow)
-                }
+            if let numberOfBathrooms = insurance.numberOfBathrooms {
+                let numberOfBathroomsRow = KeyValueRow()
+                numberOfBathroomsRow.keySignal.value = L10n.myHomeRowBathroomsKey
+                numberOfBathroomsRow.valueSignal.value = String(numberOfBathrooms)
+                numberOfBathroomsRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+                innerBag += sectionView.append(numberOfBathroomsRow)
+            }
 
-                let adressRow = KeyValueRow()
-                adressRow.keySignal.value = L10n.myHomeAddressRowKey
-                adressRow.valueSignal.value = insurance.address ?? ""
-                adressRow.valueStyleSignal.value = .rowTitleDisabled
-                innerBag += sectionView.append(adressRow)
+            if let isSubleted = insurance.isSubleted {
+                let isSubletedRow = KeyValueRow()
+                isSubletedRow.keySignal.value = L10n.myHomeRowSubletedKey
+                isSubletedRow.valueSignal.value = isSubleted ?
+                    L10n.myHomeRowSubletedValueYes :
+                    L10n.myHomeRowSubletedValueNo
+                isSubletedRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+                innerBag += sectionView.append(isSubletedRow)
+            }
 
-                let postalCodeRow = KeyValueRow()
-                postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
-                postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
-                postalCodeRow.valueStyleSignal.value = .rowTitleDisabled
-                innerBag += sectionView.append(postalCodeRow)
+            let adressRow = KeyValueRow()
+            adressRow.keySignal.value = L10n.myHomeAddressRowKey
+            adressRow.valueSignal.value = insurance.address ?? ""
+            adressRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            innerBag += sectionView.append(adressRow)
 
-                let apartmentTypeRow = KeyValueRow()
-                apartmentTypeRow.keySignal.value = L10n.myHomeRowTypeKey
-                apartmentTypeRow.valueStyleSignal.value = .rowTitleDisabled
+            let postalCodeRow = KeyValueRow()
+            postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
+            postalCodeRow.valueSignal.value = insurance.postalNumber ?? ""
+            postalCodeRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            innerBag += sectionView.append(postalCodeRow)
 
-                if let insuranceType = insurance.type {
-                    switch insuranceType {
-                    case .brf:
-                        apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeCondominiumValue
-                    case .studentBrf:
-                        apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeCondominiumValue
-                    case .rent:
-                        apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeRentalValue
-                    case .studentRent:
-                        apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeRentalValue
-                    case .house:
-                        apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeHouseValue
-                    case .__unknown:
-                        apartmentTypeRow.valueSignal.value = L10n.genericUnknown
-                    }
-                }
-                innerBag += sectionView.append(apartmentTypeRow)
+            let apartmentTypeRow = KeyValueRow()
+            apartmentTypeRow.keySignal.value = L10n.myHomeRowTypeKey
+            apartmentTypeRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-                if let extraBuildings = insurance.extraBuildings, !extraBuildings.isEmpty {
-                    let extraBuildingsSection = SectionView(
-                        headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .rowTitle),
-                        footerView: nil
-                    )
-                    extraBuildingsSection.dynamicStyle = .sectionPlain
-
-                    stackView.addArrangedSubview(extraBuildingsSection)
-
-                    innerBag += {
-                        extraBuildingsSection.removeFromSuperview()
-                    }
-
-                    innerBag += extraBuildings.map { extraBuilding in
-                        ExtraBuildingRow(data: .static(extraBuilding.fragments.extraBuildingFragment))
-                    }.map { extraBuildingRow in
-                        extraBuildingsSection.append(extraBuildingRow)
-                    }
+            if let insuranceType = insurance.type {
+                switch insuranceType {
+                case .brf:
+                    apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeCondominiumValue
+                case .studentBrf:
+                    apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeCondominiumValue
+                case .rent:
+                    apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeRentalValue
+                case .studentRent:
+                    apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeRentalValue
+                case .house:
+                    apartmentTypeRow.valueSignal.value = L10n.myHomeRowTypeHouseValue
+                case .__unknown:
+                    apartmentTypeRow.valueSignal.value = L10n.genericUnknown
                 }
             }
+            innerBag += sectionView.append(apartmentTypeRow)
+
+            if let extraBuildings = insurance.extraBuildings, !extraBuildings.isEmpty {
+                let extraBuildingsSection = SectionView(
+                    headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .rowTitle),
+                    footerView: nil
+                )
+                extraBuildingsSection.dynamicStyle = .sectionPlain
+
+                stackView.addArrangedSubview(extraBuildingsSection)
+
+                innerBag += {
+                    extraBuildingsSection.removeFromSuperview()
+                }
+
+                innerBag += extraBuildings.map { extraBuilding in
+                    ExtraBuildingRow(data: .static(extraBuilding.fragments.extraBuildingFragment))
+                }.map { extraBuildingRow in
+                    extraBuildingsSection.append(extraBuildingRow)
+                }
+            }
+
             return innerBag
         }
 

@@ -36,7 +36,7 @@ extension KeyGearAddButton: Viewable {
             make.centerY.equalToSuperview()
         }
 
-        let icon = Icon(icon: Asset.addButton, iconWidth: 32)
+        let icon = Icon(icon: Asset.addButton.image, iconWidth: 32)
         contentContainer.addArrangedSubview(icon)
 
         let label = MultilineLabel(value: L10n.keyGearAddButton, style: TextStyle.body.colored(.primaryTintColor))

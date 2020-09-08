@@ -11,6 +11,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import SwiftUI
 import UIKit
@@ -38,6 +39,8 @@ extension About: Presentable {
         let form = FormView()
 
         if state == .onboarding {
+            form.appendSpacing(.inbetween)
+
             let loginSection = form.appendSection(
                 headerView: nil,
                 footerView: nil
@@ -45,14 +48,14 @@ extension About: Presentable {
 
             let loginRow = ButtonRow(
                 text: L10n.settingsLoginRow,
-                style: .normalButton
+                style: .brand(.headline(color: .link))
             )
             bag += loginSection.append(loginRow)
 
             bag += loginRow.onSelect.onValue { _ in
                 viewController.present(
                     BankIDLogin(),
-                    style: .modally(),
+                    style: .detented(.medium, .large),
                     options: [.allowSwipeDismissAlways, .defaults]
                 )
             }
@@ -74,7 +77,11 @@ extension About: Presentable {
 
             bag += tapGestureRecongnizer.signal(forState: .recognized).onValue { _ in
                 if #available(iOS 13, *) {
-                    viewController.present(UIHostingController(rootView: Debug()), style: .modally(), options: [])
+                    viewController.present(
+                        UIHostingController(rootView: Debug()),
+                        style: .detented(.medium, .large),
+                        options: []
+                    )
                 }
             }
         }
@@ -85,7 +92,7 @@ extension About: Presentable {
         if state == .loggedIn {
             let activatePushNotificationsRow = ButtonRow(
                 text: L10n.aboutPushRow,
-                style: .normalButton
+                style: .brand(.headline(color: .link))
             )
 
             bag += versionSection.append(activatePushNotificationsRow)
@@ -116,18 +123,17 @@ extension About: Presentable {
 
             let showWelcome = ButtonRow(
                 text: L10n.aboutShowIntroRow,
-                style: .normalButton
+                style: .brand(.headline(color: .link))
             )
             bag += versionSection.append(showWelcome)
 
             bag += showWelcome.onSelect.onValue { _ in
                 bag += self.client
-                    .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                    .compactMap { $0.data }
+                    .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                     .filter { $0.welcome.count > 0 }
                     .onValue { data in
                         let welcome = Welcome(data: data, endWithReview: false)
-                        viewController.present(welcome, options: [.prefersNavigationBarHidden(true)])
+                        viewController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
                     }
             }
         }
@@ -148,13 +154,6 @@ extension About: Presentable {
                 sourceView: row.viewRepresentation,
                 previewable: languageRow
             )
-        }
-
-        let licensesRow = LicensesRow(
-            presentingViewController: viewController
-        )
-
-        bag += otherSection.append(licensesRow) { _ in
         }
 
         bag += form.append(Spacing(height: 15))

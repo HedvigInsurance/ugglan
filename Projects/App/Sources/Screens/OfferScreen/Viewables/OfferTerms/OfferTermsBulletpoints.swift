@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct OfferTermsBulletPoints {
@@ -18,7 +19,7 @@ struct OfferTermsBulletPoints {
 }
 
 extension OfferTermsBulletPoints {
-    func bullets(for type: InsuranceType) -> [BulletPoint] {
+    func bullets(for type: GraphQL.InsuranceType) -> [BulletPoint] {
         var bulletList: [BulletPoint] = []
 
         if type.isApartment {
@@ -93,7 +94,7 @@ extension OfferTermsBulletPoints {
             let stackView = UIStackView()
             stackView.spacing = 15
 
-            let checkMark = Icon(icon: Asset.circularCheckmark, iconWidth: 20)
+            let checkMark = Icon(icon: Asset.circularCheckmark.image, iconWidth: 20)
             stackView.addArrangedSubview(checkMark)
 
             checkMark.snp.makeConstraints { make in
@@ -135,9 +136,9 @@ extension OfferTermsBulletPoints: Viewable {
         }
 
         bag += client
-            .fetch(query: OfferQuery())
+            .fetch(query: GraphQL.OfferQuery())
             .valueSignal
-            .compactMap { $0.data?.insurance.type }
+            .compactMap { $0.insurance.type }
             .onValueDisposePrevious { insuranceType in
                 let innerBag = DisposeBag()
 

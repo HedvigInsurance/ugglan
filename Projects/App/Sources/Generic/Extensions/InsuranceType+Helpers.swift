@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import hGraphQL
 
-extension InsuranceType {
+extension GraphQL.InsuranceType {
     var isStudent: Bool {
         switch self {
         case .studentBrf, .studentRent:

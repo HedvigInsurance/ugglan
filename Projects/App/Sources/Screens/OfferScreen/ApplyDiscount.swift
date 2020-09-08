@@ -12,59 +12,44 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 struct ApplyDiscount {
     @Inject var client: ApolloClient
 
-    private let didRedeemValidCodeCallbacker = Callbacker<RedeemCodeMutation.Data.RedeemCode>()
+    private let didRedeemValidCodeCallbacker = Callbacker<GraphQL.RedeemCodeMutation.Data.RedeemCode>()
 
-    var didRedeemValidCodeSignal: Signal<RedeemCodeMutation.Data.RedeemCode> {
-        return didRedeemValidCodeCallbacker.providedSignal
+    var didRedeemValidCodeSignal: Signal<GraphQL.RedeemCodeMutation.Data.RedeemCode> {
+        didRedeemValidCodeCallbacker.providedSignal
     }
 }
 
 extension ApplyDiscount: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.title = L10n.referralAddcouponHeadline
 
         let bag = DisposeBag()
 
-        let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
-        viewController.view = containerView
-
-        let view = UIStackView()
-        view.spacing = 5
-        view.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 15)
-        view.isLayoutMarginsRelativeArrangement = true
-        view.axis = .vertical
-
-        containerView.addSubview(view)
-
-        view.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-        }
-
-        let titleLabel = MultilineLabel(
-            value: L10n.referralAddcouponHeadline,
-            style: .draggableOverlayTitle
-        )
-        bag += view.addArranged(titleLabel)
+        let form = FormView()
+        form.dynamicStyle = .insetted
 
         let descriptionLabel = MultilineLabel(
             value: L10n.referralAddcouponBody,
             style: .bodyOffBlack
         )
-        bag += view.addArranged(descriptionLabel)
+        bag += form.append(descriptionLabel)
 
         let textField = TextField(value: "", placeholder: L10n.referralAddcouponInputplaceholder)
-        bag += view.addArranged(textField.wrappedIn(UIStackView())) { stackView in
+        bag += form.append(textField.wrappedIn({
+            let stackView = UIStackView()
             stackView.isUserInteractionEnabled = true
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 20)
-        }
+            return stackView
+        }()))
 
         let submitButton = Button(
             title: L10n.referralAddcouponBtnSubmit,
@@ -73,14 +58,10 @@ extension ApplyDiscount: Presentable {
 
         let loadableSubmitButton = LoadableButton(button: submitButton)
         bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
-
-        bag += view.addArranged(loadableSubmitButton.wrappedIn(UIStackView())) { stackView in
-            stackView.axis = .vertical
-            stackView.alignment = .center
-        }
+        bag += form.append(loadableSubmitButton)
 
         let terms = DiscountTerms()
-        bag += view.addArranged(terms)
+        bag += form.append(terms)
 
         let shouldSubmitCallbacker = Callbacker<Void>()
         bag += loadableSubmitButton.onTapSignal.onValue { _ in
@@ -93,33 +74,32 @@ extension ApplyDiscount: Presentable {
             return true
         }
 
+        bag += viewController.install(form)
+
         return (viewController, Future { completion in
             bag += shouldSubmitCallbacker
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = true
                 }
                 .withLatestFrom(textField.value.plain())
-                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: RedeemCodeMutation(code: discountCode)) }
+                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode)) }
                 .delay(by: 0.5)
                 .atValue { _ in
                     loadableSubmitButton.isLoadingSignal.value = false
                 }
-                .onValue { result in
-                    if result.errors != nil {
-                        let alert = Alert(
-                            title: L10n.referralErrorMissingcodeHeadline,
-                            message: L10n.referralErrorMissingcodeBody,
-                            actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
-                        )
+                .atError { _ in
+                    let alert = Alert(
+                        title: L10n.referralErrorMissingcodeHeadline,
+                        message: L10n.referralErrorMissingcodeBody,
+                        actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
+                    )
 
-                        viewController.present(alert)
-                        return
-                    }
-
-                    if let redeemCode = result.data?.redeemCode {
-                        self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
-                        completion(.success)
-                    }
+                    viewController.present(alert)
+                }
+                .map { $0.redeemCode }
+                .onValue { redeemCode in
+                    self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                    completion(.success)
                 }
 
             return bag

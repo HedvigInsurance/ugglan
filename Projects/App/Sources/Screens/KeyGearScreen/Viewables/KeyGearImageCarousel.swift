@@ -9,10 +9,11 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct KeyGearImageCarousel {
-    let imagesSignal: ReadSignal<[Either<URL, KeyGearItemCategory>]>
+    let imagesSignal: ReadSignal<[Either<URL, GraphQL.KeyGearItemCategory>]>
 }
 
 extension KeyGearImageCarousel: Viewable {

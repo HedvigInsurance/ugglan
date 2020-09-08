@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -20,7 +21,7 @@ struct AddKeyGearItem {
 
     struct State {
         let imageSignal = ReadWriteSignal<UIImage?>(nil)
-        let categorySignal = ReadWriteSignal<KeyGearItemCategory?>(nil)
+        let categorySignal = ReadWriteSignal<GraphQL.KeyGearItemCategory?>(nil)
 
         var isValidSignal: ReadSignal<Bool> {
             combineLatest(imageSignal, categorySignal).map { image, category in
@@ -108,10 +109,10 @@ extension AddKeyGearItem: Presentable {
                 )
 
                 fileUpload.upload().onValue { key, bucket in
-                    self.client.perform(mutation: CreateKeyGearItemMutation(input: CreateKeyGearItemInput(photos: [
-                        S3FileInput(bucket: bucket, key: key),
-                    ], category: .computer))).onValue { result in
-                        self.client.fetch(query: KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
+                    self.client.perform(mutation: GraphQL.CreateKeyGearItemMutation(input: GraphQL.CreateKeyGearItemInput(photos: [
+                        GraphQL.S3FileInput(bucket: bucket, key: key),
+                    ], category: .computer))).onValue { data in
+                        self.client.fetch(query: GraphQL.KeyGearItemsQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in
                             let bubbleLoading = BubbleLoading(
                                 originatingView: saveButtonContainer,
                                 dismissSignal: Signal(after: 2)
@@ -126,7 +127,7 @@ extension AddKeyGearItem: Presentable {
                                 ),
                                 options: [.unanimated]
                             ).onValue { _ in
-                                completion(.success(result.data?.createKeyGearItem.id ?? ""))
+                                completion(.success(data.createKeyGearItem.id))
                             }
                         }
                     }

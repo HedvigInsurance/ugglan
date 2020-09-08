@@ -9,6 +9,8 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -36,7 +38,7 @@ extension OfferStartDateButton: Viewable {
 
         containerStackView.addArrangedSubview(button)
 
-        let dataSignal = client.watch(query: OfferQuery())
+        let dataSignal = client.watch(query: GraphQL.OfferQuery())
 
         bag += dataSignal.take(first: 1).animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) { _ in
             button.transform = CGAffineTransform.identity
@@ -62,19 +64,11 @@ extension OfferStartDateButton: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let keyLabel = UILabel(value: L10n.startDateBtn, style: .bodyButtonText)
+        let keyLabel = UILabel(value: L10n.startDateBtn, style: .brand(.headline(color: .primary)))
         stackView.addArrangedSubview(keyLabel)
 
-        let valueLabel = UILabel(value: "", style: .bodyBookButtonText)
+        let valueLabel = UILabel(value: "", style: .brand(.headline(color: .link)))
         stackView.addArrangedSubview(valueLabel)
-
-        let iconView = Icon(icon: Asset.chevronRight, iconWidth: 20)
-        iconView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
-        stackView.addArrangedSubview(iconView)
-
-        iconView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-        }
 
         let alert = Alert<Void>(title: L10n.alertTitleStartdate,
                                 message: L10n.alertDescriptionStartdate,
@@ -83,34 +77,44 @@ extension OfferStartDateButton: Viewable {
                                           Alert.Action(title: L10n.alertContinue, action: {
                                               self.presentingViewController.present(
                                                   chooseStartDate.withCloseButton,
-                                                  style: .modally()
+                                                  style: .detented(.scrollViewContentSize(20), .large),
+                                                  options: [
+                                                      .defaults,
+                                                      .prefersLargeTitles(true),
+                                                      .largeTitleDisplayMode(.always),
+                                                  ]
                                               )
                                       })])
 
         bag += touchUpInside.onValue { _ in
-            bag += self.client.fetch(query: OfferQuery()).map { $0.data }.onValue { result in
-                if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+            bag += self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in
+                if data.insurance.previousInsurer != nil, data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                     self.presentingViewController.present(alert)
                 } else {
                     self.presentingViewController.present(
                         chooseStartDate.withCloseButton,
-                        style: .modally()
+                        style: .detented(.scrollViewContentSize(20), .large),
+                        options: [
+                            .defaults,
+                            .prefersLargeTitles(true),
+                            .largeTitleDisplayMode(.always),
+                        ]
                     )
                 }
             }
         }
 
-        bag += client.watch(query: OfferQuery()).map { $0.data }.onValue { result in
-            if result?.insurance.previousInsurer != nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+        bag += client.watch(query: GraphQL.OfferQuery()).onValue { data in
+            if data.insurance.previousInsurer != nil, data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                 valueLabel.value = L10n.startDateExpires
-            } else if result?.insurance.previousInsurer == nil, result?.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
+            } else if data.insurance.previousInsurer == nil, data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
                 valueLabel.value = L10n.chooseDateBtn
             } else {
-                valueLabel.value = result?.lastQuoteOfMember.asCompleteQuote?.startDate ?? ""
+                valueLabel.value = data.lastQuoteOfMember.asCompleteQuote?.startDate ?? ""
             }
         }
 
-        bag += dataSignal.map { $0.data?.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }.onValue { startDay in
+        bag += dataSignal.map { $0.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }.onValue { startDay in
             if let startDate = startDay {
                 if Calendar.current.isDateInToday(startDate) {
                     valueLabel.value = L10n.startDateToday

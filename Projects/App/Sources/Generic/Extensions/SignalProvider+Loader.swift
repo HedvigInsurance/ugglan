@@ -8,6 +8,7 @@
 import Flow
 import Foundation
 import UIKit
+import hCoreUI
 
 extension SignalProvider {
     func loader(after: TimeInterval, view: UIView) -> Self {

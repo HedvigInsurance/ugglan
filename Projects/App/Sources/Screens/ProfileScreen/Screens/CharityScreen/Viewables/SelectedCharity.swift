@@ -12,6 +12,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct SelectedCharity {
@@ -48,7 +49,7 @@ extension SelectedCharity: Viewable {
 
         scrollView.addSubview(stackView)
 
-        bag += client.watch(query: SelectedCharityQuery()).compactMap { $0.data?.cashback }.onValue { cashback in
+        bag += client.watch(query: GraphQL.SelectedCharityQuery()).compactMap { $0.cashback }.onValue { cashback in
             for subview in stackView.arrangedSubviews {
                 subview.removeFromSuperview()
             }

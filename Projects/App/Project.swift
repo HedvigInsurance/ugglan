@@ -28,7 +28,10 @@ let appDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
         .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
+        .project(target: "hGraphQL", path: .relativeToRoot("Projects/hGraphQL")),
         .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
+        .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
+        .project(target: "Home", path: .relativeToRoot("Projects/Home")),
     ],
     sdkFrameworks,
     ExternalDependencies.allCases.filter { !$0.isTestDependency }.map { externalDependency in
@@ -108,5 +111,8 @@ let project = Project(
             buildAction: BuildAction(targets: ["Hedvig"]),
             runAction: RunAction(executable: "Hedvig")
         ),
+    ],
+    additionalFiles: [
+        .folderReference(path: "GraphQL")
     ]
 )

@@ -12,9 +12,7 @@ import hCoreUI
 import Presentation
 import UIKit
 
-struct BankIDLoginQR {
-    let autoStartURL: URL
-}
+struct BankIDLoginQR {}
 
 extension BankIDLoginQR: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -41,13 +39,8 @@ extension BankIDLoginQR: Presentable {
                 .init(
                     title: L10n.demoModeStart,
                     action: {
-                        viewController.present(
+                        UIApplication.shared.appDelegate.bag += UIApplication.shared.keyWindow?.present(
                             LoggedIn(),
-                            style: .modally(
-                                presentationStyle: .overFullScreen,
-                                transitionStyle: nil,
-                                capturesStatusBarAppearance: true
-                            ),
                             options: []
                         )
                     }
@@ -138,7 +131,11 @@ extension BankIDLoginQR: Presentable {
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
 
-        generateQRCode(autoStartURL)
+        bag += Signal(every: 10).atOnce().mapLatestToFuture { BankIDLoginSweden().generateAutoStartToken() }.transition(
+            style: .crossDissolve(duration: 0.5),
+            with: imageView,
+            animations: generateQRCode
+        )
 
         return (viewController, bag)
     }

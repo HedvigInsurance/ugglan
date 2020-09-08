@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct PaymentHeaderCard {
@@ -20,10 +21,12 @@ extension PaymentHeaderCard: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let view = UIStackView()
         view.axis = .vertical
+        view.layoutMargins = UIEdgeInsets(top: 24, left: 15, bottom: 24, right: 15)
+        view.isLayoutMarginsRelativeArrangement = true
         let bag = DisposeBag()
 
         let topView = UIView()
-        topView.backgroundColor = .black
+        topView.backgroundColor = .brand(.secondaryBackground())
 
         bag += topView.didLayoutSignal.onValue { _ in
             topView.applyRadiusMaskFor(topLeft: 10, bottomLeft: 0, bottomRight: 0, topRight: 10)
@@ -40,24 +43,24 @@ extension PaymentHeaderCard: Viewable {
 
         let leftTopViewStack = UIStackView()
         leftTopViewStack.axis = .vertical
-        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.blockRowTitle.colored(.white)))
+        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.title1(color: .primary))))
 
-        let dataSignal = client.fetch(query: MyPaymentQuery()).valueSignal
+        let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
 
         let grossPriceSignal = dataSignal
-            .map { $0.data?.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }
+            .map { $0.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }
             .toInt()
             .plain()
             .compactMap { $0 }
             .readable(initial: 0)
-        let discountSignal = dataSignal.map { $0.data?.chargeEstimation.discount.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
-        let netSignal = dataSignal.map { $0.data?.chargeEstimation.charge.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
+        let discountSignal = dataSignal.map { $0.chargeEstimation.discount.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
+        let netSignal = dataSignal.map { $0.chargeEstimation.charge.fragments.monetaryAmountFragment.amount }.toInt().plain().compactMap { $0 }.readable(initial: 0)
 
         bag += leftTopViewStack.addArranged(PaymentHeaderPrice(grossPriceSignal: grossPriceSignal, discountSignal: discountSignal, monthlyNetPriceSignal: netSignal))
 
         topViewStack.addArrangedSubview(leftTopViewStack)
 
-        let campaignTypeSignal = dataSignal.map { $0.data?.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
+        let campaignTypeSignal = dataSignal.map { $0.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
             guard let campaign = campaign else {
                 return nil
             }
@@ -67,7 +70,7 @@ extension PaymentHeaderCard: Viewable {
             if let freeMonths = incentiveFragment?.asFreeMonths {
                 return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
             } else if let monthlyDeduction = incentiveFragment?.asMonthlyCostDeduction {
-                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.formattedAmount ?? "")
+                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount ?? "")
             } else if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
                 return CampaignBubble.CampaignType.percentageDiscount(value: percentageDiscount.percentageDiscount, months: percentageDiscount.percentageNumberOfMonths)
             }

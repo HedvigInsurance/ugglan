@@ -19,11 +19,11 @@ public struct Animated: SignalProvider {
     public typealias Kind = Plain
 
     public var providedSignal: CoreSignal<Plain, Void> {
-        return Self.now
+        Self.now
     }
 
     public static var now: CoreSignal<Plain, Void> {
-        return Signal(just: ())
+        Signal(just: ())
     }
 }
 
@@ -91,6 +91,33 @@ extension SignalProvider {
         }
 
         return bag
+    }
+
+    public func transition(
+        on scheduler: Scheduler = .current,
+        style: TransitionStyle,
+        with view: UIView,
+        animations: @escaping (_ value: Value) -> Void
+    ) -> Signal<Value> {
+        Signal<Value> { callback in
+            let bag = DisposeBag()
+
+            bag += self.onValue(on: scheduler) { value in
+                UIView.transition(
+                    with: view,
+                    duration: style.duration,
+                    options: style.options,
+                    animations: {
+                        animations(value)
+                    },
+                    completion: { _ in
+                        callback(value)
+                    }
+                )
+            }
+
+            return bag
+        }
     }
 
     public func animated(

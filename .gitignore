@@ -13,6 +13,7 @@ UITestsImages/FailureDiffs
 Localizable.strings
 .githooks/release
 .githooks/bin
+.package.resolved
 
 ## Various settings
 *.pbxuser

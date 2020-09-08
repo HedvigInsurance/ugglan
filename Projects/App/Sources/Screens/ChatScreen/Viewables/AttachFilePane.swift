@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Photos
 import UIKit
 
@@ -44,14 +45,12 @@ struct FileUpload {
 
         return Future { completion in
             client.upload(
-                operation: UploadFileMutation(file: "image"),
+                operation: GraphQL.UploadFileMutation(file: "image"),
                 files: [file],
                 queue: DispatchQueue.global(qos: .background)
-            ).onValue { result in
-                guard let key = result.data?.uploadFile.key, let bucket = result.data?.uploadFile.bucket else {
-                    return
-                }
-
+            ).onValue { data in
+                let key = data.uploadFile.key
+                let bucket = data.uploadFile.bucket
                 completion(.success((key, bucket)))
             }.disposable
         }
@@ -70,8 +69,6 @@ extension AttachFilePane: Viewable {
             view.animationSafeIsHidden = isHidden
             view.layoutSuperviewsIfNeeded()
         })
-
-        view.backgroundColor = .purple
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal

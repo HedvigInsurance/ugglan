@@ -10,13 +10,14 @@ import Form
 import Foundation
 import hCore
 import UIKit
+import hGraphQL
 
 struct CategoryPicker {
-    let onSelectCategorySignal: Signal<KeyGearItemCategory>
+    let onSelectCategorySignal: Signal<GraphQL.KeyGearItemCategory>
 }
 
 extension CategoryPicker: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<KeyGearItemCategory>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.KeyGearItemCategory>) {
         let bag = DisposeBag()
         let layout = UICollectionViewTagLayout()
         let collectionKit = CollectionKit<EmptySection, KeyGearCategoryButton>(layout: layout)
@@ -41,7 +42,7 @@ extension CategoryPicker: Viewable {
             category.selectedSignal.value = true
         }
 
-        let onPickItem = Callbacker<KeyGearItemCategory>()
+        let onPickItem = Callbacker<GraphQL.KeyGearItemCategory>()
 
         bag += collectionKit.onValueDisposePrevious { table -> Disposable? in
             let innerBag = DisposeBag()
@@ -63,7 +64,7 @@ extension CategoryPicker: Viewable {
             return innerBag
         }
 
-        collectionKit.table = Table(rows: KeyGearItemCategory.allCases.map { category in
+        collectionKit.table = Table(rows: GraphQL.KeyGearItemCategory.allCases.map { category in
             KeyGearCategoryButton(category: category)
         })
 

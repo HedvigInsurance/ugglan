@@ -7,10 +7,14 @@
 //
 
 import Apollo
+import Contracts
 import Flow
 import Forever
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
+import Home
 import Mixpanel
 import Presentation
 import UIKit
@@ -30,8 +34,8 @@ extension Notification.Name {
 
 extension LoggedIn {
     func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
-        return NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
-            tabBarController.selectedIndex = 2
+        NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
+            tabBarController.selectedIndex = 3
         }
     }
 }
@@ -47,11 +51,27 @@ extension LoggedIn: Presentable {
 
         let bag = DisposeBag()
 
+        enum Tab {
+            case home
+            case contracts
+            case keyGear
+            case forever
+            case profile
+        }
+
+        let indexForTabsSignal = ReadWriteSignal<[Int: Tab]>([:])
+
+        let home = Home()
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
-        let claims = Claims()
         let referrals = Forever(service: ForeverServiceGraphQL())
         let profile = Profile()
+
+        let homePresentation = Presentation(
+            home,
+            style: .default,
+            options: [.defaults, .prefersLargeTitles(true)]
+        )
 
         let contractsPresentation = Presentation(
             contracts,
@@ -63,12 +83,6 @@ extension LoggedIn: Presentable {
             keyGear,
             style: .default,
             options: [.prefersLargeTitles(true)]
-        )
-
-        let claimsPresentation = Presentation(
-            claims,
-            style: .default,
-            options: [.defaults, .prefersLargeTitles(true)]
         )
 
         let referralsPresentation = Presentation(
@@ -84,40 +98,68 @@ extension LoggedIn: Presentable {
         )
 
         bag += client.fetch(
-            query: FeaturesQuery(),
+            query: GraphQL.FeaturesQuery(),
             cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.compactMap { $0.data?.member.features }.onValue { features in
+        ).valueSignal.compactMap { $0.member.features }.onValue { features in
             if features.contains(.keyGear) {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
                         keyGearPresentation,
-                        claimsPresentation,
                         referralsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .keyGear,
+                        3: .forever,
+                        4: .profile,
+                    ]
                 } else {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
                         keyGearPresentation,
-                        claimsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .keyGear,
+                        3: .profile,
+                    ]
                 }
             } else {
                 if features.contains(.referrals) {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
-                        claimsPresentation,
                         referralsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .forever,
+                        3: .profile,
+                    ]
                 } else {
                     bag += tabBarController.presentTabs(
+                        homePresentation,
                         contractsPresentation,
-                        claimsPresentation,
                         profilePresentation
                     )
+
+                    indexForTabsSignal.value = [
+                        0: .home,
+                        1: .contracts,
+                        2: .profile,
+                    ]
                 }
             }
         }
@@ -129,31 +171,48 @@ extension LoggedIn: Presentable {
             ApplicationState.setLastNewsSeen()
 
             bag += client
-                .watch(query: WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                .compactMap { $0.data }
+                .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                 .filter { $0.welcome.count > 0 }
                 .onValue { data in
-                    let whatsNew = Welcome(data: data, endWithReview: true)
-                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                    let welcome = Welcome(data: data, endWithReview: true)
+                    tabBarController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
                 }
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
-                .watch(query: WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-                .compactMap { $0.data }
+                .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .filter { $0.news.count > 0 }
                 .onValue { data in
                     let whatsNew = WhatsNew(data: data)
-                    tabBarController.present(whatsNew, options: [.prefersNavigationBarHidden(true)])
+                    tabBarController.present(whatsNew, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
                 }
         }
 
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
-        bag += tabBarController.signal(for: \.selectedViewController).onValue { viewController in
+        bag += combineLatest(tabBarController.signal(for: \.selectedViewController), indexForTabsSignal).atOnce().onValue { viewController, indexForTabs in
+            let tab = indexForTabs[tabBarController.selectedIndex]
+
+            switch tab {
+            case .home:
+                ContextGradient.currentOption = .home
+            case .contracts:
+                ContextGradient.currentOption = .insurance
+            case .forever:
+                ContextGradient.currentOption = .forever
+            case .profile:
+                ContextGradient.currentOption = .profile
+            case .keyGear:
+                ContextGradient.currentOption = .none
+            case .none:
+                ContextGradient.currentOption = .none
+            }
+
             if let debugPresentationTitle = viewController?.debugPresentationTitle {
                 Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
             }
         }
+
+        bag += ChatState.shared.activateNewMessageToasts(tabBarController)
 
         return (tabBarController, bag)
     }

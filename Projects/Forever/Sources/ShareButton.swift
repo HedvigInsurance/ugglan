@@ -7,6 +7,7 @@
 //
 
 import Flow
+import Form
 import Foundation
 import hCore
 import hCoreUI
@@ -25,14 +26,42 @@ struct ShareButton {
 extension ShareButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<UIView>) {
         let bag = DisposeBag()
-        let containerView = UIVisualEffectView()
-        containerView.preservesSuperviewLayoutMargins = true
-        containerView.effect = UIBlurEffect(style: .prominent)
+        let containerView = UIView()
+
+        let separator = UIView()
+        separator.backgroundColor = UIColor.brand(.primaryBorderColor)
+        containerView.addSubview(separator)
+
+        separator.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(UIScreen.main.hairlineWidth)
+        }
+
+        bag += containerView.didMoveToWindowSignal.onValue { _ in
+            if let tabBarController = containerView.viewController?.navigationController?.tabBarController {
+                tabBarController.tabBar.shadowImage = UIColor.clear.asImage()
+            }
+        }
+
+        bag += containerView.didMoveFromWindowSignal.onValue { _ in
+            if let tabBarController = containerView.viewController?.navigationController?.tabBarController {
+                tabBarController.tabBar.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
+            }
+        }
+
+        containerView.backgroundColor = DefaultStyling.tabBarBackgroundColor
+
+        let colorView = ContextGradient.makeColorView(into: bag, for: .tabBar)
+        containerView.insertSubview(colorView, at: 0)
+
+        colorView.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview()
+        }
 
         let stackView = UIStackView()
         stackView.layoutMargins = UIEdgeInsets(inset: 15)
         stackView.isLayoutMarginsRelativeArrangement = true
-        containerView.contentView.addSubview(stackView)
+        containerView.addSubview(stackView)
 
         stackView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()

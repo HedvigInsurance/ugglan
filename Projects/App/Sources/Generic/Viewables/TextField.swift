@@ -27,6 +27,7 @@ extension TextField: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIControl()
+        view.layer.cornerRadius = 8
         view.isUserInteractionEnabled = true
 
         view.snp.makeConstraints { make in
@@ -36,10 +37,6 @@ extension TextField: Viewable {
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
             trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
-        }
-
-        bag += view.didLayoutSignal.onValue { _ in
-            view.layer.cornerRadius = view.frame.height / 2
         }
 
         let paddingView = UIStackView()

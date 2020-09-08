@@ -41,7 +41,7 @@ extension Chat {
     }
 
     private static func updateLastOpened() {
-        let newValue = Date().currentTimeMillis()
+        let newValue = Date().currentTimeMillis
         UserDefaults.standard.set(newValue, forKey: lastOpenedChatKey)
     }
 

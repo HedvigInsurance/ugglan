@@ -11,11 +11,29 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
 struct BankIDLoginSweden {
     @Inject var client: ApolloClient
+}
+
+extension BankIDLoginSweden {
+    enum AutoStartTokenError: Error {
+        case failedToGenerate
+    }
+
+    func generateAutoStartToken() -> Future<URL> {
+        client.perform(mutation: GraphQL.BankIdAuthMutation()).compactMap { $0.bankIdAuth.autoStartToken }.flatMap { autoStartToken in
+            let urlScheme = Bundle.main.urlScheme ?? ""
+            guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else {
+                return Future(error: AutoStartTokenError.failedToGenerate)
+            }
+
+            return Future(url)
+        }
+    }
 }
 
 extension BankIDLoginSweden: Presentable {
@@ -83,8 +101,8 @@ extension BankIDLoginSweden: Presentable {
         bag += closeButtonContainer.addArranged(closeButton)
 
         let statusSignal = client.subscribe(
-            subscription: BankIdAuthSubscriptionSubscription()
-        ).compactMap { $0.data?.authStatus?.status }
+            subscription: GraphQL.BankIdAuthSubscriptionSubscription()
+        ).compactMap { $0.authStatus?.status }
 
         bag += statusSignal.skip(first: 1).onValue { authStatus in
             let statusText: String
@@ -105,14 +123,11 @@ extension BankIDLoginSweden: Presentable {
             statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
         }
 
-        bag += client.perform(mutation: BankIdAuthMutation()).delay(by: 0.5).valueSignal.compactMap { result in result.data?.bankIdAuth.autoStartToken }.onValue { autoStartToken in
-            let urlScheme = Bundle.main.urlScheme ?? ""
-            guard let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid") else { return }
-
+        generateAutoStartToken().onValue { url in
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
-                viewController.present(BankIDLoginQR(autoStartURL: url), options: [.prefersNavigationBarHidden(false)])
+                viewController.present(BankIDLoginQR())
             }
         }
 

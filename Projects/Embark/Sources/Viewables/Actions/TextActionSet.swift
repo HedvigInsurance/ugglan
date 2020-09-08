@@ -10,17 +10,18 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct TextActionSet {
     let state: EmbarkState
-    let data: EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet
+    let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet
 }
 
-private typealias TextAction = EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet.TextActionSetDatum.TextAction
+private typealias TextAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet.TextActionSetDatum.TextAction
 
 extension TextActionSet: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         let bag = DisposeBag()

@@ -10,6 +10,7 @@ import Firebase
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Mixpanel
 
 public struct AnalyticsCoordinator {
@@ -19,13 +20,9 @@ public struct AnalyticsCoordinator {
 
     func setUserId() {
         client.fetch(
-            query: MemberIdQuery(),
+            query: GraphQL.MemberIdQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
-        ).map { $0.data?.member.id }.onValue { id in
-            guard let id = id else {
-                return
-            }
-
+        ).compactMap { $0.member.id }.onValue { id in
             Mixpanel.mainInstance().identify(distinctId: id)
         }
     }

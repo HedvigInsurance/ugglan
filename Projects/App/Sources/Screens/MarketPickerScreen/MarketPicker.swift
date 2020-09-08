@@ -11,6 +11,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -68,7 +69,6 @@ extension MarketPicker {
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
-            section.dynamicStyle = .sectionPlainRounded
 
             let pickedMarketCallbacker = Callbacker<Market>()
 
@@ -121,7 +121,6 @@ extension MarketPicker {
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
-            section.dynamicStyle = .sectionPlainRounded
 
             func pickLanguage(locale: Localization.Locale) {
                 ApplicationState.setPreferredLocale(locale)
@@ -130,7 +129,7 @@ extension MarketPicker {
                 ApolloClient.initClient().always {}
                 Bundle.setLanguage(locale.lprojCode)
                 presentingViewController.present(Marketing())
-                bag += client.perform(mutation: UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
+                bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
                     self.didFinish()
                 }
             }
@@ -147,13 +146,13 @@ extension MarketPicker {
                     innerBag += section.append(norwegianRow).onValue { _ in
                         pickLanguage(locale: .nb_NO)
                     }
-                    norwegianRow.append(Asset.chevronRight.image)
+                    norwegianRow.append(hCoreUIAssets.chevronRight.image)
 
                     let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
                     innerBag += section.append(englishRow).onValue { _ in
                         pickLanguage(locale: .en_NO)
                     }
-                    englishRow.append(Asset.chevronRight.image)
+                    englishRow.append(hCoreUIAssets.chevronRight.image)
 
                     innerBag += Disposer {
                         section.remove(englishRow)
@@ -168,13 +167,13 @@ extension MarketPicker {
                     innerBag += section.append(swedishRow).onValue { _ in
                         pickLanguage(locale: .sv_SE)
                     }
-                    swedishRow.append(Asset.chevronRight.image)
+                    swedishRow.append(hCoreUIAssets.chevronRight.image)
 
                     let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
                     innerBag += section.append(englishRow).onValue { _ in
                         pickLanguage(locale: .en_SE)
                     }
-                    englishRow.append(Asset.chevronRight.image)
+                    englishRow.append(hCoreUIAssets.chevronRight.image)
 
                     innerBag += Disposer {
                         section.remove(englishRow)
@@ -198,7 +197,6 @@ extension MarketPicker: Presentable {
         ApplicationState.preserveState(.marketPicker)
 
         let form = FormView()
-        form.dynamicStyle = .defaultPlain
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image
@@ -220,7 +218,7 @@ extension MarketPicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += client.fetch(query: GeoQuery()).valueSignal.compactMap { $0.data?.geo.countryIsoCode }.onValue { countryISOCode in
+        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap { $0.geo.countryIsoCode }.onValue { countryISOCode in
             switch countryISOCode {
             case "SE":
                 pickedMarketSignal.value = .sweden
@@ -237,7 +235,7 @@ extension MarketPicker: Presentable {
             bag += form.append(Spacing(height: 20))
             bag += form.append(LanguageSection(pickedMarketSignal: pickedMarketSignal.atOnce().compactMap { $0 }, presentingViewController: viewController, didFinish: self.didFinish))
 
-            bag += UIApplication.shared.appDelegate.hasFinishedLoading.atOnce()
+            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                 .delay(by: 1.25)
                 .take(first: 1)
                 .animated(style: .lightBounce(duration: 0.75), animations: { _ in
@@ -245,6 +243,10 @@ extension MarketPicker: Presentable {
                     form.alpha = 1
                     form.layoutIfNeeded()
             })
+        }
+
+        bag += form.didMoveToWindowSignal.onValue {
+            ContextGradient.currentOption = .none
         }
 
         return (viewController, bag)

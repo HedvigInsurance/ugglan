@@ -38,12 +38,13 @@ extension OnboardingChat: Presentable {
         bag += settingsButton.onValue { _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
-                style: .modally(
-                    presentationStyle: .formSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                ),
-                options: [.allowSwipeDismissAlways, .defaults]
+                style: .detented(.scrollViewContentSize(20), .large),
+                options: [
+                    .allowSwipeDismissAlways,
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
             )
         }
 

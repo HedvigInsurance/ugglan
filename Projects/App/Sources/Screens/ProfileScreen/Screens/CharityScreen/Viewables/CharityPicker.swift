@@ -11,6 +11,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct CharityPicker {
@@ -94,9 +95,9 @@ extension CharityPicker: Viewable {
         }
 
         bag += client.watch(
-            query: CharityOptionsQuery()
+            query: GraphQL.CharityOptionsQuery()
         ).compactMap {
-            $0.data?.cashbackOptions.compactMap { $0 }
+            $0.cashbackOptions.compactMap { $0 }
         }.onValue { cashbackOptions in
             let charityOptions = cashbackOptions.map { cashbackOption in
                 CharityOption(
@@ -139,7 +140,7 @@ extension CharityPicker: Viewable {
                         }
 
                         return self.client.perform(
-                            mutation: SelectCharityMutation(id: charityOption.id)
+                            mutation: GraphQL.SelectCharityMutation(id: charityOption.id)
                         ).onValue { _ in
                             dismissCallbacker.callAll()
                         }.disposable

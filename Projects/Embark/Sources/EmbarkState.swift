@@ -10,6 +10,7 @@ import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 
 public enum ExternalRedirect {
     case mailingList
@@ -22,10 +23,10 @@ public struct EmbarkState {
     @Inject var apolloEnvironment: ApolloEnvironmentConfig
 
     let store = EmbarkStore()
-    let storySignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory?>(nil)
-    let passagesSignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
-    let currentPassageSignal = ReadWriteSignal<EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
-    let passageHistorySignal = ReadWriteSignal<[EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
+    let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
+    let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
+    let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
+    let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
 
     public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
@@ -81,7 +82,7 @@ public struct EmbarkState {
         }
     }
 
-    private func handleRedirects(passage: EmbarkStoryQuery.Data.EmbarkStory.Passage) -> EmbarkStoryQuery.Data.EmbarkStory.Passage? {
+    private func handleRedirects(passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
         passage.redirects.map { redirect in
             store.shouldRedirectTo(redirect: redirect)
         }.map { redirectTo in

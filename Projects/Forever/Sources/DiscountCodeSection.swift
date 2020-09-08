@@ -59,6 +59,7 @@ extension DiscountCodeSection: Viewable {
             }()
         )
         section.isHidden = true
+        section.dynamicStyle = .brandGroupedInset(separatorType: .none)
 
         let codeRow = RowView()
         codeRow.accessibilityLabel = L10n.referralsDiscountCodeAccessibility
@@ -81,7 +82,7 @@ extension DiscountCodeSection: Viewable {
                     .atOnce()
                     .compactMap { $0?.discountCode }
                     .bindTo(UIPasteboard.general, \.string)
-                bag += section.viewController?.displayToast(title: L10n.ReferralsActiveToast.text)
+                Toasts.shared.displayToast(toast: .init(symbol: .icon(Asset.toastIcon.image), body: L10n.ReferralsActiveToast.text))
             }
 
             return innerBag

@@ -10,6 +10,8 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -31,15 +33,12 @@ extension PaymentsHistory: Presentable {
             footer: nil
         )
 
-        let dataValueSignal = client.watch(query: MyPaymentQuery())
-        let dataSignal = dataValueSignal.compactMap { $0.data }
-
-        bag += dataSignal.onValueDisposePrevious { data -> Disposable? in
+        bag += client.watch(query: GraphQL.MyPaymentQuery()).onValueDisposePrevious { data -> Disposable? in
             let innerBag = DisposeBag()
 
             innerBag += data.chargeHistory.map { chargeHistory -> Disposable in
                 let row = KeyValueRow()
-                row.valueStyleSignal.value = .rowTitleDisabled
+                row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
                 let dateParsingFormatter = DateFormatter()
                 dateParsingFormatter.dateFormat = "yyyy-MM-dd"
@@ -51,7 +50,7 @@ extension PaymentsHistory: Presentable {
                     row.keySignal.value = dateDisplayFormatter.string(from: date)
                 }
 
-                row.valueSignal.value = chargeHistory.amount.fragments.monetaryAmountFragment.formattedAmount
+                row.valueSignal.value = chargeHistory.amount.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount
 
                 return section.append(row)
             }

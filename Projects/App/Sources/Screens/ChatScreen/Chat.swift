@@ -17,7 +17,7 @@ import UIKit
 struct Chat {
     @Inject var client: ApolloClient
     let reloadChatCallbacker = Callbacker<Void>()
-    let chatState = ChatState()
+    let chatState = ChatState.shared
 
     private var reloadChatSignal: Signal<Void> {
         reloadChatCallbacker.providedSignal
@@ -34,6 +34,12 @@ extension Chat: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let bag = DisposeBag()
 
+        chatState.allowNewMessageToast = false
+
+        bag += Disposer {
+            self.chatState.allowNewMessageToast = true
+        }
+
         let navigateCallbacker = Callbacker<NavigationEvent>()
 
         let chatInput = ChatInput(
@@ -42,16 +48,16 @@ extension Chat: Presentable {
         )
 
         let viewController = AccessoryViewController(accessoryView: chatInput)
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
+        viewController.navigationItem.largeTitleDisplayMode = .never
 
         bag += navigateCallbacker.onValue { navigationEvent in
             switch navigationEvent {
             case .offer:
-                viewController.present(Offer(), options: [.prefersNavigationBarHidden(true)])
+                viewController.present(Offer())
             case .dashboard:
                 viewController.present(LoggedIn())
             case .login:
-                viewController.present(DraggableOverlay(presentable: BankIDLogin()))
+                viewController.present(BankIDLogin(), style: .detented(.medium))
             }
         }
 
@@ -121,12 +127,23 @@ extension Chat: Presentable {
 
         // hack to fix modal dismissing when dragging up in scrollView
         if #available(iOS 13.0, *) {
+            func setSheetInteractionState(_ enabled: Bool) {
+                let presentationController = viewController.navigationController?.presentationController
+                let key = [
+                    "_sheet", "Interaction",
+                ]
+                let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+                sheetInteraction?.setValue(enabled, forKey: "enabled")
+            }
+
             bag += tableKit.delegate.willBeginDragging.onValue { _ in
                 viewController.isModalInPresentation = true
+                setSheetInteractionState(false)
             }
 
             bag += tableKit.delegate.willEndDragging.onValue { _ in
                 viewController.isModalInPresentation = false
+                setSheetInteractionState(true)
             }
         }
 
@@ -153,7 +170,7 @@ extension Chat: Presentable {
                 tableKit.view.layoutIfNeeded()
             })
 
-        bag += chatState.tableSignal.atOnce().onValue(on: .main) { table in
+        bag += chatState.tableSignal.atOnce().delay(by: 0.5).onValue { table in
             if tableKit.table.isEmpty {
                 tableKit.set(table, animation: .fade)
             } else {
@@ -166,7 +183,7 @@ extension Chat: Presentable {
             self.chatState.reset()
         }
 
-        bag += viewController.install(tableKit)
+        bag += viewController.install(tableKit, options: [])
 
         bag += DelayedDisposer(
             Disposer {
@@ -183,6 +200,6 @@ extension Chat: Presentable {
 
 extension Chat: Tabable {
     func tabBarItem() -> UITabBarItem {
-        return UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
+        UITabBarItem(title: "Chat", image: nil, selectedImage: nil)
     }
 }

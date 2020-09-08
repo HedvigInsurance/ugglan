@@ -10,6 +10,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -17,7 +18,7 @@ struct OfferDiscount {
     let presentingViewController: UIViewController
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    let redeemedCampaignsSignal = ReadWriteSignal<[OfferQuery.Data.RedeemedCampaign]>([])
+    let redeemedCampaignsSignal = ReadWriteSignal<[GraphQL.OfferQuery.Data.RedeemedCampaign]>([])
 }
 
 extension OfferDiscount: Viewable {
@@ -47,7 +48,7 @@ extension OfferDiscount: Viewable {
 
         let dataSignal = redeemedCampaignsSignal.compactMap { $0 }
 
-        func handleButtonState(_ buttonView: UIView, shouldShowButton: @escaping (_ redeemedCampaigns: [OfferQuery.Data.RedeemedCampaign]) -> Bool) {
+        func handleButtonState(_ buttonView: UIView, shouldShowButton: @escaping (_ redeemedCampaigns: [GraphQL.OfferQuery.Data.RedeemedCampaign]) -> Bool) {
             outState(buttonView)
 
             bag += dataSignal.take(first: 1).animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) { redeemedCampaigns in
@@ -89,18 +90,19 @@ extension OfferDiscount: Viewable {
                 let applyDiscount = ApplyDiscount()
 
                 bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                    self.store.update(query: OfferQuery(), updater: { (data: inout OfferQuery.Data) in
+                    self.store.update(query: GraphQL.OfferQuery(), updater: { (data: inout GraphQL.OfferQuery.Data) in
                         data.redeemedCampaigns = result.campaigns.compactMap {
-                            try? OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
+                            try? GraphQL.OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
                         }
                         data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
                     })
                 }
 
-                bag += self.presentingViewController.present(
+                self.presentingViewController.present(
                     applyDiscount.withCloseButton,
-                    style: .modally()
-                ).disposable
+                    style: .detented(.scrollViewContentSize(20), .large),
+                    options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                )
             }
 
         bag += removeButton.onTapSignal.onValue { _ in
@@ -110,10 +112,10 @@ extension OfferDiscount: Viewable {
                 actions: [
                     Alert.Action(title: L10n.offerRemoveDiscountAlertCancel) {},
                     Alert.Action(title: L10n.offerRemoveDiscountAlertRemove, style: .destructive) {
-                        bag += self.client.perform(mutation: RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.data?.removeDiscountCode }.onValue { result in
-                            self.store.update(query: OfferQuery()) { (data: inout OfferQuery.Data) in
+                        bag += self.client.perform(mutation: GraphQL.RemoveDiscountCodeMutation()).valueSignal.compactMap { $0.removeDiscountCode }.onValue { result in
+                            self.store.update(query: GraphQL.OfferQuery()) { (data: inout GraphQL.OfferQuery.Data) in
                                 data.redeemedCampaigns = result.campaigns.compactMap {
-                                    try? OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
+                                    try? GraphQL.OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
                                 }
                                 data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
                             }

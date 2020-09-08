@@ -9,11 +9,12 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
 struct WelcomePager {
-    let dataSignal = ReadWriteSignal<WelcomeQuery.Data?>(nil)
+    let dataSignal = ReadWriteSignal<GraphQL.WelcomeQuery.Data?>(nil)
     let scrollToNextCallbacker: Callbacker<Void>
     let scrolledToPageIndexCallbacker: Callbacker<Int>
     let scrolledToEndCallbacker: Callbacker<Void>
@@ -32,27 +33,13 @@ extension WelcomePager: Viewable {
             scrolledToPageIndexCallbacker: scrolledToPageIndexCallbacker
         )
 
-        bag += view.addArranged(pager) { collectionView in
-            bag += collectionView.contentOffsetSignal.onValue { point in
-                let slidesScrolledThrough = point.x / collectionView.frame.width + 1
-                let amountOfRealSlides = CGFloat(pager.dataSignal.value.count - 1)
-
-                if slidesScrolledThrough > amountOfRealSlides {
-                    let position = slidesScrolledThrough - amountOfRealSlides
-                    self.presentingViewController.view.alpha = 1 - position
-
-                    if position == 1 {
-                        self.scrolledToEndCallbacker.callAll()
-                    }
-                }
-            }
-        }
+        bag += view.addArranged(pager)
 
         bag += dataSignal
             .atOnce()
             .compactMap { $0?.welcome }
             .onValue { welcome in
-                var welcomePagerScreens = welcome.map { welcomePost -> PagerScreen in
+                let welcomePagerScreens = welcome.map { welcomePost -> PagerScreen in
                     let welcomePagerScreen = WelcomePagerScreen(
                         title: welcomePost.title,
                         paragraph: welcomePost.paragraph,
@@ -64,8 +51,6 @@ extension WelcomePager: Viewable {
                         content: AnyPresentable(welcomePagerScreen)
                     )
                 }
-
-                welcomePagerScreens.append(PagerScreen(id: UUID(), content: AnyPresentable(DummyPagerScreen())))
 
                 pager.dataSignal.value = welcomePagerScreens
             }

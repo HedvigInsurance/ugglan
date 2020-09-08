@@ -10,6 +10,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 struct WelcomePagerProceedButton {
@@ -18,7 +19,7 @@ struct WelcomePagerProceedButton {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
-    let dataSignal: ReadWriteSignal<WelcomeQuery.Data?> = ReadWriteSignal(nil)
+    let dataSignal: ReadWriteSignal<GraphQL.WelcomeQuery.Data?> = ReadWriteSignal(nil)
     let onScrolledToPageIndexSignal = ReadWriteSignal<Int>(0)
 
     init(button: Button) {
@@ -48,16 +49,9 @@ extension WelcomePagerProceedButton: Viewable {
         bag += buttonTitleSignal
             .distinct()
             .delay(by: 0.25)
-            .animated(style: SpringAnimationStyle.lightBounce(duration: 0.15)) { title in
-                buttonView.setTitle(title)
-
-                buttonView.snp.remakeConstraints { make in
-                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset)
-                    make.height.equalTo(self.button.type.value.height)
-                }
-
-                buttonView.layoutIfNeeded()
-            }
+            .transition(style: .crossDissolve(duration: 0.25), with: buttonView, animations: { title in
+                self.button.title.value = title
+            })
 
         bag += pageAmountSignal
             .take(first: 1)

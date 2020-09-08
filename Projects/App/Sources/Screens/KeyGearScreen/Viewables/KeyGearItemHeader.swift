@@ -10,6 +10,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 struct KeyGearItemHeader {
@@ -44,8 +45,8 @@ struct DeductibleBox: Viewable {
         deductibleValueContainer.addArrangedSubview(deductibleLabel)
         deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .bodySmallSmallLeft))
 
-        bag += client.watch(query: KeyGearItemQuery(id: itemId))
-            .map { $0.data?.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
+        bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId))
+            .map { $0.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
             .bindTo(deductibleLabel, \.text)
 
         row.append(stackView)
@@ -88,9 +89,9 @@ struct ValuationBox: Viewable {
 
         row.append(stackView)
 
-        let dataSignal = client.watch(query: KeyGearItemQuery(id: itemId))
+        let dataSignal = client.watch(query: GraphQL.KeyGearItemQuery(id: itemId))
 
-        bag += dataSignal.map { $0.data?.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
+        bag += dataSignal.map { $0.keyGearItem?.valuation }.animated(style: SpringAnimationStyle.lightBounce(), animations: { valuation in
             if valuation == nil {
                 emptyValuationLabel.animationSafeIsHidden = false
                 valuationValueContainer.animationSafeIsHidden = true
@@ -112,7 +113,7 @@ struct ValuationBox: Viewable {
             }
         })
 
-        bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, result in result.data?.keyGearItem }.onValue { item in
+        bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, data in data.keyGearItem }.onValue { item in
 
             if item.valuation != nil {
                 self.presentingViewController.present(KeyGearValuation(itemId: self.itemId).withCloseButton, style: .modal, options: [

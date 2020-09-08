@@ -11,6 +11,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -27,8 +28,8 @@ extension Charity: Presentable {
         let containerView = UIView()
         containerView.backgroundColor = .primaryBackground
 
-        bag += client.watch(query: SelectedCharityQuery())
-            .map { $0.data?.cashback }
+        bag += client.watch(query: GraphQL.SelectedCharityQuery())
+            .map { $0.cashback }
             .buffer()
             .onValue { cashbacks in
                 guard let cashback = cashbacks.last else { return }
@@ -54,7 +55,7 @@ extension Charity: Presentable {
                         }
                     }.onValue { _ in
                         bag += self.client.fetch(
-                            query: SelectedCharityQuery(),
+                            query: GraphQL.SelectedCharityQuery(),
                             cachePolicy: .fetchIgnoringCacheData
                         ).disposable
                     }

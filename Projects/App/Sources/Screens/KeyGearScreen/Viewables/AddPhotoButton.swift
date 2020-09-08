@@ -35,7 +35,7 @@ extension AddPhotoButton: Viewable {
         contentContainer.alignment = .center
         contentContainer.isUserInteractionEnabled = false
 
-        contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto, iconWidth: 40))
+        contentContainer.addArrangedSubview(Icon(icon: Asset.keyGearAddPhoto.image, iconWidth: 40))
         bag += contentContainer.addArranged(MultilineLabel(value: L10n.keyGearAddItemAddPhotoButton, style: TextStyle.body.colored(.primaryTintColor)))
 
         view.addSubview(contentContainer)

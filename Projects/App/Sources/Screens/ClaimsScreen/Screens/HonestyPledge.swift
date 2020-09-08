@@ -48,42 +48,32 @@ struct HonestyPledge {
 extension HonestyPledge: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.title = L10n.honestyPledgeTitle
 
         let bag = DisposeBag()
 
         let containerStackView = UIStackView()
-        containerStackView.alignment = .leading
-        bag += containerStackView.applySafeAreaBottomLayoutMargin()
+        containerStackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 15, right: 15)
+        containerStackView.isLayoutMarginsRelativeArrangement = true
+        containerStackView.axis = .vertical
+        containerStackView.distribution = .equalSpacing
 
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.spacing = 10
+        let topContentStackView = UIStackView()
+        topContentStackView.axis = .vertical
+        topContentStackView.spacing = 10
 
-        containerStackView.addArrangedSubview(stackView)
-
-        let titleLabel = MultilineLabel(value: L10n.honestyPledgeTitle, style: .draggableOverlayTitle)
-        bag += stackView.addArranged(titleLabel)
+        containerStackView.addArrangedSubview(topContentStackView)
 
         let descriptionLabel = MultilineLabel(
             value: L10n.honestyPledgeDescription,
-            style: .bodyOffBlack
+            style: .brand(.body(color: .secondary))
         )
-        bag += stackView.addArranged(descriptionLabel)
-
-        let pusherView = UIView()
-        pusherView.snp.makeConstraints { make in
-            make.height.equalTo(10)
-        }
-        stackView.addArrangedSubview(pusherView)
+        bag += topContentStackView.addArranged(descriptionLabel)
 
         let slideToClaim = SlideToClaim()
-        bag += stackView.addArranged(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
+        bag += containerStackView.addArranged(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
             slideToClaimStackView.isLayoutMarginsRelativeArrangement = true
         }
-
-        bag += containerStackView.applyPreferredContentSize(on: viewController)
 
         let view = UIView()
         view.backgroundColor = .secondaryBackground
@@ -95,12 +85,16 @@ extension HonestyPledge: Presentable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
+        bag += containerStackView.didLayoutSignal.onValue { _ in
+            viewController.preferredContentSize = containerStackView.systemLayoutSizeFitting(.zero)
+        }
+
         return (viewController, Future { completion in
             bag += slideToClaim.onValue {
                 func presentClaimsChat() {
                     viewController.present(
                         ClaimsChat().withCloseButton,
-                        style: .default,
+                        style: .detented(.large, modally: false),
                         options: [.prefersNavigationBarHidden(false)]
                     ).onResult(completion)
                 }
@@ -110,7 +104,7 @@ extension HonestyPledge: Presentable {
                 } else {
                     bag += viewController.present(
                         self.pushNotificationsPresentable(),
-                        style: .default,
+                        style: .detented(.large, modally: false),
                         options: [.prefersNavigationBarHidden(true)]
                     ).onValue { action in
                         if action == .ask {

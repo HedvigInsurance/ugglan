@@ -10,6 +10,7 @@ import Flow
 import Form
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -22,10 +23,17 @@ extension Offer {
     func startSignProcess(_ viewController: UIViewController) {
         viewController.present(
             BankIdSign().withCloseButton,
-            style: .modally(),
+            style: .detented(.medium, .large),
             options: [.defaults]
         ).onValue { _ in
-            viewController.present(PostOnboarding(), style: .defaultOrModal, options: [.defaults, .prefersNavigationBarHidden(true)])
+            viewController.present(
+                PostOnboarding(),
+                style: .detented(.large),
+                options: [
+                    .defaults,
+                    .prefersNavigationBarHidden(true),
+                ]
+            )
         }
     }
 
@@ -34,91 +42,7 @@ extension Offer {
     }
 }
 
-extension Offer {
-    func addNavigationBar(
-        _ view: UIView,
-        scrollView _: UIScrollView,
-        viewController: UIViewController
-    ) -> (Disposable, UINavigationBar) {
-        let bag = DisposeBag()
-
-        let navigationBar = UINavigationBar()
-        navigationBar.barTintColor = Offer.primaryAccentColor
-        navigationBar.isTranslucent = false
-        navigationBar.alpha = 0
-        navigationBar.transform = CGAffineTransform(translationX: 0, y: 5)
-
-        let item = UINavigationItem()
-
-        let chatButton = UIBarButtonItem()
-        chatButton.image = Asset.chat.image
-        chatButton.tintColor = .primaryText
-
-        bag += chatButton.onValue { _ in
-            bag += viewController.present(
-                OfferChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
-            ).disposable
-        }
-
-        item.rightBarButtonItem = chatButton
-
-        let titleViewContainer = UIStackView()
-        titleViewContainer.isLayoutMarginsRelativeArrangement = true
-        titleViewContainer.edgeInsets = UIEdgeInsets(horizontalInset: 0, verticalInset: 5)
-
-        let titleView = UIStackView()
-        titleView.axis = .vertical
-        titleView.spacing = 0
-        titleView.alignment = .center
-        titleView.distribution = .fillProportionally
-
-        titleView.addArrangedSubview(UILabel(value: L10n.offerTitle, style: .body))
-
-        let addressLabel = UILabel(value: " ", style: .navigationSubtitle)
-        titleView.addArrangedSubview(addressLabel)
-
-        titleViewContainer.addArrangedSubview(titleView)
-
-        bag += titleViewContainer.didMoveToWindowSignal.take(first: 1).onValue { _ in
-            titleViewContainer.snp.makeConstraints { make in
-                make.top.bottom.equalToSuperview()
-            }
-        }
-
-        bag += client
-            .fetch(query: OfferQuery())
-            .valueSignal
-            .compactMap { $0.data?.insurance }
-            .atValue { insurance in
-                addressLabel.text = insurance.address
-            }
-            .animated(style: AnimationStyle.easeOut(duration: 0.25, delay: 0.65)) { _ in
-                navigationBar.alpha = 1
-                navigationBar.transform = CGAffineTransform.identity
-            }
-
-        item.titleView = titleViewContainer
-
-        navigationBar.items = [item]
-
-        view.addSubview(navigationBar)
-
-        navigationBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.topMargin)
-            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailingMargin)
-            make.leading.equalTo(view.safeAreaLayoutGuide.snp.leadingMargin)
-        }
-
-        return (bag, navigationBar)
-    }
-}
-
-extension OfferQuery {
+extension GraphQL.OfferQuery {
     convenience init() {
         self.init(locale: Localization.Locale.currentLocale.asGraphQLLocale())
     }
@@ -127,21 +51,37 @@ extension OfferQuery {
 extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 80)
-
+        viewController.title = L10n.offerTitle
         ApplicationState.preserveState(.offer)
 
         let bag = DisposeBag()
 
+        let chatButton = UIBarButtonItem()
+        chatButton.image = Asset.chat.image
+        chatButton.tintColor = .primaryText
+
+        bag += chatButton.onValue { _ in
+            bag += viewController.present(
+                OfferChat().withCloseButton,
+                style: .detented(.large)
+            ).disposable
+        }
+
+        viewController.navigationItem.rightBarButtonItem = chatButton
+
+        let scrollView = FormScrollView()
+        let form = FormView()
+        bag += viewController.install(form, scrollView: scrollView)
+
+        form.appendSpacing(.top)
+
         let stackView = UIStackView()
         stackView.axis = .vertical
 
-        let scrollView = UIScrollView()
-
-        let offerSignal = client.watch(query: OfferQuery())
+        let offerSignal = client.watch(query: GraphQL.OfferQuery())
 
         let insuranceSignal = offerSignal
-            .compactMap { $0.data?.insurance }
+            .compactMap { $0.insurance }
 
         let offerHeader = OfferHeader(
             containerScrollView: scrollView,
@@ -182,31 +122,17 @@ extension Offer: Presentable {
 
         bag += stackView.addArranged(coverageSwitcher)
 
-        let view = UIView()
-        view.backgroundColor = Offer.primaryAccentColor
-        viewController.view = view
+        form.append(stackView)
 
-        let (navigationBarBag, navigationBar) = addNavigationBar(
-            view,
-            scrollView: scrollView,
-            viewController: viewController
-        )
-        bag += navigationBarBag
-
-        scrollView.backgroundColor = Offer.primaryAccentColor
-        scrollView.embedView(stackView, scrollAxis: .vertical)
-
-        view.addSubview(scrollView)
-
-        let offerSignButton = OfferSignButton()
+        let offerSignButton = OfferSignButton(scrollView: scrollView)
 
         bag += offerSignButton.onTapSignal.onValue { _ in
             self.startSignProcess(viewController)
         }
 
-        bag += view.add(offerSignButton) { buttonView in
+        bag += scrollView.add(offerSignButton) { buttonView in
             buttonView.snp.makeConstraints { make in
-                make.bottom.equalToSuperview()
+                make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
                 make.trailing.leading.equalToSuperview()
             }
 
@@ -237,15 +163,10 @@ extension Offer: Presentable {
                 } else {
                     buttonView.transform = CGAffineTransform(
                         translationX: 0,
-                        y: buttonView.frame.height + view.safeAreaInsets.bottom + 20
+                        y: buttonView.frame.height + form.safeAreaInsets.bottom + 20
                     )
                 }
             }
-        }
-
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom)
-            make.trailing.leading.bottom.equalToSuperview()
         }
 
         return (viewController, bag)

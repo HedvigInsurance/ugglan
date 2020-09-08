@@ -456,10 +456,17 @@ extension Button: Viewable {
                 \.style
             )
 
-        bag += button.hasWindowSignal.take(first: 1).onValue { _ in
-            button.snp.makeConstraints { make in
+        button.snp.makeConstraints { make in
+            make.width.equalTo(0)
+            make.height.equalTo(0)
+        }
+
+        bag += button.didLayoutSignal.take(first: 1).onValue { _ in
+            button.snp.updateConstraints { make in
                 make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset)
                 make.height.equalTo(self.type.value.height)
+            }
+            button.snp.makeConstraints { make in
                 make.centerX.equalToSuperview()
             }
         }

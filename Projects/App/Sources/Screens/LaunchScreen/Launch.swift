@@ -13,17 +13,15 @@ import Presentation
 import UIKit
 
 struct Launch {
-    let hasLoadedSignal: Signal<Void>
+    let completeAnimationCallbacker = Callbacker<Void>()
 }
 
 extension Launch: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIView, Future<Void>) {
         let bag = DisposeBag()
 
-        let viewController = UIViewController()
         let containerView = UIView()
         containerView.backgroundColor = .primaryBackground
-        viewController.view = containerView
 
         let imageView = UIImageView()
         imageView.image = Asset.wordmark.image
@@ -37,8 +35,8 @@ extension Launch: Presentable {
             make.center.equalToSuperview()
         }
 
-        return (viewController, Future { completion in
-            bag += self.hasLoadedSignal.delay(
+        return (containerView, Future { completion in
+            bag += self.completeAnimationCallbacker.delay(
                 by: 0.6
             ).animated(
                 style: AnimationStyle.easeOut(duration: 0.5)
