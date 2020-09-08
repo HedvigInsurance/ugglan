@@ -42,7 +42,7 @@ extension BankIDLoginSweden: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .brand(.primaryBackground())
         viewController.view = view
         viewController.title = L10n.bankidLoginTitle
 
@@ -78,7 +78,7 @@ extension BankIDLoginSweden: Presentable {
 
         let imageView = UIImageView()
         imageView.image = Asset.bankIdLogo.image
-        imageView.tintColor = .primaryText
+        imageView.tintColor = .brand(.primaryText())
 
         iconContainerView.addSubview(imageView)
 

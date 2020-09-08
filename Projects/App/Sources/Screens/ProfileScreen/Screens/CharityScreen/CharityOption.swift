@@ -68,7 +68,7 @@ extension CharityOption: Reusable {
             )
             contentView.isLayoutMarginsRelativeArrangement = true
 
-            containerView.backgroundColor = .secondaryBackground
+            containerView.backgroundColor = .brand(.secondaryBackground())
 
             let titleLabel = UILabel(
                 value: charityOption.name,
@@ -91,8 +91,8 @@ extension CharityOption: Reusable {
             let button = Button(
                 title: L10n.chartityPickOption,
                 type: .standard(
-                    backgroundColor: .primaryButtonBackgroundColor,
-                    textColor: .white
+                    backgroundColor: .brand(.primaryButtonBackgroundColor),
+                    textColor: .brand(.primaryButtonTextColor)
                 )
             )
 
@@ -129,7 +129,7 @@ extension CharityOption: Reusable {
                         opacity: 0.08,
                         offset: CGSize(width: 0, height: 10),
                         radius: 8,
-                        color: UIColor.primaryShadowColor,
+                        color: UIColor.brand(.primaryShadowColor),
                         path: shadowPath.cgPath
                     )
                 }

@@ -44,7 +44,7 @@ extension LoggedIn: Presentable {
     func materialize() -> (UITabBarController, Disposable) {
         let tabBarController = UITabBarController()
         let loadingViewController = UIViewController()
-        loadingViewController.view.backgroundColor = .primaryBackground
+        loadingViewController.view.backgroundColor = .brand(.primaryBackground())
         tabBarController.viewControllers = [loadingViewController]
 
         ApplicationState.preserveState(.loggedIn)

@@ -43,7 +43,7 @@ extension WhatsNew: Presentable {
         viewController.displayableTitle = L10n.featurePromoTitle
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .brand(.primaryBackground())
 
         let containerView = UIStackView()
         containerView.axis = .vertical
@@ -95,7 +95,7 @@ extension WhatsNew: Presentable {
         }
 
         let proceedButton = ProceedButton(
-            button: Button(title: "", type: .standard(backgroundColor: .blackPurple, textColor: .white))
+            button: Button(title: "", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
         )
 
         bag += controlsWrapper.addArranged(proceedButton)

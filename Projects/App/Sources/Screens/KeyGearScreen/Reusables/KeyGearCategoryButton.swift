@@ -52,7 +52,7 @@ extension KeyGearCategoryButton: Equatable {
 extension KeyGearCategoryButton: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (KeyGearCategoryButton) -> Disposable) {
         let control = UIControl()
-        control.backgroundColor = .primaryBackground
+        control.backgroundColor = .brand(.primaryBackground())
         control.layer.cornerRadius = 8
 
         let contentContainer = UIStackView()
@@ -72,11 +72,11 @@ extension KeyGearCategoryButton: Reusable {
             let bag = DisposeBag()
 
             bag += control.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-                control.backgroundColor = UIColor.primaryTintColor.withAlphaComponent(0.2)
+                control.backgroundColor = UIColor.brand(.primaryTintColor).withAlphaComponent(0.2)
             }
 
             bag += control.delayedTouchCancel().animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-                control.backgroundColor = UIColor.primaryBackground
+                control.backgroundColor = UIColor.brand(.primaryBackground())
             }
 
             bag += control.signal(for: .touchDown).feedback(type: .selection)
@@ -89,7 +89,7 @@ extension KeyGearCategoryButton: Reusable {
 
             bag += self.selectedSignal.atOnce().animated(style: AnimationStyle.easeOut(duration: 0.25)) { selected in
                 if selected {
-                    control.layer.borderColor = UIColor.primaryTintColor.cgColor
+                    control.layer.borderColor = UIColor.brand(.primaryTintColor).cgColor
                     control.layer.borderWidth = 1
                     label.style = TextStyle.brand(.body(color: .link)).centerAligned
                 } else {

@@ -37,7 +37,7 @@ extension KeyGearListCollection: Viewable {
             table: Table(rows: []),
             layout: layout
         )
-        collectionKit.view.backgroundColor = .primaryBackground
+        collectionKit.view.backgroundColor = .brand(.primaryBackground())
 
         let header = TabHeader(
             image: Asset.keyGearOverviewHeader.image,

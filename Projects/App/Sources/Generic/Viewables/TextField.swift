@@ -36,7 +36,7 @@ extension TextField: Viewable {
 
         view.layer.borderWidth = UIScreen.main.hairlineWidth
         bag += view.applyBorderColor { trait in
-            trait.userInterfaceStyle == .dark ? .offBlack : .lightGray
+            .brand(.primaryBorderColor)
         }
 
         let paddingView = UIStackView()

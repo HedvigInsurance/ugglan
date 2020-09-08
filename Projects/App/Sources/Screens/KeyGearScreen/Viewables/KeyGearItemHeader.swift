@@ -138,14 +138,12 @@ extension KeyGearItemHeader: Viewable {
         stackView.distribution = .fillEqually
 
         let valuationBox = SectionView()
-        valuationBox.dynamicStyle = .sectionPlain
 
         bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController, itemId: itemId))
 
         stackView.addArrangedSubview(valuationBox)
 
         let deductibleBox = SectionView()
-        deductibleBox.dynamicStyle = .sectionPlain
 
         bag += deductibleBox.append(DeductibleBox(itemId: itemId))
 

@@ -29,7 +29,7 @@ extension CharityInformationButton: Viewable {
         let button = Button(
             title: L10n.profileMyCharityInfoButton,
             type: .iconTransparent(
-                textColor: .primaryTintColor,
+                textColor: .brand(.primaryTintColor),
                 icon: .left(image: Asset.infoPurple.image, width: 20)
             )
         )

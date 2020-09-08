@@ -43,7 +43,6 @@ struct PurchasePrice: Viewable {
         bag += footerViewContainer.addArranged(footerView)
 
         let section = SectionView(headerView: nil, footerView: footerViewContainer)
-        section.dynamicStyle = .sectionPlain
 
         let row = RowView()
         section.append(row)
@@ -143,7 +142,6 @@ extension KeyGearAddValuation: Presentable {
         bag += form.append(Spacing(height: 20))
 
         let dateSection = form.appendSection()
-        dateSection.dynamicStyle = .sectionPlain
 
         bag += dateSection.append(DatePicker()).bindTo(state.purchaseDateSignal)
 
@@ -153,7 +151,7 @@ extension KeyGearAddValuation: Presentable {
             button:
             Button(
                 title: L10n.keyGearItemViewAddPurchaseDateButton,
-                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
             )
         )
 

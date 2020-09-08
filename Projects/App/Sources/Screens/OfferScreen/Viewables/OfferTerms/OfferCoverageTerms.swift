@@ -30,7 +30,7 @@ extension OfferCoverageTerms: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .brand(.primaryBackground())
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -64,7 +64,7 @@ extension OfferCoverageTerms: Viewable {
         let notInsuredAtOtherCompanyBlob = WhenEnabled(insuredAtOtherCompanySignal.map { !$0 }, {
             Blob(color: Offer.primaryAccentColor, position: .top)
         }) { view in
-            view.backgroundColor = .primaryBackground
+            view.backgroundColor = .brand(.primaryBackground())
         }
 
         bag += outerView.addArranged(notInsuredAtOtherCompanyBlob)

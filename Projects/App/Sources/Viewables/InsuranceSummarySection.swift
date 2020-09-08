@@ -48,7 +48,6 @@ extension InsuranceSummarySection: Viewable {
             headerView: headerView,
             footerView: footerView
         )
-        sectionView.dynamicStyle = .sectionPlain
 
         stackView.addArrangedSubview(sectionView)
 
@@ -138,7 +137,6 @@ extension InsuranceSummarySection: Viewable {
                     headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .brand(.headline(color: .primary))),
                     footerView: nil
                 )
-                extraBuildingsSection.dynamicStyle = .sectionPlain
 
                 stackView.addArrangedSubview(extraBuildingsSection)
 

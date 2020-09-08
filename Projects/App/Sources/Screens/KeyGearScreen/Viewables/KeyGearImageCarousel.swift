@@ -22,7 +22,7 @@ extension KeyGearImageCarousel: Viewable {
         layout.scrollDirection = .horizontal
         let collectionKit = CollectionKit<EmptySection, KeyGearImageCarouselItem>(table: Table(rows: []), layout: layout)
         collectionKit.view.isPagingEnabled = true
-        collectionKit.view.backgroundColor = .midnight500
+        collectionKit.view.backgroundColor = .brand(.secondaryBackground())
         let bag = DisposeBag()
 
         bag += imagesSignal.atOnce().onValue { images in

@@ -33,11 +33,11 @@ extension AdyenSetup: Presentable {
         viewController.navigationItem.hidesBackButton = true
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .brand(.primaryBackground())
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .whiteLarge
-        activityIndicator.color = .primaryTintColor
+        activityIndicator.color = .brand(.primaryTintColor)
 
         view.addSubview(activityIndicator)
 
@@ -63,21 +63,21 @@ extension AdyenSetup: Presentable {
                 let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8)!)
 
                 var style = DropInComponent.Style()
-                style.navigation.tintColor = .primaryTintColor
+                style.navigation.tintColor = .brand(.primaryTintColor)
                 style.formComponent.header.title.font = HedvigFonts.favoritStdBook!.withSize(30)
-                style.formComponent.footer.button.backgroundColor = .primaryButtonBackgroundColor
+                style.formComponent.footer.button.backgroundColor = .brand(.primaryButtonBackgroundColor)
                 style.formComponent.footer.button.title.font = HedvigFonts.favoritStdBook!.withSize(20)
                 style.formComponent.footer.button.cornerRadius = 6
                 style.formComponent.textField.title.font = HedvigFonts.favoritStdBook!.withSize(12)
                 style.formComponent.textField.text.font = HedvigFonts.favoritStdBook!.withSize(15)
                 style.formComponent.switch.title.font = HedvigFonts.favoritStdBook!.withSize(14)
-                style.formComponent.backgroundColor = .primaryBackground
-                style.formComponent.textField.backgroundColor = .primaryBackground
-                style.formComponent.footer.backgroundColor = .primaryBackground
-                style.formComponent.header.backgroundColor = .primaryBackground
-                style.listComponent.backgroundColor = .primaryBackground
-                style.listComponent.listItem.backgroundColor = .secondaryBackground
-                style.navigation.backgroundColor = .primaryBackground
+                style.formComponent.backgroundColor = .brand(.primaryBackground())
+                style.formComponent.textField.backgroundColor = .brand(.primaryBackground())
+                style.formComponent.footer.backgroundColor = .brand(.primaryBackground())
+                style.formComponent.header.backgroundColor = .brand(.primaryBackground())
+                style.listComponent.backgroundColor = .brand(.primaryBackground())
+                style.listComponent.listItem.backgroundColor = .brand(.secondaryBackground())
+                style.navigation.backgroundColor = .brand(.primaryBackground())
 
                 switch ApplicationState.getTargetEnvironment() {
                 case .staging:
@@ -190,7 +190,7 @@ extension AdyenSetup: Presentable {
 
                         let continueButton = Button(
                             title: L10n.paymentSetupDoneCta,
-                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
                         )
 
                         let continueAction = ImageTextAction<Void>(
@@ -211,12 +211,12 @@ extension AdyenSetup: Presentable {
                     case .failure:
                         let tryAgainButton = Button(
                             title: L10n.paymentSetupFailedRetryCta,
-                            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
                         )
 
                         let cancelButton = Button(
                             title: L10n.paymentSetupFailedCancelCta,
-                            type: .outline(borderColor: .transparent, textColor: .pink)
+                            type: .outline(borderColor: .clear, textColor: .brand(.link))
                         )
 
                         let didFailAction = ImageTextAction<Bool>(

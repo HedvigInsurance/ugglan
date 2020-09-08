@@ -21,7 +21,7 @@ extension Launch: Presentable {
         let bag = DisposeBag()
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .brand(.primaryBackground())
 
         let imageView = UIImageView()
         imageView.image = Asset.wordmark.image

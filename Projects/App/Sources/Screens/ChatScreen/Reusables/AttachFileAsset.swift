@@ -33,7 +33,7 @@ struct AttachFileAsset: Reusable {
 
     static func makeAndConfigure() -> (make: UIView, configure: (AttachFileAsset) -> Disposable) {
         let view = UIControl()
-        view.backgroundColor = .transparent
+        view.backgroundColor = .clear
 
         return (view, { `self` in
             let bag = DisposeBag()
@@ -64,7 +64,7 @@ struct AttachFileAsset: Reusable {
 
                 let button = Button(
                     title: L10n.chatUploadPresend,
-                    type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                    type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
                 )
                 let loadableButton = LoadableButton(button: button, initialLoadingState: false)
 

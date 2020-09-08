@@ -62,7 +62,7 @@ extension SelectedCharity: Viewable {
             }
 
             let infoContainer = UIView()
-            infoContainer.backgroundColor = .secondaryBackground
+            infoContainer.backgroundColor = .brand(.secondaryBackground())
             infoContainer.layer.cornerRadius = 8
 
             let infoContainerStackView = UIStackView()

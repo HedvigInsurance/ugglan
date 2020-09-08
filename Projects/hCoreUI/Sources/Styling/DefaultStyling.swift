@@ -186,7 +186,7 @@ public extension DefaultStyling {
             UITabBar.appearance().shadowImage = UIColor.brand(.primaryBorderColor).asImage()
         }
 
-        UITabBarItem.appearance().setTitleTextAttributes(
+        UITabBarItem.appearance().setTitleTextAttributes( 
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .footnote),
             ],

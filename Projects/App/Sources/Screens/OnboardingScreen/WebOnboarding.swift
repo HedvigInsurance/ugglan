@@ -23,7 +23,7 @@ extension WebOnboarding: Presentable {
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
-        settingsButton.tintColor = .navigationItemMutedTintColor
+        settingsButton.tintColor = .brand(.primaryText())
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
@@ -42,7 +42,7 @@ extension WebOnboarding: Presentable {
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
-        restartButton.tintColor = .navigationItemMutedTintColor
+        restartButton.tintColor = .brand(.primaryText())
 
         let chatButton = UIBarButtonItem(viewable: ChatButton(presentingViewController: viewController))
 
@@ -59,7 +59,7 @@ extension WebOnboarding: Presentable {
         }
 
         let webView = WKWebView(frame: .zero)
-        webView.backgroundColor = .transparent
+        webView.backgroundColor = .clear
         webView.isOpaque = false
         webView.customUserAgent = ApolloClient.userAgent
 

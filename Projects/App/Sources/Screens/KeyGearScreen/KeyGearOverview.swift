@@ -100,7 +100,7 @@ extension KeyGearOverview: Presentable {
             split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .allVisible : .automatic
         }
 
-        split.view.backgroundColor = .primaryBackground
+        split.view.backgroundColor = .brand(.primaryBackground())
         split.extendedLayoutIncludesOpaqueBars = true
 
         let viewController = KeyGearOverviewViewController()
@@ -115,7 +115,7 @@ extension KeyGearOverview: Presentable {
 
         if split.traitCollection.userInterfaceIdiom == .pad {
             let placeholder = UIViewController()
-            placeholder.view.backgroundColor = .primaryBackground
+            placeholder.view.backgroundColor = .brand(.primaryBackground())
             detailBag += split.present(placeholder, options: [.defaults])
         }
 

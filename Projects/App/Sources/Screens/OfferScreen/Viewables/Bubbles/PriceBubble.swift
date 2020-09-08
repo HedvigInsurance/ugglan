@@ -88,7 +88,7 @@ extension PriceBubble: Viewable {
         bag += ease.addSpring(tension: 300, damping: 100, mass: 2) { number in
             if number != 0 {
                 let textStyle = discountSignal.value > 0 ?
-                    TextStyle.brand(.title2(color: .primary)).colored(.pink) :
+                    TextStyle.brand(.title2(color: .link)) :
                     TextStyle.brand(.title2(color: .primary))
                 priceLabel.styledText = StyledText(
                     text: String(Int(number)),

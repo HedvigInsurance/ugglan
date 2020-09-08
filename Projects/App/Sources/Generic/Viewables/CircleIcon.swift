@@ -38,7 +38,7 @@ extension CircleIcon: Viewable {
         circleView.layer.shadowOpacity = 0.2
         circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
         circleView.layer.shadowRadius = 16
-        circleView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
+        circleView.layer.shadowColor = UIColor.brand(.primaryShadowColor).cgColor
 
         view.addSubview(circleView)
 

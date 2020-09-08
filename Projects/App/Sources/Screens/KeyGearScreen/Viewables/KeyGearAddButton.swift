@@ -22,7 +22,7 @@ extension KeyGearAddButton: Viewable {
         let bag = DisposeBag()
 
         view.layer.cornerRadius = 8
-        view.backgroundColor = .secondaryTintColor
+        view.backgroundColor = .brand(.link)
 
         let contentContainer = UIStackView()
         contentContainer.spacing = 10
@@ -47,12 +47,12 @@ extension KeyGearAddButton: Viewable {
         bag += touchUpInsideSignal.feedback(type: .impactLight)
 
         bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.35)) {
-            view.backgroundColor = UIColor.secondaryTintColor.darkened(amount: 0.05)
+            view.backgroundColor = UIColor.brand(.link).darkened(amount: 0.05)
             view.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
         }
 
         bag += view.delayedTouchCancel(delay: 0.1).animated(style: AnimationStyle.easeOut(duration: 0.35)) {
-            view.backgroundColor = .secondaryTintColor
+            view.backgroundColor = .brand(.link)
             view.transform = CGAffineTransform.identity
         }
 

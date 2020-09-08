@@ -28,7 +28,7 @@ extension OfferDiscount: Viewable {
         view.axis = .vertical
         view.alignment = .center
 
-        let redeemButton = Button(title: L10n.offerAddDiscountButton, type: .outline(borderColor: .transparent, textColor: .primaryText))
+        let redeemButton = Button(title: L10n.offerAddDiscountButton, type: .outline(borderColor: .clear, textColor: .brand(.primaryText())))
 
         view.snp.makeConstraints { make in
             make.height.equalTo(redeemButton.type.value.height + view.layoutMargins.top + view.layoutMargins.bottom)
@@ -76,7 +76,7 @@ extension OfferDiscount: Viewable {
 
         let removeButton = Button(
             title: L10n.offerRemoveDiscountButton,
-            type: .outline(borderColor: .transparent, textColor: .primaryText)
+            type: .outline(borderColor: .clear, textColor: .brand(.primaryText()))
         )
         bag += view.add(removeButton) { buttonView in
             handleButtonState(buttonView) { redeemedCampaigns -> Bool in

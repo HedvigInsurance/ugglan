@@ -29,7 +29,7 @@ extension BankIdSign: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .brand(.secondaryBackground())
         viewController.view = view
 
         let containerStackView = UIStackView()
@@ -63,7 +63,7 @@ extension BankIdSign: Presentable {
 
         let imageView = UIImageView()
         imageView.image = Asset.bankIdLogo.image
-        imageView.tintColor = .primaryText
+        imageView.tintColor = .brand(.primaryText())
 
         iconContainerView.addSubview(imageView)
 

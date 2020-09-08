@@ -37,7 +37,7 @@ extension EditableRow: Viewable {
 
         let button = Button(
             title: L10n.editableRowEdit,
-            type: .outline(borderColor: .transparent, textColor: .primaryTintColor)
+            type: .outline(borderColor: .clear, textColor: .brand(.primaryTintColor))
         )
 
         bag += textField.signal(for: .editingDidBegin)

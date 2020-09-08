@@ -69,7 +69,7 @@ extension KeyGearListItem: Reusable {
         let view = UIControl()
         view.layer.cornerRadius = 8
         view.clipsToBounds = true
-        view.backgroundColor = .midnight500
+        view.backgroundColor = .brand(.primaryBackground())
 
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = false
@@ -119,7 +119,7 @@ extension KeyGearListItem: Reusable {
             }
 
             bag += view.applyBorderColor { _ -> UIColor in
-                UIColor.primaryBorder
+                UIColor.brand(.primaryBorderColor)
             }
 
             label.value = self.name ?? self.category.name

@@ -26,7 +26,7 @@ extension OfferCoverageSwitcher: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .brand(.primaryBackground())
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()

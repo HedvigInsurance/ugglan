@@ -53,7 +53,7 @@ extension ApplyDiscount: Presentable {
 
         let submitButton = Button(
             title: L10n.referralAddcouponBtnSubmit,
-            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
         )
 
         let loadableSubmitButton = LoadableButton(button: submitButton)

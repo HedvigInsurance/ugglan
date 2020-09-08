@@ -33,7 +33,7 @@ extension OfferStartDateButton: Viewable {
         button.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(CGAffineTransform(translationX: 0, y: -30))
         button.alpha = 0
         bag += button.applyBorderColor { _ -> UIColor in
-            .primaryText
+            .brand(.primaryText())
         }
 
         containerStackView.addArrangedSubview(button)

@@ -43,8 +43,8 @@ extension DiscountTerms: Viewable {
         let textStyle = TextStyle.brand(.footnote(color: .secondary)).centerAligned
 
         let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString).attributedStringWithVariableStyles(
-            [termsAndConditionsString: textStyle.colored(.primaryTintColor)],
-            fallbackStyle: textStyle.colored(.decorText)
+            [termsAndConditionsString: textStyle.colored(.brand(.primaryTintColor))],
+            fallbackStyle: textStyle
         )
 
         let label = UILabel()

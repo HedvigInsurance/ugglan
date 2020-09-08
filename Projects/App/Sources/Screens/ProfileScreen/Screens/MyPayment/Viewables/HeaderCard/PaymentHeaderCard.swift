@@ -88,11 +88,11 @@ extension PaymentHeaderCard: Viewable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 radius: 8,
-                color: UIColor.primaryShadowColor,
+                color: UIColor.brand(.primaryShadowColor),
                 path: nil
             )
         }
-        bottomView.backgroundColor = .secondaryBackground
+        bottomView.backgroundColor = .brand(.secondaryBackground())
 
         bag += bottomView.didLayoutSignal.onValue { _ in
             bottomView.applyRadiusMaskFor(topLeft: 0, bottomLeft: 10, bottomRight: 10, topRight: 0)

@@ -39,8 +39,8 @@ extension CharityPicker: Viewable {
             ),
             itemSpacing: 0,
             minRowHeight: 10,
-            background: .invisible,
-            selectedBackground: .invisible,
+            background: .none,
+            selectedBackground: .none,
             header: .none,
             footer: .none
         )

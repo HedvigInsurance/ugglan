@@ -26,7 +26,7 @@ extension Charity: Presentable {
         viewController.title = L10n.myCharityScreenTitle
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .brand(.primaryBackground())
 
         bag += client.watch(query: GraphQL.SelectedCharityQuery())
             .map { $0.cashback }

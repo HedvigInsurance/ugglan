@@ -29,7 +29,7 @@ extension LatePaymentHeaderSection: Viewable {
         view.addSubview(childView)
 
         childView.layer.cornerRadius = 5
-        childView.backgroundColor = .coral200
+        childView.backgroundColor = .brand(.link)
 
         childView.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
@@ -59,7 +59,7 @@ extension LatePaymentHeaderSection: Viewable {
         containerView.setCustomSpacing(10, after: icon)
 
         let infoLabel = MultilineLabel(styledText: StyledText(text: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
-                                                              style: TextStyle.brand(.body(color: .primary)).colored(UIColor.almostBlack)))
+                                                              style: TextStyle.brand(.body(color: .primary))))
         bag += containerView.addArranged(infoLabel)
 
         return (view, bag)
