@@ -130,6 +130,15 @@ extension ImageTextAction: Viewable {
         buttonsContainer.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
         buttonsContainer.isLayoutMarginsRelativeArrangement = true
 
+        bag += buttonsContainer.didLayoutSignal.onValue { _ in
+            buttonsContainer.layoutMargins = UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: scrollView.safeAreaInsets.bottom + 15,
+                right: 0
+            )
+        }
+
         let shadowView = UIView()
 
         let gradient = CAGradientLayer()
@@ -161,7 +170,7 @@ extension ImageTextAction: Viewable {
         scrollView.addSubview(buttonsContainer)
 
         buttonsContainer.snp.makeConstraints { make in
-            make.bottom.equalTo(scrollView.safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
             make.trailing.leading.equalToSuperview()
         }
 
