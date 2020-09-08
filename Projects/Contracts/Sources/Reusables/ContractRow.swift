@@ -121,7 +121,7 @@ extension ContractRow: Reusable {
 
             bag += row.append(
                 MultilineLabel(
-                    value: L10n.dashboardPendingHasDate(
+                    value: L10n.contractPendingHasDate(
                         date
                     ),
                     style: .brand(.subHeadline(color: .primary))
@@ -134,7 +134,7 @@ extension ContractRow: Reusable {
 
             bag += row.append(
                 MultilineLabel(
-                    value: L10n.dashboardPendingNoDate,
+                    value: L10n.contractPendingNoDate,
                     style: .brand(.subHeadline(color: .primary))
                 )
             )
