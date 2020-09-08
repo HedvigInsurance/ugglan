@@ -41,6 +41,10 @@ extension CommonClaimsCollection: Viewable {
             )
         }
 
+        bag += collectionKit.view.signal(for: \.bounds).delay(by: 0.25).onValue { _ in
+            collectionKit.view.reloadData()
+        }
+
         bag += collectionKit.delegate.willDisplayCell.onValue { cell, indexPath in
             cell.layer.zPosition = CGFloat(indexPath.row)
         }

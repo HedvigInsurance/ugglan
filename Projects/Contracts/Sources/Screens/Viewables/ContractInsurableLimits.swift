@@ -40,6 +40,10 @@ extension ContractInsurableLimits: Viewable {
             return CGSize(width: width, height: collectionKit.table[index].contentSize(CGSize(width: width, height: 0)).height)
         }
 
+        bag += collectionKit.view.signal(for: \.bounds).onValue { _ in
+            collectionKit.view.reloadData()
+        }
+
         bag += collectionKit.view.signal(for: \.contentSize).onValue { size in
             collectionKit.view.snp.updateConstraints { make in
                 make.height.equalTo(size.height)

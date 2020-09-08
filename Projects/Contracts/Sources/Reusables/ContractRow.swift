@@ -323,7 +323,7 @@ extension ContractRow: Reusable {
                 perilFragments: self.contract.perils.compactMap { $0.fragments.perilFragment },
                 insurableLimitFragments: self.contract.insurableLimits.compactMap { $0.fragments.insurableLimitFragment }
             )
-            section.viewController?.present(contractCoverage.withCloseButton, style: .modal)
+            section.viewController?.present(contractCoverage.withCloseButton, style: .detented(.large))
         }
 
         return (bag, [
