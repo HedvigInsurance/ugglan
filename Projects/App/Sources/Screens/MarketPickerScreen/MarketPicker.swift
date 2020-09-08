@@ -37,15 +37,6 @@ extension MarketPicker {
             }
         }
 
-        var locales: [Localization.Locale] {
-            switch self {
-            case .norway:
-                return [.en_NO, .nb_NO]
-            case .sweden:
-                return [.en_SE, .sv_SE]
-            }
-        }
-
         var icon: UIImage {
             switch self {
             case .norway:

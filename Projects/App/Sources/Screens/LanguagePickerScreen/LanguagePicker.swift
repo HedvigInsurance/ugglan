@@ -15,19 +15,6 @@ import hGraphQL
 import Presentation
 import UIKit
 
-extension UIView {
-    var isPossiblyVisible: Signal<Bool> {
-        windowSignal.atOnce().filter { window in
-            guard let window = window else {
-                return false
-            }
-
-            let keyWindow = UIApplication.shared.keyWindow
-            return keyWindow == window
-        }.map { _ in true }
-    }
-}
-
 struct PreMarketingLanguagePicker: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let (viewController, future) = LanguagePicker().materialize()

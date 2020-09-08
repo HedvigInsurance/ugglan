@@ -61,12 +61,6 @@ extension Chat: Presentable {
             }
         }
 
-        Chat.didOpen()
-
-        bag += Disposer {
-            Chat.didClose()
-        }
-
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 0,

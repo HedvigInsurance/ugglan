@@ -16,7 +16,6 @@ import UIKit
 
 struct Offer {
     @Inject var client: ApolloClient
-    @Inject var analyticsCoordinator: AnalyticsCoordinator
 }
 
 extension Offer {

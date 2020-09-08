@@ -16,12 +16,6 @@ import WebKit
 
 struct WebOnboarding {}
 
-final class WebOnboardingWebView: WKWebView, UIScrollViewDelegate {
-    func viewForZooming(in _: UIScrollView) -> UIView? {
-        nil
-    }
-}
-
 extension WebOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
