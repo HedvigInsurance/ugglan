@@ -62,19 +62,6 @@ extension FutureSection: Viewable {
             }
         }
 
-        section.appendSpacing(.top)
-
-        let button = Button(
-            title: L10n.HomeTab.claimButtonText,
-            type: .standardOutline(
-                borderColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonBackgroundColor)
-            )
-        )
-        bag += section.append(button)
-
-        bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
-
         return (section, bag)
     }
 }
