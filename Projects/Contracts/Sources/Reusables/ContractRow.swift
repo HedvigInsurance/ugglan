@@ -215,7 +215,7 @@ extension ContractRow: Reusable {
             }
             section.viewController?.present(
                 InsuranceDocument(url: url, title: "").withCloseButton,
-                style: .modally()
+                style: .detented(.large)
             )
         }
 

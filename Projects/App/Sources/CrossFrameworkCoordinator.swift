@@ -61,11 +61,7 @@ struct CrossFrameworkCoordinator {
         Home.openCallMeChatHandler = { viewController in
             viewController.present(
                 CallMeChat().withCloseButton,
-                style: .modally(
-                    presentationStyle: .pageSheet,
-                    transitionStyle: nil,
-                    capturesStatusBarAppearance: false
-                )
+                style: .detented(.large)
             )
         }
 
