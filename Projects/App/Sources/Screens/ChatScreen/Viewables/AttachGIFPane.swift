@@ -64,7 +64,7 @@ extension AttachGIFPane: Viewable {
         }
 
         let infoText = MultilineLabel(styledText: .init(text: L10n.labelSearchGif,
-                                                        style: .centeredBody))
+                                                        style: TextStyle.brand(.body(color: .primary)).centerAligned))
         let searchBar = TextView(placeholder: L10n.searchBarGif)
 
         let (searchBarView, searchBarValue) = searchBar.materialize(events: events)

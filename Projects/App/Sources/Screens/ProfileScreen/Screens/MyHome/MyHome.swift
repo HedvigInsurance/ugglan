@@ -33,7 +33,7 @@ extension MyHome: Presentable {
         let addressCircle = AddressCircle()
         bag += form.prepend(addressCircle)
 
-        let rowTitle = UILabel(value: L10n.myHomeSectionTitle, style: .rowTitle)
+        let rowTitle = UILabel(value: L10n.myHomeSectionTitle, style: .brand(.headline(color: .primary)))
 
         bag += form.append(InsuranceSummarySection(headerView: rowTitle))
 

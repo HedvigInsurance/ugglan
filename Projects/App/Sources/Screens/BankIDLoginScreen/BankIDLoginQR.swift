@@ -105,7 +105,7 @@ extension BankIDLoginQR: Presentable {
 
         let messageLabel = MultilineLabel(
             value: L10n.bankidMissingMessage,
-            style: .rowTitle
+            style: .brand(.headline(color: .primary))
         )
         bag += containerView.addArranged(messageLabel)
 

@@ -251,7 +251,7 @@ extension SectionStyle.Background {
 
 extension HeaderFooterStyle {
     static let standard = HeaderFooterStyle(
-        text: .sectionHeader,
+        text: .brand(.footnote(color: .primary)),
         backgroundImage: nil,
         insets: UIEdgeInsets(
             top: 15,

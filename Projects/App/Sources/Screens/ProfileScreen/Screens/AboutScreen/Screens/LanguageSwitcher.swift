@@ -137,7 +137,7 @@ extension LanguageSwitcher: Presentable {
                 swedishRowImageView.image = Asset.circularCheckmark.image
             }
 
-            let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+            let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
             bag += section.append(englishRow).onValue { _ in
                 pickLanguage(locale: .en_SE)
 
@@ -153,7 +153,7 @@ extension LanguageSwitcher: Presentable {
             englishRow.prepend(Asset.flagGB.image)
             englishRow.append(englishRowImageView)
 
-            let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
+            let swedishRow = RowView(title: "Svenska", style: .brand(.headline(color: .primary)), appendSpacer: false)
             bag += section.append(swedishRow).onValue { _ in
                 pickLanguage(locale: .sv_SE)
 
@@ -190,7 +190,7 @@ extension LanguageSwitcher: Presentable {
                 norwegianRowImageView.image = Asset.circularCheckmark.image
             }
 
-            let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+            let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
             bag += section.append(englishRow).onValue { _ in
                 pickLanguage(locale: .en_NO)
 
@@ -206,7 +206,7 @@ extension LanguageSwitcher: Presentable {
             englishRow.prepend(Asset.flagGB.image)
             englishRow.append(englishRowImageView)
 
-            let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .rowTitle, appendSpacer: false)
+            let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .brand(.headline(color: .primary)), appendSpacer: false)
             bag += section.append(norwegianRow).onValue { _ in
                 pickLanguage(locale: .nb_NO)
 

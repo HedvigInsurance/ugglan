@@ -135,7 +135,7 @@ extension InsuranceSummarySection: Viewable {
 
             if let extraBuildings = insurance.extraBuildings, !extraBuildings.isEmpty {
                 let extraBuildingsSection = SectionView(
-                    headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .rowTitle),
+                    headerView: UILabel(value: L10n.myHomeExtrabuildingTitle, style: .brand(.headline(color: .primary))),
                     footerView: nil
                 )
                 extraBuildingsSection.dynamicStyle = .sectionPlain

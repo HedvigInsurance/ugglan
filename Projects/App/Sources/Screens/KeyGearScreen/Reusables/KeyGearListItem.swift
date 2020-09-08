@@ -25,7 +25,7 @@ struct KeyGearListItem {
 
 extension KeyGearListItem: Hashable {
     static func == (lhs: KeyGearListItem, rhs: KeyGearListItem) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
@@ -35,7 +35,7 @@ extension KeyGearListItem: Hashable {
 
 extension KeyGearListItem: SignalProvider {
     var providedSignal: Signal<Void> {
-        return callbacker.providedSignal
+        callbacker.providedSignal
     }
 }
 
@@ -58,7 +58,7 @@ extension KeyGearListItem: Reusable {
 
         let addedAutomaticallyLabel = UILabel(
             value: L10n.keyGearAddedAutomaticallyTag,
-            style: .bodySmallSmallLeft
+            style: .brand(.body(color: .primary))
         )
         addedAutomaticallyStackView.addArrangedSubview(addedAutomaticallyLabel)
 
@@ -97,7 +97,7 @@ extension KeyGearListItem: Reusable {
             make.leading.equalTo(10)
         }
 
-        let label = UILabel(value: "", style: TextStyle.headlineSmallNegSmallNegCenter.colored(.white))
+        let label = UILabel(value: "", style: TextStyle.brand(.body(color: .primary(state: .dynamicReversed))))
         view.addSubview(label)
 
         label.snp.makeConstraints { make in

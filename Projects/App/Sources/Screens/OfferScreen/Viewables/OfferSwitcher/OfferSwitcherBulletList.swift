@@ -43,7 +43,7 @@ extension OfferSwitcherBulletList {
                 make.height.width.equalTo(30)
             }
 
-            let circleLabel = UILabel(value: String(index), style: TextStyle.bodyWhite.centerAligned)
+            let circleLabel = UILabel(value: String(index), style: TextStyle.brand(.body(color: .primary)).centerAligned)
             circle.addSubview(circleLabel)
 
             circleLabel.snp.makeConstraints { make in
@@ -51,7 +51,7 @@ extension OfferSwitcherBulletList {
                 make.centerY.equalToSuperview().offset(3)
             }
 
-            let textLabel = MultilineLabel(value: text, style: .rowSubtitle)
+            let textLabel = MultilineLabel(value: text, style: .brand(.headline(color: .secondary)))
             bag += stackView.addArranged(textLabel)
 
             return (stackView, bag)

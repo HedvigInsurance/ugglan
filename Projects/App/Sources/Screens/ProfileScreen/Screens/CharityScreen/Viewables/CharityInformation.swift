@@ -28,7 +28,7 @@ extension CharityInformation: Presentable {
         containerView.axis = .vertical
         containerView.spacing = 15
 
-        let body = MarkdownText(textSignal: .static(L10n.profileMyCharityInfoBody), style: .bodyOffBlack)
+        let body = MarkdownText(textSignal: .static(L10n.profileMyCharityInfoBody), style: .brand(.body(color: .primary)))
         bag += containerView.addArranged(body)
 
         bag += viewController.install(containerView)

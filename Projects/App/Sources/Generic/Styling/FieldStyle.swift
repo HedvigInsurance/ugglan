@@ -13,18 +13,18 @@ import UIKit
 extension FieldStyle {
     static let `default` = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.cursorColor = .primaryTintColor
-        style.text = .rowValueEditableMuted
-        style.placeholder = .rowValueEditablePlaceholder
+        style.text = .brand(.headline(color: .secondary))
+        style.placeholder = .brand(.headline(color: .quartenary))
     }
 
     static let defaultRight = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.cursorColor = .primaryTintColor
-        style.text = TextStyle.rowValueEditableMuted.aligned(to: .right)
-        style.placeholder = TextStyle.rowValueEditablePlaceholder.aligned(to: .right)
+        style.text = TextStyle.brand(.headline(color: .secondary)).aligned(to: .right)
+        style.placeholder = TextStyle.brand(.headline(color: .quartenary)).aligned(to: .right)
     }
 
     static let editableRow = FieldStyle.default.restyled { (style: inout FieldStyle) in
         style.cursorColor = .primaryTintColor
-        style.text = .rowValueEditableRight
+        style.text = TextStyle.brand(.headline(color: .secondary)).aligned(to: .right)
     }
 }

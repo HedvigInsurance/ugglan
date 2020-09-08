@@ -22,7 +22,7 @@ extension MemberIdRow: Viewable {
     func materialize(events _: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
 
-        let row = RowView(title: L10n.aboutMemberIdRowKey, style: .rowTitle)
+        let row = RowView(title: L10n.aboutMemberIdRowKey, style: .brand(.headline(color: .primary)))
 
         let valueLabel = UILabel(value: "", style: .brand(.headline(color: .quartenary)))
         row.append(valueLabel)

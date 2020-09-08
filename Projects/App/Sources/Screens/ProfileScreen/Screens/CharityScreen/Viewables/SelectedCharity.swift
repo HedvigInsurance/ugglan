@@ -76,11 +76,11 @@ extension SelectedCharity: Viewable {
             )
             infoContainerStackView.isLayoutMarginsRelativeArrangement = true
 
-            let titleLabel = UILabel(value: cashback.name ?? "", style: .blockRowTitle)
+            let titleLabel = UILabel(value: cashback.name ?? "", style: .brand(.headline(color: .primary)))
             infoContainerStackView.addArrangedSubview(titleLabel)
 
             let descriptionLabel = MultilineLabel(
-                styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
+                styledText: StyledText(text: cashback.description ?? "", style: .brand(.body(color: .secondary)))
             )
             bag += infoContainerStackView.addArranged(descriptionLabel)
 

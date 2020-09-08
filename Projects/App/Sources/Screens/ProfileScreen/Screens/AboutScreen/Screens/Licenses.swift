@@ -17,7 +17,7 @@ struct Licenses {}
 // extension Acknow: Reusable {
 //    public static func makeAndConfigure() -> (make: RowView, configure: (Acknow) -> Disposable) {
 //        let row = RowView()
-//        let titleLabel = UILabel(value: "", style: .rowTitle)
+//        let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
 //
 //        row.append(titleLabel)
 //

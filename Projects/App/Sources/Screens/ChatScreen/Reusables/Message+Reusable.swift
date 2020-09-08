@@ -73,7 +73,7 @@ extension Message: Reusable {
 
             let timeStampText = NSAttributedString(styledText: StyledText(
                 text: "11:33",
-                style: TextStyle.chatTimeStamp.centerAligned
+                style: TextStyle.brand(.footnote(color: .secondary)).centerAligned
             ))
 
             let timeStampSize = timeStampText.boundingRect(
@@ -97,7 +97,7 @@ extension Message: Reusable {
 
         let attributedString = NSAttributedString(styledText: StyledText(
             text: body,
-            style: .chatBody
+            style: .brand(.body(color: .primary))
         ))
 
         let size = attributedString.boundingRect(
@@ -129,7 +129,7 @@ extension Message: Reusable {
         let timeStampLabelContainer = UIStackView()
         timeStampLabelContainer.alignment = .center
 
-        let timeStampLabel = UILabel(value: "", style: TextStyle.chatTimeStamp.centerAligned)
+        let timeStampLabel = UILabel(value: "", style: TextStyle.brand(.footnote(color: .quartenary)).centerAligned)
         timeStampLabelContainer.addArrangedSubview(timeStampLabel)
 
         spacingContainer.addArrangedSubview(timeStampLabelContainer)
@@ -396,7 +396,7 @@ extension Message: Reusable {
                     }
 
                 case let .file(url):
-                    let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
+                    let textStyle = TextStyle.brand(.body(color: .primary)).colored(messageTextColor)
 
                     let text = L10n.chatFileDownload
 
@@ -474,7 +474,7 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let textStyle = TextStyle.chatBody.colored(messageTextColor)
+                    let textStyle = TextStyle.brand(.body(color: .primary)).colored(messageTextColor)
                     let attributedString = NSMutableAttributedString(text: message.body, style: textStyle)
 
                     message.body.links.forEach { linkRange in

@@ -206,7 +206,7 @@ extension KeyGearItem: Presentable {
         let claimsSection = innerForm.appendSection()
         claimsSection.dynamicStyle = .sectionPlain
 
-        let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .rowTitle)
+        let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .brand(.headline(color: .primary)))
         claimsRow.append(hCoreUIAssets.chevronRight.image)
 
         bag += claimsSection.append(claimsRow).onValue { _ in
@@ -250,7 +250,7 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(Spacing(height: 30))
 
         let receiptFooter = UIStackView()
-        bag += receiptFooter.addArranged(MultilineLabel(value: L10n.keyGearItemViewReceiptTableFooter, style: .sectionHeader))
+        bag += receiptFooter.addArranged(MultilineLabel(value: L10n.keyGearItemViewReceiptTableFooter, style: .brand(.footnote(color: .primary))))
 
         let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
         receiptSection.dynamicStyle = .sectionPlain

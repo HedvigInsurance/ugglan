@@ -37,7 +37,7 @@ extension CharityHeader: Viewable {
         let multilineLabel = MultilineLabel(
             styledText: StyledText(
                 text: L10n.charityScreenHeaderMessage,
-                style: .centeredBodyOffBlack
+                style: TextStyle.brand(.body(color: .primary)).centerAligned
             )
         )
 

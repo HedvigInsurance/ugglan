@@ -39,7 +39,7 @@ extension KeyGearAddButton: Viewable {
         let icon = Icon(icon: Asset.addButton.image, iconWidth: 32)
         contentContainer.addArrangedSubview(icon)
 
-        let label = MultilineLabel(value: L10n.keyGearAddButton, style: TextStyle.body.colored(.primaryTintColor))
+        let label = MultilineLabel(value: L10n.keyGearAddButton, style: TextStyle.brand(.body(color: .primary)))
         bag += contentContainer.addArranged(label)
 
         let touchUpInsideSignal = view.trackedTouchUpInsideSignal

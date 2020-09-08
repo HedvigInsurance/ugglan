@@ -8,6 +8,7 @@
 import Apollo
 import Contracts
 import Flow
+import Form
 import Foundation
 import hCore
 import hCoreUI
@@ -29,9 +30,9 @@ extension OfferCoverage: Viewable {
 
         let bag = DisposeBag()
 
-        stackView.addArrangedSubview(UILabel(value: L10n.offerScreenCoverageTitle, style: .headlineLargeLargeCenter))
+        stackView.addArrangedSubview(UILabel(value: L10n.offerScreenCoverageTitle, style: TextStyle.brand(.headline(color: .primary)).centerAligned))
 
-        let bodyLabel = MultilineLabel(value: "", style: .bodySmallSmallCenter)
+        let bodyLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .secondary)).centerAligned)
         bag += stackView.addArranged(bodyLabel)
 
         bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.type }.onValue { type in
@@ -61,7 +62,7 @@ extension OfferCoverage: Viewable {
 
         bag += stackView.addArranged(Spacing(height: 20))
 
-        stackView.addArrangedSubview(UILabel(value: L10n.offerScreenInsuredAmountsTitle, style: .headlineLargeLargeCenter))
+        stackView.addArrangedSubview(UILabel(value: L10n.offerScreenInsuredAmountsTitle, style: TextStyle.brand(.headline(color: .primary)).centerAligned))
         bag += stackView.addArranged(ContractInsurableLimits(insurableLimitFragmentsSignal: insurableLimitFragmentsSignal))
 
         return (stackView, bag)

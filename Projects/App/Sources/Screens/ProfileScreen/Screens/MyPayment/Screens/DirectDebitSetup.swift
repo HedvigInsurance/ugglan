@@ -27,12 +27,12 @@ struct DirectDebitSetup {
         case .postOnboarding:
             return UIBarButtonItem(
                 title: L10n.trustlySkipButton,
-                style: .navigationBarButtonSkip
+                style: .brand(.body(color: .primary))
             )
         default:
             return UIBarButtonItem(
                 title: L10n.directDebitDismissButton,
-                style: .navigationBarButton
+                style: .brand(.body(color: .link))
             )
         }
     }

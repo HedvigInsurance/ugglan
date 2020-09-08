@@ -14,7 +14,7 @@ import UIKit
 
 extension CGSize {
     func append(inset: UIEdgeInsets) -> CGSize {
-        return CGSize(width: width + inset.left + inset.right, height: height + inset.bottom + inset.top)
+        CGSize(width: width + inset.left + inset.right, height: height + inset.bottom + inset.top)
     }
 }
 
@@ -30,7 +30,7 @@ struct KeyGearCategoryButton: SignalProvider {
     func calculateSize() -> CGSize {
         let attributedString = NSAttributedString(styledText: StyledText(
             text: category.rawValue,
-            style: .blockRowTitle
+            style: .brand(.headline(color: .primary))
         ))
 
         let rect = attributedString.boundingRect(
@@ -65,7 +65,7 @@ extension KeyGearCategoryButton: Reusable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let label = UILabel(value: "", style: .bodySmallSmallCenter)
+        let label = UILabel(value: "", style: TextStyle.brand(.body(color: .primary)).centerAligned)
         contentContainer.addArrangedSubview(label)
 
         return (control, { `self` in
@@ -91,10 +91,10 @@ extension KeyGearCategoryButton: Reusable {
                 if selected {
                     control.layer.borderColor = UIColor.primaryTintColor.cgColor
                     control.layer.borderWidth = 1
-                    label.style = TextStyle.bodySmallSmallCenter.colored(.primaryTintColor)
+                    label.style = TextStyle.brand(.body(color: .link)).centerAligned
                 } else {
                     control.layer.borderWidth = 0
-                    label.style = TextStyle.bodySmallSmallCenter
+                    label.style = TextStyle.brand(.body(color: .primary)).centerAligned
                 }
             }
 

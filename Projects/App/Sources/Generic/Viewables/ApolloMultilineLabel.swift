@@ -30,7 +30,7 @@ struct ApolloMultilineLabel<Query: GraphQLQuery> {
 extension ApolloMultilineLabel: Viewable {
     func materialize(events _: ViewableEvents) -> (MultilineLabel, Disposable) {
         let bag = DisposeBag()
-        let multilineLabel = MultilineLabel(value: "", style: TextStyle.body)
+        let multilineLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .primary)))
 
         bag += client
             .watch(query: query)

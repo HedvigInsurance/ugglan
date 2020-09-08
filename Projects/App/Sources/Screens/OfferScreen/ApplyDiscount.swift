@@ -38,7 +38,7 @@ extension ApplyDiscount: Presentable {
 
         let descriptionLabel = MultilineLabel(
             value: L10n.referralAddcouponBody,
-            style: .bodyOffBlack
+            style: .brand(.body(color: .secondary))
         )
         bag += form.append(descriptionLabel)
 

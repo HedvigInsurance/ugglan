@@ -38,7 +38,7 @@ extension AddKeyGearItem: Presentable {
 
         viewController.title = L10n.keyGearAddItemPageTitle
 
-        let cancelButton = UIBarButtonItem(title: L10n.keyGearAddItemPageCloseButton, style: .navigationBarButton)
+        let cancelButton = UIBarButtonItem(title: L10n.keyGearAddItemPageCloseButton, style: .brand(.body(color: .primary)))
         viewController.navigationItem.rightBarButtonItem = cancelButton
 
         let form = FormView()

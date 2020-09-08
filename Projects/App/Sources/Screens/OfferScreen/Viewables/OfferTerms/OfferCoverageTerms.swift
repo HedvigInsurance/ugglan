@@ -48,7 +48,7 @@ extension OfferCoverageTerms: Viewable {
 
         let bag = DisposeBag()
 
-        let titleLabel = MultilineLabel(value: L10n.offerTermsTitle, style: TextStyle.rowTitleBold.centerAligned)
+        let titleLabel = MultilineLabel(value: L10n.offerTermsTitle, style: TextStyle.brand(.headline(color: .primary)).centerAligned)
         bag += stackView.addArranged(titleLabel)
 
         bag += stackView.addArranged(OfferTermsBulletPoints())

@@ -107,7 +107,7 @@ extension PaymentHeaderCard: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        bottomViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardDate, style: .body))
+        bottomViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardDate, style: .brand(.body(color: .primary))))
         bag += bottomViewStack.addArranged(PaymentHeaderNextCharge())
 
         view.addArrangedSubview(bottomView)

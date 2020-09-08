@@ -62,7 +62,7 @@ extension CharityPicker: Viewable {
 
                 let label = UILabel(
                     value: L10n.charityOptionsHeaderTitle,
-                    style: .sectionHeader
+                    style: .brand(.headline(color: .primary))
                 )
 
                 headerStackView.addArrangedSubview(label)

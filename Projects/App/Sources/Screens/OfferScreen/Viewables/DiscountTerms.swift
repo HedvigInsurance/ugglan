@@ -40,7 +40,7 @@ extension DiscountTerms: Viewable {
         }
 
         let termsAndConditionsString = L10n.referralAddcouponTcLink
-        let textStyle = TextStyle.reallySmallTitle.centerAligned
+        let textStyle = TextStyle.brand(.footnote(color: .secondary)).centerAligned
 
         let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString).attributedStringWithVariableStyles(
             [termsAndConditionsString: textStyle.colored(.primaryTintColor)],

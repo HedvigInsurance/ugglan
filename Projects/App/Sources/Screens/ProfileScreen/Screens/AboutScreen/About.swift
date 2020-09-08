@@ -160,7 +160,10 @@ extension About: Presentable {
 
         let year = Calendar.current.component(.year, from: Date())
 
-        let footerView = UILabel(value: "© Hedvig AB - \(year)", style: .sectionHeader)
+        let footerView = UILabel(
+            value: "© Hedvig AB - \(year)",
+            style: TextStyle.brand(.footnote(color: .primary)).centerAligned
+        )
         footerView.textAlignment = .center
 
         form.append(footerView)

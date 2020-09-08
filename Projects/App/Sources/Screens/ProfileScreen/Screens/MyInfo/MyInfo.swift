@@ -28,7 +28,7 @@ extension MyInfo: Presentable {
         let form = FormView()
 
         let saveButton = ActivityBarButton(
-            item: UIBarButtonItem(title: L10n.myInfoSaveButton, style: .navigationBarButtonPrimary),
+            item: UIBarButtonItem(title: L10n.myInfoSaveButton, style: .brand(.body(color: .link))),
             position: .right
         )
         bag += saveButton.onValue { _ in
@@ -46,7 +46,7 @@ extension MyInfo: Presentable {
 
         let cancelButton = UIBarButtonItem(
             title: L10n.myInfoCancelButton,
-            style: .navigationBarButton
+            style: .brand(.body(color: .primary))
         )
 
         bag += state.isEditingSignal.atOnce().filter { $0 }.onValue { _ in

@@ -72,14 +72,14 @@ extension CharityOption: Reusable {
 
             let titleLabel = UILabel(
                 value: charityOption.name,
-                style: .blockRowTitle
+                style: .brand(.headline(color: .primary))
             )
             contentView.addArrangedSubview(titleLabel)
 
             let descriptionLabel = MultilineLabel(
                 styledText: StyledText(
                     text: charityOption.description,
-                    style: .blockRowDescription
+                    style: .brand(.body(color: .primary))
                 )
             )
             bag += contentView.addArranged(descriptionLabel)

@@ -120,7 +120,7 @@ extension DirectDebitResult: Viewable {
         let heading = MultilineLabel(
             styledText: StyledText(
                 text: type.headingText,
-                style: .centeredHeadingOne
+                style: .brand(.headline(color: .primary))
             )
         )
 
@@ -133,7 +133,7 @@ extension DirectDebitResult: Viewable {
         let body = MultilineLabel(
             styledText: StyledText(
                 text: type.messageText,
-                style: .centeredBody
+                style: .brand(.body(color: .secondary))
             )
         )
 

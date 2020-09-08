@@ -107,13 +107,13 @@ extension OfferTermsBulletPoints {
 
             stackView.addArrangedSubview(textStackView)
 
-            let titleLabel = MultilineLabel(value: title, style: .rowSubtitle)
+            let titleLabel = MultilineLabel(value: title, style: .brand(.headline(color: .primary)))
             bag += textStackView.addArranged(titleLabel)
 
             if let message = message {
                 stackView.alignment = .top
 
-                let messageLabel = MultilineLabel(value: message, style: .rowTertitle)
+                let messageLabel = MultilineLabel(value: message, style: .brand(.headline(color: .primary)))
                 bag += textStackView.addArranged(messageLabel)
             }
 

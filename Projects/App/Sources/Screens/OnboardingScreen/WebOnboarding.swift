@@ -69,7 +69,7 @@ extension WebOnboarding: Presentable {
         webView.isOpaque = false
         webView.customUserAgent = ApolloClient.userAgent
 
-        let doneButton = UIBarButtonItem(title: "done", style: .navigationBarButtonPrimary)
+        let doneButton = UIBarButtonItem(title: "done", style: .brand(.headline(color: .link)))
 
         bag += doneButton.onValue { _ in
             webView.resignFirstResponder()

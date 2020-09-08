@@ -60,7 +60,7 @@ extension AudioPlayer: Viewable {
             make.width.height.equalTo(12)
         }
 
-        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.rightAligned.colored(.primaryButtonTextColor))
+        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.brand(.footnote(color: .link)).rightAligned)
         contentView.addArrangedSubview(timeStampLabel)
 
         timeStampLabel.snp.makeConstraints { make in
