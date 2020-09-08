@@ -29,15 +29,7 @@ extension ClaimsChat: Presentable {
             chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
         }
 
-        let titleHedvigLogo = UIImageView()
-        titleHedvigLogo.image = Asset.wordmark.image
-        titleHedvigLogo.contentMode = .scaleAspectFit
-
-        viewController.navigationItem.titleView = titleHedvigLogo
-
-        titleHedvigLogo.snp.makeConstraints { make in
-            make.width.equalTo(80)
-        }
+        viewController.title = L10n.claimsChatTitle
 
         bag += future.onValue { _ in }
 
