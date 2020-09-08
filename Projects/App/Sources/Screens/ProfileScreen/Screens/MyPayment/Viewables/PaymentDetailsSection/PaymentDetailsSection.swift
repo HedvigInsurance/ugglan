@@ -112,7 +112,11 @@ extension PaymentDetailsSection: Viewable {
                 self.presentingViewController.present(alert)
             }
 
-            self.presentingViewController.present(applyDiscount.withCloseButton, style: .modally())
+            self.presentingViewController.present(
+                applyDiscount.withCloseButton,
+                style: .detented(.scrollViewContentSize(20), .large),
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+            )
         }
 
         bag += section.append(applyDiscountButtonRow)
