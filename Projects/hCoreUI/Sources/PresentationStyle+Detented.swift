@@ -92,7 +92,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             }
 
             if let presentationController = self.viewController.navigationController?.presentationController {
-                if let lastViewController = self.viewController.navigationController?.viewControllers.last {
+                if let lastViewController = self.viewController.navigationController?.visibleViewController {
                     PresentationStyle.Detent.set(lastViewController.appliedDetents, on: presentationController, viewController: lastViewController, keyboardAnimation: event.animation)
                 }
             }

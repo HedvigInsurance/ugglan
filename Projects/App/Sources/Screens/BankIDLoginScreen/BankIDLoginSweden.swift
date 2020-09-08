@@ -39,6 +39,7 @@ extension BankIDLoginSweden {
 extension BankIDLoginSweden: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.preferredPresentationStyle = .detented(.medium, .large)
         let bag = DisposeBag()
 
         let view = UIView()
