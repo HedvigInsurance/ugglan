@@ -17,6 +17,8 @@ jobs:
       run: sudo xcode-select -s /Applications/Xcode_12_beta.app
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
+      env:
+        XCODE_XCCONFIG_FILE: ${{ env.GITHUB_WORKSPACE }}/Carthage-Xcode12-Workaround.xcconfig
       with:
        lane: ios workspace_tests
     - name: Upload test results
@@ -24,3 +26,7 @@ jobs:
       with:
         name: test-results
         path: fastlane/test_output/index.html
+    - uses: actions/cache@v1
+      with:
+        path: Carthage
+        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
