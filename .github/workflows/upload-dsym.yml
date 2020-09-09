@@ -1,9 +1,6 @@
 name: Upload DSYM
 
 on:
- push:
-    branches:
-      - master
  schedule:
     - cron:  '*/60 * * * *'
 
