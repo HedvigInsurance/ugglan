@@ -13,6 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: brew install getsentry/tools/sentry-cli
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
