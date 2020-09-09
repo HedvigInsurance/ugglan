@@ -76,11 +76,7 @@ extension ContractTable: Viewable {
             sectionStyle
         }
 
-        let noInsets = DynamicFormStyle { _ -> FormStyle in
-            FormStyle(insets: .zero)
-        }
-
-        let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: noInsets)
+        let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
         bag += tableKit.view.addTableFooterView(UpsellingFooter())

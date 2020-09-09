@@ -25,7 +25,7 @@ struct ChangeCode {
 extension ChangeCode: Presentable {
     func makeClearButton(_ row: RowView) -> UIControl {
         let clearButton = UIControl()
-        clearButton.backgroundColor = .brand(.secondaryBackground())
+        clearButton.backgroundColor = .brand(.primaryBackground())
         clearButton.layer.cornerRadius = 12
         row.viewRepresentation.addSubview(clearButton)
 
@@ -72,7 +72,7 @@ extension ChangeCode: Presentable {
         )
         form.appendSpacing(.top)
 
-        let textFieldSection = form.appendSection()
+        let textFieldSection = form.appendSection(header: nil, footer: nil, style: .brandGrouped(separatorType: .none, borderColor: .brand(.primaryButtonBackgroundColor)))
         let textFieldRow = textFieldSection.appendRow()
 
         let normalFieldStyle = FieldStyle.default.restyled { (style: inout FieldStyle) in

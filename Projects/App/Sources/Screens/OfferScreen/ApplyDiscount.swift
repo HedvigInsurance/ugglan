@@ -34,7 +34,7 @@ extension ApplyDiscount: Presentable {
         let bag = DisposeBag()
 
         let form = FormView()
-        form.dynamicStyle = .insetted
+        form.dynamicStyle = .brandInset
 
         let descriptionLabel = MultilineLabel(
             value: L10n.referralAddcouponBody,
