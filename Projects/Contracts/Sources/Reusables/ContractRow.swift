@@ -33,34 +33,6 @@ struct ContractRow: Hashable {
         case norwegianHome
     }
 
-    func calculateHeight(for width: CGFloat) -> CGSize {
-        let bag = DisposeBag()
-        let form = FormView()
-
-        let (contentBag, contents) = makeFormContent()
-        bag += contentBag
-
-        contents.forEach { content in
-            switch content {
-            case let .left(section):
-                form.append(section)
-            case let .right(viewOrSpacing):
-                switch viewOrSpacing {
-                case let .left(view):
-                    form.append(view)
-                case let .right(spacing):
-                    bag += form.append(spacing)
-                }
-            }
-        }
-
-        let size = form.systemLayoutSizeFitting(CGSize(width: width, height: 0))
-
-        bag.dispose()
-
-        return size
-    }
-
     let sectionStyle = DynamicSectionStyle.brandGroupedInset(separatorType: .none)
 }
 
