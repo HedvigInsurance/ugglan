@@ -115,12 +115,14 @@ extension SelectedCharity: Viewable {
             }
         }
 
-        stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.trailing.equalToSuperview()
-            make.leading.equalToSuperview()
-            make.width.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
+        bag += stackView.didLayoutSignal.onFirstValue {
+            stackView.snp.makeConstraints { make in
+                make.trailing.equalToSuperview()
+                make.leading.equalToSuperview()
+                make.width.equalToSuperview()
+                make.top.equalToSuperview()
+                make.bottom.equalToSuperview()
+            }
         }
 
         return (scrollView, bag)
