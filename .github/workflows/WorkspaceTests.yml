@@ -18,7 +18,7 @@ jobs:
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
-        XCODE_XCCONFIG_FILE: ${{ env.GITHUB_WORKSPACE }}/ugglan/Carthage-Xcode12-Workaround.xcconfig
+        XCODE_XCCONFIG_FILE: ${{ env.GITHUB_WORKSPACE }}/${{ env.GITHUB_REPOSITORY }}/Carthage-Xcode12-Workaround.xcconfig
       with:
        lane: ios workspace_tests
     - name: Upload test results
