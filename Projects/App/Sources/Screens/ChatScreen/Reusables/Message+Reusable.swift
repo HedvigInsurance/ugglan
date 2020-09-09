@@ -113,6 +113,10 @@ extension Message: Reusable {
         return size.height + largerMarginTop + 20 + extraHeightForTimeStampLabel
     }
 
+    static var bubbleColor: UIColor {
+        UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1)
+    }
+
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
         let containerView = UIStackView()
         containerView.axis = .horizontal
@@ -168,7 +172,7 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = .brand(.secondaryBackground())
+        editButton.backgroundColor = Self.bubbleColor
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
@@ -279,7 +283,7 @@ extension Message: Reusable {
                 case .image(_), .video:
                     bubble.backgroundColor = .clear
                 default:
-                    bubble.backgroundColor = message.fromMyself ? .brand(.secondaryBackground()) : .brand(.primaryBackground())
+                    bubble.backgroundColor = message.fromMyself ? Self.bubbleColor : UIColor(base: .brand(.secondaryBackground()), elevated: .brand(.primaryBackground()))
                 }
 
                 switch message.type {

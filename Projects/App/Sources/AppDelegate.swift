@@ -289,7 +289,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 symbol: .icon(hCoreUIAssets.settingsIcon.image),
                 body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
                 textColor: .black,
-                backgroundColor: .yellow
+                backgroundColor: .brand(.regularCaution)
             )
 
             if #available(iOS 13, *) {
