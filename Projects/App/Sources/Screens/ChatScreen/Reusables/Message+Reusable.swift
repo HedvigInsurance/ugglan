@@ -117,6 +117,10 @@ extension Message: Reusable {
         UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1)
     }
 
+    static var hedvigBubbleColor: UIColor {
+        UIColor(base: .brand(.secondaryBackground()), elevated: .brand(.primaryBackground()))
+    }
+
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
         let containerView = UIStackView()
         containerView.axis = .horizontal
@@ -283,7 +287,7 @@ extension Message: Reusable {
                 case .image(_), .video:
                     bubble.backgroundColor = .clear
                 default:
-                    bubble.backgroundColor = message.fromMyself ? Self.bubbleColor : UIColor(base: .brand(.secondaryBackground()), elevated: .brand(.primaryBackground()))
+                    bubble.backgroundColor = message.fromMyself ? Self.bubbleColor : Self.hedvigBubbleColor
                 }
 
                 switch message.type {

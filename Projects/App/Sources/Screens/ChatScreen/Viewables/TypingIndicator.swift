@@ -15,7 +15,7 @@ import UIKit
 
 struct TypingIndicator: Hashable, Equatable {
     static func == (lhs: TypingIndicator, rhs: TypingIndicator) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
@@ -41,7 +41,7 @@ struct TypingIndicator: Hashable, Equatable {
     }
 
     var hasPreviousMessage: Bool {
-        return previous?.fromMyself == false
+        previous?.fromMyself == false
     }
 
     /// returns the totalHeight calculated height for displaying a TypingIndicator in a cell
@@ -84,7 +84,7 @@ extension TypingIndicator: Viewable {
         let bag = DisposeBag()
 
         let bubble = UIView()
-        bubble.backgroundColor = .brand(.secondaryBackground())
+        bubble.backgroundColor = Message.hedvigBubbleColor
 
         let typingView = UIStackView()
         typingView.spacing = 5
