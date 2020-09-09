@@ -21,6 +21,7 @@ struct BankIDLoginNorway {
 extension BankIDLoginNorway: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        viewController.preferredPresentationStyle = .detented(.large)
         let bag = DisposeBag()
 
         let webView = WKWebView(frame: .zero)

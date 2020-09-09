@@ -101,7 +101,7 @@ extension Marketing: Presentable {
         let loginButton = Button(title: L10n.marketingLogin, type: .standardOutline(borderColor: .white, textColor: .white))
 
         bag += loginButton.onTapSignal.onValue { _ in
-            viewController.present(BankIDLogin(), style: .detented(.medium, .large), options: [.defaults, .allowSwipeDismissAlways])
+            viewController.present(BankIDLogin(), options: [.defaults, .allowSwipeDismissAlways])
         }
 
         bag += contentStackView.addArranged(loginButton)
