@@ -15,3 +15,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
+      with:
+       lane: ios refresh_dsyms
