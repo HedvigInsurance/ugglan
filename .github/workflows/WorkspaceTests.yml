@@ -16,7 +16,7 @@ jobs:
     - name: XCode Select
       run: sudo xcode-select -s /Applications/Xcode_12_beta.app
     - name: Set XCODE_XCCONFIG_FILE
-      run: echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/ugglan/ugglan/Carthage-Xcode12-Workaround.xcconfig)
+      run: echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
