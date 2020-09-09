@@ -2,7 +2,8 @@ name: Upload DSYM
 
 on:
  schedule:
-    - cron:  '*/60 * * * *'
+    - cron:  '0 18 * * *'
+    - cron:  '0 8 * * *'
 
 jobs:
   build:
