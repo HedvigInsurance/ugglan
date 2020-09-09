@@ -1,0 +1,14 @@
+name: Upload DSYM
+
+on:
+ schedule:
+    - cron:  '*/15 * * * *'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fastlane Action
+      uses: maierj/fastlane-action@v1.4.0
