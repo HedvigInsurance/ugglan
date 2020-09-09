@@ -91,7 +91,7 @@ extension SingleSelectList: Viewable {
             let innerBag = DisposeBag()
             let button = Button(
                 title: option.text,
-                type: .standardSmall(backgroundColor: .brand(.secondaryBackground()), textColor: .brand(.primaryButtonTextColor))
+                type: .standardSmall(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
             )
 
             innerBag += button.onTapSignal.onValue { _ in
