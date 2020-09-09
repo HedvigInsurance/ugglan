@@ -12,12 +12,6 @@ import Foundation
 import Presentation
 import UIKit
 
-private extension Error {
-    var isIgnorable: Bool {
-        localizedDescription == "cancelled" || localizedDescription.contains("Apollo.WebSocketError") || localizedDescription.contains("Software caused connection abort")
-    }
-}
-
 struct GraphQLError: Error {
     var errors: [Error]
 }
