@@ -26,8 +26,7 @@ platform :ios do
         carthage(
             command: "bootstrap",
             cache_builds: true,
-            platform: "ios",
-            verbose: true
+            platform: "ios"
         )
         
         schemes = [
