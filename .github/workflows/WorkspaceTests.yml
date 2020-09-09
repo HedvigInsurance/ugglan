@@ -1,0 +1,26 @@
+name: WorkspaceTests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: XCode Select
+      run: sudo xcode-select -s /Applications/Xcode_12_beta.app
+    - name: Fastlane Action
+      uses: maierj/fastlane-action@v1.4.0
+      with:
+       lane: ios workspace_tests
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: fastlane/test_output/index.html
