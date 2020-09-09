@@ -82,26 +82,26 @@ extension ApplyDiscount: Presentable {
                     loadableSubmitButton.isLoadingSignal.value = true
                 }
                 .withLatestFrom(textField.value.plain())
-                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode)) }
-                .delay(by: 0.5)
-                .atValue { _ in
-                    loadableSubmitButton.isLoadingSignal.value = false
-                }
-                .atError { _ in
-                    let alert = Alert(
-                        title: L10n.discountCodeMissing,
-                        message: L10n.discountCodeMissingBody,
-                        actions: [Alert.Action(title: L10n.discountCodeMissingButton) {}]
-                    )
+                .onValue { _, discountCode in
+                    self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode))
+                        .delay(by: 0.5)
+                        .onError { _ in
+                            let alert = Alert(
+                                title: L10n.discountCodeMissing,
+                                message: L10n.discountCodeMissingBody,
+                                actions: [Alert.Action(title: L10n.discountCodeMissingButton) {}]
+                            )
 
-                    viewController.present(alert)
+                            viewController.present(alert)
 
-                    loadableSubmitButton.isLoadingSignal.value = false
-                }
-                .map { $0.redeemCode }
-                .onValue { redeemCode in
-                    self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
-                    completion(.success)
+                            loadableSubmitButton.isLoadingSignal.value = false
+                        }
+                        .map { $0.redeemCode }
+                        .onValue { redeemCode in
+                            loadableSubmitButton.isLoadingSignal.value = false
+                            self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                            completion(.success)
+                        }
                 }
 
             return bag
