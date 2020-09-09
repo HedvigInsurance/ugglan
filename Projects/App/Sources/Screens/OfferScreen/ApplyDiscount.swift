@@ -95,6 +95,8 @@ extension ApplyDiscount: Presentable {
                     )
 
                     viewController.present(alert)
+
+                    loadableSubmitButton.isLoadingSignal.value = false
                 }
                 .map { $0.redeemCode }
                 .onValue { redeemCode in
