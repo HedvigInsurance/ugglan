@@ -89,9 +89,9 @@ extension ApplyDiscount: Presentable {
                 }
                 .atError { _ in
                     let alert = Alert(
-                        title: L10n.referralErrorMissingcodeHeadline,
-                        message: L10n.referralErrorMissingcodeBody,
-                        actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
+                        title: L10n.discountCodeMissing,
+                        message: L10n.discountCodeMissingBody,
+                        actions: [Alert.Action(title: L10n.discountCodeMissingButton) {}]
                     )
 
                     viewController.present(alert)
