@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  build:
+  deploy:
     runs-on: macos-latest
 
     steps:
