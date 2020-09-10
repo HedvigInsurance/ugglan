@@ -26,6 +26,11 @@ fastlane ios upload_dsyms_to_sentry
 fastlane ios setup
 ```
 
+### ios production_upload
+```
+fastlane ios production_upload
+```
+
 ### ios workspace_apps
 ```
 fastlane ios workspace_apps

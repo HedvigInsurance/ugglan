@@ -33,6 +33,37 @@ platform :ios do
         sh("cd ..; tuist generate")
     end
     
+    lane :production_upload do |options|
+        setup
+        
+        app_identifier = "com.hedvig.app"
+        
+        match(
+            type: "appstore",
+            app_identifier: app_identifier,
+            readonly: is_ci
+        )
+        
+        increment_version_number(
+            version_number: options[:version_number],
+            xcodeproj: "Projects/App/Ugglan.xcodeproj"
+        )
+        
+        build_app(
+            workspace: "Ugglan.xcworkspace",
+            configuration: "Release",
+            scheme: "Hedvig",
+            derived_data_path: "gym-derived-data",
+            output_directory: "fastlane/build_output",
+            export_options: {
+                method: "appstore",
+                iCloudContainerEnvironment: "Production"
+            }
+        )
+        
+        upload_to_app_store
+    end
+    
     lane :workspace_apps do
         setup
         
