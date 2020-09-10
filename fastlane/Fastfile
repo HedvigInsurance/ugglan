@@ -67,7 +67,12 @@ platform :ios do
             }
         )
         
-        upload_to_app_store
+        upload_to_app_store(
+            force: true,
+            submit_for_review: false,
+            skip_screenshots: true,
+            skip_metadata: true
+        )
     end
     
     lane :workspace_apps do
