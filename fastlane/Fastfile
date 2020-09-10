@@ -16,7 +16,7 @@
 default_platform(:ios)
 
 platform :ios do
-    lane :refresh_dsyms do
+    lane :upload_dsyms_to_sentry do
         download_dsyms
         sentry_upload_dsym
         clean_build_artifacts

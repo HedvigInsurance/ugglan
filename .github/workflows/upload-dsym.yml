@@ -25,4 +25,4 @@ jobs:
        SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
        DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
       with:
-       lane: ios refresh_dsyms
+       lane: ios upload_dsyms_to_sentry
