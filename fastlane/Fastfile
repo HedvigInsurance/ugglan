@@ -33,6 +33,35 @@ platform :ios do
         sh("cd ..; tuist generate")
     end
     
+    lane :workspace_apps do
+        setup
+        
+        apps = {
+            "com.hedvig.test.app" => "Ugglan",
+            "com.hedvig.app" => "Hedvig",
+            "com.hedvig.HomeExample" => "HomeExample"
+        }
+        
+        apps.each do |app_identifier, scheme|
+            match(
+                type: "adhoc",
+                app_identifier: app_identifier,
+                readonly: is_ci
+            )
+            build_app(
+                workspace: "Ugglan.xcworkspace",
+                configuration: "Release",
+                scheme: scheme,
+                derived_data_path: "gym-derived-data",
+                output_directory: "fastlane/build_output",
+                export_options: {
+                    method: "ad-hoc",
+                    iCloudContainerEnvironment: "Development"
+                }
+            )
+        end
+    end
+    
     lane :workspace_tests do
         setup
         

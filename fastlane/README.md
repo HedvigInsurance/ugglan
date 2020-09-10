@@ -16,9 +16,19 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## iOS
-### ios refresh_dsyms
+### ios upload_dsyms_to_sentry
 ```
-fastlane ios refresh_dsyms
+fastlane ios upload_dsyms_to_sentry
+```
+
+### ios setup
+```
+fastlane ios setup
+```
+
+### ios workspace_apps
+```
+fastlane ios workspace_apps
 ```
 
 ### ios workspace_tests
