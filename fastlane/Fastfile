@@ -42,7 +42,7 @@ platform :ios do
             type: "appstore",
             app_identifier: app_identifier,
             readonly: is_ci,
-            git_url: is_ci ? 'https://#{env["MATCH_GITHUB_TOKEN"]}@github.com:HedvigInsurance/ugglan-certificates.git' : nil
+            git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil
         )
         
         increment_build_number(
@@ -89,7 +89,7 @@ platform :ios do
                 type: "adhoc",
                 app_identifier: app_identifier,
                 readonly: is_ci,
-                git_url: is_ci ? "https://#{ENV['MATCH_GITHUB_TOKEN']}@github.com:HedvigInsurance/ugglan-certificates.git" : nil
+                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil
             )
             build_app(
                 workspace: "Ugglan.xcworkspace",
