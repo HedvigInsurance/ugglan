@@ -22,7 +22,7 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: Carthage
-        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
+        key: ${{ runner.os }}-xcode-12-carthage-${{ hashFiles('**/Cartfile.resolved') }}
     - name: Set XCODE_XCCONFIG_FILE
       run: echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
     - name: Install Tuist
