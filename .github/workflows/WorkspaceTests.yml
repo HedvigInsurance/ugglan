@@ -34,5 +34,9 @@ jobs:
         path: fastlane/test_output/index.html
     - uses: actions/cache@v1
       with:
+        path: scan_derived_data
+        key: ${{ runner.os }}-scan-derived-data
+    - uses: actions/cache@v1
+      with:
         path: Carthage
         key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
