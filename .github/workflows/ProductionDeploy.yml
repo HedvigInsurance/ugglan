@@ -15,18 +15,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: XCode Select
       run: sudo xcode-select -s /Applications/Xcode_11.6.app
-    - uses: actions/cache@v1
-      with:
-        path: gym_derived_data
-        key: ${{ runner.os }}-gym-derived-data
-    - uses: actions/cache@v1
-      with:
-        path: Carthage
-        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
     - name: Install Tuist
       run: bash <(curl -Ls https://install.tuist.io)
-    - name: Install XCHTMLReport
-      run: bash <(curl -s https://raw.githubusercontent.com/TitouanVanBelle/XCTestHTMLReport/master/install.sh) '2.0.0'
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:

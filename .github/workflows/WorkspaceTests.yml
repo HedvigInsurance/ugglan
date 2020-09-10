@@ -36,7 +36,8 @@ jobs:
       with:
        lane: ios workspace_tests
     - name: Upload test results
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test-results
-        path: fastlane/test_output/index.html
+        name: test_output
+        path: fastlane/test_output

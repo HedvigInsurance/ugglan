@@ -69,7 +69,7 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 scan_derived_data
-gym-derived-data
+gym_derived_data
 
 # Code Injection
 #

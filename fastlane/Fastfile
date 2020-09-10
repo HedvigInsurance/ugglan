@@ -95,7 +95,7 @@ platform :ios do
                 workspace: "Ugglan.xcworkspace",
                 configuration: "Release",
                 scheme: scheme,
-                derived_data_path: "gym-derived-data",
+                derived_data_path: "gym_derived_data",
                 output_directory: "fastlane/build_output",
                 export_options: {
                     method: "ad-hoc",
@@ -118,17 +118,26 @@ platform :ios do
             "Home"
         ]
         
-        schemes.each { |scheme|
-            scan(
-                workspace: "Ugglan.xcworkspace",
-                devices: ["iPhone 11 Pro"],
-                scheme: scheme,
-                derived_data_path: "scan_derived_data"
+        def report(schemes)
+            xchtmlreport(
+                result_bundle_paths: schemes.map { |scheme| "fastlane/test_output/#{scheme}.xcresult" }.filter { |path| File.directory?(path) }
             )
+        end
+        
+        schemes.each { |scheme|
+            begin
+                scan(
+                    workspace: "Ugglan.xcworkspace",
+                    devices: ["iPhone 11 Pro"],
+                    scheme: scheme,
+                    derived_data_path: "scan_derived_data"
+                )
+            rescue => ex
+                report(schemes)
+                raise ex
+            end
         }
         
-        xchtmlreport(
-          result_bundle_paths: schemes.map { |scheme| "fastlane/test_output/#{scheme}.xcresult" }
-        )
+        report(schemes)
     end
 end
