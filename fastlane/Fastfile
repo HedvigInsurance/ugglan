@@ -41,11 +41,12 @@ platform :ios do
         match(
             type: "appstore",
             app_identifier: app_identifier,
-            readonly: is_ci
+            readonly: is_ci,
+            git_url: is_ci ? 'https://#{env["MATCH_GITHUB_TOKEN"]}@github.com:HedvigInsurance/ugglan-certificates.git' : nil
         )
         
         increment_build_number(
-            build_number: app_store_build_number + 1,
+            build_number: app_store_build_number(app_identifier: app_identifier) + 1,
             xcodeproj: "Projects/App/Ugglan.xcodeproj"
         )
         
@@ -82,7 +83,8 @@ platform :ios do
             match(
                 type: "adhoc",
                 app_identifier: app_identifier,
-                readonly: is_ci
+                readonly: is_ci,
+                git_url: is_ci ? 'https://#{env["MATCH_GITHUB_TOKEN"]}@github.com:HedvigInsurance/ugglan-certificates.git' : nil
             )
             build_app(
                 workspace: "Ugglan.xcworkspace",

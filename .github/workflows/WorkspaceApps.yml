@@ -33,6 +33,7 @@ jobs:
         FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
         FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
        lane: ios workspace_apps
