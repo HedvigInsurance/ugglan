@@ -44,6 +44,11 @@ platform :ios do
             readonly: is_ci
         )
         
+        increment_build_number(
+            build_number: app_store_build_number + 1,
+            xcodeproj: "Projects/App/Ugglan.xcodeproj"
+        )
+        
         increment_version_number(
             version_number: options[:version_number],
             xcodeproj: "Projects/App/Ugglan.xcodeproj"
