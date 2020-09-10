@@ -83,13 +83,13 @@ platform :ios do
             "com.hedvig.app" => "Hedvig",
             "com.hedvig.HomeExample" => "HomeExample"
         }
-        
+                
         apps.each do |app_identifier, scheme|
             match(
                 type: "adhoc",
                 app_identifier: app_identifier,
                 readonly: is_ci,
-                git_url: is_ci ? 'https://#{env["MATCH_GITHUB_TOKEN"]}@github.com:HedvigInsurance/ugglan-certificates.git' : nil
+                git_url: is_ci ? "https://#{ENV['MATCH_GITHUB_TOKEN']}@github.com:HedvigInsurance/ugglan-certificates.git" : nil
             )
             build_app(
                 workspace: "Ugglan.xcworkspace",
