@@ -15,20 +15,17 @@ struct CharityLogo {
 }
 
 extension CharityLogo: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let containerView = UIView()
+    func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
 
-        let imageView = CachedImage(url: url)
-
-        bag += containerView.add(imageView) { view in
-            view.snp.makeConstraints { make in
-                make.width.equalToSuperview().multipliedBy(0.8)
-                make.center.equalToSuperview()
-                make.height.lessThanOrEqualTo(100)
-            }
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.kf.setImage(with: url)
+        
+        imageView.snp.makeConstraints { make in
+            make.height.equalTo(100)
         }
-
-        return (containerView, bag)
+        
+        return (imageView, bag)
     }
 }

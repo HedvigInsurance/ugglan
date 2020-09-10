@@ -99,7 +99,7 @@ extension ChooseStartDate: Presentable {
                                                       initialLoadingState: false)
 
         let activateNowButton = Button(title: "",
-                                       type: .transparent(textColor: .primaryTintColor))
+                                       type: .transparent(textColor: .brand(.primaryTintColor)))
 
         let loadableActivateButton = LoadableButton(button: activateNowButton,
                                                     initialLoadingState: false)

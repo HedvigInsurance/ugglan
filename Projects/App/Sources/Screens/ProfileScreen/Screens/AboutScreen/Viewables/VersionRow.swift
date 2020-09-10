@@ -20,7 +20,7 @@ extension VersionRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: "Version", style: .rowTitle))
+        row.append(UILabel(value: "Version", style: .brand(.headline(color: .primary))))
 
         let appVersion = Bundle.main.appVersion
 

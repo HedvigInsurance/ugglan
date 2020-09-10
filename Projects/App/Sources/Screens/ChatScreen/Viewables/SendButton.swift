@@ -17,7 +17,7 @@ extension SendButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIControl, Signal<Void>) {
         let bag = DisposeBag()
         let control = UIControl()
-        control.backgroundColor = .transparent
+        control.backgroundColor = .clear
         control.layer.cornerRadius = 8
 
         control.snp.makeConstraints { make in
@@ -37,7 +37,7 @@ extension SendButton: Viewable {
         bag += touchUpInside.feedback(type: .impactLight)
 
         bag += control.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            control.backgroundColor = UIColor.boxPrimaryBackground.darkened(amount: 0.1)
+            control.backgroundColor = UIColor.brand(.secondaryBackground()).darkened(amount: 0.1)
         }
 
         bag += merge(
@@ -45,7 +45,7 @@ extension SendButton: Viewable {
             control.signal(for: .touchCancel),
             control.signal(for: .touchUpOutside)
         ).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-            control.backgroundColor = UIColor.transparent
+            control.backgroundColor = UIColor.clear
         }
 
         return (control, Signal { callback in

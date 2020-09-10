@@ -11,6 +11,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 import Presentation
 import UIKit
@@ -24,34 +25,31 @@ extension Charity: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.title = L10n.myCharityScreenTitle
-
-        let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        
+        let scrollView = FormScrollView()
+        let form = FormView()
 
         bag += client.watch(query: GraphQL.SelectedCharityQuery())
             .map { $0.cashback }
             .buffer()
-            .onValue { cashbacks in
-                guard let cashback = cashbacks.last else { return }
-
-                for view in containerView.subviews {
-                    view.removeFromSuperview()
-                }
+            .onValueDisposePrevious { cashbacks in
+                guard let cashback = cashbacks.last else { return NilDisposer() }
+                
+                let innerBag = DisposeBag()
 
                 if cashback != nil {
+                    scrollView.isScrollEnabled = true
                     let selectedCharity = SelectedCharity(animateEntry: cashbacks.count > 1, presentingViewController: viewController)
-                    bag += containerView.add(selectedCharity) { view in
-                        view.snp.makeConstraints { make in
-                            make.edges.equalToSuperview()
-                        }
-                    }
+                    innerBag += form.append(selectedCharity)
                 } else {
+                    scrollView.isScrollEnabled = false
                     let charityPicker = CharityPicker(
                         presentingViewController: viewController
                     )
-                    bag += containerView.add(charityPicker) { view in
-                        view.snp.makeConstraints { make in
+                    innerBag += scrollView.add(charityPicker) { table in
+                        table.snp.makeConstraints { make in
                             make.edges.equalToSuperview()
+                            make.height.width.equalToSuperview()
                         }
                     }.onValue { _ in
                         bag += self.client.fetch(
@@ -60,9 +58,11 @@ extension Charity: Presentable {
                         ).disposable
                     }
                 }
+                
+                return innerBag
             }
 
-        viewController.view = containerView
+        bag += viewController.install(form, scrollView: scrollView)
 
         return (viewController, bag)
     }

@@ -41,7 +41,7 @@ extension Forever: Presentable {
 
         viewController.navigationItem.rightBarButtonItem = infoBarButton
 
-        let tableKit = TableKit<String, InvitationRow>(holdIn: bag)
+        let tableKit = TableKit<String, InvitationRow>(style: .brandInset, holdIn: bag)
         bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
             tableKit.table[index].cellHeight
         }

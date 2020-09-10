@@ -21,7 +21,7 @@ extension WaveForm: Viewable {
         let view = UIView()
         let bag = DisposeBag()
 
-        view.backgroundColor = .pink
+        view.backgroundColor = .brand(.destructive)
 
         let viewHeight = 50
 
@@ -46,7 +46,7 @@ extension WaveForm: Viewable {
 
         var pastPeakPower: [Float] = []
 
-        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.centerAligned.colored(.white))
+        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.brand(.footnote(color: .primary)).colored(.white).centerAligned)
         view.addSubview(timeStampLabel)
 
         timeStampLabel.snp.makeConstraints { make in

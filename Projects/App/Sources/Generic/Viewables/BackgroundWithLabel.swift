@@ -32,7 +32,7 @@ struct BackgroundWithLabel {
 }
 
 extension BackgroundWithLabel: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let view = UIView()
@@ -81,10 +81,12 @@ extension BackgroundWithLabel: Viewable {
             make.center.equalToSuperview()
         }
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-            make.center.equalToSuperview()
+        bag += view.didLayoutSignal.onFirstValue {
+            view.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+                make.center.equalToSuperview()
+            }
         }
 
         return (view, bag)

@@ -61,12 +61,6 @@ extension Chat: Presentable {
             }
         }
 
-        Chat.didOpen()
-
-        bag += Disposer {
-            Chat.didClose()
-        }
-
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 0,
@@ -76,8 +70,8 @@ extension Chat: Presentable {
             ),
             itemSpacing: 0,
             minRowHeight: 10,
-            background: .invisible,
-            selectedBackground: .invisible,
+            background: .none,
+            selectedBackground: .none,
             header: .none,
             footer: .none
         )

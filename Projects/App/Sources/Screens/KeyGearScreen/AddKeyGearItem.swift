@@ -38,7 +38,7 @@ extension AddKeyGearItem: Presentable {
 
         viewController.title = L10n.keyGearAddItemPageTitle
 
-        let cancelButton = UIBarButtonItem(title: L10n.keyGearAddItemPageCloseButton, style: .navigationBarButton)
+        let cancelButton = UIBarButtonItem(title: L10n.keyGearAddItemPageCloseButton, style: .brand(.body(color: .primary)))
         viewController.navigationItem.rightBarButtonItem = cancelButton
 
         let form = FormView()
@@ -54,7 +54,6 @@ extension AddKeyGearItem: Presentable {
         let categoryPickerSection = form.appendSection(header: L10n.keyGearAddItemTypeHeadline)
         categoryPickerSection.alpha = 0.5
         categoryPickerSection.isUserInteractionEnabled = false
-        categoryPickerSection.dynamicStyle = .sectionPlain
         bag += categoryPickerSection.append(
             CategoryPicker(
                 onSelectCategorySignal: state.categorySignal.compactMap { $0 }.distinct()
@@ -68,14 +67,14 @@ extension AddKeyGearItem: Presentable {
         let saveButton = LoadableButton(
             button: Button(
                 title: L10n.keyGearAddItemSaveButton,
-                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
             )
         )
         bag += state.isValidSignal
             .atOnce()
             .map { valid in
                 valid ?
-                    ButtonType.standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor) :
+                    ButtonType.standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)) :
                     ButtonType.standard(backgroundColor: .gray, textColor: .white)
             }.bindTo(saveButton.button.type)
 

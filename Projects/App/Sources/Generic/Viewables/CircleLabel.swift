@@ -48,7 +48,7 @@ extension CircleLabel: Viewable {
                 opacity: 0.2,
                 offset: CGSize(width: 10, height: 10),
                 radius: 16,
-                color: UIColor.primaryShadowColor,
+                color: UIColor.brand(.primaryShadowColor),
                 path: nil
             )
         }

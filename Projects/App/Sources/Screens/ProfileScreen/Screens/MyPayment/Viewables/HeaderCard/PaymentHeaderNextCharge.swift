@@ -47,10 +47,10 @@ extension PaymentHeaderNextCharge: Viewable {
                     label.value = dateDisplayFormatter.string(from: date)
                 }
 
-                view.backgroundColor = .primaryBackground
+                view.backgroundColor = .brand(.primaryBackground())
             } else {
                 label.value = L10n.paymentsCardNoStartdate
-                view.backgroundColor = .sunflower300
+                view.backgroundColor = .brand(.regularCaution)
             }
         }
 

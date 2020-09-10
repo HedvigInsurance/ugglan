@@ -28,7 +28,7 @@ struct OfferHeader {
 extension OfferHeader: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .brand(.secondaryBackground())
         view.layer.cornerRadius = 6
 
         let bag = DisposeBag()
@@ -38,7 +38,7 @@ extension OfferHeader: Viewable {
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
                 radius: 8,
-                color: UIColor.primaryShadowColor,
+                color: UIColor.brand(.primaryShadowColor),
                 path: nil
             )
         }

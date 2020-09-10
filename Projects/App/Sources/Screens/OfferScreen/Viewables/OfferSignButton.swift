@@ -24,7 +24,7 @@ extension OfferSignButton: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .brand(.secondaryBackground())
 
         let contentContainer = UIStackView()
         contentContainer.isLayoutMarginsRelativeArrangement = true

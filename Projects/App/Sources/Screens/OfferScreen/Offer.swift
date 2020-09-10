@@ -16,7 +16,6 @@ import UIKit
 
 struct Offer {
     @Inject var client: ApolloClient
-    @Inject var analyticsCoordinator: AnalyticsCoordinator
 }
 
 extension Offer {
@@ -38,7 +37,7 @@ extension Offer {
     }
 
     static var primaryAccentColor: UIColor {
-        .primaryBackground
+        .brand(.primaryBackground())
     }
 }
 
@@ -58,7 +57,7 @@ extension Offer: Presentable {
 
         let chatButton = UIBarButtonItem()
         chatButton.image = Asset.chat.image
-        chatButton.tintColor = .primaryText
+        chatButton.tintColor = .brand(.primaryText())
 
         bag += chatButton.onValue { _ in
             bag += viewController.present(

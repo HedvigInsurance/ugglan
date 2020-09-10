@@ -76,8 +76,8 @@ extension BubbleLoading: Presentable {
             bag += Signal(after: 0.1).animated(
                 style: AnimationStyle.easeOut(duration: 0.3)
             ) { _ in
-                let scaleX = (UIScreen.main.bounds.height / bubbleView.frame.width) * 2
-                let scaleY = (UIScreen.main.bounds.height / bubbleView.frame.height) * 2
+                let scaleX = (UIScreen.main.bounds.height / bubbleView.frame.width) * 3
+                let scaleY = (UIScreen.main.bounds.height / bubbleView.frame.height) * 3
 
                 bubbleView.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
             }.animated(style: AnimationStyle.easeOut(duration: 0.5)) {

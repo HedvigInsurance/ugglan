@@ -25,11 +25,11 @@ extension BankIDLoginNorway: Presentable {
         let bag = DisposeBag()
 
         let webView = WKWebView(frame: .zero)
-        webView.backgroundColor = .secondaryBackground
+        webView.backgroundColor = .brand(.secondaryBackground())
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .whiteLarge
-        activityIndicator.color = .primaryTintColor
+        activityIndicator.color = .brand(.primaryTintColor)
 
         webView.addSubview(activityIndicator)
 

@@ -21,7 +21,7 @@ struct CircleIcon {
 }
 
 extension CircleIcon: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
         let circleView = UIView()
         circleView.backgroundColor = backgroundColor
@@ -38,7 +38,7 @@ extension CircleIcon: Viewable {
         circleView.layer.shadowOpacity = 0.2
         circleView.layer.shadowOffset = CGSize(width: 10, height: 10)
         circleView.layer.shadowRadius = 16
-        circleView.layer.shadowColor = UIColor.primaryShadowColor.cgColor
+        circleView.layer.shadowColor = UIColor.brand(.primaryShadowColor).cgColor
 
         view.addSubview(circleView)
 
@@ -54,8 +54,10 @@ extension CircleIcon: Viewable {
             make.center.equalToSuperview()
         }
 
-        view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(self.iconWidth + self.spacing)
+        bag += view.didLayoutSignal.onFirstValue {
+            view.snp.makeConstraints { make in
+                make.height.equalTo(self.iconWidth + self.spacing)
+            }
         }
 
         return (view, bag)

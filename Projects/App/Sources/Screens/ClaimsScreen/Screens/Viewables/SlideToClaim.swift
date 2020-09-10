@@ -34,7 +34,7 @@ extension SlideToClaim: Viewable {
         }
 
         let track = UIView()
-        track.backgroundColor = .primaryBackground
+        track.backgroundColor = .brand(.primaryBackground())
 
         view.addSubview(track)
 
@@ -57,7 +57,7 @@ extension SlideToClaim: Viewable {
         }
 
         let handle = UIView()
-        handle.backgroundColor = .primaryButtonBackgroundColor
+        handle.backgroundColor = .brand(.primaryButtonBackgroundColor)
 
         let continueIcon = Icon(icon: Asset.continue.image, iconWidth: 20)
         handle.addSubview(continueIcon)

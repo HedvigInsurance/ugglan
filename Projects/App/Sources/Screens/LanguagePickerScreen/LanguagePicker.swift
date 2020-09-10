@@ -15,19 +15,6 @@ import hGraphQL
 import Presentation
 import UIKit
 
-extension UIView {
-    var isPossiblyVisible: Signal<Bool> {
-        windowSignal.atOnce().filter { window in
-            guard let window = window else {
-                return false
-            }
-
-            let keyWindow = UIApplication.shared.keyWindow
-            return keyWindow == window
-        }.map { _ in true }
-    }
-}
-
 struct PreMarketingLanguagePicker: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let (viewController, future) = LanguagePicker().materialize()
@@ -52,7 +39,7 @@ extension LanguagePicker: Presentable {
         ApplicationState.preserveState(.languagePicker)
 
         let mainView = UIView()
-        mainView.backgroundColor = .primaryBackground
+        mainView.backgroundColor = .brand(.primaryBackground())
         viewController.view = mainView
 
         let stackView = UIStackView()
@@ -104,10 +91,10 @@ extension LanguagePicker: Presentable {
             make.trailing.leading.equalToSuperview()
         }
 
-        let titleLabel = UILabel(value: "Pick language", style: .standaloneLargeTitle)
+        let titleLabel = UILabel(value: "Pick language", style: .brand(.footnote(color: .primary)))
         textContainer.addArrangedSubview(titleLabel)
 
-        let descriptionLabel = UILabel(value: "You can change this later in settings.", style: .rowSubtitle)
+        let descriptionLabel = UILabel(value: "You can change this later in settings.", style: .brand(.footnote(color: .secondary)))
         textContainer.addArrangedSubview(descriptionLabel)
 
         let form = FormView()
@@ -146,7 +133,7 @@ extension LanguagePicker: Presentable {
                 bag += self.client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }
 
-            let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+            let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
             bag += section.append(englishRow).onValue { _ in
                 pickLanguage(locale: .en_SE)
             }
@@ -154,7 +141,7 @@ extension LanguagePicker: Presentable {
             englishRow.prepend(Asset.flagGB.image)
             englishRow.append(hCoreUIAssets.chevronRight.image)
 
-            let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
+            let swedishRow = RowView(title: "Svenska", style: .brand(.headline(color: .primary)), appendSpacer: false)
             bag += section.append(swedishRow).onValue { _ in
                 pickLanguage(locale: .sv_SE)
             }

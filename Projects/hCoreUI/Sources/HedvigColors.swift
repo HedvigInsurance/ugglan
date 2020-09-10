@@ -41,18 +41,18 @@ public extension UIColor {
                 UIColor(red: 0.75, green: 0.61, blue: 0.95, alpha: 1.00) :
                 UIColor(red: 0.79, green: 0.67, blue: 0.96, alpha: 1.00)
         })
-        static let coral500 = UIColor(
-            red: 255.0 / 255.0,
-            green: 138.0 / 255.0,
-            blue: 128.0 / 255.0,
-            alpha: 1.0
-        )
         static var primaryBorder: UIColor = UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? BrandColorBase.darkGrayBorder : BrandColorBase.grayBorder
         })
         static let darkGrayBorder = BrandColorBase.darkGray.withAlphaComponent(0.3)
         static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
         static let link = UIColor(red: 0.53, green: 0.37, blue: 0.77, alpha: 1.00)
+        static let caution = UIColor(red: 0.95, green: 0.783, blue: 0.321, alpha: 1)
+        static let destructive = UIColor(dynamic: { trait -> UIColor in
+            trait.userInterfaceStyle == .dark ?
+                UIColor(red: 0.867, green: 0.153, blue: 0.153, alpha: 1) :
+                UIColor(red: 0.886, green: 0.275, blue: 0.275, alpha: 1)
+        })
     }
 
     enum BrandColor {
@@ -71,6 +71,7 @@ public extension UIColor {
         case primaryShadowColor
         case regularCaution
         case primaryBorderColor
+        case destructive
 
         var color: UIColor {
             switch self {
@@ -133,11 +134,13 @@ public extension UIColor {
             case .primaryTextMuted:
                 return BrandColorBase.primaryTextMuted
             case .regularCaution:
-                return BrandColorBase.coral500
+                return BrandColorBase.caution
             case .primaryBorderColor:
                 return BrandColorBase.primaryBorder
             case .link:
                 return BrandColorBase.link
+            case .destructive:
+                return BrandColorBase.destructive
             }
         }
     }

@@ -26,7 +26,7 @@ extension OfferCoverageSwitcher: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .brand(.primaryBackground())
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -42,7 +42,7 @@ extension OfferCoverageSwitcher: Viewable {
             make.trailing.leading.top.bottom.equalToSuperview()
         }
 
-        let titleLabel = MultilineLabel(value: "", style: TextStyle.rowTitleBold.centerAligned)
+        let titleLabel = MultilineLabel(value: "", style: TextStyle.brand(.headline(color: .primary)).centerAligned)
         bag += stackView.addArranged(titleLabel) { titleLabel in
             titleLabel.snp.makeConstraints { make in
                 make.width.equalToSuperview().multipliedBy(0.6)
@@ -59,7 +59,7 @@ extension OfferCoverageSwitcher: Viewable {
 
                 return L10n.offerSwitchTitleApp(previousInsurer.displayName ?? "")
             }
-            .map { StyledText(text: $0, style: TextStyle.rowTitleBold.centerAligned) }
+            .map { StyledText(text: $0, style: TextStyle.brand(.headline(color: .primary)).centerAligned) }
             .bindTo(titleLabel.styledTextSignal)
 
         bag += stackView.addArranged(OfferSwitcherBulletList())

@@ -36,7 +36,7 @@ extension AudioPlayer: Viewable {
 
         let shaderView = UIView()
         contentView.addSubview(shaderView)
-        shaderView.backgroundColor = UIColor.boxSecondaryBackground.darkened(amount: 0.1)
+        shaderView.backgroundColor = UIColor.brand(.secondaryBackground()).darkened(amount: 0.1)
 
         shaderView.snp.makeConstraints { make in
             make.width.equalTo(0)
@@ -44,14 +44,14 @@ extension AudioPlayer: Viewable {
             make.height.equalToSuperview()
         }
 
-        control.backgroundColor = .primaryButtonBackgroundColor
+        control.backgroundColor = .brand(.primaryButtonBackgroundColor)
         bag += control.didLayoutSignal.onValue { _ in
             control.layer.cornerRadius = control.frame.height / 2
         }
 
         let playIconImageView = UIImageView()
         playIconImageView.image = Asset.play.image
-        playIconImageView.tintColor = .primaryButtonTextColor
+        playIconImageView.tintColor = .brand(.primaryButtonTextColor)
         playIconImageView.contentMode = .scaleAspectFit
 
         contentView.addArrangedSubview(playIconImageView)
@@ -60,7 +60,7 @@ extension AudioPlayer: Viewable {
             make.width.height.equalTo(12)
         }
 
-        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.chatTimeStamp.rightAligned.colored(.primaryButtonTextColor))
+        let timeStampLabel = UILabel(value: "00:00", style: TextStyle.brand(.footnote(color: .link)).rightAligned)
         contentView.addArrangedSubview(timeStampLabel)
 
         timeStampLabel.snp.makeConstraints { make in

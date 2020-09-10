@@ -105,9 +105,9 @@ extension PaymentDetailsSection: Viewable {
                 })
 
                 let alert = Alert(
-                    title: L10n.referralRedeemSuccessHeadline,
-                    message: L10n.referralRedeemSuccessBody,
-                    actions: [Alert.Action(title: L10n.referralRedeemSuccessBtn) {}]
+                    title: L10n.discountRedeemSuccess,
+                    message: L10n.discountRedeemSuccessBody,
+                    actions: [Alert.Action(title: L10n.discountRedeemSuccessButton) {}]
                 )
                 self.presentingViewController.present(alert)
             }

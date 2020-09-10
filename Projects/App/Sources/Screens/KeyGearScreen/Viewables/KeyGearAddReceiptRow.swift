@@ -36,7 +36,7 @@ extension KeyGearAddReceiptRow: Viewable {
 
         let icon = Icon(icon: Asset.receipt.image, iconWidth: 40)
 
-        let receiptText = MultilineLabel(value: L10n.keyGearItemViewReceiptTableTitle, style: .smallTitle)
+        let receiptText = MultilineLabel(value: L10n.keyGearItemViewReceiptTableTitle, style: .brand(.headline(color: .primary)))
 
         stackView.addArrangedSubview(icon)
         bag += stackView.addArranged(receiptText) { view in
@@ -52,8 +52,8 @@ extension KeyGearAddReceiptRow: Viewable {
             button: Button(
                 title: L10n.keyGearItemViewReceiptCellAddButton,
                 type: .outline(
-                    borderColor: .transparent,
-                    textColor: .primaryTintColor
+                    borderColor: .clear,
+                    textColor: .brand(.primaryTintColor)
                 )
             )
         )

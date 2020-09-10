@@ -55,7 +55,7 @@ extension PastPaymentsSection: Viewable {
             }
 
             let moreRow = RowView()
-            moreRow.append(UILabel(value: L10n.paymentsBtnHistory, style: .rowTitle))
+            moreRow.append(UILabel(value: L10n.paymentsBtnHistory, style: .brand(.headline(color: .primary))))
 
             let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
 

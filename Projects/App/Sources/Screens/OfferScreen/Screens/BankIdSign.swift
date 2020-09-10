@@ -29,7 +29,7 @@ extension BankIdSign: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .brand(.secondaryBackground())
         viewController.view = view
 
         let containerStackView = UIStackView()
@@ -63,7 +63,7 @@ extension BankIdSign: Presentable {
 
         let imageView = UIImageView()
         imageView.image = Asset.bankIdLogo.image
-        imageView.tintColor = .primaryText
+        imageView.tintColor = .brand(.primaryText())
 
         iconContainerView.addSubview(imageView)
 
@@ -75,7 +75,7 @@ extension BankIdSign: Presentable {
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
-        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .rowTitle)
+        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
         bag += containerView.addArranged(statusLabel)
 
         let closeButtonContainer = UIStackView()
@@ -103,7 +103,7 @@ extension BankIdSign: Presentable {
                 statusText = L10n.signFailedReasonUnknown
             }
 
-            statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
+            statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .brand(.headline(color: .primary)))
         }
 
         bag += client.perform(mutation: GraphQL.SignOfferMutation()).valueSignal.compactMap { $0.signOfferV2.autoStartToken }.onValue { autoStartToken in

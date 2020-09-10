@@ -350,9 +350,10 @@ extension DynamicSectionStyle {
         }
     }
 
-    public static func brandGrouped(separatorType: SeparatorType) -> DynamicSectionStyle {
-        DynamicSectionStyle { _ -> SectionStyle in
+    public static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear) -> DynamicSectionStyle {
+        DynamicSectionStyle { trait -> SectionStyle in
             let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
+            let isPad = trait.userInterfaceIdiom == .pad
 
             return Style(
                 rowInsets: .init(inset: 15),
@@ -363,9 +364,9 @@ extension DynamicSectionStyle {
                         background: .init(
                             color: .clear,
                             border: .init(
-                                width: 0,
-                                color: UIColor.clear,
-                                cornerRadius: 0,
+                                width: 1 / UIScreen.main.scale,
+                                color: borderColor,
+                                cornerRadius: isPad ? 8 : 0,
                                 borderEdges: .all
                             )
                         ),
@@ -390,9 +391,9 @@ extension DynamicSectionStyle {
                         background: .init(
                             color: selectedBackgroundColor,
                             border: .init(
-                                width: 0,
-                                color: UIColor.clear,
-                                cornerRadius: 0,
+                                width: 1 / UIScreen.main.scale,
+                                color: borderColor,
+                                cornerRadius: isPad ? 8 : 0,
                                 borderEdges: .all
                             )
                         ),
@@ -460,17 +461,45 @@ extension DynamicSectionStyle {
 }
 
 extension DynamicFormStyle {
-    static let brandPlain = DynamicFormStyle { _ -> FormStyle in
-        .init(insets: .zero)
+    static let brandPlain = DynamicFormStyle { trait -> FormStyle in
+        if trait.userInterfaceIdiom == .pad {
+            return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
+        }
+        
+        if trait.verticalSizeClass == .compact {
+            return .init(insets: UIEdgeInsets(top: 15, left: 0, bottom: 15, right: 0))
+        }
+
+        return .init(insets: .zero)
     }
 
-    static let brandGrouped = DynamicFormStyle { _ -> FormStyle in
-        .init(insets: .zero)
+    static let brandGrouped = DynamicFormStyle { trait -> FormStyle in
+        if trait.userInterfaceIdiom == .pad {
+            return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
+        }
+        
+        if trait.verticalSizeClass == .compact {
+            return .init(insets: UIEdgeInsets(top: 15, left: 0, bottom: 15, right: 0))
+        }
+
+        return .init(insets: .zero)
     }
 
-    public static let insetted = DynamicFormStyle { _ -> FormStyle in
-        FormStyle(insets: UIEdgeInsets(horizontalInset: 15, verticalInset: 0))
+    public static let brandInset = DynamicFormStyle { trait -> FormStyle in
+        if trait.userInterfaceIdiom == .pad {
+            return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
+        }
+        
+        if trait.verticalSizeClass == .compact {
+            return .init(insets: UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15))
+        }
+
+        return FormStyle(insets: UIEdgeInsets(horizontalInset: 15, verticalInset: 0))
     }
+}
+
+extension DynamicTableViewFormStyle {
+    public static let brandInset = DynamicTableViewFormStyle(section: .default, form: .brandInset)
 }
 
 final class ListTableView: UITableView {}

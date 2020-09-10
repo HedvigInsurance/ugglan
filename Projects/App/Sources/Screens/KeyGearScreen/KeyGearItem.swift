@@ -119,7 +119,7 @@ extension KeyGearItem: Presentable {
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .brand(.primaryBackground())
         viewController.view = view
 
         let dataSignal = client.watch(
@@ -129,7 +129,7 @@ extension KeyGearItem: Presentable {
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
-        scrollView.backgroundColor = .primaryBackground
+        scrollView.backgroundColor = .brand(.primaryBackground())
 
         scrollView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
@@ -189,7 +189,7 @@ extension KeyGearItem: Presentable {
         }
 
         let formContainer = UIView()
-        formContainer.backgroundColor = .primaryBackground
+        formContainer.backgroundColor = .brand(.primaryBackground())
         form.append(formContainer)
 
         let innerForm = FormView()
@@ -204,9 +204,8 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(Spacing(height: 10))
 
         let claimsSection = innerForm.appendSection()
-        claimsSection.dynamicStyle = .sectionPlain
 
-        let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .rowTitle)
+        let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .brand(.headline(color: .primary)))
         claimsRow.append(hCoreUIAssets.chevronRight.image)
 
         bag += claimsSection.append(claimsRow).onValue { _ in
@@ -220,7 +219,6 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(Spacing(height: 10))
 
         let coveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewCoverageTableTitle)
-        coveragesSection.dynamicStyle = .sectionPlain
 
         bag += dataSignal.map { $0.covered }.onValueDisposePrevious { covered -> Disposable? in
             let bag = DisposeBag()
@@ -235,7 +233,6 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(Spacing(height: 15))
 
         let nonCoveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewNonCoverageTableTitle)
-        nonCoveragesSection.dynamicStyle = .sectionPlain
 
         bag += dataSignal.map { $0.exceptions }.onValueDisposePrevious { exceptions -> Disposable? in
             let bag = DisposeBag()
@@ -250,17 +247,15 @@ extension KeyGearItem: Presentable {
         bag += innerForm.append(Spacing(height: 30))
 
         let receiptFooter = UIStackView()
-        bag += receiptFooter.addArranged(MultilineLabel(value: L10n.keyGearItemViewReceiptTableFooter, style: .sectionHeader))
+        bag += receiptFooter.addArranged(MultilineLabel(value: L10n.keyGearItemViewReceiptTableFooter, style: .brand(.footnote(color: .primary))))
 
         let receiptSection = innerForm.appendSection(headerView: nil, footerView: receiptFooter)
-        receiptSection.dynamicStyle = .sectionPlain
 
         bag += receiptSection.append(KeyGearAddReceiptRow(presentingViewController: viewController, itemId: id))
 
         bag += innerForm.append(Spacing(height: 15))
 
         let nameSection = innerForm.appendSection()
-        nameSection.dynamicStyle = .sectionPlain
 
         let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "").writable(setValue: { _ in })
         let nameRow = EditableRow(

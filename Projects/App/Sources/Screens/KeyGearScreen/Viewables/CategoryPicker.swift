@@ -21,7 +21,7 @@ extension CategoryPicker: Viewable {
         let bag = DisposeBag()
         let layout = UICollectionViewTagLayout()
         let collectionKit = CollectionKit<EmptySection, KeyGearCategoryButton>(layout: layout)
-        collectionKit.view.backgroundColor = .transparent
+        collectionKit.view.backgroundColor = .clear
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let row = collectionKit.table[index]

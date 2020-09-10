@@ -136,7 +136,7 @@ extension AudioRecorder: Viewable {
 
             let redoButton = Button(
                 title: L10n.audioInputRedo,
-                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                type: .standardSmall(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
             )
 
             bag += redoButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
@@ -153,7 +153,7 @@ extension AudioRecorder: Viewable {
 
             let sendButton = Button(
                 title: L10n.audioInputSave,
-                type: .standardSmall(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                type: .standardSmall(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
             )
             let loadableSendButton = LoadableButton(button: sendButton)
 

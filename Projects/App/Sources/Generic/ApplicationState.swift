@@ -37,10 +37,6 @@ struct ApplicationState {
         return applicationState
     }
 
-    static func hasPreviousState() -> Bool {
-        UserDefaults.standard.value(forKey: key) as? String != nil
-    }
-
     private static let firebaseMessagingTokenKey = "firebaseMessagingToken"
 
     static func setFirebaseMessagingToken(_ token: String) {
@@ -49,10 +45,6 @@ struct ApplicationState {
 
     static func getFirebaseMessagingToken() -> String? {
         UserDefaults.standard.value(forKey: firebaseMessagingTokenKey) as? String
-    }
-
-    static func hasLastNewsSeen() -> Bool {
-        UserDefaults.standard.value(forKey: lastNewsSeenKey) as? String != nil
     }
 
     static func getLastNewsSeen() -> String {

@@ -34,7 +34,7 @@ extension WhatsNewPagerScreen: Presentable {
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .primaryTintColor)
+        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .brand(.primaryTintColor))
         let loadingIndicatorBag = DisposeBag()
         loadingIndicatorBag += containerView.addArranged(loadingIndicator)
         bag += loadingIndicatorBag
@@ -73,7 +73,7 @@ extension WhatsNewPagerScreen: Presentable {
 
         let titleLabel = MultilineLabel(styledText: StyledText(
             text: title,
-            style: .standaloneLargeTitle
+            style: .brand(.largeTitle(color: .primary))
         ))
 
         bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
@@ -94,7 +94,7 @@ extension WhatsNewPagerScreen: Presentable {
 
         let bodyLabel = MultilineLabel(styledText: StyledText(
             text: paragraph,
-            style: .bodyOffBlack
+            style: TextStyle.brand(.body(color: .secondary)).centerAligned
         ))
 
         bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in

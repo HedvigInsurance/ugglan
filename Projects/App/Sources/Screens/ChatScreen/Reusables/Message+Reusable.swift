@@ -73,7 +73,7 @@ extension Message: Reusable {
 
             let timeStampText = NSAttributedString(styledText: StyledText(
                 text: "11:33",
-                style: TextStyle.chatTimeStamp.centerAligned
+                style: TextStyle.brand(.footnote(color: .secondary)).centerAligned
             ))
 
             let timeStampSize = timeStampText.boundingRect(
@@ -97,7 +97,7 @@ extension Message: Reusable {
 
         let attributedString = NSAttributedString(styledText: StyledText(
             text: body,
-            style: .chatBody
+            style: .brand(.body(color: .primary))
         ))
 
         let size = attributedString.boundingRect(
@@ -111,6 +111,14 @@ extension Message: Reusable {
         }
 
         return size.height + largerMarginTop + 20 + extraHeightForTimeStampLabel
+    }
+
+    static var bubbleColor: UIColor {
+        UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1)
+    }
+
+    static var hedvigBubbleColor: UIColor {
+        UIColor(base: .brand(.secondaryBackground()), elevated: .brand(.primaryBackground()))
     }
 
     static func makeAndConfigure() -> (make: UIView, configure: (Message) -> Disposable) {
@@ -129,7 +137,7 @@ extension Message: Reusable {
         let timeStampLabelContainer = UIStackView()
         timeStampLabelContainer.alignment = .center
 
-        let timeStampLabel = UILabel(value: "", style: TextStyle.chatTimeStamp.centerAligned)
+        let timeStampLabel = UILabel(value: "", style: TextStyle.brand(.footnote(color: .quartenary)).centerAligned)
         timeStampLabelContainer.addArrangedSubview(timeStampLabel)
 
         spacingContainer.addArrangedSubview(timeStampLabelContainer)
@@ -145,7 +153,7 @@ extension Message: Reusable {
         spacingContainer.addArrangedSubview(bubbleContainer)
 
         let bubble = UIView()
-        bubble.backgroundColor = .primaryTintColor
+        bubble.backgroundColor = .brand(.primaryTintColor)
 
         bubble.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(300)
@@ -168,7 +176,7 @@ extension Message: Reusable {
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
-        editButton.backgroundColor = .boxSecondaryBackground
+        editButton.backgroundColor = Self.bubbleColor
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(20)
         }
@@ -273,13 +281,13 @@ extension Message: Reusable {
 
                 spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
-                let messageTextColor = message.fromMyself ? UIColor.black : .primaryText
+                let messageTextColor = message.fromMyself ? UIColor.black : .brand(.primaryText())
 
                 switch message.type {
                 case .image(_), .video:
-                    bubble.backgroundColor = .transparent
+                    bubble.backgroundColor = .clear
                 default:
-                    bubble.backgroundColor = message.fromMyself ? .boxSecondaryBackground : .boxPrimaryBackground
+                    bubble.backgroundColor = message.fromMyself ? Self.bubbleColor : Self.hedvigBubbleColor
                 }
 
                 switch message.type {
@@ -344,7 +352,7 @@ extension Message: Reusable {
                     }
 
                 case let .gif(url):
-                    bubble.backgroundColor = .transparent
+                    bubble.backgroundColor = .clear
                     let imageViewContainer = UIView()
 
                     let imageView = UIImageView()
@@ -396,7 +404,7 @@ extension Message: Reusable {
                     }
 
                 case let .file(url):
-                    let textStyle = TextStyle.chatBodyUnderlined.colored(messageTextColor)
+                    let textStyle = TextStyle.brand(.body(color: .primary)).colored(messageTextColor)
 
                     let text = L10n.chatFileDownload
 
@@ -474,7 +482,7 @@ extension Message: Reusable {
                         imageViewContainer.removeFromSuperview()
                     }
                 case .text:
-                    let textStyle = TextStyle.chatBody.colored(messageTextColor)
+                    let textStyle = TextStyle.brand(.body(color: .primary)).colored(messageTextColor)
                     let attributedString = NSMutableAttributedString(text: message.body, style: textStyle)
 
                     message.body.links.forEach { linkRange in

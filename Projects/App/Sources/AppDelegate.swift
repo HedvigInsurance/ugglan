@@ -113,45 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return true
         }
 
-        guard let queryItems = URLComponents(url: dynamicLinkUrl, resolvingAgainstBaseURL: true)?.queryItems else { return false }
-        guard let referralCode = queryItems.filter({ item in item.name == "code" }).first?.value else { return false }
-
-        guard ApplicationState.currentState == nil || ApplicationState.currentState?.isOneOf([.marketing, .marketPicker, .onboardingChat, .offer]) == true else { return false }
-        guard let rootViewController = window.rootViewController else { return false }
-        let innerBag = bag.innerBag()
-
-        func presentReferralsAccept() {
-            innerBag += rootViewController.present(
-                ReferralsReceiverConsent(referralCode: referralCode),
-                style: .modal,
-                options: [
-                    .prefersNavigationBarHidden(true),
-                    .allowSwipeDismissAlways,
-                ]
-            ).onValue { result in
-                if result == .accept {
-                    if ApplicationState.currentState?.isOneOf([.marketing]) == true {
-                        self.bag += rootViewController.present(
-                            Onboarding(),
-                            options: [.prefersNavigationBarHidden(false)]
-                        )
-                    }
-                }
-                innerBag.dispose()
-            }
-        }
-
-        if ApplicationState.hasPreferredLocale {
-            presentReferralsAccept()
-        } else {
-            bag += rootViewController.present(MarketPicker {
-                presentReferralsAccept()
-            })
-        }
-
-        Mixpanel.mainInstance().track(event: "DEEP_LINK_REFERRALS")
-
-        return true
+        return false
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
@@ -289,7 +251,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 symbol: .icon(hCoreUIAssets.settingsIcon.image),
                 body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
                 textColor: .black,
-                backgroundColor: .yellow
+                backgroundColor: .brand(.regularCaution)
             )
 
             if #available(iOS 13, *) {

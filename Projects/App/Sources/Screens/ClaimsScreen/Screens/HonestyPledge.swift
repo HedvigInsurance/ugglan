@@ -20,12 +20,12 @@ struct HonestyPledge {
     func pushNotificationsPresentable() -> PresentableViewable<ImageTextAction<PushNotificationsAction>, PushNotificationsAction> {
         let pushNotificationsDoButton = Button(
             title: L10n.claimsActivateNotificationsCta,
-            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
         )
 
         let pushNotificationsSkipButton = Button(
             title: L10n.claimsActivateNotificationsDismiss,
-            type: .transparent(textColor: .pink)
+            type: .transparent(textColor: .brand(.link))
         )
 
         let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
@@ -76,7 +76,7 @@ extension HonestyPledge: Presentable {
         }
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .brand(.secondaryBackground())
         viewController.view = view
 
         view.addSubview(containerStackView)

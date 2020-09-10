@@ -44,7 +44,7 @@ extension Welcome: Presentable {
         viewController.navigationItem.rightBarButtonItem = item
 
         let view = UIView()
-        view.backgroundColor = .secondaryBackground
+        view.backgroundColor = .brand(.secondaryBackground())
 
         let containerView = UIStackView()
         containerView.axis = .vertical
@@ -97,7 +97,7 @@ extension Welcome: Presentable {
         }
 
         let proceedButton = WelcomePagerProceedButton(
-            button: Button(title: "", type: .standard(backgroundColor: .blackPurple, textColor: .white))
+            button: Button(title: "", type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor)))
         )
 
         bag += controlsWrapper.addArranged(proceedButton)

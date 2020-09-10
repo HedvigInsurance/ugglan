@@ -34,10 +34,10 @@ extension KeyGearValuation: Presentable {
         headerStackView.axis = .vertical
         headerStackView.spacing = 8
 
-        let totalPercentageLabel = UILabel(value: "", style: TextStyle.headlineLargeLargeCenter.resized(to: 48))
+        let totalPercentageLabel = UILabel(value: "", style: TextStyle.brand(.largeTitle(color: .primary)))
         headerStackView.addArrangedSubview(totalPercentageLabel)
 
-        let totalPercentageDescriptionLabel = UILabel(value: "", style: .bodySmallSmallCenter)
+        let totalPercentageDescriptionLabel = UILabel(value: "", style: .brand(.body(color: .link)))
         headerStackView.addArrangedSubview(totalPercentageDescriptionLabel)
 
         bag += form.append(Spacing(height: 30))
@@ -48,7 +48,7 @@ extension KeyGearValuation: Presentable {
 
         let descriptionLabel = MarkdownText(
             textSignal: .static(""),
-            style: .bodySmallSmallCenter
+            style: TextStyle.brand(.body(color: .primary)).centerAligned
         )
         bag += form.append(descriptionLabel)
 

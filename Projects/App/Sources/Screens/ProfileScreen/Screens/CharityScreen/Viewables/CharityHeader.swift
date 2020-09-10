@@ -22,14 +22,13 @@ extension CharityHeader: Viewable {
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.spacing = 15
-
-        stackView.edgeInsets = UIEdgeInsets(
-            top: 30,
-            left: 20,
-            bottom: 0,
-            right: 20
-        )
         stackView.isLayoutMarginsRelativeArrangement = true
+        
+        bag += stackView.traitCollectionSignal.atOnce().onValue { trait in
+            let style = DynamicFormStyle.brandInset.style(from: trait)
+            let insets = style.insets
+            stackView.layoutMargins = UIEdgeInsets(top: insets.top, left: insets.left, bottom: 24, right: insets.right)
+        }
 
         let icon = Icon(frame: .zero, icon: Asset.charityPlain.image, iconWidth: 40)
         stackView.addArrangedSubview(icon)
@@ -37,7 +36,7 @@ extension CharityHeader: Viewable {
         let multilineLabel = MultilineLabel(
             styledText: StyledText(
                 text: L10n.charityScreenHeaderMessage,
-                style: .centeredBodyOffBlack
+                style: TextStyle.brand(.body(color: .primary)).centerAligned
             )
         )
 

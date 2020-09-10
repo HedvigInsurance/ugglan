@@ -115,7 +115,7 @@ extension AttachFilePane: Viewable {
             header
         }
 
-        collectionKit.view.backgroundColor = .transparent
+        collectionKit.view.backgroundColor = .clear
 
         view.addArrangedSubview(collectionKit.view)
 

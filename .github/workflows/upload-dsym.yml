@@ -15,7 +15,7 @@ jobs:
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
-       DOWNLOAD_DSYMS_USERNAME: ${{ secrets.DOWNLOAD_DSYMS_USERNAME }}
+       FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
        DOWNLOAD_DSYMS_APP_IDENTIFIER: ${{ secrets.DOWNLOAD_DSYMS_APP_IDENTIFIER }}
        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -23,4 +23,4 @@ jobs:
        SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
        DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
       with:
-       lane: ios refresh_dsyms
+       lane: ios upload_dsyms_to_sentry

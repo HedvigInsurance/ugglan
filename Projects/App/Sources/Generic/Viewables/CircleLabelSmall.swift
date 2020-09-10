@@ -25,7 +25,7 @@ struct CircleLabelSmall {
 }
 
 extension CircleLabelSmall: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let circleView = UIView()
         let bag = DisposeBag()
 
@@ -46,13 +46,13 @@ extension CircleLabelSmall: Viewable {
                 opacity: 0.2,
                 offset: CGSize(width: 10, height: 10),
                 radius: 16,
-                color: UIColor.primaryShadowColor,
+                color: UIColor.brand(.primaryShadowColor),
                 path: nil
             )
         }
 
         circleView.backgroundColor = backgroundColor
-        titleLabel.textColor = .primaryText
+        titleLabel.textColor = .brand(.primaryText())
 
         labelsContainer.addArrangedSubview(titleLabel)
 
@@ -66,10 +66,12 @@ extension CircleLabelSmall: Viewable {
             circleView.layer.cornerRadius = circleView.frame.height * 0.5
         }
 
-        circleView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.width.equalTo(circleView.snp.height)
-            make.height.equalToSuperview()
-            make.center.equalToSuperview()
+        bag += circleView.didLayoutSignal.onFirstValue {
+            circleView.snp.makeConstraints { make in
+                make.width.equalTo(circleView.snp.height)
+                make.height.equalToSuperview()
+                make.center.equalToSuperview()
+            }
         }
 
         return (circleView, bag)

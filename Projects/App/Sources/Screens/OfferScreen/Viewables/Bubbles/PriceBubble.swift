@@ -39,12 +39,12 @@ extension PriceBubble: Viewable {
             make.trailing.leading.top.bottom.equalToSuperview()
         }
 
-        let grossPriceLabel = UILabel(value: "", style: TextStyle.priceBubbleGrossTitle)
+        let grossPriceLabel = UILabel(value: "", style: TextStyle.brand(.title2(color: .primary)))
         grossPriceLabel.animationSafeIsHidden = true
 
         stackView.addArrangedSubview(grossPriceLabel)
 
-        let priceLabel = UILabel(value: "", style: TextStyle.largePriceBubbleTitle)
+        let priceLabel = UILabel(value: "", style: TextStyle.brand(.title1(color: .primary)))
 
         let ease: Ease<CGFloat> = Ease(0, minimumStep: 1)
 
@@ -64,7 +64,7 @@ extension PriceBubble: Viewable {
 
         bag += combineLatest(discountSignal.plain(), grossPriceSignal, grossCurrencySignal)
             .animated(style: SpringAnimationStyle.mediumBounce(), animations: { monthlyDiscount, monthlyGross, grossCurrency in
-                grossPriceLabel.styledText = StyledText(text: "\(MonetaryAmount(amount: Float(monthlyGross), currency: grossCurrency).formattedAmount)\(L10n.perMonth)", style: TextStyle.priceBubbleGrossTitle)
+                grossPriceLabel.styledText = StyledText(text: "\(MonetaryAmount(amount: Float(monthlyGross), currency: grossCurrency).formattedAmount)\(L10n.perMonth)", style: TextStyle.brand(.title2(color: .primary)))
                 grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
                 grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
             })
@@ -88,8 +88,8 @@ extension PriceBubble: Viewable {
         bag += ease.addSpring(tension: 300, damping: 100, mass: 2) { number in
             if number != 0 {
                 let textStyle = discountSignal.value > 0 ?
-                    TextStyle.largePriceBubbleTitle.colored(.pink) :
-                    TextStyle.largePriceBubbleTitle
+                    TextStyle.brand(.title2(color: .link)) :
+                    TextStyle.brand(.title2(color: .primary))
                 priceLabel.styledText = StyledText(
                     text: String(Int(number)),
                     style: textStyle
@@ -101,7 +101,7 @@ extension PriceBubble: Viewable {
 
         bag += stackView.addArranged(MultilineLabel(
             value: L10n.offerPriceBubbleMonth,
-            style: TextStyle.rowSubtitle.centerAligned
+            style: TextStyle.brand(.subHeadline(color: .primary)).centerAligned
         ))
 
         let campaignTypeSignal = dataSignal.map { $0?.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in

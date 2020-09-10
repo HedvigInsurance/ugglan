@@ -35,7 +35,7 @@ struct PurchasePrice: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Signal<Int>) {
         let bag = DisposeBag()
 
-        let footerView = MultilineLabel(value: L10n.keyGearNotCovered(category.name.localizedLowercase), style: .sectionHeader)
+        let footerView = MultilineLabel(value: L10n.keyGearNotCovered(category.name.localizedLowercase), style: .brand(.footnote(color: .primary)))
 
         let footerViewContainer = UIStackView()
         footerViewContainer.isHidden = false
@@ -43,12 +43,11 @@ struct PurchasePrice: Viewable {
         bag += footerViewContainer.addArranged(footerView)
 
         let section = SectionView(headerView: nil, footerView: footerViewContainer)
-        section.dynamicStyle = .sectionPlain
 
         let row = RowView()
         section.append(row)
 
-        row.prepend(UILabel(value: L10n.keyGearAddPurchasePriceCellTitle, style: .headlineMediumMediumLeft))
+        row.prepend(UILabel(value: L10n.keyGearAddPurchasePriceCellTitle, style: .brand(.headline(color: .primary))))
 
         let textField = UITextField(value: "", placeholder: "0", style: .defaultRight)
         textField.keyboardType = .numeric
@@ -90,9 +89,9 @@ struct DatePicker: Viewable {
         mainRowContainerView.axis = .horizontal
         containerView.addArrangedSubview(mainRowContainerView)
 
-        mainRowContainerView.addArrangedSubview(UILabel(value: L10n.keyGearYearmonthPickerTitle, style: .headlineMediumMediumLeft))
+        mainRowContainerView.addArrangedSubview(UILabel(value: L10n.keyGearYearmonthPickerTitle, style: .brand(.headline(color: .primary))))
 
-        let value = UILabel(value: Date().localDateString ?? "", style: .rowValueEditableRight)
+        let value = UILabel(value: Date().localDateString ?? "", style: TextStyle.brand(.headline(color: .link)).rightAligned)
         mainRowContainerView.addArrangedSubview(value)
 
         let picker = UIDatePicker()
@@ -132,7 +131,7 @@ extension KeyGearAddValuation: Presentable {
 
         let descriptionLabel = MultilineLabel(
             value: L10n.keyGearAddPurchaseInfoBody(category.name.localizedLowercase),
-            style: .bodyRegularRegularCenter
+            style: TextStyle.brand(.body(color: .primary)).centerAligned
         )
         bag += form.append(descriptionLabel)
 
@@ -143,7 +142,6 @@ extension KeyGearAddValuation: Presentable {
         bag += form.append(Spacing(height: 20))
 
         let dateSection = form.appendSection()
-        dateSection.dynamicStyle = .sectionPlain
 
         bag += dateSection.append(DatePicker()).bindTo(state.purchaseDateSignal)
 
@@ -153,7 +151,7 @@ extension KeyGearAddValuation: Presentable {
             button:
             Button(
                 title: L10n.keyGearItemViewAddPurchaseDateButton,
-                type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+                type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
             )
         )
 

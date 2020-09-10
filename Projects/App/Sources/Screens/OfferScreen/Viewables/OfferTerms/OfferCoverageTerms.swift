@@ -30,7 +30,7 @@ extension OfferCoverageTerms: Viewable {
         outerView.axis = .vertical
 
         let containerView = UIView()
-        containerView.backgroundColor = .primaryBackground
+        containerView.backgroundColor = .brand(.primaryBackground())
         outerView.addArrangedSubview(containerView)
 
         let stackView = UIStackView()
@@ -48,7 +48,7 @@ extension OfferCoverageTerms: Viewable {
 
         let bag = DisposeBag()
 
-        let titleLabel = MultilineLabel(value: L10n.offerTermsTitle, style: TextStyle.rowTitleBold.centerAligned)
+        let titleLabel = MultilineLabel(value: L10n.offerTermsTitle, style: TextStyle.brand(.headline(color: .primary)).centerAligned)
         bag += stackView.addArranged(titleLabel)
 
         bag += stackView.addArranged(OfferTermsBulletPoints())
@@ -64,7 +64,7 @@ extension OfferCoverageTerms: Viewable {
         let notInsuredAtOtherCompanyBlob = WhenEnabled(insuredAtOtherCompanySignal.map { !$0 }, {
             Blob(color: Offer.primaryAccentColor, position: .top)
         }) { view in
-            view.backgroundColor = .primaryBackground
+            view.backgroundColor = .brand(.primaryBackground())
         }
 
         bag += outerView.addArranged(notInsuredAtOtherCompanyBlob)

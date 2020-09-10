@@ -21,10 +21,16 @@ extension Header: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 24, right: 15)
-        stackView.isLayoutMarginsRelativeArrangement = true
 
         let bag = DisposeBag()
+
+        bag += stackView.traitCollectionSignal.atOnce().onValue { trait in
+            let style = DynamicFormStyle.brandInset.style(from: trait)
+            let insets = style.insets
+            stackView.layoutMargins = UIEdgeInsets(top: insets.top, left: insets.left, bottom: 24, right: insets.right)
+        }
+
+        stackView.isLayoutMarginsRelativeArrangement = true
 
         let piePrice = UILabel(value: "\u{00a0}", style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center))
         piePrice.alpha = 0

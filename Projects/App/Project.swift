@@ -39,9 +39,7 @@ let appDependencies: [TargetDependency] = [
     }.flatMap { $0 },
 ].flatMap { $0 }
 
-let targetActions: [TargetAction] = [
-    .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications"),
-]
+let targetActions: [TargetAction] = []
 
 let project = Project(
     name: "Ugglan",
@@ -113,6 +111,6 @@ let project = Project(
         ),
     ],
     additionalFiles: [
-        .folderReference(path: "GraphQL")
+        .folderReference(path: "GraphQL"),
     ]
 )

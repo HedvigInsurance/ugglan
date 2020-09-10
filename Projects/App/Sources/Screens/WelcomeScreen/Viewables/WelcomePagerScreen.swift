@@ -73,7 +73,7 @@ extension WelcomePagerScreen: Presentable {
 
         let titleLabel = MultilineLabel(styledText: StyledText(
             text: title,
-            style: .standaloneLargeTitle
+            style: .brand(.title1(color: .primary))
         ))
 
         bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
@@ -94,7 +94,7 @@ extension WelcomePagerScreen: Presentable {
 
         let bodyLabel = MultilineLabel(styledText: StyledText(
             text: paragraph,
-            style: .bodyOffBlack
+            style: .brand(.body(color: .secondary))
         ))
 
         bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in

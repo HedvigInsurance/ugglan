@@ -36,7 +36,7 @@ extension ChatInput: Viewable {
 
         let backgroundView = ViewWithFixedIntrinsicSize()
         backgroundView.autoresizingMask = .flexibleHeight
-        backgroundView.backgroundColor = UIColor.tertiaryBackground.withAlphaComponent(0.8)
+        backgroundView.backgroundColor = UIColor.brand(.secondaryBackground()).withAlphaComponent(0.8)
 
         let effectView = UIVisualEffectView()
         backgroundView.addSubview(effectView)

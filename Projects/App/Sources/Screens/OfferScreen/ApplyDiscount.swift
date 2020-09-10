@@ -34,11 +34,11 @@ extension ApplyDiscount: Presentable {
         let bag = DisposeBag()
 
         let form = FormView()
-        form.dynamicStyle = .insetted
+        form.dynamicStyle = .brandInset
 
         let descriptionLabel = MultilineLabel(
             value: L10n.referralAddcouponBody,
-            style: .bodyOffBlack
+            style: .brand(.body(color: .secondary))
         )
         bag += form.append(descriptionLabel)
 
@@ -53,7 +53,7 @@ extension ApplyDiscount: Presentable {
 
         let submitButton = Button(
             title: L10n.referralAddcouponBtnSubmit,
-            type: .standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
         )
 
         let loadableSubmitButton = LoadableButton(button: submitButton)
@@ -82,24 +82,26 @@ extension ApplyDiscount: Presentable {
                     loadableSubmitButton.isLoadingSignal.value = true
                 }
                 .withLatestFrom(textField.value.plain())
-                .mapLatestToFuture { _, discountCode in self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode)) }
-                .delay(by: 0.5)
-                .atValue { _ in
-                    loadableSubmitButton.isLoadingSignal.value = false
-                }
-                .atError { _ in
-                    let alert = Alert(
-                        title: L10n.referralErrorMissingcodeHeadline,
-                        message: L10n.referralErrorMissingcodeBody,
-                        actions: [Alert.Action(title: L10n.referralErrorMissingcodeBtn) {}]
-                    )
+                .onValue { _, discountCode in
+                    self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode))
+                        .delay(by: 0.5)
+                        .onError { _ in
+                            let alert = Alert(
+                                title: L10n.discountCodeMissing,
+                                message: L10n.discountCodeMissingBody,
+                                actions: [Alert.Action(title: L10n.discountCodeMissingButton) {}]
+                            )
 
-                    viewController.present(alert)
-                }
-                .map { $0.redeemCode }
-                .onValue { redeemCode in
-                    self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
-                    completion(.success)
+                            viewController.present(alert)
+
+                            loadableSubmitButton.isLoadingSignal.value = false
+                        }
+                        .map { $0.redeemCode }
+                        .onValue { redeemCode in
+                            loadableSubmitButton.isLoadingSignal.value = false
+                            self.didRedeemValidCodeCallbacker.callAll(with: redeemCode)
+                            completion(.success)
+                        }
                 }
 
             return bag

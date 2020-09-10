@@ -177,9 +177,7 @@ extension Project {
             targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
         }
 
-        let targetActions: [TargetAction] = [
-            .pre(path: "../../scripts/build_copy.sh", name: "Copy third party frameworks and applications"),
-        ]
+        let targetActions: [TargetAction] = []
 
         // Project targets
         var projectTargets: [Target] = []

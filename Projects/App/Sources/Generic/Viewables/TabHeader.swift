@@ -52,13 +52,13 @@ extension TabHeader.Text: Viewable {
 
         let titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.standaloneLargeTitle.centered()
+            style: TextStyle.brand(.largeTitle(color: .primary)).centerAligned
         )
         bag += view.addArranged(titleLabel)
 
         let descriptionLabel = MultilineLabel(
             value: description,
-            style: TextStyle.body.centered()
+            style: TextStyle.brand(.body(color: .secondary)).centerAligned
         )
         bag += view.addArranged(descriptionLabel)
 

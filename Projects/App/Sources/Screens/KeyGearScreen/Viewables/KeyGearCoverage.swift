@@ -31,7 +31,7 @@ extension KeyGearCoverage: Viewable {
         }
         row.prepend(icon)
 
-        bag += row.append(MultilineLabel(value: title, style: .bodySmallSmallLeft))
+        bag += row.append(MultilineLabel(value: title, style: .brand(.body(color: .primary))))
 
         return (row, bag)
     }

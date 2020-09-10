@@ -16,9 +16,107 @@
 default_platform(:ios)
 
 platform :ios do
-    lane :refresh_dsyms do
+    lane :upload_dsyms_to_sentry do
         download_dsyms
         sentry_upload_dsym
         clean_build_artifacts
+    end
+    
+    lane :setup do
+        carthage(
+            command: "bootstrap",
+            cache_builds: true,
+            platform: "ios"
+        )
+        
+        sh("cd ..; tuist up")
+        sh("cd ..; tuist generate")
+    end
+    
+    lane :production_upload do |options|
+        setup
+        
+        app_identifier = "com.hedvig.app"
+        
+        match(
+            type: "appstore",
+            app_identifier: app_identifier,
+            readonly: is_ci
+        )
+        
+        increment_version_number(
+            version_number: options[:version_number],
+            xcodeproj: "Projects/App/Ugglan.xcodeproj"
+        )
+        
+        build_app(
+            workspace: "Ugglan.xcworkspace",
+            configuration: "Release",
+            scheme: "Hedvig",
+            derived_data_path: "gym-derived-data",
+            output_directory: "fastlane/build_output",
+            export_options: {
+                method: "appstore",
+                iCloudContainerEnvironment: "Production"
+            }
+        )
+        
+        upload_to_app_store
+    end
+    
+    lane :workspace_apps do
+        setup
+        
+        apps = {
+            "com.hedvig.test.app" => "Ugglan",
+            "com.hedvig.app" => "Hedvig",
+            "com.hedvig.HomeExample" => "HomeExample"
+        }
+        
+        apps.each do |app_identifier, scheme|
+            match(
+                type: "adhoc",
+                app_identifier: app_identifier,
+                readonly: is_ci
+            )
+            build_app(
+                workspace: "Ugglan.xcworkspace",
+                configuration: "Release",
+                scheme: scheme,
+                derived_data_path: "gym-derived-data",
+                output_directory: "fastlane/build_output",
+                export_options: {
+                    method: "ad-hoc",
+                    iCloudContainerEnvironment: "Development"
+                }
+            )
+        end
+    end
+    
+    lane :workspace_tests do
+        setup
+        
+        schemes = [
+            "Ugglan",
+            "hCore",
+            "hCoreUI",
+            "Embark",
+            "Forever",
+            "Contracts",
+            "Home"
+        ]
+        
+        schemes.each { |scheme|
+            scan(
+                workspace: "Ugglan.xcworkspace",
+                devices: ["iPhone 11 Pro"],
+                scheme: scheme,
+                derived_data_path: "scan_derived_data"
+            )
+        }
+        
+        xchtmlreport(
+          result_bundle_paths: schemes.map { |scheme| "fastlane/test_output/#{scheme}.xcresult" }
+        )
     end
 end

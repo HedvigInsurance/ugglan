@@ -43,7 +43,7 @@ extension BankIDLoginSweden: Presentable {
         let bag = DisposeBag()
 
         let view = UIView()
-        view.backgroundColor = .primaryBackground
+        view.backgroundColor = .brand(.primaryBackground())
         viewController.view = view
         viewController.title = L10n.bankidLoginTitle
 
@@ -79,7 +79,7 @@ extension BankIDLoginSweden: Presentable {
 
         let imageView = UIImageView()
         imageView.image = Asset.bankIdLogo.image
-        imageView.tintColor = .primaryText
+        imageView.tintColor = .brand(.primaryText())
 
         iconContainerView.addSubview(imageView)
 
@@ -91,7 +91,7 @@ extension BankIDLoginSweden: Presentable {
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
-        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .rowTitle)
+        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
         bag += containerView.addArranged(statusLabel)
 
         let closeButtonContainer = UIStackView()
@@ -121,7 +121,7 @@ extension BankIDLoginSweden: Presentable {
                 statusText = L10n.bankIdAuthTitleInitiated
             }
 
-            statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .rowTitle)
+            statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .brand(.headline(color: .primary)))
         }
 
         generateAutoStartToken().onValue { url in

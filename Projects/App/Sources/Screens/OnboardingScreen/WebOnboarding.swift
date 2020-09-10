@@ -16,12 +16,6 @@ import WebKit
 
 struct WebOnboarding {}
 
-final class WebOnboardingWebView: WKWebView, UIScrollViewDelegate {
-    func viewForZooming(in _: UIScrollView) -> UIView? {
-        nil
-    }
-}
-
 extension WebOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -29,7 +23,7 @@ extension WebOnboarding: Presentable {
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
-        settingsButton.tintColor = .navigationItemMutedTintColor
+        settingsButton.tintColor = .brand(.primaryText())
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
@@ -48,7 +42,7 @@ extension WebOnboarding: Presentable {
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image
-        restartButton.tintColor = .navigationItemMutedTintColor
+        restartButton.tintColor = .brand(.primaryText())
 
         let chatButton = UIBarButtonItem(viewable: ChatButton(presentingViewController: viewController))
 
@@ -65,11 +59,11 @@ extension WebOnboarding: Presentable {
         }
 
         let webView = WKWebView(frame: .zero)
-        webView.backgroundColor = .transparent
+        webView.backgroundColor = .clear
         webView.isOpaque = false
         webView.customUserAgent = ApolloClient.userAgent
 
-        let doneButton = UIBarButtonItem(title: "done", style: .navigationBarButtonPrimary)
+        let doneButton = UIBarButtonItem(title: "done", style: .brand(.headline(color: .link)))
 
         bag += doneButton.onValue { _ in
             webView.resignFirstResponder()

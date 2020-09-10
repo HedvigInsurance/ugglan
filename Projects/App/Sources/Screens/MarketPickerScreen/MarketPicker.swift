@@ -37,15 +37,6 @@ extension MarketPicker {
             }
         }
 
-        var locales: [Localization.Locale] {
-            switch self {
-            case .norway:
-                return [.en_NO, .nb_NO]
-            case .sweden:
-                return [.en_SE, .sv_SE]
-            }
-        }
-
         var icon: UIImage {
             switch self {
             case .norway:
@@ -65,7 +56,7 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = MultilineLabel(value: L10n.marketPickerTitle, style: .headlineLargeLargeLeft)
+            let titleLabel = MultilineLabel(value: L10n.marketPickerTitle, style: .brand(.headline(color: .primary)))
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
@@ -75,7 +66,7 @@ extension MarketPicker {
             bag += Market.allCases.sorted(by: { (a, _) -> Bool in
                 a == suggestedMarket
             }).map { market -> (RowView, Market, UIImageView) in
-                let row = RowView(title: market.title, style: .rowTitle, appendSpacer: true)
+                let row = RowView(title: market.title, style: .brand(.headline(color: .primary)), appendSpacer: true)
                 row.prepend(market.icon)
                 let imageView = UIImageView()
 
@@ -117,7 +108,7 @@ extension MarketPicker {
             let titleContainer = UIStackView()
             titleContainer.axis = .vertical
 
-            let titleLabel = MultilineLabel(value: L10n.marketPickerLanguageTitle, style: .headlineSmallSmallLeft)
+            let titleLabel = MultilineLabel(value: L10n.marketPickerLanguageTitle, style: .brand(.headline(color: .primary)))
             bag += titleContainer.addArranged(titleLabel)
 
             let section = SectionView(headerView: titleContainer, footerView: nil)
@@ -142,13 +133,13 @@ extension MarketPicker {
                 switch market {
                 case .norway:
                     let innerBag = DisposeBag()
-                    let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .rowTitle, appendSpacer: false)
+                    let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .brand(.headline(color: .primary)), appendSpacer: false)
                     innerBag += section.append(norwegianRow).onValue { _ in
                         pickLanguage(locale: .nb_NO)
                     }
                     norwegianRow.append(hCoreUIAssets.chevronRight.image)
 
-                    let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+                    let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
                     innerBag += section.append(englishRow).onValue { _ in
                         pickLanguage(locale: .en_NO)
                     }
@@ -163,13 +154,13 @@ extension MarketPicker {
                 case .sweden:
                     let innerBag = DisposeBag()
 
-                    let swedishRow = RowView(title: "Svenska", style: .rowTitle, appendSpacer: false)
+                    let swedishRow = RowView(title: "Svenska", style: .brand(.headline(color: .primary)), appendSpacer: false)
                     innerBag += section.append(swedishRow).onValue { _ in
                         pickLanguage(locale: .sv_SE)
                     }
                     swedishRow.append(hCoreUIAssets.chevronRight.image)
 
-                    let englishRow = RowView(title: "English", style: .rowTitle, appendSpacer: false)
+                    let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
                     innerBag += section.append(englishRow).onValue { _ in
                         pickLanguage(locale: .en_SE)
                     }

@@ -15,7 +15,7 @@ import UIKit
 
 struct TypingIndicator: Hashable, Equatable {
     static func == (lhs: TypingIndicator, rhs: TypingIndicator) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
@@ -41,7 +41,7 @@ struct TypingIndicator: Hashable, Equatable {
     }
 
     var hasPreviousMessage: Bool {
-        return previous?.fromMyself == false
+        previous?.fromMyself == false
     }
 
     /// returns the totalHeight calculated height for displaying a TypingIndicator in a cell
@@ -84,7 +84,7 @@ extension TypingIndicator: Viewable {
         let bag = DisposeBag()
 
         let bubble = UIView()
-        bubble.backgroundColor = .boxPrimaryBackground
+        bubble.backgroundColor = Message.hedvigBubbleColor
 
         let typingView = UIStackView()
         typingView.spacing = 5
@@ -97,19 +97,19 @@ extension TypingIndicator: Viewable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        func getDot(color: GraphQL.HedvigColor) -> UIView {
+        func getDot() -> UIView {
             let dot = UIView()
             dot.snp.makeConstraints { make in
                 make.width.height.equalTo(5)
             }
             dot.layer.cornerRadius = 2.5
-            dot.backgroundColor = UIColor.from(apollo: color)
+            dot.backgroundColor = .brand(.primaryText())
             return dot
         }
 
-        let firstDot = getDot(color: .darkGray)
-        let secondDot = getDot(color: .darkGray)
-        let thirdDot = getDot(color: .darkGray)
+        let firstDot = getDot()
+        let secondDot = getDot()
+        let thirdDot = getDot()
 
         typingView.addArrangedSubview(firstDot)
         typingView.addArrangedSubview(secondDot)

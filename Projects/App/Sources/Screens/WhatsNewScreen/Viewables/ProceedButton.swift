@@ -37,7 +37,7 @@ extension ProceedButton: Viewable {
         let buttonTitleSignal = ReadWriteSignal<String>("")
 
         func setButtonStyle(isMorePages _: Bool) {
-            button.type.value = ButtonType.standard(backgroundColor: .primaryButtonBackgroundColor, textColor: .primaryButtonTextColor)
+            button.type.value = ButtonType.standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
         }
 
         func setButtonTitle(isMorePages: Bool) {

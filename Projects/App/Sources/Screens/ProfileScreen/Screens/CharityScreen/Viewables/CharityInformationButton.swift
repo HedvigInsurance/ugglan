@@ -21,7 +21,7 @@ struct CharityInformationButton {
 }
 
 extension CharityInformationButton: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let view = UIView()
 
         let bag = DisposeBag()
@@ -29,7 +29,7 @@ extension CharityInformationButton: Viewable {
         let button = Button(
             title: L10n.profileMyCharityInfoButton,
             type: .iconTransparent(
-                textColor: .primaryTintColor,
+                textColor: .brand(.primaryTintColor),
                 icon: .left(image: Asset.infoPurple.image, width: 20)
             )
         )
@@ -48,8 +48,10 @@ extension CharityInformationButton: Viewable {
             )
         }
 
-        bag += view.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.height.equalTo(button.type.value.height)
+        bag += view.didLayoutSignal.onFirstValue {
+            view.snp.makeConstraints { make in
+                make.height.equalTo(button.type.value.height)
+            }
         }
 
         return (view, bag)

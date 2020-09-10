@@ -11,11 +11,6 @@ import Foundation
 import hCore
 import UIKit
 
-enum ToastHideDirection {
-    case left
-    case right
-}
-
 public enum ToastSymbol: Equatable {
     public static func == (lhs: ToastSymbol, rhs: ToastSymbol) -> Bool {
         switch (lhs, rhs) {

@@ -26,18 +26,6 @@ extension CollectionKit {
         return Int(double)
     }
 
-    func scrollToFirstItem() {
-        view.setContentOffset(
-            offset: CGPoint(x: 0, y: 0),
-            timingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut),
-            duration: 0.8
-        )
-    }
-
-    func hasScrolledToEnd() -> Bool {
-        view.contentOffset.x == view.frame.size.width
-    }
-
     func scrollToNextItem() {
         let currentIndex = self.currentIndex()
         let newIndexPath = IndexPath(row: currentIndex + 1, section: 0)

@@ -22,7 +22,7 @@ extension LanguageRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView()
-        row.append(UILabel(value: L10n.aboutLanguageRow, style: .rowTitle))
+        row.append(UILabel(value: L10n.aboutLanguageRow, style: .brand(.headline(color: .primary))))
 
         let arrow = Icon(frame: .zero, icon: hCoreUIAssets.chevronRight.image, iconWidth: 20)
 

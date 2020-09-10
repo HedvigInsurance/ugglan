@@ -30,10 +30,11 @@ struct SelectedCharity {
 }
 
 extension SelectedCharity: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
-        let scrollView = UIScrollView()
-        scrollView.alwaysBounceVertical = true
+        
+        let section = SectionView()
+        section.dynamicStyle = .brandGroupedNoBackground
 
         let stackView = UIStackView()
         stackView.distribution = .equalSpacing
@@ -46,8 +47,8 @@ extension SelectedCharity: Viewable {
             right: 20
         )
         stackView.isLayoutMarginsRelativeArrangement = true
-
-        scrollView.addSubview(stackView)
+        
+        section.append(stackView)
 
         bag += client.watch(query: GraphQL.SelectedCharityQuery()).compactMap { $0.cashback }.onValue { cashback in
             for subview in stackView.arrangedSubviews {
@@ -55,14 +56,10 @@ extension SelectedCharity: Viewable {
             }
 
             let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
-            bag += stackView.addArranged(charityLogo) { view in
-                view.snp.makeConstraints { make in
-                    make.height.equalTo(190)
-                }
-            }
+            bag += stackView.addArranged(charityLogo)
 
             let infoContainer = UIView()
-            infoContainer.backgroundColor = .secondaryBackground
+            infoContainer.backgroundColor = .brand(.secondaryBackground())
             infoContainer.layer.cornerRadius = 8
 
             let infoContainerStackView = UIStackView()
@@ -76,11 +73,11 @@ extension SelectedCharity: Viewable {
             )
             infoContainerStackView.isLayoutMarginsRelativeArrangement = true
 
-            let titleLabel = UILabel(value: cashback.name ?? "", style: .blockRowTitle)
+            let titleLabel = UILabel(value: cashback.name ?? "", style: .brand(.headline(color: .primary)))
             infoContainerStackView.addArrangedSubview(titleLabel)
 
             let descriptionLabel = MultilineLabel(
-                styledText: StyledText(text: cashback.description ?? "", style: .blockRowDescription)
+                styledText: StyledText(text: cashback.description ?? "", style: .brand(.body(color: .secondary)))
             )
             bag += infoContainerStackView.addArranged(descriptionLabel)
 
@@ -88,7 +85,7 @@ extension SelectedCharity: Viewable {
             stackView.addArrangedSubview(infoContainer)
 
             infoContainerStackView.snp.makeConstraints { make in
-                make.width.height.centerX.centerY.equalToSuperview()
+                make.top.bottom.trailing.leading.equalToSuperview()
             }
 
             bag += infoContainerStackView.didLayoutSignal.onValue { _ in
@@ -115,14 +112,16 @@ extension SelectedCharity: Viewable {
             }
         }
 
-        stackView.makeConstraints(wasAdded: events.wasAdded).onValue { make, _ in
-            make.trailing.equalToSuperview()
-            make.leading.equalToSuperview()
-            make.width.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
+        bag += stackView.didLayoutSignal.onFirstValue {
+            stackView.snp.makeConstraints { make in
+                make.trailing.equalToSuperview()
+                make.leading.equalToSuperview()
+                make.width.equalToSuperview()
+                make.top.equalToSuperview()
+                make.bottom.equalToSuperview()
+            }
         }
 
-        return (scrollView, bag)
+        return (section, bag)
     }
 }

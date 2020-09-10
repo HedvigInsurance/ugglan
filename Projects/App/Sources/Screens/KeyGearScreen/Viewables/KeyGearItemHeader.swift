@@ -30,7 +30,7 @@ struct DeductibleBox: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 5
 
-        stackView.addArrangedSubview(UILabel(value: L10n.keyGearItemViewDeductibleTitle, style: .bodySmallSmallLeft))
+        stackView.addArrangedSubview(UILabel(value: L10n.keyGearItemViewDeductibleTitle, style: .brand(.body(color: .primary))))
 
         let deductibleValueContainerContainer = UIStackView()
         deductibleValueContainerContainer.alignment = .leading
@@ -40,10 +40,10 @@ struct DeductibleBox: Viewable {
         let deductibleValueContainer = UIStackView()
         deductibleValueContainerContainer.addArrangedSubview(deductibleValueContainer)
 
-        let deductibleLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
+        let deductibleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
 
         deductibleValueContainer.addArrangedSubview(deductibleLabel)
-        deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .bodySmallSmallLeft))
+        deductibleValueContainer.addArrangedSubview(UILabel(value: " kr", style: .brand(.body(color: .secondary))))
 
         bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId))
             .map { $0.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
@@ -68,9 +68,9 @@ struct ValuationBox: Viewable {
         stackView.axis = .vertical
         stackView.spacing = 5
 
-        stackView.addArrangedSubview(UILabel(value: L10n.keyGearItemViewValuationTitle, style: .bodySmallSmallLeft))
+        stackView.addArrangedSubview(UILabel(value: L10n.keyGearItemViewValuationTitle, style: .brand(.body(color: .primary))))
 
-        let emptyValuationLabel = UILabel(value: L10n.keyGearItemViewValuationEmpty, style: .linksSmallSmallRight)
+        let emptyValuationLabel = UILabel(value: L10n.keyGearItemViewValuationEmpty, style: .brand(.body(color: .link)))
         emptyValuationLabel.isHidden = true
         stackView.addArrangedSubview(emptyValuationLabel)
 
@@ -78,10 +78,10 @@ struct ValuationBox: Viewable {
         valuationValueContainer.axis = .vertical
         valuationValueContainer.spacing = 2.5
 
-        let valuationValueLabel = UILabel(value: "", style: .headlineLargeLargeLeft)
+        let valuationValueLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
         valuationValueContainer.addArrangedSubview(valuationValueLabel)
 
-        let valuationValueDescription = UILabel(value: "", style: .linksSmallSmallRight)
+        let valuationValueDescription = UILabel(value: "", style: .brand(.body(color: .link)))
         valuationValueDescription.adjustsFontSizeToFitWidth = true
         valuationValueContainer.addArrangedSubview(valuationValueDescription)
 
@@ -138,14 +138,12 @@ extension KeyGearItemHeader: Viewable {
         stackView.distribution = .fillEqually
 
         let valuationBox = SectionView()
-        valuationBox.dynamicStyle = .sectionPlain
 
         bag += valuationBox.append(ValuationBox(presentingViewController: presentingViewController, itemId: itemId))
 
         stackView.addArrangedSubview(valuationBox)
 
         let deductibleBox = SectionView()
-        deductibleBox.dynamicStyle = .sectionPlain
 
         bag += deductibleBox.append(DeductibleBox(itemId: itemId))
 

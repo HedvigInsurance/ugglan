@@ -26,7 +26,7 @@ struct CharityPicker {
 }
 
 extension CharityPicker: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Future<CharityOption>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<CharityOption>) {
         let bag = DisposeBag()
         let table = Table<EmptySection, CharityOption>(rows: [])
 
@@ -39,8 +39,8 @@ extension CharityPicker: Viewable {
             ),
             itemSpacing: 0,
             minRowHeight: 10,
-            background: .invisible,
-            selectedBackground: .invisible,
+            background: .none,
+            selectedBackground: .none,
             header: .none,
             footer: .none
         )
@@ -62,7 +62,7 @@ extension CharityPicker: Viewable {
 
                 let label = UILabel(
                     value: L10n.charityOptionsHeaderTitle,
-                    style: .sectionHeader
+                    style: .brand(.headline(color: .primary))
                 )
 
                 headerStackView.addArrangedSubview(label)
@@ -112,7 +112,7 @@ extension CharityPicker: Viewable {
             rows.value = charityOptions
         }
 
-        return (tableKit.view, Future { completion in
+        return (tableKit.view, Signal { callback in
             bag += rows.atOnce().onValueDisposePrevious { charityOptions -> Disposable? in
                 let innerBag = bag.innerBag()
 
@@ -136,7 +136,7 @@ extension CharityPicker: Viewable {
                         )
 
                         bag += bubbleLoading.dismissSignal.delay(by: 0.2).onValue { _ in
-                            completion(.success(charityOption))
+                            callback(charityOption)
                         }
 
                         return self.client.perform(
