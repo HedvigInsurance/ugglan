@@ -23,6 +23,8 @@ platform :ios do
     end
     
     lane :workspace_tests do
+        sh("cd ..; tuist generate")
+    
         carthage(
             command: "bootstrap",
             cache_builds: true,
