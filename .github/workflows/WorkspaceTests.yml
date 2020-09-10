@@ -15,6 +15,14 @@ jobs:
     - uses: actions/checkout@v2
     - name: XCode Select
       run: sudo xcode-select -s /Applications/Xcode_12_beta.app
+    - uses: actions/cache@v1
+      with:
+        path: scan_derived_data
+        key: ${{ runner.os }}-scan-derived-data
+    - uses: actions/cache@v1
+      with:
+        path: Carthage
+        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
     - name: Set XCODE_XCCONFIG_FILE
       run: echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
     - name: Install Tuist
@@ -32,11 +40,3 @@ jobs:
       with:
         name: test-results
         path: fastlane/test_output/index.html
-    - uses: actions/cache@v1
-      with:
-        path: scan_derived_data
-        key: ${{ runner.os }}-scan-derived-data
-    - uses: actions/cache@v1
-      with:
-        path: Carthage
-        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
