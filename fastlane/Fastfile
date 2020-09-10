@@ -22,7 +22,7 @@ platform :ios do
         clean_build_artifacts
     end
     
-    lane :workspace_tests do
+    lane :setup do
         carthage(
             command: "bootstrap",
             cache_builds: true,
@@ -31,6 +31,10 @@ platform :ios do
         
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
+    end
+    
+    lane :workspace_tests do
+        setup
         
         schemes = [
             "Ugglan",
@@ -46,7 +50,6 @@ platform :ios do
             scan(
                 workspace: "Ugglan.xcworkspace",
                 devices: ["iPhone 11 Pro"],
-                disable_concurrent_testing: true,
                 scheme: scheme,
                 derived_data_path: "scan_derived_data"
             )
