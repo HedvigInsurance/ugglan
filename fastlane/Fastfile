@@ -67,7 +67,6 @@ platform :ios do
             workspace: "Ugglan.xcworkspace",
             configuration: "Release",
             scheme: "Hedvig",
-            derived_data_path: "gym-derived-data",
             output_directory: "fastlane/build_output",
             codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
             export_options: {
@@ -93,18 +92,6 @@ platform :ios do
         notifier = Slack::Notifier.new options[:url], username: "iOS Bot"
         
         notifier.post(blocks: options[:blocks])
-    end
-    
-    def ensure_temp_keychain(name)
-      delete_keychain(
-        name: name
-      ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
-      create_keychain(
-        name: name,
-        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-        unlock: true,
-        timeout: false
-      )
     end
     
     lane :workspace_apps do
@@ -189,7 +176,6 @@ platform :ios do
                 workspace: "Ugglan.xcworkspace",
                 configuration: "Release",
                 scheme: scheme,
-                derived_data_path: "gym_derived_data",
                 output_directory: "fastlane/build_output",
                 codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,

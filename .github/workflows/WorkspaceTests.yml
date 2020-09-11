@@ -23,8 +23,8 @@ jobs:
         restore-keys: ${{ runner.os }}-gem-
     - uses: actions/cache@v1
       with:
-        path: scan_derived_data
-        key: ${{ runner.os }}-scan-derived-data
+        path: ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-derived-data
     - uses: actions/cache@v1
       with:
         path: Carthage

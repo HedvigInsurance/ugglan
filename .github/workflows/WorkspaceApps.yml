@@ -22,8 +22,8 @@ jobs:
         restore-keys: ${{ runner.os }}-gem-
     - uses: actions/cache@v1
       with:
-        path: gym_derived_data
-        key: ${{ runner.os }}-gym-derived-data
+        path: ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-derived-data
     - uses: actions/cache@v1
       with:
         path: Carthage
