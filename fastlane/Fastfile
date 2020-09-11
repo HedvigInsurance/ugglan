@@ -223,25 +223,68 @@ platform :ios do
             }
           },
           {
-            "type": "section",
-            "text": {
-              "type": "plain_text",
-              "text": "Apps where built, use menu to download 👉🏻",
-            },
-            "accessory": {
-                "type": "overflow",
-                "options": app_results.map { |app_result|
-                    {
-                        "text": {
-                            "type": "plain_text",
-                            "text": app_result[:scheme]
-                        },
-                        "url": app_result[:url],
-                        "value": app_result[:scheme]
-                    }
+            "type": "divider"
+          },
+          {
+            "type": "actions",
+            "elements": app_results.map { |app_result|
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": app_result[:scheme]
+                    },
+                    "url": app_result[:url],
+                    "value": app_result[:scheme]
                 }
             }
-          }
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "emoji": true,
+                        "text": "Approve"
+                    },
+                    "style": "primary",
+                    "value": "approve"
+                },
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "emoji": true,
+                        "text": "Decline"
+                    },
+                    "style": "danger",
+                    "value": "decline"
+                }
+            ]
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Request review from:"
+            },
+            "accessory": {
+                "type": "users_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Select a person",
+                    "emoji": true
+                }
+            }
+          },
         ]
         
         send_slack_message(url: git_branch == "master" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
