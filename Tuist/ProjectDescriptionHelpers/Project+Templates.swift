@@ -225,7 +225,7 @@ extension Project {
             projectTargets.append(Target(name: "\(name)Example",
                                          platform: .iOS,
                                          product: .app,
-                                         bundleId: "com.hedvig.\(name)Example",
+                                         bundleId: "com.hedvig.example.\(name)Example",
                                          deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                                          infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
                                          sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],

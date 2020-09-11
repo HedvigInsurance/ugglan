@@ -37,6 +37,7 @@ platform :ios do
         setup
         
         app_identifier = "com.hedvig.app"
+        app_profile = "match AppStore com.hedvig.app"
         
         match(
             type: "appstore",
@@ -55,15 +56,26 @@ platform :ios do
             xcodeproj: "Projects/App/Ugglan.xcodeproj"
         )
         
+        update_project_provisioning(
+            xcodeproj: "Projects/App/Ugglan.xcodeproj",
+            profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
+            target_filter: "Hedvig",
+            build_configuration: "Release"
+        )
+        
         build_app(
             workspace: "Ugglan.xcworkspace",
             configuration: "Release",
             scheme: "Hedvig",
             derived_data_path: "gym-derived-data",
             output_directory: "fastlane/build_output",
+            codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
             export_options: {
                 method: "appstore",
-                iCloudContainerEnvironment: "Production"
+                iCloudContainerEnvironment: "Production",
+                provisioningProfiles: {
+                    app_identifier => app_profile
+                }
             }
         )
         
@@ -75,34 +87,144 @@ platform :ios do
         )
     end
     
+    private_lane :send_slack_message do |options|
+        require 'slack-notifier'
+        
+        notifier = Slack::Notifier.new ENV["SLACK_URL"], channel: "#ios-builds", username: "iOS Bot"
+        
+        notifier.post(blocks: options[:blocks])
+    end
+    
     lane :workspace_apps do
         setup
         
         apps = {
-            "com.hedvig.test.app" => "Ugglan",
-            "com.hedvig.app" => "Hedvig",
-            "com.hedvig.HomeExample" => "HomeExample"
+            "com.hedvig.example.*" => {
+                "scheme" => "EmbarkExample",
+                "project_path" => "Projects/Embark/Embark.xcodeproj"
+            },
+            "com.hedvig.test.app" => {
+                "scheme" => "Ugglan",
+                "project_path" => "Projects/App/Ugglan.xcodeproj"
+            },
+            "com.hedvig.app" => {
+                "scheme" => "Hedvig",
+                "project_path" => "Projects/App/Ugglan.xcodeproj"
+            }
         }
-                
-        apps.each do |app_identifier, scheme|
+        
+        app_results = []
+                        
+        apps.each do |app_identifier, app|
             match(
                 type: "adhoc",
                 app_identifier: app_identifier,
                 readonly: is_ci,
                 git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil
             )
+            
+            app_profile = "match AdHoc #{app_identifier}"
+            
+            update_project_provisioning(
+                xcodeproj: app["project_path"],
+                profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
+                target_filter: app["scheme"],
+                build_configuration: "Release"
+            )
+                                    
             build_app(
                 workspace: "Ugglan.xcworkspace",
                 configuration: "Release",
-                scheme: scheme,
+                scheme: app["scheme"],
                 derived_data_path: "gym_derived_data",
                 output_directory: "fastlane/build_output",
+                codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
+                include_bitcode: false,
                 export_options: {
+                    compileBitcode: false,
+                    iCloudContainerEnvironment: "Production",
                     method: "ad-hoc",
-                    iCloudContainerEnvironment: "Development"
+                    provisioningProfiles: {
+                        app_identifier => app_profile
+                    },
+                    thinning: "<none>"
                 }
             )
+            
+            require 'securerandom'
+            
+            aws_s3(
+              access_key: ENV['S3_ACCESS_KEY'],
+              secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
+              bucket: "hedvig-ios-builds",
+              region: "eu-central-1",
+              ipa: "fastlane/build_output/#{app['scheme']}.ipa",
+              app_directory: "#{app['scheme']}_#{SecureRandom.uuid}",
+              path: 'v{CFBundleShortVersionString}_b{CFBundleVersion}/',
+              upload_metadata: true,
+            )
+            
+            app_results.append({
+                url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+                scheme: app["scheme"]
+            })
         end
+        
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "WorkspaceApps",
+                    "emoji": true
+                }
+            },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Branch*: #{git_branch}"
+            }
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Message*: #{last_git_commit[:message]}"
+            }
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Author*: #{last_git_commit[:author]}"
+            }
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "plain_text",
+              "text": "Apps where built, use menu to download 👉🏻",
+            },
+            "accessory": {
+                "type": "overflow",
+                "options": app_results.map { |app_result|
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": app_result[:scheme]
+                        },
+                        "url": app_result[:url],
+                        "value": app_result[:scheme]
+                    }
+                }
+            }
+          }
+        ]
+        
+        print blocks
+        
+        send_slack_message(blocks: blocks)
     end
     
     lane :workspace_tests do

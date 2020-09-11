@@ -1,3 +1,4 @@
 storage_mode("git")
 type("development")
 git_url("git@github.com:HedvigInsurance/ugglan-certificates.git")
+username("app-distribution@hedvig.com")

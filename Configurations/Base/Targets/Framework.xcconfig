@@ -8,7 +8,7 @@
 // need to be signed, but they don't need to be signed at compile time because
 // they'll be re-signed when you include them in your app.
 CODE_SIGNING_REQUIRED = NO
-CODE_SIGN_IDENTITY = 
+CODE_SIGN_IDENTITY =
 
 // Whether to strip out code that isn't called from anywhere
 DEAD_CODE_STRIPPING = NO
