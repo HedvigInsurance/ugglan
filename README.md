@@ -20,9 +20,13 @@ Hedvig is a new approach to insurance currently available in Sweden and Norway, 
 
    `tuist up`
 
-4. Run tuist focus
+4. Run tuist generate
 
-   `tuist focus`
+   `tuist generate`
+   
+5. Open workspace
+
+   `open Ugglan.xcworkspace`
 
 ## How to release
 
