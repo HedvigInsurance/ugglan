@@ -38,3 +38,8 @@ jobs:
         body: Release
         draft: false
         prerelease: false
+    - name: Trigger DSYM
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Upload DSYM
+        token: ${{ secrets.GITHUB_TOKEN }}
