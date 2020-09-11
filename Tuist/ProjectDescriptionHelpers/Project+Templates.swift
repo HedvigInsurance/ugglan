@@ -239,7 +239,7 @@ extension Project {
             TestAction(
                 targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)],
                 arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": recordMode ? "RECORD" : ""],
-                                     launch: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true]),
+                                     launchArguments: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true]),
                 coverage: true
             )
         }
