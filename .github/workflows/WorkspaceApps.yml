@@ -40,7 +40,8 @@ jobs:
         GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-        SLACK_URL: ${{ secrets.SLACK_URL }}
+        SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
+        SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
       with:
        lane: ios workspace_apps
     - name: Upload built apps
