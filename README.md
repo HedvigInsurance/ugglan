@@ -26,13 +26,14 @@ Hedvig is a new approach to insurance currently available in Sweden and Norway, 
 
 ## How to release
 
-1. Create a tag in Git with the name `RELEASE-\(versionNumber)`
-   if you want the release to have version `3.0.1` you for create a tag named `RELEASE-3.0.1`
+1. Go to `Actions` -> `ProductionDeploy` ([link](https://github.com/HedvigInsurance/ugglan/actions?query=workflow%3AProductionDeploy))
 
-2. Bitrise will create and upload the build to App Store connect
+2. Click `Run workflow`
 
-3. Create a GitHub release and add a description containing all commits included in the release, use the following command to retrieve the list:
+3. Enter desired App Store version number
 
-   `git log --pretty=oneline RELEASE-\(previousVersionNumber)...RELEASE-\(versionNumber) --first-parent master`
-   
-4. Submit the release to review in App Store connect as usual
+4. Click `Run workflow`
+
+5. Wait for the build to complete and upload to App Store Connect
+
+
