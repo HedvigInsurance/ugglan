@@ -101,7 +101,7 @@ platform :ios do
       ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
       create_keychain(
         name: name,
-        password: 'temppassword',
+        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
         unlock: true,
         timeout: false
       )
