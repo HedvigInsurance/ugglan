@@ -95,6 +95,18 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
     
+    def ensure_temp_keychain(name)
+      delete_keychain(
+        name: name
+      ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+      create_keychain(
+        name: name,
+        password: 'temppassword',
+        unlock: true,
+        timeout: false
+      )
+    end
+    
     lane :workspace_apps do
         setup
         
@@ -135,6 +147,8 @@ platform :ios do
         
         app_results = []
         
+        ensure_temp_keychain 'fastlane_enterprise'
+        
         apps.each do |scheme, app|
             app_identifier = app["identifier"]
 
@@ -142,7 +156,8 @@ platform :ios do
                 type: "adhoc",
                 app_identifier: app_identifier,
                 readonly: is_ci,
-                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil
+                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
+                keychain_name: is_ci ? 'fastlane_enterprise' : nil
             )
             
             app_profile = "match AdHoc #{app_identifier}"
