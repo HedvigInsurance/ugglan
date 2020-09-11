@@ -43,8 +43,3 @@ jobs:
         SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
       with:
        lane: ios workspace_apps
-    - name: Upload built apps
-      uses: actions/upload-artifact@v2
-      with:
-        name: apps
-        path: fastlane/build_output
