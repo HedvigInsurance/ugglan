@@ -21,6 +21,11 @@ or alternatively using `brew install fastlane`
 fastlane ios upload_dsyms_to_sentry
 ```
 
+### ios upload_dsyms_to_sentry_after_processing
+```
+fastlane ios upload_dsyms_to_sentry_after_processing
+```
+
 ### ios setup
 ```
 fastlane ios setup
@@ -29,11 +34,6 @@ fastlane ios setup
 ### ios production_upload
 ```
 fastlane ios production_upload
-```
-
-### ios wait_for_build
-```
-fastlane ios wait_for_build
 ```
 
 ### ios workspace_apps
