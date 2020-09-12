@@ -7,6 +7,13 @@ jobs:
     runs-on: macos-latest
 
     steps:
+<<<<<<< HEAD
+=======
+    - name: Wait 30 minutes for App Store processing
+      uses: juliangruber/sleep-action@v1
+      with:
+        time: '30m'
+>>>>>>> 4ad54b020b65aad08a8b5641982de42f9b4db903
     - uses: actions/checkout@v2
     - run: brew install getsentry/tools/sentry-cli
     - name: Fastlane Action
