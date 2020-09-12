@@ -22,6 +22,36 @@ platform :ios do
         clean_build_artifacts
     end
     
+    lane :upload_dsyms_to_sentry_after_processing do
+        require 'spaceship'
+        
+        Spaceship::Tunes.login(ENV["FASTLANE_USERNAME"], ENV["FASTLANE_PASSWORD"])
+        Spaceship::Tunes.select_team
+        
+        app = Spaceship::Application.find("com.hedvig.app")
+        
+        loop do
+            begin
+                build = nil
+                app.latest_version.candidate_builds.each do |b|
+                    build = b if !build || b.upload_date > build.upload_date
+                end
+
+                unless build
+                    puts "No processing builds available for app"
+                end
+                
+                return build if build.processing == false
+            rescue => ex
+                puts "Got error #{ex}"
+            end
+            puts "Waiting 30 seconds"
+            sleep 30
+        end
+        
+        upload_dsyms_to_sentry
+    end
+    
     lane :setup do
         carthage(
             command: "bootstrap",

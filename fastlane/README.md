@@ -31,6 +31,11 @@ fastlane ios setup
 fastlane ios production_upload
 ```
 
+### ios wait_for_build
+```
+fastlane ios wait_for_build
+```
+
 ### ios workspace_apps
 ```
 fastlane ios workspace_apps
