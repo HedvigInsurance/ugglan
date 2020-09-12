@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Wait 30 minutes for App Store processing
-      uses: jakejarvis/wait-action@master
+      uses: juliangruber/sleep-action@v1
       with:
         time: '30m'
     - uses: actions/checkout@v2
