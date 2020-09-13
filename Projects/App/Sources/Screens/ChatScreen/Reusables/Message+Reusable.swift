@@ -506,7 +506,7 @@ extension Message: Reusable {
                             linkTapGestureRecognizer.didTapRange(in: label, range: result.range)
                         }
 
-                        if let url = tappedLink?.url {
+                        if let url = tappedLink?.url, ["http", "https"].contains(url.scheme) {
                             label.viewController?.present(SFSafariViewController(url: url), animated: true)
                         }
                     }
