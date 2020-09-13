@@ -65,26 +65,21 @@ import Foundation
 // MARK: - Implementation Details
 
 extension {{enumName}} {
-  static func tr(_ table: String, _ key: String, _ args: CVaListPointer) -> String {
+  static func tr(_ table: String, _ key: String, _ args: [TranslationArgumentable]) -> String {
      // swiftlint:disable:next nslocalizedstring_key
-     let format = NSLocalizedString(key, tableName: table, bundle: Bundle(for: BundleToken.self), comment: "")
-     var translation = NSString(format: format, locale: Foundation.Locale.current, arguments: args) as String
-     translation = translation == "" ? key : translation
-     translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
-     return translation
+    let format = NSLocalizedString(key, tableName: table, bundle: Bundle(for: BundleToken.self), comment: "")
+    var translation = String(format: format, locale: Foundation.Locale.current, arguments: args.map { $0.value })
+    translation = translation == "" ? key : translation
+    translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
+    return translation
   }
-  
-  static func tr(_ table: String, _ key: String, _ args: CVarArg...) -> String {
+
+  static func tr(_ table: String, _ key: String, _ args: TranslationArgumentable...) -> String {
     // swiftlint:disable:next nslocalizedstring_key
     let format = NSLocalizedString(key, tableName: table, bundle: Bundle(for: BundleToken.self), comment: "")
-    
-    var translation = String(format: format, locale: Foundation.Locale.current, arguments: args)
+    var translation = String(format: format, locale: Foundation.Locale.current, arguments: args.map { $0.value })
     translation = translation == "" ? key : translation
-    
-    withVaList(args) { pointer in
-        translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: pointer)
-    }
-    
+    translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
     return translation
   }
 }

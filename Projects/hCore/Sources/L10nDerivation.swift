@@ -8,14 +8,30 @@
 
 import Foundation
 
+public protocol TranslationArgumentable {
+    var value: String { get }
+}
+
+extension String: TranslationArgumentable {
+    public var value: String {
+        self
+    }
+}
+
+extension Int: TranslationArgumentable {
+    public var value: String {
+        String(self)
+    }
+}
+
 public struct L10nDerivation {
     public let table: String
     public let key: String
-    public let args: CVaListPointer
+    public let args: [TranslationArgumentable]
 
     /// render the text key again, useful if you have changed the language during runtime
     public func render() -> String {
-        return L10n.tr(table, key, args)
+        L10n.tr(table, key, args)
     }
 }
 
