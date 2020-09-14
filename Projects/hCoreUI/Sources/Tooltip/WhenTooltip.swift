@@ -18,6 +18,16 @@ extension TimeInterval {
     }
 }
 
+protocol DateProvider {
+    var date: Date { get }
+}
+
+struct RealDateProvider: DateProvider {
+    var date: Date {
+        Date()
+    }
+}
+
 public struct WhenTooltip {
     enum When {
         case onceEvery(timeInterval: TimeInterval)
@@ -25,6 +35,7 @@ public struct WhenTooltip {
 
     let when: When
     let tooltip: Tooltip
+    let dateProvider: DateProvider
 
     var userDefaultsKey: String {
         "tooltip_\(tooltip.id)_past_date"
@@ -37,10 +48,12 @@ public struct WhenTooltip {
 
     init(
         when: When,
-        tooltip: Tooltip
+        tooltip: Tooltip,
+        dateProvider: DateProvider = RealDateProvider()
     ) {
         self.when = when
         self.tooltip = tooltip
+        self.dateProvider = dateProvider
     }
 }
 
@@ -55,7 +68,7 @@ extension UIView {
         if let pastDate = pastDate {
             switch whenTooltip.when {
             case let .onceEvery(timeInterval):
-                let timeIntervalSincePast = abs(pastDate.timeIntervalSince(Date()))
+                let timeIntervalSincePast = abs(pastDate.timeIntervalSince(whenTooltip.dateProvider.date))
 
                 if timeIntervalSincePast > timeInterval {
                     setDefaultsTime()
