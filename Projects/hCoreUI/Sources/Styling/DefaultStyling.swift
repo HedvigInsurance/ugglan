@@ -465,7 +465,7 @@ extension DynamicFormStyle {
         if trait.userInterfaceIdiom == .pad {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
-        
+
         if trait.verticalSizeClass == .compact {
             return .init(insets: UIEdgeInsets(top: 15, left: 0, bottom: 15, right: 0))
         }
@@ -477,7 +477,7 @@ extension DynamicFormStyle {
         if trait.userInterfaceIdiom == .pad {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
-        
+
         if trait.verticalSizeClass == .compact {
             return .init(insets: UIEdgeInsets(top: 15, left: 0, bottom: 15, right: 0))
         }
@@ -489,7 +489,7 @@ extension DynamicFormStyle {
         if trait.userInterfaceIdiom == .pad {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
-        
+
         if trait.verticalSizeClass == .compact {
             return .init(insets: UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15))
         }
@@ -503,3 +503,7 @@ extension DynamicTableViewFormStyle {
 }
 
 final class ListTableView: UITableView {}
+
+extension CGFloat {
+    public static var defaultCornerRadius: CGFloat = 8
+}

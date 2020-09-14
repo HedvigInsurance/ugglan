@@ -91,6 +91,20 @@ let project = Project(
             dependencies: appDependencies,
             settings: Settings(configurations: hedvigConfigurations)
         ),
+        Target(
+            name: "AppClip",
+            platform: .iOS,
+            product: .onDemandInstallCapableApplication,
+            bundleId: "com.hedvig.test.app.AppClip",
+            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            infoPlist: "Config/Test/Info.plist",
+            sources: ["Sources/**"],
+            resources: ["Resources/**", "Config/Test/Resources/**"],
+            entitlements: "Config/Test/Ugglan.entitlements",
+            actions: targetActions,
+            dependencies: appDependencies,
+            settings: Settings(configurations: ugglanConfigurations)
+        ),
     ],
     schemes: [
         Scheme(

@@ -36,6 +36,10 @@ extension ChatButton: Viewable {
         let chatButtonView = UIControl()
         chatButtonView.backgroundColor = .brand(.primaryBackground())
 
+        bag += Signal(after: 5).onValue { _ in
+            bag += chatButtonView.present(Tooltip(sourceRect: chatButtonView.frame))
+        }
+
         bag += chatButtonView.signal(for: \.bounds).atOnce().onValue { frame in
             chatButtonView.layer.cornerRadius = frame.height / 2
         }
