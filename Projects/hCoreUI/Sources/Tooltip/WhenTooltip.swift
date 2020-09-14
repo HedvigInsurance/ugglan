@@ -26,6 +26,15 @@ public struct WhenTooltip {
     let when: When
     let tooltip: Tooltip
 
+    var userDefaultsKey: String {
+        "tooltip_\(tooltip.id)_past_date"
+    }
+
+    /// reset eventual external dependencies like time
+    func reset() {
+        UserDefaults.standard.setValue(nil, forKey: userDefaultsKey)
+    }
+
     init(
         when: When,
         tooltip: Tooltip
@@ -37,11 +46,10 @@ public struct WhenTooltip {
 
 extension UIView {
     func present(_ whenTooltip: WhenTooltip) -> Disposable {
-        let userDefaultsKey = "tooltip_\(whenTooltip.tooltip.id)_past_date"
-        let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date
+        let pastDate = UserDefaults.standard.value(forKey: whenTooltip.userDefaultsKey) as? Date
 
         func setDefaultsTime() {
-            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
+            UserDefaults.standard.setValue(Date(), forKey: whenTooltip.userDefaultsKey)
         }
 
         if let pastDate = pastDate {
