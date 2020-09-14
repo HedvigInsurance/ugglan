@@ -147,6 +147,14 @@ platform :ios do
         setup
         
         apps = {
+            "Ugglan" => {
+                "identifier" => "com.hedvig.test.app",
+                "project_path" => "Projects/App/Ugglan.xcodeproj"
+            },
+            "Hedvig" => {
+                "identifier" => "com.hedvig.app",
+                "project_path" => "Projects/App/Ugglan.xcodeproj"
+            },
             "EmbarkExample" => {
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Embark/Embark.xcodeproj"
@@ -170,14 +178,6 @@ platform :ios do
             "ContractsExample" => {
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Contracts/Contracts.xcodeproj"
-            },
-            "Ugglan" => {
-                "identifier" => "com.hedvig.test.app",
-                "project_path" => "Projects/App/Ugglan.xcodeproj"
-            },
-            "Hedvig" => {
-                "identifier" => "com.hedvig.app",
-                "project_path" => "Projects/App/Ugglan.xcodeproj"
             }
         }
         
@@ -263,7 +263,7 @@ platform :ios do
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "WorkspaceApps: ##{number_of_commits}",
+                    "text": "WorkspaceApps: ##{last_git_commit[:abbreviated_commit_hash]}",
                     "emoji": true
                 }
             },
