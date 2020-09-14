@@ -36,4 +36,8 @@ extension Signal where Kind == Plain, Value == () {
             }
         }.take(first: 1).plain()
     }
+
+    public func animatedDelay(after delay: TimeInterval) -> Signal<Void> {
+        flatMapLatest { Self.animatedDelay(after: delay) }
+    }
 }

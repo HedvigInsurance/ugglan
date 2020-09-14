@@ -14,16 +14,21 @@ import UIKit
 public struct ChatButton {
     public static var openChatHandler: (_ self: Self) -> Void = { _ in }
     public let presentingViewController: UIViewController
+    public let allowsChatHint: Bool
 
-    public init(presentingViewController: UIViewController) {
+    public init(presentingViewController: UIViewController, allowsChatHint: Bool = false) {
         self.presentingViewController = presentingViewController
+        self.allowsChatHint = allowsChatHint
     }
 }
 
 extension UIViewController {
     /// installs a chat button in the navigation bar to the right
-    public func installChatButton() {
-        let chatButton = ChatButton(presentingViewController: self)
+    public func installChatButton(allowsChatHint: Bool = false) {
+        let chatButton = ChatButton(
+            presentingViewController: self,
+            allowsChatHint: allowsChatHint
+        )
         let item = UIBarButtonItem(viewable: chatButton)
         navigationItem.rightBarButtonItem = item
     }
@@ -36,8 +41,19 @@ extension ChatButton: Viewable {
         let chatButtonView = UIControl()
         chatButtonView.backgroundColor = .brand(.primaryBackground())
 
-        bag += Signal(after: 5).onValue { _ in
-            bag += chatButtonView.present(Tooltip(sourceRect: chatButtonView.frame))
+        if allowsChatHint {
+            let chatHintBag = bag.innerBag()
+            chatHintBag += Signal(after: 2).onFirstValue { _ in
+                chatHintBag += chatButtonView.present(
+                    Tooltip(
+                        id: "chatHint",
+                        value: L10n.HomeTab.chatHintText,
+                        sourceRect: chatButtonView.frame
+                    ).when(.onceEvery(timeInterval: .days(numberOfDays: 30))))
+                chatHintBag += chatButtonView.signal(for: .touchUpInside).onValue {
+                    chatHintBag.dispose()
+                }
+            }
         }
 
         bag += chatButtonView.signal(for: \.bounds).atOnce().onValue { frame in
@@ -51,6 +67,7 @@ extension ChatButton: Viewable {
         }
 
         let chatIcon = UIImageView()
+        chatIcon.isUserInteractionEnabled = false
         chatIcon.image = hCoreUIAssets.chat.image
         chatIcon.contentMode = .scaleAspectFit
         chatIcon.tintColor = .brand(.primaryText())

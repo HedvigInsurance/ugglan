@@ -40,7 +40,7 @@ extension Home: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.HomeTab.title
-        viewController.installChatButton()
+        viewController.installChatButton(allowsChatHint: true)
 
         if #available(iOS 13.0, *) {
             let scrollEdgeAppearance = UINavigationBarAppearance()
