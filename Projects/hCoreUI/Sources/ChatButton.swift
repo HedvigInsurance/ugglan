@@ -43,7 +43,7 @@ extension ChatButton: Viewable {
 
         if allowsChatHint {
             let chatHintBag = bag.innerBag()
-            chatHintBag += Signal(after: 2).onFirstValue { _ in
+            chatHintBag += Signal(after: 4).filter(predicate: { chatButtonView.window != nil }).onFirstValue { _ in
                 chatHintBag += chatButtonView.present(
                     Tooltip(
                         id: "chatHint",
