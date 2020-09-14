@@ -41,5 +41,6 @@ jobs:
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
         SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
         SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
+        BRANCH_NAME: ${{ github.head_ref }}
       with:
        lane: ios workspace_apps
