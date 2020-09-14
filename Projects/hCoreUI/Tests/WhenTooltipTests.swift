@@ -45,7 +45,7 @@ final class WhenTooltipTests: XCTestCase {
 
         struct MockDateProvider: DateProvider {
             var date: Date {
-                Date().addingTimeInterval(40)
+                Date().addingTimeInterval(60)
             }
         }
 
