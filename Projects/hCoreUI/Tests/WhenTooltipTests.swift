@@ -60,23 +60,4 @@ final class WhenTooltipTests: XCTestCase {
 
         XCTAssertEqual(anotherView.subviews.count, 1)
     }
-
-    func testScreenshot() {
-        let tooltip = Tooltip(id: "mock", value: "mock", sourceRect: .zero)
-
-        let viewController = UIViewController()
-
-        let bag = DisposeBag()
-        let view = UIView()
-        viewController.view.addSubview(view)
-        bag += view.present(tooltip)
-
-        view.snp.makeConstraints { make in
-            make.width.equalTo(2)
-            make.height.equalTo(2)
-            make.top.right.equalToSuperview()
-        }
-
-        assertSnapshot(matching: viewController, as: .image)
-    }
 }
