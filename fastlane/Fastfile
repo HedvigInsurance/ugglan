@@ -308,6 +308,7 @@ platform :ios do
           {
             "type": "divider"
           },
+          git_branch == "master" ? nil :
           {
             "type": "actions",
             "elements": [
@@ -319,17 +320,17 @@ platform :ios do
                         "text": "Approve"
                     },
                     "style": "primary",
-                    "value": "approve"
+                    "value": "approve=#{ENV['GITHUB_PR_NUMBER']};git_commit=#{last_git_commit[:commit_hash]}"
                 },
                 {
                     "type": "button",
                     "text": {
                         "type": "plain_text",
                         "emoji": true,
-                        "text": "Decline"
+                        "text": "Request changes"
                     },
                     "style": "danger",
-                    "value": "decline"
+                    "value": "decline=#{ENV['GITHUB_PR_NUMBER']};git_commit=#{last_git_commit[:commit_hash]}"
                 }
             ]
           },
@@ -351,7 +352,7 @@ platform :ios do
                 }
             }
           },
-        ]
+        ].reject{ |i| i.nil? }
         
         send_slack_message(url: git_branch == "master" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end
