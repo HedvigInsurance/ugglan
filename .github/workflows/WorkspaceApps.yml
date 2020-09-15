@@ -27,10 +27,6 @@ jobs:
       with:
         path: Carthage
         key: ${{ runner.os }}-xcode-11.6-carthage-${{ hashFiles('**/Cartfile.resolved') }}
-    - uses: jwalton/gh-find-current-pr@v1
-      id: findPr
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install Tuist
       run: bash <(curl -Ls https://install.tuist.io)
     - name: Fastlane Action
@@ -46,6 +42,6 @@ jobs:
         SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
         SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
         BRANCH_NAME: ${{ github.head_ref }}
-        GITHUB_PR_NUMBER: ${{ steps.findPr.outputs.pr }}
+        GITHUB_PR_NUMBER: ${{ github.event.number }}
       with:
        lane: ios workspace_apps
