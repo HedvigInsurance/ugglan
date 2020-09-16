@@ -22,7 +22,7 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: ~/Library/Developer/Xcode/DerivedData
-        key: ${{ runner.os }}-derived-data
+        key: ${{ runner.os }}-xcode-11.6-derived-data
     - uses: actions/cache@v1
       with:
         path: Carthage
