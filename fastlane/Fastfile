@@ -308,7 +308,7 @@ platform :ios do
           {
             "type": "divider"
           },
-          git_branch == "master" ? nil :
+          git_branch == "" ? nil :
           {
             "type": "actions",
             "elements": [
@@ -337,7 +337,7 @@ platform :ios do
           {
             "type": "divider"
           },
-          git_branch == "master" ? nil :
+          git_branch == "" ? nil :
           {
             "type": "actions",
             "elements": [
@@ -353,7 +353,7 @@ platform :ios do
                 }
             ]
           },
-          git_branch == "master" ? nil :
+          git_branch == "" ? nil :
           {
             "type": "divider"
           },
@@ -374,7 +374,7 @@ platform :ios do
           },
         ].filter { |i| i != nil }
         
-        send_slack_message(url: git_branch == "master" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
+        send_slack_message(url: git_branch == "" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end
     
     lane :workspace_tests do
