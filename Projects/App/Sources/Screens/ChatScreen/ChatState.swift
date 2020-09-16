@@ -160,15 +160,20 @@ class ChatState {
     func activateNewMessageToasts(_ viewController: UIViewController) -> Disposable {
         fetch()
 
-        return subscribe().filter { _ in self.allowNewMessageToast }.filter { !$0.header.fromMyself }.onValue { message in
-            let toast = Toast(symbol: .icon(hCoreUIAssets.chat.image), body: L10n.Toast.newMessage, subtitle: message.body.asMessageBodyText?.text)
+        return subscribe()
+            .filter { _ in self.allowNewMessageToast }
+            .filter { !$0.header.fromMyself }
+            .filter { $0.id == "free.chat.message" }
+            .compactMap { $0.body.asMessageBodyText?.text }
+            .onValue { message in
+                let toast = Toast(symbol: .icon(hCoreUIAssets.chat.image), body: L10n.Toast.newMessage, subtitle: message)
 
-            self.bag += toast.onTap.onValue { _ in
-                viewController.present(FreeTextChat().withCloseButton)
+                self.bag += toast.onTap.onValue { _ in
+                    viewController.present(FreeTextChat().withCloseButton)
+                }
+
+                Toasts.shared.displayToast(toast: toast)
             }
-
-            Toasts.shared.displayToast(toast: toast)
-        }
     }
 
     func reset() {
