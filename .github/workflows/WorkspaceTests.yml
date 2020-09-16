@@ -19,11 +19,11 @@ jobs:
       uses: actions/cache@v1
       with:
         path: .tuist/Cache
-        key: ${{ runner.os }}-tuist
+        key: ${{ runner.os }}-xcode-12-tuist
     - uses: actions/cache@v1
       with:
         path: ~/Library/Developer/Xcode/DerivedData
-        key: ${{ runner.os }}-derived-data
+        key: ${{ runner.os }}-xcode-12-derived-data
     - uses: actions/cache@v1
       with:
         path: Carthage

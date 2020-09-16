@@ -14,16 +14,21 @@ import UIKit
 public struct ChatButton {
     public static var openChatHandler: (_ self: Self) -> Void = { _ in }
     public let presentingViewController: UIViewController
+    public let allowsChatHint: Bool
 
-    public init(presentingViewController: UIViewController) {
+    public init(presentingViewController: UIViewController, allowsChatHint: Bool = false) {
         self.presentingViewController = presentingViewController
+        self.allowsChatHint = allowsChatHint
     }
 }
 
 extension UIViewController {
     /// installs a chat button in the navigation bar to the right
-    public func installChatButton() {
-        let chatButton = ChatButton(presentingViewController: self)
+    public func installChatButton(allowsChatHint: Bool = false) {
+        let chatButton = ChatButton(
+            presentingViewController: self,
+            allowsChatHint: allowsChatHint
+        )
         let item = UIBarButtonItem(viewable: chatButton)
         navigationItem.rightBarButtonItem = item
     }
@@ -36,6 +41,21 @@ extension ChatButton: Viewable {
         let chatButtonView = UIControl()
         chatButtonView.backgroundColor = .brand(.primaryBackground())
 
+        if allowsChatHint {
+            let chatHintBag = bag.innerBag()
+            chatHintBag += Signal(after: 4).filter(predicate: { chatButtonView.window != nil }).onFirstValue { _ in
+                chatHintBag += chatButtonView.present(
+                    Tooltip(
+                        id: "chatHint",
+                        value: L10n.HomeTab.chatHintText,
+                        sourceRect: chatButtonView.frame
+                    ).when(.onceEvery(timeInterval: .days(numberOfDays: 30))))
+                chatHintBag += chatButtonView.signal(for: .touchUpInside).onValue {
+                    chatHintBag.dispose()
+                }
+            }
+        }
+
         bag += chatButtonView.signal(for: \.bounds).atOnce().onValue { frame in
             chatButtonView.layer.cornerRadius = frame.height / 2
         }
@@ -47,6 +67,7 @@ extension ChatButton: Viewable {
         }
 
         let chatIcon = UIImageView()
+        chatIcon.isUserInteractionEnabled = false
         chatIcon.image = hCoreUIAssets.chat.image
         chatIcon.contentMode = .scaleAspectFit
         chatIcon.tintColor = .brand(.primaryText())
@@ -62,8 +83,8 @@ extension ChatButton: Viewable {
         chatButtonView.addSubview(chatIcon)
 
         chatIcon.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.45)
-            make.height.equalToSuperview().multipliedBy(0.45)
+            make.width.equalToSuperview().multipliedBy(0.6)
+            make.height.equalToSuperview().multipliedBy(0.6)
             make.center.equalToSuperview()
         }
 

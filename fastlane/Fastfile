@@ -147,6 +147,14 @@ platform :ios do
         setup
         
         apps = {
+            "Ugglan" => {
+                "identifier" => "com.hedvig.test.app",
+                "project_path" => "Projects/App/Ugglan.xcodeproj"
+            },
+            "Hedvig" => {
+                "identifier" => "com.hedvig.app",
+                "project_path" => "Projects/App/Ugglan.xcodeproj"
+            },
             "EmbarkExample" => {
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Embark/Embark.xcodeproj"
@@ -170,14 +178,6 @@ platform :ios do
             "ContractsExample" => {
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Contracts/Contracts.xcodeproj"
-            },
-            "Ugglan" => {
-                "identifier" => "com.hedvig.test.app",
-                "project_path" => "Projects/App/Ugglan.xcodeproj"
-            },
-            "Hedvig" => {
-                "identifier" => "com.hedvig.app",
-                "project_path" => "Projects/App/Ugglan.xcodeproj"
             }
         }
         
@@ -263,7 +263,7 @@ platform :ios do
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "WorkspaceApps: ##{number_of_commits}",
+                    "text": "WorkspaceApps: ##{last_git_commit[:abbreviated_commit_hash]}",
                     "emoji": true
                 }
             },
@@ -308,6 +308,7 @@ platform :ios do
           {
             "type": "divider"
           },
+          git_branch == "master" ? nil :
           {
             "type": "actions",
             "elements": [
@@ -319,20 +320,40 @@ platform :ios do
                         "text": "Approve"
                     },
                     "style": "primary",
-                    "value": "approve"
+                    "value": "approve=#{ENV['GITHUB_PR_NUMBER']};git_commit=#{last_git_commit[:commit_hash]}"
                 },
                 {
                     "type": "button",
                     "text": {
                         "type": "plain_text",
                         "emoji": true,
-                        "text": "Decline"
+                        "text": "Request changes"
                     },
                     "style": "danger",
-                    "value": "decline"
+                    "value": "decline=#{ENV['GITHUB_PR_NUMBER']};git_commit=#{last_git_commit[:commit_hash]}"
                 }
             ]
           },
+          {
+            "type": "divider"
+          },
+          git_branch == "master" ? nil :
+          {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "emoji": true,
+                        "text": "Open Github PR"
+                    },
+                    "url": "https://www.github.com/HedvigInsurance/ugglan/pull/#{ENV['GITHUB_PR_NUMBER']}",
+                    "value": "open_github"
+                }
+            ]
+          },
+          git_branch == "master" ? nil :
           {
             "type": "divider"
           },
@@ -351,7 +372,7 @@ platform :ios do
                 }
             }
           },
-        ]
+        ].reject{ |i| i.nil? }
         
         send_slack_message(url: git_branch == "master" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end

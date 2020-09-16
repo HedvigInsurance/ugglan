@@ -73,6 +73,15 @@ struct Debug: View {
                     SwiftUI.TextField("Authorization token", text: $authorizationToken)
                 }
                 Section {
+                    SwiftUI.Button("Reset Tooltips", action: {
+                        let userDefaultsDict = UserDefaults.standard.dictionaryRepresentation()
+
+                        userDefaultsDict.filter { key, _ in key.contains("tooltip") }.forEach { key, _ in
+                            UserDefaults.standard.setValue(nil, forKey: key)
+                        }
+                    })
+                }
+                Section {
                     SwiftUI.Button("Logout", action: {
                         ApplicationState.preserveState(.marketPicker)
                         UIApplication.shared.appDelegate.logout()
