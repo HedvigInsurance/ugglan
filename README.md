@@ -38,6 +38,6 @@ Hedvig is a new approach to insurance currently available in Sweden and Norway, 
 
 4. Click `Run workflow`
 
-5. Wait for the build to complete and upload to App Store Connect
+5. Wait for the build to complete and get processed by App Store Connect
 
 
