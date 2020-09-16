@@ -372,7 +372,7 @@ platform :ios do
                 }
             }
           },
-        ].reject{ |i| i.nil? }
+        ].filter { |i| i != nil }
         
         send_slack_message(url: git_branch == "master" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end
