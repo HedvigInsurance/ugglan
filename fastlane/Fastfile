@@ -348,7 +348,7 @@ platform :ios do
                         "emoji": true,
                         "text": "Open Github PR"
                     },
-                    "url": "https://www.github.com/HedvigInsurance/ugglan/pulls/#{ENV['GITHUB_PR_NUMBER']}",
+                    "url": "https://www.github.com/HedvigInsurance/ugglan/pull/#{ENV['GITHUB_PR_NUMBER']}",
                     "value": "open_github"
                 }
             ]
