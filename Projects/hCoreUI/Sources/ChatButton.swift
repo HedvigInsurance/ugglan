@@ -83,8 +83,8 @@ extension ChatButton: Viewable {
         chatButtonView.addSubview(chatIcon)
 
         chatIcon.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.45)
-            make.height.equalToSuperview().multipliedBy(0.45)
+            make.width.equalToSuperview().multipliedBy(0.6)
+            make.height.equalToSuperview().multipliedBy(0.6)
             make.center.equalToSuperview()
         }
 
