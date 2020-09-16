@@ -1,0 +1,9 @@
+#!/bin/bash
+
+TUIST=/usr/local/bin/tuist
+
+if [[ -e "${TUIST}" ]]; then
+    TUIST generate
+else
+    echo "warning: Tuist is not installed, install from https://tuist.io"
+fi
