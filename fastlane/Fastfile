@@ -334,7 +334,7 @@ platform :ios do
                 }
             ]
           },
-          {
+          git_branch == "" ? nil : {
             "type": "divider"
           },
           git_branch == "" ? nil :
