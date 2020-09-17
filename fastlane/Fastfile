@@ -28,14 +28,18 @@ platform :ios do
         Spaceship::ConnectAPI.login(ENV["FASTLANE_USERNAME"], ENV["FASTLANE_PASSWORD"])        
         app = Spaceship::ConnectAPI::App.find("com.hedvig.app")
         
-        start_date = Date.today
-        
+        build = nil
+                
         loop do
             begin
-                build = nil
-                                
-                app.get_builds.reject { |b| b.nil? }.each do |b|
-                    build = b if Date.parse(b.uploaded_date) > start_date
+                if build == nil
+                    app.get_builds.reject { |b| b.nil? }.each do |b|
+                        build = b if !b.processed?
+                    end
+                else
+                    app.get_builds.reject { |b| b.nil? }.each do |b|
+                        build = b if b.id == build.id
+                    end
                 end
 
                 unless build
