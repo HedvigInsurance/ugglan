@@ -258,6 +258,8 @@ platform :ios do
             })
         end
         
+        is_pr = git_branch != ""
+        
         blocks = [
             {
                 "type": "header",
@@ -271,7 +273,7 @@ platform :ios do
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*Branch*: #{git_branch}"
+                "text": "*Branch*: #{is_pr ? git_branch : "master"}"
             }
           },
           {
@@ -308,7 +310,7 @@ platform :ios do
           {
             "type": "divider"
           },
-          git_branch == "" ? nil :
+          !is_pr ? nil :
           {
             "type": "actions",
             "elements": [
@@ -334,10 +336,10 @@ platform :ios do
                 }
             ]
           },
-          git_branch == "" ? nil : {
+          !is_pr ? nil : {
             "type": "divider"
           },
-          git_branch == "" ? nil :
+          !is_pr ? nil :
           {
             "type": "actions",
             "elements": [
@@ -353,11 +355,11 @@ platform :ios do
                 }
             ]
           },
-          git_branch == "" ? nil :
+          !is_pr ? nil :
           {
             "type": "divider"
           },
-          {
+          !is_pr ? nil : {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
