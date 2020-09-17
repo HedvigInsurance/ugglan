@@ -9,18 +9,18 @@
 import Foundation
 
 public protocol TranslationArgumentable {
-    var value: String { get }
+    var value: CVarArg { get }
 }
 
 extension String: TranslationArgumentable {
-    public var value: String {
+    public var value: CVarArg {
         self
     }
 }
 
 extension Int: TranslationArgumentable {
-    public var value: String {
-        String(self)
+    public var value: CVarArg {
+        self
     }
 }
 
