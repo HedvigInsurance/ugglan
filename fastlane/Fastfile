@@ -25,23 +25,24 @@ platform :ios do
     lane :upload_dsyms_to_sentry_after_processing do
         require 'spaceship'
         
-        Spaceship::Tunes.login(ENV["FASTLANE_USERNAME"], ENV["FASTLANE_PASSWORD"])
-        Spaceship::Tunes.select_team
+        Spaceship::ConnectAPI.login(ENV["FASTLANE_USERNAME"], ENV["FASTLANE_PASSWORD"])        
+        app = Spaceship::ConnectAPI::App.find("com.hedvig.app")
         
-        app = Spaceship::Application.find("com.hedvig.app")
+        start_date = Date.today
         
         loop do
             begin
                 build = nil
-                app.latest_version.candidate_builds.each do |b|
-                    build = b if !build || b.upload_date > build.upload_date
+                                
+                app.get_builds.reject { |b| b.nil? }.each do |b|
+                    build = b if Date.parse(b.uploaded_date) > start_date
                 end
 
                 unless build
                     puts "No processing builds available for app"
+                else
+                    break if build.processed?
                 end
-                
-                return build if build.processing == false
             rescue => ex
                 puts "Got error #{ex}"
             end
