@@ -1,11 +1,3 @@
-//
-//  WKWebView+Signal.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-25.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import WebKit
@@ -69,7 +61,7 @@ extension WKWebView: WKNavigationDelegate {
     }
 
     var isLoadingSignal: Signal<Bool> {
-        return Signal { callback in
+        Signal { callback in
             var observer: NSKeyValueObservation? = self.observe(\.isLoading, options: [.new], changeHandler: { _, change in
                 callback(change.newValue ?? false)
             })

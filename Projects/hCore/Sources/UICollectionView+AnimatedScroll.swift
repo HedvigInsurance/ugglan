@@ -1,11 +1,3 @@
-//
-//  UICollectionView+AnimatedScroll.swift
-//  hCore
-//
-//  Created by sam on 17.6.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import CoreMedia
 import Foundation
 import QuartzCore
@@ -24,15 +16,15 @@ private var durationKey: UInt8 = 5
 private var timingFunctionKey: UInt8 = 6
 
 private func CGPointScalarMult(s: CGFloat, _ p: CGPoint) -> CGPoint {
-    return CGPoint(x: s * p.x, y: s * p.y)
+    CGPoint(x: s * p.x, y: s * p.y)
 }
 
 private func CGPointAdd(p: CGPoint, _ q: CGPoint) -> CGPoint {
-    return CGPoint(x: p.x + q.x, y: p.y + q.y)
+    CGPoint(x: p.x + q.x, y: p.y + q.y)
 }
 
 private func CGPointMinus(p: CGPoint, _ q: CGPoint) -> CGPoint {
-    return CGPoint(x: p.x - q.x, y: p.y - q.y)
+    CGPoint(x: p.x - q.x, y: p.y - q.y)
 }
 
 extension CAMediaTimingFunction {
@@ -96,19 +88,19 @@ extension CAMediaTimingFunction {
     }
 
     private func cubicFunctionValue(a: Double, _ b: Double, _ c: Double, _ d: Double, _ x: Double) -> Double {
-        return (a * x * x * x) + (b * x * x) + (c * x) + d
+        (a * x * x * x) + (b * x * x) + (c * x) + d
     }
 
     private func cubicDerivativeValue(a: Double, _ b: Double, _ c: Double, _: Double, _ x: Double) -> Double {
         /// Derivation of the cubic (a*x*x*x)+(b*x*x)+(c*x)+d
-        return (3 * a * x * x) + (2 * b * x) + c
+        (3 * a * x * x) + (2 * b * x) + c
     }
 }
 
 extension UICollectionView: AnimatedScroll {
     var displayLink: CADisplayLink? {
         get {
-            return objc_getAssociatedObject(self, &displayLinkKey) as? CADisplayLink
+            objc_getAssociatedObject(self, &displayLinkKey) as? CADisplayLink
         }
 
         set {
@@ -118,7 +110,7 @@ extension UICollectionView: AnimatedScroll {
 
     var duration: CFTimeInterval? {
         get {
-            return objc_getAssociatedObject(self, &durationKey) as? CFTimeInterval
+            objc_getAssociatedObject(self, &durationKey) as? CFTimeInterval
         }
 
         set {
@@ -128,7 +120,7 @@ extension UICollectionView: AnimatedScroll {
 
     var timingFunction: CAMediaTimingFunction? {
         get {
-            return objc_getAssociatedObject(self, &timingFunctionKey) as? CAMediaTimingFunction
+            objc_getAssociatedObject(self, &timingFunctionKey) as? CAMediaTimingFunction
         }
 
         set {
@@ -138,7 +130,7 @@ extension UICollectionView: AnimatedScroll {
 
     var animationStarted: CADisplayLink? {
         get {
-            return objc_getAssociatedObject(self, &animationStartedKey) as? CADisplayLink
+            objc_getAssociatedObject(self, &animationStartedKey) as? CADisplayLink
         }
 
         set {
@@ -148,7 +140,7 @@ extension UICollectionView: AnimatedScroll {
 
     var beginTime: CFTimeInterval {
         get {
-            return (objc_getAssociatedObject(self, &beginTimeKey) as? CFTimeInterval) ?? 0.0
+            (objc_getAssociatedObject(self, &beginTimeKey) as? CFTimeInterval) ?? 0.0
         }
 
         set {
@@ -158,7 +150,7 @@ extension UICollectionView: AnimatedScroll {
 
     var beginContentOffset: CGPoint? {
         get {
-            return (objc_getAssociatedObject(self, &beginContentOffsetKey) as? NSValue)?.cgPointValue
+            (objc_getAssociatedObject(self, &beginContentOffsetKey) as? NSValue)?.cgPointValue
         }
 
         set {
@@ -169,7 +161,7 @@ extension UICollectionView: AnimatedScroll {
 
     var deltaContentOffset: CGPoint? {
         get {
-            return (objc_getAssociatedObject(self, &deltaContentOffsetKey) as? NSValue)?.cgPointValue
+            (objc_getAssociatedObject(self, &deltaContentOffsetKey) as? NSValue)?.cgPointValue
         }
 
         set {

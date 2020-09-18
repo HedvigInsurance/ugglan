@@ -1,11 +1,3 @@
-//
-//  About.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-16.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form
@@ -130,7 +122,7 @@ extension About: Presentable {
             bag += showWelcome.onSelect.onValue { _ in
                 bag += self.client
                     .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                    .filter { $0.welcome.count > 0 }
+                    .filter { !$0.welcome.isEmpty }
                     .onValue { data in
                         let welcome = Welcome(data: data, endWithReview: false)
                         viewController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])

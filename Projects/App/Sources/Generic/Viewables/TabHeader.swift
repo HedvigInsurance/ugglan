@@ -1,10 +1,3 @@
-//
-//  TabHeader.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-24.
-//
-
 import Flow
 import Form
 import Foundation

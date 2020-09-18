@@ -1,11 +1,3 @@
-//
-//  CharityHeader.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-21.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -23,7 +15,7 @@ extension CharityHeader: Viewable {
         stackView.distribution = .fill
         stackView.spacing = 15
         stackView.isLayoutMarginsRelativeArrangement = true
-        
+
         bag += stackView.traitCollectionSignal.atOnce().onValue { trait in
             let style = DynamicFormStyle.brandInset.style(from: trait)
             let insets = style.insets

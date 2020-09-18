@@ -1,10 +1,3 @@
-//
-//  ReusableViewable.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-09-23.
-//
-
 import Flow
 import Form
 import Foundation
@@ -58,7 +51,7 @@ struct ReusableSignalViewable<View: Viewable, SignalValue>: Reusable, SignalProv
 
 extension ReusableSignalViewable: Hashable {
     static func == (_: ReusableSignalViewable<View, SignalValue>, _: ReusableSignalViewable<View, SignalValue>) -> Bool {
-        return true
+        true
     }
 
     func hash(into hasher: inout Hasher) {

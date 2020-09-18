@@ -1,11 +1,3 @@
-//
-//  AppSection.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-16.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -31,10 +23,10 @@ extension SettingsSection: Viewable {
                 previewable: aboutRow
             )
         }
-        
+
         let logoutRow = LogoutRow(presentingViewController: presentingViewController)
         bag += section.append(logoutRow)
-        
+
         return (section, bag)
     }
 }

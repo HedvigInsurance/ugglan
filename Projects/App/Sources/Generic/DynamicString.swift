@@ -1,11 +1,3 @@
-//
-//  DynamicString.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-05.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit
@@ -15,7 +7,7 @@ struct DynamicString: SignalProvider {
 
     var value: String {
         get {
-            return providedSignal.value
+            providedSignal.value
         }
         set(newValue) {
             providedSignal.value = newValue

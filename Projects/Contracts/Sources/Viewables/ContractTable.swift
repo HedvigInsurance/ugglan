@@ -1,10 +1,3 @@
-//
-//  ContractTable.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-03-16.
-//
-
 import Apollo
 import Flow
 import Form

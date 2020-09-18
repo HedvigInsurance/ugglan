@@ -1,3 +1,3 @@
 import Foundation
 
-//public struct hGraphQL {}
+// public struct hGraphQL {}

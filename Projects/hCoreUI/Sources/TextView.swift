@@ -1,11 +1,3 @@
-//
-//  TextView.swift
-//  CoreUI
-//
-//  Created by Sam Pettersson on 2020-05-08.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -23,7 +15,7 @@ public struct TextView {
     private let didBeginEditingCallbacker: Callbacker<Void> = Callbacker()
 
     public var didBeginEditingSignal: Signal<Void> {
-        return didBeginEditingCallbacker.providedSignal
+        didBeginEditingCallbacker.providedSignal
     }
 
     public init(
@@ -43,7 +35,7 @@ public struct TextView {
 
 extension UITextView: SignalProvider {
     public var providedSignal: ReadWriteSignal<String> {
-        return Signal { callback in
+        Signal { callback in
             let bag = DisposeBag()
 
             bag += NotificationCenter.default.signal(forName: UITextView.textDidChangeNotification, object: self).onValue { _ in
@@ -59,7 +51,7 @@ extension UITextView: SignalProvider {
     }
 
     public var didBeginEditingSignal: Signal<Void> {
-        return NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
+        NotificationCenter.default.signal(forName: UITextView.textDidBeginEditingNotification, object: self).toVoid()
     }
 }
 

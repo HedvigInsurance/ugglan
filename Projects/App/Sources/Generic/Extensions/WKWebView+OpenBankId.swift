@@ -1,10 +1,3 @@
-//
-//  WKWebView+OpenBankId.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-27.
-//
-
 import Foundation
 import hCore
 import Presentation

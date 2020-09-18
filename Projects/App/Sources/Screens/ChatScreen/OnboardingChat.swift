@@ -1,11 +1,3 @@
-//
-//  OnboardingChat.swift
-//  ugglan
-//
-//  Created by Gustaf Gunér on 2019-05-22.
-//  Hedvig
-//
-
 import Apollo
 import Flow
 import Form

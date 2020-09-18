@@ -1,10 +1,3 @@
-//
-//  PaymentsHistory.swift
-//  production
-//
-//  Created by Sam Pettersson on 2020-01-15.
-//
-
 import Apollo
 import Flow
 import Form

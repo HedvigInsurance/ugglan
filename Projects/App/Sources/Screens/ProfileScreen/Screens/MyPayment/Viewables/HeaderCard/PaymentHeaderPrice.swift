@@ -1,10 +1,3 @@
-//
-//  PriceDisplay.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2020-01-20.
-//
-
 import Ease
 import Flow
 import Form

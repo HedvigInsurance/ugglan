@@ -1,11 +1,3 @@
-//
-//  TooltipButton.swift
-//  Embark
-//
-//  Created by sam on 19.5.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import hCore

@@ -1,11 +1,3 @@
-//
-//  TooltipTests.swift
-//  hCoreUITests
-//
-//  Created by sam on 15.9.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import hCore

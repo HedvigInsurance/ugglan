@@ -1,10 +1,3 @@
-//
-//  AVURLAsset+ImageDataProvider.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-13.
-//
-
 import AVFoundation
 import Foundation
 import Kingfisher
@@ -15,7 +8,7 @@ extension AVURLAsset: ImageDataProvider {
     }
 
     public var cacheKey: String {
-        return url.absoluteString
+        url.absoluteString
     }
 
     public func data(handler: @escaping (Result<Data, Error>) -> Void) {

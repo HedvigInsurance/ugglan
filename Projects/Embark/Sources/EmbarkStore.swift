@@ -1,10 +1,3 @@
-//
-//  EmbarkStore.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-16.
-//
-
 import Flow
 import Foundation
 import hGraphQL

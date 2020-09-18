@@ -1,10 +1,3 @@
-//
-//  MyInfoState.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-16.
-//
-
 import Apollo
 import Flow
 import Foundation
@@ -48,7 +41,7 @@ struct MyInfoState {
                         return NilDisposer()
                     }
 
-                    if phoneNumber.count == 0 {
+                    if phoneNumber.isEmpty {
                         completion(.failure(MyInfoSaveError.phoneNumberEmpty))
                         return NilDisposer()
                     }
@@ -77,7 +70,7 @@ struct MyInfoState {
                         return NilDisposer()
                     }
 
-                    if email.count == 0 {
+                    if email.isEmpty {
                         completion(.failure(MyInfoSaveError.emailEmpty))
                         return NilDisposer()
                     }

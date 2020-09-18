@@ -1,10 +1,3 @@
-//
-//  OfferStartDateButton.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-14.
-//
-
 import Apollo
 import Flow
 import Foundation

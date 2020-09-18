@@ -1,11 +1,3 @@
-//
-//  UIViewController+Viewable.swift
-//  hCore
-//
-//  Created by sam on 2.6.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit

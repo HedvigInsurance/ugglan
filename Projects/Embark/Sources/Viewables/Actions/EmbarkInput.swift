@@ -1,10 +1,3 @@
-//
-//  EmbarkInput.swift
-//  Ugglan
-//
-//  Created by Axel Backlund on 2020-02-13.
-//
-
 import Flow
 import Form
 import Foundation

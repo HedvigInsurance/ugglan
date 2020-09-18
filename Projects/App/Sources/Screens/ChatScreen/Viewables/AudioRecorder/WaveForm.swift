@@ -1,10 +1,3 @@
-//
-//  WaveForm.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-17.
-//
-
 import AVKit
 import Flow
 import Form

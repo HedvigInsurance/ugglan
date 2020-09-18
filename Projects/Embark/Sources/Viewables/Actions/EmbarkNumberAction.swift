@@ -1,10 +1,3 @@
-//
-//  EmbarkNumberAction.swift
-//  test
-//
-//  Created by Axel Backlund on 2020-01-30.
-//
-
 import Flow
 import Form
 import Foundation

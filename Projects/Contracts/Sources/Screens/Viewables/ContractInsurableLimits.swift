@@ -1,10 +1,3 @@
-//
-//  ContractInsurableLimits.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-03-17.
-//
-
 import Flow
 import Form
 import Foundation

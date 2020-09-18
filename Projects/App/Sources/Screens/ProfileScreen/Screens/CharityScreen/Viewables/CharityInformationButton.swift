@@ -1,10 +1,3 @@
-//
-//  CharityInformationButton.swift
-//  ugglan
-//
-//  Created by Gustaf Gunér on 2019-04-04.
-//
-
 import Flow
 import Foundation
 import hCore

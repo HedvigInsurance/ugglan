@@ -1,11 +1,3 @@
-//
-//  Charity.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-21.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form
@@ -25,7 +17,7 @@ extension Charity: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.title = L10n.myCharityScreenTitle
-        
+
         let scrollView = FormScrollView()
         let form = FormView()
 
@@ -34,7 +26,7 @@ extension Charity: Presentable {
             .buffer()
             .onValueDisposePrevious { cashbacks in
                 guard let cashback = cashbacks.last else { return NilDisposer() }
-                
+
                 let innerBag = DisposeBag()
 
                 if cashback != nil {
@@ -58,7 +50,7 @@ extension Charity: Presentable {
                         ).disposable
                     }
                 }
-                
+
                 return innerBag
             }
 

@@ -1,10 +1,3 @@
-//
-//  PerilDetail.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-03-18.
-//
-
 import Flow
 import Form
 import Foundation

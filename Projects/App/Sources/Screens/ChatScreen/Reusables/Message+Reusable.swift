@@ -1,10 +1,3 @@
-//
-//  Message.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-02.
-//
-
 import AVFoundation
 import Flow
 import Form

@@ -1,11 +1,3 @@
-//
-//  MyCharityRow.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-14.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation

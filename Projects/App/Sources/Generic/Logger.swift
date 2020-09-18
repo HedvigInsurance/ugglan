@@ -1,15 +1,8 @@
-//
-//  Logger.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-05-14.
-//
-
 import Apollo
 import Foundation
 import hCore
-import UIKit
 import hGraphQL
+import UIKit
 
 private struct LogMessage: Encodable {
     let text: String

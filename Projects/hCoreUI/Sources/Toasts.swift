@@ -1,10 +1,3 @@
-//
-//  Toasts.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-07-11.
-//
-
 import Flow
 import Form
 import Foundation

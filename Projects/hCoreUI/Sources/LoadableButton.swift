@@ -1,10 +1,3 @@
-//
-//  LoadableButton.swift
-//  ugglan
-//
-//  Created by Axel Backlund on 2019-03-28.
-//
-
 import Flow
 import Foundation
 import hCore

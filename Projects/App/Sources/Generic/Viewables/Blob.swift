@@ -1,10 +1,3 @@
-//
-//  Blob.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-08-06.
-//
-
 import Flow
 import Foundation
 import hCore

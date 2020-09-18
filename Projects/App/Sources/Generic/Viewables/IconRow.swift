@@ -1,17 +1,8 @@
-//
-//  IconRow.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-03.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
 import hCore
 import hCoreUI
-import Form
 import UIKit
 
 struct IconRow {
@@ -62,15 +53,15 @@ extension IconRow: Viewable {
         labelsContainer.spacing = 4
 
         let titleLabel = UILabel(value: "", style: .default)
-        bag += combineLatest(title.atOnce(), titleTextStyle.atOnce()).onValue({ value, style in
+        bag += combineLatest(title.atOnce(), titleTextStyle.atOnce()).onValue { value, style in
             titleLabel.styledText = StyledText(text: value, style: style)
-        })
+        }
 
         let subtitleLabel = UILabel(value: "", style: .default)
-        bag += combineLatest(subtitle.atOnce(), subtitleTextStyle.atOnce()).onValue({ value, style in
+        bag += combineLatest(subtitle.atOnce(), subtitleTextStyle.atOnce()).onValue { value, style in
             subtitleLabel.isHidden = value.isEmpty
             subtitleLabel.styledText = StyledText(text: value, style: style)
-        })
+        }
 
         labelsContainer.addArrangedSubview(titleLabel)
         labelsContainer.addArrangedSubview(subtitleLabel)

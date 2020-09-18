@@ -1,10 +1,3 @@
-//
-//  AVURLAsset+ThumbnailImage.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-13.
-//
-
 import AVFoundation
 import Flow
 import Foundation

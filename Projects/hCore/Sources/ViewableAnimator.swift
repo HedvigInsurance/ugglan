@@ -1,11 +1,3 @@
-//
-//  ViewableAnimator.swift
-//  hCore
-//
-//  Created by sam on 3.8.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit
@@ -46,7 +38,7 @@ public struct ViewableAnimatedView<View: UIView> {
     private var inner: View?
     public var wrappedValue: View {
         get {
-            return inner ?? View()
+            inner ?? View()
         }
         set {
             inner = newValue

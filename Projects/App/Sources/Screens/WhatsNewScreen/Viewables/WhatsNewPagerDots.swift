@@ -1,10 +1,3 @@
-//
-//  WhatsNewPagerDots.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-24.
-//
-
 import Flow
 import Form
 import Foundation

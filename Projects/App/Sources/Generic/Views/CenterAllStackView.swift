@@ -1,11 +1,3 @@
-//
-//  CenterAllStackView.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-12-18.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -15,7 +7,7 @@ class CenterAllStackView: UIStackView {
 
     override var alignment: UIStackView.Alignment {
         get {
-            return internalStackView.alignment
+            internalStackView.alignment
         }
         set(newValue) {
             internalStackView.alignment = newValue
@@ -24,7 +16,7 @@ class CenterAllStackView: UIStackView {
 
     override var axis: NSLayoutConstraint.Axis {
         get {
-            return internalStackView.axis
+            internalStackView.axis
         }
         set(newValue) {
             internalStackView.axis = newValue
@@ -33,7 +25,7 @@ class CenterAllStackView: UIStackView {
 
     override var spacing: CGFloat {
         get {
-            return internalStackView.spacing
+            internalStackView.spacing
         }
         set(newValue) {
             internalStackView.spacing = newValue
@@ -42,7 +34,7 @@ class CenterAllStackView: UIStackView {
 
     override var distribution: UIStackView.Distribution {
         get {
-            return internalStackView.distribution
+            internalStackView.distribution
         }
         set(newValue) {
             internalStackView.distribution = newValue

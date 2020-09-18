@@ -1,10 +1,3 @@
-//
-//  OfferSignButton.swift
-//  test
-//
-//  Created by sam on 23.3.20.
-//
-
 import Flow
 import Foundation
 import hCore

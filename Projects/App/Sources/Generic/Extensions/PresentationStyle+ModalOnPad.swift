@@ -1,10 +1,3 @@
-//
-//  PresentationStyle+ModalOnPad.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-09-24.
-//
-
 import Foundation
 import Presentation
 

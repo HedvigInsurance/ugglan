@@ -1,10 +1,3 @@
-//
-//  UITests.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-03-30.
-//
-
 import hCore
 import hCoreUI
 import SnapshotTesting

@@ -1,11 +1,3 @@
-//
-//  SelectedCharity.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-23.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form
@@ -32,7 +24,7 @@ struct SelectedCharity {
 extension SelectedCharity: Viewable {
     func materialize(events: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
-        
+
         let section = SectionView()
         section.dynamicStyle = .brandGroupedNoBackground
 
@@ -47,7 +39,7 @@ extension SelectedCharity: Viewable {
             right: 20
         )
         stackView.isLayoutMarginsRelativeArrangement = true
-        
+
         section.append(stackView)
 
         bag += client.watch(query: GraphQL.SelectedCharityQuery()).compactMap { $0.cashback }.onValue { cashback in

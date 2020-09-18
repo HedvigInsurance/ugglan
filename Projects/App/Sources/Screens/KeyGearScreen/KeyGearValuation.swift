@@ -1,10 +1,3 @@
-//
-//  KeyGearValuation.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-17.
-//
-
 import Apollo
 import Flow
 import Form

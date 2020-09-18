@@ -1,10 +1,3 @@
-//
-//  KeyGearAddReceiptRow.swift
-//  test
-//
-//  Created by Pavel Barros Quintanilla on 2020-02-18.
-//
-
 import Apollo
 import Flow
 import Form

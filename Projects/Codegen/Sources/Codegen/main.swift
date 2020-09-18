@@ -48,34 +48,34 @@ func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
 let sourceUrls = findAllGraphQLFolders()
 
 sourceUrls.forEach { sourceUrl in
-        
+
     let folderUrl = sourceUrl
-    .appendingPathComponent("../")
-    .appendingPathComponent("Sources")
+        .appendingPathComponent("../")
+        .appendingPathComponent("Sources")
         .appendingPathComponent("Derived").appendingPathComponent("GraphQL")
-    
+
     try? FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
-    
+
     let hGraphQLUrl = sourceRootURL
-    .appendingPathComponent("hGraphQL")
-    .appendingPathComponent("GraphQL")
+        .appendingPathComponent("hGraphQL")
+        .appendingPathComponent("GraphQL")
     let hGraphQLSymlinkUrl = sourceUrl.appendingPathComponent("hGraphQL")
-    
+
     let ishGraphQLFolder = folderUrl.absoluteString.contains("Projects/hGraphQL")
-    
+
     if !ishGraphQLFolder {
         try? FileManager.default.createSymbolicLink(
-           at: hGraphQLSymlinkUrl,
-           withDestinationURL: hGraphQLUrl
-       )
+            at: hGraphQLSymlinkUrl,
+            withDestinationURL: hGraphQLUrl
+        )
     }
-    
+
     let codegenOptions = ApolloCodegenOptions(
         namespace: "GraphQL",
         outputFormat: .multipleFiles(inFolderAtURL: folderUrl),
         urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
     )
-    
+
     let fromUrl = ishGraphQLFolder ? sourceUrl.appendingPathComponent("../").appendingPathComponent("../") : sourceUrl
 
     try! ApolloCodegen.run(
@@ -83,25 +83,25 @@ sourceUrls.forEach { sourceUrl in
         with: cliFolderURL,
         options: codegenOptions
     )
-    
-    if !ishGraphQLFolder  {
+
+    if !ishGraphQLFolder {
         var allGeneratedFiles = try! FileManager.default.contentsOfDirectory(
             at: folderUrl,
             includingPropertiesForKeys: nil,
             options: []
         )
-        
+
         let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
             at: hGraphQLUrl,
             includingPropertiesForKeys: nil,
             options: []
         )
-        
+
         allGeneratedFiles.filter { generatedFile in
             let originalFileName = generatedFile
                 .lastPathComponent
                 .replacingOccurrences(of: ".swift", with: "")
-            
+
             return allhGraphQLFiles.first(where: {
                 $0.lastPathComponent.contains(originalFileName)
             }) != nil
@@ -109,7 +109,7 @@ sourceUrls.forEach { sourceUrl in
             allGeneratedFiles.removeAll(where: { $0 == url })
             try? FileManager.default.removeItem(at: url)
         }
-                
+
         allGeneratedFiles.forEach { file in
             let fileHandle = try! FileHandle(forWritingTo: file)
             fileHandle.seek(toFileOffset: 0)
@@ -119,7 +119,7 @@ sourceUrls.forEach { sourceUrl in
             fileHandle.write(data)
             fileHandle.closeFile()
         }
-        
+
         try? FileManager.default.removeItem(at: folderUrl.appendingPathComponent("Types.graphql.swift"))
     } else {
         let allGeneratedFiles = try! FileManager.default.contentsOfDirectory(
@@ -127,18 +127,18 @@ sourceUrls.forEach { sourceUrl in
             includingPropertiesForKeys: nil,
             options: []
         )
-        
+
         let allhGraphQLFiles = try! FileManager.default.contentsOfDirectory(
             at: hGraphQLUrl,
             includingPropertiesForKeys: nil,
             options: []
         )
-        
+
         allGeneratedFiles.filter { generatedFile in
             let originalFileName = generatedFile
                 .lastPathComponent
                 .replacingOccurrences(of: ".swift", with: "")
-            
+
             return allhGraphQLFiles.first(where: {
                 $0.lastPathComponent.contains(originalFileName)
             }) == nil
@@ -148,6 +148,6 @@ sourceUrls.forEach { sourceUrl in
             try? FileManager.default.removeItem(at: url)
         }
     }
-    
+
     try? FileManager.default.removeItem(at: hGraphQLSymlinkUrl)
 }

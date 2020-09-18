@@ -1,10 +1,3 @@
-//
-//  UICollectionViewTagsLayout.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-13.
-//
-
 import Foundation
 import UIKit
 

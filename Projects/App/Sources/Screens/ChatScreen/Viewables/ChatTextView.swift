@@ -1,10 +1,3 @@
-//
-//  ChatTextView.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-07-25.
-//
-
 import Apollo
 import Flow
 import Foundation
@@ -20,7 +13,7 @@ struct ChatTextView {
     private let didBeginEditingCallbacker = Callbacker<Void>()
 
     var didBeginEditingSignal: Signal<Void> {
-        return didBeginEditingCallbacker.providedSignal
+        didBeginEditingCallbacker.providedSignal
     }
 
     init(

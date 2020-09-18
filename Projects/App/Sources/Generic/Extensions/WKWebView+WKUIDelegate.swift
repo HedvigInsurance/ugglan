@@ -1,10 +1,3 @@
-//
-//  WKWebView+WKUIDelegate.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-27.
-//
-
 import Flow
 import Foundation
 import WebKit

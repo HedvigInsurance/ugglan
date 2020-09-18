@@ -1,10 +1,3 @@
-//
-//  WhenEnabled.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-05-13.
-//
-
 import Flow
 import Foundation
 import hCore

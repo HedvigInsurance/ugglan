@@ -1,11 +1,3 @@
-//
-//  Launch.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-12-09.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import hCore

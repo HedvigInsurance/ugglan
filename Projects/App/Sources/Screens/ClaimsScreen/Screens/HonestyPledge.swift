@@ -1,10 +1,3 @@
-//
-//  HonestyPledge.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-04-24.
-//
-
 import Flow
 import Foundation
 import hCore

@@ -1,10 +1,3 @@
-//
-//  RecordButton.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-17.
-//
-
 import Flow
 import Foundation
 import hCore

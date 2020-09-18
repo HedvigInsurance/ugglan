@@ -1,11 +1,3 @@
-//
-//  ApplicationState.swift
-//  ugglan
-//
-//  Created by Gustaf Gunér on 2019-05-22.
-//  Hedvig
-//
-
 import Flow
 import Foundation
 import hCore

@@ -1,11 +1,3 @@
-//
-//  UITapGestureRecognizer+didTapRange.swift
-//  hCore
-//
-//  Created by sam on 14.7.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 

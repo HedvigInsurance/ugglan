@@ -1,10 +1,3 @@
-//
-//  OfferCoverage.swift
-//  test
-//
-//  Created by sam on 25.3.20.
-//
-
 import Apollo
 import Contracts
 import Flow

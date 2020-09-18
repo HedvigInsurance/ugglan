@@ -1,17 +1,10 @@
-//
-//  OfferChat.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-05.
-//
-
 import Apollo
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
-import hGraphQL
 
 struct OfferChat {
     @Inject var client: ApolloClient

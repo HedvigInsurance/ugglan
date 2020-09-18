@@ -1,10 +1,3 @@
-//
-//  UIImage+FileUpload.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-20.
-//
-
 import Flow
 import Foundation
 import UIKit

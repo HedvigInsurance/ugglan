@@ -1,11 +1,3 @@
-//
-//  SpringAnimationStyle.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-12-10.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -27,7 +19,7 @@ public struct SpringAnimationStyle {
 
 public extension SpringAnimationStyle {
     static func lightBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.5) -> SpringAnimationStyle {
-        return SpringAnimationStyle(
+        SpringAnimationStyle(
             duration: duration,
             damping: 30,
             velocity: 1,
@@ -37,7 +29,7 @@ public extension SpringAnimationStyle {
     }
 
     static func mediumBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
-        return SpringAnimationStyle(
+        SpringAnimationStyle(
             duration: duration,
             damping: 10,
             velocity: 1.7,
@@ -47,7 +39,7 @@ public extension SpringAnimationStyle {
     }
 
     static func heavyBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
-        return SpringAnimationStyle(
+        SpringAnimationStyle(
             duration: duration,
             damping: 0.6,
             velocity: 2,
@@ -57,7 +49,7 @@ public extension SpringAnimationStyle {
     }
 
     static func ludicrousBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
-        return SpringAnimationStyle(
+        SpringAnimationStyle(
             duration: duration,
             damping: 0.2,
             velocity: 3,

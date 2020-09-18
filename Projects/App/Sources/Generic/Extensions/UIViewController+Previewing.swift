@@ -1,11 +1,3 @@
-//
-//  UIViewController+Previewing.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-13.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import Presentation

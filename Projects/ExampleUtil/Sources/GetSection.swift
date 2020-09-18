@@ -1,11 +1,3 @@
-//
-//  GetSection.swift
-//  ExampleUtil
-//
-//  Created by sam on 16.6.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -59,15 +51,15 @@ func getSection(
             let onSelect: (_ value: String) -> Void
 
             func pickerView(_: UIPickerView, numberOfRowsInComponent _: Int) -> Int {
-                return currencies.count
+                currencies.count
             }
 
             func numberOfComponents(in _: UIPickerView) -> Int {
-                return 1
+                1
             }
 
             func pickerView(_: UIPickerView, titleForRow row: Int, forComponent _: Int) -> String? {
-                return currencies[row]
+                currencies[row]
             }
 
             func pickerView(_: UIPickerView, didSelectRow row: Int, inComponent _: Int) {

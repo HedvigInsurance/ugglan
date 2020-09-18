@@ -1,10 +1,3 @@
-//
-//  Masking.swift
-//  Ugglan
-//
-//  Created by Axel Backlund on 2020-02-28.
-//
-
 import Foundation
 import UIKit
 
@@ -22,7 +15,7 @@ struct Masking {
     let type: MaskType
 
     func isValid(text _: String) -> String {
-        return ""
+        ""
     }
 
     func unmaskedValue(text: String) -> String {
@@ -54,7 +47,7 @@ struct Masking {
         let unmaskedValue = self.unmaskedValue(text: text)
 
         func calculateAge(_ format: String, value: String) -> String? {
-            if value.count == 0 {
+            if value.isEmpty {
                 return nil
             }
 

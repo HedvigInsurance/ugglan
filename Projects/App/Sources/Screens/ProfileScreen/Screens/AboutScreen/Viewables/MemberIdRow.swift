@@ -1,10 +1,3 @@
-//
-//  MemberIdRow.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-15.
-//
-
 import Apollo
 import Flow
 import Form

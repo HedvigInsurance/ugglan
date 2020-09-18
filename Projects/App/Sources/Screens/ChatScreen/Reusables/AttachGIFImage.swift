@@ -1,10 +1,3 @@
-//
-//  AttachGIFImage.swift
-//  test
-//
-//  Created by Pavel Barros Quintanilla on 2019-12-03.
-//
-
 import Flow
 import Form
 import Foundation

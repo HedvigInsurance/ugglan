@@ -1,11 +1,3 @@
-//
-//  Spacing.swift
-//  CoreUI
-//
-//  Created by Sam Pettersson on 2020-05-08.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation

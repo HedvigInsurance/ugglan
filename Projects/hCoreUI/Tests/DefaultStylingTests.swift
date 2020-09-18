@@ -1,11 +1,3 @@
-//
-//  DefaultStylingTests.swift
-//  hCoreUITests
-//
-//  Created by sam on 3.6.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation

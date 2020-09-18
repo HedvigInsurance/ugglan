@@ -1,10 +1,3 @@
-//
-//  UIBarButtonItem+Viewable.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-05-09.
-//
-
 import Flow
 import Foundation
 import UIKit

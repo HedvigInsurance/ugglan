@@ -1,11 +1,3 @@
-//
-//  AskForRating.swift
-//  Ugglan
-//
-//  Created by sam on 22.7.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import StoreKit
 

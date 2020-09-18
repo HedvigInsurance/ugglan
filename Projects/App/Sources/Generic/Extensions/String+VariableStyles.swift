@@ -1,10 +1,3 @@
-//
-//  String+VariableStyles.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-06-14.
-//
-
 import Form
 import Foundation
 import UIKit

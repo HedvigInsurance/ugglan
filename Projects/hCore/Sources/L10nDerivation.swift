@@ -1,11 +1,3 @@
-//
-//  L10nDerivation.swift
-//  hCore
-//
-//  Created by sam on 18.5.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 
 public protocol TranslationArgumentable {

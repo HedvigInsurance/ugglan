@@ -1,11 +1,3 @@
-//
-//  MaskingTests.swift
-//  EmbarkTests
-//
-//  Created by sam on 23.7.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 @testable import Embark
 import Foundation
 import XCTest

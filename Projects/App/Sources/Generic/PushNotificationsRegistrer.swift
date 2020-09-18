@@ -1,10 +1,3 @@
-//
-//  PushNotificationsRegistrer.swift
-//  project
-//
-//  Created by Axel Backlund on 2019-07-08.
-//
-
 import Flow
 import Foundation
 import hCore

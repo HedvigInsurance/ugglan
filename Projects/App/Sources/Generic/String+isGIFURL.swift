@@ -1,10 +1,3 @@
-//
-//  isGIFURL.swift
-//  test
-//
-//  Created by Pavel Barros Quintanilla on 2019-12-18.
-//
-
 import Foundation
 
 extension String {

@@ -1,3 +1,1 @@
-public struct ContractsTestingData {
-
-}
+public struct ContractsTestingData {}

@@ -1,11 +1,3 @@
-//
-//  MyInfo.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-04.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import hCore

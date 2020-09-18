@@ -1,10 +1,3 @@
-//
-//  EditableRow.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-30.
-//
-
 import Flow
 import Form
 import Foundation
