@@ -86,44 +86,28 @@ extension ContentIconPagerItem: Presentable {
         if let title = title {
             let titleLabel = MultilineLabel(styledText: StyledText(
                 text: title,
-                style: .brand(.title1(color: .primary))
+                style: TextStyle.brand(.title1(color: .primary)).centerAligned
             ))
 
             bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
-                titleLabelView.textAlignment = .center
-
                 titleLabelView.snp.makeConstraints { make in
                     make.width.equalToSuperview()
                     make.centerX.equalToSuperview()
                     make.height.equalTo(100)
-                }
-
-                bag += titleLabel.intrinsicContentSizeSignal.onValue { size in
-                    titleLabelView.snp.updateConstraints { make in
-                        make.height.equalTo(size.height)
-                    }
                 }
             }
         }
 
         let bodyLabel = MultilineLabel(styledText: StyledText(
             text: paragraph,
-            style: .brand(.body(color: .secondary))
+            style: TextStyle.brand(.body(color: title != nil ? .secondary : .primary)).centerAligned
         ))
 
         bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in
-            bodyLabelView.textAlignment = .center
-
             bodyLabelView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
                 make.height.equalTo(100)
-            }
-
-            bag += bodyLabel.intrinsicContentSizeSignal.onValue { size in
-                bodyLabelView.snp.updateConstraints { make in
-                    make.height.equalTo(size.height)
-                }
             }
         }
 
