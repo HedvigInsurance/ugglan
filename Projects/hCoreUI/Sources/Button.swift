@@ -141,7 +141,7 @@ public enum ButtonType {
         case .pillSemiTransparent:
             return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .iconTransparent:
-            return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
+            return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
         case .tinyIcon:
             return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
         case .transparent:
