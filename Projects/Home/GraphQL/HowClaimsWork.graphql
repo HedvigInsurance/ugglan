@@ -1,0 +1,9 @@
+query HowClaimsWork($locale: Locale!) {
+    howClaimsWork(locale: $locale) {
+        id
+        illustration {
+            ...IconFragment
+        }
+        body
+    }
+}

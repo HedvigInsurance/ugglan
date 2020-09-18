@@ -8,7 +8,6 @@
 
 import Form
 import Foundation
-import hCore
 import UIKit
 
 enum ScrollTo {
@@ -16,7 +15,7 @@ enum ScrollTo {
 }
 
 extension CollectionKit {
-    func currentIndex() -> Int {
+    public var currentIndex: Int {
         let double = view.contentOffset.x / view.frame.size.width
 
         if double.isNaN {
@@ -26,8 +25,8 @@ extension CollectionKit {
         return Int(double)
     }
 
-    func scrollToNextItem() {
-        let currentIndex = self.currentIndex()
+    public func scrollToNextItem() {
+        let currentIndex = self.currentIndex
         let newIndexPath = IndexPath(row: currentIndex + 1, section: 0)
         let numberOfItems = dataSource.collectionView(
             view,
@@ -44,8 +43,8 @@ extension CollectionKit {
         }
     }
 
-    func scrollToPreviousItem() {
-        let currentIndex = self.currentIndex()
+    public func scrollToPreviousItem() {
+        let currentIndex = self.currentIndex
         let newIndexPath = IndexPath(row: currentIndex - 1, section: 0)
 
         if newIndexPath.row >= 0 {
