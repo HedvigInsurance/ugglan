@@ -51,7 +51,7 @@ extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.offerTitle
-        viewController.navigationItem.hidesBackButton = true
+        viewController.navigationItem.hidesBackButton = false
         ApplicationState.preserveState(.offer)
 
         let bag = DisposeBag()
