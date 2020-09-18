@@ -1,10 +1,3 @@
-//
-//  InsuranceSummarySection.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-03.
-//
-
 import Apollo
 import Flow
 import Form

@@ -1,10 +1,3 @@
-//
-//  LanguageSwitcher.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-17.
-//
-
 import Apollo
 import Flow
 import Form

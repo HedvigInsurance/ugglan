@@ -1,11 +1,3 @@
-//
-//  CollectionKit+ScrollTo.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-11-29.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
-
 import Form
 import Foundation
 import UIKit

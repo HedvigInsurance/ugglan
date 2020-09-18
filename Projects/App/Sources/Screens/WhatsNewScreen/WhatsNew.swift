@@ -1,10 +1,3 @@
-//
-//  WhatsNew.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-05.
-//
-
 import Apollo
 import Flow
 import Form

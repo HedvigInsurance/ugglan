@@ -1,11 +1,3 @@
-//
-//  TriangleView.swift
-//  hCoreUI
-//
-//  Created by sam on 14.9.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 

@@ -1,10 +1,3 @@
-//
-//  LoadableView.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-06-17.
-//
-
 import Flow
 import Foundation
 import hCore

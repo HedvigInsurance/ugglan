@@ -1,10 +1,3 @@
-//
-//  UpdatingMessage.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-18.
-//
-
 import Flow
 import Form
 import Foundation

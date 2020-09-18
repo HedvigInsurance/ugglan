@@ -1,10 +1,3 @@
-//
-//  CharityInformation.swift
-//  ugglan
-//
-//  Created by Gustaf Gunér on 2019-03-28.
-//
-
 import Apollo
 import Flow
 import Form

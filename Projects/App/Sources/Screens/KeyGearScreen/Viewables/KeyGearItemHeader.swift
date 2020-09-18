@@ -1,10 +1,3 @@
-//
-//  KeyGearItemHeader.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-14.
-//
-
 import Apollo
 import Flow
 import Form

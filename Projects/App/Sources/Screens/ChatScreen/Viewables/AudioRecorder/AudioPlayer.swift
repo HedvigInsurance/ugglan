@@ -1,10 +1,3 @@
-//
-//  AudioPlayer.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-18.
-//
-
 import AVKit
 import Flow
 import Form

@@ -1,10 +1,3 @@
-//
-//  Debug.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-07.
-//
-
 import Apollo
 import Foundation
 import SwiftUI

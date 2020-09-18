@@ -1,10 +1,3 @@
-//
-//  SlideToClaim.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-04-24.
-//
-
 import Ease
 import Flow
 import Form

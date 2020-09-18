@@ -1,11 +1,3 @@
-//
-//  InvitationRowTests.swift
-//  ForeverTests
-//
-//  Created by sam on 8.6.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 @testable import Forever
 import Form

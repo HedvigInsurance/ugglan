@@ -1,10 +1,3 @@
-//
-//  AttachGIFPane.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-07-30.
-//
-
 import Apollo
 import Flow
 import Form
@@ -104,7 +97,7 @@ extension AttachGIFPane: Viewable {
                 make.right.bottom.equalTo(view).offset(-10)
 
                 bag += searchBarValue.map { string -> Bool in
-                    string.count == 0
+                    string.isEmpty
                 }.onValue { isEmpty in
                     if isEmpty {
                         labelView.alpha = 1

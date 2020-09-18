@@ -1,10 +1,3 @@
-//
-//  ExpandableSection.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-03.
-//
-
 import Flow
 import Foundation
 import hCore

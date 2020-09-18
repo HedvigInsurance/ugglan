@@ -1,11 +1,3 @@
-//
-//  EmbarkState+API.swift
-//  Embark
-//
-//  Created by sam on 25.5.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Foundation

@@ -1,10 +1,3 @@
-//
-//  UpsellingFooter.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-03-30.
-//
-
 import Apollo
 import Flow
 import Form

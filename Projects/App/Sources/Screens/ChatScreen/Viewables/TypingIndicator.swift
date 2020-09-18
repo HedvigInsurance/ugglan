@@ -1,10 +1,3 @@
-//
-//  TypingIndicator.swift
-//  project
-//
-//  Created by Axel Backlund on 2019-08-09.
-//
-
 import Flow
 import Form
 import Foundation

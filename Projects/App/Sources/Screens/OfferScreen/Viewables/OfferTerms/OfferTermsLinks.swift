@@ -1,10 +1,3 @@
-//
-//  OfferTermsLinks.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-08-20.
-//
-
 import Apollo
 import Flow
 import Form

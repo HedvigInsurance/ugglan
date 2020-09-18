@@ -1,10 +1,3 @@
-//
-//  VNCore+KeyGear.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-06.
-//
-
 import Apollo
 import CoreML
 import Disk

@@ -1,16 +1,9 @@
-//
-//  CategoryPicker.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-13.
-//
-
 import Flow
 import Form
 import Foundation
 import hCore
-import UIKit
 import hGraphQL
+import UIKit
 
 struct CategoryPicker {
     let onSelectCategorySignal: Signal<GraphQL.KeyGearItemCategory>

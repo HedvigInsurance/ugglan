@@ -1,10 +1,3 @@
-//
-//  Bundle+SetLanguage.swift
-//  test
-//
-//  Created by sam on 24.3.20.
-//
-
 import Foundation
 import UIKit
 

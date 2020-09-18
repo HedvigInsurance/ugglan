@@ -1,10 +1,3 @@
-//
-//  OfferHeader.swift
-//  test
-//
-//  Created by sam on 23.3.20.
-//
-
 import Apollo
 import Flow
 import Foundation

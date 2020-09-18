@@ -1,11 +1,3 @@
-//
-//  UIView+DynamicShadow.swift
-//  Core
-//
-//  Created by Sam Pettersson on 2020-05-08.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit
@@ -34,7 +26,7 @@ extension UIView {
     }
 
     public func applyShadow(_ dynamic: @escaping (_ trait: UITraitCollection) -> ShadowProperties) -> Disposable {
-        return traitCollectionSignal.atOnce().with(weak: self).onValue { trait, `self` in
+        traitCollectionSignal.atOnce().with(weak: self).onValue { trait, `self` in
             let properties = dynamic(trait)
 
             if let opacity = properties.opacity {

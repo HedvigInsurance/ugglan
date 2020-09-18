@@ -1,11 +1,3 @@
-//
-//  DirectDebitSetup.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-24.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Foundation

@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//
-//
-//  Created by Sam Pettersson on 2020-05-06.
-//
-
 import Apollo
 import ApolloWebSocket
 import Embark

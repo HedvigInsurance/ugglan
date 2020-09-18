@@ -1,10 +1,3 @@
-//
-//  PresentableViewable.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-21.
-//
-
 import Flow
 import Form
 import Foundation

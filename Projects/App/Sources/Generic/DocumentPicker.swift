@@ -1,11 +1,3 @@
-//
-//  DocumentPicker.swift
-//  hedvig
-//
-//  Created by Sam Pettersson on 2019-05-21.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import Presentation
@@ -46,11 +38,11 @@ extension UIDocumentPickerViewController: UIDocumentPickerDelegate {
     }
 
     var didPickDocumentsSignal: Signal<[URL]> {
-        return didPickDocumentsCallbacker.providedSignal
+        didPickDocumentsCallbacker.providedSignal
     }
 
     var didCancelSignal: Signal<Void> {
-        return didCancelDocumentPickerCallbacker.providedSignal
+        didCancelDocumentPickerCallbacker.providedSignal
     }
 
     public func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {

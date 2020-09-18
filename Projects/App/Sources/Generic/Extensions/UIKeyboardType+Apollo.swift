@@ -1,14 +1,7 @@
-//
-//  UIKeyboardType+Apollo.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-12.
-//
-
 import Apollo
 import Foundation
-import UIKit
 import hGraphQL
+import UIKit
 
 extension UIKeyboardType {
     static func from(_ keyboardType: GraphQL.KeyboardType?) -> UIKeyboardType? {

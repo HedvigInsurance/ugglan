@@ -1,11 +1,3 @@
-//
-//  CellForRow.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-12-30.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -28,7 +20,7 @@ protocol CellForRow {
 extension UICollectionView {
     func dequeueCell<T>(cellType: T.Type, index: TableIndex) -> T {
         // swiftlint:disable force_cast
-        return dequeueReusableCell(
+        dequeueReusableCell(
             withReuseIdentifier: String(describing: cellType),
             for: IndexPath(row: index.row, section: index.section)
         ) as! T

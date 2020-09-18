@@ -1,10 +1,3 @@
-//
-//  Bundle+URLScheme.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-07.
-//
-
 import Foundation
 
 extension Bundle {

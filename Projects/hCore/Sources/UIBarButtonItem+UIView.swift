@@ -1,10 +1,3 @@
-//
-//  UIBarButtonItem+UIView.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-13.
-//
-
 import Foundation
 import UIKit
 

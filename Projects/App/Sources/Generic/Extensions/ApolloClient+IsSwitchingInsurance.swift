@@ -1,10 +1,3 @@
-//
-//  ApolloClient+IsSwitching.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-09-23.
-//
-
 import Apollo
 import Contracts
 import Flow

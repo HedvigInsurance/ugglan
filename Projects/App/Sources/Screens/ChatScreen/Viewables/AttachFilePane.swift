@@ -1,10 +1,3 @@
-//
-//  AttachFilePane.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-07-30.
-//
-
 import Apollo
 import Flow
 import Form

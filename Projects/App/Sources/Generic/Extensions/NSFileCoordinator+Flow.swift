@@ -1,10 +1,3 @@
-//
-//  NSFileCoordinator+Flow.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-09-11.
-//
-
 import Flow
 import Foundation
 

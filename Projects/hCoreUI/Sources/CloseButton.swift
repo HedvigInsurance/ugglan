@@ -1,10 +1,3 @@
-//
-//  CloseButton.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-04-18.
-//
-
 import Flow
 import Form
 import Foundation

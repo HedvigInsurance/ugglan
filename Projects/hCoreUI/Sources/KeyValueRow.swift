@@ -1,10 +1,3 @@
-//
-//  KeyValueRow.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-12.
-//
-
 import Flow
 import Form
 import Foundation
@@ -16,7 +9,7 @@ public struct KeyValueRow {
     public let keySignal = ReadWriteSignal<String>("")
     public let valueSignal = ReadWriteSignal<String>("")
     public let valueStyleSignal = ReadWriteSignal<TextStyle>(.brand(.headline(color: .primary)))
-    
+
     public init() {}
 }
 

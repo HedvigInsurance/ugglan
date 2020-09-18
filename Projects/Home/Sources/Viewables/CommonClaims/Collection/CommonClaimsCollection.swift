@@ -1,10 +1,3 @@
-//
-//  CommonClaimsCollection.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-04-12.
-//
-
 import Apollo
 import Flow
 import Form

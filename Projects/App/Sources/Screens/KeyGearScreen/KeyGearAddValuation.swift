@@ -1,10 +1,3 @@
-//
-//  KeyGearDateValuation.swift
-//  test
-//
-//  Created by Pavel Barros Quintanilla on 2020-02-03.
-//
-
 import Apollo
 import Flow
 import Form

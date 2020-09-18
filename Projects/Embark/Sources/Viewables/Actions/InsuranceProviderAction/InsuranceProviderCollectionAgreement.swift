@@ -1,11 +1,3 @@
-//
-//  InsuranceProviderCollectionAgreement.swift
-//  Embark
-//
-//  Created by Sam Pettersson on 2020-08-06.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form

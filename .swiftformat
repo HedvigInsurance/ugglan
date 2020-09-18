@@ -1,0 +1,10 @@
+# rules
+
+--enable isEmpty
+--enable fileHeader
+--enable linebreakAtEndOfFile
+--enable sortedImports
+
+# options
+
+--header strip

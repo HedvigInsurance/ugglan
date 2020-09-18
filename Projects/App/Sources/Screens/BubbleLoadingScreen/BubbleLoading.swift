@@ -1,11 +1,3 @@
-//
-//  BubbleLoading.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-23.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import hCore
@@ -24,11 +16,11 @@ struct BubbleLoading {
 
 class LightContentViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        .lightContent
     }
 
     override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        return .fade
+        .fade
     }
 }
 

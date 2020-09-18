@@ -1,10 +1,3 @@
-//
-//  BankIdSign.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-12.
-//
-
 import Apollo
 import Flow
 import Form

@@ -1,10 +1,3 @@
-//
-//  Either+Make.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-02.
-//
-
 import Flow
 import Foundation
 
@@ -13,11 +6,11 @@ public typealias FourEither<A, B, C, D> = Either<Either<A, B>, Either<C, D>>
 
 public extension Either {
     static func make(_ value: Left) -> Self {
-        return .left(value)
+        .left(value)
     }
 
     static func make(_ value: Right) -> Self {
-        return .right(value)
+        .right(value)
     }
 
     static func make<A, B>(_ value: A) -> Self where Left == Either<A, B> {

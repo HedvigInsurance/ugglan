@@ -1,10 +1,3 @@
-//
-//  DateFormatter+ISO8601.swift
-//  ugglan
-//
-//  Created by Axel Backlund on 2019-04-29.
-//
-
 import Foundation
 
 extension DateFormatter {

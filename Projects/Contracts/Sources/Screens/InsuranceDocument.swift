@@ -1,11 +1,3 @@
-//
-//  InsuranceDocument.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-17.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form
@@ -41,7 +33,7 @@ extension InsuranceDocument: Presentable {
             position: .right
         ).withLatestFrom(pdfViewer.data).onValueDisposePrevious { _, value -> Disposable? in
             guard let value = value else { return NilDisposer() }
-            
+
             let activityView = ActivityView(
                 activityItems: [value],
                 applicationActivities: nil,

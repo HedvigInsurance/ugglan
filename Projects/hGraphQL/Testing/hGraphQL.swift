@@ -1,3 +1,1 @@
-public struct hGraphQLTestingData {
-
-}
+public struct hGraphQLTestingData {}

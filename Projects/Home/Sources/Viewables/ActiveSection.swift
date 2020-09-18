@@ -1,11 +1,3 @@
-//
-//  ActiveSection.swift
-//  Home
-//
-//  Created by Sam Pettersson on 2020-08-17.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form

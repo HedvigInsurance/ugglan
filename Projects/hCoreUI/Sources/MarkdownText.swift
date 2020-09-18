@@ -1,10 +1,3 @@
-//
-//  MarkdownText.swift
-//  ugglan
-//
-//  Created by Gustaf Gunér on 2019-04-04.
-//
-
 import Flow
 import Form
 import Foundation

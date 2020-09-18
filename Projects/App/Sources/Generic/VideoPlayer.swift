@@ -1,10 +1,3 @@
-//
-//  VideoPlayer.swift
-//  project
-//
-//  Created by Sam Pettersson on 2019-09-13.
-//
-
 import AVKit
 import Flow
 import Foundation

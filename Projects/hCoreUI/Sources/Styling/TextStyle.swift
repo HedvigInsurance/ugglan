@@ -1,11 +1,3 @@
-//
-//  TextStyle.swift
-//  CoreUI
-//
-//  Created by Sam Pettersson on 2020-05-08.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Form
 import Foundation
 
@@ -26,27 +18,27 @@ public extension TextStyle {
         }
 
         public static var primary: Self {
-            return Self.primary(state: .dynamic)
+            Self.primary(state: .dynamic)
         }
 
         public static var secondary: Self {
-            return Self.secondary(state: .dynamic)
+            Self.secondary(state: .dynamic)
         }
 
         public static var tertiary: Self {
-            return Self.tertiary(state: .dynamic)
+            Self.tertiary(state: .dynamic)
         }
 
         public static var quartenary: Self {
-            return Self.quartenary(state: .dynamic)
+            Self.quartenary(state: .dynamic)
         }
 
         public static var link: Self {
-            return Self.link(state: .dynamic)
+            Self.link(state: .dynamic)
         }
 
         public static var destructive: Self {
-            return Self.destructive(state: .dynamic)
+            Self.destructive(state: .dynamic)
         }
 
         public var positiveColor: UIColor {
@@ -93,7 +85,7 @@ public extension TextStyle {
         }
 
         var dynamicColor: UIColor {
-            return UIColor(dynamic: { trait -> UIColor in
+            UIColor(dynamic: { trait -> UIColor in
                 if trait.userInterfaceStyle == .dark {
                     return self.negativeColor
                 }
@@ -103,7 +95,7 @@ public extension TextStyle {
         }
 
         var dynamicReversedColor: UIColor {
-            return UIColor(dynamic: { trait -> UIColor in
+            UIColor(dynamic: { trait -> UIColor in
                 if trait.userInterfaceStyle == .dark {
                     return self.dynamicColor
                 }
@@ -211,7 +203,7 @@ public extension TextStyle {
         }
 
         var textStyle: TextStyle {
-            return TextStyle.default.restyled { (style: inout TextStyle) in
+            TextStyle.default.restyled { (style: inout TextStyle) in
                 style.font = font
                 style.color = color
                 style.adjustsFontForContentSizeCategory = true

@@ -1,10 +1,3 @@
-//
-//  DummyPagerSlide.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-28.
-//
-
 import Flow
 import Foundation
 import Presentation

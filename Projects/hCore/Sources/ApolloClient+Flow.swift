@@ -1,11 +1,3 @@
-//
-//  ApolloClient+Flow.swift
-//  Core
-//
-//  Created by Sam Pettersson on 2020-05-08.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Foundation

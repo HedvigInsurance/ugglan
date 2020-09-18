@@ -1,11 +1,3 @@
-//
-//  LoadingIndicator.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-12-17.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -30,11 +22,11 @@ public struct LoadingIndicator {
 }
 
 extension LoadingIndicator: Viewable {
-    public func materialize(events: ViewableEvents) -> (UIView, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
         loadingIndicator.alpha = 0
         loadingIndicator.color = color
-        
+
         let bag = DisposeBag()
 
         bag += loadingIndicator.didMoveToWindowSignal.take(first: 1).onValue { _ in
@@ -44,7 +36,7 @@ extension LoadingIndicator: Viewable {
                 make.centerX.equalToSuperview()
             }
         }
-        
+
         bag += Signal(after: showAfter).animated(style: AnimationStyle.easeOut(duration: 0.5), animations: {
             loadingIndicator.alpha = 1
             loadingIndicator.startAnimating()

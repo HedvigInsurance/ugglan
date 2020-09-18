@@ -1,11 +1,3 @@
-//
-//  FormTableView.swift
-//  hCoreUI
-//
-//  Created by Sam Pettersson on 2020-08-10.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit

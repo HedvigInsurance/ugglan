@@ -1,10 +1,3 @@
-//
-//  CheckmarkLabel.swift
-//  ugglan
-//
-//  Created by Axel Backlund on 2019-04-10.
-//
-
 import Flow
 import Form
 import Foundation

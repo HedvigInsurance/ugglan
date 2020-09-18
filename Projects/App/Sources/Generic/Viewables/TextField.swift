@@ -1,10 +1,3 @@
-//
-//  TextField.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-06-14.
-//
-
 import Flow
 import Foundation
 import hCore
@@ -35,7 +28,7 @@ extension TextField: Viewable {
         }
 
         view.layer.borderWidth = UIScreen.main.hairlineWidth
-        bag += view.applyBorderColor { trait in
+        bag += view.applyBorderColor { _ in
             .brand(.primaryBorderColor)
         }
 

@@ -1,10 +1,3 @@
-//
-//  PresentStartDate.swift
-//  test
-//
-//  Created by Pavel Barros Quintanilla on 2020-01-14.
-//
-
 import Apollo
 import Flow
 import Form

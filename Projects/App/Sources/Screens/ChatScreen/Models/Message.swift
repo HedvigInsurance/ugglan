@@ -1,19 +1,12 @@
-//
-//  Message.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-09-12.
-//
-
 import Apollo
 import Flow
 import Foundation
-import UIKit
 import hGraphQL
+import UIKit
 
 struct Message: Equatable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {
-        return lhs.globalId == rhs.globalId
+        lhs.globalId == rhs.globalId
     }
 
     func hash(into hasher: inout Hasher) {
@@ -113,14 +106,14 @@ struct Message: Equatable, Hashable {
         }
 
         var isVideoOrImageType: Bool {
-            return isImageType || isVideoType || isGIFType
+            isImageType || isVideoType || isGIFType
         }
 
         case text, image(url: URL?), video(url: URL?), file(url: URL?), gif(url: URL?)
     }
 
     var shouldShowEditButton: Bool {
-        return cachedComputedProperties?.compute("shouldShowEditButton") { () -> Bool in
+        cachedComputedProperties?.compute("shouldShowEditButton") { () -> Bool in
             if self.richTextCompatible {
                 return false
             }
@@ -155,7 +148,7 @@ struct Message: Equatable, Hashable {
     }
 
     var hasTypingIndicatorNext: Bool {
-        return cachedComputedProperties?.compute("hasTypingIndicatorNext") { () -> Bool in
+        cachedComputedProperties?.compute("hasTypingIndicatorNext") { () -> Bool in
             guard let list = self.listSignal?.value else {
                 return false
             }
@@ -174,7 +167,7 @@ struct Message: Equatable, Hashable {
     }
 
     var next: Message? {
-        return cachedComputedProperties?.compute("next") { () -> Message? in
+        cachedComputedProperties?.compute("next") { () -> Message? in
             guard let list = self.listSignal?.value else {
                 return nil
             }
@@ -193,7 +186,7 @@ struct Message: Equatable, Hashable {
     }
 
     var previous: Message? {
-        return cachedComputedProperties?.compute("previous") { () -> Message? in
+        cachedComputedProperties?.compute("previous") { () -> Message? in
             guard let list = self.listSignal?.value else {
                 return nil
             }

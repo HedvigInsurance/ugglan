@@ -1,13 +1,6 @@
-//
-//  KeyGearItemCategory+Placeholder.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-20.
-//
-
 import Foundation
-import UIKit
 import hGraphQL
+import UIKit
 
 extension GraphQL.KeyGearItemCategory {
     var image: UIImage? {

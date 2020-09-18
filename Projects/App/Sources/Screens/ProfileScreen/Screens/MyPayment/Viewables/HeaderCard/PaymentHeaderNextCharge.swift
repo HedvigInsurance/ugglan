@@ -1,10 +1,3 @@
-//
-//  PaymentHeaderNextCharge.swift
-//  production
-//
-//  Created by Sam Pettersson on 2020-01-17.
-//
-
 import Apollo
 import Flow
 import Form

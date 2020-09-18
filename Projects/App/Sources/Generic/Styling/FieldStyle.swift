@@ -1,10 +1,3 @@
-//
-//  TextFieldStyle.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-02-16.
-//
-
 import Flow
 import Form
 import Foundation

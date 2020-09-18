@@ -1,10 +1,3 @@
-//
-//  ExtraBuildingRow.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-07.
-//
-
 import Flow
 import Form
 import Foundation
@@ -14,7 +7,7 @@ import UIKit
 
 public class ExtraBuildingRow {
     let data: ReadWriteSignal<GraphQL.ExtraBuildingFragment>
-    
+
     public init(data: ReadWriteSignal<GraphQL.ExtraBuildingFragment>) {
         self.data = data
     }

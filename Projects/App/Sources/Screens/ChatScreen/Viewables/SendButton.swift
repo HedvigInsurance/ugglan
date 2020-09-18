@@ -1,10 +1,3 @@
-//
-//  SendButton.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-07-25.
-//
-
 import Flow
 import Foundation
 import hCore

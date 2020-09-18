@@ -1,10 +1,3 @@
-//
-//  Dependencies.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-04.
-//
-
 import Foundation
 
 public class Dependencies {

@@ -1,11 +1,3 @@
-//
-//  ImagePicker.swift
-//  hedvig
-//
-//  Created by Sam Pettersson on 2019-05-22.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import MobileCoreServices

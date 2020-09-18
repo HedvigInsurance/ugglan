@@ -1,10 +1,3 @@
-//
-//  ChatState.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-10-02.
-//
-
 import Apollo
 import Flow
 import Form
@@ -115,7 +108,7 @@ class ChatState {
             hasFetched()
         }
         .filter(predicate: { messages -> Bool in
-            messages.count > 0
+            !messages.isEmpty
         })
         .atValue { messages in
             if let message = messages.first {

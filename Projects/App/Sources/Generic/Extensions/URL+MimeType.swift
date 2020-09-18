@@ -1,10 +1,3 @@
-//
-//  URL+MimeType.swift
-//  ugglan
-//
-//  Created by Sam Pettersson on 2019-09-12.
-//
-
 import Foundation
 import MobileCoreServices
 

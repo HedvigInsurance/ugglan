@@ -1,10 +1,3 @@
-//
-//  AnalyticsCoordinator.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-09-27.
-//
-
 import Apollo
 import Firebase
 import Flow

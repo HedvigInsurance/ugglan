@@ -1,10 +1,3 @@
-//
-//  TrustlyScriptHandler.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-02-10.
-//
-
 import Foundation
 import WebKit
 

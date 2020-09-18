@@ -1,11 +1,3 @@
-//
-//  ApolloEnvironmentConfig.swift
-//  hCore
-//
-//  Created by sam on 29.7.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 
 public struct ApolloEnvironmentConfig {

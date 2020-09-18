@@ -1,11 +1,3 @@
-//
-//  LoggedIn.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-02.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Contracts
 import Flow
@@ -172,7 +164,7 @@ extension LoggedIn: Presentable {
 
             bag += client
                 .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                .filter { $0.welcome.count > 0 }
+                .filter { !$0.welcome.isEmpty }
                 .onValue { data in
                     let welcome = Welcome(data: data, endWithReview: true)
                     tabBarController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
@@ -180,7 +172,7 @@ extension LoggedIn: Presentable {
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
                 .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-                .filter { $0.news.count > 0 }
+                .filter { !$0.news.isEmpty }
                 .onValue { data in
                     let whatsNew = WhatsNew(data: data)
                     tabBarController.present(whatsNew, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])

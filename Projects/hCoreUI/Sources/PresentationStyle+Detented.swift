@@ -1,11 +1,3 @@
-//
-//  PresentationStyle+Detented.swift
-//  hCore
-//
-//  Created by sam on 24.8.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation

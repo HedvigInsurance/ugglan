@@ -1,11 +1,3 @@
-//
-//  PaymentDetailsSection.swift
-//  Hedvig
-//
-//  Created by Isaac Sennerholt on 2019-01-15.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Form

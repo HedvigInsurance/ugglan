@@ -1,11 +1,3 @@
-//
-//  CrossFrameworkCoordinator.swift
-//  Ugglan
-//
-//  Created by Sam Pettersson on 2020-08-21.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Contracts
 import Foundation
 import hCore

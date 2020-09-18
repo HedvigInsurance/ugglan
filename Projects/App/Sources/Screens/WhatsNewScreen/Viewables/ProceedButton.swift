@@ -1,10 +1,3 @@
-//
-//  ProceedButton.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-10.
-//
-
 import Flow
 import Form
 import Foundation

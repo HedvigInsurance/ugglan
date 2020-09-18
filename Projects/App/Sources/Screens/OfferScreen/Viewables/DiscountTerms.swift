@@ -1,10 +1,3 @@
-//
-//  DiscountTerms.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-06-14.
-//
-
 import Flow
 import Form
 import Foundation

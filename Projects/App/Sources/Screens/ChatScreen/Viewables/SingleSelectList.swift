@@ -1,10 +1,3 @@
-//
-//  SingleSelectList.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-01.
-//
-
 import Apollo
 import Flow
 import Form

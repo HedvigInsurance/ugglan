@@ -1,18 +1,10 @@
-//
-//  UIControl+DelayedTouchCancel.swift
-//  Core
-//
-//  Created by Sam Pettersson on 2020-05-08.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit
 
 extension UIControl {
     public func delayedTouchCancel(delay: TimeInterval = 0.2) -> Signal<Void> {
-        return Signal { callback in
+        Signal { callback in
             let bag = DisposeBag()
 
             let touchDownDateSignal = ReadWriteSignal<Date>(Date())

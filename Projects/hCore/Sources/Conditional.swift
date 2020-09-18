@@ -1,11 +1,3 @@
-//
-//  Conditional.swift
-//  hCore
-//
-//  Created by Sam Pettersson on 2020-06-22.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import Presentation

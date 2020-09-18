@@ -1,10 +1,3 @@
-//
-//  CampaignBubble.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-19.
-//
-
 import Flow
 import Form
 import Foundation

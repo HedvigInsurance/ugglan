@@ -1,11 +1,3 @@
-//
-//  ScreenShotUtils.swift
-//  Testing
-//
-//  Created by sam on 22.5.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import hCore

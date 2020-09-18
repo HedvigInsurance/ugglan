@@ -1,11 +1,3 @@
-//
-//  EmbarkState.swift
-//  Embark
-//
-//  Created by sam on 15.5.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Foundation
@@ -40,7 +32,7 @@ public struct EmbarkState {
 
     let animationDirectionSignal = ReadWriteSignal<AnimationDirection>(.forwards)
     var canGoBackSignal: ReadSignal<Bool> {
-        passageHistorySignal.map { $0.count != 0 }
+        passageHistorySignal.map { !$0.isEmpty }
     }
 
     var passageNameSignal: ReadSignal<String?> {
@@ -102,7 +94,7 @@ public struct EmbarkState {
 
             let links = passage.allLinks.map { $0.name }
 
-            if links.count == 0 {
+            if links.isEmpty {
                 return previousDepth
             }
 

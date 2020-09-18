@@ -2,7 +2,6 @@ import Foundation
 import XCTest
 
 final class hGraphQLTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -14,5 +13,4 @@ final class hGraphQLTests: XCTestCase {
     func test_example() {
         // Add your test here
     }
-
 }

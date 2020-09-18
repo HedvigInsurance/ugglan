@@ -1,10 +1,3 @@
-//
-//  FreeTextChat.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-05-22.
-//
-
 import Apollo
 import Flow
 import Form

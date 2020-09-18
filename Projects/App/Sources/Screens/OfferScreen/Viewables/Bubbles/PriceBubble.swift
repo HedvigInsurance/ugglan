@@ -1,10 +1,3 @@
-//
-//  PriceBubble.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-06.
-//
-
 import Ease
 import Flow
 import Form

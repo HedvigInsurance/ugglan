@@ -1,11 +1,3 @@
-//
-//  ButtonRow.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-16.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -15,7 +7,7 @@ import UIKit
 
 public struct ButtonRow {
     public static var trackingHandler: (_ row: Self) -> Void = { _ in }
-    
+
     public let text: ReadWriteSignal<String>
     public let style: ReadWriteSignal<TextStyle>
     public let isHiddenSignal = ReadWriteSignal<Bool>(false)
@@ -64,7 +56,7 @@ extension ButtonRow: Viewable {
         bag += events.onSelect.onValue {
             Self.trackingHandler(self)
         }
-        
+
         row.append(label)
 
         return (row, bag)

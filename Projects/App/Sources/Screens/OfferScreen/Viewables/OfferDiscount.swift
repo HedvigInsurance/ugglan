@@ -1,10 +1,3 @@
-//
-//  OfferDiscount.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-08-09.
-//
-
 import Apollo
 import Flow
 import Foundation

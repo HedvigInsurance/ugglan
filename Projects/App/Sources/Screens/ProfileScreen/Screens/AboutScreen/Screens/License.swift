@@ -1,11 +1,3 @@
-//
-//  License.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-16.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 // import AcknowList
 import Flow
 import Foundation

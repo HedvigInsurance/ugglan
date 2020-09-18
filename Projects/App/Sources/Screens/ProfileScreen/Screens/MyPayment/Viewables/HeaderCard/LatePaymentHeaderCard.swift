@@ -1,10 +1,3 @@
-//
-//  LatePaymentHeaderCard.swift
-//  test
-//
-//  Created by Pavel Barros Quintanilla on 2020-01-23.
-//
-
 import Apollo
 import Flow
 import Form

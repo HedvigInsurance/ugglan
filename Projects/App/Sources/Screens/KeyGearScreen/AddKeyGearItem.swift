@@ -1,10 +1,3 @@
-//
-//  AddKeyGearItem.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-27.
-//
-
 import Apollo
 import Flow
 import Form

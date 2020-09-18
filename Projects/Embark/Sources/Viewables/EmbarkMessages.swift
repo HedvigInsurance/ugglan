@@ -1,10 +1,3 @@
-//
-//  EmbarkMessages.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-16.
-//
-
 import Flow
 import Foundation
 import hCore
@@ -17,7 +10,7 @@ struct EmbarkMessages {
 
 extension EmbarkMessages: Viewable {
     func parseMessage(message: GraphQL.MessageFragment) -> String? {
-        if message.expressions.count == 0 {
+        if message.expressions.isEmpty {
             return message.text
         }
 

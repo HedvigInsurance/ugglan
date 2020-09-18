@@ -1,11 +1,3 @@
-//
-//  SubviewOrderable+Spacing.swift
-//  hCore
-//
-//  Created by sam on 21.7.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 import Form
 import Foundation
 

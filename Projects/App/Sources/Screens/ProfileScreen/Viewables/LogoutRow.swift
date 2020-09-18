@@ -1,11 +1,3 @@
-//
-//  LogoutRow.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2019-01-17.
-//  Copyright © 2019 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation
@@ -21,7 +13,7 @@ struct LogoutRow {
 extension LogoutRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
-        
+
         let textStyle = TextStyle.brand(.headline(color: .destructive))
 
         let logoutRow = IconRow(

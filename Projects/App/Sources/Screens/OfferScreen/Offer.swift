@@ -1,10 +1,3 @@
-//
-//  Offer.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-07-31.
-//
-
 import Apollo
 import Flow
 import Form
@@ -51,6 +44,7 @@ extension Offer: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.offerTitle
+        viewController.navigationItem.hidesBackButton = true
         ApplicationState.preserveState(.offer)
 
         let bag = DisposeBag()

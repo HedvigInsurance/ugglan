@@ -1,10 +1,3 @@
-//
-//  CachedComputedVariables.swift
-//  test
-//
-//  Created by Sam Pettersson on 2019-09-26.
-//
-
 import Flow
 import Foundation
 

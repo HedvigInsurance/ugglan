@@ -1,10 +1,3 @@
-//
-//  PagerDots.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-12.
-//
-
 import Flow
 import Form
 import Foundation

@@ -1,16 +1,9 @@
-//
-//  KeyGearImageCarouselItem.swift
-//  test
-//
-//  Created by Sam Pettersson on 2020-01-27.
-//
-
 import Flow
 import Form
 import Foundation
+import hGraphQL
 import Kingfisher
 import UIKit
-import hGraphQL
 
 struct KeyGearImageCarouselItem {
     let resource: Either<URL, GraphQL.KeyGearItemCategory>

@@ -1,10 +1,3 @@
-//
-//  AccessoryViewController.swift
-//  Ugglan
-//
-//  Created by Sam Pettersson on 2019-09-02.
-//
-
 import Flow
 import Foundation
 import hCore
@@ -33,11 +26,11 @@ class AccessoryViewController<Accessory: Viewable>: UIViewController where Acces
     }
 
     override var canBecomeFirstResponder: Bool {
-        return true
+        true
     }
 
     override var inputAccessoryView: UIView? {
-        return accessoryView
+        accessoryView
     }
 
     override func viewDidAppear(_ animated: Bool) {

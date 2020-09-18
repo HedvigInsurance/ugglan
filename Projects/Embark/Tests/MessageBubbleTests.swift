@@ -1,11 +1,3 @@
-//
-//  MessageBubbleTests.swift
-//  EmbarkTests
-//
-//  Created by sam on 26.5.20.
-//  Copyright © 2020 Hedvig AB. All rights reserved.
-//
-
 @testable import Embark
 import Foundation
 import SnapshotTesting

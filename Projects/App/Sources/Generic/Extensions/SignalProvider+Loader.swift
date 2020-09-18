@@ -1,14 +1,7 @@
-//
-//  SignalProvider+Loader.swift
-//  UITests
-//
-//  Created by Sam Pettersson on 2019-05-10.
-//
-
 import Flow
 import Foundation
-import UIKit
 import hCoreUI
+import UIKit
 
 extension SignalProvider {
     func loader(after: TimeInterval, view: UIView) -> Self {

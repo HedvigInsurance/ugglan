@@ -1,11 +1,3 @@
-//
-//  Icon.swift
-//  Hedvig
-//
-//  Created by Sam Pettersson on 2018-11-11.
-//  Copyright © 2018 Sam Pettersson. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -45,7 +37,7 @@ public class Icon: UIView {
     }
 
     public override var intrinsicContentSize: CGSize {
-        return CGSize(width: iconWidth, height: iconWidth)
+        CGSize(width: iconWidth, height: iconWidth)
     }
 
     func setup() {
