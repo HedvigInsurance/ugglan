@@ -1,10 +1,3 @@
-//
-//  ContentIconPagerItem.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-28.
-//
-
 import Flow
 import Form
 import Foundation
@@ -100,7 +93,7 @@ extension ContentIconPagerItem: Presentable {
 
         let bodyLabel = MultilineLabel(styledText: StyledText(
             text: paragraph,
-            style: TextStyle.brand(.body(color: title != nil ? .secondary : .primary)).centerAligned
+            style: TextStyle.brand(.title3(color: title != nil ? .secondary : .primary)).centerAligned
         ))
 
         bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in
