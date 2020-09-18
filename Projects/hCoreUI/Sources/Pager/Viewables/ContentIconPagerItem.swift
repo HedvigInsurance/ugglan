@@ -86,21 +86,19 @@ extension ContentIconPagerItem: Presentable {
                 titleLabelView.snp.makeConstraints { make in
                     make.width.equalToSuperview()
                     make.centerX.equalToSuperview()
-                    make.height.equalTo(100)
                 }
             }
         }
 
         let bodyLabel = MultilineLabel(styledText: StyledText(
             text: paragraph,
-            style: TextStyle.brand(.title3(color: title != nil ? .secondary : .primary)).centerAligned
+            style: TextStyle.brand(title != nil ? .body(color: .secondary) : .title3(color: .primary)).centerAligned
         ))
 
         bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in
             bodyLabelView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
-                make.height.equalTo(100)
             }
         }
 

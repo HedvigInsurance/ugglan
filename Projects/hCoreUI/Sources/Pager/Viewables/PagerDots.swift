@@ -1,23 +1,18 @@
-//
-//  PagerDots.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-12.
-//
-
 import Flow
 import Form
 import Foundation
 import hCore
 import UIKit
 
-struct PagerDots {
-    let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
-    let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+public struct PagerDots {
+    public let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+    public let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+
+    public init() {}
 }
 
 extension PagerDots: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let view = UIView()

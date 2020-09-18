@@ -7,15 +7,6 @@ import hGraphQL
 import Presentation
 import UIKit
 
-extension PresentationStyle {
-    public static var autoDismissOnClose: PresentationStyle {
-        PresentationStyle(name: "autoDismissOnClose") { (viewController, from, options) -> Result in
-
-            PresentationStyle.default.present(viewController, from: from, options: options)
-        }
-    }
-}
-
 public struct Pager {
     public var title: String
     public var buttonContinueTitle: String

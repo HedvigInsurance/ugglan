@@ -166,16 +166,46 @@ extension LoggedIn: Presentable {
                 .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
                 .filter { !$0.welcome.isEmpty }
                 .onValue { data in
-                    let welcome = Welcome(data: data, endWithReview: true)
-                    tabBarController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
+                    let pager = Pager(
+                        title: "",
+                        buttonContinueTitle: L10n.newMemberProceed,
+                        buttonDoneTitle: L10n.newMemberDismiss,
+                        pages: data.welcome.map {
+                            ContentIconPagerItem(
+                                title: $0.title,
+                                paragraph: $0.paragraph,
+                                icon: $0.illustration.fragments.iconFragment
+                            ).pagerItem
+                        }
+                    ) { _ in
+                        Future<Void>()
+                    }
+
+                    tabBarController.present(pager).onValue { _ in
+                        AskForRating().ask()
+                    }
                 }
         } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
             bag += client
                 .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
                 .filter { !$0.news.isEmpty }
                 .onValue { data in
-                    let whatsNew = WhatsNew(data: data)
-                    tabBarController.present(whatsNew, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
+                    let pager = Pager(
+                        title: "",
+                        buttonContinueTitle: L10n.newsProceed,
+                        buttonDoneTitle: L10n.newsDismiss,
+                        pages: data.news.map {
+                            ContentIconPagerItem(
+                                title: $0.title,
+                                paragraph: $0.paragraph,
+                                icon: $0.illustration.fragments.iconFragment
+                            ).pagerItem
+                        }
+                    ) { _ in
+                        Future<Void>()
+                    }
+
+                    tabBarController.present(pager)
                 }
         }
 
