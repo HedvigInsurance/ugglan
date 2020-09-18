@@ -84,7 +84,7 @@ public enum ButtonType {
         case let .pillSemiTransparent(backgroundColor, _):
             return backgroundColor
         case .iconTransparent:
-            return .purple
+            return .black
         case .transparent:
             return .clear
         }
