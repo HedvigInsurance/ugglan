@@ -286,7 +286,12 @@ extension Button: Viewable {
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
-                let backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                let backgroundColor: UIColor
+                if buttonType.backgroundColor.isLight() {
+                    backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                } else {
+                    backgroundColor = buttonType.backgroundColor.lighter(amount: 0.10).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                }
 
                 style.states = [
                     .normal: ButtonStateStyle(

@@ -1,10 +1,3 @@
-//
-//  WelcomePagerProceedButton.swift
-//  project
-//
-//  Created by Gustaf Gunér on 2019-06-28.
-//
-
 import Flow
 import Form
 import Foundation
@@ -46,7 +39,11 @@ extension PagerProceedButton: Viewable {
             button.type.value = ButtonType.standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
         }
 
-        func setButtonTitle(isMorePages: Bool) {
+        func setButtonTitle(amount: Int, isMorePages: Bool) {
+            guard amount != 0 else {
+                buttonTitleSignal.value = ""
+                return
+            }
             buttonTitleSignal.value = isMorePages ? buttonContinueTitle : buttonDoneTitle
         }
 
@@ -63,7 +60,7 @@ extension PagerProceedButton: Viewable {
             .onValue { pageAmount in
                 let isMorePages = pageAmount > 1
 
-                setButtonTitle(isMorePages: isMorePages)
+                setButtonTitle(amount: pageAmount, isMorePages: isMorePages)
                 setButtonStyle(isMorePages: isMorePages)
 
                 buttonView.alpha = 1
@@ -72,7 +69,7 @@ extension PagerProceedButton: Viewable {
         bag += onScrolledToPageIndexSignal.withLatestFrom(pageAmountSignal).onValue { pageIndex, pageAmount in
             let isMorePages = pageIndex < (pageAmount - 1)
 
-            setButtonTitle(isMorePages: isMorePages)
+            setButtonTitle(amount: pageAmount, isMorePages: isMorePages)
             setButtonStyle(isMorePages: isMorePages)
         }
 
