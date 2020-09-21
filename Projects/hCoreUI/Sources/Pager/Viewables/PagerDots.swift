@@ -30,6 +30,20 @@ extension PagerDots: Viewable {
             }
         }
 
+        func dotColor(active: Bool) -> UIColor {
+            if active {
+                return UIColor(dynamic: { trait in
+                    if trait.userInterfaceStyle == .dark {
+                        return .white
+                    }
+
+                    return .black
+                })
+            }
+
+            return .gray
+        }
+
         bag += pageAmountSignal.atOnce().filter { $0 != 0 }.onValue { pageAmount in
             for subview in stackView.subviews {
                 subview.removeFromSuperview()
@@ -37,7 +51,7 @@ extension PagerDots: Viewable {
 
             for i in 0 ... pageAmount - 1 {
                 let indicator = UIView()
-                indicator.backgroundColor = i == 0 ? .black : .gray
+                indicator.backgroundColor = dotColor(active: i == 0)
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
                 indicator.layer.cornerRadius = 2
 
@@ -53,7 +67,7 @@ extension PagerDots: Viewable {
             for (index, indicator) in stackView.subviews.enumerated() {
                 let indicatorIsActive = index == pageIndex
 
-                indicator.backgroundColor = indicatorIsActive ? .black : .gray
+                indicator.backgroundColor = dotColor(active: indicatorIsActive)
                 indicator.transform = indicatorIsActive ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
             }
         }
