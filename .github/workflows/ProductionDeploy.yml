@@ -41,7 +41,7 @@ jobs:
         author_email: hedvig-app-bot@hedvig.com
         signoff: true
         message: 'Updated version to ${{ github.event.inputs.versionNumber }}'
-        tag: "${{ github.event.inputs.versionNumber }}"
+        tag: ''
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Create Release
