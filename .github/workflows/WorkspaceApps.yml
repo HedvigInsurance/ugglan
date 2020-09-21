@@ -18,15 +18,15 @@ jobs:
       uses: actions/cache@v1
       with:
         path: .tuist/Cache
-        key: ${{ runner.os }}-xcode-12-tuist
+        key: ${{ runner.os }}-xcode-12-gm-tuist
     - uses: actions/cache@v1
       with:
         path: ~/Library/Developer/Xcode/DerivedData
-        key: ${{ runner.os }}-xcode-12-derived-data
+        key: ${{ runner.os }}-xcode-12-gm-derived-data
     - uses: actions/cache@v1
       with:
         path: Carthage
-        key: ${{ runner.os }}-xcode-12-carthage-${{ hashFiles('**/Cartfile.resolved') }}
+        key: ${{ runner.os }}-xcode-12-gm-carthage-${{ hashFiles('**/Cartfile.resolved') }}
     - name: Set XCODE_XCCONFIG_FILE
       run: echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
     - name: Install Tuist
