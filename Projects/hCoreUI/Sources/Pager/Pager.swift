@@ -7,6 +7,7 @@ import hGraphQL
 import Presentation
 import UIKit
 
+/// Presents a UICollectionView of multiple screens that are scrolled horizontally
 public struct Pager {
     public var title: String
     public var buttonContinueTitle: String
@@ -19,7 +20,7 @@ public struct Pager {
         buttonContinueTitle: String,
         buttonDoneTitle: String,
         pages: [PagerItem],
-        onEnd: @escaping (_ viewController: UIViewController) -> Future<Void>
+        onEnd: @escaping (_ viewController: UIViewController) -> Future<Void> = { _ in Future() }
     ) {
         self.title = title
         self.pages = pages

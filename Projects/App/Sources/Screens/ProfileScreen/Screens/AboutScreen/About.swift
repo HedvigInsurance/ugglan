@@ -120,27 +120,7 @@ extension About: Presentable {
             bag += versionSection.append(showWelcome)
 
             bag += showWelcome.onSelect.onValue { _ in
-                bag += self.client
-                    .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                    .filter { !$0.welcome.isEmpty }
-                    .onValue { data in
-                        let pager = Pager(
-                            title: "",
-                            buttonContinueTitle: L10n.newMemberProceed,
-                            buttonDoneTitle: L10n.newMemberDismiss,
-                            pages: data.welcome.map {
-                                ContentIconPagerItem(
-                                    title: $0.title,
-                                    paragraph: $0.paragraph,
-                                    icon: $0.illustration.fragments.iconFragment
-                                ).pagerItem
-                            }
-                        ) { _ in
-                            Future<Void>()
-                        }
-
-                        viewController.present(pager)
-                    }
+                viewController.present(WelcomePager())
             }
         }
 

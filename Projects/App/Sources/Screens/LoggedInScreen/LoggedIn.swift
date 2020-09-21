@@ -156,58 +156,15 @@ extension LoggedIn: Presentable {
             }
         }
 
-        let appVersion = Bundle.main.appVersion
-        let lastNewsSeen = ApplicationState.getLastNewsSeen()
-
         if didSign {
-            ApplicationState.setLastNewsSeen()
-
-            bag += client
-                .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                .filter { !$0.welcome.isEmpty }
-                .onValue { data in
-                    let pager = Pager(
-                        title: "",
-                        buttonContinueTitle: L10n.newMemberProceed,
-                        buttonDoneTitle: L10n.newMemberDismiss,
-                        pages: data.welcome.map {
-                            ContentIconPagerItem(
-                                title: $0.title,
-                                paragraph: $0.paragraph,
-                                icon: $0.illustration.fragments.iconFragment
-                            ).pagerItem
-                        }
-                    ) { _ in
-                        Future<Void>()
-                    }
-
-                    tabBarController.present(pager).onValue { _ in
-                        AskForRating().ask()
-                    }
-                }
-        } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
-            bag += client
-                .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-                .filter { !$0.news.isEmpty }
-                .onValue { data in
-                    let pager = Pager(
-                        title: "",
-                        buttonContinueTitle: L10n.newsProceed,
-                        buttonDoneTitle: L10n.newsDismiss,
-                        pages: data.news.map {
-                            ContentIconPagerItem(
-                                title: $0.title,
-                                paragraph: $0.paragraph,
-                                icon: $0.illustration.fragments.iconFragment
-                            ).pagerItem
-                        }
-                    ) { _ in
-                        Future<Void>()
-                    }
-
-                    tabBarController.present(pager)
-                }
+            tabBarController.present(WelcomePager()).onValue { _ in
+                AskForRating().ask()
+            }
+        } else {
+            tabBarController.presentConditionally(WhatsNewPager()).onValue { _ in }
         }
+
+        ApplicationState.setLastNewsSeen()
 
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
