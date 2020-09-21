@@ -44,7 +44,7 @@ extension ActiveSection: Viewable {
 
         let howClaimsWorkButton = Button(
             title: L10n.ClaimsExplainer.title,
-            type: .iconTransparent(textColor: .brand(.primaryTintColor), icon: .left(image: hCoreUIAssets.info.image, width: 14))
+            type: .iconTransparent(textColor: .brand(.primaryTintColor), icon: .left(image: hCoreUIAssets.infoSmall.image, width: 14))
         )
         bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
         bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }.onValue { viewController in
