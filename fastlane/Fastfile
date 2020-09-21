@@ -101,8 +101,7 @@ platform :ios do
         end
         
         increment_build_number(
-            live: false,
-            build_number: app_store_build_number(app_identifier: app_identifier) + 1,
+            build_number: latest_testflight_build_number(app_identifier: app_identifier) + 1,
             xcodeproj: "Projects/App/Ugglan.xcodeproj"
         )
         
