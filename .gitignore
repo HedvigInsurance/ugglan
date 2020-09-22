@@ -26,6 +26,7 @@ __MACOSX
 *.perspectivev3
 !default.perspectivev3
 xcuserdata/
+.bundle/config
 
 ## Other
 *.moved-aside
