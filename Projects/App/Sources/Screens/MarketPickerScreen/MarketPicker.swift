@@ -5,6 +5,7 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
+import Mixpanel
 import Presentation
 import UIKit
 
@@ -20,6 +21,15 @@ struct MarketPicker {
 extension MarketPicker {
     enum Market: CaseIterable {
         case norway, sweden
+
+        var id: String {
+            switch self {
+            case .norway:
+                return "no"
+            case .sweden:
+                return "se"
+            }
+        }
 
         var title: String {
             switch self {
@@ -55,6 +65,12 @@ extension MarketPicker {
             let section = SectionView(headerView: titleContainer, footerView: nil)
 
             let pickedMarketCallbacker = Callbacker<Market>()
+
+            bag += pickedMarketCallbacker.onValue { market in
+                Mixpanel.mainInstance().track(event: "select_market", properties: [
+                    "market": market.id,
+                ])
+            }
 
             bag += Market.allCases.sorted(by: { (a, _) -> Bool in
                 a == suggestedMarket
@@ -116,6 +132,9 @@ extension MarketPicker {
                 bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
                     self.didFinish()
                 }
+                Mixpanel.mainInstance().track(event: "select_locale", properties: [
+                    "locale": locale.code,
+                ])
             }
 
             section.animationSafeIsHidden = true
