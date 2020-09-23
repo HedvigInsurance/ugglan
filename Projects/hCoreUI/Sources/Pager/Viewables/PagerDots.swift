@@ -4,13 +4,15 @@ import Foundation
 import hCore
 import UIKit
 
-struct WhatsNewPagerDots {
-    let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
-    let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+public struct PagerDots {
+    public let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+    public let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
+
+    public init() {}
 }
 
-extension WhatsNewPagerDots: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+extension PagerDots: Viewable {
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let view = UIView()
@@ -28,14 +30,28 @@ extension WhatsNewPagerDots: Viewable {
             }
         }
 
+        func dotColor(active: Bool) -> UIColor {
+            if active {
+                return UIColor(dynamic: { trait in
+                    if trait.userInterfaceStyle == .dark {
+                        return .white
+                    }
+
+                    return .black
+                })
+            }
+
+            return .gray
+        }
+
         bag += pageAmountSignal.atOnce().filter { $0 != 0 }.onValue { pageAmount in
             for subview in stackView.subviews {
                 subview.removeFromSuperview()
             }
 
-            for i in 0 ... pageAmount - 2 {
+            for i in 0 ... pageAmount - 1 {
                 let indicator = UIView()
-                indicator.backgroundColor = i == 0 ? .brand(.primaryText()) : .gray
+                indicator.backgroundColor = dotColor(active: i == 0)
                 indicator.transform = i == 0 ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
                 indicator.layer.cornerRadius = 2
 
@@ -45,28 +61,13 @@ extension WhatsNewPagerDots: Viewable {
 
                 stackView.addArrangedSubview(indicator)
             }
-
-            let hedvigSymbol = UIImageView()
-            hedvigSymbol.image = Asset.symbol.image.withRenderingMode(.alwaysTemplate)
-            hedvigSymbol.contentMode = .scaleAspectFit
-            hedvigSymbol.tintColor = .gray
-            hedvigSymbol.snp.makeConstraints { make in
-                make.width.height.equalTo(12)
-            }
-
-            stackView.addArrangedSubview(hedvigSymbol)
         }
 
         bag += pageIndexSignal.animated(style: SpringAnimationStyle.heavyBounce()) { pageIndex in
             for (index, indicator) in stackView.subviews.enumerated() {
                 let indicatorIsActive = index == pageIndex
 
-                if indicator is UIImageView {
-                    indicator.tintColor = indicatorIsActive ? .brand(.primaryTintColor) : .gray
-                } else {
-                    indicator.backgroundColor = indicatorIsActive ? .brand(.primaryTintColor) : .gray
-                }
-
+                indicator.backgroundColor = dotColor(active: indicatorIsActive)
                 indicator.transform = indicatorIsActive ? CGAffineTransform(scaleX: 1.5, y: 1.5) : CGAffineTransform.identity
             }
         }

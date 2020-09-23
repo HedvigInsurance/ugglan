@@ -22,7 +22,7 @@ extension Forever: Presentable {
         viewController.edgesForExtendedLayout = [.top, .left, .right]
         let bag = DisposeBag()
 
-        let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.info.image, style: .plain, target: nil, action: nil)
+        let infoBarButton = UIBarButtonItem(image: hCoreUIAssets.infoLarge.image, style: .plain, target: nil, action: nil)
 
         bag += infoBarButton.onValue {
             viewController.present(

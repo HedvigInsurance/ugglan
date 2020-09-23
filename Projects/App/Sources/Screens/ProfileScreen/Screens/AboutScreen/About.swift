@@ -120,13 +120,7 @@ extension About: Presentable {
             bag += versionSection.append(showWelcome)
 
             bag += showWelcome.onSelect.onValue { _ in
-                bag += self.client
-                    .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                    .filter { !$0.welcome.isEmpty }
-                    .onValue { data in
-                        let welcome = Welcome(data: data, endWithReview: false)
-                        viewController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
-                    }
+                viewController.present(WelcomePager())
             }
         }
 

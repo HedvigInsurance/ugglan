@@ -23,7 +23,7 @@ extension CharityInformationButton: Viewable {
             title: L10n.profileMyCharityInfoButton,
             type: .iconTransparent(
                 textColor: .brand(.primaryTintColor),
-                icon: .left(image: Asset.infoPurple.image, width: 20)
+                icon: .left(image: hCoreUIAssets.infoSmall.image, width: .smallIconWidth)
             )
         )
 
