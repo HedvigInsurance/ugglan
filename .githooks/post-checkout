@@ -1,8 +1,8 @@
 #!/bin/bash
 
-../scripts/translations.sh
-../scripts/swiftgen.sh
-../scripts/codegen.sh
+scripts/translations.sh
+scripts/swiftgen.sh
+scripts/codegen.sh
 
 TUIST=/usr/local/bin/tuist
 
