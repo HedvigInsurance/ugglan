@@ -41,7 +41,7 @@ extension BulletPointCard: Reusable {
         let titleLabel = UILabel(value: "", style: .brand(.headline(color: .primary)))
         contentView.addArrangedSubview(titleLabel)
 
-        let descriptionLabel = MultilineLabel(value: "", style: .brand(.body(color: .secondary)))
+        var descriptionLabel = MultilineLabel(value: "", style: .brand(.body(color: .secondary)))
 
         return (view, { bulletPointCard in
             let bag = DisposeBag()
@@ -59,7 +59,7 @@ extension BulletPointCard: Reusable {
             bag += contentView.addArranged(descriptionLabel)
 
             titleLabel.value = bulletPointCard.title
-            descriptionLabel.valueSignal.value = bulletPointCard.description
+            descriptionLabel.value = bulletPointCard.description
 
             bag += cardContainer.add(bulletPointCard.icon) { iconView in
                 iconView.snp.makeConstraints { make in

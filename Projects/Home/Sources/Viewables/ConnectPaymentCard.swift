@@ -28,13 +28,22 @@ extension ConnectPaymentCard: Viewable {
         bag += client.watch(query: GraphQL.PayInMethodStatusQuery())
             .map { $0.payinMethodStatus }
             .distinct()
-            .delay(by: 5)
             .onValueDisposePrevious { status -> Disposable? in
                 let bag = DisposeBag()
 
-                if status == .active {
+                if status == .needsSetup {
                     bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
-                    bag += stackView.addArranged(Card(title: "test", body: "test"), onCreate: animateIn)
+                    bag += stackView.addArranged(
+                        Card(
+                            titleIcon: hCoreUIAssets.warningTriangle.image,
+                            title: L10n.InfoCardMissingPayment.title,
+                            body: L10n.InfoCardMissingPayment.body,
+                            buttonText: L10n.InfoCardMissingPayment.buttonText
+                        ),
+                        onCreate: animateIn
+                    ).compactMap { stackView.viewController }.onValue { viewController in
+                        Home.openConnectPaymentHandler(viewController)
+                    }
                 }
 
                 return bag

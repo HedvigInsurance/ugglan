@@ -28,7 +28,14 @@ extension ApolloMultilineLabel: Viewable {
         bag += client
             .watch(query: query)
             .map { self.mapDataAndStyle($0) }
-            .bindTo(multilineLabel.styledTextSignal)
+            .map { $0.text }
+            .bindTo(multilineLabel.$value)
+
+        bag += client
+            .watch(query: query)
+            .map { self.mapDataAndStyle($0) }
+            .map { $0.style }
+            .bindTo(multilineLabel.$style)
 
         return (multilineLabel, bag)
     }

@@ -25,17 +25,17 @@ extension OfferCoverage: Viewable {
 
         stackView.addArrangedSubview(UILabel(value: L10n.offerScreenCoverageTitle, style: TextStyle.brand(.headline(color: .primary)).centerAligned))
 
-        let bodyLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .secondary)).centerAligned)
+        var bodyLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .secondary)).centerAligned)
         bag += stackView.addArranged(bodyLabel)
 
         bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.type }.onValue { type in
             switch type {
             case .brf, .studentBrf:
-                bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyBrf
+                bodyLabel.value = L10n.offerScreenCoverageBodyBrf
             case .rent, .studentRent:
-                bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyRental
+                bodyLabel.value = L10n.offerScreenCoverageBodyRental
             case .house:
-                bodyLabel.valueSignal.value = L10n.offerScreenCoverageBodyHouse
+                bodyLabel.value = L10n.offerScreenCoverageBodyHouse
             case .__unknown:
                 break
             }

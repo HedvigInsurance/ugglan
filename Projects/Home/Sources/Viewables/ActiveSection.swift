@@ -18,14 +18,14 @@ extension ActiveSection: Viewable {
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-        let label = MultilineLabel(
+        var label = MultilineLabel(
             value: "",
             style: .brand(.largeTitle(color: .primary))
         )
         bag += section.append(label)
 
         client.fetch(query: GraphQL.HomeQuery()).onValue { data in
-            label.valueSignal.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "")
+            label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "")
         }
 
         section.appendSpacing(.top)

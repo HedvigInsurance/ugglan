@@ -18,7 +18,7 @@ extension TerminatedSection: Viewable {
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-        let titleLabel = MultilineLabel(
+        var titleLabel = MultilineLabel(
             value: "",
             style: .brand(.largeTitle(color: .primary))
         )
@@ -27,7 +27,7 @@ extension TerminatedSection: Viewable {
         section.appendSpacing(.inbetween)
 
         client.fetch(query: GraphQL.HomeQuery()).onValue { data in
-            titleLabel.valueSignal.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
+            titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
         }
 
         let subtitleLabel = MultilineLabel(

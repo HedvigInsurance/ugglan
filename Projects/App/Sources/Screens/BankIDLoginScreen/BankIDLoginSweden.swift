@@ -84,7 +84,7 @@ extension BankIDLoginSweden: Presentable {
 
         bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
 
-        let statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
+        var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
         bag += containerView.addArranged(statusLabel)
 
         let closeButtonContainer = UIStackView()
@@ -114,7 +114,7 @@ extension BankIDLoginSweden: Presentable {
                 statusText = L10n.bankIdAuthTitleInitiated
             }
 
-            statusLabel.styledTextSignal.value = StyledText(text: statusText, style: .brand(.headline(color: .primary)))
+            statusLabel.value = statusText
         }
 
         generateAutoStartToken().onValue { url in

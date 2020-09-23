@@ -9,7 +9,7 @@ import UIKit
 struct CrossFrameworkCoordinator {
     static func setup() {
         Button.trackingHandler = { button in
-            if let localizationKey = button.title.value.derivedFromL10n?.key {
+            if let localizationKey = button.title.value.displayValue.derivedFromL10n?.key {
                 Mixpanel.mainInstance().track(event: localizationKey, properties: [
                     "context": "Button",
                 ])
@@ -60,6 +60,13 @@ struct CrossFrameworkCoordinator {
         Home.openFreeTextChatHandler = { viewController in
             viewController.present(
                 FreeTextChat().withCloseButton,
+                style: .detented(.large)
+            )
+        }
+
+        Home.openConnectPaymentHandler = { viewController in
+            viewController.present(
+                PaymentSetup(setupType: .initial),
                 style: .detented(.large)
             )
         }

@@ -52,8 +52,7 @@ extension OfferCoverageSwitcher: Viewable {
 
                 return L10n.offerSwitchTitleApp(previousInsurer.displayName ?? "")
             }
-            .map { StyledText(text: $0, style: TextStyle.brand(.headline(color: .primary)).centerAligned) }
-            .bindTo(titleLabel.styledTextSignal)
+            .bindTo(titleLabel.$value)
 
         bag += stackView.addArranged(OfferSwitcherBulletList())
 

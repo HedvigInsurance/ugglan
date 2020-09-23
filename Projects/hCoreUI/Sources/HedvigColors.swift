@@ -140,4 +140,34 @@ public extension UIColor {
     static func brand(_ color: BrandColor) -> UIColor {
         color.color
     }
+
+    enum TintColor {
+        case yellowOne
+        case yellowTwo
+
+        var color: UIColor {
+            switch self {
+            case .yellowOne:
+                return UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return #colorLiteral(red: 0.8401703238, green: 0.6963499188, blue: 0.2325098217, alpha: 1)
+                    }
+
+                    return #colorLiteral(red: 0.9490196078, green: 0.7843137255, blue: 0.3215686275, alpha: 1)
+                })
+            case .yellowTwo:
+                return UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return #colorLiteral(red: 0.890196085, green: 0.7254902124, blue: 0.270588249, alpha: 1)
+                    }
+
+                    return #colorLiteral(red: 0.980392158, green: 0.8784313798, blue: 0.5960784554, alpha: 1)
+                })
+            }
+        }
+    }
+
+    static func tint(_ tint: TintColor) -> UIColor {
+        tint.color
+    }
 }

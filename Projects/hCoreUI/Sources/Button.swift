@@ -232,12 +232,12 @@ public struct Button {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     private let id = UUID()
-    public let title: ReadWriteSignal<String>
+    public let title: ReadWriteSignal<DisplayableString>
     public let onTapSignal: Signal<Void>
     public let type: ReadWriteSignal<ButtonType>
     public let animate: Bool
 
-    public init(title: String, type: ButtonType, animate: Bool = true) {
+    public init(title: DisplayableString, type: ButtonType, animate: Bool = true) {
         self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = ReadWriteSignal<ButtonType>(type)
