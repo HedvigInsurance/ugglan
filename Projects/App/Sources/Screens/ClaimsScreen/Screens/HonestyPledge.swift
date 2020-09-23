@@ -33,7 +33,7 @@ struct HonestyPledge {
         )
 
         return PresentableViewable(viewable: pushNotificationsAction) { viewController in
-            viewController.preferredContentSize = CGSize(width: 0, height: UIScreen.main.bounds.height - 70)
+            viewController.navigationItem.hidesBackButton = true
         }
     }
 }
@@ -87,8 +87,7 @@ extension HonestyPledge: Presentable {
                 func presentClaimsChat() {
                     viewController.present(
                         ClaimsChat().withCloseButton,
-                        style: .detented(.large, modally: false),
-                        options: [.prefersNavigationBarHidden(false)]
+                        style: .detented(.large, modally: false)
                     ).onResult(completion)
                 }
 
@@ -97,8 +96,7 @@ extension HonestyPledge: Presentable {
                 } else {
                     bag += viewController.present(
                         self.pushNotificationsPresentable(),
-                        style: .detented(.large, modally: false),
-                        options: [.prefersNavigationBarHidden(true)]
+                        style: .detented(.large, modally: false)
                     ).onValue { action in
                         if action == .ask {
                             UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in

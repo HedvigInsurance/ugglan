@@ -2,19 +2,32 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import hGraphQL
 import Presentation
 import UIKit
 
-struct WhatsNewPagerScreen {
-    let title: String
+public struct ContentIconPagerItem {
+    let title: String?
     let paragraph: String
     let icon: GraphQL.IconFragment
+
+    public var pagerItem: PagerItem {
+        PagerItem(id: .init(), content: AnyPresentable(self))
+    }
+
+    public init(
+        title: String?,
+        paragraph: String,
+        icon: GraphQL.IconFragment
+    ) {
+        self.title = title
+        self.paragraph = paragraph
+        self.icon = icon
+    }
 }
 
-extension WhatsNewPagerScreen: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+extension ContentIconPagerItem: Presentable {
+    public func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
@@ -27,7 +40,7 @@ extension WhatsNewPagerScreen: Presentable {
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .brand(.primaryTintColor))
+        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .black)
         let loadingIndicatorBag = DisposeBag()
         loadingIndicatorBag += containerView.addArranged(loadingIndicator)
         bag += loadingIndicatorBag
@@ -40,7 +53,6 @@ extension WhatsNewPagerScreen: Presentable {
         innerContainerView.isLayoutMarginsRelativeArrangement = true
 
         let remoteVectorIcon = RemoteVectorIcon(icon, threaded: true)
-
         containerView.addArrangedSubview(innerContainerView)
 
         innerContainerView.snp.makeConstraints { make in
@@ -56,53 +68,37 @@ extension WhatsNewPagerScreen: Presentable {
 
         bag += innerContainerView.addArranged(remoteVectorIcon) { iconView in
             iconView.snp.makeConstraints { make in
-                make.width.centerX.equalToSuperview()
-                make.height.equalTo(iconView.snp.width)
+                make.width.equalToSuperview()
+                make.height.equalTo(180)
             }
         }
 
         let spacing = Spacing(height: 30)
         bag += innerContainerView.addArranged(spacing)
 
-        let titleLabel = MultilineLabel(styledText: StyledText(
-            text: title,
-            style: .brand(.largeTitle(color: .primary))
-        ))
+        if let title = title {
+            let titleLabel = MultilineLabel(styledText: StyledText(
+                text: title,
+                style: TextStyle.brand(.title1(color: .primary)).centerAligned
+            ))
 
-        bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
-            titleLabelView.textAlignment = .center
-
-            titleLabelView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.centerX.equalToSuperview()
-                make.height.equalTo(100)
-            }
-
-            bag += titleLabel.intrinsicContentSizeSignal.onValue { size in
-                titleLabelView.snp.updateConstraints { make in
-                    make.height.equalTo(size.height)
+            bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
+                titleLabelView.snp.makeConstraints { make in
+                    make.width.equalToSuperview()
+                    make.centerX.equalToSuperview()
                 }
             }
         }
 
         let bodyLabel = MultilineLabel(styledText: StyledText(
             text: paragraph,
-            style: TextStyle.brand(.body(color: .secondary)).centerAligned
+            style: TextStyle.brand(title != nil ? .body(color: .secondary) : .title3(color: .primary)).centerAligned
         ))
 
         bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in
-            bodyLabelView.textAlignment = .center
-
             bodyLabelView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.centerX.equalToSuperview()
-                make.height.equalTo(100)
-            }
-
-            bag += bodyLabel.intrinsicContentSizeSignal.onValue { size in
-                bodyLabelView.snp.updateConstraints { make in
-                    make.height.equalTo(size.height)
-                }
             }
         }
 

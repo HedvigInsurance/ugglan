@@ -118,7 +118,7 @@ extension ContractRow: Reusable {
     func makeInfoIcon() -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = Asset.infoPurple.image
+        imageView.image = hCoreUIAssets.infoLarge.image
 
         imageView.snp.makeConstraints { make in
             make.width.equalTo(20)

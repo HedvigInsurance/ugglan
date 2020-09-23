@@ -30,16 +30,43 @@ extension ActiveSection: Viewable {
 
         section.appendSpacing(.top)
 
-        let button = Button(
+        let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
             type: .standard(
                 backgroundColor: .brand(.secondaryButtonBackgroundColor),
                 textColor: .brand(.secondaryButtonTextColor)
             )
         )
-        bag += section.append(button)
+        bag += section.append(claimButton)
+        bag += claimButton.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
 
-        bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
+        section.appendSpacing(.inbetween)
+
+        let howClaimsWorkButton = Button(
+            title: L10n.ClaimsExplainer.title,
+            type: .iconTransparent(textColor: .brand(.primaryTintColor), icon: .left(image: hCoreUIAssets.infoSmall.image, width: .smallIconWidth))
+        )
+        bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
+        bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }.onValue { viewController in
+            var pager = Pager(
+                title: L10n.ClaimsExplainer.title,
+                buttonContinueTitle: L10n.ClaimsExplainer.buttonNext,
+                buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
+                pages: []
+            ) { viewController in
+                Home.openClaimsHandler(viewController)
+                return Future(.forever)
+            }
+            viewController.present(pager)
+
+            client.fetch(query: GraphQL.HowClaimsWorkQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())).onValue { data in
+                pager.pages = data.howClaimsWork.map { ContentIconPagerItem(
+                    title: nil,
+                    paragraph: $0.body,
+                    icon: $0.illustration.fragments.iconFragment
+                ).pagerItem }
+            }
+        }
 
         bag += section.append(ConnectPaymentCard())
 

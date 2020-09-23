@@ -8,6 +8,10 @@ public struct CloseButton {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
     public let onTapSignal: Signal<Void>
 
+    public var barButtonItem: UIBarButtonItem {
+        UIBarButtonItem(viewable: self)
+    }
+
     public init() {
         onTapSignal = onTapReadWriteSignal.plain()
     }

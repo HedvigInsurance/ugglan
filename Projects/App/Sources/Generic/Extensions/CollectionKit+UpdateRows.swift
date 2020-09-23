@@ -1,3 +1,11 @@
+//
+//  CollectionKit+UpdateAt.swift
+//  Hedvig
+//
+//  Created by Sam Pettersson on 2018-12-04.
+//  Copyright © 2018 Hedvig AB. All rights reserved.
+//
+
 import Form
 import Foundation
 
@@ -22,14 +30,14 @@ extension CollectionKit {
     }
 
     func hasPreviousRow() -> Bool {
-        currentIndex() != 0
+        currentIndex != 0
     }
 
     func hasNextRow() -> Bool {
-        currentIndex() + 1 < table.count
+        currentIndex + 1 < table.count
     }
 
     func updateCurrentRow() {
-        updateRowAtIndex(index: currentIndex())
+        updateRowAtIndex(index: currentIndex)
     }
 }

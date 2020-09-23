@@ -84,7 +84,7 @@ public enum ButtonType {
         case let .pillSemiTransparent(backgroundColor, _):
             return backgroundColor
         case .iconTransparent:
-            return .purple
+            return .black
         case .transparent:
             return .clear
         }
@@ -141,7 +141,7 @@ public enum ButtonType {
         case .pillSemiTransparent:
             return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .iconTransparent:
-            return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
+            return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
         case .tinyIcon:
             return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
         case .transparent:
@@ -286,7 +286,12 @@ extension Button: Viewable {
             highlightedStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
                 style.buttonType = .custom
 
-                let backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                let backgroundColor: UIColor
+                if buttonType.backgroundColor.isLight() {
+                    backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                } else {
+                    backgroundColor = buttonType.backgroundColor.lighter(amount: 0.10).withAlphaComponent(buttonType.highlightedBackgroundOpacity)
+                }
 
                 style.states = [
                     .normal: ButtonStateStyle(
@@ -454,8 +459,11 @@ extension Button: Viewable {
         }
 
         bag += button.didLayoutSignal.take(first: 1).onValue { _ in
+            let type = self.type.value
+            let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
+
             button.snp.updateConstraints { make in
-                make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset)
+                make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset + iconWidth)
                 make.height.equalTo(self.type.value.height)
             }
             button.snp.makeConstraints { make in

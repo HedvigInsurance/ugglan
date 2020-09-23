@@ -2,26 +2,32 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import hGraphQL
 import UIKit
 
-struct ProceedButton {
+struct PagerProceedButton {
+    let buttonContinueTitle: String
+    let buttonDoneTitle: String
     let button: Button
     let onTapSignal: Signal<Void>
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     let pageAmountSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)
-    let dataSignal: ReadWriteSignal<GraphQL.WhatsNewQuery.Data?> = ReadWriteSignal(nil)
     let onScrolledToPageIndexSignal = ReadWriteSignal<Int>(0)
 
-    init(button: Button) {
+    init(
+        buttonContinueTitle: String,
+        buttonDoneTitle: String,
+        button: Button
+    ) {
+        self.buttonContinueTitle = buttonContinueTitle
+        self.buttonDoneTitle = buttonDoneTitle
         self.button = button
         onTapSignal = onTapReadWriteSignal.plain()
     }
 }
 
-extension ProceedButton: Viewable {
+extension PagerProceedButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
         let (buttonView, disposable) = button.materialize(events: events)
@@ -30,11 +36,15 @@ extension ProceedButton: Viewable {
         let buttonTitleSignal = ReadWriteSignal<String>("")
 
         func setButtonStyle(isMorePages _: Bool) {
-            button.type.value = ButtonType.standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+            button.type.value = ButtonType.standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
         }
 
-        func setButtonTitle(isMorePages: Bool) {
-            buttonTitleSignal.value = isMorePages ? L10n.newsProceed : L10n.newsDismiss
+        func setButtonTitle(amount: Int, isMorePages: Bool) {
+            guard amount != 0 else {
+                buttonTitleSignal.value = ""
+                return
+            }
+            buttonTitleSignal.value = isMorePages ? buttonContinueTitle : buttonDoneTitle
         }
 
         bag += button.onTapSignal.bindTo(onTapReadWriteSignal)
@@ -42,23 +52,15 @@ extension ProceedButton: Viewable {
         bag += buttonTitleSignal
             .distinct()
             .delay(by: 0.25)
-            .animated(style: SpringAnimationStyle.lightBounce(duration: 0.15)) { title in
-                buttonView.setTitle(title)
-
-                buttonView.snp.remakeConstraints { make in
-                    make.width.equalTo(buttonView.intrinsicContentSize.width + self.button.type.value.extraWidthOffset)
-                    make.height.equalTo(self.button.type.value.height)
-                }
-
-                buttonView.layoutIfNeeded()
-            }
+            .transition(style: .crossDissolve(duration: 0.25), with: buttonView, animations: { title in
+                self.button.title.value = title
+            })
 
         bag += pageAmountSignal
-            .take(first: 1)
             .onValue { pageAmount in
                 let isMorePages = pageAmount > 1
 
-                setButtonTitle(isMorePages: isMorePages)
+                setButtonTitle(amount: pageAmount, isMorePages: isMorePages)
                 setButtonStyle(isMorePages: isMorePages)
 
                 buttonView.alpha = 1
@@ -67,7 +69,7 @@ extension ProceedButton: Viewable {
         bag += onScrolledToPageIndexSignal.withLatestFrom(pageAmountSignal).onValue { pageIndex, pageAmount in
             let isMorePages = pageIndex < (pageAmount - 1)
 
-            setButtonTitle(isMorePages: isMorePages)
+            setButtonTitle(amount: pageAmount, isMorePages: isMorePages)
             setButtonStyle(isMorePages: isMorePages)
         }
 

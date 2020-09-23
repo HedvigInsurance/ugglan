@@ -156,28 +156,15 @@ extension LoggedIn: Presentable {
             }
         }
 
-        let appVersion = Bundle.main.appVersion
-        let lastNewsSeen = ApplicationState.getLastNewsSeen()
-
         if didSign {
-            ApplicationState.setLastNewsSeen()
-
-            bag += client
-                .watch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-                .filter { !$0.welcome.isEmpty }
-                .onValue { data in
-                    let welcome = Welcome(data: data, endWithReview: true)
-                    tabBarController.present(welcome, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
-                }
-        } else if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
-            bag += client
-                .watch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-                .filter { !$0.news.isEmpty }
-                .onValue { data in
-                    let whatsNew = WhatsNew(data: data)
-                    tabBarController.present(whatsNew, style: .detented(.large), options: [.prefersNavigationBarHidden(true)])
-                }
+            tabBarController.present(WelcomePager()).onValue { _ in
+                AskForRating().ask()
+            }
+        } else {
+            tabBarController.presentConditionally(WhatsNewPager()).onValue { _ in }
         }
+
+        ApplicationState.setLastNewsSeen()
 
         bag += handleOpenReferrals(tabBarController: tabBarController)
 
