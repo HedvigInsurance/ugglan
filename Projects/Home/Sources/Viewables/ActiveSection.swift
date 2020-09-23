@@ -41,6 +41,8 @@ extension ActiveSection: Viewable {
 
         bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
 
+        bag += section.append(ConnectPaymentCard())
+
         section.appendSpacing(.custom(80))
 
         bag += section.append(CommonClaimsCollection())
