@@ -36,13 +36,13 @@ extension DiscountCodeSection: Viewable {
             footerView: {
                 let stackView = UIStackView()
 
-                let label = MultilineLabel(
+                var label = MultilineLabel(
                     value: "",
                     style: TextStyle.brand(.footnote(color: .tertiary)).aligned(to: .center)
                 )
 
                 bag += self.service.dataSignal.atOnce().compactMap { $0?.potentialDiscountAmount }.onValue { monetaryAmount in
-                    label.valueSignal.value = L10n.ReferralsEmpty.Code.footer(monetaryAmount.formattedAmount)
+                    label.value = L10n.ReferralsEmpty.Code.footer(monetaryAmount.formattedAmount)
                 }
 
                 bag += stackView.addArranged(label)

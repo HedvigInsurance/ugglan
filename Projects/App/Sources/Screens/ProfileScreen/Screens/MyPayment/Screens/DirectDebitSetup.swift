@@ -167,9 +167,9 @@ extension DirectDebitSetup: Presentable {
 
                 switch type {
                 case .success:
-                    self.store.update(query: GraphQL.MyPaymentQuery(), updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
+                    self.store.update(query: GraphQL.PayInMethodStatusQuery()) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
                         data.payinMethodStatus = .pending
-                    })
+                    }
                     ClearDirectDebitStatus.clear()
                 case .failure:
                     break

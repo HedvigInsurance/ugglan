@@ -18,8 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigationController = UINavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
 
-        ContextGradient.rules = []
-
         Dependencies.shared.add(module: Module {
             ApolloEnvironmentConfig(
                 endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,

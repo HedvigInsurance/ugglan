@@ -206,7 +206,7 @@ extension Project {
                                          infoPlist: .default,
                                          sources: "Testing/**/*.swift",
                                          actions: targetActions,
-                                         dependencies: [[.target(name: "\(name)")], targetDependencies].flatMap { $0 },
+                                         dependencies: [[.target(name: "\(name)"), .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil"))], targetDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
         if targets.contains(.tests) {
@@ -218,7 +218,7 @@ extension Project {
                                          infoPlist: .default,
                                          sources: "Tests/**/*.swift",
                                          actions: targetActions,
-                                         dependencies: [[.target(name: "\(name)Example")], testsDependencies].flatMap { $0 },
+                                         dependencies: [[.target(name: "\(name)Example"), .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil"))], testsDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: testsConfigurations)))
         }
         if targets.contains(.example) {
@@ -231,7 +231,7 @@ extension Project {
                                          sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                                          resources: "Example/Resources/**",
                                          actions: targetActions,
-                                         dependencies: [[.target(name: "\(name)"), .project(target: "ExampleUtil", path: .relativeToRoot("Projects/ExampleUtil"))], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
+                                         dependencies: [[.target(name: "\(name)"), .project(target: "ExampleUtil", path: .relativeToRoot("Projects/ExampleUtil")), .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil"))], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
                                          settings: Settings(base: [:], configurations: appConfigurations)))
         }
 

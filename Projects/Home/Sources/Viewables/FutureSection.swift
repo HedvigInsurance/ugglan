@@ -18,7 +18,7 @@ extension FutureSection: Viewable {
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-        let titleLabel = MultilineLabel(
+        var titleLabel = MultilineLabel(
             value: "",
             style: .brand(.largeTitle(color: .primary))
         )
@@ -26,7 +26,7 @@ extension FutureSection: Viewable {
 
         section.appendSpacing(.inbetween)
 
-        let subtitleLabel = MultilineLabel(
+        var subtitleLabel = MultilineLabel(
             value: "",
             style: .brand(.body(color: .secondary))
         )
@@ -38,17 +38,17 @@ extension FutureSection: Viewable {
         ).onValue { homeData, insuranceProvidersData in
             if let contract = homeData.contracts.first(where: { $0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil }) {
                 if let activeInFutureStatus = contract.status.asActiveInFutureStatus {
-                    titleLabel.valueSignal.value = L10n.HomeTab.activeInFutureWelcomeTitle(homeData.member.firstName ?? "", activeInFutureStatus.futureInception ?? "")
-                    subtitleLabel.valueSignal.value = L10n.HomeTab.activeInFutureBody
+                    titleLabel.value = L10n.HomeTab.activeInFutureWelcomeTitle(homeData.member.firstName ?? "", activeInFutureStatus.futureInception ?? "")
+                    subtitleLabel.value = L10n.HomeTab.activeInFutureBody
                 } else if let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider, let insuranceProvider = insuranceProvidersData.insuranceProviders.first(where: { provider -> Bool in
                     provider.name == switchedFromInsuranceProvider
                 }) {
                     if insuranceProvider.switchable {
-                        titleLabel.valueSignal.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(homeData.member.firstName ?? "")
-                        subtitleLabel.valueSignal.value = L10n.HomeTab.pendingNonswitchableBody
+                        titleLabel.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(homeData.member.firstName ?? "")
+                        subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
                     } else {
-                        titleLabel.valueSignal.value = L10n.HomeTab.pendingNonswitchableWelcomeTitle(homeData.member.firstName ?? "")
-                        subtitleLabel.valueSignal.value = L10n.HomeTab.pendingNonswitchableBody
+                        titleLabel.value = L10n.HomeTab.pendingNonswitchableWelcomeTitle(homeData.member.firstName ?? "")
+                        subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
                     }
                 }
             }

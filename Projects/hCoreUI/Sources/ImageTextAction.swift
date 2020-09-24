@@ -99,22 +99,22 @@ extension ImageTextAction: Viewable {
         headerImageContainer.addArrangedSubview(headerImageView)
         view.addArrangedSubview(headerImageContainer)
 
-        let titleLabel = MultilineLabel(
+        var titleLabel = MultilineLabel(
             value: title,
             style: TextStyle.brand(.title1(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(titleLabel)
         bag += $title.onValue { value in
-            titleLabel.valueSignal.value = value
+            titleLabel.value = value
         }
 
-        let bodyLabel = MultilineLabel(
+        var bodyLabel = MultilineLabel(
             value: body,
             style: TextStyle.brand(.body(color: .secondary)).aligned(to: .center)
         )
         bag += view.addArranged(bodyLabel)
         bag += $body.onValue { value in
-            bodyLabel.valueSignal.value = value
+            bodyLabel.value = value
         }
 
         let buttonsContainer = UIStackView()

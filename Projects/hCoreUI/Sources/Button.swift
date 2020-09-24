@@ -137,7 +137,7 @@ public enum ButtonType {
         case .standard, .outline, .standardIcon, .standardOutline:
             return TextStyle.brand(.body(color: .primary(state: .negative))).colored(textColor)
         case .standardSmall:
-            return TextStyle.brand(.footnote(color: .primary(state: .negative))).colored(textColor)
+            return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
         case .pillSemiTransparent:
             return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .iconTransparent:
@@ -154,7 +154,7 @@ public enum ButtonType {
         case .standard, .standardIcon, .standardOutline:
             return 50
         case .standardSmall:
-            return 35
+            return 40
         case .outline:
             return 35
         case .pillSemiTransparent:
@@ -232,12 +232,12 @@ public struct Button {
     private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
 
     private let id = UUID()
-    public let title: ReadWriteSignal<String>
+    public let title: ReadWriteSignal<DisplayableString>
     public let onTapSignal: Signal<Void>
     public let type: ReadWriteSignal<ButtonType>
     public let animate: Bool
 
-    public init(title: String, type: ButtonType, animate: Bool = true) {
+    public init(title: DisplayableString, type: ButtonType, animate: Bool = true) {
         self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = ReadWriteSignal<ButtonType>(type)

@@ -265,9 +265,9 @@ extension AdyenSetup: Presentable {
 
             return DelayedDisposer(bag, delay: 2)
         }.onValue { _ in
-            self.store.update(query: GraphQL.MyPaymentQuery(), updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
+            self.store.update(query: GraphQL.PayInMethodStatusQuery()) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
                 data.payinMethodStatus = .active
-            })
+            }
         })
     }
 }

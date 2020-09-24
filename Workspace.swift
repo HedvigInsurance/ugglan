@@ -8,6 +8,7 @@ let workspace = Workspace(
         "Projects/Codegen",
         "Projects/Embark",
         "Projects/Testing",
+        "Projects/TestingUtil",
         "Projects/hCore",
         "Projects/hCoreUI",
         "Projects/hGraphQL",

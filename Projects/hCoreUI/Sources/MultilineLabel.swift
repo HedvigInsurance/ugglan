@@ -5,22 +5,19 @@ import hCore
 import UIKit
 
 public struct MultilineLabel {
-    public let styledTextSignal: ReadWriteSignal<StyledText>
+    @ReadWriteState public var value: DisplayableString
+    @ReadWriteState public var style: TextStyle
+
     public let intrinsicContentSizeSignal: ReadSignal<CGSize>
     public let usePreferredMaxLayoutWidth: Bool
-
-    public var valueSignal: ReadWriteSignal<DisplayableString> {
-        styledTextSignal.map { $0.text }.writable { value in
-            self.styledTextSignal.value = StyledText(text: value, style: self.styledTextSignal.value.style)
-        }
-    }
 
     private let intrinsicContentSizeReadWriteSignal = ReadWriteSignal<CGSize>(
         CGSize(width: 0, height: 0)
     )
 
     public init(styledText: StyledText, usePreferredMaxLayoutWidth: Bool = true) {
-        styledTextSignal = ReadWriteSignal(styledText)
+        value = styledText.text
+        style = styledText.style
         intrinsicContentSizeSignal = intrinsicContentSizeReadWriteSignal.readOnly()
         self.usePreferredMaxLayoutWidth = usePreferredMaxLayoutWidth
     }
@@ -35,13 +32,14 @@ extension MultilineLabel: Viewable {
         let bag = DisposeBag()
 
         let label = UILabel()
+        bag += $value.atOnce().bindTo(label, \.value)
 
-        bag += styledTextSignal.atOnce().map { styledText -> StyledText in
-            styledText.restyled { (textStyle: inout TextStyle) in
+        bag += $style.atOnce().map { style -> TextStyle in
+            style.restyled { (textStyle: inout TextStyle) in
                 textStyle.numberOfLines = 0
                 textStyle.lineBreakMode = .byWordWrapping
             }
-        }.bindTo(label, \.styledText)
+        }.bindTo(label, \.style)
 
         bag += label.didLayoutSignal.onValue {
             if self.usePreferredMaxLayoutWidth {

@@ -111,7 +111,7 @@ extension ChangeCode: Presentable {
 
         bag += textFieldErrorSignal
             .compactMap { $0?.localizedDescription }
-            .bindTo(errorMessageLabel.valueSignal)
+            .bindTo(errorMessageLabel.$value)
 
         form.appendSpacing(.inbetween)
         bag += form.append(errorMessageLabel) { errorMessageLabelView in
