@@ -9,6 +9,7 @@ import hGraphQL
 import Home
 import HomeTesting
 import Presentation
+import TestingUtil
 import UIKit
 
 struct Debug {}
@@ -32,7 +33,7 @@ extension Debug: Presentable {
                 apolloClient
             })
 
-            viewController.present(Home(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
 
         bag += section.appendRow(title: "Home - Active in future").append(hCoreUIAssets.chevronRight.image).onValue {
@@ -42,7 +43,7 @@ extension Debug: Presentable {
                 apolloClient
             })
 
-            viewController.present(Home(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
 
         bag += section.appendRow(title: "Home - Pending").append(hCoreUIAssets.chevronRight.image).onValue {
@@ -52,7 +53,7 @@ extension Debug: Presentable {
                 apolloClient
             })
 
-            viewController.present(Home(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
 
         bag += section.appendRow(title: "Home - Pending non switchable").append(hCoreUIAssets.chevronRight.image).onValue {
@@ -62,7 +63,20 @@ extension Debug: Presentable {
                 apolloClient
             })
 
-            viewController.present(Home(), style: .modal, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+        }
+
+        bag += section.appendRow(title: "Home - With payment card").append(hCoreUIAssets.chevronRight.image).onValue {
+            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: combineMultiple([
+                .makeActive(),
+                .makePayInMethodStatus(.needsSetup),
+            ])))
+
+            Dependencies.shared.add(module: Module { () -> ApolloClient in
+                apolloClient
+            })
+
+            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
         }
 
         bag += viewController.install(form)

@@ -2,12 +2,7 @@ import Apollo
 import hCore
 import hGraphQL
 import Home
-
-func combineMultiple(_ jsonObjects: [JSONObject]) -> JSONObject {
-    jsonObjects.reduce(JSONObject()) { result, jsonObject in
-        result.merging(jsonObject, uniquingKeysWith: takeRight)
-    }
-}
+import TestingUtil
 
 extension JSONObject {
     public static func makeCommonClaims() -> JSONObject {

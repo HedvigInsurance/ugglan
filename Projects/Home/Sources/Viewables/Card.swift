@@ -16,6 +16,7 @@ extension Card: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<Void>) {
         let bag = DisposeBag()
         let view = UIView()
+        view.accessibilityIdentifier = "Card"
         view.layer.cornerRadius = .defaultCornerRadius
 
         view.backgroundColor = .tint(.yellowTwo)
