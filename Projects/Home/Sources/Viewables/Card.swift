@@ -45,6 +45,7 @@ extension Card: Viewable {
             let imageView = UIImageView()
             imageView.image = titleIcon
             imageView.contentMode = .scaleAspectFit
+            imageView.tintColor = .black
 
             bag += $titleIcon.bindTo(imageView, \.image)
 
@@ -55,12 +56,12 @@ extension Card: Viewable {
             return imageView
         }())
 
-        let titleLabel = UILabel(value: title, style: TextStyle.brand(.headline(color: .primary)).centerAligned)
+        let titleLabel = UILabel(value: title, style: TextStyle.brand(.headline(color: .primary(state: .positive))).centerAligned)
         bag += $title.bindTo(titleLabel, \.value)
 
         headerView.addArrangedSubview(titleLabel)
 
-        let bodyLabel = MultilineLabel(value: body, style: TextStyle.brand(.subHeadline(color: .secondary)).centerAligned)
+        let bodyLabel = MultilineLabel(value: body, style: TextStyle.brand(.subHeadline(color: .secondary(state: .positive))).centerAligned)
         bag += $body.bindTo(bodyLabel.$value)
 
         bag += contentView.addArranged(bodyLabel) { view in
