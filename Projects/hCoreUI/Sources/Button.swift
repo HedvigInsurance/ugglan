@@ -154,7 +154,7 @@ public enum ButtonType {
         case .standard, .standardIcon, .standardOutline:
             return 50
         case .standardSmall:
-            return 35
+            return 40
         case .outline:
             return 35
         case .pillSemiTransparent:
