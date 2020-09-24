@@ -53,7 +53,7 @@ extension MessageBubble: Viewable {
 
         let bodyStyle: TextStyle = messageType == .replied ? .brand(.body(color: .primary(state: .negative))) : .brand(.body(color: .primary))
 
-        let label = MultilineLabel(value: "", style: bodyStyle, usePreferredMaxLayoutWidth: false)
+        var label = MultilineLabel(value: "", style: bodyStyle, usePreferredMaxLayoutWidth: false)
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in
                 UIPasteboard.general.string = labelView.text
@@ -68,7 +68,8 @@ extension MessageBubble: Viewable {
                     .delay(by: delay)
                     .onValue { styledText in
                         UIView.performWithoutAnimation {
-                            label.styledTextSignal.value = styledText
+                            label.style = styledText.style
+                            label.value = styledText.text
                             containerStackView.isHidden = false
                             stylingView.alpha = 1
                             labelView.alpha = 1
@@ -79,7 +80,8 @@ extension MessageBubble: Viewable {
                     .atOnce()
                     .map { StyledText(text: $0, style: bodyStyle) }
                     .onValue { styledText in
-                        label.styledTextSignal.value = styledText
+                        label.style = styledText.style
+                        label.value = styledText.text
                         containerStackView.isHidden = false
                         stylingView.alpha = 1
                         labelView.alpha = 1
