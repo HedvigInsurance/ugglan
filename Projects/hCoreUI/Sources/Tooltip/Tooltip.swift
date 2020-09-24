@@ -123,7 +123,7 @@ extension Tooltip: Presentable {
             make.top.bottom.leading.trailing.equalToSuperview()
         }
 
-        let label = UILabel(value: value, style: .brand(.body(color: .primary)))
+        let label = UILabel(value: value, style: .brand(.body(color: .primary(state: .positive))))
         contentContainer.addArrangedSubview(label)
 
         return (backgroundView, bag)
