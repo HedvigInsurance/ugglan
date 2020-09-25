@@ -54,6 +54,8 @@ platform :ios do
             sleep 30
         end
         
+        # wait some additional 20 minutes to make sure DSYM is ready for download
+        sleep 1200
         upload_dsyms_to_sentry
     end
     
