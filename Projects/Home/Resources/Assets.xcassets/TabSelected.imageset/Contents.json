@@ -1,27 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "home active.pdf",
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "light"
-        }
-      ],
-      "filename" : "home active-2.pdf",
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "filename" : "home active-1.pdf",
+      "filename" : "Fill 5.pdf",
       "idiom" : "universal"
     }
   ],
@@ -31,6 +11,6 @@
   },
   "properties" : {
     "preserves-vector-representation" : true,
-    "template-rendering-intent" : "original"
+    "template-rendering-intent" : "template"
   }
 }
