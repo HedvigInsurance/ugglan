@@ -24,6 +24,7 @@ jobs:
       run: echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
     - name: Install Tuist
       run: bash <(curl -Ls https://install.tuist.io)
+    - run: brew install getsentry/tools/sentry-cli
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
