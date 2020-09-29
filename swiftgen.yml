@@ -22,6 +22,10 @@ xcassets:
       outputs:
         templateName: swift4
         output: Projects/Home/Sources/Derived/Assets.swift
+    - inputs: Projects/Market/Resources/Assets.xcassets
+      outputs:
+        templateName: swift4
+        output: Projects/Market/Sources/Derived/Assets.swift
 strings:
   inputs: 
     - Projects/hCore/Resources/en-SE.lproj/Localizable.strings

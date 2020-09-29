@@ -9,17 +9,17 @@ import Mixpanel
 import Presentation
 import UIKit
 
-struct MarketPicker {
+public struct MarketPicker {
     @Inject var client: ApolloClient
     var didFinish: () -> Void
 
-    init(didFinish: @escaping () -> Void = {}) {
+    public init(didFinish: @escaping () -> Void = {}) {
         self.didFinish = didFinish
     }
 }
 
 extension MarketPicker {
-    enum Market: CaseIterable {
+    public enum Market: CaseIterable {
         case norway, sweden
 
         var id: String {
@@ -193,7 +193,7 @@ extension MarketPicker {
 }
 
 extension MarketPicker: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 

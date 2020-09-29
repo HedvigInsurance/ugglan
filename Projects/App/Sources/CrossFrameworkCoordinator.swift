@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import hCoreUI
 import Home
+import Market
 import Mixpanel
 import UIKit
 
@@ -76,6 +77,10 @@ struct CrossFrameworkCoordinator {
                 FreeTextChat().withCloseButton,
                 style: .detented(.large)
             )
+        }
+
+        Marketing.onMaterialize = {
+            ApplicationState.preserveState(.marketing)
         }
     }
 }
