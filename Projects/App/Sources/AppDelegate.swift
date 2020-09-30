@@ -146,7 +146,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-        Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
 
         ApolloClient.environment = ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
         ApolloClient.bundle = Bundle.main

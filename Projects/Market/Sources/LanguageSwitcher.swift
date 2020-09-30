@@ -102,7 +102,6 @@ extension LanguageSwitcher: Presentable {
         func pickLanguage(locale: Localization.Locale) {
             ApplicationState.setPreferredLocale(locale)
             Localization.Locale.currentLocale = locale
-            Bundle.setLanguage(locale.lprojCode)
             ApolloClient.initClient().always {
                 reloadAllLabels()
                 NotificationCenter.default.post(Notification(name: .localeSwitched))
