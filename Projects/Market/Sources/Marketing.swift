@@ -43,7 +43,7 @@ extension Marketing: Presentable {
 
         let wordmarkImageView = UIImageView()
         wordmarkImageView.contentMode = .scaleAspectFill
-        wordmarkImageView.image = Asset.wordmarkWhite.image
+        wordmarkImageView.image = hCoreUIAssets.wordmark.image
         containerView.addSubview(wordmarkImageView)
 
         wordmarkImageView.snp.makeConstraints { make in
@@ -85,18 +85,24 @@ extension Marketing: Presentable {
             make.bottom.trailing.leading.equalToSuperview()
         }
 
-        let onboardButton = Button(title: L10n.marketingGetHedvig, type: .standard(backgroundColor: .white, textColor: .black))
+        let onboardButton = Button(
+            title: L10n.marketingGetHedvig,
+            type: .standard(backgroundColor: .white, textColor: .black)
+        )
 
         bag += onboardButton.onTapSignal.onValue { _ in
-            viewController.present(Onboarding(), style: .default, options: [.defaults, .prefersNavigationBarHidden(false)])
+            CrossFramework.presentOnboarding(viewController)
         }
 
         bag += contentStackView.addArranged(onboardButton)
 
-        let loginButton = Button(title: L10n.marketingLogin, type: .standardOutline(borderColor: .white, textColor: .white))
+        let loginButton = Button(
+            title: L10n.marketingLogin,
+            type: .standardOutline(borderColor: .white, textColor: .white)
+        )
 
         bag += loginButton.onTapSignal.onValue { _ in
-            viewController.present(BankIDLogin(), options: [.defaults, .allowSwipeDismissAlways])
+            CrossFramework.presentLogin(viewController)
         }
 
         bag += contentStackView.addArranged(loginButton)

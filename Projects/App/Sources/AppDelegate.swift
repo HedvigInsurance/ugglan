@@ -145,11 +145,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Mixpanel.initialize(token: mixpanelToken)
         }
 
+        Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
+
+        ApolloClient.environment = ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        ApolloClient.bundle = Bundle.main
+        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
+
+        Dependencies.shared.add(module: Module {
+            ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        })
+
         AskForRating().registerSession()
         CrossFrameworkCoordinator.setup()
 
-        Localization.Locale.currentLocale = ApplicationState.preferredLocale
-        Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
 
         window.rootViewController = navigationController
@@ -259,20 +268,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Toasts.shared.displayToast(toast: toast)
         }
 
-        bag += ApolloClient.initClient().valueSignal.map { _ in true }.plain().atValue { _ in
-            Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
-                AnalyticsCoordinator()
+        // treat an empty token as a newly downloaded app and setLastNewsSeen
+        if ApolloClient.retreiveToken() == nil {
+            ApplicationState.setLastNewsSeen()
+        }
+
+        bag += ApolloClient.initAndRegisterClient()
+            .valueSignal
+            .map { _ in true }
+            .plain()
+            .atValue { _ in
+                Dependencies.shared.add(module: Module {
+                    AnalyticsCoordinator()
             })
 
-            AnalyticsCoordinator().setUserId()
+                AnalyticsCoordinator().setUserId()
 
-            self.bag += ApplicationState.presentRootViewController(self.window)
-        }.onValue { _ in
-            let client: ApolloClient = Dependencies.shared.resolve()
-            self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
-                launch.completeAnimationCallbacker.callAll()
+                self.bag += ApplicationState.presentRootViewController(self.window)
+            }.onValue { _ in
+                let client: ApolloClient = Dependencies.shared.resolve()
+                self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
+                    launch.completeAnimationCallbacker.callAll()
+                }
             }
-        }
 
         bag += launchFuture.onValue { _ in
             launchView.removeFromSuperview()
@@ -280,6 +298,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         return true
+    }
+}
+
+extension ApolloClient {
+    public static func initAndRegisterClient() -> Future<Void> {
+        Self.initClient().onValue { store, client in
+            Dependencies.shared.add(module: Module {
+                store
+            })
+
+            Dependencies.shared.add(module: Module {
+                client
+            })
+        }.toVoid()
     }
 }
 

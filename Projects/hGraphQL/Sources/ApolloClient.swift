@@ -3,25 +3,30 @@ import ApolloWebSocket
 import Disk
 import Flow
 import Foundation
-import hCore
-import hGraphQL
 import UIKit
 
 extension ApolloClient {
-    static var environment: ApolloEnvironmentConfig {
-        ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+    public static var environment: ApolloEnvironmentConfig?
+    public static var acceptLanguageHeader: String = ""
+    public static var bundle: Bundle?
+
+    static var appVersion: String {
+        bundle?.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
-    static var userAgent: String {
-        "\(Bundle.main.bundleIdentifier ?? "") \(Bundle.main.appVersion) (iOS \(UIDevice.current.systemVersion))"
+    public static var userAgent: String {
+        "\(bundle?.bundleIdentifier ?? "") \(appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
 
-    static var cache = InMemoryNormalizedCache()
+    public static var cache = InMemoryNormalizedCache()
 
     static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+        guard let environment = environment else {
+            fatalError("Environment must be defined")
+        }
         let httpAdditionalHeaders = [
             "Authorization": token ?? "",
-            "Accept-Language": Localization.Locale.currentLocale.acceptLanguageHeader,
+            "Accept-Language": acceptLanguageHeader,
             "User-Agent": userAgent,
         ]
 
@@ -49,18 +54,6 @@ extension ApolloClient {
         let store = ApolloStore(cache: ApolloClient.cache)
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
 
-        Dependencies.shared.add(module: Module { () -> ApolloClient in
-            client
-        })
-
-        Dependencies.shared.add(module: Module { () -> ApolloStore in
-            store
-        })
-
-        Dependencies.shared.add(module: Module { () -> ApolloEnvironmentConfig in
-            environment
-        })
-
         return (store, client)
     }
 
@@ -71,7 +64,7 @@ extension ApolloClient {
         )
     }
 
-    static func retreiveToken() -> AuthorizationToken? {
+    public static func retreiveToken() -> AuthorizationToken? {
         try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
@@ -79,7 +72,7 @@ extension ApolloClient {
         )
     }
 
-    static func saveToken(token: String) {
+    public static func saveToken(token: String) {
         let authorizationToken = AuthorizationToken(token: token)
         try? Disk.save(
             authorizationToken,
@@ -88,9 +81,7 @@ extension ApolloClient {
         )
     }
 
-    static func createClientFromNewSession() -> Future<Void> {
-        ApplicationState.setLastNewsSeen()
-
+    public static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
         let campaign = GraphQL.CampaignInput(
             source: nil,
             medium: nil,
@@ -103,38 +94,47 @@ extension ApolloClient {
         return Future { completion in
             let (_, client) = self.createClient(token: nil)
 
-            client.perform(mutation: mutation).onValue { data in
-                self.saveToken(token: data.createSession)
+            let cancellable = client.perform(mutation: mutation) { result in
+                switch result {
+                case let .success(result):
+                    guard let data = result.data else {
+                        return
+                    }
 
-                _ = self.createClient(
-                    token: data.createSession
-                )
+                    self.saveToken(token: data.createSession)
 
-                completion(.success)
+                    let result = self.createClient(
+                        token: data.createSession
+                    )
+
+                    completion(.success(result))
+                case let .failure(error):
+                    completion(.failure(error))
+                }
             }
 
-            return NilDisposer()
+            return Disposer {
+                cancellable.cancel()
+            }
         }
     }
 
-    static func initClient() -> Future<Void> {
+    public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {
                 self.createClientFromNewSession().onResult { result in
                     switch result {
-                    case .success: do {
-                        completion(.success)
-                    }
-                    case let .failure(error): do {
+                    case let .success(result):
+                        completion(.success(result))
+                    case let .failure(error):
                         completion(.failure(error))
-                    }
                     }
                 }
             } else {
-                _ = self.createClient(token: tokenData!.token)
-                completion(.success)
+                let result = self.createClient(token: tokenData!.token)
+                completion(.success(result))
             }
 
             return NilDisposer()

@@ -14,7 +14,7 @@ extension Notification.Name {
 
 extension UIApplication {
     // reloads all text that is derived from translations in the app
-    func reloadAllLabels() {
+    public func reloadAllLabels() {
         func reloadLabels(in base: UIView) {
             for view in base.subviews {
                 if let label = view as? UILabel {
@@ -78,12 +78,14 @@ extension UIApplication {
     }
 }
 
-struct LanguageSwitcher {
+public struct LanguageSwitcher {
     @Inject var client: ApolloClient
+
+    public init() {}
 }
 
 extension LanguageSwitcher: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.aboutLanguageRow
         let bag = DisposeBag()
@@ -226,7 +228,7 @@ extension LanguageSwitcher: Presentable {
                     Alert.Action(title: L10n.settingsAlertChangeMarketOk) {
                         ApolloClient.cache = InMemoryNormalizedCache()
                         ApplicationState.preserveState(.marketPicker)
-                        UIApplication.shared.appDelegate.logout()
+                        CrossFramework.onRequestLogout()
                     },
                     Alert.Action(title: L10n.settingsAlertChangeMarketCancel) {},
                 ]

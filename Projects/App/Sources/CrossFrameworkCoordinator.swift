@@ -1,3 +1,4 @@
+import Apollo
 import Contracts
 import Foundation
 import hCore
@@ -79,8 +80,26 @@ struct CrossFrameworkCoordinator {
             )
         }
 
-        Marketing.onMaterialize = {
-            ApplicationState.preserveState(.marketing)
+        Market.CrossFramework.presentOnboarding = { viewController in
+            viewController.present(
+                Onboarding(),
+                options: [.defaults, .prefersNavigationBarHidden(false)]
+            )
+        }
+
+        Market.CrossFramework.presentLogin = { viewController in
+            viewController.present(
+                BankIDLogin(),
+                options: [.defaults, .allowSwipeDismissAlways]
+            )
+        }
+
+        Market.CrossFramework.onRequestLogout = {
+            UIApplication.shared.appDelegate.logout()
+        }
+
+        Market.CrossFramework.reinitApolloClient = {
+            ApolloClient.initAndRegisterClient().always {}
         }
     }
 }

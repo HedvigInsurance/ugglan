@@ -1,5 +1,6 @@
 import Apollo
 import Foundation
+import hCore
 import SwiftUI
 
 @available(iOS 13, *)

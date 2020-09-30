@@ -1,21 +1,21 @@
 import Foundation
 
 public struct ApplicationState {
-    enum Screen: String {
+    public enum Screen: String {
         case marketing, onboardingChat, offer, loggedIn, languagePicker, marketPicker, onboarding
 
-        func isOneOf(_ possibilities: Set<Self>) -> Bool {
+        public func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
         }
     }
 
     private static let key = "applicationState"
 
-    static func preserveState(_ screen: Screen) {
+    public static func preserveState(_ screen: Screen) {
         UserDefaults.standard.set(screen.rawValue, forKey: key)
     }
 
-    static var currentState: Screen? {
+    public static var currentState: Screen? {
         guard
             let applicationStateRawValue = UserDefaults.standard.value(forKey: key) as? String,
             let applicationState = Screen(rawValue: applicationStateRawValue) else {
@@ -26,15 +26,15 @@ public struct ApplicationState {
 
     private static let preferredLocaleKey = "preferredLocale"
 
-    static func setPreferredLocale(_ locale: Localization.Locale) {
+    public static func setPreferredLocale(_ locale: Localization.Locale) {
         UserDefaults.standard.set(locale.rawValue, forKey: ApplicationState.preferredLocaleKey)
     }
 
-    static var hasPreferredLocale: Bool {
+    public static var hasPreferredLocale: Bool {
         UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
     }
 
-    static var preferredLocale: Localization.Locale {
+    public static var preferredLocale: Localization.Locale {
         guard
             let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
             let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) else {
@@ -53,9 +53,9 @@ public struct ApplicationState {
         return preferredLocale
     }
 
-    private static let targetEnvironmentKey = "targetEnvironment"
+    public static let targetEnvironmentKey = "targetEnvironment"
 
-    enum Environment: Hashable {
+    public enum Environment: Hashable {
         case production
         case staging
         case custom(endpointURL: URL, wsEndpointURL: URL, assetsEndpointURL: URL)
@@ -66,7 +66,7 @@ public struct ApplicationState {
             let assetsEndpointURL: URL
         }
 
-        var rawValue: String {
+        public var rawValue: String {
             switch self {
             case .production:
                 return "production"
@@ -88,7 +88,7 @@ public struct ApplicationState {
             }
         }
 
-        var displayName: String {
+        public var displayName: String {
             switch self {
             case .production:
                 return "production"
@@ -99,7 +99,7 @@ public struct ApplicationState {
             }
         }
 
-        init?(rawValue: String) {
+        public init?(rawValue: String) {
             switch rawValue {
             case "production":
                 self = .production
@@ -123,11 +123,11 @@ public struct ApplicationState {
         }
     }
 
-    static func setTargetEnvironment(_ environment: Environment) {
+    public static func setTargetEnvironment(_ environment: Environment) {
         UserDefaults.standard.set(environment.rawValue, forKey: targetEnvironmentKey)
     }
 
-    static var hasOverridenTargetEnvironment: Bool {
+    public static var hasOverridenTargetEnvironment: Bool {
         UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
     }
 }

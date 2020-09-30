@@ -1,6 +1,8 @@
 import Flow
 import Foundation
 import hCore
+import hGraphQL
+import Market
 import UIKit
 
 extension ApplicationState {
@@ -50,15 +52,9 @@ extension ApplicationState {
         }
 
         switch applicationState {
-        case .marketPicker:
+        case .marketPicker, .languagePicker:
             return window.present(
                 MarketPicker(),
-                options: [.defaults, .prefersNavigationBarHidden(true)],
-                animated: false
-            )
-        case .languagePicker:
-            return window.present(
-                PreMarketingLanguagePicker(),
                 options: [.defaults, .prefersNavigationBarHidden(true)],
                 animated: false
             )
@@ -88,7 +84,7 @@ extension ApplicationState {
 
 extension ApplicationState.Environment {
     var apolloEnvironmentConfig: ApolloEnvironmentConfig {
-        switch getTargetEnvironment() {
+        switch self {
         case .staging:
             return ApolloEnvironmentConfig(
                 endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,

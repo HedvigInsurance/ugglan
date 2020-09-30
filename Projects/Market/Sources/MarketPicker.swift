@@ -126,7 +126,7 @@ extension MarketPicker {
                 ApplicationState.setPreferredLocale(locale)
                 Localization.Locale.currentLocale = locale
                 UIApplication.shared.reloadAllLabels()
-                ApolloClient.initClient().always {}
+                CrossFramework.reinitApolloClient()
                 Bundle.setLanguage(locale.lprojCode)
                 presentingViewController.present(Marketing())
                 bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
@@ -202,7 +202,7 @@ extension MarketPicker: Presentable {
         let form = FormView()
 
         let titleHedvigLogo = UIImageView()
-        titleHedvigLogo.image = Asset.wordmark.image
+        titleHedvigLogo.image = hCoreUIAssets.wordmark.image
         titleHedvigLogo.contentMode = .scaleAspectFit
 
         form.prepend(titleHedvigLogo)

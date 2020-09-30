@@ -1,7 +1,7 @@
 import Foundation
 
-struct AuthorizationToken: Codable {
-    var token: String
+public struct AuthorizationToken: Codable {
+    public var token: String
 
     init(token: String) {
         self.token = token
