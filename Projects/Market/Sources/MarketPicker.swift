@@ -126,7 +126,7 @@ extension MarketPicker {
                 ApplicationState.setPreferredLocale(locale)
                 Localization.Locale.currentLocale = locale
                 UIApplication.shared.reloadAllLabels()
-                CrossFramework.reinitApolloClient()
+                CrossFramework.reinitApolloClient().always {}
                 presentingViewController.present(Marketing())
                 bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
                     self.didFinish()

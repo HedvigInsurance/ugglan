@@ -99,7 +99,7 @@ struct CrossFrameworkCoordinator {
         }
 
         Market.CrossFramework.reinitApolloClient = {
-            ApolloClient.initAndRegisterClient().always {}
+            ApolloClient.initAndRegisterClient()
         }
     }
 }

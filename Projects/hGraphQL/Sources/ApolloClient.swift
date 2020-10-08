@@ -57,7 +57,7 @@ extension ApolloClient {
         return (store, client)
     }
 
-    static func deleteToken() {
+    public static func deleteToken() {
         try? Disk.remove(
             "authorization-token.json",
             from: .applicationSupport
@@ -94,7 +94,7 @@ extension ApolloClient {
         return Future { completion in
             let (_, client) = self.createClient(token: nil)
 
-            let cancellable = client.perform(mutation: mutation) { result in
+            client.perform(mutation: mutation) { result in
                 switch result {
                 case let .success(result):
                     guard let data = result.data else {
@@ -114,7 +114,7 @@ extension ApolloClient {
             }
 
             return Disposer {
-                cancellable.cancel()
+                _ = client
             }
         }
     }
@@ -124,14 +124,14 @@ extension ApolloClient {
             let tokenData = self.retreiveToken()
 
             if tokenData == nil {
-                self.createClientFromNewSession().onResult { result in
+                return self.createClientFromNewSession().onResult { result in
                     switch result {
                     case let .success(result):
                         completion(.success(result))
                     case let .failure(error):
                         completion(.failure(error))
                     }
-                }
+                }.disposable
             } else {
                 let result = self.createClient(token: tokenData!.token)
                 completion(.success(result))

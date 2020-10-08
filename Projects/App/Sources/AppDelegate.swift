@@ -33,7 +33,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func logout() {
         ApolloClient.cache = InMemoryNormalizedCache()
-        bag += ApolloClient.createClientFromNewSession().onValue { _ in
+        ApolloClient.deleteToken()
+        bag += ApolloClient.initAndRegisterClient().onValue { _ in
             self.bag.dispose()
             self.bag += ApplicationState.presentRootViewController(self.window)
         }
@@ -279,7 +280,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .atValue { _ in
                 Dependencies.shared.add(module: Module {
                     AnalyticsCoordinator()
-            })
+                })
 
                 AnalyticsCoordinator().setUserId()
 
@@ -316,12 +317,14 @@ extension ApolloClient {
 
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
-        let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
-            if data.registerPushToken != nil {
-                log.info("Did register push token for user")
-            } else {
-                log.info("Failed to register push token for user")
+        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 }).onValue { _ in
+            let client: ApolloClient = Dependencies.shared.resolve()
+            client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
+                if data.registerPushToken != nil {
+                    log.info("Did register push token for user")
+                } else {
+                    log.info("Failed to register push token for user")
+                }
             }
         }
     }
