@@ -18,204 +18,75 @@ public struct MarketPicker {
     }
 }
 
-extension MarketPicker {
-    public enum Market: CaseIterable {
-        case norway, sweden
-
-        var id: String {
-            switch self {
-            case .norway:
-                return "no"
-            case .sweden:
-                return "se"
-            }
-        }
-
-        var title: String {
-            switch self {
-            case .norway:
-                return "Norge"
-            case .sweden:
-                return "Sverige"
-            }
-        }
-
-        var icon: UIImage {
-            switch self {
-            case .norway:
-                return Asset.flagNO.image
-            case .sweden:
-                return Asset.flagSE.image
-            }
-        }
-    }
-
-    struct MarketSection: Viewable {
-        let suggestedMarket: Market?
-
-        func materialize(events _: ViewableEvents) -> (SectionView, Signal<Market>) {
-            let bag = DisposeBag()
-
-            let titleContainer = UIStackView()
-            titleContainer.axis = .vertical
-
-            let titleLabel = MultilineLabel(value: L10n.marketPickerTitle, style: .brand(.headline(color: .primary)))
-            bag += titleContainer.addArranged(titleLabel)
-
-            let section = SectionView(headerView: titleContainer, footerView: nil)
-
-            let pickedMarketCallbacker = Callbacker<Market>()
-
-            bag += pickedMarketCallbacker.onValue { market in
-                Mixpanel.mainInstance().track(event: "select_market", properties: [
-                    "market": market.id,
-                ])
-            }
-
-            bag += Market.allCases.sorted(by: { (a, _) -> Bool in
-                a == suggestedMarket
-            }).map { market -> (RowView, Market, UIImageView) in
-                let row = RowView(title: market.title, style: .brand(.headline(color: .primary)), appendSpacer: true)
-                row.prepend(market.icon)
-                let imageView = UIImageView()
-
-                if market == suggestedMarket {
-                    imageView.image = Asset.circularCheckmark.image
-                }
-
-                row.append(imageView)
-                return (row, market, imageView)
-            }.map { row, market, imageView in
-                let bag = DisposeBag()
-                bag += section.append(row).onValue { _ in
-                    imageView.image = Asset.circularCheckmark.image
-                    pickedMarketCallbacker.callAll(with: market)
-                }
-
-                bag += pickedMarketCallbacker.providedSignal.onValue { newMarket in
-                    if market != newMarket {
-                        imageView.image = nil
-                    }
-                }
-
-                return bag
-            }
-
-            return (section, pickedMarketCallbacker.providedSignal.hold(bag))
-        }
-    }
-
-    struct LanguageSection: Viewable {
-        let pickedMarketSignal: Signal<Market>
-        let presentingViewController: UIViewController
-        @Inject var client: ApolloClient
-        var didFinish: () -> Void
-
-        func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
-            let bag = DisposeBag()
-
-            let titleContainer = UIStackView()
-            titleContainer.axis = .vertical
-
-            let titleLabel = MultilineLabel(value: L10n.marketPickerLanguageTitle, style: .brand(.headline(color: .primary)))
-            bag += titleContainer.addArranged(titleLabel)
-
-            let section = SectionView(headerView: titleContainer, footerView: nil)
-
-            func pickLanguage(locale: Localization.Locale) {
-                ApplicationState.setPreferredLocale(locale)
-                Localization.Locale.currentLocale = locale
-                UIApplication.shared.reloadAllLabels()
-                CrossFramework.reinitApolloClient().always {}
-                presentingViewController.present(Marketing())
-                bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
-                    self.didFinish()
-                }
-                Mixpanel.mainInstance().track(event: "select_locale", properties: [
-                    "locale": locale.code,
-                ])
-            }
-
-            section.animationSafeIsHidden = true
-
-            bag += pickedMarketSignal.onValueDisposePrevious { market in
-                section.animationSafeIsHidden = false
-
-                switch market {
-                case .norway:
-                    let innerBag = DisposeBag()
-                    let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .brand(.headline(color: .primary)), appendSpacer: false)
-                    innerBag += section.append(norwegianRow).onValue { _ in
-                        pickLanguage(locale: .nb_NO)
-                    }
-                    norwegianRow.append(hCoreUIAssets.chevronRight.image)
-
-                    let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
-                    innerBag += section.append(englishRow).onValue { _ in
-                        pickLanguage(locale: .en_NO)
-                    }
-                    englishRow.append(hCoreUIAssets.chevronRight.image)
-
-                    innerBag += Disposer {
-                        section.remove(englishRow)
-                        section.remove(norwegianRow)
-                    }
-
-                    return innerBag
-                case .sweden:
-                    let innerBag = DisposeBag()
-
-                    let swedishRow = RowView(title: "Svenska", style: .brand(.headline(color: .primary)), appendSpacer: false)
-                    innerBag += section.append(swedishRow).onValue { _ in
-                        pickLanguage(locale: .sv_SE)
-                    }
-                    swedishRow.append(hCoreUIAssets.chevronRight.image)
-
-                    let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
-                    innerBag += section.append(englishRow).onValue { _ in
-                        pickLanguage(locale: .en_SE)
-                    }
-                    englishRow.append(hCoreUIAssets.chevronRight.image)
-
-                    innerBag += Disposer {
-                        section.remove(englishRow)
-                        section.remove(swedishRow)
-                    }
-
-                    return innerBag
-                }
-            }
-
-            return (section, bag)
-        }
-    }
-}
-
 extension MarketPicker: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithTransparentBackground()
+            viewController.navigationItem.standardAppearance = appearance
+            viewController.navigationItem.compactAppearance = appearance
+        }
         let bag = DisposeBag()
 
         ApplicationState.preserveState(.marketPicker)
 
+        let backgroundImageView = UIImageView()
+
+        bag += client.fetch(query: GraphQL.MarketingImagesQuery())
+            .compactMap { $0.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
+            .compactMap { $0 }
+            .onValue { marketingImage in
+                guard let url = URL(string: marketingImage.image?.url ?? "") else {
+                    return
+                }
+
+                let blurImage = UIImage(blurHash: marketingImage.blurhash ?? "", size: .init(width: 32, height: 32))
+                backgroundImageView.image = blurImage
+
+                backgroundImageView.contentMode = .scaleAspectFill
+                backgroundImageView.kf.setImage(
+                    with: url,
+                    placeholder: blurImage,
+                    options: [
+                        .transition(.fade(0.25)),
+                    ]
+                )
+            }
+
         let form = FormView()
 
-        let titleHedvigLogo = UIImageView()
-        titleHedvigLogo.image = hCoreUIAssets.wordmark.image
-        titleHedvigLogo.contentMode = .scaleAspectFit
-
-        form.prepend(titleHedvigLogo)
-
-        titleHedvigLogo.snp.makeConstraints { make in
-            make.width.equalTo(80)
-            make.height.equalTo(30)
+        let view = UIView()
+        if #available(iOS 13.0, *) {
+            view.overrideUserInterfaceStyle = .dark
         }
 
-        bag += viewController.install(form)
+        viewController.view = view
+        view.addSubview(backgroundImageView)
 
-        let pickedMarketSignal: ReadWriteSignal<Market?> = ReadWriteSignal(nil)
+        backgroundImageView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
 
-        Marketing().prefetch()
+        view.addSubview(form)
+
+        let welcomeLabel = UILabel(
+            value: L10n.MarketLanguageScreen.title,
+            style: .brand(.title1(color: .primary))
+        )
+        view.addSubview(welcomeLabel)
+
+        welcomeLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        form.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+        }
+
+        let pickedMarketSignal: ReadWriteSignal<Market> = ReadWriteSignal(.sweden)
 
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
@@ -227,15 +98,39 @@ extension MarketPicker: Presentable {
             case "NO":
                 pickedMarketSignal.value = .norway
             default:
-                pickedMarketSignal.value = nil
+                pickedMarketSignal.value = .sweden
             }
 
-            bag += form.append(Spacing(height: 40))
-            bag += form.append(MarketSection(suggestedMarket: pickedMarketSignal.value)).onValue { market in
-                pickedMarketSignal.value = market
+            if !pickedMarketSignal.value.languages.contains(Localization.Locale.currentLocale) {
+                Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
+                UIApplication.shared.reloadAllLabels()
             }
-            bag += form.append(Spacing(height: 20))
-            bag += form.append(LanguageSection(pickedMarketSignal: pickedMarketSignal.atOnce().compactMap { $0 }, presentingViewController: viewController, didFinish: self.didFinish))
+
+            let section = form.appendSection()
+
+            let marketRow = MarketRow(market: pickedMarketSignal.value)
+            bag += section.append(marketRow)
+
+            bag += marketRow.$market.onValue { newMarket in
+                Localization.Locale.currentLocale = newMarket.preferredLanguage
+                UIApplication.shared.reloadAllLabels()
+            }
+
+            let languageRow = LanguageRow(currentMarket: pickedMarketSignal.value)
+            bag += section.append(languageRow)
+            bag += marketRow.$market.bindTo(languageRow.$currentMarket)
+
+            bag += form.append(Spacing(height: 36))
+
+            let continueButton = Button(
+                title: L10n.MarketLanguageScreen.continueButtonText,
+                type: .standard(backgroundColor: .white, textColor: .black)
+            )
+            bag += form.append(continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)))
+
+            bag += continueButton.onTapSignal.onValue {
+                viewController.present(Marketing())
+            }
 
             bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                 .delay(by: 1.25)

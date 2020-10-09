@@ -92,7 +92,7 @@ extension OfferDiscount: Viewable {
                 }
 
                 self.presentingViewController.present(
-                    applyDiscount.withCloseButton,
+                    applyDiscount.wrappedInCloseButton(),
                     style: .detented(.scrollViewContentSize(20), .large),
                     options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
                 )

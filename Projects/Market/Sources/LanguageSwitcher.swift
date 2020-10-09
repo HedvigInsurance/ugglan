@@ -118,7 +118,7 @@ extension LanguageSwitcher: Presentable {
             }
 
             if Localization.Locale.currentLocale == .en_SE {
-                englishRowImageView.image = Asset.circularCheckmark.image
+                englishRowImageView.image = Asset.checkmark.image
             }
 
             let swedishRowImageView = UIImageView()
@@ -128,7 +128,7 @@ extension LanguageSwitcher: Presentable {
             }
 
             if Localization.Locale.currentLocale == .sv_SE {
-                swedishRowImageView.image = Asset.circularCheckmark.image
+                swedishRowImageView.image = Asset.checkmark.image
             }
 
             let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
@@ -136,7 +136,7 @@ extension LanguageSwitcher: Presentable {
                 pickLanguage(locale: .en_SE)
 
                 UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    englishRowImageView.image = Asset.circularCheckmark.image
+                    englishRowImageView.image = Asset.checkmark.image
                        }, completion: nil)
 
                 UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
@@ -156,7 +156,7 @@ extension LanguageSwitcher: Presentable {
                        }, completion: nil)
 
                 UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    swedishRowImageView.image = Asset.circularCheckmark.image
+                    swedishRowImageView.image = Asset.checkmark.image
                        }, completion: nil)
             }
 
@@ -171,7 +171,7 @@ extension LanguageSwitcher: Presentable {
             }
 
             if Localization.Locale.currentLocale == .en_NO {
-                englishRowImageView.image = Asset.circularCheckmark.image
+                englishRowImageView.image = Asset.checkmark.image
             }
 
             let norwegianRowImageView = UIImageView()
@@ -181,7 +181,7 @@ extension LanguageSwitcher: Presentable {
             }
 
             if Localization.Locale.currentLocale == .nb_NO {
-                norwegianRowImageView.image = Asset.circularCheckmark.image
+                norwegianRowImageView.image = Asset.checkmark.image
             }
 
             let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
@@ -189,7 +189,7 @@ extension LanguageSwitcher: Presentable {
                 pickLanguage(locale: .en_NO)
 
                 UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    englishRowImageView.image = Asset.circularCheckmark.image
+                    englishRowImageView.image = Asset.checkmark.image
                        }, completion: nil)
 
                 UIView.transition(with: norwegianRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
@@ -209,7 +209,7 @@ extension LanguageSwitcher: Presentable {
                        }, completion: nil)
 
                 UIView.transition(with: norwegianRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    norwegianRowImageView.image = Asset.circularCheckmark.image
+                    norwegianRowImageView.image = Asset.checkmark.image
                        }, completion: nil)
             }
 

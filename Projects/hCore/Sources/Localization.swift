@@ -3,7 +3,7 @@ import hGraphQL
 
 public struct Localization {
     public enum Locale: String, CaseIterable {
-        public static var currentLocale: Locale = .sv_SE
+        @ReadWriteState public static var currentLocale: Locale = .sv_SE
         case sv_SE
         case en_SE
         case en_NO
@@ -50,6 +50,19 @@ public struct Localization {
                 return "en_NO"
             case .nb_NO:
                 return "nb_NO"
+            }
+        }
+
+        public var displayName: String {
+            switch self {
+            case .sv_SE:
+                return "Svenska"
+            case .en_SE:
+                return "English"
+            case .en_NO:
+                return "English"
+            case .nb_NO:
+                return "Norsk (Bokmål)"
             }
         }
 

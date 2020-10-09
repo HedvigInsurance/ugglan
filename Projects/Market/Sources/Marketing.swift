@@ -15,20 +15,21 @@ public struct Marketing {
     public init() {}
 }
 
-extension Marketing {
-    func prefetch() {
-        client.fetch(query: GraphQL.MarketingImagesQuery()).onValue { _ in }
-    }
-}
-
 extension Marketing: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
 
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithTransparentBackground()
+            viewController.navigationItem.standardAppearance = appearance
+            viewController.navigationItem.compactAppearance = appearance
+        }
+
         let bag = DisposeBag()
 
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.black
+        containerView.clipsToBounds = true
         viewController.view = containerView
 
         ApplicationState.preserveState(.marketing)

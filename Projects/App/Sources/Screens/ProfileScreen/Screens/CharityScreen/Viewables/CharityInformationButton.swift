@@ -35,7 +35,7 @@ extension CharityInformationButton: Viewable {
 
         bag += button.onTapSignal.onValue { _ in
             self.presentingViewController.present(
-                CharityInformation().withCloseButton,
+                CharityInformation().wrappedInCloseButton(),
                 style: .detented(.medium, .large),
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
             )

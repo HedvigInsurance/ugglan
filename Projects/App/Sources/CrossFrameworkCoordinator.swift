@@ -39,14 +39,14 @@ struct CrossFrameworkCoordinator {
         }
         ChatButton.openChatHandler = { chatButton in
             chatButton.presentingViewController.present(
-                FreeTextChat().withCloseButton,
+                FreeTextChat().wrappedInCloseButton(),
                 style: .detented(.large)
             )
         }
 
         Home.openClaimsHandler = { viewController in
             viewController.present(
-                HonestyPledge().withCloseButton,
+                HonestyPledge().wrappedInCloseButton(),
                 style: .detented(.preferredContentSize),
                 options: [.defaults, .allowSwipeDismissAlways, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
             )
@@ -54,14 +54,14 @@ struct CrossFrameworkCoordinator {
 
         Home.openCallMeChatHandler = { viewController in
             viewController.present(
-                CallMeChat().withCloseButton,
+                CallMeChat().wrappedInCloseButton(),
                 style: .detented(.large)
             )
         }
 
         Home.openFreeTextChatHandler = { viewController in
             viewController.present(
-                FreeTextChat().withCloseButton,
+                FreeTextChat().wrappedInCloseButton(),
                 style: .detented(.large)
             )
         }
@@ -75,30 +75,30 @@ struct CrossFrameworkCoordinator {
 
         Contracts.openFreeTextChatHandler = { viewController in
             viewController.present(
-                FreeTextChat().withCloseButton,
+                FreeTextChat().wrappedInCloseButton(),
                 style: .detented(.large)
             )
         }
 
-        Market.CrossFramework.presentOnboarding = { viewController in
+        CrossFramework.presentOnboarding = { viewController in
             viewController.present(
                 Onboarding(),
                 options: [.defaults, .prefersNavigationBarHidden(false)]
             )
         }
 
-        Market.CrossFramework.presentLogin = { viewController in
+        CrossFramework.presentLogin = { viewController in
             viewController.present(
                 BankIDLogin(),
                 options: [.defaults, .allowSwipeDismissAlways]
             )
         }
 
-        Market.CrossFramework.onRequestLogout = {
+        CrossFramework.onRequestLogout = {
             UIApplication.shared.appDelegate.logout()
         }
 
-        Market.CrossFramework.reinitApolloClient = {
+        CrossFramework.reinitApolloClient = {
             ApolloClient.initAndRegisterClient()
         }
     }

@@ -162,7 +162,7 @@ class ChatState {
                 let toast = Toast(symbol: .icon(hCoreUIAssets.chat.image), body: L10n.Toast.newMessage, subtitle: message)
 
                 self.bag += toast.onTap.onValue { _ in
-                    viewController.present(FreeTextChat().withCloseButton)
+                    viewController.present(FreeTextChat().wrappedInCloseButton())
                 }
 
                 Toasts.shared.displayToast(toast: toast)

@@ -46,7 +46,7 @@ extension ApplicationState {
         else {
             return window.present(
                 MarketPicker(),
-                options: [.defaults, .prefersNavigationBarHidden(true)],
+                options: [.defaults],
                 animated: false
             )
         }
@@ -55,13 +55,13 @@ extension ApplicationState {
         case .marketPicker, .languagePicker:
             return window.present(
                 MarketPicker(),
-                options: [.defaults, .prefersNavigationBarHidden(true)],
+                options: [.defaults],
                 animated: false
             )
         case .marketing:
             return window.present(
                 Marketing(),
-                options: [.defaults, .prefersNavigationBarHidden(true)],
+                options: [.defaults],
                 animated: false
             )
         case .onboardingChat, .onboarding:
