@@ -24,6 +24,7 @@ extension Marketing: Presentable {
             appearance.configureWithTransparentBackground()
             viewController.navigationItem.standardAppearance = appearance
             viewController.navigationItem.compactAppearance = appearance
+            viewController.navigationItem.scrollEdgeAppearance = appearance
         }
 
         let bag = DisposeBag()
@@ -31,6 +32,14 @@ extension Marketing: Presentable {
         let containerView = UIView()
         containerView.clipsToBounds = true
         viewController.view = containerView
+
+        bag += containerView.windowSignal.onFirstValue { _ in
+            if #available(iOS 13.0, *) {
+                viewController.navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
+            } else {
+                viewController.navigationController?.navigationBar.barStyle = .black
+            }
+        }
 
         ApplicationState.preserveState(.marketing)
 
@@ -44,7 +53,7 @@ extension Marketing: Presentable {
 
         let wordmarkImageView = UIImageView()
         wordmarkImageView.contentMode = .scaleAspectFill
-        wordmarkImageView.image = hCoreUIAssets.wordmark.image
+        wordmarkImageView.image = hCoreUIAssets.wordmarkWhite.image
         containerView.addSubview(wordmarkImageView)
 
         wordmarkImageView.snp.makeConstraints { make in

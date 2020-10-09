@@ -15,13 +15,18 @@ extension LanguageRow: Viewable {
 
         let row = RowView(
             title: L10n.MarketLanguageScreen.languageLabel,
-            subtitle: Localization.Locale.currentLocale.displayName
+            subtitle: Localization.Locale.currentLocale.displayName,
+            style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
+                style.title = .brand(.headline(color: .primary(state: .negative)))
+                style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
+            }
         )
         bag += Localization.Locale.$currentLocale.map { $0.displayName }.bindTo(row, \.subtitle)
 
         let iconImageView = UIImageView()
         iconImageView.image = Asset.globe.image
         iconImageView.contentMode = .scaleAspectFit
+        iconImageView.tintColor = .white
 
         row.prepend(iconImageView)
 

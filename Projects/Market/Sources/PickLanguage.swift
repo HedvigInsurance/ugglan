@@ -20,7 +20,7 @@ extension PickLanguage: Presentable {
         bag += viewController.install(form)
 
         let titleSection = form.appendSection()
-        titleSection.append(L10n.LanguagePickerModal.text, style: .brand(.body(color: .secondary)))
+        bag += titleSection.append(MultilineLabel(value: L10n.LanguagePickerModal.text, style: .brand(.body(color: .secondary))).insetted(UIEdgeInsets(inset: 15)))
 
         let section = form.appendSection()
         return (viewController, Future { completion in

@@ -14,7 +14,11 @@ extension MarketRow: Viewable {
         let bag = DisposeBag()
         let row = RowView(
             title: L10n.MarketLanguageScreen.marketLabel,
-            subtitle: market.title
+            subtitle: market.title,
+            style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
+                style.title = .brand(.headline(color: .primary(state: .negative)))
+                style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
+            }
         )
         bag += $market.map { $0.title }.bindTo(row, \.subtitle)
 

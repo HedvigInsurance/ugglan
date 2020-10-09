@@ -273,6 +273,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             ApplicationState.setLastNewsSeen()
         }
 
+        // reinit Apollo client every time locale updates
+        bag += Localization.Locale.$currentLocale.distinct().onValue { _ in
+            ApolloClient.initAndRegisterClient().always {}
+        }
+
         bag += ApolloClient.initAndRegisterClient()
             .valueSignal
             .map { _ in true }

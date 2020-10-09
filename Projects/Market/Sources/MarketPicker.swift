@@ -27,6 +27,7 @@ extension MarketPicker: Presentable {
             viewController.navigationItem.standardAppearance = appearance
             viewController.navigationItem.compactAppearance = appearance
         }
+
         let bag = DisposeBag()
 
         ApplicationState.preserveState(.marketPicker)
@@ -55,10 +56,14 @@ extension MarketPicker: Presentable {
             }
 
         let form = FormView()
-
         let view = UIView()
-        if #available(iOS 13.0, *) {
-            view.overrideUserInterfaceStyle = .dark
+
+        bag += view.windowSignal.onFirstValue { _ in
+            if #available(iOS 13.0, *) {
+                viewController.navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
+            } else {
+                viewController.navigationController?.navigationBar.barStyle = .black
+            }
         }
 
         viewController.view = view
@@ -72,7 +77,7 @@ extension MarketPicker: Presentable {
 
         let welcomeLabel = UILabel(
             value: L10n.MarketLanguageScreen.title,
-            style: .brand(.title1(color: .primary))
+            style: .brand(.title1(color: .primary(state: .negative)))
         )
         view.addSubview(welcomeLabel)
 
