@@ -95,12 +95,7 @@ extension LanguageSwitcher: Presentable {
 
         let section = form.appendSection(header: nil, footer: nil)
 
-        func reloadAllLabels() {
-            UIApplication.shared.reloadAllLabels()
-        }
-
         func pickLanguage(locale: Localization.Locale) {
-            ApplicationState.setPreferredLocale(locale)
             Localization.Locale.currentLocale = locale
         }
 

@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloClient.cache = InMemoryNormalizedCache()
         ApolloClient.deleteToken()
         bag += ApolloClient.initAndRegisterClient().onValue { _ in
-            self.bag.dispose()
+            ChatState.shared = ChatState()
             self.bag += ApplicationState.presentRootViewController(self.window)
         }
     }
@@ -275,8 +275,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // reinit Apollo client every time locale updates
         bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
+            ApplicationState.setPreferredLocale(locale)
+            ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
+            
             ApolloClient.cache = InMemoryNormalizedCache()
             ApolloClient.initAndRegisterClient().always {
+                ChatState.shared = ChatState()
                 let client: ApolloClient = Dependencies.shared.resolve()
                 self.bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }

@@ -97,9 +97,5 @@ struct CrossFrameworkCoordinator {
         CrossFramework.onRequestLogout = {
             UIApplication.shared.appDelegate.logout()
         }
-
-        CrossFramework.reinitApolloClient = {
-            ApolloClient.initAndRegisterClient()
-        }
     }
 }

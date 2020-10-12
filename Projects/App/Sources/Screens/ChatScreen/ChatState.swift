@@ -8,7 +8,7 @@ import hGraphQL
 import UIKit
 
 class ChatState {
-    public static let shared = ChatState()
+    public static var shared = ChatState()
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
