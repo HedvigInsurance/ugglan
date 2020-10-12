@@ -83,6 +83,10 @@ public struct Localization {
             }
         }
 
+        public var foundation: Foundation.Locale {
+            Foundation.Locale(identifier: lprojCode)
+        }
+
         public var lprojCode: String {
             switch self {
             case .sv_SE:

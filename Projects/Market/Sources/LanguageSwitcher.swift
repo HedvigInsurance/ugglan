@@ -102,11 +102,6 @@ extension LanguageSwitcher: Presentable {
         func pickLanguage(locale: Localization.Locale) {
             ApplicationState.setPreferredLocale(locale)
             Localization.Locale.currentLocale = locale
-            CrossFramework.reinitApolloClient().always {
-                reloadAllLabels()
-                NotificationCenter.default.post(Notification(name: .localeSwitched))
-            }
-            bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
         }
 
         switch Localization.Locale.currentLocale.market {

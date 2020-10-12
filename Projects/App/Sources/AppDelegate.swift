@@ -274,8 +274,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // reinit Apollo client every time locale updates
-        bag += Localization.Locale.$currentLocale.distinct().onValue { _ in
-            ApolloClient.initAndRegisterClient().always {}
+        bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
+            ApolloClient.cache = InMemoryNormalizedCache()
+            ApolloClient.initAndRegisterClient().always {
+                let client: ApolloClient = Dependencies.shared.resolve()
+                self.bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
+            }
         }
 
         bag += ApolloClient.initAndRegisterClient()
