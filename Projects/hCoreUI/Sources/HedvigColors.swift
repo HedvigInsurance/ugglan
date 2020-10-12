@@ -34,9 +34,8 @@ public extension UIColor {
                 UIColor(red: 0.79, green: 0.67, blue: 0.96, alpha: 1.00)
         })
         static var primaryBorder: UIColor = UIColor(dynamic: { trait -> UIColor in
-            trait.userInterfaceStyle == .dark ? BrandColorBase.darkGrayBorder : BrandColorBase.grayBorder
+            trait.userInterfaceStyle == .dark ? UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15) : BrandColorBase.grayBorder
         })
-        static let darkGrayBorder = BrandColorBase.darkGray.withAlphaComponent(0.3)
         static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
         static let link = UIColor(red: 0.53, green: 0.37, blue: 0.77, alpha: 1.00)
         static let caution = UIColor(red: 0.95, green: 0.783, blue: 0.321, alpha: 1)

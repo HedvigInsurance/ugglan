@@ -114,6 +114,9 @@ extension MarketPicker: Presentable {
             }
 
             let section = form.appendSection()
+            if #available(iOS 13.0, *) {
+                section.overrideUserInterfaceStyle = .dark
+            }
 
             let marketRow = MarketRow(market: pickedMarketSignal.value)
             bag += section.append(marketRow)
