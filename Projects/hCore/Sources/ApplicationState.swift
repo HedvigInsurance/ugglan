@@ -128,6 +128,19 @@ public struct ApplicationState {
         UserDefaults.standard.set(environment.rawValue, forKey: targetEnvironmentKey)
     }
 
+    public static func getTargetEnvironment() -> Environment {
+        guard
+            let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
+            let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
+            if Bundle.main.bundleIdentifier == "com.hedvig.app" {
+                return .production
+            }
+
+            return .staging
+        }
+        return targetEnvironment
+    }
+
     public static var hasOverridenTargetEnvironment: Bool {
         UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
     }

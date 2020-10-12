@@ -22,7 +22,7 @@ extension PickMarket: Presentable {
         let section = form.appendSection()
 
         return (viewController, Future { completion in
-            Market.allCases.forEach { market in
+            Market.allCases.filter { $0.enabled }.forEach { market in
                 let row = RowView(title: market.title)
 
                 let iconImageView = UIImageView()

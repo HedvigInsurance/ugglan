@@ -17,7 +17,7 @@ extension PaymentSetup: Presentable {
         switch Localization.Locale.currentLocale.market {
         case .se:
             return DirectDebitSetup(setupType: setupType).materialize()
-        case .no:
+        case .no, .dk:
             return AdyenSetup().materialize()
         }
     }

@@ -215,6 +215,9 @@ extension LanguageSwitcher: Presentable {
 
             norwegianRow.prepend(Asset.flagNO.image)
             norwegianRow.append(norwegianRowImageView)
+        case .dk:
+            // TODO:
+            break
         }
 
         let marketSection = ButtonSection(text: L10n.settingsChangeMarket, style: .danger)

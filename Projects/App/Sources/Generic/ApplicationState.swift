@@ -26,21 +26,6 @@ extension ApplicationState {
         UserDefaults.standard.set(Bundle.main.appVersion, forKey: ApplicationState.lastNewsSeenKey)
     }
 
-    static func getTargetEnvironment() -> Environment {
-        guard
-            let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
-            let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
-            #if APP_VARIANT_PRODUCTION
-                return .production
-            #elseif APP_VARIANT_STAGING
-                return .staging
-            #else
-                return .production
-            #endif
-        }
-        return targetEnvironment
-    }
-
     static func presentRootViewController(_ window: UIWindow) -> Disposable {
         guard let applicationState = currentState
         else {

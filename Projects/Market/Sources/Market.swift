@@ -3,7 +3,7 @@ import hCore
 import UIKit
 
 public enum Market: CaseIterable {
-    case norway, sweden
+    case sweden, norway, denmark
 
     var id: String {
         switch self {
@@ -11,6 +11,8 @@ public enum Market: CaseIterable {
             return "no"
         case .sweden:
             return "se"
+        case .denmark:
+            return "dk"
         }
     }
 
@@ -20,6 +22,8 @@ public enum Market: CaseIterable {
             return "Norge"
         case .sweden:
             return "Sverige"
+        case .denmark:
+            return "Danmark"
         }
     }
 
@@ -29,6 +33,8 @@ public enum Market: CaseIterable {
             return Asset.flagNO.image
         case .sweden:
             return Asset.flagSE.image
+        case .denmark:
+            return Asset.flagDK.image
         }
     }
 
@@ -38,6 +44,17 @@ public enum Market: CaseIterable {
             return [.nb_NO, .en_NO]
         case .sweden:
             return [.sv_SE, .en_SE]
+        case .denmark:
+            return [.da_DK, .en_DK]
+        }
+    }
+
+    var enabled: Bool {
+        switch self {
+        case .norway, .sweden:
+            return true
+        case .denmark:
+            return ApplicationState.getTargetEnvironment() == .staging
         }
     }
 

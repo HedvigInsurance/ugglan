@@ -15,7 +15,7 @@ extension BankIDLogin: Presentable {
         switch Localization.Locale.currentLocale.market {
         case .se:
             return BankIDLoginSweden().wrappedInCloseButton().materialize()
-        case .no:
+        case .no, .dk:
             return BankIDLoginNorway().wrappedInCloseButton().materialize()
         }
     }

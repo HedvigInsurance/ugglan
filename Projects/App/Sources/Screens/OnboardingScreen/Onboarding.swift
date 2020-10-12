@@ -13,7 +13,7 @@ extension Onboarding: Presentable {
         switch Localization.Locale.currentLocale.market {
         case .se:
             return OnboardingChat().materialize()
-        case .no:
+        case .no, .dk:
             return WebOnboarding().materialize()
         }
     }
