@@ -36,7 +36,11 @@ extension LanguageRow: Viewable {
 
         row.setCustomSpacing(16, after: iconImageView)
 
-        row.append(hCoreUIAssets.chevronRight.image)
+        let chevronImageView = UIImageView()
+        chevronImageView.tintColor = .white
+        chevronImageView.image = hCoreUIAssets.chevronRight.image
+
+        row.append(chevronImageView)
 
         bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
             viewController.present(PickLanguage(currentMarket: currentMarket).wrappedInCloseButton(), style: .detented(.scrollViewContentSize(20))).onValue { locale in

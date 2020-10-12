@@ -35,7 +35,11 @@ extension MarketRow: Viewable {
 
         row.setCustomSpacing(16, after: flagImageView)
 
-        row.append(hCoreUIAssets.chevronRight.image)
+        let chevronImageView = UIImageView()
+        chevronImageView.tintColor = .white
+        chevronImageView.image = hCoreUIAssets.chevronRight.image
+
+        row.append(chevronImageView)
 
         bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
             viewController.present(PickMarket(currentMarket: market).wrappedInCloseButton(), style: .detented(.scrollViewContentSize(20))).onValue { newMarket in
