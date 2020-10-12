@@ -280,6 +280,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let client: ApolloClient = Dependencies.shared.resolve()
                 self.bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
             }
+
+            DispatchQueue.main.async {
+                UIApplication.shared.reloadAllLabels()
+            }
         }
 
         bag += ApolloClient.initAndRegisterClient()

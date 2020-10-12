@@ -111,7 +111,6 @@ extension MarketPicker: Presentable {
 
             if !pickedMarketSignal.value.languages.contains(Localization.Locale.currentLocale) {
                 Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
-                UIApplication.shared.reloadAllLabels()
             }
 
             let section = form.appendSection()
@@ -121,7 +120,6 @@ extension MarketPicker: Presentable {
 
             bag += marketRow.$market.onValue { newMarket in
                 Localization.Locale.currentLocale = newMarket.preferredLanguage
-                UIApplication.shared.reloadAllLabels()
             }
 
             let languageRow = LanguageRow(currentMarket: pickedMarketSignal.value)

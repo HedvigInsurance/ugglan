@@ -45,7 +45,6 @@ extension LanguageRow: Viewable {
         bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
             viewController.present(PickLanguage(currentMarket: currentMarket).wrappedInCloseButton(), style: .detented(.scrollViewContentSize(20))).onValue { locale in
                 Localization.Locale.currentLocale = locale
-                UIApplication.shared.reloadAllLabels()
             }
         }
 
