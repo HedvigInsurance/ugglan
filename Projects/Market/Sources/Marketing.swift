@@ -21,6 +21,7 @@ extension Marketing: Presentable {
 
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
+            DefaultStyling.applyCommonNavigationBarStyling(appearance)
             appearance.configureWithTransparentBackground()
             viewController.navigationItem.standardAppearance = appearance
             viewController.navigationItem.compactAppearance = appearance
@@ -40,8 +41,6 @@ extension Marketing: Presentable {
                 viewController.navigationController?.navigationBar.barStyle = .black
             }
         }
-
-        ApplicationState.preserveState(.marketing)
 
         let imageView = UIImageView()
 
@@ -101,10 +100,18 @@ extension Marketing: Presentable {
         )
 
         bag += onboardButton.onTapSignal.onValue { _ in
+            if #available(iOS 13.0, *) {
+                viewController.navigationController?.navigationBar.overrideUserInterfaceStyle = .unspecified
+            } else {
+                viewController.navigationController?.navigationBar.barStyle = .default
+            }
+
             CrossFramework.presentOnboarding(viewController)
         }
 
-        bag += contentStackView.addArranged(onboardButton)
+        bag += contentStackView.addArranged(onboardButton) { buttonView in
+            buttonView.motionIdentifier = "ContinueButton"
+        }
 
         let loginButton = Button(
             title: L10n.marketingLogin,

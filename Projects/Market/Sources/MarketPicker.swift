@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 import Mixpanel
+import Motion
 import Presentation
 import UIKit
 
@@ -21,8 +22,10 @@ public struct MarketPicker {
 extension MarketPicker: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
+
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
+            DefaultStyling.applyCommonNavigationBarStyling(appearance)
             appearance.configureWithTransparentBackground()
             viewController.navigationItem.standardAppearance = appearance
             viewController.navigationItem.compactAppearance = appearance
@@ -131,9 +134,15 @@ extension MarketPicker: Presentable {
                 title: L10n.MarketLanguageScreen.continueButtonText,
                 type: .standard(backgroundColor: .white, textColor: .black)
             )
-            bag += form.append(continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)))
+            bag += form.append(continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)) { buttonView in
+                buttonView.motionIdentifier = "ContinueButton"
+                buttonView.transition(.spring(stiffness: 30, damping: 20))
+            })
 
             bag += continueButton.onTapSignal.onValue {
+                viewController.navigationController?.isMotionEnabled = false
+                viewController.navigationController?.isMotionEnabled = true
+                viewController.navigationController?.motionNavigationTransitionType = .fade
                 viewController.present(Marketing())
             }
 
