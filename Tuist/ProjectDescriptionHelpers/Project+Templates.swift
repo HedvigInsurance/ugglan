@@ -180,6 +180,7 @@ extension Project {
 
         if includesGraphQL, !dependencies.contains(hGraphQLName), name != hGraphQLName {
             targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
+            targetDependencies.append(contentsOf: ExternalDependencies.disk.targetDependencies())
         }
 
         let targetActions: [TargetAction] = []
