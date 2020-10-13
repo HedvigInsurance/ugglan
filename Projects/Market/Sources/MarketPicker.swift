@@ -4,9 +4,9 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Hero
 import hGraphQL
 import Mixpanel
-import Motion
 import Presentation
 import UIKit
 
@@ -136,14 +136,15 @@ extension MarketPicker: Presentable {
                 type: .standard(backgroundColor: .white, textColor: .black)
             )
             bag += form.append(continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)) { buttonView in
-                buttonView.motionIdentifier = "ContinueButton"
-                buttonView.transition(.spring(stiffness: 30, damping: 20))
+                buttonView.hero.id = "ContinueButton"
+                buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
             })
 
             bag += continueButton.onTapSignal.onValue {
-                viewController.navigationController?.isMotionEnabled = false
-                viewController.navigationController?.isMotionEnabled = true
-                viewController.navigationController?.motionNavigationTransitionType = .fade
+                viewController.navigationController?.hero.isEnabled = false
+                viewController.navigationController?.hero.isEnabled = true
+                viewController.navigationController?.hero.
+                    viewController.navigationController?.hero.navigationAnimationType = .fade
                 viewController.present(Marketing())
             }
 

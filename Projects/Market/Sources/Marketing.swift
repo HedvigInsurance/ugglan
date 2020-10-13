@@ -110,7 +110,8 @@ extension Marketing: Presentable {
         }
 
         bag += contentStackView.addArranged(onboardButton) { buttonView in
-            buttonView.motionIdentifier = "ContinueButton"
+            buttonView.hero.id = "ContinueButton"
+            buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
         }
 
         let loginButton = Button(

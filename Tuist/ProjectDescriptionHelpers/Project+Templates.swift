@@ -27,6 +27,7 @@ public enum ExternalDependencies: CaseIterable {
     case runtime
     case sentry
     case motion
+    case hero
 
     public var isTestDependency: Bool {
         self == .runtime
@@ -116,6 +117,10 @@ public enum ExternalDependencies: CaseIterable {
         case .motion:
             return [
                 .framework(path: "../../Carthage/Build/iOS/Motion.framework"),
+            ]
+        case .hero:
+            return [
+                .framework(path: "../../Carthage/Build/iOS/Hero.framework"),
             ]
         }
     }
