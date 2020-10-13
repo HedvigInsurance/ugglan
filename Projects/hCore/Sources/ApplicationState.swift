@@ -2,7 +2,10 @@ import Foundation
 
 public struct ApplicationState {
     public enum Screen: String {
-        case marketing, onboardingChat, offer, loggedIn, languagePicker, marketPicker, onboarding
+        case onboardingChat, offer, loggedIn, languagePicker, marketPicker, onboarding
+
+        @available(*, deprecated, message: "use marketPicker instead")
+        case marketing
 
         public func isOneOf(_ possibilities: Set<Self>) -> Bool {
             possibilities.contains(self)
