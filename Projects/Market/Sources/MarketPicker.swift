@@ -143,8 +143,7 @@ extension MarketPicker: Presentable {
             bag += continueButton.onTapSignal.onValue {
                 viewController.navigationController?.hero.isEnabled = false
                 viewController.navigationController?.hero.isEnabled = true
-                viewController.navigationController?.hero.
-                    viewController.navigationController?.hero.navigationAnimationType = .fade
+                viewController.navigationController?.hero.navigationAnimationType = .fade
                 viewController.present(Marketing())
             }
 
