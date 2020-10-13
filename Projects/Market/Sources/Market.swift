@@ -69,6 +69,8 @@ public enum Market: CaseIterable {
             return firstLanguage
         }
 
-        return Localization.Locale(rawValue: bestMatchedLanguage) ?? firstLanguage
+        return Localization.Locale(
+            rawValue: bestMatchedLanguage.replacingOccurrences(of: "-", with: "_")
+        ) ?? firstLanguage
     }
 }

@@ -109,9 +109,7 @@ extension MarketPicker: Presentable {
                 pickedMarketSignal.value = .sweden
             }
 
-            if !pickedMarketSignal.value.languages.contains(Localization.Locale.currentLocale) {
-                Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
-            }
+            Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
 
             let section = form.appendSection()
             if #available(iOS 13.0, *) {
