@@ -26,7 +26,6 @@ public enum ExternalDependencies: CaseIterable {
     case mixpanel
     case runtime
     case sentry
-    case motion
     case hero
 
     public var isTestDependency: Bool {
@@ -113,10 +112,6 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
                 .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
-            ]
-        case .motion:
-            return [
-                .framework(path: "../../Carthage/Build/iOS/Motion.framework"),
             ]
         case .hero:
             return [
