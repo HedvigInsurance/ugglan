@@ -6,6 +6,8 @@ import SnapshotTesting
 import UIKit
 
 public func setupScreenShotTests() {
+    Localization.Locale.currentLocale = .en_SE
+
     if ProcessInfo.processInfo.environment["SNAPSHOT_TEST_MODE"] == "RECORD" {
         record = true
     }
