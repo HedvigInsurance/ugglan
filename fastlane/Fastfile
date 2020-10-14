@@ -414,15 +414,27 @@ platform :ios do
         
         schemes.each { |scheme|
             begin
-                scan(
-                    workspace: "Ugglan.xcworkspace",
-                    devices: ["iPhone 11 Pro"],
-                    scheme: scheme,
-                    derived_data_path: "scan_derived_data"
-                )
+                if ENV["RECORD"] == "true"
+                    scan(
+                        workspace: "Ugglan.xcworkspace",
+                        devices: ["iPhone 11 Pro"],
+                        scheme: scheme,
+                        derived_data_path: "scan_derived_data",
+                        xcargs: "OTHER_SWIFT_FLAGS='$(inherited) -D RECORD'"
+                    )
+                else
+                    scan(
+                        workspace: "Ugglan.xcworkspace",
+                        devices: ["iPhone 11 Pro"],
+                        scheme: scheme,
+                        derived_data_path: "scan_derived_data"
+                    )
+                end
             rescue => ex
                 report(schemes)
-                raise ex
+                if ENV["RECORD"] != "true"
+                    raise ex
+                end
             end
         }
         

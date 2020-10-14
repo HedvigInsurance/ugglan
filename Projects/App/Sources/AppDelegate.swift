@@ -33,8 +33,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func logout() {
         ApolloClient.cache = InMemoryNormalizedCache()
-        bag += ApolloClient.createClientFromNewSession().onValue { _ in
-            self.bag.dispose()
+        ApolloClient.deleteToken()
+        bag += ApolloClient.initAndRegisterClient().onValue { _ in
+            ChatState.shared = ChatState()
             self.bag += ApplicationState.presentRootViewController(self.window)
         }
     }
@@ -145,11 +146,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Mixpanel.initialize(token: mixpanelToken)
         }
 
+        Localization.Locale.currentLocale = ApplicationState.preferredLocale
+
+        ApolloClient.environment = ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        ApolloClient.bundle = Bundle.main
+        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
+
+        Dependencies.shared.add(module: Module {
+            ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        })
+
         AskForRating().registerSession()
         CrossFrameworkCoordinator.setup()
 
-        Localization.Locale.currentLocale = ApplicationState.preferredLocale
-        Bundle.setLanguage(Localization.Locale.currentLocale.lprojCode)
         FirebaseApp.configure()
 
         window.rootViewController = navigationController
@@ -259,20 +268,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Toasts.shared.displayToast(toast: toast)
         }
 
-        bag += ApolloClient.initClient().valueSignal.map { _ in true }.plain().atValue { _ in
-            Dependencies.shared.add(module: Module { () -> AnalyticsCoordinator in
-                AnalyticsCoordinator()
-            })
+        // treat an empty token as a newly downloaded app and setLastNewsSeen
+        if ApolloClient.retreiveToken() == nil {
+            ApplicationState.setLastNewsSeen()
+        }
 
-            AnalyticsCoordinator().setUserId()
+        // reinit Apollo client every time locale updates
+        bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
+            ApplicationState.setPreferredLocale(locale)
+            ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
+            
+            ApolloClient.cache = InMemoryNormalizedCache()
+            ApolloClient.initAndRegisterClient().always {
+                ChatState.shared = ChatState()
+                let client: ApolloClient = Dependencies.shared.resolve()
+                self.bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
+            }
 
-            self.bag += ApplicationState.presentRootViewController(self.window)
-        }.onValue { _ in
-            let client: ApolloClient = Dependencies.shared.resolve()
-            self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
-                launch.completeAnimationCallbacker.callAll()
+            DispatchQueue.main.async {
+                UIApplication.shared.reloadAllLabels()
             }
         }
+
+        bag += ApolloClient.initAndRegisterClient()
+            .valueSignal
+            .map { _ in true }
+            .plain()
+            .atValue { _ in
+                Dependencies.shared.add(module: Module {
+                    AnalyticsCoordinator()
+                })
+
+                AnalyticsCoordinator().setUserId()
+
+                self.bag += ApplicationState.presentRootViewController(self.window)
+            }.onValue { _ in
+                let client: ApolloClient = Dependencies.shared.resolve()
+                self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
+                    launch.completeAnimationCallbacker.callAll()
+                }
+            }
 
         bag += launchFuture.onValue { _ in
             launchView.removeFromSuperview()
@@ -283,14 +318,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
+extension ApolloClient {
+    public static func initAndRegisterClient() -> Future<Void> {
+        Self.initClient().onValue { store, client in
+            Dependencies.shared.add(module: Module {
+                store
+            })
+
+            Dependencies.shared.add(module: Module {
+                client
+            })
+        }.toVoid()
+    }
+}
+
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
-        let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
-            if data.registerPushToken != nil {
-                log.info("Did register push token for user")
-            } else {
-                log.info("Failed to register push token for user")
+        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 }).onValue { _ in
+            let client: ApolloClient = Dependencies.shared.resolve()
+            client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
+                if data.registerPushToken != nil {
+                    log.info("Did register push token for user")
+                } else {
+                    log.info("Failed to register push token for user")
+                }
             }
         }
     }

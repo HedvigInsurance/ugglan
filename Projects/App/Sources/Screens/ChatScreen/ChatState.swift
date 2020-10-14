@@ -8,7 +8,7 @@ import hGraphQL
 import UIKit
 
 class ChatState {
-    public static let shared = ChatState()
+    public static var shared = ChatState()
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
@@ -162,7 +162,7 @@ class ChatState {
                 let toast = Toast(symbol: .icon(hCoreUIAssets.chat.image), body: L10n.Toast.newMessage, subtitle: message)
 
                 self.bag += toast.onTap.onValue { _ in
-                    viewController.present(FreeTextChat().withCloseButton)
+                    viewController.present(FreeTextChat().wrappedInCloseButton())
                 }
 
                 Toasts.shared.displayToast(toast: toast)

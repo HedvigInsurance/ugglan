@@ -47,14 +47,17 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
         ContainerStackViewable(viewable: self, container: stackView, configure: configure)
     }
 
-    public func insetted(_ layoutMargins: UIEdgeInsets) -> StackContainer {
+    public func insetted(
+        _ layoutMargins: UIEdgeInsets,
+        configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
+    ) -> StackContainer {
         wrappedIn({
             let stackView = UIStackView()
             stackView.layoutMargins = layoutMargins
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.insetsLayoutMarginsFromSafeArea = false
             return stackView
-        }())
+        }(), configure: configure)
     }
 
     public func alignedTo(

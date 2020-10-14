@@ -14,9 +14,9 @@ extension BankIDLogin: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         switch Localization.Locale.currentLocale.market {
         case .se:
-            return BankIDLoginSweden().withCloseButton.materialize()
-        case .no:
-            return BankIDLoginNorway().withCloseButton.materialize()
+            return BankIDLoginSweden().wrappedInCloseButton().materialize()
+        case .no, .dk:
+            return BankIDLoginNorway().wrappedInCloseButton().materialize()
         }
     }
 }

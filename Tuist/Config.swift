@@ -1,7 +1,7 @@
 import ProjectDescription
 
 let config = Config(
-    compatibleXcodeVersions: ["11.4.1", "11.5", "11.6", "12.0"],
+    compatibleXcodeVersions: ["12.0", "12.0.1"],
     generationOptions: [
         .xcodeProjectName("\(.projectName)"),
         .organizationName("Hedvig AB"),

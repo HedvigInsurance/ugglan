@@ -47,9 +47,9 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
     }
 }
 
-extension Presentable where Matter: UIViewController, Result == Future<Void> {
-    public var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
-        AnyPresentable { () -> (Self.Matter, Self.Result) in
+extension Presentable where Matter: UIViewController {
+    public func wrappedInCloseButton<T>() -> AnyPresentable<Self.Matter, Future<T>> where Self.Result == Future<T> {
+        AnyPresentable { () -> (Self.Matter, Future<T>) in
             let (viewController, future) = self.materialize()
 
             if let presentableIdentifier = (self as? PresentableIdentifierExpressible)?.presentableIdentifier {

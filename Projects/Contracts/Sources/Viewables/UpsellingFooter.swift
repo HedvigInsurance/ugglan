@@ -121,7 +121,7 @@ extension UpsellingFooter: Viewable {
                         buttonText: L10n.upsellNotificationContentCta
                     ))
                 }
-            case .se:
+            default:
                 break
             }
 

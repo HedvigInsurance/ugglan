@@ -5,6 +5,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hGraphQL
 import Presentation
 import UIKit
 
@@ -80,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationController.navigationBar.prefersLargeTitles = true
         window?.rootViewController = navigationController
 
-        Bundle.setLanguage("en-SE")
+        Localization.Locale.currentLocale = .sv_SE
         DefaultStyling.installCustom()
 
         bag += navigationController.present(

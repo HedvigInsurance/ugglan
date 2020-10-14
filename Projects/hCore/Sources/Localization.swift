@@ -3,15 +3,18 @@ import hGraphQL
 
 public struct Localization {
     public enum Locale: String, CaseIterable {
-        public static var currentLocale: Locale = .sv_SE
+        @ReadWriteState public static var currentLocale: Locale = .sv_SE
         case sv_SE
         case en_SE
         case en_NO
         case nb_NO
+        case da_DK
+        case en_DK
 
         public enum Market: String {
             case no = "NO"
             case se = "SE"
+            case dk = "DK"
         }
 
         public var market: Market {
@@ -24,6 +27,8 @@ public struct Localization {
                 return .no
             case .nb_NO:
                 return .no
+            case .da_DK, .en_DK:
+                return .dk
             }
         }
 
@@ -37,6 +42,10 @@ public struct Localization {
                 return "en-NO"
             case .nb_NO:
                 return "nb-NO"
+            case .da_DK:
+                return "da-DK"
+            case .en_DK:
+                return "en-DK"
             }
         }
 
@@ -50,7 +59,32 @@ public struct Localization {
                 return "en_NO"
             case .nb_NO:
                 return "nb_NO"
+            case .da_DK:
+                return "da_DK"
+            case .en_DK:
+                return "en_DK"
             }
+        }
+
+        public var displayName: String {
+            switch self {
+            case .sv_SE:
+                return "Svenska"
+            case .en_SE:
+                return "English"
+            case .en_NO:
+                return "English"
+            case .nb_NO:
+                return "Norsk (Bokmål)"
+            case .da_DK:
+                return "Dansk"
+            case .en_DK:
+                return "English"
+            }
+        }
+
+        public var foundation: Foundation.Locale {
+            Foundation.Locale(identifier: lprojCode)
         }
 
         public var lprojCode: String {
@@ -63,6 +97,10 @@ public struct Localization {
                 return "en-NO"
             case .nb_NO:
                 return "nb-NO"
+            case .da_DK:
+                return "da-DK"
+            case .en_DK:
+                return "en-DK"
             }
         }
     }
@@ -78,6 +116,10 @@ extension Localization.Locale {
         case .nb_NO:
             return .nbNo
         case .en_NO:
+            return .enNo
+        case .da_DK:
+            return .enNo
+        case .en_DK:
             return .enNo
         }
     }

@@ -26,6 +26,7 @@ public enum ExternalDependencies: CaseIterable {
     case mixpanel
     case runtime
     case sentry
+    case hero
 
     public var isTestDependency: Bool {
         self == .runtime
@@ -112,6 +113,10 @@ public enum ExternalDependencies: CaseIterable {
                 .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
                 .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
             ]
+        case .hero:
+            return [
+                .framework(path: "../../Carthage/Build/iOS/Hero.framework"),
+            ]
         }
     }
 }
@@ -175,6 +180,7 @@ extension Project {
 
         if includesGraphQL, !dependencies.contains(hGraphQLName), name != hGraphQLName {
             targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
+            targetDependencies.append(contentsOf: ExternalDependencies.disk.targetDependencies())
         }
 
         let targetActions: [TargetAction] = []
@@ -235,10 +241,10 @@ extension Project {
                                          settings: Settings(base: [:], configurations: appConfigurations)))
         }
 
-        func getTestAction(_ recordMode: Bool) -> TestAction {
+        func getTestAction() -> TestAction {
             TestAction(
                 targets: [TestableTarget(target: TargetReference(stringLiteral: "\(name)Tests"), parallelizable: true)],
-                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__", "SNAPSHOT_TEST_MODE": recordMode ? "RECORD" : ""],
+                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"],
                                      launchArguments: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true]),
                 coverage: true
             )
@@ -255,21 +261,14 @@ extension Project {
                                name: name,
                                shared: true,
                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
-                               testAction: targets.contains(.tests) ? getTestAction(false) : nil,
+                               testAction: targets.contains(.tests) ? getTestAction() : nil,
                                runAction: nil
                            ),
-                           targets.contains(.tests) ? Scheme(
-                               name: "\(name)Tests Record",
-                               shared: true,
-                               buildAction: nil,
-                               testAction: getTestAction(true),
-                               runAction: nil
-                           ) : nil,
                            targets.contains(.example) ? Scheme(
                                name: "\(name)Example",
                                shared: true,
                                buildAction: BuildAction(targets: [TargetReference(stringLiteral: "\(name)Example")]),
-                               testAction: getTestAction(false),
+                               testAction: getTestAction(),
                                runAction: RunAction(executable: TargetReference(stringLiteral: "\(name)Example"))
                            ) : nil,
                        ].compactMap { $0 },

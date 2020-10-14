@@ -85,7 +85,7 @@ extension MyPayment: Presentable {
         case .se:
             let bankDetailsSection = BankDetailsSection()
             bag += form.append(bankDetailsSection)
-        case .no:
+        case .no, .dk:
             let cardDetailsSection = CardDetailsSection()
             bag += form.append(cardDetailsSection)
         }

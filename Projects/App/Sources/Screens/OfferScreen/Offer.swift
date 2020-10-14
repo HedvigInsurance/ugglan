@@ -14,7 +14,7 @@ struct Offer {
 extension Offer {
     func startSignProcess(_ viewController: UIViewController) {
         viewController.present(
-            BankIdSign().withCloseButton,
+            BankIdSign().wrappedInCloseButton(),
             style: .detented(.medium, .large),
             options: [.defaults]
         ).onValue { _ in
@@ -55,7 +55,7 @@ extension Offer: Presentable {
 
         bag += chatButton.onValue { _ in
             bag += viewController.present(
-                OfferChat().withCloseButton,
+                OfferChat().wrappedInCloseButton(),
                 style: .detented(.large)
             ).disposable
         }

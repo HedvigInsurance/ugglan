@@ -109,11 +109,11 @@ struct ValuationBox: Viewable {
         bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, data in data.keyGearItem }.onValue { item in
 
             if item.valuation != nil {
-                self.presentingViewController.present(KeyGearValuation(itemId: self.itemId).withCloseButton, style: .modal, options: [
+                self.presentingViewController.present(KeyGearValuation(itemId: self.itemId).wrappedInCloseButton(), style: .modal, options: [
                     .defaults, .allowSwipeDismissAlways,
                 ])
             } else {
-                self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: item.category).withCloseButton, style: .modal, options: [
+                self.presentingViewController.present(KeyGearAddValuation(id: self.itemId, category: item.category).wrappedInCloseButton(), style: .modal, options: [
                     .defaults, .allowSwipeDismissAlways,
                 ])
             }

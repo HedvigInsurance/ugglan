@@ -6,6 +6,7 @@ mkdir Projects/hCore/Sources/Derived
 mkdir Projects/Forever/Sources/Derived
 mkdir Projects/Contracts/Sources/Derived
 mkdir Projects/Home/Sources/Derived
+mkdir Projects/Market/Sources/Derived
 
 if [[ -f $TMPDIR/swiftgen/bin/swiftgen ]]
 then
