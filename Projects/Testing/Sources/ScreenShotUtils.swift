@@ -8,9 +8,9 @@ import UIKit
 public func setupScreenShotTests() {
     Localization.Locale.currentLocale = .en_SE
 
-    if ProcessInfo.processInfo.environment["SNAPSHOT_TEST_MODE"] == "RECORD" {
+    #if RECORD
         record = true
-    }
+    #endif
 }
 
 @discardableResult public func materializeViewable<View: Viewable>(
