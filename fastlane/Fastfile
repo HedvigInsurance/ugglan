@@ -140,13 +140,6 @@ platform :ios do
             skip_screenshots: true,
             skip_metadata: true
         )
-        
-        sentry_set_commits(
-          version: options[:version_number],
-          app_identifier: 'com.hedvig.app',
-          auto: false,
-          clear: false
-        )
     end
     
     private_lane :send_slack_message do |options|
