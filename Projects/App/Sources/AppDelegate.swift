@@ -277,8 +277,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
             ApplicationState.setPreferredLocale(locale)
             ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-            
-            ApolloClient.cache = InMemoryNormalizedCache()
+
             ApolloClient.initAndRegisterClient().always {
                 ChatState.shared = ChatState()
                 let client: ApolloClient = Dependencies.shared.resolve()
