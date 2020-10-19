@@ -62,7 +62,7 @@ extension DirectDebitSetup: Presentable {
         webViewConfiguration.addOpenBankIDBehaviour(viewController)
 
         let webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        webView.backgroundColor = .brand(.primaryBackground())
+        webView.backgroundColor = .brand(.secondaryBackground())
         webView.isOpaque = false
 
         bag += webView.createWebViewWith.set { (_, _, navigationAction, _) -> WKWebView? in
@@ -148,7 +148,7 @@ extension DirectDebitSetup: Presentable {
                 case .postOnboarding:
                     alert = Alert<Bool>.init(
                         title: L10n.PayInIframePostSignSkipAlert.title,
-                        message: L10n.PayInIframePostSignSkipAlert.body,
+                        message: L10n.PayInIframePostSignSkipAlertDirectDebit.body,
                         actions: [
                             Alert.Action(title: L10n.PayInIframePostSignSkipAlert.proceedButton) {
                                 true
@@ -175,7 +175,7 @@ extension DirectDebitSetup: Presentable {
                 viewController.navigationItem.setLeftBarButtonItems(nil, animated: true)
 
                 let containerView = UIView()
-                containerView.backgroundColor = .brand(.primaryBackground())
+                containerView.backgroundColor = .brand(.secondaryBackground())
 
                 let directDebitResult = DirectDebitResult(
                     type: type

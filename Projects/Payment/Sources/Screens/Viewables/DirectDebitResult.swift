@@ -11,10 +11,9 @@ enum DirectDebitResultType {
     var icon: ImageAsset {
         switch self {
         case .success:
-            // TODO:
-            return hCoreUIAssets.pinkCircularExclamationPoint
+            return hCoreUIAssets.circularCheckmark
         case .failure:
-            return hCoreUIAssets.pinkCircularExclamationPoint
+            return hCoreUIAssets.warningTriangle
         }
     }
 
@@ -36,12 +35,12 @@ enum DirectDebitResultType {
         }
     }
 
-    var messageText: String {
+    var messageText: String? {
         switch self {
         case .success:
-            return ""
+            return nil
         case .failure:
-            return L10n.PayInError.body
+            return L10n.PayInErrorDirectDebit.body
         }
     }
 
@@ -71,13 +70,16 @@ extension DirectDebitResult: Viewable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+        stackView.isLayoutMarginsRelativeArrangement = true
         stackView.spacing = 15
 
         containerView.addSubview(stackView)
 
         stackView.snp.makeConstraints { make in
-            make.size.equalToSuperview()
-            make.edges.equalToSuperview()
+            make.center.equalToSuperview()
+            make.width.lessThanOrEqualToSuperview()
         }
 
         let bag = DisposeBag()
@@ -86,41 +88,35 @@ extension DirectDebitResult: Viewable {
         stackView.addArrangedSubview(icon)
 
         let heading = MultilineLabel(
-            styledText: StyledText(
-                text: type.headingText,
-                style: .brand(.headline(color: .primary))
-            )
+            value: type.headingText,
+            style: .brand(.title2(color: .primary))
         )
 
-        bag += stackView.addArranged(heading) { view in
-            view.snp.makeConstraints { make in
-                make.width.equalTo(containerView.snp.width).inset(20)
-            }
-        }
+        bag += stackView.addArranged(heading)
 
-        let body = MultilineLabel(
-            styledText: StyledText(
-                text: type.messageText,
-                style: .brand(.body(color: .secondary))
+        if let messageText = type.messageText {
+            let body = MultilineLabel(
+                value: messageText,
+                style: TextStyle.brand(.body(color: .secondary)).centerAligned
             )
-        )
 
-        bag += stackView.addArranged(body) { view in
-            view.snp.makeConstraints { make in
-                make.width.lessThanOrEqualTo(containerView.snp.width).inset(20)
-            }
+            bag += stackView.addArranged(body)
         }
 
         let buttonsContainer = UIStackView()
         buttonsContainer.axis = .vertical
-        buttonsContainer.alignment = .center
-        buttonsContainer.spacing = 10
-        buttonsContainer.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+        buttonsContainer.spacing = 8
+        buttonsContainer.layoutMargins = UIEdgeInsets(inset: 15)
         buttonsContainer.isLayoutMarginsRelativeArrangement = true
 
-        stackView.addArrangedSubview(buttonsContainer)
+        containerView.addSubview(buttonsContainer)
 
-        bag += events.wasAdded.delay(by: 0.5).animated(style: SpringAnimationStyle.heavyBounce()) {
+        buttonsContainer.snp.makeConstraints { make in
+            make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom)
+            make.width.equalToSuperview()
+        }
+
+        bag += containerView.didMoveToWindowSignal.take(first: 1).animated(style: SpringAnimationStyle.heavyBounce()) {
             containerView.alpha = 1
             containerView.transform = CGAffineTransform.identity
         }
@@ -133,21 +129,18 @@ extension DirectDebitResult: Viewable {
             if self.type.isSuccess {
                 let continueButton = Button(
                     title: self.type.mainButtonText,
-                    type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+                    type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
                 )
 
                 bag += continueButton.onTapSignal.onValue { _ in
                     completion(.success)
                 }
 
-                bag += buttonsContainer.addArranged(continueButton.wrappedIn(UIStackView())) { stackView in
-                    stackView.axis = .vertical
-                    stackView.alignment = .center
-                }
+                bag += buttonsContainer.addArranged(continueButton)
             } else {
                 let retryButton = Button(
                     title: self.type.mainButtonText,
-                    type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+                    type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
                 )
 
                 bag += retryButton.onTapSignal.onValue { _ in
@@ -160,24 +153,18 @@ extension DirectDebitResult: Viewable {
                     completion(.failure(DirectDebitResult.ResultError.retry))
                 }
 
-                bag += buttonsContainer.addArranged(retryButton.wrappedIn(UIStackView())) { stackView in
-                    stackView.axis = .vertical
-                    stackView.alignment = .center
-                }
+                bag += buttonsContainer.addArranged(retryButton)
 
                 let skipButton = Button(
                     title: L10n.PayInError.postponeButton,
-                    type: .transparent(textColor: .brand(.link))
+                    type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
                 )
 
                 bag += skipButton.onTapSignal.onValue { _ in
                     completion(.success)
                 }
 
-                bag += buttonsContainer.addArranged(skipButton.wrappedIn(UIStackView())) { stackView in
-                    stackView.axis = .vertical
-                    stackView.alignment = .center
-                }
+                bag += buttonsContainer.addArranged(skipButton)
             }
 
             return DelayedDisposer(bag, delay: 1)

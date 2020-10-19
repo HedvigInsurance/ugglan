@@ -20,11 +20,7 @@ extension Offer {
         ).onValue { _ in
             viewController.present(
                 PostOnboarding(),
-                style: .detented(.large),
-                options: [
-                    .defaults,
-                    .prefersNavigationBarHidden(true),
-                ]
+                style: .detented(.large)
             )
         }
     }

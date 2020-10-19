@@ -122,12 +122,13 @@ extension ImageTextAction: Viewable {
         buttonsContainer.spacing = 15
         buttonsContainer.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 15)
         buttonsContainer.isLayoutMarginsRelativeArrangement = true
+        buttonsContainer.insetsLayoutMarginsFromSafeArea = false
 
         bag += buttonsContainer.didLayoutSignal.onValue { _ in
             buttonsContainer.layoutMargins = UIEdgeInsets(
                 top: 0,
                 left: 0,
-                bottom: scrollView.safeAreaInsets.bottom + 15,
+                bottom: scrollView.safeAreaInsets.bottom == 0 ? 15 : scrollView.safeAreaInsets.bottom,
                 right: 0
             )
         }
