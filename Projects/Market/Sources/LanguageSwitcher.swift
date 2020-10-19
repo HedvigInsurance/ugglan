@@ -134,7 +134,6 @@ extension LanguageSwitcher: Presentable {
                        }, completion: nil)
             }
 
-            englishRow.prepend(Asset.flagGB.image)
             englishRow.append(englishRowImageView)
 
             let swedishRow = RowView(title: "Svenska", style: .brand(.headline(color: .primary)), appendSpacer: false)
@@ -150,7 +149,6 @@ extension LanguageSwitcher: Presentable {
                        }, completion: nil)
             }
 
-            swedishRow.prepend(Asset.flagSE.image)
             swedishRow.append(swedishRowImageView)
         case .no:
 
@@ -187,7 +185,6 @@ extension LanguageSwitcher: Presentable {
                        }, completion: nil)
             }
 
-            englishRow.prepend(Asset.flagGB.image)
             englishRow.append(englishRowImageView)
 
             let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .brand(.headline(color: .primary)), appendSpacer: false)
@@ -203,7 +200,6 @@ extension LanguageSwitcher: Presentable {
                        }, completion: nil)
             }
 
-            norwegianRow.prepend(Asset.flagNO.image)
             norwegianRow.append(norwegianRowImageView)
         case .dk:
             // TODO:

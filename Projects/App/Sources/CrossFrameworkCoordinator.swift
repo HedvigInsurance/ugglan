@@ -85,6 +85,7 @@ struct CrossFrameworkCoordinator {
         }
 
         CrossFramework.presentOnboarding = { viewController in
+            viewController.navigationController?.hero.isEnabled = false
             viewController.present(
                 Onboarding(),
                 options: [.defaults, .prefersNavigationBarHidden(false)]
