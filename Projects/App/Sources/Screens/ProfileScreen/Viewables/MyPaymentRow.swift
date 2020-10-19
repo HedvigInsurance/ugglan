@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import Payment
 import Presentation
 import UIKit
 
@@ -26,7 +27,7 @@ extension MyPaymentRow: Viewable {
         }.bindTo(row.subtitle)
 
         bag += events.onSelect.onValue {
-            let myPayment = MyPayment()
+            let myPayment = MyPayment(urlScheme: Bundle.main.urlScheme ?? "")
             self.presentingViewController.present(myPayment, style: .default, options: [.largeTitleDisplayMode(.never)])
         }
 
@@ -36,6 +37,6 @@ extension MyPaymentRow: Viewable {
 
 extension MyPaymentRow: Previewable {
     func preview() -> (MyPayment, PresentationOptions) {
-        return (MyPayment(), [.largeTitleDisplayMode(.never)])
+        return (MyPayment(urlScheme: Bundle.main.urlScheme ?? ""), [.largeTitleDisplayMode(.never)])
     }
 }

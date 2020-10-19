@@ -6,6 +6,7 @@ import hCoreUI
 import Home
 import Market
 import Mixpanel
+import Payment
 import UIKit
 
 struct CrossFrameworkCoordinator {
@@ -68,7 +69,10 @@ struct CrossFrameworkCoordinator {
 
         Home.openConnectPaymentHandler = { viewController in
             viewController.present(
-                PaymentSetup(setupType: .initial),
+                PaymentSetup(
+                    setupType: .initial,
+                    urlScheme: Bundle.main.urlScheme ?? ""
+                ),
                 style: .detented(.large)
             )
         }

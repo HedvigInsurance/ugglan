@@ -10,6 +10,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 import Mixpanel
+import Payment
 import Presentation
 import Sentry
 import SwiftUI
@@ -23,13 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let navigationController = UINavigationController()
     let window = UIWindow(frame: UIScreen.main.bounds)
-    private let applicationWillTerminateCallbacker = Callbacker<Void>()
-    let applicationWillTerminateSignal: Signal<Void>
-
-    override init() {
-        applicationWillTerminateSignal = applicationWillTerminateCallbacker.signal()
-        super.init()
-    }
 
     func logout() {
         ApolloClient.cache = InMemoryNormalizedCache()
@@ -41,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(_: UIApplication) {
-        applicationWillTerminateCallbacker.callAll()
+        NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
     }
 
     func application(_: UIApplication, continue userActivity: NSUserActivity,
@@ -89,7 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
 
             bag += rootViewController.present(
-                PaymentSetup(setupType: .initial),
+                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
                 style: .modal,
                 options: [.defaults]
             )
@@ -388,7 +382,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        PaymentSetup(setupType: .initial),
+                        PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
                         style: .modal,
                         options: [.defaults]
                     )
@@ -396,7 +390,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
                     self.window.rootViewController?.present(
-                        PaymentSetup(setupType: .replacement),
+                        PaymentSetup(setupType: .replacement, urlScheme: Bundle.main.urlScheme ?? ""),
                         style: .modal,
                         options: [.defaults]
                     )

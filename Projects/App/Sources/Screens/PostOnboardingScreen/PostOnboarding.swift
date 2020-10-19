@@ -4,6 +4,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Payment
 import Presentation
 import UIKit
 
@@ -116,7 +117,7 @@ extension PostOnboarding: Presentable {
                 switch action {
                 case .payment:
                     viewController.present(
-                        PaymentSetup(setupType: .postOnboarding),
+                        PaymentSetup(setupType: .postOnboarding, urlScheme: Bundle.main.urlScheme ?? ""),
                         style: .modally(
                             presentationStyle: .formSheet,
                             transitionStyle: nil,

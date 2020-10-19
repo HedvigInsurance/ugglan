@@ -4,6 +4,7 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
+import Payment
 import Presentation
 import UIKit
 
@@ -87,7 +88,10 @@ extension OfferDiscount: Viewable {
                         data.redeemedCampaigns = result.campaigns.compactMap {
                             try? GraphQL.OfferQuery.Data.RedeemedCampaign(jsonObject: $0.jsonObject)
                         }
-                        data.insurance.cost?.fragments.costFragment = result.cost.fragments.costFragment
+
+                        if let costFragment = result.cost?.fragments.costFragment {
+                            data.insurance.cost?.fragments.costFragment = costFragment
+                        }
                     })
                 }
 
