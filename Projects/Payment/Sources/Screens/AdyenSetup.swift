@@ -27,7 +27,7 @@ extension AdyenSetup: Presentable {
         viewController.navigationItem.hidesBackButton = true
 
         let view = UIView()
-        view.backgroundColor = .brand(.primaryBackground())
+        view.backgroundColor = .brand(.secondaryBackground())
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .whiteLarge
@@ -59,19 +59,21 @@ extension AdyenSetup: Presentable {
                 var style = DropInComponent.Style()
                 style.navigation.tintColor = .brand(.primaryTintColor)
                 style.formComponent.header.title.font = Fonts.fontFor(style: .title1)
-                style.formComponent.footer.button.backgroundColor = .brand(.primaryButtonBackgroundColor)
+                style.formComponent.footer.button.backgroundColor = .brand(.secondaryButtonBackgroundColor)
+                style.formComponent.footer.button.title.color = .brand(.secondaryButtonTextColor)
                 style.formComponent.footer.button.title.font = Fonts.fontFor(style: .title3)
                 style.formComponent.footer.button.cornerRadius = 6
                 style.formComponent.textField.title.font = Fonts.fontFor(style: .caption1)
                 style.formComponent.textField.text.font = Fonts.fontFor(style: .body)
                 style.formComponent.switch.title.font = Fonts.fontFor(style: .footnote)
-                style.formComponent.backgroundColor = .brand(.primaryBackground())
-                style.formComponent.textField.backgroundColor = .brand(.primaryBackground())
-                style.formComponent.footer.backgroundColor = .brand(.primaryBackground())
-                style.formComponent.header.backgroundColor = .brand(.primaryBackground())
-                style.listComponent.backgroundColor = .brand(.primaryBackground())
-                style.listComponent.listItem.backgroundColor = .brand(.secondaryBackground())
-                style.navigation.backgroundColor = .brand(.primaryBackground())
+                style.formComponent.backgroundColor = .brand(.secondaryBackground())
+                style.formComponent.textField.backgroundColor = .brand(.secondaryBackground())
+                style.formComponent.footer.backgroundColor = .brand(.secondaryBackground())
+                style.formComponent.header.backgroundColor = .brand(.secondaryBackground())
+                style.listComponent.backgroundColor = .brand(.secondaryBackground())
+                style.listComponent.listItem.backgroundColor = .clear
+                style.listComponent.listItem.title.font = Fonts.fontFor(style: .headline)
+                style.navigation.backgroundColor = .brand(.secondaryBackground())
 
                 switch ApplicationState.getTargetEnvironment() {
                 case .staging:
@@ -186,15 +188,14 @@ extension AdyenSetup: Presentable {
                         ).onValue { _ in }
 
                         let continueButton = Button(
-                            title: L10n.paymentSetupDoneCta,
-                            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+                            title: L10n.PayInConfirmation.continueButton,
+                            type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
                         )
 
-                        // TODO: Correct icon
                         let continueAction = ImageTextAction<Void>(
-                            image: .init(image: hCoreUIAssets.addButton.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
-                            title: L10n.paymentSetupDoneTitle,
-                            body: L10n.paymentSetupDoneDescription,
+                            image: .init(image: hCoreUIAssets.circularCheckmark.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
+                            title: L10n.PayInConfirmation.headline,
+                            body: "",
                             actions: [
                                 ((), continueButton),
                             ],
@@ -208,20 +209,19 @@ extension AdyenSetup: Presentable {
                         }
                     case .failure:
                         let tryAgainButton = Button(
-                            title: L10n.paymentSetupFailedRetryCta,
-                            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+                            title: L10n.PayInError.retryButton,
+                            type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
                         )
 
                         let cancelButton = Button(
-                            title: L10n.paymentSetupFailedCancelCta,
-                            type: .outline(borderColor: .clear, textColor: .brand(.link))
+                            title: L10n.PayInError.postponeButton,
+                            type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
                         )
 
-                        // TODO: correct icon
                         let didFailAction = ImageTextAction<Bool>(
-                            image: .init(image: hCoreUIAssets.addButton.image, size: CGSize(width: 64, height: 64), contentMode: .scaleAspectFit),
-                            title: L10n.paymentSetupFailedTitle,
-                            body: L10n.paymentSetupFailedDescription,
+                            image: .init(image: hCoreUIAssets.warningTriangle.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
+                            title: L10n.PayInError.headline,
+                            body: L10n.PayInError.body,
                             actions: [
                                 (true, tryAgainButton),
                                 (false, cancelButton),

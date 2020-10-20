@@ -58,7 +58,7 @@ extension ImageTextAction: Viewable {
         scrollView.embedView(containerView, scrollAxis: .vertical)
 
         let view = UIStackView()
-        view.spacing = 28
+        view.spacing = 24
         view.axis = .vertical
         view.alignment = .center
 
@@ -101,7 +101,7 @@ extension ImageTextAction: Viewable {
 
         var titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.brand(.title1(color: .primary)).aligned(to: .center)
+            style: TextStyle.brand(.title2(color: .primary)).aligned(to: .center)
         )
         bag += view.addArranged(titleLabel)
         bag += $title.onValue { value in
