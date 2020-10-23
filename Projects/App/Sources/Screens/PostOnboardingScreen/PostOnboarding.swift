@@ -4,6 +4,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Payment
 import Presentation
 import UIKit
 
@@ -23,7 +24,7 @@ struct PostOnboarding {
 
         let paymentButton = Button(
             title: L10n.onboardingConnectDdCta,
-            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+            type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
         )
 
         bag += paymentButton.onTapSignal.onValue { _ in
@@ -42,12 +43,12 @@ struct PostOnboarding {
 
         let pushNotificationsDoButton = Button(
             title: L10n.onboardingActivateNotificationsCta,
-            type: .standard(backgroundColor: .brand(.primaryButtonBackgroundColor), textColor: .brand(.primaryButtonTextColor))
+            type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
         )
 
         let pushNotificationsSkipButton = Button(
             title: L10n.onboardingActivateNotificationsDismiss,
-            type: .transparent(textColor: .brand(.link))
+            type: .transparent(textColor: .brand(.primaryText()))
         )
 
         bag += pushNotificationsDoButton.onTapSignal.onValue { _ in
@@ -116,7 +117,7 @@ extension PostOnboarding: Presentable {
                 switch action {
                 case .payment:
                     viewController.present(
-                        PaymentSetup(setupType: .postOnboarding),
+                        PaymentSetup(setupType: .postOnboarding, urlScheme: Bundle.main.urlScheme ?? ""),
                         style: .modally(
                             presentationStyle: .formSheet,
                             transitionStyle: nil,

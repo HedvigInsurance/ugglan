@@ -185,6 +185,10 @@ platform :ios do
             "ContractsExample" => {
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Contracts/Contracts.xcodeproj"
+            },
+            "PaymentExample" => {
+                "identifier" => "com.hedvig.example.*",
+                "project_path" => "Projects/Payment/Payment.xcodeproj"
             }
         }
         
@@ -396,7 +400,8 @@ platform :ios do
             "Embark",
             "Forever",
             "Contracts",
-            "Home"
+            "Home",
+            "Payment"
         ]
         
         def report(schemes)

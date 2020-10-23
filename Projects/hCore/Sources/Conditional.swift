@@ -7,6 +7,10 @@ public protocol Conditional {
     func condition() -> Bool
 }
 
+public protocol FutureConditional {
+    func condition() -> Future<Bool>
+}
+
 extension UIViewController {
     enum ConditionalPresentation: Error {
         case conditionNotMet
@@ -25,6 +29,27 @@ extension UIViewController {
         return Future<Value> { completion in
             completion(.failure(ConditionalPresentation.conditionNotMet))
             return NilDisposer()
+        }
+    }
+
+    public func presentConditionally<T: FutureConditional & Presentable, Value>(
+        _ presentable: T,
+        style: PresentationStyle = .default,
+        options: PresentationOptions = [.defaults]
+    ) -> T.Result
+        where T.Result == Future<Value>, T.Matter == UIViewController {
+        return Future<Value> { completion in
+            let bag = DisposeBag()
+
+            bag += presentable.condition().onValue { passed in
+                if passed {
+                    bag += self.present(presentable, style: style, options: options).onResult(completion)
+                } else {
+                    completion(.failure(ConditionalPresentation.conditionNotMet))
+                }
+            }
+
+            return bag
         }
     }
 }

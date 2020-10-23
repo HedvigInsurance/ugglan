@@ -1,0 +1,12 @@
+mutation RedeemCode($code: String!) {
+    redeemCodeV2(code: $code) {
+        ... on SuccessfulRedeemResult {
+            cost {
+                ...CostFragment
+            }
+            campaigns {
+                ...CampaignFragment
+            }
+        }
+    }
+}

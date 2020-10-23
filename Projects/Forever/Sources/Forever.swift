@@ -38,6 +38,10 @@ extension Forever: Presentable {
             tableKit.table[index].cellHeight
         }
 
+        bag += NotificationCenter.default.signal(forName: .costDidUpdate).onValue { _ in
+            service.refetch()
+        }
+
         let refreshControl = UIRefreshControl()
 
         bag += refreshControl.onValue {

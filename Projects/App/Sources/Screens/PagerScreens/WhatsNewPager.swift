@@ -11,14 +11,34 @@ struct WhatsNewPager {
     @Inject var client: ApolloClient
 }
 
-extension WhatsNewPager: Conditional {
+extension WhatsNewPager: FutureConditional {
     var lastNewsSeen: String {
         ApplicationState.getLastNewsSeen()
     }
 
-    func condition() -> Bool {
+    func getPages() -> Future<[PagerItem]> {
+        client
+            .fetch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
+            .compactMap { $0.news }
+            .map { news in
+                news.map {
+                    ContentIconPagerItem(
+                        title: $0.title,
+                        paragraph: $0.paragraph,
+                        icon: $0.illustration.fragments.iconFragment
+                    ).pagerItem
+                }
+            }
+    }
+
+    func condition() -> Future<Bool> {
         let appVersion = Bundle.main.appVersion
-        return appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending
+
+        if appVersion.compare(lastNewsSeen, options: .numeric) == .orderedDescending {
+            return getPages().map { !$0.isEmpty }
+        }
+
+        return Future(immediate: { false })
     }
 }
 
@@ -32,18 +52,9 @@ extension WhatsNewPager: Presentable {
         )
         let (viewController, future) = pager.materialize()
 
-        client
-            .fetch(query: GraphQL.WhatsNewQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale(), sinceVersion: lastNewsSeen))
-            .compactMap { $0.news }
-            .onValue { news in
-                pager.pages = news.map {
-                    ContentIconPagerItem(
-                        title: $0.title,
-                        paragraph: $0.paragraph,
-                        icon: $0.illustration.fragments.iconFragment
-                    ).pagerItem
-                }
-            }
+        getPages().onValue { pages in
+            pager.pages = pages
+        }
 
         return (viewController, future)
     }
