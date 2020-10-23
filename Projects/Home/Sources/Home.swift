@@ -73,6 +73,8 @@ extension Home: Presentable {
             }
         }
 
+        bag += form.append(ImportantMessagesSection())
+
         let titleSection = form.appendSection()
         let titleRow = RowView()
         titleRow.layoutMargins = UIEdgeInsets(
