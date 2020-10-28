@@ -169,4 +169,19 @@ public extension UIColor {
     static func tint(_ tint: TintColor) -> UIColor {
         tint.color
     }
+
+    enum GrayscaleColor {
+        case grayOne
+
+        var color: UIColor {
+            switch self {
+            case .grayOne:
+                return #colorLiteral(red: 0.9176470588, green: 0.9176470588, blue: 0.9176470588, alpha: 1)
+            }
+        }
+    }
+
+    static func grayscale(_ grayscale: GrayscaleColor) -> UIColor {
+        grayscale.color
+    }
 }
