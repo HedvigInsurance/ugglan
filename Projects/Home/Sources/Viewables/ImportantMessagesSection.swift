@@ -25,9 +25,10 @@ extension ImportantMessagesSection: Viewable {
             .compactMap { $0 }
             .onValue { importantMessage in
                 let row = RowView()
-                bag += row.append(MultilineLabel(value: importantMessage.message ?? "", style: .brand(.subHeadline(color: .secondary))))
+                bag += row.append(MultilineLabel(value: importantMessage.message ?? "", style: .brand(.subHeadline(color: .secondary(state: .positive)))))
 
                 let chevronImageView = UIImageView()
+                chevronImageView.tintColor = .black
                 chevronImageView.image = hCoreUIAssets.chevronRight.image
 
                 row.append(chevronImageView)
