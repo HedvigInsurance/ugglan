@@ -37,6 +37,25 @@ struct ContractRow: Hashable {
         case norwegianHome
     }
 
+    var isContractActivated: Bool {
+        contract.status.asActiveStatus != nil || contract.status.asTerminatedTodayStatus != nil || contract.status.asTerminatedInFutureStatus != nil
+    }
+
+    var gradientLayer: CAGradientLayer? {
+        guard isContractActivated else {
+            return nil
+        }
+
+        let layer = CAGradientLayer()
+        layer.colors = [
+            UIColor(red: 0.984, green: 0.843, blue: 0.925, alpha: 1).cgColor,
+            UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1).cgColor,
+        ]
+        layer.locations = [0, 1]
+
+        return layer
+    }
+
     var statusPills: [String] {
         if let status = contract.status.asActiveInFutureAndTerminatedInFutureStatus {
             let futureInceptionDate = status.futureInception?.localDateToDate ?? Date()
@@ -122,11 +141,20 @@ extension ContractRow: Reusable {
             make.height.equalTo(200)
         }
 
-        let contentView = UIView()
+        let contentView = UIControl()
         contentView.layer.cornerRadius = .defaultCornerRadius
         contentView.backgroundColor = .grayscale(.grayOne)
 
         view.addArrangedSubview(contentView)
+
+        let gradientView = UIView()
+        gradientView.layer.cornerRadius = .defaultCornerRadius
+        gradientView.clipsToBounds = true
+        contentView.addSubview(gradientView)
+
+        gradientView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
 
         let symbolImageView = UIImageView()
         symbolImageView.image = hCoreUIAssets.symbol.image
@@ -150,6 +178,7 @@ extension ContractRow: Reusable {
         }
 
         let bottomContentContainer = UIStackView()
+        bottomContentContainer.spacing = 8
         bottomContentContainer.axis = .vertical
         bottomContentContainer.edgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 12, right: 12)
         contentView.addSubview(bottomContentContainer)
@@ -157,6 +186,9 @@ extension ContractRow: Reusable {
         bottomContentContainer.snp.makeConstraints { make in
             make.width.leading.bottom.equalToSuperview()
         }
+
+        let displayNameLabel = UILabel(value: "", style: .brand(.title2(color: .primary)))
+        bottomContentContainer.addArrangedSubview(displayNameLabel)
 
         let detailPillsContainer = UIStackView()
         detailPillsContainer.spacing = 8
@@ -176,8 +208,32 @@ extension ContractRow: Reusable {
         return (view, { `self` in
             let bag = DisposeBag()
 
+            if let gradientLayer = self.gradientLayer {
+                gradientView.layer.addSublayer(gradientLayer)
+
+                bag += gradientView.didLayoutSignal.onValue {
+                    gradientLayer.bounds = gradientView.layer.bounds
+                    gradientLayer.frame = gradientView.layer.frame
+                    gradientLayer.position = gradientView.layer.position
+                }
+
+                bag += {
+                    gradientLayer.removeFromSuperlayer()
+                }
+            }
+
+            displayNameLabel.value = self.displayName
+
+            bag += contentView.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25)) {
+                contentView.backgroundColor = UIColor.grayscale(.grayOne).darkened(amount: 0.5)
+            }
+
+            bag += contentView.delayedTouchCancel().animated(style: .easeOut(duration: 0.25)) {
+                contentView.backgroundColor = UIColor.grayscale(.grayOne)
+            }
+
             bag += self.statusPills.map { pill in
-                statusPillsContainer.addArranged(Pill(title: pill))
+                statusPillsContainer.addArranged(Pill(title: pill, backgroundColor: .tint(.yellowOne)))
             }
 
             let statusPillsStretchingView = UIView()
@@ -189,7 +245,7 @@ extension ContractRow: Reusable {
             }
 
             bag += self.detailPills.map { pill in
-                detailPillsContainer.addArranged(Pill(title: pill))
+                detailPillsContainer.addArranged(Pill(title: pill, backgroundColor: UIColor.white.withAlphaComponent(0.5)))
             }
 
             let detailPillsStretchingView = UIView()

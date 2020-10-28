@@ -7,6 +7,7 @@ import UIKit
 
 struct Pill {
     @ReadWriteState var title: DisplayableString
+    let backgroundColor: UIColor
 }
 
 extension Pill: Viewable {
@@ -15,8 +16,7 @@ extension Pill: Viewable {
 
         let pillView = UIView()
         pillView.layer.cornerRadius = 4
-        // TODO:
-        pillView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        pillView.backgroundColor = backgroundColor
 
         let label = UILabel(value: title, style: .brand(.caption1(color: .secondary)))
         pillView.addSubview(label)
