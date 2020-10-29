@@ -41,17 +41,81 @@ struct ContractRow: Hashable {
         contract.status.asActiveStatus != nil || contract.status.asTerminatedTodayStatus != nil || contract.status.asTerminatedInFutureStatus != nil
     }
 
+    var gradientColors: [UIColor] {
+        switch type {
+        case .norwegianHome, .swedishHouse, .swedishApartment:
+            return [
+                UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.42, green: 0.30, blue: 0.21, alpha: 1.00)
+                    }
+
+                    return UIColor(red: 0.984, green: 0.843, blue: 0.925, alpha: 1)
+                }),
+                UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.25, green: 0.46, blue: 0.68, alpha: 1.00)
+                    }
+
+                    return UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1)
+                }),
+            ]
+        case .norwegianTravel:
+            return [
+                UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.25, green: 0.46, blue: 0.68, alpha: 1.00)
+                    }
+
+                    return UIColor(red: 0.73, green: 0.69, blue: 0.89, alpha: 1.00)
+                }),
+                UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.63, green: 0.47, blue: 0.33, alpha: 1.00)
+                    }
+
+                    return UIColor(red: 0.97, green: 0.73, blue: 0.57, alpha: 1.00)
+                }),
+            ]
+        }
+    }
+
+    var orbTintColor: UIColor {
+        guard isContractActivated else {
+            return .clear
+        }
+
+        switch type {
+        case .norwegianHome, .swedishHouse, .swedishApartment:
+            return UIColor(dynamic: { trait -> UIColor in
+                if trait.userInterfaceStyle == .dark {
+                    return UIColor(red: 0.80, green: 0.71, blue: 0.51, alpha: 1.00)
+                }
+
+                return UIColor(red: 0.937, green: 0.918, blue: 0.776, alpha: 1)
+            })
+        case .norwegianTravel:
+            return UIColor(dynamic: { trait -> UIColor in
+                if trait.userInterfaceStyle == .dark {
+                    return UIColor(red: 0.78, green: 0.68, blue: 0.54, alpha: 1.00)
+                }
+
+                return UIColor(red: 0.89, green: 0.80, blue: 0.81, alpha: 1.00)
+            })
+        }
+    }
+
     var gradientLayer: CAGradientLayer? {
         guard isContractActivated else {
             return nil
         }
 
         let layer = CAGradientLayer()
-        layer.colors = [
-            UIColor(red: 0.984, green: 0.843, blue: 0.925, alpha: 1).cgColor,
-            UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1).cgColor,
-        ]
+        layer.colors = gradientColors.map { $0.cgColor }
         layer.locations = [0, 1]
+
+        layer.startPoint = CGPoint(x: 0.0, y: 0.0)
+        layer.endPoint = CGPoint(x: 1.0, y: 0.0)
 
         return layer
     }
@@ -138,6 +202,7 @@ extension ContractRow: Reusable {
         view.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
 
         let contentView = UIControl()
+        contentView.layer.masksToBounds = true
         contentView.layer.cornerRadius = .defaultCornerRadius
         contentView.layer.borderWidth = .hairlineWidth
         contentView.backgroundColor = .grayscale(.grayOne)
@@ -153,6 +218,16 @@ extension ContractRow: Reusable {
         contentView.addSubview(gradientView)
 
         gradientView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
+        let orbImageView = UIImageView()
+        orbImageView.tintColor = .clear
+        orbImageView.image = Asset.contractRowOrb.image
+
+        contentView.addSubview(orbImageView)
+
+        orbImageView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
@@ -210,18 +285,26 @@ extension ContractRow: Reusable {
                 .brand(.primaryBorderColor)
             }
 
-            if let gradientLayer = self.gradientLayer {
-                gradientView.layer.addSublayer(gradientLayer)
+            orbImageView.tintColor = self.orbTintColor
 
-                bag += gradientView.didLayoutSignal.onValue {
-                    gradientLayer.bounds = gradientView.layer.bounds
-                    gradientLayer.frame = gradientView.layer.frame
-                    gradientLayer.position = gradientView.layer.position
+            bag += contentView.traitCollectionSignal.atOnce().onValueDisposePrevious { _ -> Disposable? in
+                let bag = DisposeBag()
+
+                if let gradientLayer = self.gradientLayer {
+                    gradientView.layer.addSublayer(gradientLayer)
+
+                    bag += gradientView.didLayoutSignal.onValue {
+                        gradientLayer.bounds = gradientView.layer.bounds
+                        gradientLayer.frame = gradientView.layer.frame
+                        gradientLayer.position = gradientView.layer.position
+                    }
+
+                    bag += {
+                        gradientLayer.removeFromSuperlayer()
+                    }
                 }
 
-                bag += {
-                    gradientLayer.removeFromSuperlayer()
-                }
+                return bag
             }
 
             displayNameLabel.value = self.displayName
@@ -239,7 +322,7 @@ extension ContractRow: Reusable {
             }))
 
             bag += detailPillsContainer.addArranged(PillCollection(pills: self.detailPills.map { pill in
-                Pill(title: pill, backgroundColor: UIColor.white.withAlphaComponent(0.5))
+                Pill(title: pill, backgroundColor: UIColor.brand(.primaryBackground()).withAlphaComponent(0.5))
             }))
 
             return bag
