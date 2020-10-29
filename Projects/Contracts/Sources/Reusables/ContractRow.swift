@@ -143,6 +143,7 @@ extension ContractRow: Reusable {
 
         let contentView = UIControl()
         contentView.layer.cornerRadius = .defaultCornerRadius
+        contentView.layer.borderWidth = .hairlineWidth
         contentView.backgroundColor = .grayscale(.grayOne)
 
         view.addArrangedSubview(contentView)
@@ -207,6 +208,10 @@ extension ContractRow: Reusable {
 
         return (view, { `self` in
             let bag = DisposeBag()
+
+            bag += contentView.applyBorderColor { _ in
+                .brand(.primaryBorderColor)
+            }
 
             if let gradientLayer = self.gradientLayer {
                 gradientView.layer.addSublayer(gradientLayer)
