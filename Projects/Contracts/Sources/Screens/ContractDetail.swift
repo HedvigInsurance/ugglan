@@ -50,6 +50,7 @@ extension ContractDetail: Presentable {
                     let translation = panGR.translation(in: nil)
 
                     if translation.y > 200 {
+                        panGR.state = .cancelled
                         completion(.success)
                     }
                 }
