@@ -1,5 +1,6 @@
 query Contracts($locale: Locale!) {
     contracts {
+        id
         displayName
         switchedFromInsuranceProvider
         upcomingRenewal {

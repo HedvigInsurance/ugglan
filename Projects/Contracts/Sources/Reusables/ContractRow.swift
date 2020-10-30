@@ -3,6 +3,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Hero
 import hGraphQL
 import UIKit
 
@@ -36,6 +37,8 @@ struct ContractRow: Hashable {
         case norwegianTravel
         case norwegianHome
     }
+
+    var allowDetailNavigation = true
 
     var isContractActivated: Bool {
         contract.status.asActiveStatus != nil || contract.status.asTerminatedTodayStatus != nil || contract.status.asTerminatedInFutureStatus != nil
@@ -213,6 +216,7 @@ extension ContractRow: Reusable {
         }
 
         let gradientView = UIView()
+        gradientView.isUserInteractionEnabled = false
         gradientView.layer.cornerRadius = .defaultCornerRadius
         gradientView.clipsToBounds = true
         contentView.addSubview(gradientView)
@@ -231,6 +235,14 @@ extension ContractRow: Reusable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
+        let touchFocusView = UIView()
+        touchFocusView.isUserInteractionEnabled = false
+        contentView.addSubview(touchFocusView)
+
+        touchFocusView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
         let symbolImageView = UIImageView()
         symbolImageView.image = hCoreUIAssets.symbol.image
 
@@ -242,6 +254,7 @@ extension ContractRow: Reusable {
         }
 
         let verticalContentContainer = UIStackView()
+        verticalContentContainer.isUserInteractionEnabled = false
         verticalContentContainer.spacing = 20
         verticalContentContainer.edgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 40)
         verticalContentContainer.axis = .vertical
@@ -281,6 +294,17 @@ extension ContractRow: Reusable {
         return (view, { `self` in
             let bag = DisposeBag()
 
+            chevronImageView.isHidden = !self.allowDetailNavigation
+
+            contentView.hero.id = "contentView_\(self.contract.id)"
+            contentView.layer.zPosition = .greatestFiniteMagnitude
+            contentView.hero.modifiers = [
+                .spring(stiffness: 250, damping: 25),
+                .when({ context -> Bool in
+                    !context.isMatched
+                }, [.translate(x: -500, y: 0, z: 0)]),
+            ]
+
             bag += contentView.applyBorderColor { _ in
                 .brand(.primaryBorderColor)
             }
@@ -309,12 +333,31 @@ extension ContractRow: Reusable {
 
             displayNameLabel.value = self.displayName
 
-            bag += contentView.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25)) {
-                contentView.backgroundColor = UIColor.grayscale(.grayOne).darkened(amount: 0.5)
-            }
+            if self.allowDetailNavigation {
+                bag += contentView.signal(for: .touchUpInside)
+                    .compactMap { _ in contentView.viewController }
+                    .onValue { viewController in
+                        guard let navigationController = viewController.navigationController else {
+                            return
+                        }
 
-            bag += contentView.delayedTouchCancel().animated(style: .easeOut(duration: 0.25)) {
-                contentView.backgroundColor = UIColor.grayscale(.grayOne)
+                        if navigationController.hero.isEnabled {
+                            navigationController.hero.isEnabled = false
+                        }
+
+                        navigationController.hero.isEnabled = true
+                        navigationController.hero.navigationAnimationType = .fade
+
+                        viewController.present(ContractDetail(contractRow: self), options: [.largeTitleDisplayMode(.never), .autoPop])
+                    }
+
+                bag += contentView.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25)) {
+                    touchFocusView.backgroundColor = UIColor.grayscale(.grayOne).darkened(amount: 0.2).withAlphaComponent(0.25)
+                }
+
+                bag += contentView.delayedTouchCancel().animated(style: .easeOut(duration: 0.25)) {
+                    touchFocusView.backgroundColor = .clear
+                }
             }
 
             bag += statusPillsContainer.addArranged(PillCollection(pills: self.statusPills.map { pill in

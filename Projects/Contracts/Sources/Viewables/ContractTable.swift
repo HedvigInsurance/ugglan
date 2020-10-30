@@ -53,9 +53,9 @@ extension ContractTable: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 10,
-                left: 20,
+                left: 15,
                 bottom: 10,
-                right: 20
+                right: 15
             ),
             itemSpacing: 0,
             minRowHeight: 10,
