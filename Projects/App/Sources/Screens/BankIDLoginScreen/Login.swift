@@ -6,17 +6,19 @@ import hCore
 import Presentation
 import UIKit
 
-struct BankIDLogin {
+struct Login {
     @Inject var client: ApolloClient
 }
 
-extension BankIDLogin: Presentable {
+extension Login: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         switch Localization.Locale.currentLocale.market {
         case .se:
             return BankIDLoginSweden().wrappedInCloseButton().materialize()
-        case .no, .dk:
+        case .no:
             return BankIDLoginNorway().wrappedInCloseButton().materialize()
+        case .dk:
+            return NemIDLogin().wrappedInCloseButton().materialize()
         }
     }
 }

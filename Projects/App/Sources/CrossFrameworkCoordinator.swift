@@ -94,7 +94,7 @@ struct CrossFrameworkCoordinator {
 
         CrossFramework.presentLogin = { viewController in
             viewController.present(
-                BankIDLogin(),
+                Login(),
                 options: [.defaults, .allowSwipeDismissAlways]
             )
         }

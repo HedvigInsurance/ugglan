@@ -1,4 +1,4 @@
-subscription BankIDAuthSubscription {
+subscription AuthStatus {
     authStatus {
         status
     }

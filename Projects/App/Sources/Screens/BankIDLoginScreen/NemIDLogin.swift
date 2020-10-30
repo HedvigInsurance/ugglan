@@ -6,14 +6,14 @@ import hGraphQL
 import Presentation
 import UIKit
 
-struct BankIDLoginNorway: Presentable {
+struct NemIDLogin: Presentable {
     @Inject var client: ApolloClient
 
     func materialize() -> (UIViewController, Future<Void>) {
         let redirectUrl = client.perform(
-            mutation: GraphQL.BankIdNorwayAuthMutation()
+            mutation: GraphQL.NemIdAuthMutation()
         )
-        .compactMap { $0.norwegianBankIdAuth.redirectUrl }
+        .compactMap { $0.danishBankIdAuth.redirectUrl }
         .compactMap { URL(string: $0) }
 
         let didLogin = client.subscribe(subscription: GraphQL.AuthStatusSubscription())
