@@ -97,7 +97,9 @@ extension ContractTable: Viewable {
                 query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
             ).valueSignal.compactMap { $0.contracts }.onValue { contracts in
-                let table = Table(rows: contracts.map { contract -> ContractRow in
+                let activeContracts = contracts.filter { $0.status.asTerminatedStatus == nil }
+
+                let table = Table(rows: activeContracts.map { contract -> ContractRow in
                     ContractRow(
                         contract: contract,
                         displayName: contract.displayName,
