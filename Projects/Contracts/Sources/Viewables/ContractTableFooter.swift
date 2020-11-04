@@ -27,10 +27,9 @@ extension ContractTableFooter: Viewable {
         .delay(by: 0.5)
         .onValueDisposePrevious { contracts in
             let innerBag = DisposeBag()
+            let terminatedContractsCount = contracts.filter { $0.status.asTerminatedStatus != nil }.count
 
-            if filter == .active {
-                let terminatedContractsCount = contracts.filter { $0.status.asTerminatedStatus == nil }.count
-
+            if filter == .active, terminatedContractsCount > 0 {
                 let section = form.appendSection(
                     header: L10n.InsurancesTab.moreTitle,
                     footer: nil,
