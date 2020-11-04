@@ -19,7 +19,6 @@ extension ContractCoverage: Presentable {
         viewController.title = L10n.contractCoverageMainTitle
 
         let form = FormView()
-        form.backgroundColor = .brand(.secondaryBackground())
 
         let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
 
@@ -42,7 +41,9 @@ extension ContractCoverage: Presentable {
 
         bag += form.append(Spacing(height: 10))
 
-        let insurableLimits = ContractInsurableLimits(insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly())
+        let insurableLimits = ContractInsurableLimits(
+            insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
+        )
 
         bag += form.append(insurableLimits.insetted(insets))
 

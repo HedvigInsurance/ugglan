@@ -6,7 +6,7 @@ public enum SpacingType {
     case inbetween
     case custom(_ height: CGFloat)
 
-    var height: CGFloat {
+    public var height: CGFloat {
         switch self {
         case let .custom(height):
             return height
