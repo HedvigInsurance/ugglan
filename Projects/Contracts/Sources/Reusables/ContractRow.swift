@@ -296,6 +296,7 @@ extension ContractRow: Reusable {
 
             chevronImageView.isHidden = !self.allowDetailNavigation
 
+            contentView.accessibilityIdentifier = String(describing: self)
             contentView.hero.id = "contentView_\(self.contract.id)"
             contentView.layer.zPosition = .greatestFiniteMagnitude
             contentView.hero.modifiers = [
@@ -334,7 +335,7 @@ extension ContractRow: Reusable {
             displayNameLabel.value = self.displayName
 
             if self.allowDetailNavigation {
-                bag += contentView.signal(for: .touchUpInside)
+                bag += contentView.trackedTouchUpInsideSignal
                     .compactMap { _ in contentView.viewController }
                     .onValue { viewController in
                         guard let navigationController = viewController.navigationController else {
@@ -350,6 +351,8 @@ extension ContractRow: Reusable {
 
                         viewController.present(ContractDetail(contractRow: self), options: [.largeTitleDisplayMode(.never), .autoPop])
                     }
+
+                bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
                 bag += contentView.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25)) {
                     touchFocusView.backgroundColor = UIColor.grayscale(.grayOne).darkened(amount: 0.2).withAlphaComponent(0.25)
