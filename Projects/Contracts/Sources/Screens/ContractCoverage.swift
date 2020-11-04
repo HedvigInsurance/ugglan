@@ -47,7 +47,7 @@ extension ContractCoverage: Presentable {
 
         bag += form.append(insurableLimits.insetted(insets))
 
-        bag += viewController.install(form)
+        bag += viewController.install(form, options: [])
 
         return (viewController, bag)
     }

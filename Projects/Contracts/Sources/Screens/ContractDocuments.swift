@@ -55,7 +55,7 @@ extension ContractDocuments: Presentable {
             )
         }
 
-        bag += viewController.install(form)
+        bag += viewController.install(form, options: [])
 
         return (viewController, bag)
     }

@@ -60,7 +60,7 @@ extension ContractDetail: Presentable {
         }
 
         return (viewController, Future { completion in
-            bag += viewController.install(form, scrollView: scrollView) { scrollView in
+            bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
                 let panGR = scrollView.panGestureRecognizer
                 bag += panGR.onValue { _ in
                     let translation = panGR.translation(in: nil)

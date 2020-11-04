@@ -74,7 +74,7 @@ extension ContractDetailSegmentedControl: Viewable {
 
         return (segmentedControlBackgroundView, Signal { callback in
             bag += segmentedControl.onValue { index in
-                scrollView.scrollToTop(animated: true)
+                // scrollView.scrollToTop(animated: true)
                 callback(IndexPath(item: index, section: 0))
             }
 
