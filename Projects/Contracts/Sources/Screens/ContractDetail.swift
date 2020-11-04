@@ -16,7 +16,7 @@ struct ContractDetail {
 }
 
 extension ContractDetail: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -59,20 +59,8 @@ extension ContractDetail: Presentable {
             ]
         }
 
-        return (viewController, Future { completion in
-            bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
-                let panGR = scrollView.panGestureRecognizer
-                bag += panGR.onValue { _ in
-                    let translation = panGR.translation(in: nil)
+        bag += viewController.install(form, options: [], scrollView: scrollView)
 
-                    if translation.y > 200 {
-                        panGR.state = .cancelled
-                        completion(.success)
-                    }
-                }
-            }
-
-            return bag
-        })
+        return (viewController, bag)
     }
 }

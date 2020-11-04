@@ -10,6 +10,7 @@ import UIKit
 struct ContractTable {
     @Inject var client: ApolloClient
     let presentingViewController: UIViewController
+    let filter: ContractFilter
 }
 
 extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
@@ -72,7 +73,7 @@ extension ContractTable: Viewable {
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
-        bag += tableKit.view.addTableFooterView(UpsellingFooter())
+        bag += tableKit.view.addTableFooterView(ContractTableFooter(filter: filter))
 
         tableKit.view.backgroundColor = .brand(.primaryBackground())
         tableKit.view.alwaysBounceVertical = true
@@ -97,9 +98,16 @@ extension ContractTable: Viewable {
                 query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
             ).valueSignal.compactMap { $0.contracts }.onValue { contracts in
-                let activeContracts = contracts.filter { $0.status.asTerminatedStatus == nil }
+                let contractsToShow = contracts.filter {
+                    switch self.filter {
+                    case .active:
+                        return $0.status.asTerminatedStatus == nil
+                    case .terminated:
+                        return $0.status.asTerminatedStatus != nil
+                    }
+                }
 
-                let table = Table(rows: activeContracts.map { contract -> ContractRow in
+                let table = Table(rows: contractsToShow.map { contract -> ContractRow in
                     ContractRow(
                         contract: contract,
                         displayName: contract.displayName,
