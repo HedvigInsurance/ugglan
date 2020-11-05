@@ -230,6 +230,53 @@ extension ContractInformation: Presentable {
         return nil
     }
 
+    func danishHomeContent() -> (DisposeBag, [Either<SectionView, Spacing>])? {
+        if let danishHomeContent = contract.currentAgreement.asDanishHomeContentAgreement {
+            let bag = DisposeBag()
+            let apartmentInfoSection = SectionView()
+
+            let livingSpaceRow = KeyValueRow()
+            livingSpaceRow.keySignal.value = L10n.myHomeRowSizeKey
+            livingSpaceRow.valueSignal.value = L10n.myHomeRowSizeValue(String(danishHomeContent.squareMeters))
+            livingSpaceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            bag += apartmentInfoSection.append(livingSpaceRow)
+
+            let adressRow = KeyValueRow()
+            adressRow.keySignal.value = L10n.myHomeAddressRowKey
+            adressRow.valueSignal.value = danishHomeContent.address.street
+            adressRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            bag += apartmentInfoSection.append(adressRow)
+
+            let postalCodeRow = KeyValueRow()
+            postalCodeRow.keySignal.value = L10n.myHomeRowPostalCodeKey
+            postalCodeRow.valueSignal.value = danishHomeContent.address.postalCode
+            postalCodeRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            bag += apartmentInfoSection.append(postalCodeRow)
+
+            let coinsuredSection = SectionView()
+
+            let coinsuredRow = KeyValueRow()
+            coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
+
+            if danishHomeContent.numberCoInsured > 0 {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(danishHomeContent.numberCoInsured)
+            } else {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
+            }
+
+            coinsuredRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            bag += coinsuredSection.append(coinsuredRow)
+
+            return (bag, [
+                .make(apartmentInfoSection),
+                .make(Spacing(height: 10)),
+                .make(coinsuredSection),
+            ])
+        }
+
+        return nil
+    }
+
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.contractDetailMainTitle
@@ -276,6 +323,18 @@ extension ContractInformation: Presentable {
         if let (norwegianTravelBag, norwegianTravelContent) = norwegianTravel() {
             bag += norwegianTravelBag
             norwegianTravelContent.forEach { content in
+                switch content {
+                case let .left(section):
+                    form.append(section)
+                case let .right(spacing):
+                    bag += form.append(spacing)
+                }
+            }
+        }
+
+        if let (danishHomeContentBag, danishHomeContent) = danishHomeContent() {
+            bag += danishHomeContentBag
+            danishHomeContent.forEach { content in
                 switch content {
                 case let .left(section):
                     form.append(section)

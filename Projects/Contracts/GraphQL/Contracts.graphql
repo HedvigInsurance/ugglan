@@ -77,6 +77,18 @@ query Contracts($locale: Locale!) {
                 certificateUrl
                 numberCoInsured
             }
+            ... on DanishHomeContentAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+                squareMeters
+            }
         }
     }
 }

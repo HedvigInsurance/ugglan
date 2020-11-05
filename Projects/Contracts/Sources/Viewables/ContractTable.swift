@@ -23,27 +23,11 @@ extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
             return .swedishApartment
         } else if let _ = asSwedishHouseAgreement {
             return .swedishHouse
+        } else if let _ = asDanishHomeContentAgreement {
+            return .danishHome
         }
 
         fatalError("Unrecognised agreement provided")
-    }
-
-    var summary: String? {
-        if let norwegianHomeContents = asNorwegianHomeContentAgreement {
-            return norwegianHomeContents.address.street
-        } else if let norwegianTravel = asNorwegianTravelAgreement {
-            if norwegianTravel.numberCoInsured > 0 {
-                return L10n.dashboardMyInfoCoinsured(norwegianTravel.numberCoInsured)
-            }
-
-            return L10n.dashboardMyInfoNoCoinsured
-        } else if let swedishApartment = asSwedishApartmentAgreement {
-            return swedishApartment.address.street
-        } else if let swedishHouse = asSwedishHouseAgreement {
-            return swedishHouse.address.street
-        }
-
-        return nil
     }
 }
 

@@ -36,6 +36,7 @@ struct ContractRow: Hashable {
         case swedishHouse
         case norwegianTravel
         case norwegianHome
+        case danishHome
     }
 
     var allowDetailNavigation = true
@@ -46,7 +47,7 @@ struct ContractRow: Hashable {
 
     var gradientColors: [UIColor] {
         switch type {
-        case .norwegianHome, .swedishHouse, .swedishApartment:
+        case .norwegianHome, .swedishHouse, .swedishApartment, .danishHome:
             return [
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
@@ -89,7 +90,7 @@ struct ContractRow: Hashable {
         }
 
         switch type {
-        case .norwegianHome, .swedishHouse, .swedishApartment:
+        case .norwegianHome, .swedishHouse, .swedishApartment, .danishHome:
             return UIColor(dynamic: { trait -> UIColor in
                 if trait.userInterfaceStyle == .dark {
                     return UIColor(red: 0.80, green: 0.71, blue: 0.51, alpha: 1.00)
@@ -171,6 +172,9 @@ struct ContractRow: Hashable {
         case .norwegianTravel:
             let numberCoinsured = contract.currentAgreement.asNorwegianHomeContentAgreement?.numberCoInsured ?? 0
             return getPill(numberCoinsured: numberCoinsured)
+        case .danishHome:
+            let numberCoinsured = contract.currentAgreement.asDanishHomeContentAgreement?.numberCoInsured ?? 0
+            return getPill(numberCoinsured: numberCoinsured)
         }
     }
 
@@ -195,6 +199,11 @@ struct ContractRow: Hashable {
             return [
                 coversHowManyPill,
             ]
+        case .danishHome:
+            return [
+                contract.currentAgreement.asDanishHomeContentAgreement?.address.street.uppercased(),
+                coversHowManyPill,
+            ].compactMap { $0 }
         }
     }
 }
