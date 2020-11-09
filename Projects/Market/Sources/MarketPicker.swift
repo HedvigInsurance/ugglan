@@ -142,11 +142,6 @@ extension MarketPicker: Presentable {
                 guard let navigationController = viewController.navigationController else {
                     return
                 }
-
-                if navigationController.hero.isEnabled {
-                    navigationController.hero.isEnabled = false
-                }
-
                 navigationController.hero.isEnabled = true
                 navigationController.hero.navigationAnimationType = .fade
                 viewController.present(Marketing())
