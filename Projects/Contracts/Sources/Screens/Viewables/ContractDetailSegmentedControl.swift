@@ -54,6 +54,17 @@ extension ContractDetailSegmentedControl: Viewable {
         segmentedControl.selectedSegmentIndex = 0
         segmentedControlContainer.addArrangedSubview(segmentedControl)
 
+        let font = Fonts.fontFor(style: .footnote)
+        segmentedControl.setTitleTextAttributes([
+            NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
+            NSAttributedString.Key.font: font,
+        ], for: .normal)
+
+        segmentedControl.setTitleTextAttributes([
+            NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+            NSAttributedString.Key.font: font,
+        ], for: .selected)
+
         bag += scrollView.signal(for: \.contentOffset).onValue { contentOffset in
             form.bringSubviewToFront(segmentedControlBackgroundView)
 
