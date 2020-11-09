@@ -77,11 +77,11 @@ extension ContractTable: Viewable {
             }
         }
 
-        func loadContracts() {
-            bag += client.fetch(
+        func watchContracts() {
+            bag += client.watch(
                 query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
-            ).valueSignal.compactMap { $0.contracts }.onValue { contracts in
+            ).compactMap { $0.contracts }.onValue { contracts in
                 let contractsToShow = contracts.filter {
                     switch self.filter {
                     case .active:
@@ -105,7 +105,15 @@ extension ContractTable: Viewable {
             }
         }
 
-        loadContracts()
+        watchContracts()
+
+        let refreshControl = UIRefreshControl()
+        bag += client.refetchOnRefresh(
+            query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+            refreshControl: refreshControl
+        )
+
+        tableKit.view.refreshControl = refreshControl
 
         return (tableKit.view, bag)
     }
