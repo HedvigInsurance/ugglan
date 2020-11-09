@@ -182,17 +182,17 @@ struct ContractRow: Hashable {
         switch type {
         case .swedishApartment:
             return [
-                contract.currentAgreement.asSwedishApartmentAgreement?.address.street.uppercased(),
+                contract.currentAgreement.asSwedishApartmentAgreement?.address.street,
                 coversHowManyPill,
             ].compactMap { $0 }
         case .swedishHouse:
             return [
-                contract.currentAgreement.asSwedishHouseAgreement?.address.street.uppercased(),
+                contract.currentAgreement.asSwedishHouseAgreement?.address.street,
                 coversHowManyPill,
             ].compactMap { $0 }
         case .norwegianHome:
             return [
-                contract.currentAgreement.asNorwegianHomeContentAgreement?.address.street.uppercased(),
+                contract.currentAgreement.asNorwegianHomeContentAgreement?.address.street,
                 coversHowManyPill,
             ].compactMap { $0 }
         case .norwegianTravel:
@@ -201,7 +201,7 @@ struct ContractRow: Hashable {
             ]
         case .danishHome:
             return [
-                contract.currentAgreement.asDanishHomeContentAgreement?.address.street.uppercased(),
+                contract.currentAgreement.asDanishHomeContentAgreement?.address.street,
                 coversHowManyPill,
             ].compactMap { $0 }
         }
@@ -368,11 +368,11 @@ extension ContractRow: Reusable {
             }
 
             bag += statusPillsContainer.addArranged(PillCollection(pills: self.statusPills.map { pill in
-                Pill(title: pill, backgroundColor: .tint(.yellowOne))
+                Pill(title: pill.uppercased(), backgroundColor: .tint(.yellowOne))
             }))
 
             bag += detailPillsContainer.addArranged(PillCollection(pills: self.detailPills.map { pill in
-                Pill(title: pill, backgroundColor: UIColor.brand(.primaryBackground()).withAlphaComponent(0.5))
+                Pill(title: pill.uppercased(), backgroundColor: UIColor.brand(.primaryBackground()).withAlphaComponent(0.5))
             }))
 
             return bag
