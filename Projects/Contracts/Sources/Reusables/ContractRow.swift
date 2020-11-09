@@ -20,11 +20,14 @@ extension Date {
 
 struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool {
-        lhs.displayName == rhs.displayName
+        lhs.hashValue == rhs.hashValue
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(displayName)
+        hasher.combine(statusPills)
+        hasher.combine(isContractActivated)
+        hasher.combine(detailPills)
     }
 
     let contract: GraphQL.ContractsQuery.Data.Contract
@@ -47,7 +50,7 @@ struct ContractRow: Hashable {
 
     var gradientColors: [UIColor] {
         switch type {
-        case .norwegianHome, .swedishHouse, .swedishApartment, .danishHome:
+        case .norwegianHome, .swedishApartment, .danishHome:
             return [
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
@@ -62,6 +65,23 @@ struct ContractRow: Hashable {
                     }
 
                     return UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1)
+                }),
+            ]
+        case .swedishHouse:
+            return [
+                UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.51, green: 0.33, blue: 0.16, alpha: 1.00)
+                    }
+
+                    return UIColor(red: 0.83, green: 0.81, blue: 0.80, alpha: 1.00)
+                }),
+                UIColor(dynamic: { trait -> UIColor in
+                    if trait.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.80, green: 0.48, blue: 0.48, alpha: 1.00)
+                    }
+
+                    return UIColor(red: 0.89, green: 0.80, blue: 0.81, alpha: 1.00)
                 }),
             ]
         case .norwegianTravel:
@@ -90,13 +110,21 @@ struct ContractRow: Hashable {
         }
 
         switch type {
-        case .norwegianHome, .swedishHouse, .swedishApartment, .danishHome:
+        case .norwegianHome, .swedishApartment, .danishHome:
             return UIColor(dynamic: { trait -> UIColor in
                 if trait.userInterfaceStyle == .dark {
                     return UIColor(red: 0.80, green: 0.71, blue: 0.51, alpha: 1.00)
                 }
 
                 return UIColor(red: 0.937, green: 0.918, blue: 0.776, alpha: 1)
+            })
+        case .swedishHouse:
+            return UIColor(dynamic: { trait -> UIColor in
+                if trait.userInterfaceStyle == .dark {
+                    return UIColor(red: 0.93, green: 0.58, blue: 0.37, alpha: 1.00)
+                }
+
+                return UIColor(red: 0.97, green: 0.73, blue: 0.57, alpha: 1.00)
             })
         case .norwegianTravel:
             return UIColor(dynamic: { trait -> UIColor in
