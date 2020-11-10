@@ -28,8 +28,9 @@ extension ContractTableFooter: Viewable {
         .onValueDisposePrevious { contracts in
             let innerBag = DisposeBag()
             let terminatedContractsCount = contracts.filter { $0.status.asTerminatedStatus != nil }.count
+            let activeContractsCount = contracts.filter { $0.status.asTerminatedStatus == nil }.count
 
-            if filter == .active, terminatedContractsCount > 0 {
+            if filter.displaysActiveContracts, terminatedContractsCount > 0, activeContractsCount > 0 {
                 let section = form.appendSection(
                     header: L10n.InsurancesTab.moreTitle,
                     footer: nil,
@@ -46,7 +47,7 @@ extension ContractTableFooter: Viewable {
 
                 innerBag += section.append(terminatedRow).compactMap { form.viewController }.onValue { viewController in
                     viewController.present(
-                        Contracts(filter: .terminated),
+                        Contracts(filter: .terminated(ifEmpty: .none)),
                         options: [.defaults, .largeTitleDisplayMode(.never)]
                     )
                 }
