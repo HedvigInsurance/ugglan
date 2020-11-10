@@ -400,11 +400,11 @@ extension ContractRow: Reusable {
             }
 
             bag += statusPillsContainer.addArranged(PillCollection(pills: self.statusPills.map { pill in
-                Pill(title: pill.uppercased(), backgroundColor: .tint(.yellowOne))
+                Pill(title: pill.uppercased(), tintColor: .tint(.yellowOne))
             }))
 
             bag += detailPillsContainer.addArranged(PillCollection(pills: self.detailPills.map { pill in
-                Pill(title: pill.uppercased(), backgroundColor: UIColor.brand(.primaryBackground()).withAlphaComponent(0.5))
+                Pill(title: pill.uppercased(), tintColor: nil)
             }))
 
             return bag
