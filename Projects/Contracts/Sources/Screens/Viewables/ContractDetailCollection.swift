@@ -40,7 +40,10 @@ extension ContractDetailCollection: Viewable {
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let row = collectionKit.table[index]
-            let size = row.calculateContentSize(collectionKit.view.frame.size)
+            let size = row.calculateContentSize(
+                collectionKit.view.frame.size,
+                safeAreaInsets: collectionKit.view.safeAreaInsets
+            )
             contentSizes[IndexPath(row: index.row, section: index.section)] = size
 
             return CGSize(

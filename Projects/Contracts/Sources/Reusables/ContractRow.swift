@@ -240,6 +240,7 @@ extension ContractRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (ContractRow) -> Disposable) {
         let view = UIStackView()
         view.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        view.insetsLayoutMarginsFromSafeArea = true
 
         let contentView = UIControl()
         contentView.layer.masksToBounds = true

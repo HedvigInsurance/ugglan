@@ -39,6 +39,7 @@ extension ContractDetailSegmentedControl: Viewable {
             horizontalInset: 15,
             verticalInset: SpacingType.inbetween.height
         )
+        segmentedControlContainer.insetsLayoutMarginsFromSafeArea = true
 
         segmentedControlBackgroundView.addSubview(segmentedControlContainer)
 

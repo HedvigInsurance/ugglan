@@ -18,7 +18,7 @@ struct ContractDetailPresentableRow: Hashable, Equatable {
     let id = UUID()
     let presentable: AnyPresentable<UIViewController, Disposable>
 
-    func calculateContentSize(_ fitting: CGSize) -> CGSize {
+    func calculateContentSize(_ fitting: CGSize, safeAreaInsets: UIEdgeInsets) -> CGSize {
         let bag = DisposeBag()
 
         defer {
@@ -28,7 +28,7 @@ struct ContractDetailPresentableRow: Hashable, Equatable {
         let viewController = presentable.materialize(into: bag)
 
         viewController.view.snp.makeConstraints { make in
-            make.width.equalTo(fitting.width)
+            make.width.equalTo(fitting.width - safeAreaInsets.left - safeAreaInsets.right)
         }
 
         viewController.view.setNeedsLayout()
@@ -51,7 +51,10 @@ extension ContractDetailPresentableRow: Reusable {
             view.addSubview(viewController.view)
 
             viewController.view.snp.makeConstraints { make in
-                make.top.bottom.trailing.leading.equalToSuperview()
+                make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+                make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+                make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
             }
 
             view.viewController?.addChild(viewController)

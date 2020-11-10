@@ -31,7 +31,10 @@ extension ContractPerilCollection: Viewable {
         }
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: collectionKit.view.frame.size.width / 2 - 5, height: 64)
+            CGSize(
+                width: collectionKit.view.frame.size.width / 2 - 5,
+                height: 64
+            )
         }
 
         bag += collectionKit.view.signal(for: \.contentSize).onValue { size in
