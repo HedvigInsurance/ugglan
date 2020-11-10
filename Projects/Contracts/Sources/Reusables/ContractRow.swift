@@ -245,7 +245,9 @@ extension ContractRow: Reusable {
         contentView.layer.masksToBounds = true
         contentView.layer.cornerRadius = .defaultCornerRadius
         contentView.layer.borderWidth = .hairlineWidth
-        contentView.backgroundColor = .grayscale(.grayOne)
+
+        let backgroundColor = UIColor(light: .grayscale(.grayOne), dark: .grayscale(.grayFive))
+        contentView.backgroundColor = backgroundColor
         view.addArrangedSubview(contentView)
 
         contentView.snp.makeConstraints { make in
@@ -380,14 +382,16 @@ extension ContractRow: Reusable {
                         }
                         navigationController.hero.isEnabled = true
                         navigationController.hero.navigationAnimationType = .fade
-
-                        viewController.present(ContractDetail(contractRow: self), options: [.largeTitleDisplayMode(.never), .autoPop])
+                        viewController.present(
+                            ContractDetail(contractRow: self),
+                            options: [.largeTitleDisplayMode(.never), .autoPop]
+                        )
                     }
 
                 bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
                 bag += contentView.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25)) {
-                    touchFocusView.backgroundColor = UIColor.grayscale(.grayOne).darkened(amount: 0.2).withAlphaComponent(0.25)
+                    touchFocusView.backgroundColor = backgroundColor.darkened(amount: 0.2).withAlphaComponent(0.25)
                 }
 
                 bag += contentView.delayedTouchCancel().animated(style: .easeOut(duration: 0.25)) {

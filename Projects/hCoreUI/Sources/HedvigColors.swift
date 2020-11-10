@@ -172,11 +172,14 @@ public extension UIColor {
 
     enum GrayscaleColor {
         case grayOne
+        case grayFive
 
         var color: UIColor {
             switch self {
             case .grayOne:
                 return #colorLiteral(red: 0.9176470588, green: 0.9176470588, blue: 0.9176470588, alpha: 1)
+            case .grayFive:
+                return #colorLiteral(red: 0.1930259168, green: 0.1930313706, blue: 0.19302845, alpha: 1)
             }
         }
     }
