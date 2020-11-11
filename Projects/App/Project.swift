@@ -10,13 +10,29 @@ let sdkFrameworks: [TargetDependency] = [
 ]
 
 let ugglanConfigurations: [CustomConfiguration] = [
-    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
-    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
+    .debug(
+        name: "Debug",
+        settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app"],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+    ),
+    .release(
+        name: "Release",
+        settings: [:],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+    ),
 ]
 
 let hedvigConfigurations: [CustomConfiguration] = [
-    .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
-    .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_PRODUCTION"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")),
+    .debug(
+        name: "Debug",
+        settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.app"],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+    ),
+    .release(
+        name: "Release",
+        settings: [:],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+    ),
 ]
 
 let testsConfigurations: [CustomConfiguration] = [
