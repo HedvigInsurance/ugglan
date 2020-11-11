@@ -118,9 +118,9 @@ extension Localization.Locale {
         case .en_NO:
             return .enNo
         case .da_DK:
-            return .enNo
+            return .daDk
         case .en_DK:
-            return .enNo
+            return .enDk
         }
     }
 }
