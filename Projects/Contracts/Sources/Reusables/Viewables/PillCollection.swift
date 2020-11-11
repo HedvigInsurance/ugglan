@@ -6,7 +6,8 @@ import hCoreUI
 import UIKit
 
 struct PillCollection {
-    @ReadWriteState var pills: [Pill]
+    typealias PillData = Either<Pill, EffectedPill>
+    @ReadWriteState var pills: [PillData]
 }
 
 extension PillCollection: Viewable {
@@ -14,12 +15,12 @@ extension PillCollection: Viewable {
         let bag = DisposeBag()
 
         let layout = LeftAlignedCollectionViewFlowLayout()
-        let collectionKit = CollectionKit<EmptySection, Pill>(layout: layout)
+        let collectionKit = CollectionKit<EmptySection, PillData>(layout: layout)
         collectionKit.view.backgroundColor = .clear
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let row = collectionKit.table[index]
-            return row.size
+            return row.left?.size ?? row.right?.size ?? .zero
         }
 
         bag += $pills.atOnce().map { Table(rows: $0) }.onValue { table in

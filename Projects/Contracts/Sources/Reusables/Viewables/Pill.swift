@@ -5,83 +5,36 @@ import hCore
 import hCoreUI
 import UIKit
 
-struct Pill: Hashable {
+struct Pill: Hashable, ReusableSizeable {
     static func == (lhs: Pill, rhs: Pill) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 
     @ReadWriteState var title: DisplayableString
-    let tintColor: UIColor?
+    let tintColor: UIColor
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(title.displayValue)
         hasher.combine(tintColor)
     }
-
-    var size: CGSize {
-        let (view, configure) = Self.makeAndConfigure()
-
-        let bag = DisposeBag()
-        bag += configure(self)
-
-        let size = view.systemLayoutSizeFitting(.zero)
-
-        bag.dispose()
-
-        return size
-    }
 }
 
 extension Pill: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (Pill) -> Disposable) {
-        let containerView = UIView()
-
-        let effect: UIBlurEffect
-
-        if #available(iOS 13.0, *) {
-            effect = UIBlurEffect(style: .systemThinMaterial)
-        } else {
-            effect = UIBlurEffect(style: .light)
-        }
-
-        let pillView = UIVisualEffectView(effect: effect)
+        let pillView = UIView()
         pillView.layer.cornerRadius = 4
-        pillView.layer.masksToBounds = true
-        containerView.addSubview(pillView)
 
-        pillView.snp.makeConstraints { make in
-            make.top.bottom.trailing.leading.equalToSuperview()
-        }
-
-        let tintView = UIView()
-        tintView.layer.cornerRadius = 4
-        containerView.addSubview(tintView)
-
-        tintView.snp.makeConstraints { make in
-            make.top.bottom.trailing.leading.equalToSuperview()
-        }
-
-        let vibrancyView: UIVisualEffectView
-
-        if #available(iOS 13.0, *) {
-            vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: effect, style: .secondaryLabel))
-        } else {
-            vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: effect))
-        }
-
-        pillView.contentView.addSubview(vibrancyView)
-
-        vibrancyView.snp.makeConstraints { make in
-            make.top.bottom.trailing.leading.equalToSuperview()
-        }
-
-        return (containerView, { `self` in
+        return (pillView, { `self` in
             let bag = DisposeBag()
 
-            tintView.backgroundColor = self.tintColor?.withAlphaComponent(0.1)
+            pillView.backgroundColor = self.tintColor
 
-            let label = UILabel(value: self.title, style: .brand(.caption1(color: .secondary)))
-            vibrancyView.contentView.addSubview(label)
+            let label = UILabel(value: self.title, style: .brand(.caption1(color: .secondary(state: .positive))))
+            pillView.addSubview(label)
+
+            bag += {
+                label.removeFromSuperview()
+            }
 
             bag += self.$title.bindTo(label)
 
