@@ -7,17 +7,6 @@ import Hero
 import hGraphQL
 import UIKit
 
-extension Date {
-    var localized: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Foundation.Locale(identifier: Localization.Locale.currentLocale.rawValue)
-        dateFormatter.dateStyle = .long
-        let dateString = dateFormatter.string(from: self)
-
-        return dateString
-    }
-}
-
 struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool {
         lhs.hashValue == rhs.hashValue
@@ -43,197 +32,6 @@ struct ContractRow: Hashable {
     }
 
     var allowDetailNavigation = true
-
-    var isContractActivated: Bool {
-        contract.status.asActiveStatus != nil || contract.status.asTerminatedTodayStatus != nil || contract.status.asTerminatedInFutureStatus != nil
-    }
-
-    var gradientColors: [UIColor] {
-        switch type {
-        case .norwegianHome, .swedishApartment, .danishHome:
-            return [
-                UIColor(dynamic: { trait -> UIColor in
-                    if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.42, green: 0.30, blue: 0.21, alpha: 1.00)
-                    }
-
-                    return UIColor(red: 0.984, green: 0.843, blue: 0.925, alpha: 1)
-                }),
-                UIColor(dynamic: { trait -> UIColor in
-                    if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.25, green: 0.46, blue: 0.68, alpha: 1.00)
-                    }
-
-                    return UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1)
-                }),
-            ]
-        case .swedishHouse:
-            return [
-                UIColor(dynamic: { trait -> UIColor in
-                    if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.51, green: 0.33, blue: 0.16, alpha: 1.00)
-                    }
-
-                    return UIColor(red: 0.83, green: 0.81, blue: 0.80, alpha: 1.00)
-                }),
-                UIColor(dynamic: { trait -> UIColor in
-                    if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.80, green: 0.48, blue: 0.48, alpha: 1.00)
-                    }
-
-                    return UIColor(red: 0.89, green: 0.80, blue: 0.81, alpha: 1.00)
-                }),
-            ]
-        case .norwegianTravel:
-            return [
-                UIColor(dynamic: { trait -> UIColor in
-                    if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.25, green: 0.46, blue: 0.68, alpha: 1.00)
-                    }
-
-                    return UIColor(red: 0.73, green: 0.69, blue: 0.89, alpha: 1.00)
-                }),
-                UIColor(dynamic: { trait -> UIColor in
-                    if trait.userInterfaceStyle == .dark {
-                        return UIColor(red: 0.63, green: 0.47, blue: 0.33, alpha: 1.00)
-                    }
-
-                    return UIColor(red: 0.97, green: 0.73, blue: 0.57, alpha: 1.00)
-                }),
-            ]
-        }
-    }
-
-    var orbTintColor: UIColor {
-        guard isContractActivated else {
-            return .clear
-        }
-
-        switch type {
-        case .norwegianHome, .swedishApartment, .danishHome:
-            return UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark {
-                    return UIColor(red: 0.80, green: 0.71, blue: 0.51, alpha: 1.00)
-                }
-
-                return UIColor(red: 0.937, green: 0.918, blue: 0.776, alpha: 1)
-            })
-        case .swedishHouse:
-            return UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark {
-                    return UIColor(red: 0.93, green: 0.58, blue: 0.37, alpha: 1.00)
-                }
-
-                return UIColor(red: 0.97, green: 0.73, blue: 0.57, alpha: 1.00)
-            })
-        case .norwegianTravel:
-            return UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark {
-                    return UIColor(red: 0.78, green: 0.68, blue: 0.54, alpha: 1.00)
-                }
-
-                return UIColor(red: 0.89, green: 0.80, blue: 0.81, alpha: 1.00)
-            })
-        }
-    }
-
-    var gradientLayer: CAGradientLayer? {
-        guard isContractActivated else {
-            return nil
-        }
-
-        let layer = CAGradientLayer()
-        layer.colors = gradientColors.map { $0.cgColor }
-        layer.locations = [0, 1]
-
-        layer.startPoint = CGPoint(x: 0.0, y: 0.0)
-        layer.endPoint = CGPoint(x: 1.0, y: 0.0)
-
-        return layer
-    }
-
-    var statusPills: [String] {
-        if let status = contract.status.asActiveInFutureAndTerminatedInFutureStatus {
-            let futureInceptionDate = status.futureInception?.localDateToDate ?? Date()
-            let futureTerminationDate = status.futureTermination?.localDateToDate ?? Date()
-
-            return [
-                L10n.dashboardInsuranceStatusInactiveStartdate(futureInceptionDate.localized),
-                L10n.dashboardInsuranceStatusActiveTerminationdate(futureTerminationDate.localized),
-            ]
-        } else if contract.status.asTerminatedTodayStatus != nil {
-            return [
-                L10n.dashboardInsuranceStatusTerminatedToday,
-            ]
-        } else if let status = contract.status.asActiveInFutureStatus {
-            let futureInceptionDate = status.futureInception?.localDateToDate ?? Date()
-
-            return [
-                L10n.dashboardInsuranceStatusInactiveStartdate(futureInceptionDate.localized),
-            ]
-        } else if contract.status.asPendingStatus != nil {
-            return [
-                L10n.dashboardInsuranceStatusInactiveNoStartdate,
-            ]
-        }
-
-        return []
-    }
-
-    private var coversHowManyPill: String {
-        func getPill(numberCoinsured: Int) -> String {
-            numberCoinsured > 0 ?
-                L10n.InsuranceTab.coversYouPlusTag(numberCoinsured) :
-                L10n.InsuranceTab.coversYouTag
-        }
-
-        switch type {
-        case .swedishApartment:
-            let numberCoinsured = contract.currentAgreement.asSwedishApartmentAgreement?.numberCoInsured ?? 0
-            return getPill(numberCoinsured: numberCoinsured)
-        case .swedishHouse:
-            let numberCoinsured = contract.currentAgreement.asSwedishHouseAgreement?.numberCoInsured ?? 0
-            return getPill(numberCoinsured: numberCoinsured)
-        case .norwegianHome:
-            let numberCoinsured = contract.currentAgreement.asNorwegianHomeContentAgreement?.numberCoInsured ?? 0
-            return getPill(numberCoinsured: numberCoinsured)
-        case .norwegianTravel:
-            let numberCoinsured = contract.currentAgreement.asNorwegianHomeContentAgreement?.numberCoInsured ?? 0
-            return getPill(numberCoinsured: numberCoinsured)
-        case .danishHome:
-            let numberCoinsured = contract.currentAgreement.asDanishHomeContentAgreement?.numberCoInsured ?? 0
-            return getPill(numberCoinsured: numberCoinsured)
-        }
-    }
-
-    var detailPills: [String] {
-        switch type {
-        case .swedishApartment:
-            return [
-                contract.currentAgreement.asSwedishApartmentAgreement?.address.street,
-                coversHowManyPill,
-            ].compactMap { $0 }
-        case .swedishHouse:
-            return [
-                contract.currentAgreement.asSwedishHouseAgreement?.address.street,
-                coversHowManyPill,
-            ].compactMap { $0 }
-        case .norwegianHome:
-            return [
-                contract.currentAgreement.asNorwegianHomeContentAgreement?.address.street,
-                coversHowManyPill,
-            ].compactMap { $0 }
-        case .norwegianTravel:
-            return [
-                coversHowManyPill,
-            ]
-        case .danishHome:
-            return [
-                contract.currentAgreement.asDanishHomeContentAgreement?.address.street,
-                coversHowManyPill,
-            ].compactMap { $0 }
-        }
-    }
 }
 
 extension ContractRow: Reusable {
@@ -343,7 +141,9 @@ extension ContractRow: Reusable {
                 .spring(stiffness: 250, damping: 25),
                 .when({ context -> Bool in
                     !context.isMatched
-                }, [.translate(x: -500, y: 0, z: 0)]),
+                }, [.init(applyFunction: { (state: inout HeroTargetState) in
+                    state.append(.translate(x: -contentView.frame.width * 1.3, y: 0, z: 0))
+                })]),
             ]
 
             bag += contentView.applyBorderColor { _ in
@@ -386,7 +186,9 @@ extension ContractRow: Reusable {
                         viewController.present(
                             ContractDetail(contractRow: self),
                             options: [.largeTitleDisplayMode(.never), .autoPop]
-                        )
+                        ).onResult { _ in
+                            navigationController.hero.isEnabled = false
+                        }
                     }
 
                 bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
