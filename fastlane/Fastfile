@@ -391,7 +391,9 @@ platform :ios do
     end
     
     lane :workspace_tests do
-        setup
+        if !ENV["SKIP_SETUP"]
+            setup
+        end
         
         schemes = [
             "Ugglan",
@@ -403,6 +405,10 @@ platform :ios do
             "Home",
             "Payment"
         ]
+
+        if ENV["SCHEME_FILTER"]
+            schemes = schemes.filter { |scheme| scheme.include?(ENV["SCHEME_FILTER"]) }
+        end
         
         def report(schemes)
             xchtmlreport(
