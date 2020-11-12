@@ -103,6 +103,10 @@ extension WebOnboarding: Presentable {
                     return "no-en/"
                 case .nb_NO:
                     return "no/"
+                case .da_DK:
+                    return "dk/"
+                case .en_DK:
+                    return "dk-en/"
                 default:
                     return ""
                 }
