@@ -33,8 +33,8 @@ extension ContractDocuments: Presentable {
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate),
-                style: .detented(.large, modally: false)
+                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
+                style: .detented(.large)
             )
         }
 
@@ -50,12 +50,12 @@ extension ContractDocuments: Presentable {
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceTerms),
-                style: .detented(.large, modally: false)
+                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceTerms).withCloseButton,
+                style: .detented(.large)
             )
         }
 
-        bag += viewController.install(form)
+        bag += viewController.install(form, options: [])
 
         return (viewController, bag)
     }

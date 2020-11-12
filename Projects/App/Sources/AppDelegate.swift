@@ -223,7 +223,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         RowAndProviderTracking.handler = { event in
             Mixpanel.mainInstance().track(event: event)
         }
-
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
@@ -339,9 +338,11 @@ extension AppDelegate: MessagingDelegate {
         }
     }
 
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
-        ApplicationState.setFirebaseMessagingToken(fcmToken)
-        registerFCMToken(fcmToken)
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let fcmToken = fcmToken {
+            ApplicationState.setFirebaseMessagingToken(fcmToken)
+            registerFCMToken(fcmToken)
+        }
     }
 }
 

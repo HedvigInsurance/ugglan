@@ -1,4 +1,5 @@
 import Flow
+import Form
 import Foundation
 import hCore
 import hCoreUI
@@ -7,6 +8,7 @@ import UIKit
 
 public func setupScreenShotTests() {
     Localization.Locale.currentLocale = .en_SE
+    DefaultStyling.installCustom()
 
     #if RECORD
         record = true

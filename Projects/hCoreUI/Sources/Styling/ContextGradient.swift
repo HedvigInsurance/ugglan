@@ -93,7 +93,11 @@ public struct ContextGradient {
         public func colors(for traitCollection: UITraitCollection) -> [UIColor] {
             switch self {
             case .none:
-                return []
+                return [
+                    .brand(.primaryBackground()),
+                    .brand(.primaryBackground()),
+                    .brand(.primaryBackground()),
+                ]
             case .home:
                 if traitCollection.userInterfaceStyle == .dark {
                     return [

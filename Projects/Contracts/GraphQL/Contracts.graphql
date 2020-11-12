@@ -1,5 +1,6 @@
 query Contracts($locale: Locale!) {
     contracts {
+        id
         displayName
         switchedFromInsuranceProvider
         upcomingRenewal {
@@ -75,6 +76,18 @@ query Contracts($locale: Locale!) {
                 activeTo
                 certificateUrl
                 numberCoInsured
+            }
+            ... on DanishHomeContentAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+                address {
+                    street
+                    postalCode
+                    city
+                }
+                squareMeters
             }
         }
     }

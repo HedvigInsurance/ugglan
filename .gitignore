@@ -11,6 +11,7 @@ Carthage
 *.xcodeproj
 UITestsImages/FailureDiffs
 Localizable.strings
+Localizable.stringsdict
 .githooks/release
 .githooks/bin
 .package.resolved

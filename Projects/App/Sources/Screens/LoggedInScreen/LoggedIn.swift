@@ -175,7 +175,7 @@ extension LoggedIn: Presentable {
             case .home:
                 ContextGradient.currentOption = .home
             case .contracts:
-                ContextGradient.currentOption = .insurance
+                ContextGradient.currentOption = .none
             case .forever:
                 ContextGradient.currentOption = .forever
             case .profile:

@@ -19,13 +19,9 @@ public struct Localization {
 
         public var market: Market {
             switch self {
-            case .sv_SE:
+            case .sv_SE, .en_SE:
                 return .se
-            case .en_SE:
-                return .se
-            case .en_NO:
-                return .no
-            case .nb_NO:
+            case .en_NO, .nb_NO:
                 return .no
             case .da_DK, .en_DK:
                 return .dk
@@ -118,9 +114,9 @@ extension Localization.Locale {
         case .en_NO:
             return .enNo
         case .da_DK:
-            return .enNo
+            return .daDk
         case .en_DK:
-            return .enNo
+            return .enDk
         }
     }
 }
