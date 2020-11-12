@@ -123,7 +123,7 @@ extension PostOnboarding: Presentable {
                             transitionStyle: nil,
                             capturesStatusBarAppearance: true
                         )
-                    ).onValue { _ in
+                    ).onResult { _ in
                         collectionKit.scrollToNextItem()
                     }
                 case .push:
