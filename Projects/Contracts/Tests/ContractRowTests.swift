@@ -48,7 +48,7 @@ final class ContractRowTests: XCTestCase {
         assert(activeContractRow)
 
         let activeInFutureContractRow = ContractRow(
-            contract: try! .init(jsonObject: .makeNorwegianHomeContentContract(status: .makeActiveInFutureStatus())),
+            contract: try! .init(jsonObject: .makeNorwegianHomeContentContract(status: .makeActiveInFutureStatus(futureInception: "2020-02-10"))),
             displayName: "NorwegianHome",
             type: .norwegianHome
         )
@@ -64,7 +64,7 @@ final class ContractRowTests: XCTestCase {
         assert(pendingContractRow)
 
         let activeInFutureAndTerminatedInFutureContractRow = ContractRow(
-            contract: try! .init(jsonObject: .makeNorwegianHomeContentContract(status: .makeActiveInFutureAndTerminatedInFutureStatus())),
+            contract: try! .init(jsonObject: .makeNorwegianHomeContentContract(status: .makeActiveInFutureAndTerminatedInFutureStatus(futureInception: "2020-02-10", futureTermination: "2020-02-12"))),
             displayName: "NorwegianHome",
             type: .norwegianHome
         )

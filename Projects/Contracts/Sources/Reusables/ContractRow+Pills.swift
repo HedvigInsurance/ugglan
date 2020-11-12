@@ -40,6 +40,10 @@ extension ContractRow {
             return [
                 L10n.dashboardInsuranceStatusInactiveNoStartdate,
             ]
+        } else if contract.status.asTerminatedStatus != nil {
+            return [
+                L10n.dashboardInsuranceStatusTerminated,
+            ]
         }
 
         return []
