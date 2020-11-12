@@ -40,16 +40,17 @@ extension FutureSection: Viewable {
                 if let activeInFutureStatus = contract.status.asActiveInFutureStatus {
                     titleLabel.value = L10n.HomeTab.activeInFutureWelcomeTitle(homeData.member.firstName ?? "", activeInFutureStatus.futureInception ?? "")
                     subtitleLabel.value = L10n.HomeTab.activeInFutureBody
-                } else if let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider, let insuranceProvider = insuranceProvidersData.insuranceProviders.first(where: { provider -> Bool in
-                    provider.name == switchedFromInsuranceProvider
-                }) {
-                    if insuranceProvider.switchable {
-                        titleLabel.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(homeData.member.firstName ?? "")
-                        subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
-                    } else {
-                        titleLabel.value = L10n.HomeTab.pendingNonswitchableWelcomeTitle(homeData.member.firstName ?? "")
-                        subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
-                    }
+                } else if
+                    let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider,
+                    let insuranceProvider = insuranceProvidersData.insuranceProviders.first(where: { provider -> Bool in
+                        provider.name == switchedFromInsuranceProvider
+                    }),
+                    insuranceProvider.switchable {
+                    titleLabel.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(homeData.member.firstName ?? "")
+                    subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
+                } else {
+                    titleLabel.value = L10n.HomeTab.pendingNonswitchableWelcomeTitle(homeData.member.firstName ?? "")
+                    subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
                 }
             }
         }
