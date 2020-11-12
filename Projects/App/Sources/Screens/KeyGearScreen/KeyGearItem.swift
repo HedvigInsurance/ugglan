@@ -217,7 +217,7 @@ extension KeyGearItem: Presentable {
             let bag = DisposeBag()
 
             bag += covered.map { coveredItem in
-                coveragesSection.append(KeyGearCoverage(type: .included, title: coveredItem.title?.translations?.first?.text ?? ""))
+                coveragesSection.append(KeyGearCoverage(type: .included, title: coveredItem.title?.translations.first?.text ?? ""))
             }
 
             return bag
@@ -231,7 +231,7 @@ extension KeyGearItem: Presentable {
             let bag = DisposeBag()
 
             bag += exceptions.map { exceptionItem in
-                nonCoveragesSection.append(KeyGearCoverage(type: .excluded, title: exceptionItem.title?.translations?.first?.text ?? ""))
+                nonCoveragesSection.append(KeyGearCoverage(type: .excluded, title: exceptionItem.title?.translations.first?.text ?? ""))
             }
 
             return bag

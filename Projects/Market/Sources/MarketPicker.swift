@@ -38,7 +38,7 @@ extension MarketPicker: Presentable {
         let backgroundImageView = UIImageView()
 
         bag += client.fetch(query: GraphQL.MarketingImagesQuery())
-            .compactMap { $0.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
+            .compactMap { $0.appMarketingImages.filter { $0.language?.code == Localization.Locale.currentLocale.code }.first }
             .compactMap { $0 }
             .onValue { marketingImage in
                 guard let url = URL(string: marketingImage.image?.url ?? "") else {

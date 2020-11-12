@@ -146,7 +146,7 @@ extension VNCoreMLModel {
                 return bag
             }
 
-            bag += client.fetch(query: GraphQL.KeyGearClassifierQuery()).map { data in data.coreMlModels.first??.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in
+            bag += client.fetch(query: GraphQL.KeyGearClassifierQuery()).map { data in data.coreMlModels.first?.file?.url }.valueSignal.compactMap { url in URL(string: url) }.onValue { url in
                 downloadModel(url)
             }
 
