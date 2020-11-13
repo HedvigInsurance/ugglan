@@ -238,7 +238,7 @@ extension Project {
                                          resources: "Example/Resources/**",
                                          actions: targetActions,
                                          dependencies: [[.target(name: "\(name)"), .project(target: "ExampleUtil", path: .relativeToRoot("Projects/ExampleUtil")), .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil"))], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [], targetDependencies].flatMap { $0 },
-                                         settings: Settings(base: [:], configurations: appConfigurations)))
+                                         settings: Settings(base: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.example.*"], configurations: appConfigurations)))
         }
 
         func getTestAction() -> TestAction {
