@@ -33,7 +33,7 @@ extension ContractDocuments: Presentable {
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
+                Document(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
                 style: .detented(.large)
             )
         }
@@ -50,7 +50,7 @@ extension ContractDocuments: Presentable {
             }
 
             viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceTerms).withCloseButton,
+                Document(url: url, title: L10n.myDocumentsInsuranceTerms).withCloseButton,
                 style: .detented(.large)
             )
         }
