@@ -69,6 +69,7 @@ extension ActiveSection: Viewable {
         }
 
         bag += section.append(ConnectPaymentCard())
+        bag += section.append(RenewalCard())
 
         section.appendSpacing(.custom(80))
 

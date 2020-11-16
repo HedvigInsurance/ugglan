@@ -1,21 +1,23 @@
-import Apollo
 import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import Presentation
 import SafariServices
 import UIKit
 
-struct InsuranceDocument {
-    @Inject var client: ApolloClient
+public struct Document {
     let url: URL
     let title: String
+
+    public init(url: URL, title: String) {
+        self.url = url
+        self.title = title
+    }
 }
 
-extension InsuranceDocument: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+extension Document: Presentable {
+    public func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
