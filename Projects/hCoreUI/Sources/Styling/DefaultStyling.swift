@@ -411,20 +411,21 @@ extension DynamicSectionStyle {
         }
     }
 
-    public static let brandGroupedCaution = DynamicSectionStyle { _ -> SectionStyle in
+    public static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
         let backgroundColor = UIColor.tint(.yellowTwo)
+        let cornerRadius = trait.userInterfaceIdiom == .pad ? CGFloat.defaultCornerRadius : 0
 
         return Style(
             rowInsets: .init(inset: 15),
             itemSpacing: 10,
             minRowHeight: 0,
             background: .init(style:
-                .init(background: .init(color: backgroundColor, border: .init(width: 0, color: .clear, cornerRadius: 0, borderEdges: .all)),
+                .init(background: .init(color: backgroundColor, border: .init(width: 0, color: .clear, cornerRadius: cornerRadius, borderEdges: .all)),
                       topSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
                       bottomSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
             ),
             selectedBackground: .init(style:
-                .init(background: .init(color: UIColor.tint(.yellowOne), border: .init(width: 0, color: .clear, cornerRadius: 0, borderEdges: .all)),
+                .init(background: .init(color: UIColor.tint(.yellowOne), border: .init(width: 0, color: .clear, cornerRadius: cornerRadius, borderEdges: .all)),
                       topSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
                       bottomSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
             ),
