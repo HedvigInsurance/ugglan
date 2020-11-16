@@ -49,6 +49,7 @@ extension RenewalCard: Viewable {
                 let bag = DisposeBag()
 
                 if
+                    contracts.count > 1,
                     contracts.allSatisfy({ contract in
                         contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
                     }),
