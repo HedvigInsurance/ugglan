@@ -20,6 +20,10 @@ extension Card: Viewable {
         let view = UIView()
         view.accessibilityIdentifier = "Card"
         view.layer.cornerRadius = .defaultCornerRadius
+        view.layer.borderWidth = .hairlineWidth
+        bag += view.applyBorderColor { _ -> UIColor in
+            .brand(.primaryBorderColor)
+        }
 
         view.backgroundColor = backgroundColor
 
