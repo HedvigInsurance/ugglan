@@ -19,62 +19,11 @@ final class RenewalCardTests: XCTestCase {
         setupScreenShotTests()
     }
 
-    func testDoesShowCard() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActiveWithMultipleRenewals()))
-
-        Dependencies.shared.add(module: Module { () -> ApolloClient in
-            apolloClient
-        })
-
-        let card = RenewalCard()
-
-        let waitForApollo = expectation(description: "wait for apollo")
-
-        let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
-        self.bag += bag
-
-        view.snp.makeConstraints { make in
-            make.width.equalTo(300)
-        }
-
-        apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1).onValue { _ in
-            XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
-            waitForApollo.fulfill()
-        }
-
-        wait(for: [waitForApollo], timeout: 1)
-    }
-
-    func testDoesShowSingleCard() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActiveWithRenewal()))
-
-        Dependencies.shared.add(module: Module { () -> ApolloClient in
-            apolloClient
-        })
-
-        let card = RenewalCard()
-
-        let waitForApollo = expectation(description: "wait for apollo")
-
-        let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
-        self.bag += bag
-
-        view.snp.makeConstraints { make in
-            make.width.equalTo(300)
-        }
-
-        apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1).onValue { _ in
-            XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
-            waitForApollo.fulfill()
-        }
-
-        wait(for: [waitForApollo], timeout: 1)
-    }
-
-    func testDoesShowMultipleSingleCards() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActiveWithMultipleRenewalsOnSeparateDates()))
+    func perform(
+        _ body: JSONObject,
+        assertions: @escaping (_ view: UIView) -> Void
+    ) {
+        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body))
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             apolloClient
@@ -92,33 +41,37 @@ final class RenewalCardTests: XCTestCase {
         }
 
         apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1).onValue { _ in
-            XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            assertions(view)
             waitForApollo.fulfill()
         }
 
         wait(for: [waitForApollo], timeout: 1)
     }
 
-    func testDoesNotShowCard() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActive()))
-
-        Dependencies.shared.add(module: Module { () -> ApolloClient in
-            apolloClient
-        })
-
-        let card = RenewalCard()
-
-        let waitForApollo = expectation(description: "wait for apollo")
-
-        let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
-        self.bag += bag
-
-        apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1).onValue { _ in
-            XCTAssertEqual(view.subviews.count, 0)
-            waitForApollo.fulfill()
+    func testDoesShowCard() {
+        perform(.makeActiveWithMultipleRenewals()) { view in
+            XCTAssertNotEqual(view.subviews.count, 0)
+            assertSnapshot(matching: view, as: .image)
         }
+    }
 
-        wait(for: [waitForApollo], timeout: 1)
+    func testDoesShowSingleCard() {
+        perform(.makeActiveWithRenewal()) { view in
+            XCTAssertNotEqual(view.subviews.count, 0)
+            assertSnapshot(matching: view, as: .image)
+        }
+    }
+
+    func testDoesShowMultipleSingleCards() {
+        perform(.makeActiveWithMultipleRenewalsOnSeparateDates()) { view in
+            XCTAssertNotEqual(view.subviews.count, 0)
+            assertSnapshot(matching: view, as: .image)
+        }
+    }
+
+    func testDoesNotShowCard() {
+        perform(.makeActive()) { view in
+            XCTAssertEqual(view.subviews.count, 0)
+        }
     }
 }
