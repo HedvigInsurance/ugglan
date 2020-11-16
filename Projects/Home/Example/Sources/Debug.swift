@@ -59,17 +59,17 @@ extension Debug: Presentable {
             ]))
         }
 
-        bag += section.appendRow(title: "Home - Active with renewal card").append(hCoreUIAssets.chevronRight.image).onValue {
+        bag += section.appendRow(title: "Renewals - One renewal").append(hCoreUIAssets.chevronRight.image).onValue {
             presentHome(combineMultiple([
                 .makeActiveWithRenewal(),
             ]))
         }
 
-        bag += section.appendRow(title: "Home - Active with multiple renewal cards").append(hCoreUIAssets.chevronRight.image).onValue {
+        bag += section.appendRow(title: "Renewals - Multiple same date").append(hCoreUIAssets.chevronRight.image).onValue {
             presentHome(.makeActiveWithMultipleRenewals())
         }
 
-        bag += section.appendRow(title: "Home - Active with multiple renewal cards on separate dates").append(hCoreUIAssets.chevronRight.image).onValue {
+        bag += section.appendRow(title: "Renewals - Multiple separate dates").append(hCoreUIAssets.chevronRight.image).onValue {
             presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates())
         }
 
