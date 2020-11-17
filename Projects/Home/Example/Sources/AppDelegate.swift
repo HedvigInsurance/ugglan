@@ -1,3 +1,4 @@
+import Flow
 import Form
 import Foundation
 import hCore
@@ -8,8 +9,9 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    let bag = DisposeBag()
 
-    internal func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func run() {
         window = UIWindow(frame: UIScreen.main.bounds)
 
         DefaultStyling.installCustom()
@@ -18,6 +20,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let navigationController = UINavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
+
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTouchesRequired = 3
+
+        bag += tapGestureRecognizer.signal(forState: .recognized).onValue { _ in
+            self.bag.dispose()
+            self.run()
+        }
+
+        window?.addGestureRecognizer(tapGestureRecognizer)
+
+        bag += {
+            self.window?.removeGestureRecognizer(tapGestureRecognizer)
+        }
 
         Dependencies.shared.add(module: Module {
             ApolloEnvironmentConfig(
@@ -39,7 +55,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
 
         ApplicationContext.shared.hasFinishedBootstrapping = true
+    }
 
+    internal func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        run()
         return true
     }
 }

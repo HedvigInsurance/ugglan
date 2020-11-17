@@ -26,57 +26,51 @@ extension Debug: Presentable {
 
         let section = form.appendSection(headerView: UILabel(value: "Screens", style: .default), footerView: nil)
 
-        bag += section.appendRow(title: "Home - Active").append(hCoreUIAssets.chevronRight.image).onValue {
-            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActive()))
+        func presentHome(_ body: JSONObject) {
+            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body))
 
             Dependencies.shared.add(module: Module { () -> ApolloClient in
                 apolloClient
             })
 
             bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+        }
+
+        bag += section.appendRow(title: "Home - Active").append(hCoreUIAssets.chevronRight.image).onValue {
+            presentHome(.makeActive())
         }
 
         bag += section.appendRow(title: "Home - Active in future").append(hCoreUIAssets.chevronRight.image).onValue {
-            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActiveInFuture(switchable: true)))
-
-            Dependencies.shared.add(module: Module { () -> ApolloClient in
-                apolloClient
-            })
-
-            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            presentHome(.makeActiveInFuture(switchable: true))
         }
 
         bag += section.appendRow(title: "Home - Pending").append(hCoreUIAssets.chevronRight.image).onValue {
-            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makePending(switchable: true)))
-
-            Dependencies.shared.add(module: Module { () -> ApolloClient in
-                apolloClient
-            })
-
-            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            presentHome(.makePending(switchable: true))
         }
 
         bag += section.appendRow(title: "Home - Pending non switchable").append(hCoreUIAssets.chevronRight.image).onValue {
-            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makePending(switchable: false)))
-
-            Dependencies.shared.add(module: Module { () -> ApolloClient in
-                apolloClient
-            })
-
-            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            presentHome(.makePending(switchable: false))
         }
 
         bag += section.appendRow(title: "Home - With payment card").append(hCoreUIAssets.chevronRight.image).onValue {
-            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: combineMultiple([
+            presentHome(combineMultiple([
                 .makeActive(),
                 .makePayInMethodStatus(.needsSetup),
-            ])))
+            ]))
+        }
 
-            Dependencies.shared.add(module: Module { () -> ApolloClient in
-                apolloClient
-            })
+        bag += section.appendRow(title: "Renewals - One renewal").append(hCoreUIAssets.chevronRight.image).onValue {
+            presentHome(combineMultiple([
+                .makeActiveWithRenewal(),
+            ]))
+        }
 
-            bag += UIApplication.shared.keyWindow?.present(Home(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+        bag += section.appendRow(title: "Renewals - Multiple same date").append(hCoreUIAssets.chevronRight.image).onValue {
+            presentHome(.makeActiveWithMultipleRenewals())
+        }
+
+        bag += section.appendRow(title: "Renewals - Multiple separate dates").append(hCoreUIAssets.chevronRight.image).onValue {
+            presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates())
         }
 
         bag += viewController.install(form)
