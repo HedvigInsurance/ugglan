@@ -73,4 +73,15 @@ public enum Market: CaseIterable {
             rawValue: bestMatchedLanguage.replacingOccurrences(of: "-", with: "_")
         ) ?? firstLanguage
     }
+
+    static func fromLocalization(_ market: Localization.Locale.Market) -> Self {
+        switch market {
+        case .dk:
+            return .denmark
+        case .se:
+            return .sweden
+        case .no:
+            return .norway
+        }
+    }
 }
