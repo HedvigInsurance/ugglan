@@ -9,6 +9,8 @@ func addDaysToDate(_ days: Int = 30) -> Date {
 
     var dateComponent = DateComponents()
     dateComponent.day = days
+    dateComponent.hour = 0
+
     let futureDate = Calendar.current.date(byAdding: dateComponent, to: today)
 
     return futureDate ?? Date()
