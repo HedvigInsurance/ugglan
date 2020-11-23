@@ -29,7 +29,6 @@ extension ContractDocuments: Presentable {
             certificateRow.append(hCoreUIAssets.chevronRight.image)
 
             bag += section.append(certificateRow).onValue { _ in
-
                 viewController.present(
                     Document(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
                     style: .detented(.large)
