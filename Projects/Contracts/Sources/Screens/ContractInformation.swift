@@ -277,6 +277,32 @@ extension ContractInformation: Presentable {
         return nil
     }
 
+    func danishTravel() -> (DisposeBag, [Either<SectionView, Spacing>])? {
+        if let danishTravel = contract.currentAgreement.asDanishTravelAgreement {
+            let bag = DisposeBag()
+
+            let coinsuredSection = SectionView()
+
+            let coinsuredRow = KeyValueRow()
+            coinsuredRow.keySignal.value = L10n.contractDetailCoinsuredTitle
+
+            if danishTravel.numberCoInsured > 0 {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInput(danishTravel.numberCoInsured)
+            } else {
+                coinsuredRow.valueSignal.value = L10n.contractDetailCoinsuredNumberInputZeroCoinsured
+            }
+
+            coinsuredRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
+            bag += coinsuredSection.append(coinsuredRow)
+
+            return (bag, [
+                .make(coinsuredSection),
+            ])
+        }
+
+        return nil
+    }
+
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.contractDetailMainTitle

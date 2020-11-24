@@ -29,6 +29,7 @@ struct ContractRow: Hashable {
         case norwegianTravel
         case norwegianHome
         case danishHome
+        case danishTravel
     }
 
     var allowDetailNavigation = true

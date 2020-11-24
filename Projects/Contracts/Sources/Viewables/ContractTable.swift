@@ -25,6 +25,8 @@ extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
             return .swedishHouse
         } else if let _ = asDanishHomeContentAgreement {
             return .danishHome
+        } else if let _ = asDanishTravelAgreement {
+            return .danishTravel
         }
 
         fatalError("Unrecognised agreement provided")
