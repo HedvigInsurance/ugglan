@@ -27,6 +27,7 @@ extension RemoteVectorIcon: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         imageView.alpha = 0
 
         let pdfDocumentSignal = ReadWriteSignal<CGPDFDocument?>(nil)
@@ -63,7 +64,6 @@ extension RemoteVectorIcon: Viewable {
                     x: imageSize.width / rect.width,
                     y: -(imageSize.height / rect.height)
                 )
-
                 context.drawPDFPage(page)
             }
 
@@ -108,6 +108,7 @@ extension RemoteVectorIcon: Viewable {
             }
 
             if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
+                imageView.alpha = 1
                 return data as CFData
             }
 
