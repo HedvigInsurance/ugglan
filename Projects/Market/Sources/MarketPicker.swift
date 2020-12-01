@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import Hero
 import hGraphQL
+import Kingfisher
 import Mixpanel
 import Presentation
 import UIKit
