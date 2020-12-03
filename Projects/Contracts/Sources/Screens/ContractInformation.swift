@@ -396,6 +396,18 @@ extension ContractInformation: Presentable {
             }
         }
 
+        if let (danishTravelBag, danishTravelContent) = danishTravel() {
+            bag += danishTravelBag
+            danishTravelContent.forEach { content in
+                switch content {
+                case let .left(section):
+                    form.append(section)
+                case let .right(spacing):
+                    bag += form.append(spacing)
+                }
+            }
+        }
+
         if let (danishAccidentBag, danishAccidentContent) = danishAccident() {
             bag += danishAccidentBag
             danishAccidentContent.forEach { content in
