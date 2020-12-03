@@ -370,6 +370,18 @@ extension ContractInformation: Presentable {
             }
         }
 
+        if let (danishTravelBag, danishTravelContent) = danishTravel() {
+            bag += danishTravelBag
+            danishTravelContent.forEach { content in
+                switch content {
+                case let .left(section):
+                    form.append(section)
+                case let .right(spacing):
+                    bag += form.append(spacing)
+                }
+            }
+        }
+
         bag += form.append(Spacing(height: 20))
 
         let changeButton = ButtonSection(
