@@ -21,7 +21,7 @@ extension ContractRow {
                     return UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1)
                 }),
             ]
-        case .swedishHouse:
+        case .swedishHouse, .danishAccident:
             return [
                 UIColor(dynamic: { trait -> UIColor in
                     if trait.userInterfaceStyle == .dark {
@@ -72,7 +72,7 @@ extension ContractRow {
 
                 return UIColor(red: 0.937, green: 0.918, blue: 0.776, alpha: 1)
             })
-        case .swedishHouse:
+        case .swedishHouse, .danishAccident:
             return UIColor(dynamic: { trait -> UIColor in
                 if trait.userInterfaceStyle == .dark {
                     return UIColor(red: 0.93, green: 0.58, blue: 0.37, alpha: 1.00)

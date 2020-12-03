@@ -75,6 +75,9 @@ extension ContractRow {
         case .danishTravel:
             let numberCoinsured = contract.currentAgreement.asNorwegianHomeContentAgreement?.numberCoInsured ?? 0
             return getPill(numberCoinsured: numberCoinsured)
+        case .danishAccident:
+            let numberCoinsured = contract.currentAgreement.asDanishAccidentAgreement?.numberCoInsured ?? 0
+            return getPill(numberCoinsured: numberCoinsured)
         }
     }
 
@@ -105,6 +108,10 @@ extension ContractRow {
                 coversHowManyPill,
             ].compactMap { $0 }
         case .danishTravel:
+            return [
+                coversHowManyPill,
+            ]
+        case .danishAccident:
             return [
                 coversHowManyPill,
             ]

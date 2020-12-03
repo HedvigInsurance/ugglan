@@ -95,6 +95,12 @@ query Contracts($locale: Locale!) {
                 certificateUrl
                 numberCoInsured
             }
+            ... on DanishAccidentAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+            }
         }
     }
 }
