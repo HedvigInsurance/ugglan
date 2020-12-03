@@ -73,7 +73,7 @@ extension ContractRow {
             let numberCoinsured = contract.currentAgreement.asDanishHomeContentAgreement?.numberCoInsured ?? 0
             return getPill(numberCoinsured: numberCoinsured)
         case .danishTravel:
-            let numberCoinsured = contract.currentAgreement.asNorwegianHomeContentAgreement?.numberCoInsured ?? 0
+            let numberCoinsured = contract.currentAgreement.asDanishTravelAgreement?.numberCoInsured ?? 0
             return getPill(numberCoinsured: numberCoinsured)
         }
     }
