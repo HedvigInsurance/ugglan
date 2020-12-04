@@ -123,7 +123,7 @@ extension PresentationOptions {
 extension UIViewController {
     private static var _appliedDetents: UInt8 = 1
 
-    var appliedDetents: [PresentationStyle.Detent] {
+    public var appliedDetents: [PresentationStyle.Detent] {
         get {
             if let appliedDetents = objc_getAssociatedObject(
                 self,
@@ -145,20 +145,45 @@ extension UIViewController {
     }
 
     public var currentDetent: PresentationStyle.Detent? {
-        guard let presentationController = navigationController?.presentationController else {
+        get {
+            guard let presentationController = navigationController?.presentationController else {
+                return nil
+            }
+
+            let index = getDetentIndex(on: presentationController)
+
+            if appliedDetents.indices.contains(index) {
+                return appliedDetents[index]
+            }
+
             return nil
         }
+        set {
+            guard
+                let presentationController = navigationController?.presentationController,
+                let newValue = newValue,
+                let index = appliedDetents.firstIndex(of: newValue)
+            else {
+                return
+            }
 
-        let index = getDetentIndex(on: presentationController)
+            setDetentIndex(on: presentationController, index: index)
 
-        if appliedDetents.indices.contains(index) {
-            return appliedDetents[index]
+            UIView.animate(
+                withDuration: 0.5,
+                delay: 0,
+                usingSpringWithDamping: 5,
+                initialSpringVelocity: 1,
+                options: .allowUserInteraction,
+                animations: {
+                    presentationController.presentedViewController.view.layoutIfNeeded()
+                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                }, completion: nil
+            )
         }
-
-        return nil
     }
 
-    public var currentDetentSignal: ReadSignal<PresentationStyle.Detent?> {
+    public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
         Signal { callback in
             let bag = DisposeBag()
 
@@ -173,6 +198,8 @@ extension UIViewController {
             return bag
         }.distinct().readable {
             self.currentDetent
+        }.writable { detent in
+            self.currentDetent = detent
         }
     }
 

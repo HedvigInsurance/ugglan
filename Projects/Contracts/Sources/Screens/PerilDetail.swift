@@ -151,6 +151,13 @@ extension PerilDetail: Presentable {
                 make.top.bottom.trailing.leading.equalToSuperview()
             }
 
+            let swipeHintTapGestureRecognizer = UITapGestureRecognizer()
+            swipeHintContainer.addGestureRecognizer(swipeHintTapGestureRecognizer)
+
+            bag += swipeHintTapGestureRecognizer.signal(forState: .recognized)
+                .compactMap { viewController.appliedDetents.last }
+                .bindTo(viewController.currentDetentSignal)
+
             let chevronUpImageView = UIImageView()
             chevronUpImageView.image = hCoreUIAssets.chevronUp.image
             chevronUpImageView.contentMode = .scaleAspectFit
