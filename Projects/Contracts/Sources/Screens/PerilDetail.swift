@@ -47,58 +47,64 @@ extension PerilDetail: Presentable {
             style: TextStyle.brand(.body(color: .secondary)).centerAligned
         ))
 
-        let coveredSection = form.appendSection(header: L10n.perilModalCoverageTitle, footer: nil, style: .default)
+        if !perilFragment.covered.isEmpty {
+            let coveredSection = form.appendSection(header: L10n.perilModalCoverageTitle, footer: nil, style: .default)
 
-        perilFragment.covered.forEach { covered in
-            let row = RowView()
+            perilFragment.covered.forEach { covered in
+                let row = RowView()
 
-            let checkmarkImageView = UIImageView()
-            checkmarkImageView.contentMode = .scaleAspectFit
-            checkmarkImageView.image = hCoreUIAssets.circularCheckmark.image
+                let checkmarkImageView = UIImageView()
+                checkmarkImageView.contentMode = .scaleAspectFit
+                checkmarkImageView.image = hCoreUIAssets.circularCheckmark.image
 
-            checkmarkImageView.snp.makeConstraints { make in
-                make.width.equalTo(21)
+                checkmarkImageView.snp.makeConstraints { make in
+                    make.width.equalTo(21)
+                }
+
+                row.prepend(checkmarkImageView)
+
+                bag += row.append(MultilineLabel(value: covered, style: .brand(.headline(color: .primary))))
+
+                coveredSection.append(row)
             }
-
-            row.prepend(checkmarkImageView)
-
-            bag += row.append(MultilineLabel(value: covered, style: .brand(.headline(color: .primary))))
-
-            coveredSection.append(row)
         }
 
-        let exceptionsSection = form.appendSection(header: L10n.perilModalExceptionsTitle, footer: nil, style: .default)
+        if !perilFragment.exceptions.isEmpty {
+            let exceptionsSection = form.appendSection(header: L10n.perilModalExceptionsTitle, footer: nil, style: .default)
 
-        perilFragment.exceptions.forEach { exception in
-            let row = RowView()
+            perilFragment.exceptions.forEach { exception in
+                let row = RowView()
 
-            let crossImageView = UIImageView()
-            crossImageView.contentMode = .scaleAspectFit
-            crossImageView.image = hCoreUIAssets.circularCross.image
+                let crossImageView = UIImageView()
+                crossImageView.contentMode = .scaleAspectFit
+                crossImageView.image = hCoreUIAssets.circularCross.image
 
-            crossImageView.snp.makeConstraints { make in
-                make.width.equalTo(21)
+                crossImageView.snp.makeConstraints { make in
+                    make.width.equalTo(21)
+                }
+
+                row.prepend(crossImageView)
+
+                bag += row.append(MultilineLabel(value: exception, style: .brand(.headline(color: .primary))))
+
+                exceptionsSection.append(row)
             }
-
-            row.prepend(crossImageView)
-
-            bag += row.append(MultilineLabel(value: exception, style: .brand(.headline(color: .primary))))
-
-            exceptionsSection.append(row)
         }
 
-        let infoSection = form.appendSection(header: L10n.perilModalInfoTitle, footer: nil, style: .default)
+        if !perilFragment.info.isEmpty {
+            let infoSection = form.appendSection(header: L10n.perilModalInfoTitle, footer: nil, style: .default)
 
-        let infoRow = RowView()
+            let infoRow = RowView()
 
-        bag += infoRow.append(
-            MultilineLabel(
-                value: perilFragment.info,
-                style: .brand(.headline(color: .secondary))
+            bag += infoRow.append(
+                MultilineLabel(
+                    value: perilFragment.info,
+                    style: .brand(.headline(color: .secondary))
+                )
             )
-        )
 
-        infoSection.append(infoRow)
+            infoSection.append(infoRow)
+        }
 
         // only show swipe hint if detents are available on system which is iOS 13+
         if #available(iOS 13, *) {
