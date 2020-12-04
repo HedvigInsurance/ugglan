@@ -89,6 +89,18 @@ query Contracts($locale: Locale!) {
                 }
                 squareMeters
             }
+            ... on DanishTravelAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+            }
+            ... on DanishAccidentAgreement {
+                activeFrom
+                activeTo
+                certificateUrl
+                numberCoInsured
+            }
         }
     }
 }
