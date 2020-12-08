@@ -13,7 +13,7 @@ struct AdyenMethodsList {
     typealias DidSubmit = (
         _ data: PaymentComponentData,
         _ component: PaymentComponent,
-        _ onResult: @escaping (_ result: Result<Either<Void, Adyen.Action>>) -> Void
+        _ onResult: @escaping (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
     ) -> Void
 
     let adyenOptions: AdyenOptions
@@ -22,7 +22,7 @@ struct AdyenMethodsList {
 
 extension AdyenMethodsList: Presentable {
     class ActionDelegate: NSObject, ActionComponentDelegate {
-        typealias ResultHandler = (_ result: Result<Either<Void, Adyen.Action>>) -> Void
+        typealias ResultHandler = (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
 
         @Inject var client: ApolloClient
         let onResult: ResultHandler
@@ -90,7 +90,9 @@ extension AdyenMethodsList: Presentable {
             } else if let component = component as? PresentableComponent {
                 component.stopLoading(withSuccess: success)
             }
+        }
 
+        func handleResult(success: Bool) {
             if success {
                 viewController.present(AdyenSuccess()).onValue { _ in
                     self.onCompletion()
@@ -110,6 +112,7 @@ extension AdyenMethodsList: Presentable {
                 case let .success(response):
                     if response.left != nil {
                         self.stopLoading(withSuccess: true, in: component)
+                        self.handleResult(success: true)
                     } else if let action = response.right {
                         self.handleAction(action, from: component)
                     }
@@ -150,16 +153,24 @@ extension AdyenMethodsList: Presentable {
                 case let .success(response):
                     if response.left != nil {
                         self.stopLoading(withSuccess: true, in: component)
+                        self.handleResult(success: true)
                     } else if let action = response.right {
                         self.handleAction(action, from: component)
                     }
                 case .failure:
                     self.stopLoading(withSuccess: false, in: component)
+                    self.handleResult(success: false)
                 }
             }
         }
 
-        func didFail(with _: Error, from component: PaymentComponent) {
+        func didFail(with error: Error, from component: PaymentComponent) {
+            guard let error = error as? Adyen.ComponentError, error == .cancelled else {
+                stopLoading(withSuccess: false, in: component)
+                handleResult(success: false)
+                return
+            }
+
             stopLoading(withSuccess: false, in: component)
         }
     }

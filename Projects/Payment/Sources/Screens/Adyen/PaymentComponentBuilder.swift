@@ -91,7 +91,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
                 configuration: configuration
             )
         } catch {
-            adyenPrint("Failed to instantiate ApplePayComponent because of error: \(error.localizedDescription)")
+            print("Failed to instantiate ApplePayComponent because of error: \(error.localizedDescription)")
             return nil
         }
     }
