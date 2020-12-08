@@ -29,7 +29,7 @@ struct AdyenPayIn: Presentable {
     let urlScheme: String
 
     func materialize() -> (UIViewController, Future<Void>) {
-        return AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
+        let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard
                 let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8) else {
@@ -57,5 +57,9 @@ struct AdyenPayIn: Presentable {
                 }
             }
         }.materialize()
+
+        viewController.title = L10n.adyenPayinTitle
+
+        return (viewController, result)
     }
 }
