@@ -1,0 +1,10 @@
+mutation AdyenTokenizePayoutDetails($request: TokenizationRequest!) {
+    tokenizePayoutDetails(req: $request) {
+      ... on TokenizationResponseFinished {
+        resultCode
+      }
+      ... on TokenizationResponseAction {
+        action
+      }
+    }
+}

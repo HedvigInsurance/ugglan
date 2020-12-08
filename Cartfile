@@ -12,7 +12,7 @@ github "hedviginsurance/ease" "master"
 github "pointfreeco/swift-snapshot-testing" == 1.7.2
 github "facebook/facebook-ios-sdk" == 5.13.0
 github "https://github.com/onevcat/Kingfisher" == 5.13.4
-github "adyen/adyen-ios" "3.3.0"
+github "adyen/adyen-ios" "3.8.0"
 github "mixpanel/mixpanel-swift"
 github "https://github.com/HedvigInsurance/Runtime" == 2.1.8
 github "getsentry/sentry-cocoa" "5.1.9"

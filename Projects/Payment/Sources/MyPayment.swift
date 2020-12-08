@@ -88,49 +88,17 @@ extension MyPayment: Presentable {
 
         switch Localization.Locale.currentLocale.market {
         case .se:
-            let bankDetailsSection = BankDetailsSection()
+            let bankDetailsSection = BankDetailsSection(urlScheme: urlScheme)
             bag += form.append(bankDetailsSection)
         case .no, .dk:
-            let cardDetailsSection = CardDetailsSection()
+            let cardDetailsSection = CardDetailsSection(urlScheme: urlScheme)
             bag += form.append(cardDetailsSection)
+
+            let payoutDetailsSection = PayoutDetailsSection(urlScheme: urlScheme)
+            bag += form.append(payoutDetailsSection)
         }
 
         bag += form.append(Spacing(height: 20))
-
-        let buttonSection = ButtonSection(
-            text: "",
-            style: .normal
-        )
-        bag += form.append(buttonSection)
-
-        let myPaymentQuerySignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
-
-        bag += myPaymentQuerySignal.onValueDisposePrevious { data in
-            let innerBag = bag.innerBag()
-
-            let hasAlreadyConnected = data.payinMethodStatus != .needsSetup
-            buttonSection.text.value = hasAlreadyConnected ? L10n.myPaymentDirectDebitReplaceButton : L10n.myPaymentDirectDebitButton
-
-            innerBag += buttonSection.onSelect.onValue {
-                let setup = PaymentSetup(
-                    setupType: hasAlreadyConnected ? .replacement : .initial,
-                    urlScheme: urlScheme
-                )
-                viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
-            }
-
-            if data.payinMethodStatus == .pending {
-                updatingMessageSectionSpacing.isHiddenSignal.value = false
-                updatingMessageSection.isHidden = false
-                buttonSection.isHiddenSignal.value = true
-            } else {
-                updatingMessageSectionSpacing.isHiddenSignal.value = true
-                updatingMessageSection.isHidden = true
-                buttonSection.isHiddenSignal.value = false
-            }
-
-            return innerBag
-        }
 
         return (viewController, bag)
     }

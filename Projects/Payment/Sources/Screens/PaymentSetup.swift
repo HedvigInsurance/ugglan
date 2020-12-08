@@ -27,7 +27,7 @@ extension PaymentSetup: Presentable {
         case .se:
             return DirectDebitSetup(setupType: setupType).materialize()
         case .no, .dk:
-            return AdyenSetup(urlScheme: urlScheme).materialize()
+            return AdyenSetup(urlScheme: urlScheme, type: .payin).materialize()
         }
     }
 }

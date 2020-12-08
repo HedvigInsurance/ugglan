@@ -15,6 +15,17 @@ public struct Localization {
             case no = "NO"
             case se = "SE"
             case dk = "DK"
+
+            public var currencyCode: String {
+                switch self {
+                case .no:
+                    return "NOK"
+                case .dk:
+                    return "DKK"
+                case .se:
+                    return "SEK"
+                }
+            }
         }
 
         public var market: Market {

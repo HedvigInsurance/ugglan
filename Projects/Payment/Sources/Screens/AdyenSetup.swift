@@ -14,10 +14,11 @@ struct AdyenSetup {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let urlScheme: String
+    let type: AdyenSetupType
 }
 
-enum AdyenError: Error {
-    case cancelled, tokenization, action
+enum AdyenSetupType {
+    case payin, payout
 }
 
 extension AdyenSetup: Presentable {
@@ -54,21 +55,24 @@ extension AdyenSetup: Presentable {
                     PKPaymentSummaryItem(label: "Hedvig", amount: NSDecimalNumber(string: "0"), type: .pending),
                 ]
 
-                let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8)!)
+                guard let jsonData = type == .payin ? data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8) : data.availablePayoutMethods.paymentMethodsResponse.data(using: .utf8) else {
+                    return
+                }
+
+                let paymentMethods = try! JSONDecoder().decode(PaymentMethods.self, from: jsonData)
 
                 var style = DropInComponent.Style()
                 style.navigation.tintColor = .brand(.primaryTintColor)
                 style.formComponent.header.title.font = Fonts.fontFor(style: .title1)
-                style.formComponent.footer.button.backgroundColor = .brand(.secondaryButtonBackgroundColor)
-                style.formComponent.footer.button.title.color = .brand(.secondaryButtonTextColor)
-                style.formComponent.footer.button.title.font = Fonts.fontFor(style: .title3)
-                style.formComponent.footer.button.cornerRadius = 6
+                style.formComponent.mainButtonItem.backgroundColor = .brand(.secondaryButtonBackgroundColor)
+                style.formComponent.mainButtonItem.button.title.color = .brand(.secondaryButtonTextColor)
+                style.formComponent.mainButtonItem.button.title.font = Fonts.fontFor(style: .title3)
+                style.formComponent.mainButtonItem.button.cornerRounding = .fixed(6)
                 style.formComponent.textField.title.font = Fonts.fontFor(style: .caption1)
                 style.formComponent.textField.text.font = Fonts.fontFor(style: .body)
                 style.formComponent.switch.title.font = Fonts.fontFor(style: .footnote)
                 style.formComponent.backgroundColor = .brand(.secondaryBackground())
                 style.formComponent.textField.backgroundColor = .brand(.secondaryBackground())
-                style.formComponent.footer.backgroundColor = .brand(.secondaryBackground())
                 style.formComponent.header.backgroundColor = .brand(.secondaryBackground())
                 style.listComponent.backgroundColor = .brand(.secondaryBackground())
                 style.listComponent.listItem.backgroundColor = .clear
@@ -107,54 +111,92 @@ extension AdyenSetup: Presentable {
                     @Inject var client: ApolloClient
                     let urlScheme: String
                     let completion: (_ result: Flow.Result<Void>) -> Void
+                    let type: AdyenSetupType
 
                     init(
                         urlScheme: String,
+                        type: AdyenSetupType,
                         _ completion: @escaping (_ result: Flow.Result<Void>) -> Void
                     ) {
                         self.urlScheme = urlScheme
+                        self.type = type
                         self.completion = completion
                     }
 
                     func didSubmit(_ data: PaymentComponentData, from component: DropInComponent) {
                         guard
-                            let jsonData = try? JSONSerialization.data(withJSONObject: data.paymentMethod.dictionaryRepresentation),
+                            let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                             let json = String(data: jsonData, encoding: .utf8) else {
                             return
                         }
 
-                        self.client.perform(
-                            mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
-                                request: GraphQL.TokenizationRequest(paymentMethodDetails: json.replacingOccurrences(of: "applepay.token", with: "applepayToken"), channel: .ios, returnUrl: "\(self.urlScheme)://adyen")
-                            )
-                        ).onValue { data in
-                            if data.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
-                                component.stopLoading(withSuccess: true, completion: nil)
-                                self.completion(.success)
-                            } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
-                                guard let jsonData = data.action.data(using: .utf8) else {
-                                    return
-                                }
-                                guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
-                                    return
-                                }
+                        let tokenizationRequest = GraphQL.TokenizationRequest(
+                            paymentMethodDetails: json.replacingOccurrences(of: "applepay.token", with: "applepayToken"),
+                            channel: .ios,
+                            returnUrl: "\(self.urlScheme)://adyen"
+                        )
 
-                                component.handle(action)
-                            } else {
-                                component.stopLoading(withSuccess: false, completion: nil)
-                                component.delegate?.didFail(with: AdyenError.tokenization, from: component)
+                        if self.type == .payin {
+                            self.client.perform(
+                                mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
+                                    request: tokenizationRequest
+                                )
+                            ).onValue { data in
+                                if data.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
+                                    component.stopLoading(withSuccess: true, completion: nil)
+                                    self.completion(.success)
+                                } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
+                                    guard let jsonData = data.action.data(using: .utf8) else {
+                                        return
+                                    }
+                                    guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
+                                        return
+                                    }
+
+                                    component.handle(action)
+                                } else {
+                                    component.stopLoading(withSuccess: false, completion: nil)
+                                    component.delegate?.didFail(with: AdyenError.tokenization, from: component)
+                                }
+                            }
+                        } else {
+                            self.client.perform(
+                                mutation: GraphQL.AdyenTokenizePayoutDetailsMutation(
+                                    request: tokenizationRequest
+                                )
+                            ).onValue { data in
+                                if data.tokenizePayoutDetails?.asTokenizationResponseFinished != nil {
+                                    component.stopLoading(withSuccess: true, completion: nil)
+                                    self.completion(.success)
+                                } else if let data = data.tokenizePayoutDetails?.asTokenizationResponseAction {
+                                    guard let jsonData = data.action.data(using: .utf8) else {
+                                        return
+                                    }
+                                    guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
+                                        return
+                                    }
+
+                                    component.handle(action)
+                                } else {
+                                    component.stopLoading(withSuccess: false, completion: nil)
+                                    component.delegate?.didFail(with: AdyenError.tokenization, from: component)
+                                }
                             }
                         }
                     }
 
                     func didProvide(_ data: ActionComponentData, from component: DropInComponent) {
                         guard
-                            let detailsJsonData = try? JSONSerialization.data(withJSONObject: data.details.dictionaryRepresentation),
+                            let detailsJsonData = try? JSONEncoder().encode(data.details.encodable),
                             let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
                             return
                         }
 
-                        self.client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData)\"}")).onValue { data in
+                        self.client.perform(
+                            mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(
+                                req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData!)\"}"
+                            )
+                        ).onValue { data in
                             if data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                                 component.stopLoading(withSuccess: true, completion: nil)
                                 self.completion(.success)
@@ -179,68 +221,7 @@ extension AdyenSetup: Presentable {
                     }
                 }
 
-                let delegate = Coordinator(urlScheme: self.urlScheme) { result in
-                    switch result {
-                    case .success:
-                        self.client.fetch(
-                            query: GraphQL.ActivePaymentMethodsQuery(),
-                            cachePolicy: .fetchIgnoringCacheData
-                        ).onValue { _ in }
-
-                        let continueButton = Button(
-                            title: L10n.PayInConfirmation.continueButton,
-                            type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
-                        )
-
-                        let continueAction = ImageTextAction<Void>(
-                            image: .init(image: hCoreUIAssets.circularCheckmark.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
-                            title: L10n.PayInConfirmation.headline,
-                            body: "",
-                            actions: [
-                                ((), continueButton),
-                            ],
-                            showLogo: false
-                        )
-
-                        bag += dropInComponent.viewController.present(PresentableViewable(viewable: continueAction) { viewController in
-                            viewController.navigationItem.hidesBackButton = true
-                        }).onValue { _ in
-                            completion(.success)
-                        }
-                    case .failure:
-                        let tryAgainButton = Button(
-                            title: L10n.PayInError.retryButton,
-                            type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
-                        )
-
-                        let cancelButton = Button(
-                            title: L10n.PayInError.postponeButton,
-                            type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
-                        )
-
-                        let didFailAction = ImageTextAction<Bool>(
-                            image: .init(image: hCoreUIAssets.warningTriangle.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
-                            title: L10n.PayInError.headline,
-                            body: L10n.PayInError.body,
-                            actions: [
-                                (true, tryAgainButton),
-                                (false, cancelButton),
-                            ],
-                            showLogo: false
-                        )
-
-                        bag += dropInComponent.viewController.present(PresentableViewable(viewable: didFailAction) { viewController in
-                            viewController.navigationItem.hidesBackButton = true
-                        }).onValue { shouldRetry in
-                            if shouldRetry {
-                                dropInComponent.viewController.present(AdyenSetup(urlScheme: urlScheme)).onResult { result in
-                                    completion(result)
-                                }
-                            } else {
-                                completion(.failure(AdyenError.cancelled))
-                            }
-                        }
-                    }
+                let delegate = Coordinator(urlScheme: self.urlScheme, type: self.type) { _ in
                 }
                 bag.hold(delegate)
                 bag.hold(dropInComponent)
@@ -271,8 +252,10 @@ extension AdyenSetup: Presentable {
 
             return DelayedDisposer(bag, delay: 2)
         }.onValue { _ in
-            self.store.update(query: GraphQL.PayInMethodStatusQuery()) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
-                data.payinMethodStatus = .active
+            if self.type == .payin {
+                self.store.update(query: GraphQL.PayInMethodStatusQuery()) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+                    data.payinMethodStatus = .active
+                }
             }
         })
     }

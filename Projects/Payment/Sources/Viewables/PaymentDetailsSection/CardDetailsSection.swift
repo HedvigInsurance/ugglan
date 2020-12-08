@@ -8,6 +8,7 @@ import hGraphQL
 
 struct CardDetailsSection {
     @Inject var client: ApolloClient
+    let urlScheme: String
 }
 
 extension CardDetailsSection: Viewable {
@@ -40,6 +41,22 @@ extension CardDetailsSection: Viewable {
         bag += dataSignal.compactMap {
             $0.activePaymentMethods?.storedPaymentMethodsDetails.lastFourDigits
         }.map { "**** \($0)" }.bindTo(row.valueSignal)
+
+        let connectRow = RowView(title: "connect")
+        let payInOptions = AdyenMethodsList.payInOptions
+
+        bag += section.append(connectRow).compactMap { section.viewController }.onValue { viewController in
+            payInOptions.onValue { options in
+                viewController.present(
+                    AdyenPayIn(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
+                    style: .detented(.scrollViewContentSize(20)),
+                    options: [
+                        .defaults,
+                        .allowSwipeDismissAlways,
+                    ]
+                )
+            }
+        }
 
         return (section, bag)
     }
