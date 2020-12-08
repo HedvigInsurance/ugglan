@@ -23,7 +23,9 @@ extension PaymentHeaderPrice: Viewable {
         let priceLabel = UILabel(value: "", style: TextStyle.brand(.title2(color: .secondary)))
         stackView.addArrangedSubview(priceLabel)
 
-        let grossPriceLabel = UILabel(value: "", style: TextStyle.brand(.title3(color: .tertiary)))
+        let grossPriceLabel = UILabel(value: "", style: TextStyle.brand(.title3(color: .tertiary)).restyled { (style: inout TextStyle) in
+            style.setParagraphAttribute(2, for: NSAttributedString.Key.strikethroughStyle, update: { _ in })
+        })
         grossPriceLabel.animationSafeIsHidden = true
 
         stackView.addArrangedSubview(grossPriceLabel)
