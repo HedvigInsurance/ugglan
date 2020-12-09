@@ -110,6 +110,13 @@ extension AdyenMethodsList: Presentable {
             }
         }
 
+        lazy var threeDS2Component: ThreeDS2Component = {
+            let threeDS2Component = ThreeDS2Component()
+            threeDS2Component.environment = AdyenPaymentBuilder.environment
+            bag.hold(threeDS2Component)
+            return threeDS2Component
+        }()
+
         func handleAction(_ action: Adyen.Action, from component: PaymentComponent) {
             let delegate = ActionDelegate { result in
                 switch result {
@@ -132,25 +139,23 @@ extension AdyenMethodsList: Presentable {
             case let .redirect(redirectAction):
                 let redirectComponent = RedirectComponent()
                 redirectComponent.delegate = delegate
+                redirectComponent.environment = AdyenPaymentBuilder.environment
                 redirectComponent.handle(redirectAction)
                 bag.hold(redirectComponent)
             case let .await(awaitAction):
                 let awaitComponent = AwaitComponent(style: nil)
                 awaitComponent.delegate = delegate
+                awaitComponent.environment = AdyenPaymentBuilder.environment
                 awaitComponent.handle(awaitAction)
                 bag.hold(awaitComponent)
             case .sdk:
                 fatalError("Not implemented")
             case let .threeDS2Fingerprint(fingerprintAction):
-                let threeDS2Component = ThreeDS2Component()
                 threeDS2Component.delegate = delegate
                 threeDS2Component.handle(fingerprintAction)
-                bag.hold(threeDS2Component)
             case let .threeDS2Challenge(challengeAction):
-                let threeDS2Component = ThreeDS2Component()
                 threeDS2Component.delegate = delegate
                 threeDS2Component.handle(challengeAction)
-                bag.hold(threeDS2Component)
             }
         }
 
@@ -218,7 +223,9 @@ extension AdyenMethodsList: Presentable {
                     let delegate = PaymentDelegate(viewController: viewController, didSubmitHandler: didSubmit) {
                         completion(.success)
                     } onRetry: {
-                        viewController.present(self.wrappedInCloseButton()).onValue {
+                        viewController.present(self.wrappedInCloseButton(), configure: { vc, _ in
+                            vc.title = viewController.title
+                        }).onValue {
                             completion(.success)
                         }.onError { error in
                             completion(.failure(error))

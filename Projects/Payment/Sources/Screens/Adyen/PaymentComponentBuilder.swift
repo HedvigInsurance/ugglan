@@ -37,10 +37,20 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
         )
     }
 
+    static var environment: Adyen.Environment {
+        switch ApplicationState.getTargetEnvironment() {
+        case .staging, .custom:
+            return .test
+        case .production:
+            return .live
+        }
+    }
+
     func build(paymentMethod: StoredCardPaymentMethod) -> PaymentComponent? {
         let component = CardComponent(paymentMethod: paymentMethod, publicKey: encryptionPublicKey, style: formComponentStyle)
         component.showsStorePaymentMethodField = false
         component.payment = payment
+        component.environment = Self.environment
         return component
     }
 
@@ -56,6 +66,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
         let component = CardComponent(paymentMethod: paymentMethod, publicKey: encryptionPublicKey, style: formComponentStyle)
         component.showsStorePaymentMethodField = false
         component.payment = payment
+        component.environment = Self.environment
         return component
     }
 
