@@ -61,7 +61,11 @@ extension AdyenMethodsList: Presentable {
         }
 
         func didFail(with error: Error, from _: ActionComponent) {
-            onResult(.failure(error))
+            if let error = error as? Adyen.ComponentError, error == .cancelled {
+                // no op
+            } else {
+                onResult(.failure(error))
+            }
         }
     }
 
@@ -118,6 +122,7 @@ extension AdyenMethodsList: Presentable {
                     }
                 case .failure:
                     self.stopLoading(withSuccess: false, in: component)
+                    self.handleResult(success: false)
                 }
             }
 
@@ -131,17 +136,19 @@ extension AdyenMethodsList: Presentable {
                 bag.hold(redirectComponent)
             case let .await(awaitAction):
                 let awaitComponent = AwaitComponent(style: nil)
-                awaitComponent.handle(awaitAction)
                 awaitComponent.delegate = delegate
+                awaitComponent.handle(awaitAction)
                 bag.hold(awaitComponent)
             case .sdk:
                 fatalError("Not implemented")
             case let .threeDS2Fingerprint(fingerprintAction):
                 let threeDS2Component = ThreeDS2Component()
+                threeDS2Component.delegate = delegate
                 threeDS2Component.handle(fingerprintAction)
                 bag.hold(threeDS2Component)
             case let .threeDS2Challenge(challengeAction):
                 let threeDS2Component = ThreeDS2Component()
+                threeDS2Component.delegate = delegate
                 threeDS2Component.handle(challengeAction)
                 bag.hold(threeDS2Component)
             }

@@ -27,9 +27,20 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
         return formComponent
     }
 
+    var payment: Adyen.Payment {
+        Adyen.Payment(
+            amount: Adyen.Payment.Amount(
+                value: 0,
+                currencyCode: Localization.Locale.currentLocale.market.currencyCode
+            ),
+            countryCode: Localization.Locale.currentLocale.market.rawValue
+        )
+    }
+
     func build(paymentMethod: StoredCardPaymentMethod) -> PaymentComponent? {
         let component = CardComponent(paymentMethod: paymentMethod, publicKey: encryptionPublicKey, style: formComponentStyle)
         component.showsStorePaymentMethodField = false
+        component.payment = payment
         return component
     }
 
@@ -44,6 +55,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
     func build(paymentMethod: CardPaymentMethod) -> PaymentComponent? {
         let component = CardComponent(paymentMethod: paymentMethod, publicKey: encryptionPublicKey, style: formComponentStyle)
         component.showsStorePaymentMethodField = false
+        component.payment = payment
         return component
     }
 
@@ -75,14 +87,6 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
             let configuration = ApplePayComponent.Configuration(
                 summaryItems: [.init(label: "Hedvig", amount: 0, type: .pending)],
                 merchantIdentifier: merchantIdentifier
-            )
-
-            let payment = Payment(
-                amount: Payment.Amount(
-                    value: 0,
-                    currencyCode: Localization.Locale.currentLocale.market.currencyCode
-                ),
-                countryCode: Localization.Locale.currentLocale.market.rawValue
             )
 
             return try ApplePayComponent(
