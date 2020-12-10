@@ -39,7 +39,9 @@ extension AdyenMethodsList: Presentable {
 
                 let logoImageView = UIImageView()
                 logoImageView.contentMode = .scaleAspectFit
-                logoImageView.kf.setImage(with: Adyen.LogoURLProvider.logoURL(for: method, environment: .live))
+
+                let logoURL = Adyen.LogoURLProvider.logoURL(for: method, environment: AdyenPaymentBuilder.environment)
+                logoImageView.kf.setImage(with: logoURL)
 
                 logoImageView.snp.makeConstraints { make in
                     make.width.equalTo(30)
