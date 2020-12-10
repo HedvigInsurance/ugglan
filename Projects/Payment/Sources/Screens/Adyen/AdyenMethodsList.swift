@@ -31,7 +31,7 @@ extension AdyenMethodsList: Presentable {
             self.onResult = onResult
         }
 
-        func didProvide(_ data: ActionComponentData, from _: ActionComponent) {
+        func didProvide(_ data: ActionComponentData, from component: ActionComponent) {
             guard
                 let detailsJsonData = try? JSONEncoder().encode(data.details.encodable),
                 let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
@@ -43,6 +43,10 @@ extension AdyenMethodsList: Presentable {
                     req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData!)\"}"
                 )
             ).onValue { data in
+                if let component = component as? DismissableComponent {
+                    component.dismiss(true, completion: nil)
+                }
+
                 if data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished != nil {
                     self.onResult(.success(.make(())))
                 } else if let data = data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseAction {
@@ -60,7 +64,11 @@ extension AdyenMethodsList: Presentable {
             }
         }
 
-        func didFail(with error: Error, from _: ActionComponent) {
+        func didFail(with error: Error, from component: ActionComponent) {
+            if let component = component as? DismissableComponent {
+                component.dismiss(true, completion: nil)
+            }
+
             if let error = error as? Adyen.ComponentError, error == .cancelled {
                 // no op
             } else {
@@ -71,6 +79,7 @@ extension AdyenMethodsList: Presentable {
 
     class PaymentDelegate: NSObject, PaymentComponentDelegate {
         let viewController: UIViewController
+        let paymentMethod: PaymentMethod
         let didSubmitHandler: DidSubmit
         let onCompletion: () -> Void
         let onRetry: () -> Void
@@ -78,11 +87,13 @@ extension AdyenMethodsList: Presentable {
 
         init(
             viewController: UIViewController,
+            paymentMethod: PaymentMethod,
             didSubmitHandler: @escaping DidSubmit,
             onCompletion: @escaping () -> Void,
             onRetry: @escaping () -> Void
         ) {
             self.viewController = viewController
+            self.paymentMethod = paymentMethod
             self.didSubmitHandler = didSubmitHandler
             self.onCompletion = onCompletion
             self.onRetry = onRetry
@@ -98,7 +109,7 @@ extension AdyenMethodsList: Presentable {
 
         func handleResult(success: Bool) {
             if success {
-                viewController.present(AdyenSuccess()).onValue { _ in
+                viewController.present(AdyenSuccess(), style: .detented(.large, modally: false)).onValue { _ in
                     self.onCompletion()
                 }
             } else {
@@ -220,7 +231,7 @@ extension AdyenMethodsList: Presentable {
                         return
                     }
 
-                    let delegate = PaymentDelegate(viewController: viewController, didSubmitHandler: didSubmit) {
+                    let delegate = PaymentDelegate(viewController: viewController, paymentMethod: method, didSubmitHandler: didSubmit) {
                         completion(.success)
                     } onRetry: {
                         viewController.present(self.wrappedInCloseButton(), configure: { vc, _ in
