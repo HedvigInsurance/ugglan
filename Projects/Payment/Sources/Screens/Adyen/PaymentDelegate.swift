@@ -36,7 +36,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
     func handleResult(success: Bool) {
         if success {
-            viewController.present(AdyenSuccess(), style: .detented(.large, modally: false)).onValue { _ in
+            viewController.present(AdyenSuccess(paymentMethod: paymentMethod), style: .detented(.large, modally: false)).onValue { _ in
                 self.onCompletion()
             }
         } else {

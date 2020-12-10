@@ -1,3 +1,4 @@
+import Adyen
 import Flow
 import Foundation
 import hCore
@@ -5,7 +6,9 @@ import hCoreUI
 import Presentation
 import UIKit
 
-struct AdyenSuccess {}
+struct AdyenSuccess {
+    let paymentMethod: PaymentMethod
+}
 
 extension AdyenSuccess: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
@@ -16,7 +19,7 @@ extension AdyenSuccess: Presentable {
 
         let continueAction = ImageTextAction<Void>(
             image: .init(image: hCoreUIAssets.circularCheckmark.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
-            title: L10n.PayInConfirmation.headline,
+            title: L10n.AdyenConfirmation.headline(paymentMethod.name),
             body: "",
             actions: [
                 ((), continueButton),

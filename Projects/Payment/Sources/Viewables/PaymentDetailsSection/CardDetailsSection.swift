@@ -19,33 +19,12 @@ extension CardDetailsSection: Viewable {
             header: L10n.myPaymentCardRowLabel,
             footer: nil
         )
-        section.isHidden = true
-
-        let row = KeyValueRow()
-        row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-
-        bag += section.append(row)
 
         let dataSignal = client.watch(query: GraphQL.ActivePaymentMethodsQuery())
 
-        bag += dataSignal.map { $0.activePaymentMethods == nil }.bindTo(
-            animate: SpringAnimationStyle.lightBounce(),
-            section,
-            \.animationSafeIsHidden
-        )
-
-        bag += dataSignal.compactMap {
-            $0.activePaymentMethods?.storedPaymentMethodsDetails.brand?.capitalized
-        }.bindTo(row.keySignal)
-
-        bag += dataSignal.compactMap {
-            $0.activePaymentMethods?.storedPaymentMethodsDetails.lastFourDigits
-        }.map { "**** \($0)" }.bindTo(row.valueSignal)
-
-        let connectRow = RowView(title: "connect")
         let payInOptions = AdyenMethodsList.payInOptions
 
-        bag += section.append(connectRow).compactMap { section.viewController }.onValue { viewController in
+        func presentPayIn(_ viewController: UIViewController) {
             payInOptions.onValue { options in
                 viewController.present(
                     AdyenPayIn(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
@@ -56,6 +35,65 @@ extension CardDetailsSection: Viewable {
                     ]
                 )
             }
+        }
+
+        bag += dataSignal.onValueDisposePrevious { data in
+            let bag = DisposeBag()
+
+            if let activeMethod = data.activePaymentMethods {
+                let valueRow = RowView(
+                    title: activeMethod.storedPaymentMethodsDetails.brand?.capitalized ?? ""
+                )
+
+                let valueLabel = UILabel(
+                    value: L10n.PaymentScreen.creditCardMasking(activeMethod.storedPaymentMethodsDetails.lastFourDigits),
+                    style: .brand(.headline(color: .tertiary))
+                )
+                valueRow.append(valueLabel)
+
+                section.append(valueRow)
+
+                let connectRow = RowView(
+                    title: L10n.myPaymentDirectDebitReplaceButton,
+                    style: .brand(.headline(color: .link))
+                )
+
+                let connectImageView = UIImageView()
+                connectImageView.image = hCoreUIAssets.editIcon.image
+                connectImageView.tintColor = .brand(.link)
+
+                connectRow.append(connectImageView)
+
+                bag += section.append(connectRow)
+                    .compactMap { connectRow.viewController }
+                    .onValue(presentPayIn)
+
+                bag += {
+                    section.remove(valueRow)
+                    section.remove(connectRow)
+                }
+            } else {
+                let connectRow = RowView(
+                    title: L10n.myPaymentDirectDebitButton,
+                    style: .brand(.headline(color: .link))
+                )
+
+                let connectImageView = UIImageView()
+                connectImageView.image = hCoreUIAssets.circularPlus.image
+                connectImageView.tintColor = .brand(.link)
+
+                connectRow.append(connectImageView)
+
+                bag += section.append(connectRow)
+                    .compactMap { connectRow.viewController }
+                    .onValue(presentPayIn)
+
+                bag += {
+                    section.remove(connectRow)
+                }
+            }
+
+            return bag
         }
 
         return (section, bag)
