@@ -7,6 +7,7 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
+import Kingfisher
 import Presentation
 
 struct AdyenMethodsList {
