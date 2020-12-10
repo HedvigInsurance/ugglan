@@ -20,7 +20,10 @@ extension CardDetailsSection: Viewable {
             footer: nil
         )
 
-        let dataSignal = client.watch(query: GraphQL.ActivePaymentMethodsQuery())
+        let dataSignal = client.watch(
+            query: GraphQL.ActivePaymentMethodsQuery(),
+            cachePolicy: .returnCacheDataAndFetch
+        )
 
         let payInOptions = AdyenMethodsList.payInOptions
 

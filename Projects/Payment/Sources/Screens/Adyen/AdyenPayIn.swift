@@ -42,6 +42,12 @@ struct AdyenPayIn: Presentable {
                 )
             ).onValue { data in
                 if data.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        client.fetch(
+                            query: GraphQL.ActivePaymentMethodsQuery(),
+                            cachePolicy: .fetchIgnoringCacheData
+                        ).onValue { _ in }
+                    }
                     onResult(.success(.make(())))
                 } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
                     guard let jsonData = data.action.data(using: .utf8) else {

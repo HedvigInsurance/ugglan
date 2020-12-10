@@ -55,6 +55,12 @@ extension BankDetailsSection: Viewable {
                     style: .brand(.headline(color: .link))
                 )
 
+                let setupImageView = UIImageView()
+                setupImageView.image = hasAlreadyConnected ? hCoreUIAssets.editIcon.image : hCoreUIAssets.circularPlus.image
+                setupImageView.tintColor = .brand(.link)
+
+                paymentSetupRow.append(setupImageView)
+
                 bag += section.append(paymentSetupRow).compactMap { section.viewController }.onValue { viewController in
                     let setup = PaymentSetup(
                         setupType: hasAlreadyConnected ? .replacement : .initial,

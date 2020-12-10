@@ -20,7 +20,10 @@ extension PayoutDetailsSection: Viewable {
             footer: nil
         )
 
-        let dataSignal = client.watch(query: GraphQL.ActivePayoutMethodsQuery())
+        let dataSignal = client.watch(
+            query: GraphQL.ActivePayoutMethodsQuery(),
+            cachePolicy: .returnCacheDataAndFetch
+        )
 
         let payOutOptions = AdyenMethodsList.payOutOptions
 
