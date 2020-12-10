@@ -5,6 +5,11 @@ import Foundation
 import hCore
 import hGraphQL
 
+struct AdditionalDetailsRequest: Encodable {
+    let details: AnyEncodable
+    let paymentData: String?
+}
+
 class ActionDelegate: NSObject, ActionComponentDelegate {
     typealias ResultHandler = (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
 
@@ -16,15 +21,20 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
     }
 
     func didProvide(_ data: ActionComponentData, from component: ActionComponent) {
+        let additionalDetails = AdditionalDetailsRequest(
+            details: data.details.encodable,
+            paymentData: data.paymentData
+        )
+
         guard
-            let detailsJsonData = try? JSONEncoder().encode(data.details.encodable),
+            let detailsJsonData = try? JSONEncoder().encode(additionalDetails),
             let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
             return
         }
 
         client.perform(
             mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(
-                req: "{\"details\": \(detailsJson), \"paymentData\": \"\(data.paymentData!)\"}"
+                req: detailsJson
             )
         ).onValue { data in
             if let component = component as? DismissableComponent {
