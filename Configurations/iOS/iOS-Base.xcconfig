@@ -23,3 +23,5 @@ SWIFT_COMPILATION_MODE = wholemodule
 SWIFT_INCLUDE_PATHS = $(inherited) $(PROJECT_DIR)/../../Carthage/Checkouts/Runtime/Sources/CRuntime/Include
 
 CODE_SIGN_STYLE = Manual
+
+SWIFT_TREAT_WARNINGS_AS_ERRORS = NO
