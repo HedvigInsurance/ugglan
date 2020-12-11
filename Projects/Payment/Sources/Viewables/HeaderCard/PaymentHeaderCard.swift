@@ -39,7 +39,12 @@ extension PaymentHeaderCard: Viewable {
         topView.backgroundColor = .brand(.secondaryBackground())
 
         bag += topView.didLayoutSignal.onValue { _ in
-            topView.applyRadiusMaskFor(topLeft: 10, bottomLeft: 0, bottomRight: 0, topRight: 10)
+            topView.applyRadiusMaskFor(
+                topLeft: .defaultCornerRadius,
+                bottomLeft: 0,
+                bottomRight: 0,
+                topRight: .defaultCornerRadius
+            )
         }
 
         let topViewStack = UIStackView()

@@ -31,7 +31,7 @@ extension LatePaymentHeaderSection: Viewable {
 
         view.addSubview(childView)
 
-        childView.layer.cornerRadius = 5
+        childView.layer.cornerRadius = .defaultCornerRadius
         childView.backgroundColor = .brand(.secondaryBackground())
 
         childView.snp.makeConstraints { make in
