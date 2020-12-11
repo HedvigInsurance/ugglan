@@ -115,12 +115,8 @@ extension PaymentDetailsSection: Viewable {
 
         bag += section.append(applyDiscountButtonRow)
 
-        let hidePriceRowsSignal = dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map { $0 == 0 }
         let hasFreeMonths = dataSignal.map { $0.insuranceCost?.fragments.costFragment.freeUntil != nil }
-        bag += hidePriceRowsSignal.bindTo(grossPriceRow.isHiddenSignal)
-        bag += hidePriceRowsSignal.bindTo(discountRow.isHiddenSignal)
-        bag += hidePriceRowsSignal.bindTo(netPriceRow.isHiddenSignal)
-        bag += combineLatest(hidePriceRowsSignal, hasFreeMonths).map { !$0 || $1 }.bindTo(applyDiscountButtonRow.isHiddenSignal)
+        bag += hasFreeMonths.bindTo(applyDiscountButtonRow.isHiddenSignal)
 
         return (section, bag)
     }

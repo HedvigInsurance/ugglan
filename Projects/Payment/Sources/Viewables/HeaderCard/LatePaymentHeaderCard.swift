@@ -35,8 +35,8 @@ extension LatePaymentHeaderSection: Viewable {
         }
 
         let containerView = UIStackView()
-        containerView.axis = .horizontal
-        containerView.alignment = .top
+        containerView.axis = .vertical
+        containerView.alignment = .center
         containerView.edgeInsets = UIEdgeInsets(horizontalInset: 16, verticalInset: 20)
 
         childView.addSubview(containerView)
@@ -46,20 +46,18 @@ extension LatePaymentHeaderSection: Viewable {
             make.top.bottom.equalToSuperview()
         }
 
-        let icon = Icon(icon: hCoreUIAssets.circularCross.image, iconWidth: 15)
+        let icon = Icon(icon: hCoreUIAssets.circularCross.image, iconWidth: 25)
         containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in
-            make.width.equalTo(15)
-            make.height.equalTo(20)
-            make.left.equalTo(16)
+            make.height.equalTo(25)
         }
 
         containerView.setCustomSpacing(10, after: icon)
 
         let infoLabel = MultilineLabel(
             value: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
-            style: TextStyle.brand(.body(color: .primary))
+            style: TextStyle.brand(.body(color: .primary)).centerAligned
         )
         bag += containerView.addArranged(infoLabel)
 
