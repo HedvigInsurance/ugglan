@@ -19,6 +19,22 @@ extension PaymentHeaderCard: Viewable {
         view.isLayoutMarginsRelativeArrangement = true
         let bag = DisposeBag()
 
+        let innerBorderView = UIView()
+        innerBorderView.layer.borderWidth = .hairlineWidth
+        view.addArrangedSubview(innerBorderView)
+
+        bag += innerBorderView.applyBorderColor { _ in
+            .brand(.primaryBorderColor)
+        }
+
+        let innerStackView = UIStackView()
+        innerStackView.axis = .vertical
+        innerBorderView.addSubview(innerStackView)
+
+        innerStackView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
         let topView = UIView()
         topView.backgroundColor = .brand(.secondaryBackground())
 
@@ -54,7 +70,7 @@ extension PaymentHeaderCard: Viewable {
         bag += leftTopViewStack.addArranged(PaymentHeaderPrice(grossPriceSignal: grossPriceSignal, discountSignal: discountSignal, monthlyNetPriceSignal: netSignal))
 
         topViewStack.addArrangedSubview(leftTopViewStack)
-        view.addArrangedSubview(topView)
+        innerStackView.addArrangedSubview(topView)
 
         let bottomView = UIView()
         bag += bottomView.applyShadow { _ in
@@ -84,7 +100,7 @@ extension PaymentHeaderCard: Viewable {
         bottomViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardDate, style: .brand(.body(color: .primary))))
         bag += bottomViewStack.addArranged(PaymentHeaderNextCharge())
 
-        view.addArrangedSubview(bottomView)
+        innerStackView.addArrangedSubview(bottomView)
 
         return (view, bag)
     }

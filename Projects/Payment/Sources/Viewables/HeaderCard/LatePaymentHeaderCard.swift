@@ -24,6 +24,10 @@ extension LatePaymentHeaderSection: Viewable {
         outerContainer.addArrangedSubview(view)
 
         let childView = UIView()
+        childView.layer.borderWidth = .hairlineWidth
+        bag += childView.applyBorderColor { _ -> UIColor in
+            .brand(.primaryBorderColor)
+        }
 
         view.addSubview(childView)
 
