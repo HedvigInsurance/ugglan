@@ -81,7 +81,7 @@ extension BankDetailsSection: Viewable {
             case .pending:
                 let pendingRow = RowView()
 
-                bag += pendingRow.append(
+                innerBag += pendingRow.append(
                     MultilineLabel(
                         value: L10n.myPaymentUpdatingMessage,
                         style: .brand(.footnote(color: .tertiary))
@@ -94,9 +94,9 @@ extension BankDetailsSection: Viewable {
                     section.remove(pendingRow)
                 }
 
-                bag += addConnectPayment(data)
+                innerBag += addConnectPayment(data)
             case .active, .needsSetup:
-                bag += addConnectPayment(data)
+                innerBag += addConnectPayment(data)
             case .__unknown:
                 break
             }
