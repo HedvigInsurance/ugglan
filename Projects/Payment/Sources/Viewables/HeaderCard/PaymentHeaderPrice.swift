@@ -20,7 +20,7 @@ extension PaymentHeaderPrice: Viewable {
         stackView.axis = .vertical
         stackView.alignment = .leading
 
-        let priceLabel = UILabel(value: "", style: TextStyle.brand(.title2(color: .secondary)))
+        let priceLabel = UILabel(value: "", style: TextStyle.brand(.largeTitle(color: .primary)))
         stackView.addArrangedSubview(priceLabel)
 
         let grossPriceLabel = UILabel(value: "", style: TextStyle.brand(.title3(color: .tertiary)).restyled { (style: inout TextStyle) in

@@ -42,15 +42,13 @@ extension MyPayment: Presentable {
             form.transform = CGAffineTransform.identity
         }
 
-        let failedChargesSpacing = Spacing(height: 20)
-        failedChargesSpacing.isHiddenSignal.value = true
-
         bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious { failedCharges, nextPayment in
             let innerbag = DisposeBag()
             if let failedCharges = failedCharges, let nextPayment = nextPayment {
                 if failedCharges > 0 {
                     let latePaymentHeaderCard = LatePaymentHeaderSection(failedCharges: failedCharges, lastDate: nextPayment)
                     innerbag += form.prepend(latePaymentHeaderCard)
+                    innerbag += form.prepend(Spacing(height: 20))
                 }
             }
             return innerbag
@@ -58,27 +56,6 @@ extension MyPayment: Presentable {
 
         let paymentHeaderCard = PaymentHeaderCard()
         bag += form.prepend(paymentHeaderCard)
-
-        let updatingMessageSectionSpacing = Spacing(height: 20)
-        updatingMessageSectionSpacing.isHiddenSignal.value = true
-
-        bag += failedChargesSignalData.onValue { failedCharges in
-            if failedCharges != nil {
-                failedChargesSpacing.isHiddenSignal.value = false
-            }
-        }
-
-        bag += form.prepend(failedChargesSpacing)
-
-        bag += form.append(updatingMessageSectionSpacing)
-
-        let updatingMessageSection = SectionView()
-        updatingMessageSection.isHidden = true
-
-        let updatingMessage = UpdatingMessage()
-        bag += updatingMessageSection.append(updatingMessage)
-
-        form.append(updatingMessageSection)
 
         let pastPaymentsSection = PastPaymentsSection(presentingViewController: viewController)
         bag += form.append(pastPaymentsSection)

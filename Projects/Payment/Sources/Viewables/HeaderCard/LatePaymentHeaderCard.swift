@@ -16,13 +16,19 @@ struct LatePaymentHeaderSection {
 extension LatePaymentHeaderSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
+        let outerContainer = UIStackView()
+        outerContainer.edgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+
         let view = UIStackView()
+        view.edgeInsets = UIEdgeInsets(inset: 15)
+        outerContainer.addArrangedSubview(view)
+
         let childView = UIView()
 
         view.addSubview(childView)
 
         childView.layer.cornerRadius = 5
-        childView.backgroundColor = .brand(.link)
+        childView.backgroundColor = .brand(.secondaryBackground())
 
         childView.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
@@ -40,7 +46,7 @@ extension LatePaymentHeaderSection: Viewable {
             make.top.bottom.equalToSuperview()
         }
 
-        let icon = Icon(icon: hCoreUIAssets.pinkCircularExclamationPoint.image, iconWidth: 15)
+        let icon = Icon(icon: hCoreUIAssets.circularCross.image, iconWidth: 15)
         containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in
@@ -51,10 +57,12 @@ extension LatePaymentHeaderSection: Viewable {
 
         containerView.setCustomSpacing(10, after: icon)
 
-        let infoLabel = MultilineLabel(styledText: StyledText(text: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
-                                                              style: TextStyle.brand(.body(color: .primary))))
+        let infoLabel = MultilineLabel(
+            value: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
+            style: TextStyle.brand(.body(color: .primary))
+        )
         bag += containerView.addArranged(infoLabel)
 
-        return (view, bag)
+        return (outerContainer, bag)
     }
 }

@@ -36,8 +36,9 @@ extension PaymentHeaderCard: Viewable {
         }
 
         let leftTopViewStack = UIStackView()
+        leftTopViewStack.spacing = 12
         leftTopViewStack.axis = .vertical
-        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.title1(color: .primary))))
+        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.subHeadline(color: .tertiary))))
 
         let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
 
@@ -53,27 +54,6 @@ extension PaymentHeaderCard: Viewable {
         bag += leftTopViewStack.addArranged(PaymentHeaderPrice(grossPriceSignal: grossPriceSignal, discountSignal: discountSignal, monthlyNetPriceSignal: netSignal))
 
         topViewStack.addArrangedSubview(leftTopViewStack)
-
-        let campaignTypeSignal = dataSignal.map { $0.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
-            guard let campaign = campaign else {
-                return nil
-            }
-
-            let incentiveFragment = campaign.fragments.campaignFragment.incentive?.fragments.incentiveFragment
-
-            if let freeMonths = incentiveFragment?.asFreeMonths {
-                return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
-            } else if let monthlyDeduction = incentiveFragment?.asMonthlyCostDeduction {
-                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount ?? "")
-            } else if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
-                return CampaignBubble.CampaignType.percentageDiscount(value: percentageDiscount.percentageDiscount, months: percentageDiscount.percentageNumberOfMonths)
-            }
-
-            return nil
-        }.plain().readable(initial: nil)
-
-        bag += topViewStack.addArranged(CampaignBubble(campaignTypeSignal: campaignTypeSignal))
-
         view.addArrangedSubview(topView)
 
         let bottomView = UIView()
