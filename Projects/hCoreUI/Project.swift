@@ -16,7 +16,6 @@ let project = Project.framework(
         .snapkit,
         .presentation,
         .dynamiccolor,
-        .flowfeedback,
         .markdownkit,
         .kingfisher,
     ],

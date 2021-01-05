@@ -181,13 +181,19 @@ extension ContractRow: Reusable {
                         guard let navigationController = viewController.navigationController else {
                             return
                         }
-                        navigationController.hero.isEnabled = true
-                        navigationController.hero.navigationAnimationType = .fade
+
+                        if !UITraitCollection.isCatalyst {
+                            navigationController.hero.isEnabled = true
+                            navigationController.hero.navigationAnimationType = .fade
+                        }
+
                         viewController.present(
                             ContractDetail(contractRow: self),
                             options: [.largeTitleDisplayMode(.never), .autoPop]
                         ).onResult { _ in
-                            navigationController.hero.isEnabled = false
+                            if !UITraitCollection.isCatalyst {
+                                navigationController.hero.isEnabled = false
+                            }
                         }
                     }
 

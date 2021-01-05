@@ -99,7 +99,7 @@ extension MarketPicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap { $0.geo.countryIsoCode }.onValue { countryISOCode in
+        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap(\.geo.countryIsoCode).onValue { countryISOCode in
             switch countryISOCode {
             case "SE":
                 pickedMarketSignal.value = .sweden
@@ -142,8 +142,10 @@ extension MarketPicker: Presentable {
                 guard let navigationController = viewController.navigationController else {
                     return
                 }
-                navigationController.hero.isEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
+                if !UITraitCollection.isCatalyst {
+                    navigationController.hero.isEnabled = true
+                    navigationController.hero.navigationAnimationType = .fade
+                }
                 viewController.present(Marketing())
             }
 
@@ -154,7 +156,7 @@ extension MarketPicker: Presentable {
                     form.transform = CGAffineTransform.identity
                     form.alpha = 1
                     form.layoutIfNeeded()
-            })
+                })
         }
 
         bag += form.didMoveToWindowSignal.onValue {

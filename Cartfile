@@ -6,21 +6,11 @@ github "hedviginsurance/flow" "master"
 github "hedviginsurance/presentation" "master"
 github "hedviginsurance/form" "master"
 github "SnapKit/SnapKit" >= 5.0.0
-github "hedviginsurance/flowfeedback" "master"
 github "ivanbruel/MarkdownKit" "bdd03bb07179b23a741fb83f9b1bbe325604a690"
 github "hedviginsurance/ease" "master"
 github "pointfreeco/swift-snapshot-testing" == 1.7.2
 github "facebook/facebook-ios-sdk" == 5.13.0
 github "https://github.com/onevcat/Kingfisher" == 5.13.4
-github "adyen/adyen-ios" "3.8.0"
 github "mixpanel/mixpanel-swift"
-github "https://github.com/HedvigInsurance/Runtime" == 2.1.8
-github "getsentry/sentry-cocoa" "5.1.9"
+github "getsentry/sentry-cocoa" "6.0.12"
 github "HeroTransitions/Hero"
-
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseFirestoreBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json"

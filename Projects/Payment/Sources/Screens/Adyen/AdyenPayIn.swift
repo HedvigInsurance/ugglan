@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 import Presentation
+import UIKit
 
 extension AdyenMethodsList {
     static var payInOptions: Future<AdyenOptions> {
@@ -14,7 +15,8 @@ extension AdyenMethodsList {
             .compactMap { data in
                 guard
                     let paymentMethodsData = data.availablePaymentMethods.paymentMethodsResponse.data(using: .utf8),
-                    let paymentMethods = try? JSONDecoder().decode(PaymentMethods.self, from: paymentMethodsData) else {
+                    let paymentMethods = try? JSONDecoder().decode(PaymentMethods.self, from: paymentMethodsData)
+                else {
                     return nil
                 }
 
@@ -32,7 +34,8 @@ struct AdyenPayIn: Presentable {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard
                 let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
-                let json = String(data: jsonData, encoding: .utf8) else {
+                let json = String(data: jsonData, encoding: .utf8)
+            else {
                 return
             }
 

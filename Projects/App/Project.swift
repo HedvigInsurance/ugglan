@@ -52,7 +52,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
     ],
     sdkFrameworks,
-    ExternalDependencies.allCases.filter { !$0.isTestDependency }.map { externalDependency in
+    ExternalDependencies.allCases.filter { !$0.isTestDependency }.filter { !$0.isExcludedFromMainApps }.map { externalDependency in
         externalDependency.targetDependencies()
     }.flatMap { $0 },
 ].flatMap { $0 }
@@ -69,7 +69,7 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: "com.hedvig.test.app",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
@@ -83,14 +83,14 @@ let project = Project(
             platform: .iOS,
             product: .unitTests,
             bundleId: "com.hedvig.AppTests",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
             actions: targetActions,
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
+                 .xcFramework(path: "../../Carthage/Build/SnapshotTesting.xcframework"),
                  .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
             ].flatMap { $0 },
             settings: Settings(configurations: testsConfigurations)
@@ -100,7 +100,7 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: "com.hedvig.app",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],

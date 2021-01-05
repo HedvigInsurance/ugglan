@@ -11,3 +11,5 @@
 #include "iOS-Base.xcconfig"
 
 APPLICATION_EXTENSION_API_ONLY = NO
+
+CODE_SIGN_IDENTITY = "Apple Development"

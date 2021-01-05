@@ -17,7 +17,6 @@ public enum ExternalDependencies: CaseIterable {
     case flow
     case form
     case presentation
-    case flowfeedback
     case ease
     case dynamiccolor
     case disk
@@ -32,107 +31,114 @@ public enum ExternalDependencies: CaseIterable {
         self == .runtime
     }
 
+    public var isExcludedFromMainApps: Bool {
+        self == .adyen
+    }
+
+    public func swiftPackages() -> [Package] {
+        switch self {
+        case .adyen:
+            return [
+                .package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "3.8.2")),
+                .package(url: "https://github.com/HedvigInsurance/Runtime", .branch("master")),
+                .package(url: "https://github.com/firebase/firebase-ios-sdk", .upToNextMajor(from: "7.3.1")),
+            ]
+        default:
+            return []
+        }
+    }
+
     public func targetDependencies() -> [TargetDependency] {
         switch self {
         case .sentry:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Sentry.framework"),
+                .xcFramework(path: "../../Carthage/Build/Sentry.xcframework"),
             ]
         case .adyen:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Adyen.framework"),
-                .framework(path: "../../Carthage/Build/iOS/Adyen3DS2.framework"),
-                .framework(path: "../../Carthage/Build/iOS/AdyenCard.framework"),
-                .framework(path: "../../Carthage/Build/iOS/AdyenDropIn.framework"),
+                .package(product: "Adyen"),
+                .package(product: "AdyenCard"),
+                .package(product: "AdyenDropIn"),
             ]
         case .firebase:
             return [
-                .framework(path: "../../Carthage/Build/iOS/GoogleUtilities.framework"),
-                .framework(path: "../../Carthage/Build/iOS/Protobuf.framework"),
-                .framework(path: "../../Carthage/Build/iOS/PromisesObjC.framework"),
-                .framework(path: "../../Carthage/Build/iOS/FirebaseInstallations.framework"),
-                .framework(path: "../../Carthage/Build/iOS/FirebaseMessaging.framework"),
-                .framework(path: "../../Carthage/Build/iOS/FirebaseInstanceID.framework"),
-                .framework(path: "../../Carthage/Build/iOS/FirebaseCore.framework"),
+                .package(product: "FirebaseMessaging"),
             ]
         case .fb:
             return [
-                .framework(path: "../../Carthage/Build/iOS/FBSDKCoreKit.framework"),
+                .xcFramework(path: "../../Carthage/Build/FBSDKCoreKit.xcframework"),
             ]
         case .kingfisher:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Kingfisher.framework"),
+                .xcFramework(path: "../../Carthage/Build/Kingfisher.xcframework"),
             ]
         case .apollo:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Apollo.framework"),
-                .framework(path: "../../Carthage/Build/iOS/ApolloWebSocket.framework"),
+                .xcFramework(path: "../../Carthage/Build/Apollo.xcframework"),
+                .xcFramework(path: "../../Carthage/Build/ApolloWebSocket.xcframework"),
+                .xcFramework(path: "../../Carthage/Build/Starscream.xcframework"),
             ]
         case .flow:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Flow.framework"),
+                .xcFramework(path: "../../Carthage/Build/Flow.xcframework"),
             ]
         case .form:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Form.framework"),
+                .xcFramework(path: "../../Carthage/Build/Form.xcframework"),
             ]
         case .presentation:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Presentation.framework"),
-            ]
-        case .flowfeedback:
-            return [
-                .framework(path: "../../Carthage/Build/iOS/FlowFeedback.framework"),
+                .xcFramework(path: "../../Carthage/Build/Presentation.xcframework"),
             ]
         case .ease:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Ease.framework"),
+                .xcFramework(path: "../../Carthage/Build/Ease.xcframework"),
             ]
         case .dynamiccolor:
             return [
-                .framework(path: "../../Carthage/Build/iOS/DynamicColor.framework"),
+                .xcFramework(path: "../../Carthage/Build/DynamicColor.xcframework"),
             ]
         case .disk:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Disk.framework"),
+                .xcFramework(path: "../../Carthage/Build/Disk.xcframework"),
             ]
         case .snapkit:
             return [
-                .framework(path: "../../Carthage/Build/iOS/SnapKit.framework"),
+                .xcFramework(path: "../../Carthage/Build/SnapKit.xcframework"),
             ]
         case .markdownkit:
             return [
-                .framework(path: "../../Carthage/Build/iOS/MarkdownKit.framework"),
+                .xcFramework(path: "../../Carthage/Build/MarkdownKit.xcframework"),
             ]
         case .mixpanel:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Mixpanel.framework"),
+                .xcFramework(path: "../../Carthage/Build/Mixpanel.xcframework"),
             ]
         case .runtime:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Runtime.framework"),
-                .framework(path: "../../Carthage/Build/iOS/CRuntime.framework"),
+                .package(product: "Runtime"),
             ]
         case .hero:
             return [
-                .framework(path: "../../Carthage/Build/iOS/Hero.framework"),
+                .xcFramework(path: "../../Carthage/Build/Hero.xcframework"),
             ]
         }
     }
 }
 
-extension Project {
-    public static func framework(name: String,
-                                 targets: Set<FeatureTarget> = Set([
-                                     .framework,
-                                     .tests,
-                                     .example,
-                                     .testing,
-                                 ]),
-                                 externalDependencies: [ExternalDependencies] = [],
-                                 dependencies: [String] = [],
-                                 sdks: [String] = [],
-                                 includesGraphQL: Bool = false) -> Project {
+public extension Project {
+    static func framework(name: String,
+                          targets: Set<FeatureTarget> = Set([
+                              .framework,
+                              .tests,
+                              .example,
+                              .testing,
+                          ]),
+                          externalDependencies: [ExternalDependencies] = [],
+                          dependencies: [String] = [],
+                          sdks: [String] = [],
+                          includesGraphQL: Bool = false) -> Project
+    {
         // Configurations
         let frameworkConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
@@ -156,13 +162,9 @@ extension Project {
         var testsDependencies: [TargetDependency] = [
             .target(name: "\(name)"),
             .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
-            .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
+            .xcFramework(path: "../../Carthage/Build/SnapshotTesting.xcframework"),
         ]
         dependencies.forEach { testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)"))) }
-
-        testsDependencies.append(contentsOf: externalDependencies.map { externalDependency in
-            externalDependency.targetDependencies()
-        }.flatMap { $0 })
 
         if targets.contains(.testing) {
             testsDependencies.append(.target(name: "\(name)Testing"))
@@ -172,9 +174,9 @@ extension Project {
         var targetDependencies: [TargetDependency] = dependencies.map { .project(target: $0, path: .relativeToRoot("Projects/\($0)")) }
         targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
 
-        targetDependencies.append(contentsOf: externalDependencies.map { externalDependency in
+        var targetDependenciesWithExternal: [TargetDependency] = [targetDependencies, externalDependencies.map { externalDependency in
             externalDependency.targetDependencies()
-        }.flatMap { $0 })
+        }.flatMap { $0 }].flatMap { $0 }
 
         let hGraphQLName = "hGraphQL"
 
@@ -195,12 +197,12 @@ extension Project {
                                          platform: .iOS,
                                          product: .framework,
                                          bundleId: "com.hedvig.\(name)",
-                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
                                          infoPlist: .default,
                                          sources: sources,
                                          resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
                                          actions: targetActions,
-                                         dependencies: targetDependencies,
+                                         dependencies: targetDependenciesWithExternal,
                                          settings: Settings(base: [:], configurations: frameworkConfigurations)))
         }
         if targets.contains(.testing) {
@@ -208,7 +210,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .framework,
                                          bundleId: "com.hedvig.\(name)Testing",
-                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
                                          infoPlist: .default,
                                          sources: "Testing/**/*.swift",
                                          actions: targetActions,
@@ -220,7 +222,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .unitTests,
                                          bundleId: "com.hedvig.\(name)Tests",
-                                         deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
+                                         deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
                                          infoPlist: .default,
                                          sources: "Tests/**/*.swift",
                                          actions: targetActions,
@@ -232,7 +234,7 @@ extension Project {
                                          platform: .iOS,
                                          product: .app,
                                          bundleId: "com.hedvig.example.\(name)Example",
-                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+                                         deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
                                          infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
                                          sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                                          resources: "Example/Resources/**",
@@ -250,10 +252,12 @@ extension Project {
             )
         }
 
+        var swiftPackages = externalDependencies.map { $0.swiftPackages() }.flatMap { $0 }
+
         // Project
         return Project(name: name,
                        organizationName: "Hedvig",
-                       packages: [],
+                       packages: swiftPackages,
                        settings: Settings(configurations: projectConfigurations),
                        targets: projectTargets,
                        schemes: [
