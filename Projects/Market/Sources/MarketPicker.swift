@@ -99,7 +99,7 @@ extension MarketPicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap(\.geo.countryIsoCode).onValue { countryISOCode in
+        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap { $0.geo.countryIsoCode }.onValue { countryISOCode in
             switch countryISOCode {
             case "SE":
                 pickedMarketSignal.value = .sweden
