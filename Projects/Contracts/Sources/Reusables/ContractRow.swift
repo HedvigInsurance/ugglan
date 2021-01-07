@@ -135,16 +135,19 @@ extension ContractRow: Reusable {
             chevronImageView.isHidden = !self.allowDetailNavigation
 
             contentView.accessibilityIdentifier = String(describing: self)
-            contentView.hero.id = "contentView_\(self.contract.id)"
             contentView.layer.zPosition = .greatestFiniteMagnitude
-            contentView.hero.modifiers = [
-                .spring(stiffness: 250, damping: 25),
-                .when({ context -> Bool in
-                    !context.isMatched
-                }, [.init(applyFunction: { (state: inout HeroTargetState) in
-                    state.append(.translate(x: -contentView.frame.width * 1.3, y: 0, z: 0))
-                })]),
-            ]
+
+            if !UITraitCollection.isCatalyst {
+                contentView.hero.id = "contentView_\(self.contract.id)"
+                contentView.hero.modifiers = [
+                    .spring(stiffness: 250, damping: 25),
+                    .when({ context -> Bool in
+                        !context.isMatched
+                    }, [.init(applyFunction: { (state: inout HeroTargetState) in
+                        state.append(.translate(x: -contentView.frame.width * 1.3, y: 0, z: 0))
+                    })]),
+                ]
+            }
 
             bag += contentView.applyBorderColor { _ in
                 .brand(.primaryBorderColor)
@@ -185,6 +188,8 @@ extension ContractRow: Reusable {
                         if !UITraitCollection.isCatalyst {
                             navigationController.hero.isEnabled = true
                             navigationController.hero.navigationAnimationType = .fade
+                        } else {
+                            navigationController.hero.isEnabled = false
                         }
 
                         viewController.present(

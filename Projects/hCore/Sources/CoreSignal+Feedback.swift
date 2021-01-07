@@ -34,7 +34,7 @@ private enum Feedback {
 public extension CoreSignal {
     /// Generate haptic feedback
     func feedback(type: FeedbackType) -> Disposable {
-        if #available(iOS 10.0, *) {
+        if #available(iOS 10.0, *), !UITraitCollection.isCatalyst {
             let bag = DisposeBag()
 
             bag += onValue { _ in

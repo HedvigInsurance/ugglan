@@ -8,6 +8,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Hero
 import hGraphQL
 import Mixpanel
 import Payment
@@ -39,7 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_: UIApplication, continue userActivity: NSUserActivity,
-                     restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+                     restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool
+    {
         guard let url = userActivity.webpageURL else { return false }
         guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
         guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
@@ -310,8 +312,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-extension ApolloClient {
-    public static func initAndRegisterClient() -> Future<Void> {
+public extension ApolloClient {
+    static func initAndRegisterClient() -> Future<Void> {
         Self.initClient().onValue { store, client in
             Dependencies.shared.add(module: Module {
                 store
