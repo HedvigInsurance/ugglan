@@ -18,8 +18,11 @@ class HomeTests: XCTestCase {
         setupScreenShotTests()
     }
 
-    func testContractTerminatedState() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeTerminatedInTheFuture()))
+    func perform(
+        _ body: JSONObject,
+        assertions: @escaping (_ view: UIView) -> Void
+    ) {
+        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body))
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             apolloClient
@@ -34,59 +37,29 @@ class HomeTests: XCTestCase {
         apolloClient.fetch(query: GraphQL.HomeQuery())
             .delay(by: 0.5)
             .onValue { _ in
-                assertSnapshot(matching: window, as: .image)
+                assertions(window)
                 waitForApollo.fulfill()
                 self.bag.dispose()
             }
 
         wait(for: [waitForApollo], timeout: 2)
+    }
+
+    func testContractTerminatedState() {
+        perform(.makeTerminatedInTheFuture()) { window in
+            assertSnapshot(matching: window, as: .image)
+        }
     }
 
     func testContractActiveInFutureState() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActiveInFuture(switchable: true)))
-
-        Dependencies.shared.add(module: Module { () -> ApolloClient in
-            apolloClient
-        })
-
-        let window = UIWindow()
-
-        bag += window.present(Home())
-
-        let waitForApollo = expectation(description: "wait for apollo")
-
-        apolloClient.fetch(query: GraphQL.HomeQuery())
-            .delay(by: 0.5)
-            .onValue { _ in
-                assertSnapshot(matching: window, as: .image)
-                waitForApollo.fulfill()
-                self.bag.dispose()
-            }
-
-        wait(for: [waitForApollo], timeout: 2)
+        perform(.makeActiveInFuture(switchable: true)) { window in
+            assertSnapshot(matching: window, as: .image)
+        }
     }
 
     func testContractActiveState() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeActive()))
-
-        Dependencies.shared.add(module: Module { () -> ApolloClient in
-            apolloClient
-        })
-
-        let window = UIWindow()
-
-        bag += window.present(Home())
-
-        let waitForApollo = expectation(description: "wait for apollo")
-
-        apolloClient.fetch(query: GraphQL.HomeQuery())
-            .delay(by: 0.5)
-            .onValue { _ in
-                assertSnapshot(matching: window, as: .image)
-                waitForApollo.fulfill()
-                self.bag.dispose()
-            }
-
-        wait(for: [waitForApollo], timeout: 2)
+        perform(.makeActive()) { window in
+            assertSnapshot(matching: window, as: .image)
+        }
     }
 }
