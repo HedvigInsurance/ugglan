@@ -3,5 +3,5 @@ import ProjectDescriptionHelpers
 
 let project = Project.dependenciesFramework(
     name: "Dependencies",
-    externalDependencies: ExternalDependencies.allCases.filter { !$0.isTestDependency }
+    externalDependencies: ExternalDependencies.allCases.filter { !$0.isTestDependency }.filter { !$0.isDevDependency }
 )

@@ -21,7 +21,11 @@ public enum ExternalDependencies: CaseIterable {
     case snapshottesting
 
     public var isTestDependency: Bool {
-        self == .runtime || self == .snapshottesting
+        self == .snapshottesting
+    }
+
+    public var isDevDependency: Bool {
+        self == .runtime
     }
 
     public func swiftPackages() -> [Package] {

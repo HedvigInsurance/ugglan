@@ -94,7 +94,7 @@ public extension Project {
                                              [
                                                  .target(name: "\(name)"),
                                                  .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil")),
-                                                 .project(target: "TestDependencies", path: .relativeToRoot("Projects/TestDependencies")),
+                                                 .project(target: "DevDependencies", path: .relativeToRoot("Projects/DevDependencies")),
                                              ],
                                              targetDependencies,
                                          ].flatMap { $0 },
