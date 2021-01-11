@@ -43,7 +43,6 @@ public extension Project {
         var testsDependencies: [TargetDependency] = [
             .target(name: "\(name)"),
             .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
-            .xcFramework(path: "../../Carthage/Build/SnapshotTesting.xcframework"),
         ]
         dependencies.forEach { testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)"))) }
 

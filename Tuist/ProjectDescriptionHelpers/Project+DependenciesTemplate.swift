@@ -18,9 +18,10 @@ public enum ExternalDependencies: CaseIterable {
     case runtime
     case sentry
     case hero
+    case snapshottesting
 
     public var isTestDependency: Bool {
-        self == .runtime
+        self == .runtime || self == .snapshottesting
     }
 
     public func swiftPackages() -> [Package] {
@@ -92,6 +93,10 @@ public enum ExternalDependencies: CaseIterable {
         case .sentry:
             return [
                 .package(url: "https://github.com/getsentry/sentry-cocoa", .upToNextMajor(from: "6.0.12")),
+            ]
+        case .snapshottesting:
+            return [
+                .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.8.2")),
             ]
         }
     }
@@ -168,6 +173,10 @@ public enum ExternalDependencies: CaseIterable {
         case .hero:
             return [
                 .package(product: "Hero"),
+            ]
+        case .snapshottesting:
+            return [
+                .package(product: "SnapshotTesting"),
             ]
         }
     }

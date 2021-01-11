@@ -88,7 +88,7 @@ let project = Project(
             actions: targetActions,
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .xcFramework(path: "../../Carthage/Build/SnapshotTesting.xcframework"),
+                 .project(target: "TestDependencies", path: .relativeToRoot("Projects/TestDependencies")),
                  .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
             ].flatMap { $0 },
             settings: Settings(configurations: testsConfigurations)
