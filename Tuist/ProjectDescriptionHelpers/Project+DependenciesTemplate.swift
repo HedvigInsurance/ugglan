@@ -183,7 +183,11 @@ public enum ExternalDependencies: CaseIterable {
 }
 
 public extension Project {
-    static func dependenciesFramework(name: String, externalDependencies: [ExternalDependencies]) -> Project {
+    static func dependenciesFramework(
+        name: String,
+        externalDependencies: [ExternalDependencies],
+        sdks: [String] = []
+    ) -> Project {
         let frameworkConfigurations: [CustomConfiguration] = [
             .debug(name: "Debug", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
             .release(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")),
@@ -194,9 +198,14 @@ public extension Project {
             .release(name: "Release", settings: [String: SettingValue](), xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")),
         ]
 
-        let dependencies = externalDependencies.map { externalDependency in
-            externalDependency.targetDependencies()
-        }.flatMap { $0 }
+        let dependencies: [TargetDependency] = [
+            externalDependencies.map { externalDependency in
+                externalDependency.targetDependencies()
+            }.flatMap { $0 },
+            sdks.map { sdk in
+                .sdk(name: sdk)
+            },
+        ].flatMap { $0 }
 
         let packages = externalDependencies.map { externalDependency in
             externalDependency.swiftPackages()
