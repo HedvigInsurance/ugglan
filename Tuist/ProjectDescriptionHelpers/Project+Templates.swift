@@ -16,7 +16,8 @@ public extension Project {
                               .example,
                               .testing,
                           ]),
-                          dependencies: [String] = [],
+                          projects: [String] = [],
+                          dependencies _: [String] = ["Dependencies"],
                           sdks: [String] = [],
                           includesGraphQL: Bool = false) -> Project
     {
@@ -44,20 +45,20 @@ public extension Project {
             .target(name: "\(name)"),
             .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
-        dependencies.forEach { testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)"))) }
+        projects.forEach { testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)"))) }
 
         if targets.contains(.testing) {
             testsDependencies.append(.target(name: "\(name)Testing"))
         }
 
         // Target dependencies
-        var targetDependencies: [TargetDependency] = dependencies.map { .project(target: $0, path: .relativeToRoot("Projects/\($0)")) }
+        var targetDependencies: [TargetDependency] = projects.map { .project(target: $0, path: .relativeToRoot("Projects/\($0)")) }
         targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
-        targetDependencies.append(.project(target: "Dependencies", path: .relativeToRoot("Projects/Dependencies")))
+        targetDependencies.append(.project(target: "Dependencies", path: .relativeToRoot("Dependencies/Dependencies")))
 
         let hGraphQLName = "hGraphQL"
 
-        if includesGraphQL, !dependencies.contains(hGraphQLName), name != hGraphQLName {
+        if includesGraphQL, !projects.contains(hGraphQLName), name != hGraphQLName {
             targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
         }
 
@@ -94,7 +95,7 @@ public extension Project {
                                              [
                                                  .target(name: "\(name)"),
                                                  .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil")),
-                                                 .project(target: "DevDependencies", path: .relativeToRoot("Projects/DevDependencies")),
+                                                 .project(target: "DevDependencies", path: .relativeToRoot("Dependencies/DevDependencies")),
                                              ],
                                              targetDependencies,
                                          ].flatMap { $0 },
@@ -113,8 +114,8 @@ public extension Project {
                                              [
                                                  .target(name: "\(name)Example"),
                                                  .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil")),
-                                                 .project(target: "Dependencies", path: .relativeToRoot("Projects/Dependencies")),
-                                                 .project(target: "TestDependencies", path: .relativeToRoot("Projects/TestDependencies")),
+                                                 .project(target: "Dependencies", path: .relativeToRoot("Dependencies/Dependencies")),
+                                                 .project(target: "TestDependencies", path: .relativeToRoot("Dependencies/TestDependencies")),
                                              ],
                                              testsDependencies,
                                          ].flatMap { $0 },

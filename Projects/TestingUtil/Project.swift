@@ -6,7 +6,7 @@ let project = Project.framework(
     targets: Set([
         .framework,
     ]),
-    dependencies: ["hCore"],
+    projects: ["hCore"],
     sdks: [],
     includesGraphQL: false
 )

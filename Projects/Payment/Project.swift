@@ -9,7 +9,7 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    dependencies: ["hCore", "hCoreUI"],
+    projects: ["hCore", "hCoreUI"],
     sdks: [],
     includesGraphQL: true
 )

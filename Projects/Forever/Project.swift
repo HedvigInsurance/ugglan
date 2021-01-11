@@ -10,7 +10,7 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    dependencies: [
+    projects: [
         "hCore",
         "hCoreUI",
     ],

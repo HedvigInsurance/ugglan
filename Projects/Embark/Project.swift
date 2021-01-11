@@ -3,6 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "Embark",
-    dependencies: ["hCore", "hCoreUI"],
+    projects: ["hCore", "hCoreUI"],
     includesGraphQL: true
 )

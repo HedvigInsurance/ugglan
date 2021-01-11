@@ -4,6 +4,6 @@ import ProjectDescriptionHelpers
 let project = Project.framework(
     name: "Testing",
     targets: Set([.framework]),
-    dependencies: ["hCoreUI", "hCore"],
+    projects: ["hCoreUI", "hCore"],
     sdks: ["XCTest.framework"]
 )

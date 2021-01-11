@@ -10,7 +10,7 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    dependencies: ["hGraphQL"],
+    projects: ["hGraphQL"],
     sdks: [],
     includesGraphQL: false
 )

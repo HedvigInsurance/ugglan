@@ -50,7 +50,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
-        .project(target: "Dependencies", path: .relativeToRoot("Projects/Dependencies")),
+        .project(target: "Dependencies", path: .relativeToRoot("Dependencies/Dependencies")),
     ],
     sdkFrameworks,
 ].flatMap { $0 }
@@ -88,7 +88,7 @@ let project = Project(
             actions: targetActions,
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .project(target: "TestDependencies", path: .relativeToRoot("Projects/TestDependencies")),
+                 .project(target: "TestDependencies", path: .relativeToRoot("Dependencies/TestDependencies")),
                  .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
             ].flatMap { $0 },
             settings: Settings(configurations: testsConfigurations)

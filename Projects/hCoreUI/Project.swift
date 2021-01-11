@@ -10,7 +10,7 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    dependencies: ["hCore"],
+    projects: ["hCore"],
     sdks: ["UIKit.framework"],
     includesGraphQL: true
 )

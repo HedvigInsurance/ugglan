@@ -6,9 +6,12 @@ let project = Project.framework(
     targets: Set([
         .framework,
     ]),
-    dependencies: [
+    projects: [
         "hCore",
         "hCoreUI",
+    ],
+    dependencies: [
+        "Dependencies",
         "DevDependencies",
     ],
     sdks: [],
