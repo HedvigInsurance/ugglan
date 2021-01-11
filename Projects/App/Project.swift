@@ -50,11 +50,9 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
+        .project(target: "Dependencies", path: .relativeToRoot("Projects/Dependencies")),
     ],
     sdkFrameworks,
-    ExternalDependencies.allCases.filter { !$0.isTestDependency }.filter { !$0.isExcludedFromMainApps }.map { externalDependency in
-        externalDependency.targetDependencies()
-    }.flatMap { $0 },
 ].flatMap { $0 }
 
 let targetActions: [TargetAction] = []

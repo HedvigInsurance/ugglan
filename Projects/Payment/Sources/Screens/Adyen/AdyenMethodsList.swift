@@ -9,6 +9,7 @@ import hCoreUI
 import hGraphQL
 import Kingfisher
 import Presentation
+import UIKit
 
 struct AdyenMethodsList {
     typealias DidSubmit = (

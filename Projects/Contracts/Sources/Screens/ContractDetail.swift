@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 import Hero
 import Presentation
+import UIKit
 
 struct ContractDetail {
     var contractRow: ContractRow
@@ -34,9 +35,9 @@ extension ContractDetail: Presentable {
 
         let contractCoverage = ContractCoverage(
             perilFragments:
-            contractRow.contract.perils.compactMap { $0.fragments.perilFragment },
+            contractRow.contract.perils.compactMap(\.fragments.perilFragment),
             insurableLimitFragments:
-            contractRow.contract.insurableLimits.compactMap { $0.fragments.insurableLimitFragment }
+            contractRow.contract.insurableLimits.compactMap(\.fragments.insurableLimitFragment)
         )
 
         let contractDocuments = ContractDocuments(contract: contractRow.contract)

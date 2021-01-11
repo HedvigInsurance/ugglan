@@ -10,11 +10,6 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    externalDependencies: [
-        .flow,
-        .presentation,
-        .form,
-    ],
     dependencies: [
         "hCore",
         "hCoreUI",

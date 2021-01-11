@@ -1,5 +1,6 @@
 import Form
 import Foundation
+import UIKit
 
 public enum SpacingType {
     case top
@@ -18,8 +19,8 @@ public enum SpacingType {
     }
 }
 
-extension SubviewOrderable {
-    public func appendSpacing(_ type: SpacingType) {
+public extension SubviewOrderable {
+    func appendSpacing(_ type: SpacingType) {
         let view = UIView()
 
         view.snp.makeConstraints { make in

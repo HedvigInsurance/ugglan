@@ -205,6 +205,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
+            case .didDeallocate(_, from: _):
+                message = ""
+                data = ""
+            case .didLeak(_, from: _):
+                message = ""
+                data = ""
             }
 
             presentableLogPresentation(message, data, file, function, line)

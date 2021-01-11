@@ -5,6 +5,7 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
+import UIKit
 
 struct PayoutDetailsSection {
     @Inject var client: ApolloClient

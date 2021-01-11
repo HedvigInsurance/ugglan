@@ -18,5 +18,7 @@ let workspace = Workspace(
         "Projects/Home",
         "Projects/Market",
         "Projects/Payment",
+        "Projects/Dependencies",
+        "Projects/TestDependencies",
     ]
 )
