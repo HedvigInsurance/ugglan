@@ -35,9 +35,9 @@ extension ContractDetail: Presentable {
 
         let contractCoverage = ContractCoverage(
             perilFragments:
-            contractRow.contract.perils.compactMap(\.fragments.perilFragment),
+            contractRow.contract.perils.compactMap { $0.fragments.perilFragment },
             insurableLimitFragments:
-            contractRow.contract.insurableLimits.compactMap(\.fragments.insurableLimitFragment)
+            contractRow.contract.insurableLimits.compactMap { $0.fragments.insurableLimitFragment }
         )
 
         let contractDocuments = ContractDocuments(contract: contractRow.contract)
