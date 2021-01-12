@@ -11,7 +11,7 @@ let project = Project.framework(
         "hCoreUI",
     ],
     dependencies: [
-        "Dependencies",
+        "CoreDependencies",
         "DevDependencies",
     ],
     sdks: [],
