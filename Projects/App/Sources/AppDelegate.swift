@@ -205,12 +205,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
-            case .didDeallocate(_, from: _):
-                message = ""
-                data = ""
-            case .didLeak(_, from: _):
-                message = ""
-                data = ""
+            #if DEBUG
+                case .didDeallocate(presentableId, from: context):
+                    message = "\(presentableId) was deallocated after presentation from \(context)"
+                case .didLeak(presentableId, from: context):
+                    message = "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
+            #endif
             }
 
             presentableLogPresentation(message, data, file, function, line)
