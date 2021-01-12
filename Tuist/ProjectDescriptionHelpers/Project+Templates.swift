@@ -151,6 +151,7 @@ public extension Project {
                         .target(name: "\(name)"),
                         .project(target: "ExampleUtil", path: .relativeToRoot("Projects/ExampleUtil")),
                         .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil")),
+                        .project(target: "DevDependencies", path: .relativeToRoot("Dependencies/DevDependencies")),
                     ],
                     targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
                     targetDependencies,
