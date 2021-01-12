@@ -119,6 +119,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .firebase:
             return [
+                .package(product: "FirebaseAnalytics"),
                 .package(product: "FirebaseMessaging"),
             ]
         case .fb:
