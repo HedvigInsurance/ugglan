@@ -54,7 +54,7 @@ public extension Project {
         // Target dependencies
         var targetDependencies: [TargetDependency] = projects.map { .project(target: $0, path: .relativeToRoot("Projects/\($0)")) }
         targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
-        targetDependencies.append(.project(target: "Dependencies", path: .relativeToRoot("Dependencies/Dependencies")))
+        targetDependencies.append(.project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")))
 
         let hGraphQLName = "hGraphQL"
 
@@ -114,7 +114,7 @@ public extension Project {
                                              [
                                                  .target(name: "\(name)Example"),
                                                  .project(target: "TestingUtil", path: .relativeToRoot("Projects/TestingUtil")),
-                                                 .project(target: "Dependencies", path: .relativeToRoot("Dependencies/Dependencies")),
+                                                 .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
                                                  .project(target: "TestDependencies", path: .relativeToRoot("Dependencies/TestDependencies")),
                                              ],
                                              testsDependencies,

@@ -50,7 +50,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
-        .project(target: "Dependencies", path: .relativeToRoot("Dependencies/Dependencies")),
+        .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
     ],
     sdkFrameworks,
 ].flatMap { $0 }
