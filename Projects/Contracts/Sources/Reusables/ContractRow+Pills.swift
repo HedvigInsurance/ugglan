@@ -72,6 +72,12 @@ extension ContractRow {
         case .danishHome:
             let numberCoinsured = contract.currentAgreement.asDanishHomeContentAgreement?.numberCoInsured ?? 0
             return getPill(numberCoinsured: numberCoinsured)
+        case .danishTravel:
+            let numberCoinsured = contract.currentAgreement.asDanishTravelAgreement?.numberCoInsured ?? 0
+            return getPill(numberCoinsured: numberCoinsured)
+        case .danishAccident:
+            let numberCoinsured = contract.currentAgreement.asDanishAccidentAgreement?.numberCoInsured ?? 0
+            return getPill(numberCoinsured: numberCoinsured)
         }
     }
 
@@ -101,6 +107,14 @@ extension ContractRow {
                 contract.currentAgreement.asDanishHomeContentAgreement?.address.street,
                 coversHowManyPill,
             ].compactMap { $0 }
+        case .danishTravel:
+            return [
+                coversHowManyPill,
+            ]
+        case .danishAccident:
+            return [
+                coversHowManyPill,
+            ]
         }
     }
 }
