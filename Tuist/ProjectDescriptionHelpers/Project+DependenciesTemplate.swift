@@ -28,6 +28,14 @@ public enum ExternalDependencies: CaseIterable {
         self == .runtime
     }
 
+    public var isResourceBundledDependency: Bool {
+        self == .mixpanel || self == .adyen
+    }
+
+    public var isCoreDependency: Bool {
+        !isTestDependency && !isDevDependency && !isResourceBundledDependency
+    }
+
     public func swiftPackages() -> [Package] {
         switch self {
         case .adyen:

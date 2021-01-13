@@ -20,7 +20,7 @@ final class ConnectPaymentCardTests: XCTestCase {
     }
 
     func testDoesShowCard() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makePayInMethodStatus(.needsSetup)))
+        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makePayInMethodStatus(.needsSetup)), store: .init())
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             apolloClient
@@ -42,7 +42,7 @@ final class ConnectPaymentCardTests: XCTestCase {
     }
 
     func testDoesNotShowCard() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makePayInMethodStatus(.active)))
+        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makePayInMethodStatus(.active)), store: .init())
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             apolloClient

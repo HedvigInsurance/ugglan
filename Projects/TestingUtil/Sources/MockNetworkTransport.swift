@@ -10,6 +10,10 @@ public final class MockNetworkTransport: NetworkTransport {
             }
         }
 
+        if let data = try? Operation.Data(jsonObject: body) {
+            completionHandler(.success(.init(data: data, extensions: nil, errors: nil, source: .server, dependentKeys: nil)))
+        }
+
         return MockTask()
     }
 

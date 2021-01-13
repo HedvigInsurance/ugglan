@@ -22,7 +22,7 @@ final class ImportantMessagesSectionTest: XCTestCase {
     }
 
     func testScreenshot() {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeImportantMessages()))
+        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: .makeImportantMessages()), store: .init())
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             apolloClient
