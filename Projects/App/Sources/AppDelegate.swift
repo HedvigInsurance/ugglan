@@ -206,9 +206,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     data = "\(error)"
                 }
             #if DEBUG
-                case .didDeallocate(presentableId, from: context):
+                case let .didDeallocate(presentableId, from: context):
                     message = "\(presentableId) was deallocated after presentation from \(context)"
-                case .didLeak(presentableId, from: context):
+                case let .didLeak(presentableId, from: context):
                     message = "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
             #endif
             }
