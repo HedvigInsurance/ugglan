@@ -2,7 +2,6 @@ import Flow
 import Form
 import Foundation
 import hCore
-import Mixpanel
 import UIKit
 
 public struct ButtonRow {
