@@ -2,25 +2,35 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
-struct Pill: Hashable, ReusableSizeable {
-    static func == (lhs: Pill, rhs: Pill) -> Bool {
+public struct Pill: Hashable, ReusableSizeable {
+    public init(
+        tintColor: UIColor,
+        title: DisplayableString,
+        textStyle: TextStyle = .brand(.caption1(color: .secondary(state: .positive)))
+    ) {
+        self.tintColor = tintColor
+        self.title = title
+        self.textStyle = textStyle
+    }
+    
+    public static func == (lhs: Pill, rhs: Pill) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 
-    @ReadWriteState var title: DisplayableString
-    let tintColor: UIColor
+    @ReadWriteState public var title: DisplayableString
+    public let tintColor: UIColor
+    public let textStyle: TextStyle
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(title.displayValue)
         hasher.combine(tintColor)
     }
 }
 
 extension Pill: Reusable {
-    static func makeAndConfigure() -> (make: UIView, configure: (Pill) -> Disposable) {
+    public static func makeAndConfigure() -> (make: UIView, configure: (Pill) -> Disposable) {
         let pillView = UIView()
         pillView.layer.cornerRadius = 4
 
@@ -29,7 +39,7 @@ extension Pill: Reusable {
 
             pillView.backgroundColor = self.tintColor
 
-            let label = UILabel(value: self.title, style: .brand(.caption1(color: .secondary(state: .positive))))
+            let label = UILabel(value: self.title, style: self.textStyle)
             pillView.addSubview(label)
 
             bag += {

@@ -2,16 +2,19 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
-struct PillCollection {
-    typealias PillData = Either<Pill, EffectedPill>
+public struct PillCollection {
+    public typealias PillData = Either<Pill, EffectedPill>
     @ReadWriteState var pills: [PillData]
+    
+    public init(pills: [PillData]) {
+        self.pills = pills
+    }
 }
 
 extension PillCollection: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let layout = LeftAlignedCollectionViewFlowLayout()

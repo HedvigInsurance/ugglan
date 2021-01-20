@@ -2,23 +2,26 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
-struct EffectedPill: Hashable, ReusableSizeable {
-    static func == (lhs: EffectedPill, rhs: EffectedPill) -> Bool {
+public struct EffectedPill: Hashable, ReusableSizeable {
+    public static func == (lhs: EffectedPill, rhs: EffectedPill) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 
     @ReadWriteState var title: DisplayableString
+    
+    public init(title: DisplayableString) {
+        self.title = title
+    }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(title.displayValue)
     }
 }
 
 extension EffectedPill: Reusable {
-    static func makeAndConfigure() -> (make: UIView, configure: (EffectedPill) -> Disposable) {
+    public static func makeAndConfigure() -> (make: UIView, configure: (EffectedPill) -> Disposable) {
         let containerView = UIView()
 
         let effect: UIBlurEffect
