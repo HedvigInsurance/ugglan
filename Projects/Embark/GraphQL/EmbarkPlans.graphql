@@ -1,4 +1,4 @@
-query ChoosePlanQuery($locale: String!) {
+query ChoosePlan($locale: String!) {
   embarkStories(locale: $locale) {
     name
     title

@@ -27,7 +27,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloClient.saveToken(token: "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==")
         ApolloClient.initClient().onValue { store, client in
             let navigationController = UINavigationController()
-            navigationController.navigationBar.prefersLargeTitles = true
             self.window?.rootViewController = navigationController
             
             Dependencies.shared.add(module: Module {
@@ -43,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             self.bag += navigationController.present(
                 EmbarkPlans(),
-                options: [.defaults, .largeTitleDisplayMode(.always)]
+                options: [.defaults]
             )
         }
 
