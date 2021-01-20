@@ -20,6 +20,7 @@ struct AdyenMethodsList {
 
     let adyenOptions: AdyenOptions
     let didSubmit: DidSubmit
+    let onSuccess: () -> Void
 }
 
 extension AdyenMethodsList: Presentable {
@@ -68,6 +69,8 @@ extension AdyenMethodsList: Presentable {
                         }.onError { error in
                             completion(.failure(error))
                         }
+                    } onSuccess: {
+                        self.onSuccess()
                     }
                     bag.hold(delegate)
                     bag.hold(component)

@@ -27,6 +27,7 @@ extension AdyenMethodsList {
 
 struct AdyenPayOut: Presentable {
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -43,14 +44,8 @@ struct AdyenPayOut: Presentable {
                 mutation: GraphQL.AdyenTokenizePayoutDetailsMutation(
                     request: GraphQL.TokenizationRequest(json: json, urlScheme: urlScheme)
                 )
-            ).onValue { _ in
+            ).onValue { data in
                 if data.tokenizePayoutDetails?.asTokenizationResponseFinished != nil {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        client.fetch(
-                            query: GraphQL.ActivePayoutMethodsQuery(),
-                            cachePolicy: .fetchIgnoringCacheData
-                        ).onValue { _ in }
-                    }
                     onResult(.success(.make(())))
                 } else if let data = data.tokenizePayoutDetails?.asTokenizationResponseAction {
                     guard let jsonData = data.action.data(using: .utf8) else {
@@ -64,6 +59,10 @@ struct AdyenPayOut: Presentable {
                 } else {
                     onResult(.failure(AdyenError.tokenization))
                 }
+            }
+        } onSuccess: {
+            store.update(query: GraphQL.ActivePayoutMethodsQuery()) { (data: inout GraphQL.ActivePayoutMethodsQuery.Data) in
+                data.activePayoutMethods = .init(status: .pending)
             }
         }.materialize()
 
