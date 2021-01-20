@@ -14,4 +14,8 @@ import Foundation
     public init(wrappedValue value: T) {
         signal = ReadWriteSignal(value)
     }
+    
+    public init(wrappedValue value: ReadWriteSignal<T>) {
+        signal = value
+    }
 }
