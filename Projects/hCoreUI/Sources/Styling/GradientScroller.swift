@@ -68,8 +68,8 @@ extension GradientScroller {
 
         bag += combineLatest(
             signal(for: \.contentOffset).atOnce(),
-            signal(for: \.frame).atOnce()
-        ).onValue { _, frame in
+            signal(for: \.bounds).atOnce()
+        ).onValue { _, bounds in
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             let navigationBarHeight = self.viewController?.navigationController?.navigationBar.frame.height ?? 0
@@ -79,7 +79,7 @@ extension GradientScroller {
                     CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
                 )
             )
-            gradientLayer.frame = frame
+            gradientLayer.frame = bounds
 
             CATransaction.commit()
         }
