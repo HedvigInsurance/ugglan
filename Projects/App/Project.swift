@@ -56,7 +56,18 @@ let appDependencies: [TargetDependency] = [
     sdkFrameworks,
 ].flatMap { $0 }
 
-let targetActions: [TargetAction] = []
+let targetActions: [TargetAction] = [
+    .post(
+        path: "../../scripts/post-build-action.sh",
+        arguments: "",
+        name: "",
+        inputPaths: [],
+        inputFileListPaths: [],
+        outputPaths: [],
+        outputFileListPaths: [],
+        basedOnDependencyAnalysis: false
+    ),
+]
 
 let project = Project(
     name: "Ugglan",
