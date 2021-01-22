@@ -77,7 +77,7 @@ extension PlanRow: Reusable {
                 value: self.message,
                 style: .brand(.body(color: .primary)))
             
-            let checkmark = CheckMark(isSelectedSignal: self.isSelected)
+            let checkmark = Bullet(isSelectedSignal: self.isSelected)
             
             bag += verticalContentContainer.addArranged(descriptionLabel)
             
