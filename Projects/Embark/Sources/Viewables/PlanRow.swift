@@ -41,12 +41,12 @@ extension PlanRow: Reusable {
         let horizontalContentContainer = UIStackView()
         horizontalContentContainer.axis = .horizontal
         horizontalContentContainer.spacing = 10
-        
+        horizontalContentContainer.alignment = .firstBaseline
        
         let verticalContentContainer = UIStackView()
         verticalContentContainer.isUserInteractionEnabled = false
         verticalContentContainer.axis = .vertical
-        verticalContentContainer.distribution = .equalSpacing
+        verticalContentContainer.distribution = .fill
         verticalContentContainer.edgeInsets = UIEdgeInsets(top: 24, left: 16, bottom: 24, right: 16)
         verticalContentContainer.spacing = 20
         
@@ -79,9 +79,7 @@ extension PlanRow: Reusable {
             
             let checkmark = CheckMark(isSelectedSignal: self.isSelected)
             
-            bag += verticalContentContainer.addArranged(descriptionLabel) { labelview in
-                labelview.setContentHuggingPriority(.defaultHigh, for: .vertical)
-            }
+            bag += verticalContentContainer.addArranged(descriptionLabel)
             
             let gradientView = GradientView(
                 gradientOption: .init(preset: .insuranceThree, traitCollection: view.traitCollection),
