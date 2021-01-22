@@ -73,12 +73,17 @@ extension EmbarkPlans: Presentable {
             make.center.equalToSuperview()
         }
         
-        let continueButton = Button(title: "Continue", type: .standard(backgroundColor: .black, textColor: .white))
+        let continueButton = Button(title: "Calculate your price", type: .standard(backgroundColor: .black, textColor: .white))
         
         bag += containerView.add(continueButton) { buttonView in
             buttonView.snp.makeConstraints { make in
-                make.bottom.equalTo(containerView).inset(16)
+                make.bottom.equalTo(containerView).inset(-buttonView.frame.height)
                 make.leading.trailing.equalTo(containerView).inset(16)
+            }
+            
+            bag += buttonView.didMoveToWindowSignal.delay(by: 0.05).take(first: 1).animated(style: SpringAnimationStyle.heavyBounce()) { () in
+                let viewHeight = buttonView.systemLayoutSizeFitting(.zero).height + (buttonView.superview?.safeAreaInsets.bottom ?? 0)
+                buttonView.transform = CGAffineTransform(translationX: 0, y: -viewHeight)
             }
             
             bag += buttonView.didLayoutSignal.onValue {
