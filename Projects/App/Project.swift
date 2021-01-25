@@ -57,7 +57,9 @@ let appDependencies: [TargetDependency] = [
     sdkFrameworks,
 ].flatMap { $0 }
 
-let targetActions: [TargetAction] = []
+let targetActions: [TargetAction] = [
+    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks"),
+]
 
 var postActions: [ExecutionAction] = {
     let url = URL(fileURLWithPath: "scripts/post-build-action.sh")
@@ -129,8 +131,7 @@ let project = Project(
             name: "Ugglan",
             shared: true,
             buildAction: BuildAction(
-                targets: ["Ugglan"],
-                postActions: postActions
+                targets: ["Ugglan"]
             ),
             testAction: TestAction(
                 targets: [
@@ -155,8 +156,7 @@ let project = Project(
             name: "Hedvig",
             shared: true,
             buildAction: BuildAction(
-                targets: ["Hedvig"],
-                postActions: postActions
+                targets: ["Hedvig"]
             ),
             runAction: RunAction(executable: "Hedvig")
         ),
