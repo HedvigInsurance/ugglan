@@ -1,7 +1,7 @@
 import UIKit
 
-extension UIImage {
-    public convenience init?(blurHash: String, size: CGSize, punch: Float = 1) {
+public extension UIImage {
+    convenience init?(blurHash: String, size: CGSize, punch: Float = 1) {
         guard blurHash.count >= 6 else { return nil }
 
         let sizeFlag = String(blurHash[0]).decode83()

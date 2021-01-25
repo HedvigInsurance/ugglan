@@ -5,9 +5,11 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
+import UIKit
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient
+    let urlScheme: String
 }
 
 extension BankDetailsSection: Viewable {
@@ -39,6 +41,67 @@ extension BankDetailsSection: Viewable {
         bag += dataSignal.compactMap {
             $0.bankAccount?.descriptor
         }.bindTo(row.valueSignal)
+
+        let myPaymentQuerySignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
+
+        func addConnectPayment(_ data: GraphQL.MyPaymentQuery.Data) -> Disposable {
+            let bag = DisposeBag()
+            let hasAlreadyConnected = data.payinMethodStatus != .needsSetup
+            let buttonText = hasAlreadyConnected ? L10n.myPaymentDirectDebitReplaceButton : L10n.myPaymentDirectDebitButton
+
+            let paymentSetupRow = RowView(
+                title: buttonText,
+                style: .brand(.headline(color: .link))
+            )
+
+            let setupImageView = UIImageView()
+            setupImageView.image = hasAlreadyConnected ? hCoreUIAssets.editIcon.image : hCoreUIAssets.circularPlus.image
+            setupImageView.tintColor = .brand(.link)
+
+            paymentSetupRow.append(setupImageView)
+
+            bag += section.append(paymentSetupRow).compactMap { section.viewController }.onValue { viewController in
+                let setup = PaymentSetup(
+                    setupType: hasAlreadyConnected ? .replacement : .initial,
+                    urlScheme: self.urlScheme
+                )
+                viewController.present(setup, style: .modally(), options: [.defaults, .allowSwipeDismissAlways])
+            }
+
+            bag += {
+                section.remove(paymentSetupRow)
+            }
+
+            return bag
+        }
+
+        bag += myPaymentQuerySignal.onValueDisposePrevious { data in
+            let innerBag = bag.innerBag()
+
+            switch data.payinMethodStatus {
+            case .pending:
+                let pendingRow = RowView()
+
+                innerBag += pendingRow.append(
+                    MultilineLabel(
+                        value: L10n.myPaymentUpdatingMessage,
+                        style: .brand(.footnote(color: .tertiary))
+                    )
+                )
+
+                section.append(pendingRow)
+
+                innerBag += {
+                    section.remove(pendingRow)
+                }
+
+                innerBag += addConnectPayment(data)
+            case .active, .needsSetup, .__unknown:
+                innerBag += addConnectPayment(data)
+            }
+
+            return innerBag
+        }
 
         return (section, bag)
     }

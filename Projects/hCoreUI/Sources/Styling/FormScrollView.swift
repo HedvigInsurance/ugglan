@@ -6,7 +6,7 @@ public final class FormScrollView: UIScrollView, GradientScroller {
     let bag = DisposeBag()
     public var appliesGradient: Bool = true
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
 
         if appliesGradient {
@@ -14,11 +14,12 @@ public final class FormScrollView: UIScrollView, GradientScroller {
         }
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func didMoveToWindow() {
+    override public func didMoveToWindow() {
         super.didMoveToWindow()
 
         // fix large titles being collapsed on load

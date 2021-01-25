@@ -1,5 +1,6 @@
 import Form
 import Foundation
+import UIKit
 
 public extension TextStyle {
     enum BrandTextStyle {

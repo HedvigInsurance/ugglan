@@ -15,7 +15,7 @@ public extension ApolloClient {
         queue: DispatchQueue = DispatchQueue.main
     ) -> Future<Query.Data> {
         Future<Query.Data> { completion in
-            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, context: nil, queue: queue) { result in
+            let cancellable = self.fetch(query: query, cachePolicy: cachePolicy, contextIdentifier: nil, queue: queue) { result in
                 switch result {
                 case let .success(result):
                     if let data = result.data {
@@ -81,13 +81,13 @@ public extension ApolloClient {
     func watch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
-        queue: DispatchQueue = DispatchQueue.main,
+        queue _: DispatchQueue = DispatchQueue.main,
         onError: @escaping (_ error: Error) -> Void = { _ in }
     ) -> Signal<Query.Data> {
         Signal { callbacker in
             let bag = DisposeBag()
 
-            let watcher = self.watch(query: query, cachePolicy: cachePolicy, queue: queue, resultHandler: { result in
+            let watcher = self.watch(query: query, cachePolicy: cachePolicy) { result in
                 switch result {
                 case let .success(result):
                     if let data = result.data {
@@ -100,7 +100,7 @@ public extension ApolloClient {
                 case let .failure(error):
                     onError(error)
                 }
-            })
+            }
 
             return Disposer {
                 watcher.cancel()
@@ -116,7 +116,7 @@ public extension ApolloClient {
     ) -> Future<Mutation.Data> {
         Future { completion in
             let bag = DisposeBag()
-            let cancellable = self.upload(operation: operation, context: nil, files: files, queue: queue) { result in
+            let cancellable = self.upload(operation: operation, files: files, queue: queue) { result in
                 switch result {
                 case let .success(result):
                     if let data = result.data {
@@ -143,7 +143,7 @@ public extension ApolloClient {
         queue: DispatchQueue = DispatchQueue.main,
         onError: @escaping (_ error: Error) -> Void = { _ in }
     ) -> Signal<Subscription.Data> where Subscription: GraphQLSubscription {
-        return Signal { callbacker in
+        Signal { callbacker in
             let bag = DisposeBag()
 
             let subscriber = self.subscribe(subscription: subscription, queue: queue, resultHandler: { result in

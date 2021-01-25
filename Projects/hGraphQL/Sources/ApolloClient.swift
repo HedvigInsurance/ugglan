@@ -5,41 +5,43 @@ import Flow
 import Foundation
 import UIKit
 
-extension ApolloClient {
-    public static var environment: ApolloEnvironmentConfig?
-    public static var acceptLanguageHeader: String = ""
-    public static var bundle: Bundle?
+public extension ApolloClient {
+    static var environment: ApolloEnvironmentConfig?
+    static var acceptLanguageHeader: String = ""
+    static var bundle: Bundle?
 
-    static var appVersion: String {
+    internal static var appVersion: String {
         bundle?.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
-    public static var userAgent: String {
+    static var userAgent: String {
         "\(bundle?.bundleIdentifier ?? "") \(appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
 
-    public static var cache = InMemoryNormalizedCache()
+    static var cache = InMemoryNormalizedCache()
 
-    static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+    internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         guard let environment = environment else {
             fatalError("Environment must be defined")
         }
+
         let httpAdditionalHeaders = [
-            "Authorization": token ?? "",
+            "Authorization": token,
             "Accept-Language": acceptLanguageHeader,
             "User-Agent": userAgent,
         ]
 
-        let configuration = URLSessionConfiguration.default
+        let store = ApolloStore(cache: ApolloClient.cache)
 
-        configuration.httpAdditionalHeaders = httpAdditionalHeaders
-
-        let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
-
-        let httpNetworkTransport = HTTPNetworkTransport(
-            url: environment.endpointURL,
-            client: urlSessionClient
+        let networkInterceptorProvider = NetworkInterceptorProvider(
+            store: store,
+            token: token ?? "",
+            acceptLanguageHeader: acceptLanguageHeader,
+            userAgent: userAgent
         )
+
+        let requestChainTransport = RequestChainNetworkTransport(interceptorProvider: networkInterceptorProvider,
+                                                                 endpointURL: environment.endpointURL)
 
         let websocketNetworkTransport = WebSocketTransport(
             request: URLRequest(url: environment.wsEndpointURL),
@@ -47,24 +49,23 @@ extension ApolloClient {
         )
 
         let splitNetworkTransport = SplitNetworkTransport(
-            httpNetworkTransport: httpNetworkTransport,
+            uploadingNetworkTransport: requestChainTransport,
             webSocketNetworkTransport: websocketNetworkTransport
         )
 
-        let store = ApolloStore(cache: ApolloClient.cache)
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
 
         return (store, client)
     }
 
-    public static func deleteToken() {
+    static func deleteToken() {
         try? Disk.remove(
             "authorization-token.json",
             from: .applicationSupport
         )
     }
 
-    public static func retreiveToken() -> AuthorizationToken? {
+    static func retreiveToken() -> AuthorizationToken? {
         try? Disk.retrieve(
             "authorization-token.json",
             from: .applicationSupport,
@@ -72,7 +73,7 @@ extension ApolloClient {
         )
     }
 
-    public static func saveToken(token: String) {
+    static func saveToken(token: String) {
         let authorizationToken = AuthorizationToken(token: token)
         try? Disk.save(
             authorizationToken,
@@ -81,7 +82,7 @@ extension ApolloClient {
         )
     }
 
-    public static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
+    static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
         let campaign = GraphQL.CampaignInput(
             source: nil,
             medium: nil,
@@ -119,7 +120,7 @@ extension ApolloClient {
         }
     }
 
-    public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
+    static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in
             let tokenData = self.retreiveToken()
 

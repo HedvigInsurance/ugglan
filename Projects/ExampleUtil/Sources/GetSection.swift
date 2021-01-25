@@ -121,7 +121,8 @@ func getSection(
             guard
                 let info = try? typeInfo(of: property.type),
                 let elementType = info.genericTypes.first,
-                let item = item as? (Decodable & Encodable) else {
+                let item = item as? (Decodable & Encodable)
+            else {
                 fatalError("Failed to parse array item")
             }
 
@@ -136,7 +137,8 @@ func getSection(
             guard
                 let info = try? typeInfo(of: property.type),
                 let elementType = info.genericTypes.first,
-                let arrayElementInstance = try? createInstance(of: elementType) as? (Decodable & Encodable) else {
+                let arrayElementInstance = try? createInstance(of: elementType) as? (Decodable & Encodable)
+            else {
                 fatalError("Failed to create instance for array")
             }
 

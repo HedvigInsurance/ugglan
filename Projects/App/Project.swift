@@ -1,3 +1,4 @@
+import Foundation
 import ProjectDescription
 import ProjectDescriptionHelpers
 
@@ -50,14 +51,15 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
+        .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
+        .project(target: "ResourceBundledDependencies", path: .relativeToRoot("Dependencies/ResourceBundledDependencies")),
     ],
     sdkFrameworks,
-    ExternalDependencies.allCases.filter { !$0.isTestDependency }.map { externalDependency in
-        externalDependency.targetDependencies()
-    }.flatMap { $0 },
 ].flatMap { $0 }
 
-let targetActions: [TargetAction] = []
+let targetActions: [TargetAction] = [
+    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks"),
+]
 
 let project = Project(
     name: "Ugglan",
@@ -69,7 +71,7 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: "com.hedvig.test.app",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
@@ -83,14 +85,14 @@ let project = Project(
             platform: .iOS,
             product: .unitTests,
             bundleId: "com.hedvig.AppTests",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
             actions: targetActions,
             dependencies: [
                 [.target(name: "Ugglan"),
-                 .framework(path: "../../Carthage/Build/iOS/SnapshotTesting.framework"),
+                 .project(target: "TestDependencies", path: .relativeToRoot("Dependencies/TestDependencies")),
                  .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))],
             ].flatMap { $0 },
             settings: Settings(configurations: testsConfigurations)
@@ -100,7 +102,7 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: "com.hedvig.app",
-            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+            deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
@@ -114,17 +116,34 @@ let project = Project(
         Scheme(
             name: "Ugglan",
             shared: true,
-            buildAction: BuildAction(targets: ["Ugglan"]),
+            buildAction: BuildAction(
+                targets: ["Ugglan"]
+            ),
             testAction: TestAction(
-                targets: [TestableTarget(target: TargetReference(stringLiteral: "AppTests"), parallelizable: true)],
-                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launchArguments: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])
+                targets: [
+                    TestableTarget(
+                        target: TargetReference(stringLiteral: "AppTests"),
+                        parallelizable: true
+                    ),
+                ],
+                arguments: Arguments(
+                    environment: [
+                        "SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__",
+                    ],
+                    launchArguments: [
+                        "-UIPreferredContentSizeCategoryName": true,
+                        "UICTContentSizeCategoryM": true,
+                    ]
+                )
             ),
             runAction: RunAction(executable: "Ugglan")
         ),
         Scheme(
             name: "Hedvig",
             shared: true,
-            buildAction: BuildAction(targets: ["Hedvig"]),
+            buildAction: BuildAction(
+                targets: ["Hedvig"]
+            ),
             runAction: RunAction(executable: "Hedvig")
         ),
     ],

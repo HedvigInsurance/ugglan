@@ -4,6 +4,7 @@
 --enable fileHeader
 --enable linebreakAtEndOfFile
 --enable sortedImports
+--disable preferKeyPath
 
 # options
 

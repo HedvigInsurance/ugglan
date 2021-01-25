@@ -36,8 +36,8 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
     }
 }
 
-extension WKWebViewConfiguration {
-    public func addOpenBankIDBehaviour(_ presentingViewController: UIViewController) {
+public extension WKWebViewConfiguration {
+    func addOpenBankIDBehaviour(_ presentingViewController: UIViewController) {
         setURLSchemeHandler(
             OpenBankIdHandler(presentingViewController),
             forURLScheme: "bankid"

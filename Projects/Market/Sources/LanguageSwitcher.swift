@@ -12,9 +12,9 @@ extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
 }
 
-extension UIApplication {
+public extension UIApplication {
     // reloads all text that is derived from translations in the app
-    public func reloadAllLabels() {
+    func reloadAllLabels() {
         func reloadLabels(in base: UIView) {
             for view in base.subviews {
                 if let label = view as? UILabel {

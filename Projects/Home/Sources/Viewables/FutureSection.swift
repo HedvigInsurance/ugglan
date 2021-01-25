@@ -45,7 +45,8 @@ extension FutureSection: Viewable {
                     let insuranceProvider = insuranceProvidersData.insuranceProviders.first(where: { provider -> Bool in
                         provider.name == switchedFromInsuranceProvider
                     }),
-                    insuranceProvider.switchable {
+                    insuranceProvider.switchable
+                {
                     titleLabel.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(homeData.member.firstName ?? "")
                     subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
                 } else {

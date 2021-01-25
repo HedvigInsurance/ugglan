@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 public class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
-    public override func layoutAttributesForElements(
+    override public func layoutAttributesForElements(
         in rect: CGRect
     ) -> [UICollectionViewLayoutAttributes]? {
         let attributes = super.layoutAttributesForElements(in: rect)

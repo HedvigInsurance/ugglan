@@ -23,7 +23,7 @@ final class RenewalCardTests: XCTestCase {
         _ body: JSONObject,
         assertions: @escaping (_ view: UIView) -> Void
     ) {
-        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body))
+        let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body), store: .init())
 
         Dependencies.shared.add(module: Module { () -> ApolloClient in
             apolloClient

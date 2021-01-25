@@ -131,8 +131,8 @@ extension RemoteVectorIcon: Viewable {
     }
 }
 
-extension RemoteVectorIcon {
-    public func alignedTo(
+public extension RemoteVectorIcon {
+    func alignedTo(
         _: UIStackView.Alignment,
         configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
     ) -> ContainerStackViewable<ContainerStackViewable<RemoteVectorIcon, UIImageView, UIStackView>, UIStackView, UIStackView> {

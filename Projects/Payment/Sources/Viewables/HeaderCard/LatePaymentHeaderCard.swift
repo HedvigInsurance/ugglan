@@ -16,21 +16,31 @@ struct LatePaymentHeaderSection {
 extension LatePaymentHeaderSection: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
+        let outerContainer = UIStackView()
+        outerContainer.edgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+
         let view = UIStackView()
+        view.edgeInsets = UIEdgeInsets(inset: 15)
+        outerContainer.addArrangedSubview(view)
+
         let childView = UIView()
+        childView.layer.borderWidth = .hairlineWidth
+        bag += childView.applyBorderColor { _ -> UIColor in
+            .brand(.primaryBorderColor)
+        }
 
         view.addSubview(childView)
 
-        childView.layer.cornerRadius = 5
-        childView.backgroundColor = .brand(.link)
+        childView.layer.cornerRadius = .defaultCornerRadius
+        childView.backgroundColor = .brand(.secondaryBackground())
 
         childView.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
         }
 
         let containerView = UIStackView()
-        containerView.axis = .horizontal
-        containerView.alignment = .top
+        containerView.axis = .vertical
+        containerView.alignment = .center
         containerView.edgeInsets = UIEdgeInsets(horizontalInset: 16, verticalInset: 20)
 
         childView.addSubview(containerView)
@@ -40,21 +50,21 @@ extension LatePaymentHeaderSection: Viewable {
             make.top.bottom.equalToSuperview()
         }
 
-        let icon = Icon(icon: hCoreUIAssets.pinkCircularExclamationPoint.image, iconWidth: 15)
+        let icon = Icon(icon: hCoreUIAssets.circularCross.image, iconWidth: 25)
         containerView.addArrangedSubview(icon)
 
         icon.snp.makeConstraints { make in
-            make.width.equalTo(15)
-            make.height.equalTo(20)
-            make.left.equalTo(16)
+            make.height.equalTo(25)
         }
 
         containerView.setCustomSpacing(10, after: icon)
 
-        let infoLabel = MultilineLabel(styledText: StyledText(text: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
-                                                              style: TextStyle.brand(.body(color: .primary))))
+        let infoLabel = MultilineLabel(
+            value: L10n.paymentsLatePaymentsMessage(failedCharges, lastDate),
+            style: TextStyle.brand(.body(color: .primary)).centerAligned
+        )
         bag += containerView.addArranged(infoLabel)
 
-        return (view, bag)
+        return (outerContainer, bag)
     }
 }

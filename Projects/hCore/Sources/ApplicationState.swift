@@ -21,7 +21,8 @@ public struct ApplicationState {
     public static var currentState: Screen? {
         guard
             let applicationStateRawValue = UserDefaults.standard.value(forKey: key) as? String,
-            let applicationState = Screen(rawValue: applicationStateRawValue) else {
+            let applicationState = Screen(rawValue: applicationStateRawValue)
+        else {
             return nil
         }
         return applicationState
@@ -41,7 +42,8 @@ public struct ApplicationState {
     public static var preferredLocale: Localization.Locale {
         guard
             let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
-            let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) else {
+            let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue)
+        else {
             let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
 
             let bestMatchedLanguage = Bundle.preferredLocalizations(
@@ -134,7 +136,8 @@ public struct ApplicationState {
     public static func getTargetEnvironment() -> Environment {
         guard
             let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
-            let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue) else {
+            let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue)
+        else {
             if Bundle.main.bundleIdentifier == "com.hedvig.app" {
                 return .production
             }

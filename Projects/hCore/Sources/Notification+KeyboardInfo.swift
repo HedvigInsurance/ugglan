@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-extension Notification {
-    public struct KeyboardInfo {
+public extension Notification {
+    struct KeyboardInfo {
         public let height: CGFloat
         public let animationDuration: TimeInterval
         public let animationCurve: UIView.AnimationOptions
@@ -11,7 +11,7 @@ extension Notification {
     }
 
     // parses keyboard info from userInfo if available
-    public var keyboardInfo: KeyboardInfo? {
+    var keyboardInfo: KeyboardInfo? {
         if let userInfo = userInfo, let keyboardFrame: NSValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardHeight = keyboardFrame.cgRectValue.height
             let duration = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0

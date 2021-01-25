@@ -6,8 +6,7 @@ let project = Project.framework(
     targets: Set([
         .framework,
     ]),
-    externalDependencies: [.apollo],
-    dependencies: [],
+    projects: [],
     sdks: [],
     includesGraphQL: true
 )

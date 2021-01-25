@@ -19,7 +19,7 @@ public class Icon: UIView {
         }
     }
 
-    public override var tintColor: UIColor! {
+    override public var tintColor: UIColor! {
         didSet(newValue) {
             image.tintColor = newValue
         }
@@ -32,11 +32,12 @@ public class Icon: UIView {
         setup()
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override var intrinsicContentSize: CGSize {
+    override public var intrinsicContentSize: CGSize {
         CGSize(width: iconWidth, height: iconWidth)
     }
 

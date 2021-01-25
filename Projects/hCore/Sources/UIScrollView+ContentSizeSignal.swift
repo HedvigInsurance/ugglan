@@ -2,8 +2,8 @@ import Flow
 import Foundation
 import UIKit
 
-extension UIScrollView {
-    public var contentSizeSignal: ReadSignal<CGSize> {
+public extension UIScrollView {
+    var contentSizeSignal: ReadSignal<CGSize> {
         signal(for: \.contentSize)
     }
 }

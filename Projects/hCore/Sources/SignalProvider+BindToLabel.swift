@@ -3,8 +3,8 @@ import Form
 import Foundation
 import UIKit
 
-extension SignalProvider where Value == DisplayableString {
-    public func bindTo(_ label: UILabel) -> Disposable {
+public extension SignalProvider where Value == DisplayableString {
+    func bindTo(_ label: UILabel) -> Disposable {
         bindTo(label, \.value)
     }
 }

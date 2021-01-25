@@ -31,7 +31,8 @@ extension RenewalCard: Viewable {
             viewController: UIViewController
         ) {
             if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
-                let url = URL(string: draftCertificateUrl) {
+               let url = URL(string: draftCertificateUrl)
+            {
                 viewController.present(
                     Document(
                         url: url,
@@ -53,7 +54,8 @@ extension RenewalCard: Viewable {
                     contracts.allSatisfy({ contract in
                         contract.upcomingRenewal?.renewalDate == contracts.first?.upcomingRenewal?.renewalDate
                     }),
-                    let renewalDate = contracts.first?.upcomingRenewal?.renewalDate.localDateToDate {
+                    let renewalDate = contracts.first?.upcomingRenewal?.renewalDate.localDateToDate
+                {
                     let components = Calendar.current.dateComponents([.day], from: Date(), to: renewalDate)
 
                     bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)

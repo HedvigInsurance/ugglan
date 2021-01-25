@@ -3,8 +3,8 @@ import Foundation
 import Presentation
 import UIKit
 
-extension PresentationStyle {
-    public static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
+public extension PresentationStyle {
+    static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
         let future = Future<Void> { completion in
             from.present(viewController, animated: true) {
                 completion(.success)

@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 import Hero
 import Presentation
+import UIKit
 
 struct ContractDetail {
     var contractRow: ContractRow

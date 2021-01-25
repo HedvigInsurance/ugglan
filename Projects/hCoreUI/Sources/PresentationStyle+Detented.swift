@@ -115,15 +115,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     }
 }
 
-extension PresentationOptions {
+public extension PresentationOptions {
     // adds a grabber to DetentedModals
-    public static let wantsGrabber = PresentationOptions()
+    static let wantsGrabber = PresentationOptions()
 }
 
-extension UIViewController {
+public extension UIViewController {
     private static var _appliedDetents: UInt8 = 1
 
-    public var appliedDetents: [PresentationStyle.Detent] {
+    var appliedDetents: [PresentationStyle.Detent] {
         get {
             if let appliedDetents = objc_getAssociatedObject(
                 self,
@@ -144,7 +144,7 @@ extension UIViewController {
         }
     }
 
-    public var currentDetent: PresentationStyle.Detent? {
+    var currentDetent: PresentationStyle.Detent? {
         get {
             guard let presentationController = navigationController?.presentationController else {
                 return nil
@@ -183,7 +183,7 @@ extension UIViewController {
         }
     }
 
-    public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
+    var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
         Signal { callback in
             let bag = DisposeBag()
 
@@ -205,7 +205,7 @@ extension UIViewController {
 
     private static var _lastDetentIndex: UInt8 = 1
 
-    var lastDetentIndex: Int? {
+    internal var lastDetentIndex: Int? {
         get {
             if let lastDetentIndex = objc_getAssociatedObject(
                 self,
@@ -227,8 +227,8 @@ extension UIViewController {
     }
 }
 
-extension PresentationStyle {
-    public enum Detent: Equatable {
+public extension PresentationStyle {
+    enum Detent: Equatable {
         public static func == (lhs: PresentationStyle.Detent, rhs: PresentationStyle.Detent) -> Bool {
             switch (lhs, rhs) {
             case (.large, .large):
@@ -349,7 +349,7 @@ extension PresentationStyle {
         }
     }
 
-    public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
+    static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
         PresentationStyle(name: "detented") { viewController, from, options in
             if #available(iOS 13, *) {
                 viewController.setLargeTitleDisplayMode(options)

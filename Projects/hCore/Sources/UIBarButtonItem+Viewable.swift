@@ -2,11 +2,12 @@ import Flow
 import Foundation
 import UIKit
 
-extension UIBarButtonItem {
-    public convenience init<V: Viewable, View: UIView>(viewable: V, onCreate: @escaping (_ view: View) -> Void = { _ in }) where
+public extension UIBarButtonItem {
+    convenience init<V: Viewable, View: UIView>(viewable: V, onCreate: @escaping (_ view: View) -> Void = { _ in }) where
         V.Matter == View,
         V.Events == ViewableEvents,
-        V.Result == Disposable {
+        V.Result == Disposable
+    {
         let wasAddedCallbacker = Callbacker<Void>()
         let events = ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
 

@@ -10,7 +10,7 @@ import UIKit
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
     let type: AssetType
-    let uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
+    let uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 
     enum AssetType {
         case image, video

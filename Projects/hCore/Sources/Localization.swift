@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct Localization {
+public enum Localization {
     public enum Locale: String, CaseIterable {
         @ReadWriteState public static var currentLocale: Locale = .sv_SE
         case sv_SE
@@ -15,6 +15,17 @@ public struct Localization {
             case no = "NO"
             case se = "SE"
             case dk = "DK"
+
+            public var currencyCode: String {
+                switch self {
+                case .no:
+                    return "NOK"
+                case .dk:
+                    return "DKK"
+                case .se:
+                    return "SEK"
+                }
+            }
         }
 
         public var market: Market {
@@ -102,8 +113,8 @@ public struct Localization {
     }
 }
 
-extension Localization.Locale {
-    public func asGraphQLLocale() -> hGraphQL.GraphQL.Locale {
+public extension Localization.Locale {
+    func asGraphQLLocale() -> hGraphQL.GraphQL.Locale {
         switch self {
         case .sv_SE:
             return .svSe

@@ -143,8 +143,10 @@ extension MarketPicker: Presentable {
                 guard let navigationController = viewController.navigationController else {
                     return
                 }
-                navigationController.hero.isEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
+                if !UITraitCollection.isCatalyst {
+                    navigationController.hero.isEnabled = true
+                    navigationController.hero.navigationAnimationType = .fade
+                }
                 viewController.present(Marketing())
             }
 
@@ -155,7 +157,7 @@ extension MarketPicker: Presentable {
                     form.transform = CGAffineTransform.identity
                     form.alpha = 1
                     form.layoutIfNeeded()
-            })
+                })
         }
 
         bag += form.didMoveToWindowSignal.onValue {
