@@ -30,26 +30,13 @@ extension EmbarkPlans: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        let sectionStyle = SectionStyle(
-            rowInsets: UIEdgeInsets(
-                top: 10,
-                left: 15,
-                bottom: 10,
-                right: 15
-            ),
-            itemSpacing: 0,
-            minRowHeight: 10,
-            background: .init(all: UIColor.clear.asImage()),
-            selectedBackground: .init(all: UIColor.clear.asImage()),
-            header: .none,
-            footer: .none
-        )
+        let sectionStyle = SectionStyle.defaultStyle
         
         let dynamicSectionStyle = DynamicSectionStyle { _ in
             sectionStyle
         }
         
-        viewController.navigationItem.title = "Choose plan"
+        viewController.navigationItem.title = L10n.OnboardingStartpage.screenTitle
         
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
         
@@ -65,20 +52,50 @@ extension EmbarkPlans: Presentable {
         
         containerView.addSubview(activityIndicator)
         
-        tableKit.view.snp.makeConstraints { make in
-            make.top.bottom.trailing.leading.equalToSuperview()
+        let buttonContainerView = UIView()
+        containerView.addSubview(buttonContainerView)
+        
+        var footnoteTextStyle = TextStyle.brand(.footnote(color: .primary))
+        footnoteTextStyle.alignment = .center
+        
+        let label = MultilineLabel(
+            value: "Calculating a price is not committing. You’ll be able to learn more about the plan after your price is calculated.",
+            style: footnoteTextStyle)
+        
+        bag += containerView.add(label) { labelView in
+            tableKit.view.snp.makeConstraints { make in
+                make.top.trailing.leading.equalToSuperview()
+            }
+            
+            labelView.snp.makeConstraints { (make) in
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.top.equalTo(tableKit.view.snp.bottom)
+            }
+            
+            buttonContainerView.snp.makeConstraints { (make) in
+                make.bottom.equalToSuperview().inset(containerView.safeAreaInsets.bottom)
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.top.equalTo(labelView.snp.bottom).offset(20)
+                make.height.lessThanOrEqualTo(200)
+            }
         }
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         
-        let continueButton = Button(title: "Calculate your price", type: .standard(backgroundColor: .black, textColor: .white))
+        let continueButton = Button(
+            title: L10n.OnboardingStartpage.continueButtonText,
+            type: .standard(
+                backgroundColor: UIColor.brand(.primaryButtonBackgroundColor),
+                textColor: UIColor.brand(.primaryButtonTextColor)
+            )
+        )
         
-        bag += containerView.add(continueButton) { buttonView in
+        bag += buttonContainerView.add(continueButton) { buttonView in
             buttonView.snp.makeConstraints { make in
-                make.bottom.equalTo(containerView).inset(-buttonView.frame.height)
-                make.leading.trailing.equalTo(containerView).inset(16)
+                make.bottom.equalTo(buttonContainerView).inset(-buttonView.frame.height)
+                make.leading.trailing.equalTo(buttonContainerView)
             }
             
             bag += buttonView.didMoveToWindowSignal.delay(by: 0.05).take(first: 1).animated(style: SpringAnimationStyle.heavyBounce()) { () in
@@ -99,12 +116,8 @@ extension EmbarkPlans: Presentable {
             .compactMap { $0.embarkStories }
             .map { $0
                 .filter{ story in story.type == .appOnboarding }
-            }
-            .atError({ _ in
-                
-            }).onValue {
+            }.onValue {
                 activityIndicator.removeFromSuperview()
-                print($0)
                 plansSignal.value = $0
             }
     
