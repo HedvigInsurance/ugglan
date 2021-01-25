@@ -2,8 +2,8 @@ import Flow
 import Foundation
 import UIKit
 
-extension UIView {
-    public struct ShadowProperties {
+public extension UIView {
+    struct ShadowProperties {
         public init(
             opacity: Float?,
             offset: CGSize?,
@@ -25,7 +25,7 @@ extension UIView {
         let path: CGPath?
     }
 
-    public func applyShadow(_ dynamic: @escaping (_ trait: UITraitCollection) -> ShadowProperties) -> Disposable {
+    func applyShadow(_ dynamic: @escaping (_ trait: UITraitCollection) -> ShadowProperties) -> Disposable {
         traitCollectionSignal.atOnce().with(weak: self).onValue { trait, `self` in
             let properties = dynamic(trait)
 

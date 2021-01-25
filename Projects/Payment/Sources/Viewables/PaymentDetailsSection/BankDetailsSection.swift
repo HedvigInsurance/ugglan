@@ -5,6 +5,7 @@ import Foundation
 import hCore
 import hCoreUI
 import hGraphQL
+import UIKit
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient
@@ -95,10 +96,8 @@ extension BankDetailsSection: Viewable {
                 }
 
                 innerBag += addConnectPayment(data)
-            case .active, .needsSetup:
+            case .active, .needsSetup, .__unknown:
                 innerBag += addConnectPayment(data)
-            case .__unknown:
-                break
             }
 
             return innerBag

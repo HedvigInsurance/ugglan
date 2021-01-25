@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import UIKit
 
-public struct ContextGradient {
+public enum ContextGradient {
     public enum Option {
         case none
         case home

@@ -28,7 +28,8 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 
         guard
             let detailsJsonData = try? JSONEncoder().encode(additionalDetails),
-            let detailsJson = String(data: detailsJsonData, encoding: .utf8) else {
+            let detailsJson = String(data: detailsJsonData, encoding: .utf8)
+        else {
             return
         }
 

@@ -2,13 +2,14 @@ import Foundation
 import UIKit
 
 class UICollectionViewTagLayout: UICollectionViewFlowLayout {
-    required override init() {
+    override required init() {
         super.init()
         estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         minimumLineSpacing = 10
         minimumInteritemSpacing = 10
     }
 
+    @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

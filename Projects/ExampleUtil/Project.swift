@@ -6,15 +6,13 @@ let project = Project.framework(
     targets: Set([
         .framework,
     ]),
-    externalDependencies: [
-        .flow,
-        .form,
-        .presentation,
-        .runtime,
-    ],
-    dependencies: [
+    projects: [
         "hCore",
         "hCoreUI",
+    ],
+    dependencies: [
+        "CoreDependencies",
+        "DevDependencies",
     ],
     sdks: [],
     includesGraphQL: false

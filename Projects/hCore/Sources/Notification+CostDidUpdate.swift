@@ -1,5 +1,5 @@
 import Foundation
 
-extension Notification.Name {
-    public static let costDidUpdate = Notification.Name("costDidUpdate")
+public extension Notification.Name {
+    static let costDidUpdate = Notification.Name("costDidUpdate")
 }

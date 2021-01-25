@@ -21,6 +21,7 @@ extension PaymentHeaderCard: Viewable {
 
         let innerBorderView = UIView()
         innerBorderView.layer.borderWidth = .hairlineWidth
+        innerBorderView.layer.cornerRadius = .defaultCornerRadius
         view.addArrangedSubview(innerBorderView)
 
         bag += innerBorderView.applyBorderColor { _ in

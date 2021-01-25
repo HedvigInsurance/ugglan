@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import Hero
 import hGraphQL
+import Kingfisher
 import Mixpanel
 import Presentation
 import UIKit
@@ -142,8 +143,10 @@ extension MarketPicker: Presentable {
                 guard let navigationController = viewController.navigationController else {
                     return
                 }
-                navigationController.hero.isEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
+                if !UITraitCollection.isCatalyst {
+                    navigationController.hero.isEnabled = true
+                    navigationController.hero.navigationAnimationType = .fade
+                }
                 viewController.present(Marketing())
             }
 
@@ -154,7 +157,7 @@ extension MarketPicker: Presentable {
                     form.transform = CGAffineTransform.identity
                     form.alpha = 1
                     form.layoutIfNeeded()
-            })
+                })
         }
 
         bag += form.didMoveToWindowSignal.onValue {

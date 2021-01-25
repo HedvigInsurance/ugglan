@@ -8,7 +8,7 @@ private struct LogMessage: Encodable {
     let text: String
 }
 
-struct Logger {
+enum Logger {
     private static let queue = DispatchQueue(label: "Logger")
 
     private static func log(input: GraphQL.LoggingInput) {

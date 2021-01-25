@@ -4,4 +4,7 @@ fragment PerilFragment on PerilV2 {
     icon {
         ...IconFragment
     }
+    covered
+    exceptions
+    info
 }

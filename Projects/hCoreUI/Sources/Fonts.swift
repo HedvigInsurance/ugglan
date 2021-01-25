@@ -3,7 +3,7 @@ import UIKit
 
 class FontBundleToken {}
 
-public struct Fonts {
+public enum Fonts {
     private static let favoritStdBookFontName = "FavoritStd-Book"
 
     public static var favoritStdBook: UIFont = {

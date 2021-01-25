@@ -27,7 +27,7 @@ extension Debug: Presentable {
         let section = form.appendSection(headerView: UILabel(value: "Screens", style: .default), footerView: nil)
 
         func presentHome(_ body: JSONObject) {
-            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body))
+            let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body), store: ApolloStore())
 
             Dependencies.shared.add(module: Module { () -> ApolloClient in
                 apolloClient

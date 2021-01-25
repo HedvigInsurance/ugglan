@@ -11,13 +11,13 @@ import Vision
 extension AddKeyGearItem {
     private enum Category: String {
         case smartWatch = "SmartWatches",
-            watch = "Watches",
-            appliance = "Applicances",
-            camera = "Camera",
-            jewelry = "Jewelry",
-            phone = "Phones",
-            bicycle = "Bicycle",
-            computer = "Computer"
+             watch = "Watches",
+             appliance = "Applicances",
+             camera = "Camera",
+             jewelry = "Jewelry",
+             phone = "Phones",
+             bicycle = "Bicycle",
+             computer = "Computer"
     }
 
     func classifyImage(_ image: UIImage) -> Future<GraphQL.KeyGearItemCategory?> {

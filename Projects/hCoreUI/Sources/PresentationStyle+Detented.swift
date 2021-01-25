@@ -20,12 +20,10 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
     }
 }
 
-func getDetentIndex(on presentationController: UIPresentationController) -> Int {
-    let key = [
-        "_", "indexOf", "CurrentDetent",
-    ]
+var detentIndexKey = ["_", "indexOf", "CurrentDetent"].joined()
 
-    return presentationController.value(forKey: key.joined()) as? Int ?? 0
+func getDetentIndex(on presentationController: UIPresentationController) -> Int {
+    presentationController.value(forKey: detentIndexKey) as? Int ?? 0
 }
 
 func setDetentIndex(on presentationController: UIPresentationController, index: Int) {
@@ -117,12 +115,12 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     }
 }
 
-extension PresentationOptions {
+public extension PresentationOptions {
     // adds a grabber to DetentedModals
-    public static let wantsGrabber = PresentationOptions()
+    static let wantsGrabber = PresentationOptions()
 }
 
-extension UIViewController {
+public extension UIViewController {
     private static var _appliedDetents: UInt8 = 1
 
     var appliedDetents: [PresentationStyle.Detent] {
@@ -146,9 +144,68 @@ extension UIViewController {
         }
     }
 
+    var currentDetent: PresentationStyle.Detent? {
+        get {
+            guard let presentationController = navigationController?.presentationController else {
+                return nil
+            }
+
+            let index = getDetentIndex(on: presentationController)
+
+            if appliedDetents.indices.contains(index) {
+                return appliedDetents[index]
+            }
+
+            return nil
+        }
+        set {
+            guard
+                let presentationController = navigationController?.presentationController,
+                let newValue = newValue,
+                let index = appliedDetents.firstIndex(of: newValue)
+            else {
+                return
+            }
+
+            setDetentIndex(on: presentationController, index: index)
+
+            UIView.animate(
+                withDuration: 0.5,
+                delay: 0,
+                usingSpringWithDamping: 5,
+                initialSpringVelocity: 1,
+                options: .allowUserInteraction,
+                animations: {
+                    presentationController.presentedViewController.view.layoutIfNeeded()
+                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                }, completion: nil
+            )
+        }
+    }
+
+    var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
+        Signal { callback in
+            let bag = DisposeBag()
+
+            bag += (self.view as? UIScrollView)?.panGestureRecognizer.onValue { _ in
+                callback(self.currentDetent)
+            }
+
+            bag += self.view.didLayoutSignal.onValue {
+                callback(self.currentDetent)
+            }
+
+            return bag
+        }.distinct().readable {
+            self.currentDetent
+        }.writable { detent in
+            self.currentDetent = detent
+        }
+    }
+
     private static var _lastDetentIndex: UInt8 = 1
 
-    var lastDetentIndex: Int? {
+    internal var lastDetentIndex: Int? {
         get {
             if let lastDetentIndex = objc_getAssociatedObject(
                 self,
@@ -170,12 +227,25 @@ extension UIViewController {
     }
 }
 
-extension PresentationStyle {
-    public enum Detent {
-        case medium, large, custom(_ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat)
+public extension PresentationStyle {
+    enum Detent: Equatable {
+        public static func == (lhs: PresentationStyle.Detent, rhs: PresentationStyle.Detent) -> Bool {
+            switch (lhs, rhs) {
+            case (.large, .large):
+                return true
+            case (.medium, .medium):
+                return true
+            case let (.custom(lhsName, _), .custom(rhsName, _)):
+                return lhsName == rhsName
+            default:
+                return false
+            }
+        }
+
+        case medium, large, custom(_ name: String, _ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat)
 
         public static func scrollViewContentSize(_ extraPadding: CGFloat = 0) -> Detent {
-            .custom { viewController, containerView in
+            .custom("scrollViewContentSize") { viewController, containerView in
                 guard let scrollView = viewController.view as? UIScrollView else {
                     return 0
                 }
@@ -190,7 +260,7 @@ extension PresentationStyle {
         }
 
         public static var preferredContentSize: Detent {
-            .custom { viewController, _ in
+            .custom("preferredContentSize") { viewController, _ in
                 viewController.preferredContentSize.height
             }
         }
@@ -257,7 +327,7 @@ extension PresentationStyle {
             switch self {
             case .large, .medium:
                 return DetentsClass.value(forKey: "_\(rawValue)Detent") as! NSObject
-            case let .custom(containerViewBlock):
+            case let .custom(_, containerViewBlock):
                 typealias ContainerViewBlockMethod = @convention(c) (
                     NSObject.Type,
                     Selector,
@@ -279,7 +349,7 @@ extension PresentationStyle {
         }
     }
 
-    public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
+    static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
         PresentationStyle(name: "detented") { viewController, from, options in
             if #available(iOS 13, *) {
                 viewController.setLargeTitleDisplayMode(options)

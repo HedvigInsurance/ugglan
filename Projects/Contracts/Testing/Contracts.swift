@@ -4,8 +4,8 @@ import hCore
 import hGraphQL
 import TestingUtil
 
-extension JSONObject {
-    public static func makeNorwegianHomeContentContract(status: GraphQL.ContractsQuery.Data.Contract.Status) -> JSONObject {
+public extension JSONObject {
+    static func makeNorwegianHomeContentContract(status: GraphQL.ContractsQuery.Data.Contract.Status) -> JSONObject {
         GraphQL.ContractsQuery.Data.Contract(
             id: "mock_norwegian_123",
             displayName: "Mock norwegian home",
@@ -24,7 +24,7 @@ extension JSONObject {
         ).jsonObject
     }
 
-    public static func makeNorwegianTravelContract(status: GraphQL.ContractsQuery.Data.Contract.Status) -> JSONObject {
+    static func makeNorwegianTravelContract(status: GraphQL.ContractsQuery.Data.Contract.Status) -> JSONObject {
         GraphQL.ContractsQuery.Data.Contract(
             id: "mock_norwegian_travel_123",
             displayName: "Mock norwegian travel",
@@ -39,7 +39,7 @@ extension JSONObject {
         ).jsonObject
     }
 
-    public static func makeSwedishHouseContract(status: GraphQL.ContractsQuery.Data.Contract.Status) -> JSONObject {
+    static func makeSwedishHouseContract(status: GraphQL.ContractsQuery.Data.Contract.Status) -> JSONObject {
         GraphQL.ContractsQuery.Data.Contract(
             id: "mock_swedish_house_123",
             displayName: "Mock swedish house",

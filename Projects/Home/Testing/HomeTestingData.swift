@@ -1,4 +1,5 @@
 import Apollo
+import Foundation
 import hCore
 import hGraphQL
 import Home
@@ -16,8 +17,8 @@ func addDaysToDate(_ days: Int = 30) -> Date {
     return futureDate ?? Date()
 }
 
-extension JSONObject {
-    public static func makeCommonClaims() -> JSONObject {
+public extension JSONObject {
+    static func makeCommonClaims() -> JSONObject {
         GraphQL.CommonClaimsQuery.Data(commonClaims: [
             .init(
                 title: "Mock",
@@ -37,7 +38,7 @@ extension JSONObject {
         ]).jsonObject
     }
 
-    public static func makeActiveWithRenewal() -> JSONObject {
+    static func makeActiveWithRenewal() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
@@ -53,7 +54,7 @@ extension JSONObject {
         ])
     }
 
-    public static func makeActiveWithMultipleRenewals() -> JSONObject {
+    static func makeActiveWithMultipleRenewals() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
@@ -79,7 +80,7 @@ extension JSONObject {
         ])
     }
 
-    public static func makeActiveWithMultipleRenewalsOnSeparateDates() -> JSONObject {
+    static func makeActiveWithMultipleRenewalsOnSeparateDates() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
@@ -105,7 +106,7 @@ extension JSONObject {
         ])
     }
 
-    public static func makeActive() -> JSONObject {
+    static func makeActive() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
@@ -121,7 +122,7 @@ extension JSONObject {
         ])
     }
 
-    public static func makeActiveInFuture(switchable: Bool) -> JSONObject {
+    static func makeActiveInFuture(switchable: Bool) -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
@@ -137,7 +138,7 @@ extension JSONObject {
         ])
     }
 
-    public static func makePending(switchable: Bool) -> JSONObject {
+    static func makePending(switchable: Bool) -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),

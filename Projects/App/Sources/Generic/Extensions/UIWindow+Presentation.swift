@@ -14,10 +14,11 @@ extension UIWindow {
         options: PresentationOptions = [],
         animated: Bool
     ) -> P.Result where
-        P.Matter: UIViewController {
+        P.Matter: UIViewController
+    {
         let (viewController, result) = presentable.materialize()
 
-        if animated {
+        if animated, !UITraitCollection.isCatalyst {
             let snapshot = snapshotView(afterScreenUpdates: true)!
 
             var subviews: [UIView] = []

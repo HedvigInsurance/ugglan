@@ -14,18 +14,18 @@ public extension Either {
     }
 
     static func make<A, B>(_ value: A) -> Self where Left == Either<A, B> {
-        return .make(.make(value))
+        .make(.make(value))
     }
 
     static func make<A, B>(_ value: B) -> Self where Left == Either<A, B> {
-        return .make(.make(value))
+        .make(.make(value))
     }
 
     static func make<A, B>(_ value: A) -> Self where Right == Either<A, B> {
-        return .make(.make(value))
+        .make(.make(value))
     }
 
     static func make<A, B>(_ value: B) -> Self where Right == Either<A, B> {
-        return .make(.make(value))
+        .make(.make(value))
     }
 }

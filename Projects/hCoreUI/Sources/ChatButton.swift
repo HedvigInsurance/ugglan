@@ -1,5 +1,4 @@
 import Flow
-import FlowFeedback
 import Foundation
 import hCore
 import UIKit
@@ -15,9 +14,9 @@ public struct ChatButton {
     }
 }
 
-extension UIViewController {
+public extension UIViewController {
     /// installs a chat button in the navigation bar to the right
-    public func installChatButton(allowsChatHint: Bool = false) {
+    func installChatButton(allowsChatHint: Bool = false) {
         let chatButton = ChatButton(
             presentingViewController: self,
             allowsChatHint: allowsChatHint

@@ -76,7 +76,8 @@ extension GraphQL.ApiMultiActionVariableFragment {
                         uniquingKeysWith: { lhs, _ in lhs }
                     )
                 } else if let apiGeneratedVariableFragment =
-                    multiActionVariable.fragments.apiGeneratedVariableFragment {
+                    multiActionVariable.fragments.apiGeneratedVariableFragment
+                {
                     map = map.merging(
                         apiGeneratedVariableFragment.graphQLMap(store: store),
                         uniquingKeysWith: { lhs, _ in lhs }

@@ -2,9 +2,9 @@ import Flow
 import Foundation
 import UIKit
 
-extension Signal where Kind == Plain, Value == () {
+public extension Signal where Kind == Plain, Value == () {
     // a delay operator that respects slow animations, useful when building interactive animations
-    public static func animatedDelay(after delay: TimeInterval) -> Signal<Void> {
+    static func animatedDelay(after delay: TimeInterval) -> Signal<Void> {
         Signal { callback in
             let dummyView = UIView()
             dummyView.alpha = 0
@@ -29,7 +29,7 @@ extension Signal where Kind == Plain, Value == () {
         }.take(first: 1).plain()
     }
 
-    public func animatedDelay(after delay: TimeInterval) -> Signal<Void> {
+    func animatedDelay(after delay: TimeInterval) -> Signal<Void> {
         flatMapLatest { Self.animatedDelay(after: delay) }
     }
 }

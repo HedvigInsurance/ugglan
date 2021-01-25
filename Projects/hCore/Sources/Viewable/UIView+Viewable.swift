@@ -4,13 +4,14 @@ import UIKit
 
 public let defaultOnCreateClosure: (_ view: UIView) -> Void = { _ in }
 
-extension UIView {
+public extension UIView {
     // swiftlint:disable large_tuple
-    public func materializeViewable<V: Viewable, VMatter: UIView>(
+    func materializeViewable<V: Viewable, VMatter: UIView>(
         viewable: V
     ) -> (V.Matter, V.Result, DelayedDisposer) where
         V.Matter == VMatter,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let wasAddedCallbacker = Callbacker<Void>()
 
         let viewableEvents = ViewableEvents(
@@ -28,12 +29,13 @@ extension UIView {
         }, delay: viewableEvents.removeAfter.call() ?? 0.0))
     }
 
-    public func materializeViewable<V: Viewable, VMatter: UIView>(
+    func materializeViewable<V: Viewable, VMatter: UIView>(
         viewable: V,
         addView: (_ view: VMatter) -> Void
     ) -> (V.Matter, V.Result, DelayedDisposer) where
         V.Matter == VMatter,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = ViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker
@@ -49,12 +51,13 @@ extension UIView {
         }, delay: viewableEvents.removeAfter.call() ?? 0.0))
     }
 
-    public func materializeViewable<V: Viewable, VMatter: UIView>(
+    func materializeViewable<V: Viewable, VMatter: UIView>(
         viewable: V,
         onSelectCallbacker: Callbacker<Void>
     ) -> (V.Matter, V.Result, DelayedDisposer) where
         V.Matter == VMatter,
-        V.Events == SelectableViewableEvents {
+        V.Events == SelectableViewableEvents
+    {
         let wasAddedCallbacker = Callbacker<Void>()
         let viewableEvents = SelectableViewableEvents(
             wasAddedCallbacker: wasAddedCallbacker,
@@ -73,13 +76,14 @@ extension UIView {
 
     // swiftlint:enable large_tuple
 
-    public func add<V: Viewable, VMatter: UIView, FutureResult: Any>(
+    func add<V: Viewable, VMatter: UIView, FutureResult: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where
         V.Matter == VMatter,
         V.Result == Future<FutureResult>,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -94,13 +98,14 @@ extension UIView {
         return result
     }
 
-    public func add<V: Viewable, VMatter: UIView>(
+    func add<V: Viewable, VMatter: UIView>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where
         V.Matter == VMatter,
         V.Result == Disposable,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -111,7 +116,7 @@ extension UIView {
         }
     }
 
-    public func add<V: Viewable, Matter: Viewable, View: UIView>(
+    func add<V: Viewable, Matter: Viewable, View: UIView>(
         _ viewable: V,
         onCreate: (_ view: Matter.Matter) -> Void = { _ in }
     ) -> V.Result where
@@ -120,7 +125,8 @@ extension UIView {
         V.Events == ViewableEvents,
         Matter.Matter == View,
         Matter.Result == Disposable,
-        Matter.Events == ViewableEvents {
+        Matter.Events == ViewableEvents
+    {
         let wasAddedCallbacker = Callbacker<Void>()
 
         let (matter, result) = viewable.materialize(events: ViewableEvents(
@@ -138,13 +144,14 @@ extension UIView {
         }
     }
 
-    public func add<V: Viewable, VMatter: UIView, SignalType: Any>(
+    func add<V: Viewable, VMatter: UIView, SignalType: Any>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where
         V.Matter == VMatter,
         V.Result == Signal<SignalType>,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         onCreate(matter)
@@ -159,7 +166,7 @@ extension UIView {
     }
 }
 
-extension UIStackView {
+public extension UIStackView {
     // swiftlint:disable large_tuple
     private func materializeArrangedViewable<V: Viewable, MatterView: UIView>(
         viewable: V
@@ -181,13 +188,14 @@ extension UIStackView {
 
     // swiftlint:enable large_tuple
 
-    public func addArranged<V: Viewable, MatterView: UIView>(
+    func addArranged<V: Viewable, MatterView: UIView>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where
         V.Matter == MatterView,
         V.Result == Disposable,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
 
         onCreate(matter)
@@ -198,13 +206,14 @@ extension UIStackView {
         }
     }
 
-    public func addArranged<V: Viewable, MatterView: UIView, SignalType, SignalValue>(
+    func addArranged<V: Viewable, MatterView: UIView, SignalType, SignalValue>(
         _ viewable: V,
         onCreate: (_ view: V.Matter) -> Void = defaultOnCreateClosure
     ) -> V.Result where
         V.Matter == MatterView,
         V.Result == CoreSignal<SignalType, SignalValue>,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let (matter, result, disposable) = materializeArrangedViewable(viewable: viewable)
 
         onCreate(matter)
@@ -212,7 +221,7 @@ extension UIStackView {
         return result.hold(disposable)
     }
 
-    public func addArranged<V: Viewable, Matter: Viewable, View: UIView>(
+    func addArranged<V: Viewable, Matter: Viewable, View: UIView>(
         _ viewable: V,
         onCreate: (_ view: Matter.Matter) -> Void = { _ in }
     ) -> V.Result where
@@ -221,7 +230,8 @@ extension UIStackView {
         V.Events == ViewableEvents,
         Matter.Matter == View,
         Matter.Result == Disposable,
-        Matter.Events == ViewableEvents {
+        Matter.Events == ViewableEvents
+    {
         let wasAddedCallbacker = Callbacker<Void>()
 
         let (matter, result) = viewable.materialize(events: ViewableEvents(

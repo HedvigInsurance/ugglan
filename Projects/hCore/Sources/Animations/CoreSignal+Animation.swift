@@ -19,13 +19,13 @@ public struct Animated: SignalProvider {
     }
 }
 
-extension SignalProvider {
+public extension SignalProvider {
     /// explicitly ignore any value emitted by a signal
-    public func `nil`() -> Disposable {
+    func `nil`() -> Disposable {
         onValue { _ in }
     }
 
-    public func bindTo<T>(
+    func bindTo<T>(
         transition view: UIView,
         style: TransitionStyle,
         on scheduler: Scheduler = .current,
@@ -43,7 +43,7 @@ extension SignalProvider {
         return bag
     }
 
-    public func bindTo<T>(
+    func bindTo<T>(
         animate style: AnimationStyle,
         on scheduler: Scheduler = .current,
         _ value: T,
@@ -60,7 +60,7 @@ extension SignalProvider {
         return bag
     }
 
-    public func bindTo<T>(
+    func bindTo<T>(
         animate style: SpringAnimationStyle,
         on scheduler: Scheduler = .current,
         _ value: T,
@@ -85,7 +85,7 @@ extension SignalProvider {
         return bag
     }
 
-    public func transition(
+    func transition(
         on scheduler: Scheduler = .current,
         style: TransitionStyle,
         with view: UIView,
@@ -112,7 +112,7 @@ extension SignalProvider {
         }
     }
 
-    public func animated(
+    func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> AnimationStyle,
         animations: @escaping (_ value: Value) -> Void
@@ -139,7 +139,7 @@ extension SignalProvider {
         }
     }
 
-    public func animated(
+    func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
@@ -170,7 +170,7 @@ extension SignalProvider {
         }
     }
 
-    public func animated(
+    func animated(
         on scheduler: Scheduler = .current,
         mapStyle: @escaping (_ value: Value) -> SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
@@ -178,7 +178,7 @@ extension SignalProvider {
         animated(on: scheduler, mapStyle: mapStyle, animations: animations).nil()
     }
 
-    public func animated(
+    func animated(
         on scheduler: Scheduler = .current,
         style: AnimationStyle,
         animations: @escaping (_ value: Value) -> Void
@@ -203,7 +203,7 @@ extension SignalProvider {
         }
     }
 
-    public func animated(
+    func animated(
         on scheduler: Scheduler = .current,
         style: SpringAnimationStyle,
         animations: @escaping (_ value: Value) -> Void
