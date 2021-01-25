@@ -1,1 +1,1 @@
-rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app"/PlugIns/*.framework
+rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app"/Frameworks/*.framework
