@@ -61,20 +61,6 @@ let targetActions: [TargetAction] = [
     .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks"),
 ]
 
-var postActions: [ExecutionAction] = {
-    let url = URL(fileURLWithPath: "scripts/post-build-action.sh")
-
-    if let data = try? Data(contentsOf: url),
-       let scriptText = String(data: data, encoding: .utf8)
-    {
-        return [
-            ExecutionAction(scriptText: scriptText),
-        ]
-    }
-
-    return []
-}()
-
 let project = Project(
     name: "Ugglan",
     organizationName: "Hedvig",
