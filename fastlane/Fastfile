@@ -155,30 +155,6 @@ platform :ios do
             "Hedvig" => {
                 "identifier" => "com.hedvig.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
-            },
-            "ForeverExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Forever/Forever.xcodeproj"
-            },
-            "HomeExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Home/Home.xcodeproj"
-            },
-            "hCoreUIExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/hCoreUI/hCoreUI.xcodeproj"
-            },
-            "hCoreExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/hCore/hCore.xcodeproj"
-            },
-            "ContractsExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Contracts/Contracts.xcodeproj"
-            },
-            "PaymentExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Payment/Payment.xcodeproj"
             }
         }
         
