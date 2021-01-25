@@ -2,8 +2,8 @@ import Flow
 import Foundation
 import UIKit
 
-extension UIViewController {
-    public func install<V: Viewable, View: UIView>(
+public extension UIViewController {
+    func install<V: Viewable, View: UIView>(
         _ viewable: V
     ) -> Disposable where V.Matter == View, V.Result == Disposable, V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()
@@ -19,7 +19,7 @@ extension UIViewController {
         return result
     }
 
-    public func install<V: Viewable, View: UIView, SignalKind, SignalValue>(
+    func install<V: Viewable, View: UIView, SignalKind, SignalValue>(
         _ viewable: V,
         onInstall: (_ view: View) -> Void = { _ in }
     ) -> V.Result where V.Matter == View, V.Result == CoreSignal<SignalKind, SignalValue>, V.Events == ViewableEvents {
@@ -38,7 +38,7 @@ extension UIViewController {
         return result
     }
 
-    public func install<V: Viewable, View: UIView, FutureResult: Any>(
+    func install<V: Viewable, View: UIView, FutureResult: Any>(
         _ viewable: V
     ) -> Future<FutureResult> where V.Matter == View, V.Result == Future<FutureResult>, V.Events == ViewableEvents {
         let wasAddedCallbacker = Callbacker<Void>()

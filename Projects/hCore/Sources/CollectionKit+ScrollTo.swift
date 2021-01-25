@@ -6,8 +6,8 @@ enum ScrollTo {
     case next, previous, first
 }
 
-extension CollectionKit {
-    public var currentIndex: Int {
+public extension CollectionKit {
+    var currentIndex: Int {
         let double = view.contentOffset.x / view.frame.size.width
 
         if double.isNaN {
@@ -17,7 +17,7 @@ extension CollectionKit {
         return Int(double)
     }
 
-    public func scrollToNextItem() {
+    func scrollToNextItem() {
         let currentIndex = self.currentIndex
         let newIndexPath = IndexPath(row: currentIndex + 1, section: 0)
         let numberOfItems = dataSource.collectionView(
@@ -35,7 +35,7 @@ extension CollectionKit {
         }
     }
 
-    public func scrollToPreviousItem() {
+    func scrollToPreviousItem() {
         let currentIndex = self.currentIndex
         let newIndexPath = IndexPath(row: currentIndex - 1, section: 0)
 

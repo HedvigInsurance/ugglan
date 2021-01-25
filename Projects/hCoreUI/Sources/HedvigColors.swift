@@ -4,7 +4,7 @@ import hCore
 import UIKit
 
 public extension UIColor {
-    private struct BrandColorBase {
+    private enum BrandColorBase {
         static let almostBlack = UIColor(red: 0.04, green: 0.04, blue: 0.04, alpha: 1.0)
         static let offWhite = UIColor(red: 0.98, green: 0.98, blue: 0.99, alpha: 1.0)
         static let offBlack = UIColor(red: 0.25, green: 0.25, blue: 0.31, alpha: 1.0)
@@ -33,7 +33,7 @@ public extension UIColor {
                 UIColor(red: 0.75, green: 0.61, blue: 0.95, alpha: 1.00) :
                 UIColor(red: 0.79, green: 0.67, blue: 0.96, alpha: 1.00)
         })
-        static var primaryBorder: UIColor = UIColor(dynamic: { trait -> UIColor in
+        static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
             trait.userInterfaceStyle == .dark ? UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15) : BrandColorBase.grayBorder
         })
         static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
@@ -316,9 +316,9 @@ public extension UIColor {
             case .dynamicReversed:
                 return dynamicReversedColor
             case .negative:
-                return self.negativeColor
+                return negativeColor
             case .positive:
-                return self.positiveColor
+                return positiveColor
             case let .matching(color):
                 return UIColor(dynamic: { _ -> UIColor in
                     color.luminance > 0.5 ? self.positiveColor : self.negativeColor

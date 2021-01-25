@@ -1,8 +1,8 @@
 import Foundation
 
-extension String {
+public extension String {
     /// returns all http/https links in the string
-    public var links: [NSTextCheckingResult] {
+    var links: [NSTextCheckingResult] {
         let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
 
         guard let detect = detector else {

@@ -8,8 +8,8 @@ enum CloseButtonError: Error {
     case cancelled
 }
 
-extension Presentable where Matter: UIViewController, Result == Disposable {
-    public var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
+public extension Presentable where Matter: UIViewController, Result == Disposable {
+    var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {
         AnyPresentable { () -> (Self.Matter, Future<Void>) in
             let (viewController, disposable) = self.materialize()
 
@@ -47,8 +47,8 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
     }
 }
 
-extension Presentable where Matter: UIViewController {
-    public func wrappedInCloseButton<T>() -> AnyPresentable<Self.Matter, Future<T>> where Self.Result == Future<T> {
+public extension Presentable where Matter: UIViewController {
+    func wrappedInCloseButton<T>() -> AnyPresentable<Self.Matter, Future<T>> where Self.Result == Future<T> {
         AnyPresentable { () -> (Self.Matter, Future<T>) in
             let (viewController, future) = self.materialize()
 

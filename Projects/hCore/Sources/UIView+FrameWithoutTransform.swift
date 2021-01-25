@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-extension UIView {
-    public var frameWithoutTransform: CGRect {
+public extension UIView {
+    var frameWithoutTransform: CGRect {
         let center = self.center
         let size = bounds.size
 

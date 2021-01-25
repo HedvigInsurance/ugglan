@@ -11,17 +11,18 @@ public protocol FutureConditional {
     func condition() -> Future<Bool>
 }
 
-extension UIViewController {
-    enum ConditionalPresentation: Error {
+public extension UIViewController {
+    internal enum ConditionalPresentation: Error {
         case conditionNotMet
     }
 
-    public func presentConditionally<T: Conditional & Presentable, Value>(
+    func presentConditionally<T: Conditional & Presentable, Value>(
         _ presentable: T,
         style: PresentationStyle = .default,
         options: PresentationOptions = [.defaults]
     ) -> T.Result
-        where T.Result == Future<Value>, T.Matter == UIViewController {
+        where T.Result == Future<Value>, T.Matter == UIViewController
+    {
         if presentable.condition() {
             return present(presentable, style: style, options: options)
         }
@@ -32,13 +33,14 @@ extension UIViewController {
         }
     }
 
-    public func presentConditionally<T: FutureConditional & Presentable, Value>(
+    func presentConditionally<T: FutureConditional & Presentable, Value>(
         _ presentable: T,
         style: PresentationStyle = .default,
         options: PresentationOptions = [.defaults]
     ) -> T.Result
-        where T.Result == Future<Value>, T.Matter == UIViewController {
-        return Future<Value> { completion in
+        where T.Result == Future<Value>, T.Matter == UIViewController
+    {
+        Future<Value> { completion in
             let bag = DisposeBag()
 
             bag += presentable.condition().onValue { passed in

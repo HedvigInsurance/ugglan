@@ -17,7 +17,8 @@ class EmbarkStore {
             // handling for array based keys and values
             if
                 arraySymbolRegex.firstMatch(in: key, options: [], range: keyRange) != nil,
-                arraySymbolRegex.firstMatch(in: value, options: [], range: valueRange) != nil {
+                arraySymbolRegex.firstMatch(in: value, options: [], range: valueRange) != nil
+            {
                 var mutableValue = String(value)
                 mutableValue.removeFirst()
                 mutableValue.removeLast()
@@ -80,7 +81,8 @@ class EmbarkStore {
             case .lessThan:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value) {
+                    let expressionFloat = Float(binaryExpression.value)
+                {
                     return storeFloat < expressionFloat
                 }
 
@@ -88,7 +90,8 @@ class EmbarkStore {
             case .lessThanOrEquals:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value) {
+                    let expressionFloat = Float(binaryExpression.value)
+                {
                     return storeFloat <= expressionFloat
                 }
 
@@ -96,7 +99,8 @@ class EmbarkStore {
             case .moreThan:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value) {
+                    let expressionFloat = Float(binaryExpression.value)
+                {
                     return storeFloat > expressionFloat
                 }
 
@@ -104,7 +108,8 @@ class EmbarkStore {
             case .moreThanOrEquals:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value) {
+                    let expressionFloat = Float(binaryExpression.value)
+                {
                     return storeFloat >= expressionFloat
                 }
 
@@ -173,26 +178,30 @@ class EmbarkStore {
             case .lessThan:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat < expressionFloat {
+                    let expressionFloat = Float(binaryExpression.value), storeFloat < expressionFloat
+                {
                     return binaryExpression.to
                 }
 
             case .lessThanOrEquals:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat <= expressionFloat {
+                    let expressionFloat = Float(binaryExpression.value), storeFloat <= expressionFloat
+                {
                     return binaryExpression.to
                 }
             case .moreThan:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat > expressionFloat {
+                    let expressionFloat = Float(binaryExpression.value), storeFloat > expressionFloat
+                {
                     return binaryExpression.to
                 }
             case .moreThanOrEquals:
                 if
                     let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat >= expressionFloat {
+                    let expressionFloat = Float(binaryExpression.value), storeFloat >= expressionFloat
+                {
                     return binaryExpression.to
                 }
 

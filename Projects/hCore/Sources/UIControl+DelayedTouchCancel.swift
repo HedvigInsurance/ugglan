@@ -2,8 +2,8 @@ import Flow
 import Foundation
 import UIKit
 
-extension UIControl {
-    public func delayedTouchCancel(delay: TimeInterval = 0.2) -> Signal<Void> {
+public extension UIControl {
+    func delayedTouchCancel(delay: TimeInterval = 0.2) -> Signal<Void> {
         Signal { callback in
             let bag = DisposeBag()
 

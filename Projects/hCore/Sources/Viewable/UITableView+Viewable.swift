@@ -26,14 +26,15 @@ extension UIView {
     }
 }
 
-extension UITableView {
-    public func addTableHeaderView<V: Viewable, VMatter: UIView>(
+public extension UITableView {
+    func addTableHeaderView<V: Viewable, VMatter: UIView>(
         _ viewable: V,
         animated: Bool = true
     ) -> Disposable where
         V.Events == ViewableEvents,
         V.Matter == VMatter,
-        V.Result == Disposable {
+        V.Result == Disposable
+    {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         tableHeaderView = matter
@@ -69,12 +70,13 @@ extension UITableView {
         }
     }
 
-    public func addTableFooterView<V: Viewable, VMatter: UIView>(
+    func addTableFooterView<V: Viewable, VMatter: UIView>(
         _ viewable: V
     ) -> Disposable where
         V.Events == ViewableEvents,
         V.Matter == VMatter,
-        V.Result == Disposable {
+        V.Result == Disposable
+    {
         let (matter, result, disposable) = materializeViewable(viewable: viewable)
 
         tableFooterView = matter
@@ -97,7 +99,7 @@ extension UITableView {
             self.tableFooterView = matter
             matter.layoutIfNeeded()
             self.layoutIfNeeded()
-           })
+        })
 
         return Disposer {
             bag.dispose()

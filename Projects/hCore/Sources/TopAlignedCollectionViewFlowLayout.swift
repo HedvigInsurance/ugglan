@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 public class TopAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
-    public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var attrsCopy = [UICollectionViewLayoutAttributes]()
 
         if let attrs = super.layoutAttributesForElements(in: rect) {
