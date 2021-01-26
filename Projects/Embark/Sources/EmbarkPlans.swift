@@ -65,7 +65,6 @@ extension EmbarkPlans: Presentable {
             make.bottom.equalToSuperview().inset(containerView.safeAreaInsets.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalTo(tableKit.view.snp.bottom).offset(20)
-            make.height.lessThanOrEqualTo(200)
         }
 
         activityIndicator.snp.makeConstraints { make in
@@ -83,6 +82,7 @@ extension EmbarkPlans: Presentable {
         bag += buttonContainerView.add(continueButton) { buttonView in
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalTo(buttonContainerView).inset(-buttonView.frame.height)
+                make.top.equalTo(buttonContainerView).inset(20)
                 make.leading.trailing.equalTo(buttonContainerView)
             }
             
