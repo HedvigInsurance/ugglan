@@ -43,6 +43,7 @@ extension EmbarkPlans: Presentable {
         let tableKit = TableKit<String, PlanRow>(style: style, holdIn: bag)
         
         let containerView = UIView()
+        containerView.backgroundColor = .brand(.primaryBackground())
         viewController.view = containerView
 
         containerView.addSubview(tableKit.view)
@@ -53,33 +54,20 @@ extension EmbarkPlans: Presentable {
         containerView.addSubview(activityIndicator)
         
         let buttonContainerView = UIView()
+        buttonContainerView.backgroundColor = .clear
         containerView.addSubview(buttonContainerView)
         
-        var footnoteTextStyle = TextStyle.brand(.footnote(color: .primary))
-        footnoteTextStyle.alignment = .center
-        
-        let label = MultilineLabel(
-            value: "Calculating a price is not committing. You’ll be able to learn more about the plan after your price is calculated.",
-            style: footnoteTextStyle)
-        
-        bag += containerView.add(label) { labelView in
-            tableKit.view.snp.makeConstraints { make in
-                make.top.trailing.leading.equalToSuperview()
-            }
-            
-            labelView.snp.makeConstraints { (make) in
-                make.leading.trailing.equalToSuperview().inset(16)
-                make.top.equalTo(tableKit.view.snp.bottom)
-            }
-            
-            buttonContainerView.snp.makeConstraints { (make) in
-                make.bottom.equalToSuperview().inset(containerView.safeAreaInsets.bottom)
-                make.leading.trailing.equalToSuperview().inset(16)
-                make.top.equalTo(labelView.snp.bottom).offset(20)
-                make.height.lessThanOrEqualTo(200)
-            }
+        tableKit.view.snp.makeConstraints { make in
+            make.top.trailing.leading.equalToSuperview()
         }
-        
+
+        buttonContainerView.snp.makeConstraints { (make) in
+            make.bottom.equalToSuperview().inset(containerView.safeAreaInsets.bottom)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(tableKit.view.snp.bottom).offset(20)
+            make.height.lessThanOrEqualTo(200)
+        }
+
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
@@ -87,8 +75,8 @@ extension EmbarkPlans: Presentable {
         let continueButton = Button(
             title: L10n.OnboardingStartpage.continueButtonText,
             type: .standard(
-                backgroundColor: UIColor.brand(.primaryButtonBackgroundColor),
-                textColor: UIColor.brand(.primaryButtonTextColor)
+                backgroundColor: UIColor.brand(.secondaryButtonBackgroundColor),
+                textColor: UIColor.brand(.secondaryButtonTextColor)
             )
         )
         
@@ -119,6 +107,7 @@ extension EmbarkPlans: Presentable {
             }.onValue {
                 activityIndicator.removeFromSuperview()
                 plansSignal.value = $0
+                $selectedIndex.value = 0
             }
     
         bag += plansSignal.atOnce().compactMap { $0 }.onValue { plans in
@@ -128,11 +117,18 @@ extension EmbarkPlans: Presentable {
                     (
                         "",
                         plans.enumerated().map { offset, story in
-                            PlanRow(title: story.localisedTitle, discount: story.discount, message: story.localisedDescription, isSelected: $selectedIndex.map { offset == $0 }.writable(setValue: { isSelected in
-                                if isSelected {
-                                    $selectedIndex.value = offset
-                                }
-                            }))
+                            PlanRow(
+                                title: story.localisedTitle,
+                                discount: story.discount,
+                                message: story.localisedDescription,
+                                gradientType: story.gradientViewPreset,
+                                isSelected: $selectedIndex.map { offset == $0 }
+                                    .writable(setValue: { isSelected in
+                                        if isSelected {
+                                            $selectedIndex.value = offset
+                                        }
+                                    })
+                            )
                         }
                     ),
                 ]
@@ -150,19 +146,6 @@ extension EmbarkPlans: Presentable {
                                         name: story.name,
                                         state: EmbarkState(externalRedirectHandler: { _ in })))
             })
-        
-        
-//        bag += continueButton
-//            .onTapSignal
-//            .withLatestFrom(plansSignal.atOnce().map {
-//                $0.first(where: { $0.isSelected == true })
-//            }.plain())
-//            .compactMap { _, plan in plan }
-//            .onValue({ (plan) in
-//                viewController.present(Embark(
-//                                        name: plan.embarkStory.name,
-//                                        state: EmbarkState(externalRedirectHandler: { _ in })))
-//            })
                                         
         return (viewController, bag)
     }
@@ -189,10 +172,24 @@ private extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
         default:
             return self.name
         }
-        
     }
     
     var discount: String? {
-        self.metadata.compactMap { $0.asEmbarkStoryMetadataEntryDiscount }.first?.discount
+        self.metadata.compactMap { $0.asEmbarkStoryMetadataEntryPill }.first?.pill
+    }
+    
+    var gradientViewPreset: GradientView.Preset {
+        let background = self.metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first ?? .gradientOne
+        
+        switch background {
+        case .gradientOne:
+            return .insuranceOne
+        case .gradientTwo:
+            return .insuranceTwo
+        case .gradientThree:
+            return .insuranceThree
+        case .__unknown(_):
+            return .insuranceOne
+        }
     }
 }

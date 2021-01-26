@@ -19,6 +19,7 @@ struct PlanRow: Equatable, Hashable {
     let title: String
     let discount: String?
     let message: String
+    let gradientType: GradientView.Preset
     let isSelected: ReadWriteSignal<Bool>
 }
 
@@ -82,7 +83,9 @@ extension PlanRow: Reusable {
             bag += verticalContentContainer.addArranged(descriptionLabel)
             
             let gradientView = GradientView(
-                gradientOption: .init(preset: .insuranceThree, traitCollection: view.traitCollection),
+                gradientOption: .init(
+                    preset: self.gradientType,
+                    traitCollection: view.traitCollection),
                 signal: self.isSelected)
             
             bag += contentView.add(gradientView) { view in
