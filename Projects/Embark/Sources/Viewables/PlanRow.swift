@@ -83,10 +83,8 @@ extension PlanRow: Reusable {
             bag += verticalContentContainer.addArranged(descriptionLabel)
             
             let gradientView = GradientView(
-                gradientOption: .init(
-                    preset: self.gradientType,
-                    traitCollection: view.traitCollection),
-                signal: self.isSelected)
+                gradientOption: .init(preset: self.gradientType),
+                shouldShowGradientSignal: self.isSelected)
             
             bag += contentView.add(gradientView) { view in
                 contentView.sendSubviewToBack(view)

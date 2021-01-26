@@ -4,15 +4,29 @@ import Flow
 
 extension GradientView {
     public struct GradientOption {
-        public init(preset: GradientView.Preset, traitCollection: UITraitCollection) {
+        public init(preset: GradientView.Preset) {
             self.preset = preset
-            self.traitCollection = traitCollection
         }
         
         public let preset: Preset
-        public let traitCollection: UITraitCollection
         
-        public var orbLayer: CALayer {
+        public var locations: [NSNumber] {
+            return [0,1]
+        }
+        
+        public var startPoint: CGPoint {
+            return CGPoint(x: 0.25, y: 0.5)
+        }
+        
+        public var endPoint: CGPoint {
+            return CGPoint(x: 0.75, y: 0.5)
+        }
+        
+        public var transform: CATransform3D {
+            CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 0, c: 0, d: 2.94, tx: 0, ty: -0.97))
+        }
+        
+        public func orbLayer(traitCollection: UITraitCollection) -> CAGradientLayer {
             var colors = [UIColor]()
 
             switch (preset, traitCollection.userInterfaceStyle) {
@@ -45,7 +59,7 @@ extension GradientView {
             return layer
         }
         
-        public var colors: [UIColor] {
+        public func backgroundColors(traitCollection: UITraitCollection) -> [UIColor] {
             switch (preset, traitCollection.userInterfaceStyle) {
             
             case (.insuranceOne, .light):
@@ -90,21 +104,5 @@ extension GradientView {
         case insuranceOne
         case insuranceTwo
         case insuranceThree
-        
-        public var locations: [NSNumber] {
-            return [0,1]
-        }
-        
-        public var startPoint: CGPoint {
-            return CGPoint(x: 0.25, y: 0.5)
-        }
-        
-        public var endPoint: CGPoint {
-            return CGPoint(x: 0.75, y: 0.5)
-        }
-        
-        public var transform: CATransform3D {
-            CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 0, c: 0, d: 2.94, tx: 0, ty: -0.97))
-        }
     }
 }
