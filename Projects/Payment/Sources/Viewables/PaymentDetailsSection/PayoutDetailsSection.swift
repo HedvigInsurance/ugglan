@@ -21,10 +21,10 @@ extension PayoutDetailsSection: Viewable {
             footer: nil
         )
 
-//        let dataSignal = client.watch(
-//            query: GraphQL.ActivePayoutMethodsQuery(),
-//            cachePolicy: .returnCacheDataAndFetch
-//        )
+        let dataSignal = client.watch(
+            query: GraphQL.ActivePayoutMethodsQuery(),
+            cachePolicy: .returnCacheDataAndFetch
+        )
 
         let payOutOptions = AdyenMethodsList.payOutOptions
 
@@ -41,73 +41,138 @@ extension PayoutDetailsSection: Viewable {
             }
         }
 
-//        bag += dataSignal.onValueDisposePrevious { data in
-//            let bag = DisposeBag()
-//
-//            if let activeMethod = data.activePayoutMethods {
-//                let valueRow = RowView(
-//                    title: activeMethod.storedPaymentMethodsDetails.brand?.capitalized ?? ""
-//                )
-//
-//                let valueLabel = UILabel(
-//                    value: L10n.PaymentScreen.creditCardMasking(activeMethod.storedPaymentMethodsDetails.lastFourDigits),
-//                    style: .brand(.headline(color: .tertiary))
-//                )
-//                valueRow.append(valueLabel)
-//
-//                section.append(valueRow)
-//
-//                let connectRow = RowView(
-//                    title: L10n.PaymentScreen.payOutChangePayoutButton,
-//                    style: .brand(.headline(color: .link))
-//                )
-//
-//                let connectImageView = UIImageView()
-//                connectImageView.image = hCoreUIAssets.editIcon.image
-//                connectImageView.tintColor = .brand(.link)
-//
-//                connectRow.append(connectImageView)
-//
-//                bag += section.append(connectRow)
-//                    .compactMap { connectRow.viewController }
-//                    .onValue(presentPayOut)
-//
-//                bag += {
-//                    section.remove(valueRow)
-//                    section.remove(connectRow)
-//                }
-//            } else {
-//                let connectRow = RowView(
-//                    title: L10n.PaymentScreenConnect.payOutConnectPayoutButton,
-//                    style: .brand(.headline(color: .link))
-//                )
-//
-//                let connectImageView = UIImageView()
-//                connectImageView.image = hCoreUIAssets.circularPlus.image
-//                connectImageView.tintColor = .brand(.link)
-//
-//                connectRow.append(connectImageView)
-//
-//                bag += section.append(connectRow)
-//                    .compactMap { connectRow.viewController }
-//                    .onValue(presentPayOut)
-//
-//                let footerRow = RowView()
-//                bag += footerRow.append(MultilineLabel(
-//                    value: L10n.PaymentScreen.payOutFooterNotConnected,
-//                    style: .brand(.footnote(color: .secondary))
-//                ))
-//
-//                section.append(footerRow)
-//
-//                bag += {
-//                    section.remove(connectRow)
-//                    section.remove(footerRow)
-//                }
-//            }
-//
-//            return bag
-//        }
+        bag += dataSignal.onValueDisposePrevious { data in
+            let bag = DisposeBag()
+            let status = data.activePayoutMethods?.status
+
+            if status == .active {
+                let valueRow = RowView()
+                section.append(valueRow)
+
+                let valueStackView = UIStackView()
+                valueStackView.spacing = 10
+                valueStackView.axis = .vertical
+
+                valueRow.append(valueStackView)
+
+                let valueHorizontalStackView = UIStackView()
+                valueHorizontalStackView.spacing = 10
+                valueHorizontalStackView.axis = .horizontal
+                valueHorizontalStackView.distribution = .fillProportionally
+                valueStackView.addArrangedSubview(valueHorizontalStackView)
+
+                let valueImageView = UIImageView()
+                valueImageView.image = hCoreUIAssets.circularCheckmark.image
+                valueImageView.contentMode = .scaleAspectFit
+
+                valueImageView.snp.makeConstraints { make in
+                    make.width.equalTo(22)
+                }
+
+                valueHorizontalStackView.addArrangedSubview(valueImageView)
+
+                let valueLabel = UILabel(
+                    value: L10n.PaymentScreen.payConnectedLabel,
+                    style: .brand(.headline(color: .primary))
+                )
+                valueHorizontalStackView.addArrangedSubview(valueLabel)
+
+                bag += valueStackView.addArranged(MultilineLabel(
+                    value: L10n.PaymentScreen.payOutConnectedPayoutFooterConnected,
+                    style: .brand(.footnote(color: .secondary))
+                ))
+
+                let connectRow = RowView(
+                    title: L10n.PaymentScreen.payOutChangePayoutButton,
+                    style: .brand(.headline(color: .link))
+                )
+
+                let connectImageView = UIImageView()
+                connectImageView.image = hCoreUIAssets.editIcon.image
+                connectImageView.tintColor = .brand(.link)
+
+                connectRow.append(connectImageView)
+
+                bag += section.append(connectRow)
+                    .compactMap { connectRow.viewController }
+                    .onValue(presentPayOut)
+
+                bag += {
+                    section.remove(valueRow)
+                    section.remove(connectRow)
+                }
+            } else if status == .pending {
+                let valueRow = RowView()
+                section.append(valueRow)
+
+                let valueStackView = UIStackView()
+                valueStackView.spacing = 10
+                valueStackView.axis = .vertical
+
+                valueRow.append(valueStackView)
+
+                let valueLabel = UILabel(
+                    value: L10n.PaymentScreen.payOutProcessing,
+                    style: .brand(.headline(color: .primary))
+                )
+                valueStackView.addArrangedSubview(valueLabel)
+
+                bag += valueStackView.addArranged(MultilineLabel(
+                    value: L10n.PaymentScreen.PayOut.footerPending,
+                    style: .brand(.footnote(color: .secondary))
+                ))
+
+                let connectRow = RowView(
+                    title: L10n.PaymentScreen.payOutChangePayoutButton,
+                    style: .brand(.headline(color: .link))
+                )
+
+                let connectImageView = UIImageView()
+                connectImageView.image = hCoreUIAssets.editIcon.image
+                connectImageView.tintColor = .brand(.link)
+
+                connectRow.append(connectImageView)
+
+                bag += section.append(connectRow)
+                    .compactMap { connectRow.viewController }
+                    .onValue(presentPayOut)
+
+                bag += {
+                    section.remove(valueRow)
+                    section.remove(connectRow)
+                }
+            } else {
+                let connectRow = RowView(
+                    title: L10n.PaymentScreenConnect.payOutConnectPayoutButton,
+                    style: .brand(.headline(color: .link))
+                )
+
+                let connectImageView = UIImageView()
+                connectImageView.image = hCoreUIAssets.circularPlus.image
+                connectImageView.tintColor = .brand(.link)
+
+                connectRow.append(connectImageView)
+
+                bag += section.append(connectRow)
+                    .compactMap { connectRow.viewController }
+                    .onValue(presentPayOut)
+
+                let footerRow = RowView()
+                bag += footerRow.append(MultilineLabel(
+                    value: L10n.PaymentScreen.payOutFooterNotConnected,
+                    style: .brand(.footnote(color: .secondary))
+                ))
+
+                section.append(footerRow)
+
+                bag += {
+                    section.remove(connectRow)
+                    section.remove(footerRow)
+                }
+            }
+
+            return bag
+        }
 
         return (section, bag)
     }

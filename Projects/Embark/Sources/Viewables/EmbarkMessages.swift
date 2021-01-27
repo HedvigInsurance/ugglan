@@ -23,7 +23,8 @@ extension EmbarkMessages: Viewable {
         }
 
         if let multipleExpression =
-            firstMatchingExpression?.fragments.expressionFragment.asEmbarkExpressionMultiple {
+            firstMatchingExpression?.fragments.expressionFragment.asEmbarkExpressionMultiple
+        {
             return multipleExpression.text
         }
 
@@ -33,7 +34,8 @@ extension EmbarkMessages: Viewable {
                 .expressionFragment
                 .fragments
                 .basicExpressionFragment
-                .asEmbarkExpressionBinary {
+                .asEmbarkExpressionBinary
+        {
             return binaryExpression.text
         }
 
@@ -43,7 +45,8 @@ extension EmbarkMessages: Viewable {
                 .expressionFragment
                 .fragments
                 .basicExpressionFragment
-                .asEmbarkExpressionUnary {
+                .asEmbarkExpressionUnary
+        {
             return unaryExpression.text
         }
 

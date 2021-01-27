@@ -1,3 +1,4 @@
+import Foundation
 import ProjectDescription
 import ProjectDescriptionHelpers
 
@@ -56,7 +57,9 @@ let appDependencies: [TargetDependency] = [
     sdkFrameworks,
 ].flatMap { $0 }
 
-let targetActions: [TargetAction] = []
+let targetActions: [TargetAction] = [
+    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks"),
+]
 
 let project = Project(
     name: "Ugglan",
@@ -113,17 +116,34 @@ let project = Project(
         Scheme(
             name: "Ugglan",
             shared: true,
-            buildAction: BuildAction(targets: ["Ugglan"]),
+            buildAction: BuildAction(
+                targets: ["Ugglan"]
+            ),
             testAction: TestAction(
-                targets: [TestableTarget(target: TargetReference(stringLiteral: "AppTests"), parallelizable: true)],
-                arguments: Arguments(environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"], launchArguments: ["-UIPreferredContentSizeCategoryName": true, "UICTContentSizeCategoryM": true])
+                targets: [
+                    TestableTarget(
+                        target: TargetReference(stringLiteral: "AppTests"),
+                        parallelizable: true
+                    ),
+                ],
+                arguments: Arguments(
+                    environment: [
+                        "SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__",
+                    ],
+                    launchArguments: [
+                        "-UIPreferredContentSizeCategoryName": true,
+                        "UICTContentSizeCategoryM": true,
+                    ]
+                )
             ),
             runAction: RunAction(executable: "Ugglan")
         ),
         Scheme(
             name: "Hedvig",
             shared: true,
-            buildAction: BuildAction(targets: ["Hedvig"]),
+            buildAction: BuildAction(
+                targets: ["Hedvig"]
+            ),
             runAction: RunAction(executable: "Hedvig")
         ),
     ],

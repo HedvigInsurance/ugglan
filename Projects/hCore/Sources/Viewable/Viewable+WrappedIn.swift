@@ -40,14 +40,14 @@ public struct ContainerViewable<V: Viewable, Matter: UIView, ContainerView: UIVi
     }
 }
 
-extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposable, Self.Matter: UIView {
-    public typealias StackContainer = ContainerStackViewable<Self, Self.Matter, UIStackView>
+public extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposable, Self.Matter: UIView {
+    typealias StackContainer = ContainerStackViewable<Self, Self.Matter, UIStackView>
 
-    public func wrappedIn(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> StackContainer {
+    func wrappedIn(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> StackContainer {
         ContainerStackViewable(viewable: self, container: stackView, configure: configure)
     }
 
-    public func insetted(
+    func insetted(
         _ layoutMargins: UIEdgeInsets,
         configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
     ) -> StackContainer {
@@ -60,7 +60,7 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
         }(), configure: configure)
     }
 
-    public func alignedTo(
+    func alignedTo(
         alignment: UIStackView.Alignment,
         configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
     ) -> ContainerStackViewable<StackContainer, UIStackView, UIStackView> {
@@ -79,19 +79,19 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
         }())
     }
 
-    public typealias Container = ContainerViewable<Self, Self.Matter, UIView>
+    typealias Container = ContainerViewable<Self, Self.Matter, UIView>
 
-    public func wrappedIn(_ view: UIView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> Container {
+    func wrappedIn(_ view: UIView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> Container {
         ContainerViewable(viewable: self, container: view, configure: configure)
     }
 }
 
-extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
-    public func wrappedIn<SignalValue>(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
+public extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
+    func wrappedIn<SignalValue>(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in }) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
         ContainerStackViewableSignal(viewable: self, container: stackView, configure: configure)
     }
 
-    public func insetted<SignalValue>(_ layoutMargins: UIEdgeInsets) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
+    func insetted<SignalValue>(_ layoutMargins: UIEdgeInsets) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
         wrappedIn({
             let stackView = UIStackView()
             stackView.layoutMargins = layoutMargins
@@ -101,7 +101,7 @@ extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
         }())
     }
 
-    public func alignedTo<SignalValue>(
+    func alignedTo<SignalValue>(
         alignment: UIStackView.Alignment,
         configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
     ) -> ContainerStackViewableSignal<ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue>, UIStackView, UIStackView, SignalValue> {

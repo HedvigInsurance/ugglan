@@ -62,7 +62,7 @@ extension WaveForm: Viewable {
             pastPeakPower = pastPeakPower.suffix(20)
 
             pastPeakPower.enumerated().forEach { offset, value in
-                let normalizedValue: CGFloat = CGFloat(max(value, -50))
+                let normalizedValue = CGFloat(max(value, -50))
                 let maxHeight: CGFloat = 15
 
                 let log = log10(normalizedValue / -50)

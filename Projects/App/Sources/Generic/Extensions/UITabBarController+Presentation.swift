@@ -10,7 +10,8 @@ extension UITabBarController {
         Matter: UIViewController
     >(_ presentation: Presentation<P>) -> (UIViewController, Disposable) where
         P.Matter == Matter,
-        P.Result == Disposable {
+        P.Result == Disposable
+    {
         let bag = DisposeBag()
 
         let materialized = presentation.presentable.materialize()
@@ -67,7 +68,8 @@ extension UITabBarController {
         D.Matter == DMatter,
         D.Result == Disposable,
         E.Matter == EMatter,
-        E.Result == Disposable {
+        E.Result == Disposable
+    {
         let bag = DisposeBag()
 
         let tabA = materializeTab(a)
@@ -109,7 +111,8 @@ extension UITabBarController {
         C.Matter == CMatter,
         C.Result == Disposable,
         D.Matter == DMatter,
-        D.Result == Disposable {
+        D.Result == Disposable
+    {
         let bag = DisposeBag()
 
         let tabA = materializeTab(a)
@@ -144,7 +147,8 @@ extension UITabBarController {
         B.Matter == BMatter,
         B.Result == Disposable,
         C.Matter == CMatter,
-        C.Result == Disposable {
+        C.Result == Disposable
+    {
         let bag = DisposeBag()
 
         let tabA = materializeTab(a)
@@ -172,7 +176,8 @@ extension UITabBarController {
         A.Matter == AMatter,
         A.Result == Disposable,
         B.Matter == BMatter,
-        B.Result == Disposable {
+        B.Result == Disposable
+    {
         let bag = DisposeBag()
 
         let tabA = materializeTab(a)
@@ -193,7 +198,8 @@ extension UITabBarController {
         _ a: Presentation<A>
     ) -> Disposable where
         A.Matter == AMatter,
-        A.Result == Disposable {
+        A.Result == Disposable
+    {
         let bag = DisposeBag()
 
         let tabA = materializeTab(a)

@@ -77,7 +77,7 @@ extension OfferStartDateButton: Viewable {
                                                       .largeTitleDisplayMode(.always),
                                                   ]
                                               )
-                                      })])
+                                          })])
 
         bag += touchUpInside.onValue { _ in
             bag += self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in

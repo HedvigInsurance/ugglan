@@ -14,7 +14,8 @@ struct EmbarkTextAction {
 
     var masking: Masking? {
         if let mask = data.textActionData.mask,
-            let maskType = MaskType(rawValue: mask) {
+           let maskType = MaskType(rawValue: mask)
+        {
             return Masking(type: maskType)
         }
 

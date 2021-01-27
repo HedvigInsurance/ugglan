@@ -65,6 +65,12 @@ struct AdyenPayIn: Presentable {
                     onResult(.failure(AdyenError.tokenization))
                 }
             }
+        } onSuccess: {
+            // refetch to refresh UI
+            Future()
+                .delay(by: 0.5)
+                .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
+                .onValue { _ in }
         }.materialize()
 
         viewController.title = L10n.adyenPayinTitle

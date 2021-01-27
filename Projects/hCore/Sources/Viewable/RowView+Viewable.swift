@@ -3,14 +3,15 @@ import Form
 import Foundation
 import UIKit
 
-extension RowView {
-    public func append<V: Viewable, View: UIView>(
+public extension RowView {
+    func append<V: Viewable, View: UIView>(
         _ viewable: V,
         onCreate: @escaping (_ view: View) -> Void = { _ in }
     ) -> Disposable where
         V.Matter == View,
         V.Result == Disposable,
-        V.Events == ViewableEvents {
+        V.Events == ViewableEvents
+    {
         let wasAddedCallbacker = Callbacker<Void>()
 
         let (matter, result) = viewable.materialize(events: ViewableEvents(

@@ -1,9 +1,9 @@
 import Flow
 
-extension SignalProvider {
+public extension SignalProvider {
     /// Lazily bind to a callbacker, useful if you wanna build a generic component that
     /// necesairily doesnt always listen to a Signal.
-    public func lazyBindTo(callbacker: Callbacker<Value>) -> Disposable {
+    func lazyBindTo(callbacker: Callbacker<Value>) -> Disposable {
         let bag = DisposeBag()
 
         if !callbacker.isEmpty {

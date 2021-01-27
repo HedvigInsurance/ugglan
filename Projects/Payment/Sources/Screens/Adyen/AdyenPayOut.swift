@@ -27,11 +27,12 @@ extension AdyenMethodsList {
 
 struct AdyenPayOut: Presentable {
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
     func materialize() -> (UIViewController, Future<Void>) {
-        let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, _ in
+        let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard
                 let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -43,27 +44,25 @@ struct AdyenPayOut: Presentable {
                 mutation: GraphQL.AdyenTokenizePayoutDetailsMutation(
                     request: GraphQL.TokenizationRequest(json: json, urlScheme: urlScheme)
                 )
-            ).onValue { _ in
-//                if data.tokenizePayoutDetails?.asTokenizationResponseFinished != nil {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                        client.fetch(
-//                            query: GraphQL.ActivePayoutMethodsQuery(),
-//                            cachePolicy: .fetchIgnoringCacheData
-//                        ).onValue { _ in }
-//                    }
-//                    onResult(.success(.make(())))
-//                } else if let data = data.tokenizePayoutDetails?.asTokenizationResponseAction {
-//                    guard let jsonData = data.action.data(using: .utf8) else {
-//                        return
-//                    }
-//                    guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
-//                        return
-//                    }
-//
-//                    onResult(.success(.make(action)))
-//                } else {
-//                    onResult(.failure(AdyenError.tokenization))
-//                }
+            ).onValue { data in
+                if data.tokenizePayoutDetails?.asTokenizationResponseFinished != nil {
+                    onResult(.success(.make(())))
+                } else if let data = data.tokenizePayoutDetails?.asTokenizationResponseAction {
+                    guard let jsonData = data.action.data(using: .utf8) else {
+                        return
+                    }
+                    guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData) else {
+                        return
+                    }
+
+                    onResult(.success(.make(action)))
+                } else {
+                    onResult(.failure(AdyenError.tokenization))
+                }
+            }
+        } onSuccess: {
+            store.update(query: GraphQL.ActivePayoutMethodsQuery()) { (data: inout GraphQL.ActivePayoutMethodsQuery.Data) in
+                data.activePayoutMethods = .init(status: .pending)
             }
         }.materialize()
 

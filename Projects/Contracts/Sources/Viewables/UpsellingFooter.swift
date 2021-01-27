@@ -100,7 +100,7 @@ extension UpsellingFooter: Viewable {
             case .no:
                 let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
                     contract.currentAgreement.asNorwegianTravelAgreement != nil
-                    })
+                })
 
                 if !hasTravelAgreement {
                     innerBag += stackView.addArranged(UpsellingBox(
@@ -112,7 +112,7 @@ extension UpsellingFooter: Viewable {
 
                 let hasHomeContentsAgreement = contracts.contains(where: { contract -> Bool in
                     contract.currentAgreement.asNorwegianHomeContentAgreement != nil
-                    })
+                })
 
                 if !hasHomeContentsAgreement {
                     innerBag += stackView.addArranged(UpsellingBox(

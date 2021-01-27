@@ -90,7 +90,7 @@ extension Embark: Presentable {
                     passageView.layoutIfNeeded()
                     form.layoutIfNeeded()
                     scrollView.layoutIfNeeded()
-            })
+                })
 
             bag += NotificationCenter.default
                 .signal(forName: UIResponder.keyboardWillHideNotification)
@@ -105,7 +105,7 @@ extension Embark: Presentable {
                     passageView.layoutIfNeeded()
                     form.layoutIfNeeded()
                     scrollView.layoutIfNeeded()
-            })
+                })
         }.onValue { link in
             self.state.goTo(passageName: link.name)
         }

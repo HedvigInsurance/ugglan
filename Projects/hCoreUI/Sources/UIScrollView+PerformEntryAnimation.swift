@@ -3,8 +3,8 @@ import Foundation
 import hCore
 import UIKit
 
-extension UIScrollView {
-    public func performEntryAnimation<Value>(
+public extension UIScrollView {
+    func performEntryAnimation<Value>(
         contentView: UIView,
         onLoad: Future<Value>,
         onError: @escaping (_ error: Error) -> Void

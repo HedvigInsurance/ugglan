@@ -1,9 +1,0 @@
-query ActivePayoutMethods {
-    activePayoutMethods {
-        storedPaymentMethodsDetails {
-            lastFourDigits
-            holderName
-            brand
-        }
-    }
-}

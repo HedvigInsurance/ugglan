@@ -96,10 +96,8 @@ extension BankDetailsSection: Viewable {
                 }
 
                 innerBag += addConnectPayment(data)
-            case .active, .needsSetup:
+            case .active, .needsSetup, .__unknown:
                 innerBag += addConnectPayment(data)
-            case .__unknown:
-                break
             }
 
             return innerBag

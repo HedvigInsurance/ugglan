@@ -10,6 +10,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
     let didSubmitHandler: AdyenMethodsList.DidSubmit
     let onCompletion: () -> Void
     let onRetry: () -> Void
+    let onSuccess: () -> Void
     let bag = DisposeBag()
 
     init(
@@ -17,13 +18,15 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         paymentMethod: PaymentMethod,
         didSubmitHandler: @escaping AdyenMethodsList.DidSubmit,
         onCompletion: @escaping () -> Void,
-        onRetry: @escaping () -> Void
+        onRetry: @escaping () -> Void,
+        onSuccess: @escaping () -> Void
     ) {
         self.viewController = viewController
         self.paymentMethod = paymentMethod
         self.didSubmitHandler = didSubmitHandler
         self.onCompletion = onCompletion
         self.onRetry = onRetry
+        self.onSuccess = onSuccess
     }
 
     func stopLoading(withSuccess success: Bool, in component: PaymentComponent) {
@@ -36,6 +39,8 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
     func handleResult(success: Bool) {
         if success {
+            onSuccess()
+
             viewController.present(AdyenSuccess(paymentMethod: paymentMethod), style: .detented(.large, modally: false)).onValue { _ in
                 self.onCompletion()
             }

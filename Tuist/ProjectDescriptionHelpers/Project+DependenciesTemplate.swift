@@ -224,31 +224,39 @@ public extension Project {
             externalDependency.swiftPackages()
         }.flatMap { $0 }
 
-        return Project(name: name,
-                       organizationName: "Hedvig",
-                       packages: packages,
-                       settings: Settings(configurations: projectConfigurations),
-                       targets: [
-                           Target(name: name,
-                                  platform: .iOS,
-                                  product: .framework,
-                                  bundleId: "com.hedvig.\(name)",
-                                  deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
-                                  infoPlist: .default,
-                                  sources: ["Sources/**/*.swift"],
-                                  resources: [],
-                                  actions: [],
-                                  dependencies: dependencies,
-                                  settings: Settings(base: [:], configurations: frameworkConfigurations)),
-                       ],
-                       schemes: [
-                           Scheme(
-                               name: name,
-                               shared: true,
-                               buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
-                               testAction: nil,
-                               runAction: nil
+        return Project(
+            name: name,
+            organizationName: "Hedvig",
+            packages: packages,
+            settings: Settings(configurations: projectConfigurations),
+            targets: [
+                Target(name: name,
+                       platform: .iOS,
+                       product: .framework,
+                       bundleId: "com.hedvig.\(name)",
+                       deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+                       infoPlist: .default,
+                       sources: ["Sources/**/*.swift"],
+                       resources: [],
+                       actions: [
+                           .post(
+                               path: "../../scripts/post-build-action.sh",
+                               arguments: [],
+                               name: "Clean frameworks"
                            ),
-                       ])
+                       ],
+                       dependencies: dependencies,
+                       settings: Settings(base: [:], configurations: frameworkConfigurations)),
+            ],
+            schemes: [
+                Scheme(
+                    name: name,
+                    shared: true,
+                    buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
+                    testAction: nil,
+                    runAction: nil
+                ),
+            ]
+        )
     }
 }
