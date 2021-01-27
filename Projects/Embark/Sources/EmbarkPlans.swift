@@ -109,6 +109,14 @@ extension EmbarkPlans: Presentable {
                 plansSignal.value = $0
                 $selectedIndex.value = 0
             }
+        
+        func isSelected(offset: Int) -> ReadWriteSignal<Bool> {
+            $selectedIndex.map { offset == $0 }.writable { (isSelected) in
+                if isSelected {
+                    $selectedIndex.value = offset
+                }
+            }
+        }
     
         bag += plansSignal.atOnce().compactMap { $0 }.onValue { plans in
             
@@ -122,12 +130,7 @@ extension EmbarkPlans: Presentable {
                                 discount: story.discount,
                                 message: story.localisedDescription,
                                 gradientType: story.gradientViewPreset,
-                                isSelected: $selectedIndex.map { offset == $0 }
-                                    .writable(setValue: { isSelected in
-                                        if isSelected {
-                                            $selectedIndex.value = offset
-                                        }
-                                    })
+                                isSelected: isSelected(offset: offset)
                             )
                         }
                     ),
