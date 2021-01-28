@@ -60,6 +60,7 @@ public extension UIColor {
         case primaryButtonTextColor
         case secondaryButtonTextColor
         case primaryShadowColor
+        case secondaryShadowColor
         case regularCaution
         case primaryBorderColor
         case destructive
@@ -132,6 +133,8 @@ public extension UIColor {
                 return BrandColorBase.link
             case .destructive:
                 return BrandColorBase.destructive
+            case .secondaryShadowColor:
+                return UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
             }
         }
     }
