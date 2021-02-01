@@ -243,9 +243,7 @@ extension EmbarkState {
         }
 
         if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
-            return performHTTPCall(queryApi.data.query, variables: queryApi.data.graphQLVariables(store: store)).onError { error in
-                print(error)
-            }.onValue { resultMap in
+            return performHTTPCall(queryApi.data.query, variables: queryApi.data.graphQLVariables(store: store)).onValue { resultMap in
                 guard let resultMap = resultMap else {
                     return
                 }
@@ -253,9 +251,7 @@ extension EmbarkState {
                 resultMap.insertInto(store: self.store, basedOn: queryApi)
             }
         } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
-            return performHTTPCall(mutationApi.data.mutation, variables: mutationApi.data.graphQLVariables(store: store)).onError { error in
-                print(error)
-            }.onValue { resultMap in
+            return performHTTPCall(mutationApi.data.mutation, variables: mutationApi.data.graphQLVariables(store: store)).onValue { resultMap in
                 guard let resultMap = resultMap else {
                     return
                 }
