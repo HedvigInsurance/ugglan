@@ -20,16 +20,20 @@ public extension ApolloClient {
 
     static var cache = InMemoryNormalizedCache()
 
+    static func headers(token: String?) -> [String: String] {
+        [
+            "Authorization": token ?? "",
+            "Accept-Language": acceptLanguageHeader,
+            "User-Agent": userAgent,
+        ]
+    }
+
     internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         guard let environment = environment else {
             fatalError("Environment must be defined")
         }
 
-        let httpAdditionalHeaders = [
-            "Authorization": token,
-            "Accept-Language": acceptLanguageHeader,
-            "User-Agent": userAgent,
-        ]
+        let httpAdditionalHeaders = headers(token: token)
 
         let store = ApolloStore(cache: ApolloClient.cache)
 

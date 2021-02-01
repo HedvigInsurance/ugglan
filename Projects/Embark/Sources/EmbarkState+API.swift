@@ -195,13 +195,18 @@ extension EmbarkState {
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
-            var urlRequest = URLRequest(url: apolloEnvironment.endpointURL)
+            var urlRequest = URLRequest(url: ApolloClient.environment!.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
 
+            let configuration = URLSessionConfiguration.default
+            configuration.httpAdditionalHeaders = ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
+
+            let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
+
             return Future { completion in
-                self.urlSessionClient.sendRequest(urlRequest) { result in
+                urlSessionClient.sendRequest(urlRequest) { result in
                     switch result {
                     case .failure:
                         break
@@ -238,7 +243,9 @@ extension EmbarkState {
         }
 
         if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
-            return performHTTPCall(queryApi.data.query, variables: queryApi.data.graphQLVariables(store: store)).onValue { resultMap in
+            return performHTTPCall(queryApi.data.query, variables: queryApi.data.graphQLVariables(store: store)).onError { error in
+                print(error)
+            }.onValue { resultMap in
                 guard let resultMap = resultMap else {
                     return
                 }
@@ -246,7 +253,9 @@ extension EmbarkState {
                 resultMap.insertInto(store: self.store, basedOn: queryApi)
             }
         } else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
-            return performHTTPCall(mutationApi.data.mutation, variables: mutationApi.data.graphQLVariables(store: store)).onValue { resultMap in
+            return performHTTPCall(mutationApi.data.mutation, variables: mutationApi.data.graphQLVariables(store: store)).onError { error in
+                print(error)
+            }.onValue { resultMap in
                 guard let resultMap = resultMap else {
                     return
                 }

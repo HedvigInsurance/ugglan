@@ -141,10 +141,10 @@ extension Embark: Presentable {
                 name: name,
                 locale: Localization.Locale.currentLocale.code
             )
-        ).valueSignal.compactMap { $0.embarkStory }.atError { error in
-            if let data = (error as? GraphQLHTTPResponseError)?.body {
-                print(String(data: data, encoding: .utf8) ?? "")
-            }
+        ).valueSignal.compactMap { $0.embarkStory }.atError { _ in
+            // if let data = (error as? GraphQLHTTPResponseError)?.body {
+            //    print(String(data: data, encoding: .utf8) ?? "")
+            // }
         }.onValue { embarkStory in
             activityIndicator.removeFromSuperview()
 
