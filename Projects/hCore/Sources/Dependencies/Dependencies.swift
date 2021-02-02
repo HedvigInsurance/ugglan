@@ -1,4 +1,6 @@
+import Apollo
 import Foundation
+import hGraphQL
 
 public class Dependencies {
     public static var shared = Dependencies()
@@ -19,6 +21,15 @@ public class Dependencies {
         }
 
         return component
+    }
+}
+
+public extension Dependencies {
+    func set(apolloEnvironmentConfig: ApolloEnvironmentConfig) {
+        add(module: Module {
+            apolloEnvironmentConfig
+        })
+        ApolloClient.environment = apolloEnvironmentConfig
     }
 }
 

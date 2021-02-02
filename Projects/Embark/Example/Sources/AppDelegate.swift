@@ -18,13 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
 
-        let apolloEnvironmentConfig = ApolloEnvironmentConfig(
-            endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
-            assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+        Dependencies.shared.set(
+            apolloEnvironmentConfig: ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
         )
-
-        ApolloClient.environment = apolloEnvironmentConfig
 
         ApolloClient.saveToken(token: "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==")
 

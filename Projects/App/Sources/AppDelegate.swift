@@ -144,13 +144,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
-        ApolloClient.environment = ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        Dependencies.shared.set(
+            apolloEnvironmentConfig: ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        )
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
-
-        Dependencies.shared.add(module: Module {
-            ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
-        })
 
         AskForRating().registerSession()
         CrossFrameworkCoordinator.setup()

@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public struct ApplicationState {
     public enum Screen: String {
@@ -149,5 +150,30 @@ public struct ApplicationState {
 
     public static var hasOverridenTargetEnvironment: Bool {
         UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
+    }
+}
+
+public extension ApplicationState.Environment {
+    var apolloEnvironmentConfig: ApolloEnvironmentConfig {
+        switch self {
+        case .staging:
+            return ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
+            )
+        case .production:
+            return ApolloEnvironmentConfig(
+                endpointURL: URL(string: "https://giraffe.hedvig.com/graphql")!,
+                wsEndpointURL: URL(string: "wss://giraffe.hedvig.com/subscriptions")!,
+                assetsEndpointURL: URL(string: "https://giraffe.hedvig.com")!
+            )
+        case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
+            return ApolloEnvironmentConfig(
+                endpointURL: endpointURL,
+                wsEndpointURL: wsEndpointURL,
+                assetsEndpointURL: assetsEndpointURL
+            )
+        }
     }
 }
