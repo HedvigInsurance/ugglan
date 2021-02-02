@@ -5,7 +5,7 @@ import hCore
 import UIKit
 
 public struct PillCollection {
-    public typealias PillData = Either<Pill, EffectedPill>
+    public typealias PillData = Pill
     @ReadWriteState var pills: [PillData]
     
     public init(pills: [PillData]) {
@@ -23,7 +23,7 @@ extension PillCollection: Viewable {
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let row = collectionKit.table[index]
-            return row.left?.size ?? row.right?.size ?? .zero
+            return row.size
         }
 
         bag += $pills.atOnce().map { Table(rows: $0) }.onValue { table in

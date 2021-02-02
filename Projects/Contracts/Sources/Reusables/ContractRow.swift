@@ -216,13 +216,13 @@ extension ContractRow: Reusable {
             }
 
             bag += statusPillsContainer.addArranged(PillCollection(pills: self.statusPills.map { pill in
-                .make(Pill(tintColor: .tint(.yellowOne), title: pill.uppercased()))
+                Pill(style: .solid(color: .tint(.yellowOne)), title: pill.uppercased())
             }))
 
             bag += detailPillsContainer.addArranged(PillCollection(pills: self.detailPills.map { pill in
-                .make(EffectedPill(title: pill.uppercased()))
+                Pill(style: .effected, title: pill.uppercased())
             }))
-
+            
             return bag
         })
     }

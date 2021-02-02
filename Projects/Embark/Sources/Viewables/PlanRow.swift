@@ -97,9 +97,9 @@ extension PlanRow: Reusable {
                 let tintColor = UIColor.brand(.primaryBackground(true))
                 bag += horizontalContentContainer.addArranged(
                     PillCollection(
-                        pills: [.make(
+                        pills: [(
                                     Pill(
-                                        tintColor: tintColor,
+                                        style: .solid(color: tintColor),
                                         title: discount,
                                         textStyle: .brand(.caption1(color: .primary(state: .matching(tintColor))))))
                         ]

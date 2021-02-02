@@ -6,13 +6,18 @@ import UIKit
 
 public struct Pill: Hashable, ReusableSizeable {
     public init(
-        tintColor: UIColor,
+        style: Style,
         title: DisplayableString,
         textStyle: TextStyle = .brand(.caption1(color: .secondary(state: .positive)))
     ) {
-        self.tintColor = tintColor
+        self.style = style
         self.title = title
         self.textStyle = textStyle
+    }
+    
+    public enum Style {
+        case effected
+        case solid(color: UIColor)
     }
     
     public static func == (lhs: Pill, rhs: Pill) -> Bool {
@@ -20,12 +25,12 @@ public struct Pill: Hashable, ReusableSizeable {
     }
 
     @ReadWriteState public var title: DisplayableString
-    public let tintColor: UIColor
+    public let style: Style
     public let textStyle: TextStyle
+    public let id = UUID()
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(title.displayValue)
-        hasher.combine(tintColor)
+        hasher.combine(id)
     }
 }
 
@@ -36,9 +41,14 @@ extension Pill: Reusable {
 
         return (pillView, { `self` in
             let bag = DisposeBag()
-
-            pillView.backgroundColor = self.tintColor
-
+            
+            switch self.style {
+            case .effected:
+                pillView.embed()
+            case .solid(color: let color):
+                pillView.backgroundColor = color
+            }
+            
             let label = UILabel(value: self.title, style: self.textStyle)
             pillView.addSubview(label)
 
@@ -64,5 +74,40 @@ extension Pill: Reusable {
 
             return bag
         })
+    }
+}
+
+private extension UIView {
+    func embed() {
+        let effect: UIBlurEffect
+
+        if #available(iOS 13.0, *) {
+            effect = UIBlurEffect(style: .systemUltraThinMaterial)
+        } else {
+            effect = UIBlurEffect(style: .light)
+        }
+
+        let pillView = UIVisualEffectView(effect: effect)
+        pillView.layer.cornerRadius = 4
+        pillView.layer.masksToBounds = true
+        self.addSubview(pillView)
+
+        pillView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
+        let vibrancyView: UIVisualEffectView
+
+        if #available(iOS 13.0, *) {
+            vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: effect, style: .secondaryLabel))
+        } else {
+            vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: effect))
+        }
+
+        pillView.contentView.addSubview(vibrancyView)
+
+        vibrancyView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
     }
 }
