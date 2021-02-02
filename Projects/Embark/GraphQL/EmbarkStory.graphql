@@ -233,6 +233,7 @@ query EmbarkStory($name: String!, $locale: String!) {
                         }
                         textActions {
                             data {
+                              title
                               key
                               placeholder
                               mask

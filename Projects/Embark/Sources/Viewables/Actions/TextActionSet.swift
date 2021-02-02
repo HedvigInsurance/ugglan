@@ -49,11 +49,7 @@ extension TextActionSet: Viewable {
             
             let isFirstName: Bool = textAction.data?.key == "firstName"
             
-            func title(isFirstName: Bool) -> String {
-                 isFirstName ? "First name" : "Second name"
-            }
-            
-            let label = UILabel(value: title(isFirstName: isFirstName), style: .brand(.body(color: .primary)))
+            let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))
             
             let stack = UIStackView()
             stack.axis = .horizontal
@@ -115,10 +111,21 @@ extension TextActionSet: Viewable {
             
             let button = Button(
                 title: data.textActionSetData?.link.label ?? "",
-                type: .standard(backgroundColor: .black, textColor: .white)
+                type: .standard(backgroundColor: .black, textColor: .white),
+                isEnabled: false
             )
 
             bag += view.addArranged(button)
+            
+            func isValid(signal: ReadWriteSignal<String>, action: TextAction) -> Signal<Bool> {
+                signal.map { text in
+                    return text.count > 0
+                }.plain()
+            }
+            
+            bag += combineLatest(textActions!.map { signal, _, action in isValid(signal: signal, action: action) }).map {
+                !$0.contains(false)
+            }.bindTo(button.isEnabled)
 
             bag += view.chainAllControlResponders()
 
