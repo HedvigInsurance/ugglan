@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 import Presentation
+import UIKit
 
 struct InsuranceProviderCollectionAgreement {
     let provider: GraphQL.InsuranceProviderFragment

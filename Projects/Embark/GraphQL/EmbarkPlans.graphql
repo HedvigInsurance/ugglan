@@ -1,0 +1,21 @@
+query ChoosePlan($locale: String!) {
+        embarkStories(locale: $locale) {
+          __typename
+          name
+          title
+          type
+          description
+          metadata {
+            __typename
+            ... on EmbarkStoryMetadataEntryPill {
+              pill
+            }
+            ... on EmbarkStoryMetaDataEntryWebUrlPath {
+              path
+            }
+            ... on EmbarkStoryMetadataEntryBackground {
+              background
+            }
+          }
+        }
+      }
