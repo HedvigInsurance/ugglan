@@ -39,7 +39,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
     }
 
     static var environment: Adyen.Environment {
-        switch hGraphQL.Environment.current {
+        switch Environment.current {
         case .staging, .custom:
             return .test
         case .production:
@@ -87,7 +87,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
         do {
             let merchantIdentifier: String
 
-            switch hGraphQL.Environment.current {
+            switch Environment.current {
             case .staging:
                 merchantIdentifier = "merchant.com.hedvig.test.app"
             case .production:
