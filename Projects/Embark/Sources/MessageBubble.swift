@@ -96,7 +96,7 @@ extension MessageBubble: Viewable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = .brand(.secondaryBackground(messageType == .replied))
+        stylingView.backgroundColor = .brand(.embarkMessageBubble(messageType == .replied))
         stylingView.layer.cornerRadius = 10
 
         if messageType == .replied {
