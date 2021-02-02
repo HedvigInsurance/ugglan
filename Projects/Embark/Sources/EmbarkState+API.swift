@@ -195,7 +195,11 @@ extension EmbarkState {
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
-            var urlRequest = URLRequest(url: ApolloClient.environment!.endpointURL)
+            guard let endpointURL = ApolloClient.environment?.endpointURL else {
+                return Future(result: .failure(ApiError.missingEndpoint))
+            }
+
+            var urlRequest = URLRequest(url: endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
@@ -264,7 +268,7 @@ extension EmbarkState {
     }
 
     enum ApiError: Error {
-        case noApi, failed(reason: String), unknown
+        case noApi, failed(reason: String), unknown, missingEndpoint
 
         var localizedDescription: String {
             switch self {
@@ -274,6 +278,8 @@ extension EmbarkState {
                 return "Failed with \(reason)"
             case .unknown:
                 return "Unknown"
+            case .missingEndpoint:
+                return "Missing ApolloClient.environment.endpointURL, specify by setting ApolloClient.environment"
             }
         }
     }
