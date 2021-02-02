@@ -11,8 +11,6 @@ public enum ExternalRedirect {
 }
 
 public struct EmbarkState {
-    @Inject var apolloEnvironmentConfig: ApolloEnvironmentConfig
-
     let store = EmbarkStore()
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])

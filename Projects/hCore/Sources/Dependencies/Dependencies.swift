@@ -24,15 +24,6 @@ public class Dependencies {
     }
 }
 
-public extension Dependencies {
-    func set(apolloEnvironmentConfig: ApolloEnvironmentConfig) {
-        add(module: Module {
-            apolloEnvironmentConfig
-        })
-        ApolloClient.environment = apolloEnvironmentConfig
-    }
-}
-
 public struct Module {
     fileprivate let name: String
     fileprivate let resolve: () -> Any

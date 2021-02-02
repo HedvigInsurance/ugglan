@@ -1,6 +1,7 @@
 import Apollo
 import Foundation
 import hCore
+import hGraphQL
 import SwiftUI
 
 @available(iOS 13, *)
@@ -19,7 +20,7 @@ struct Debug: View {
     @State private var showFaultyEndpointAlert = false
 
     static var environmentOptionFromTarget: EnvironmentOption {
-        let targetEnvironment = ApplicationState.getTargetEnvironment()
+        let targetEnvironment = Environment.current
 
         switch targetEnvironment {
         case .production:
@@ -32,7 +33,7 @@ struct Debug: View {
     }
 
     init() {
-        switch ApplicationState.getTargetEnvironment() {
+        switch Environment.current {
         case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
             _endpointURL = State(initialValue: endpointURL.absoluteString)
             _wsEndpointURL = State(initialValue: wsEndpointURL.absoluteString)
@@ -88,9 +89,9 @@ struct Debug: View {
             .navigationBarItems(trailing: SwiftUI.Button("Update", action: {
                 switch self.pickedEnvironment {
                 case .staging:
-                    ApplicationState.setTargetEnvironment(.staging)
+                    Environment.setCurrent(.staging)
                 case .production:
-                    ApplicationState.setTargetEnvironment(.production)
+                    Environment.setCurrent(.production)
                 case .custom:
                     guard let endpointURL = URL(string: self.endpointURL) else {
                         self.showFaultyEndpointAlert = true
@@ -105,7 +106,7 @@ struct Debug: View {
                         return
                     }
 
-                    ApplicationState.setTargetEnvironment(.custom(
+                    Environment.setCurrent(.custom(
                         endpointURL: endpointURL,
                         wsEndpointURL: wsEndpointURL,
                         assetsEndpointURL: assetsEndpointURL

@@ -195,7 +195,7 @@ extension EmbarkState {
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
-            var urlRequest = URLRequest(url: apolloEnvironmentConfig.endpointURL)
+            var urlRequest = URLRequest(url: Environment.current.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])

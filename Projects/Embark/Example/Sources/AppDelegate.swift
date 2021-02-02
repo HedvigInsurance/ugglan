@@ -18,10 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
 
-        Dependencies.shared.set(
-            apolloEnvironmentConfig: ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
-        )
-
         ApolloClient.saveToken(token: "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==")
 
         ApolloClient.initClient().onValue { store, client in

@@ -6,7 +6,6 @@ import Foundation
 import UIKit
 
 public extension ApolloClient {
-    static var environment: ApolloEnvironmentConfig?
     static var acceptLanguageHeader: String = ""
     static var bundle: Bundle?
 
@@ -29,9 +28,7 @@ public extension ApolloClient {
     }
 
     internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
-        guard let environment = environment else {
-            fatalError("Environment must be defined")
-        }
+        let environment = Environment.current
 
         let httpAdditionalHeaders = headers(token: token)
 

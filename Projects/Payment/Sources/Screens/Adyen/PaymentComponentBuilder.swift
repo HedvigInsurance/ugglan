@@ -3,6 +3,7 @@ import AdyenCard
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct AdyenPaymentBuilder: PaymentComponentBuilder {
     let encryptionPublicKey: String
@@ -38,7 +39,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
     }
 
     static var environment: Adyen.Environment {
-        switch ApplicationState.getTargetEnvironment() {
+        switch hGraphQL.Environment.current {
         case .staging, .custom:
             return .test
         case .production:
@@ -86,7 +87,7 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
         do {
             let merchantIdentifier: String
 
-            switch ApplicationState.getTargetEnvironment() {
+            switch hGraphQL.Environment.current {
             case .staging:
                 merchantIdentifier = "merchant.com.hedvig.test.app"
             case .production:
