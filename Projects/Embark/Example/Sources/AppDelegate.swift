@@ -14,7 +14,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let bag = DisposeBag()
 
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
 
@@ -38,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             self.bag += navigationController.present(
                 StoryList(),
-                options: [.defaults, .largeTitleDisplayMode(.always)]
+                options: [.defaults, .largeTitleDisplayMode(.never)]
             )
         }
         return true
