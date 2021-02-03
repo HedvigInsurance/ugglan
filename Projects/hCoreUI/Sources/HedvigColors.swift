@@ -141,7 +141,7 @@ public extension UIColor {
                 return BrandColorBase.destructive
             case .secondaryShadowColor:
                 return UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
-            case .embarkMessageBubble(let negative):
+            case let .embarkMessageBubble(negative):
                 if negative {
                     return UIColor(dynamic: { trait -> UIColor in
                         trait.userInterfaceStyle == .dark ? BrandColorBase.white  : BrandColorBase.lavender

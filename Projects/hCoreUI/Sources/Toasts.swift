@@ -115,7 +115,7 @@ extension Toast: Viewable {
             UIView.ShadowProperties(
                 opacity: trait.userInterfaceStyle == .dark ? 0 : 0.25,
                 offset: CGSize(width: 0, height: 0),
-                blurRadius: 10,
+                blurRadius: 3,
                 color: UIColor.darkGray,
                 path: nil,
                 radius: 10

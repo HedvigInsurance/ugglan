@@ -47,7 +47,7 @@ extension TextActionSet: Viewable {
                 fieldStyle: .embarkInputSmall
             )
             
-            let isFirstName: Bool = textAction.data?.key == "firstName"
+            let isFirstName: Bool = index == 0
             
             let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))
             
@@ -60,7 +60,7 @@ extension TextActionSet: Viewable {
             boxStack.addArrangedSubview(stack)
             
             if isFirstName {
-                let view = UIView.init(height: 1)
+                let view = UIView.init(height: 0.5)
                 view.backgroundColor = .brand(.primaryBorderColor)
                 boxStack.addArrangedSubview(view)
             }
@@ -84,30 +84,11 @@ extension TextActionSet: Viewable {
             }
             
             containerView.addSubview(boxStack)
-            boxStack.snp.makeConstraints({ $0.edges.equalToSuperview() })
-            
-            view.addArrangedSubview(containerView)
-
-            if let textActions = textActions {
-                bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { offset, shouldReturn in
-                    shouldReturn.set { _ -> Bool in
-                        if offset == textActions.count - 1 {
-                            complete()
-                        }
-                        return true
-                    }
-                }
+            boxStack.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
             }
             
-            bag += containerView.applyShadow({ (traitCollection) -> UIView.ShadowProperties in
-                UIView.ShadowProperties(
-                    opacity: 1,
-                    offset: .init(width: 0, height: 2),
-                    radius: 2,
-                    color: .brand(.secondaryShadowColor),
-                    path: nil,
-                    corners: (.allCorners, 8))
-            })
+            view.addArrangedSubview(containerView)
             
             let button = Button(
                 title: data.textActionSetData?.link.label ?? "",
@@ -123,10 +104,26 @@ extension TextActionSet: Viewable {
                 }.plain()
             }
             
-            bag += combineLatest(textActions!.map { signal, _, action in isValid(signal: signal, action: action) }).map {
-                !$0.contains(false)
-            }.bindTo(button.isEnabled)
-
+            if let textActions = textActions {
+                bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { offset, shouldReturn in
+                    shouldReturn.set { _ -> Bool in
+                        if offset == textActions.count - 1 {
+                            complete()
+                        }
+                        return true
+                    }
+                }
+                
+                bag += combineLatest(textActions.map { signal, _, action in isValid(signal: signal, action: action) })
+                    .map {
+                    !$0.contains(false)
+                }.bindTo(button.isEnabled)
+            }
+            
+            bag += containerView.applyShadow({ (_) -> UIView.ShadowProperties in
+                .embark
+            })
+        
             bag += view.chainAllControlResponders()
 
             bag += button.onTapSignal.onValue { _ in
