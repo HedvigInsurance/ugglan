@@ -20,9 +20,10 @@ extension InsuranceProviderAction: Viewable {
             UIView.ShadowProperties(
                 opacity: 0.25,
                 offset: CGSize(width: 0, height: 6),
-                radius: 8,
+                blurRadius: 3,
                 color: .brand(.primaryShadowColor),
-                path: nil
+                path: nil,
+                radius: 3
             )
         }
 

@@ -15,15 +15,9 @@ extension EmbarkSelectActionOption: Viewable {
         let bag = DisposeBag()
         let control = UIControl()
         control.backgroundColor = .brand(.secondaryBackground())
-        control.layer.cornerRadius = 10
+        control.layer.cornerRadius = 8
         bag += control.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
 
         let stackView = UIStackView()

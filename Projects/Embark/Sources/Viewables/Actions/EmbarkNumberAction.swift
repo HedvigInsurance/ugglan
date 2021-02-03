@@ -26,13 +26,7 @@ extension EmbarkNumberAction: Viewable {
         box.backgroundColor = .brand(.secondaryBackground())
         box.layer.cornerRadius = 10
         bag += box.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
 
         let boxStack = UIStackView()

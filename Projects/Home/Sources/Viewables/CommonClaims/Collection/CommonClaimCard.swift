@@ -33,9 +33,10 @@ extension CommonClaimCard: Viewable {
             UIView.ShadowProperties(
                 opacity: 0.1,
                 offset: CGSize(width: 0, height: 1),
-                radius: 2,
+                blurRadius: 2,
                 color: .brand(.primaryShadowColor),
-                path: nil
+                path: nil,
+                radius: 2
             )
         }
 

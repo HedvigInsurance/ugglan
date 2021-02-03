@@ -108,11 +108,7 @@ extension CharityOption: Reusable {
             }
 
             bag += containerView.didLayoutSignal.onValue {
-                let shadowPath = UIBezierPath(
-                    roundedRect: containerView.bounds,
-                    cornerRadius: 8
-                )
-
+    
                 containerView.layer.masksToBounds = false
                 containerView.layer.cornerRadius = 8
 
@@ -120,9 +116,10 @@ extension CharityOption: Reusable {
                     UIView.ShadowProperties(
                         opacity: 0.08,
                         offset: CGSize(width: 0, height: 10),
-                        radius: 8,
+                        blurRadius: 3,
                         color: UIColor.brand(.primaryShadowColor),
-                        path: shadowPath.cgPath
+                        path: nil,
+                        radius: 8
                     )
                 }
             }
