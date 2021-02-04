@@ -17,6 +17,17 @@ extension StoryList: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = "Embark Stories"
+
+        let plansButton = UIBarButtonItem(title: "Plans")
+        viewController.navigationItem.rightBarButtonItem = plansButton
+
+        bag += plansButton.onValue { _ in
+            viewController.present(
+                EmbarkPlans(),
+                options: [.defaults, .largeTitleDisplayMode(.never)]
+            )
+        }
+
         let bag = DisposeBag()
 
         let tableKit = TableKit<EmptySection, StringRow>(holdIn: bag)
@@ -30,9 +41,14 @@ extension StoryList: Presentable {
             ), options: [.defaults, .largeTitleDisplayMode(.never)])
         }
 
-        bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery()).valueSignal.map { $0.embarkStoryNames }.compactMap { $0 }.map { $0.map { value in StringRow(value: value) } }.onValue { storyNames in
-            tableKit.set(Table(rows: storyNames))
-        }
+        bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery())
+            .valueSignal
+            .map { $0.embarkStoryNames }
+            .compactMap { $0 }
+            .map { $0.map { value in StringRow(value: value) } }
+            .onValue { storyNames in
+                tableKit.set(Table(rows: storyNames))
+            }
 
         return (viewController, bag)
     }

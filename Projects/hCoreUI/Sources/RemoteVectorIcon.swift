@@ -10,7 +10,6 @@ public struct RemoteVectorIcon {
     let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
     let finishedLoadingSignal: Signal<Void>
     let finishedLoadingCallback = Callbacker<Void>()
-    @Inject var environment: ApolloEnvironmentConfig
     let threaded: Bool
 
     public init(
@@ -103,7 +102,7 @@ extension RemoteVectorIcon: Viewable {
 
             return iconFragment?.variants.light.pdfUrl
         }.map(on: .background) { pdfUrlString -> CFData? in
-            guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
+            guard let url = URL(string: "\(Environment.current.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
                 return nil
             }
 

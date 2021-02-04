@@ -35,13 +35,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.window?.removeGestureRecognizer(tapGestureRecognizer)
         }
 
-        Dependencies.shared.add(module: Module {
-            ApolloEnvironmentConfig(
-                endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-                wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
-                assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
-            )
-        })
+        Dependencies.shared.set(
+            apolloEnvironmentConfig: ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
+        )
 
         navigationController.present(
             Debug(),

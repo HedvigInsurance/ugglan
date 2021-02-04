@@ -2,16 +2,19 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
-struct PillCollection {
-    typealias PillData = Either<Pill, EffectedPill>
+public struct PillCollection {
+    public typealias PillData = Pill
     @ReadWriteState var pills: [PillData]
+
+    public init(pills: [PillData]) {
+        self.pills = pills
+    }
 }
 
 extension PillCollection: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let layout = LeftAlignedCollectionViewFlowLayout()
@@ -20,7 +23,7 @@ extension PillCollection: Viewable {
 
         bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
             let row = collectionKit.table[index]
-            return row.left?.size ?? row.right?.size ?? .zero
+            return row.size
         }
 
         bag += $pills.atOnce().map { Table(rows: $0) }.onValue { table in

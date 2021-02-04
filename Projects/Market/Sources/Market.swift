@@ -1,5 +1,6 @@
 import Foundation
 import hCore
+import hGraphQL
 import UIKit
 
 public enum Market: CaseIterable {
@@ -54,7 +55,7 @@ public enum Market: CaseIterable {
         case .norway, .sweden:
             return true
         case .denmark:
-            return ApplicationState.getTargetEnvironment() == .staging
+            return Environment.current == .staging
         }
     }
 

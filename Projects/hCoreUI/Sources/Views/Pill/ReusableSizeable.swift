@@ -14,10 +14,10 @@ extension ReusableSizeable where ReuseType: UIView {
         let bag = DisposeBag()
         bag += configure(self)
 
-        let size = view.systemLayoutSizeFitting(.zero)
+        let reusableSize = view.systemLayoutSizeFitting(.zero)
 
         bag.dispose()
 
-        return size
+        return reusableSize
     }
 }

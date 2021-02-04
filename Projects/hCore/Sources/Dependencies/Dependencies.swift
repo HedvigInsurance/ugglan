@@ -1,4 +1,6 @@
+import Apollo
 import Foundation
+import hGraphQL
 
 public class Dependencies {
     public static var shared = Dependencies()

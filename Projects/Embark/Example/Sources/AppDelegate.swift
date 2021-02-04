@@ -14,17 +14,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let bag = DisposeBag()
 
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-
-        let apolloEnvironmentConfig = ApolloEnvironmentConfig(
-            endpointURL: URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-            wsEndpointURL: URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!,
-            assetsEndpointURL: URL(string: "https://graphql.dev.hedvigit.com")!
-        )
-
-        ApolloClient.environment = apolloEnvironmentConfig
 
         ApolloClient.saveToken(token: "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==")
 
@@ -46,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             self.bag += navigationController.present(
                 StoryList(),
-                options: [.defaults, .largeTitleDisplayMode(.always)]
+                options: [.defaults, .largeTitleDisplayMode(.never)]
             )
         }
         return true

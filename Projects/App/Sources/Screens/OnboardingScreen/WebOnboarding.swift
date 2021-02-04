@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import Presentation
 import UIKit
 import WebKit
@@ -120,7 +121,7 @@ extension WebOnboarding: Presentable {
                 webView.load(URLRequest(url: url))
             }
 
-            switch ApplicationState.getTargetEnvironment() {
+            switch Environment.current {
             case .production:
                 guard let url = URL(string: "https://www.hedvig.com/\(localePath)new-member?variation=ios#token=\(tokenString)") else {
                     return
