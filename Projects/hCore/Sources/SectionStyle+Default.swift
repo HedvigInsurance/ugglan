@@ -1,16 +1,8 @@
-//
-//  SectionStyle+Default.swift
-//  hCore
-//
-//  Created by Tarik Stafford on 2021-01-25.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Form
 import UIKit
 
-extension SectionStyle {
-    public static let defaultStyle = SectionStyle(
+public extension SectionStyle {
+    static let defaultStyle = SectionStyle(
         rowInsets: UIEdgeInsets(
             top: 10,
             left: 15,

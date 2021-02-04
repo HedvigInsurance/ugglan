@@ -134,7 +134,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             #if DEBUG
                 options.debug = true
             #endif
-            options.environment = ApplicationState.getTargetEnvironment().displayName
+            options.environment = Environment.current.displayName
             options.enableAutoSessionTracking = true
         }
 
@@ -144,13 +144,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
-        ApolloClient.environment = ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
-
-        Dependencies.shared.add(module: Module {
-            ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
-        })
 
         AskForRating().registerSession()
         CrossFrameworkCoordinator.setup()
@@ -248,10 +243,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
-        if ApplicationState.hasOverridenTargetEnvironment {
+        if Environment.hasOverridenDefault {
             let toast = Toast(
                 symbol: .icon(hCoreUIAssets.settingsIcon.image),
-                body: "Targeting \(ApplicationState.getTargetEnvironment().displayName) environment",
+                body: "Targeting \(Environment.current.displayName) environment",
                 textColor: .black,
                 backgroundColor: .brand(.regularCaution)
             )

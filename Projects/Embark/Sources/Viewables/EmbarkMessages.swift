@@ -131,7 +131,7 @@ extension EmbarkMessages: Viewable {
                     let (index, messageText) = arg
                     let text = self.replacePlaceholders(message: messageText)
                     return view.addArranged(MessageBubble(text: text, delay: 0, animated: true, animationDelay: TimeInterval(index)))
-            }
+                }
 
             return innerBag
         }

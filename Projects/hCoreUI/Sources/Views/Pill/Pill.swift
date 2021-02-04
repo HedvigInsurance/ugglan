@@ -14,12 +14,12 @@ public struct Pill: Hashable, ReusableSizeable {
         self.title = title
         self.textStyle = textStyle
     }
-    
+
     public enum Style {
         case effected
         case solid(color: UIColor)
     }
-    
+
     public static func == (lhs: Pill, rhs: Pill) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
@@ -41,14 +41,14 @@ extension Pill: Reusable {
 
         return (pillView, { `self` in
             let bag = DisposeBag()
-            
+
             switch self.style {
             case .effected:
                 pillView.embed()
-            case .solid(color: let color):
+            case let .solid(color: color):
                 pillView.backgroundColor = color
             }
-            
+
             let label = UILabel(value: self.title, style: self.textStyle)
             pillView.addSubview(label)
 
@@ -90,7 +90,7 @@ private extension UIView {
         let pillView = UIVisualEffectView(effect: effect)
         pillView.layer.cornerRadius = 4
         pillView.layer.masksToBounds = true
-        self.addSubview(pillView)
+        addSubview(pillView)
 
         pillView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()

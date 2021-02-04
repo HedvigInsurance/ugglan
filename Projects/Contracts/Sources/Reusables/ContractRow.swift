@@ -222,7 +222,7 @@ extension ContractRow: Reusable {
             bag += detailPillsContainer.addArranged(PillCollection(pills: self.detailPills.map { pill in
                 Pill(style: .effected, title: pill.uppercased())
             }))
-            
+
             return bag
         })
     }

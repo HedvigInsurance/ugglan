@@ -1,4 +1,5 @@
 import Apollo
+import ApolloWebSocket
 import Flow
 import Foundation
 import hCore
@@ -10,10 +11,6 @@ public enum ExternalRedirect {
 }
 
 public struct EmbarkState {
-    @Inject var client: ApolloClient
-    @Inject var urlSessionClient: URLSessionClient
-    @Inject var apolloEnvironment: ApolloEnvironmentConfig
-
     let store = EmbarkStore()
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])

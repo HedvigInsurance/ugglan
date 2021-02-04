@@ -7,7 +7,7 @@ import UIKit
 public struct PillCollection {
     public typealias PillData = Pill
     @ReadWriteState var pills: [PillData]
-    
+
     public init(pills: [PillData]) {
         self.pills = pills
     }
