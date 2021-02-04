@@ -148,7 +148,6 @@ public extension SignalProvider {
             let bag = DisposeBag()
 
             bag += self.onValue(on: scheduler) { value in
-                let innerBag = DisposeBag()
                 let style = mapStyle(value)
                 UIView.animate(
                     withDuration: style.duration,
@@ -160,7 +159,6 @@ public extension SignalProvider {
                         animations(value)
                     },
                     completion: { _ in
-                        innerBag.dispose()
                         callback(value)
                     }
                 )

@@ -74,7 +74,10 @@ extension EmbarkInput: Viewable {
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
 
-        bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo { (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
+        bag += combineLatest(
+            textContentTypeSignal.atOnce(),
+            keyboardTypeSignal.atOnce()
+        ).bindTo { textContentType, keyboardType in
             textField.textContentType = textContentType
             textField.keyboardType = keyboardType ?? .default
             textField.reloadInputViews()

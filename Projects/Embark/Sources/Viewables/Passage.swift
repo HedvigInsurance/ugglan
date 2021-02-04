@@ -133,7 +133,7 @@ extension Passage: Viewable {
         )
 
         bag += state.currentPassageSignal.onValue { passage in
-            print("API", passage?.api ?? " none")
+            print("API", passage?.api ?? "none")
         }
 
         bag += state.apiResponseSignal.onValue { link in
