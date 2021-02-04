@@ -54,7 +54,7 @@ public struct EmbarkState {
             passage.name == passageName
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
-            if let externalRedirect = resultingPassage.externalRedirect {
+            if let externalRedirect = resultingPassage.externalRedirect?.data.location {
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectHandler(ExternalRedirect.mailingList)

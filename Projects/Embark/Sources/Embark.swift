@@ -21,7 +21,7 @@ public struct Embark {
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -155,6 +155,19 @@ extension Embark: Presentable {
             })
         }
 
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
+            viewController.navigationItem.leftBarButtonItem = backButton
+
+            bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue { _, canGoBack in
+                if canGoBack {
+                    state.goBack()
+                } else {
+                    completion(.success)
+                }
+            }
+
+            return bag
+        })
     }
 }

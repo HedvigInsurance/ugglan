@@ -27,31 +27,13 @@ extension Action: Viewable {
 
         let bag = DisposeBag()
 
-        let backButton = Button(
-            title: L10n.embarkGoBackButton,
-            type: .standardSmall(backgroundColor: .brand(.secondaryBackground()), textColor: .brand(.primaryText()))
-        )
-        bag += backButton.onTapSignal.onValue {
-            self.state.goBack()
-        }
-
-        bag += view.addArranged(backButton.wrappedIn(UIStackView())) { buttonView in
-            buttonView.axis = .vertical
-            buttonView.alignment = .center
-            buttonView.distribution = .equalCentering
-            bag += self.state.canGoBackSignal.delay(by: 0.25).atOnce().map { !$0 }.bindTo(buttonView, \.isHidden)
-        }
-
-        let spacing = Spacing(height: 12)
-        bag += view.addArranged(spacing)
-
         let actionDataSignal = state.currentPassageSignal.map { $0?.action }
 
         let isHiddenSignal = ReadWriteSignal(true)
 
         func handleViewState(_ isHidden: Bool) {
             let extraPadding: CGFloat = 40
-            let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + backButton.type.value.height + extraPadding
+            let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + extraPadding
             view.transform = isHidden ? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
         }
 
