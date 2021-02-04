@@ -47,7 +47,7 @@ extension TextActionSet: Viewable {
                 fieldStyle: .embarkInputSmall
             )
             
-            let isFirstName: Bool = index == 0
+            let isLastAction: Bool = index == (data.textActionSetData?.textActions.endIndex ?? 1) - 1
             
             let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))
             
@@ -59,10 +59,9 @@ extension TextActionSet: Viewable {
             
             boxStack.addArrangedSubview(stack)
             
-            if isFirstName {
-                let view = UIView.init(height: 0.5)
-                view.backgroundColor = .brand(.primaryBorderColor)
-                boxStack.addArrangedSubview(view)
+            if !isLastAction {
+                let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
+                bag += boxStack.addArranged(divider)
             }
             
             return (signal: stack.addArranged(input), shouldReturn: input.shouldReturn, action: textAction)
