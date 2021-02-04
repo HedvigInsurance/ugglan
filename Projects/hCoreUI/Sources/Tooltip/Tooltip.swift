@@ -97,9 +97,10 @@ extension Tooltip: Presentable {
             UIView.ShadowProperties(
                 opacity: 1,
                 offset: CGSize(width: 0, height: 4.58),
-                radius: 4.58,
+                blurRadius: 4.58,
                 color: .brand(.primaryShadowColor),
-                path: nil
+                path: nil,
+                radius: 4.58
             )
         }
 

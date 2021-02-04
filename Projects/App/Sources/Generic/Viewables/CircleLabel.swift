@@ -39,9 +39,10 @@ extension CircleLabel: Viewable {
             UIView.ShadowProperties(
                 opacity: 0.2,
                 offset: CGSize(width: 10, height: 10),
-                radius: 16,
+                blurRadius: 3,
                 color: UIColor.brand(.primaryShadowColor),
-                path: nil
+                path: nil,
+                radius: 16
             )
         }
 

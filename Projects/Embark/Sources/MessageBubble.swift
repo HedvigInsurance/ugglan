@@ -39,9 +39,10 @@ extension MessageBubble: Viewable {
             UIView.ShadowProperties(
                 opacity: 0.05,
                 offset: CGSize(width: 0, height: 6),
-                radius: 8,
+                blurRadius: 3,
                 color: .brand(.primaryShadowColor),
-                path: nil
+                path: nil,
+                radius: 8
             )
         }
         stylingView.alpha = 0
@@ -96,7 +97,7 @@ extension MessageBubble: Viewable {
             make.width.lessThanOrEqualTo(300)
         }
 
-        stylingView.backgroundColor = .brand(.secondaryBackground(messageType == .replied))
+        stylingView.backgroundColor = .brand(.embarkMessageBubble(messageType == .replied))
         stylingView.layer.cornerRadius = 10
 
         if messageType == .replied {

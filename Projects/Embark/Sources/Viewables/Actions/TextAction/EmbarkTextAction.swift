@@ -35,15 +35,9 @@ extension EmbarkTextAction: Viewable {
 
         let box = UIView()
         box.backgroundColor = .brand(.secondaryBackground())
-        box.layer.cornerRadius = 10
+        box.layer.cornerRadius = 8
         bag += box.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
         animator.register(key: \.box, value: box)
 
@@ -68,7 +62,6 @@ extension EmbarkTextAction: Viewable {
         let textSignal = boxStack.addArranged(input) { inputView in
             animator.register(key: \.input, value: inputView)
         }
-        bag += textSignal.nil()
 
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
@@ -77,6 +70,10 @@ extension EmbarkTextAction: Viewable {
         bag += view.addArranged(button) { buttonView in
             animator.register(key: \.button, value: buttonView)
         }
+        
+        bag += textSignal
+            .map { text in text.count > 0 }
+            .bindTo(button.isEnabled)
 
         return (view, Signal { callback in
             func complete(_ value: String) {
