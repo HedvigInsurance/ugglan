@@ -179,7 +179,12 @@ query EmbarkStory($name: String!, $locale: String!) {
         passages {
             id
             name
-            externalRedirect
+            externalRedirect {
+                component
+                data {
+                    location
+                }
+            }
             allLinks {
                 ...EmbarkLinkFragment
             }

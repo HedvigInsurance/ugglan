@@ -114,9 +114,7 @@ extension EmbarkMessages: Viewable {
             }
         })
 
-        let delaySignal = Signal(after: 1.5).readable()
-
-        bag += combineLatest(messagesDataSignal.compactMap { $0 }.driven(by: animateOutSignal), delaySignal.compactMap { $0 }).onValueDisposePrevious { messages, _ in
+        bag += messagesDataSignal.compactMap { $0 }.driven(by: animateOutSignal).onValueDisposePrevious { messages in
             let innerBag = DisposeBag()
 
             for stackedView in view.subviews {
@@ -130,7 +128,7 @@ extension EmbarkMessages: Viewable {
                 .map { (arg) -> Disposable in
                     let (index, messageText) = arg
                     let text = self.replacePlaceholders(message: messageText)
-                    return view.addArranged(MessageBubble(text: text, delay: 0, animated: true, animationDelay: TimeInterval(index)))
+                    return view.addArranged(MessageBubble(text: text, delay: 0, animated: true, animationDelay: TimeInterval(index * 2)))
                 }
 
             return innerBag

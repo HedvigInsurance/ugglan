@@ -11,6 +11,7 @@ public enum ExternalRedirect {
 public struct EmbarkState {
     let store = EmbarkStore()
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
+    let startPassageIDSignal = ReadWriteSignal<String?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
@@ -34,6 +35,13 @@ public struct EmbarkState {
         currentPassageSignal.map { $0?.name }
     }
 
+    func restart() {
+        animationDirectionSignal.value = .backwards
+        currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
+            passage.id == startPassageIDSignal.value
+        })
+    }
+
     func goBack() {
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passageHistorySignal.value.last
@@ -54,7 +62,7 @@ public struct EmbarkState {
             passage.name == passageName
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
-            if let externalRedirect = resultingPassage.externalRedirect {
+            if let externalRedirect = resultingPassage.externalRedirect?.data.location {
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectHandler(ExternalRedirect.mailingList)
