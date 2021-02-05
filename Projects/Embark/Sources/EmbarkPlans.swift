@@ -58,7 +58,7 @@ extension EmbarkPlans: Presentable {
         containerView.addSubview(buttonContainerView)
 
         tableKit.view.snp.makeConstraints { make in
-            make.top.trailing.leading.equalToSuperview()
+            make.top.trailing.leading.bottom.equalToSuperview()
         }
 
         buttonContainerView.snp.makeConstraints { make in
@@ -79,14 +79,14 @@ extension EmbarkPlans: Presentable {
             )
         )
 
-        bag += buttonContainerView.add(continueButton) { buttonView in
+        bag += containerView.add(continueButton) { buttonView in
+            
             buttonView.snp.makeConstraints { make in
-                make.bottom.equalTo(buttonContainerView).inset(-buttonView.frame.height)
-                make.top.equalTo(buttonContainerView).inset(20)
+                make.bottom.equalToSuperview().inset(-buttonView.frame.height)
                 make.leading.trailing.equalTo(buttonContainerView)
             }
 
-            bag += buttonView.didMoveToWindowSignal.delay(by: 0.05).take(first: 1).animated(style: SpringAnimationStyle.heavyBounce()) { () in
+            bag += buttonView.didMoveToWindowSignal.delay(by: 0.1).take(first: 1).animated(style: SpringAnimationStyle.heavyBounce()) { () in
                 let viewHeight = buttonView.systemLayoutSizeFitting(.zero).height + (buttonView.superview?.safeAreaInsets.bottom ?? 0)
                 buttonView.transform = CGAffineTransform(translationX: 0, y: -viewHeight)
             }
@@ -126,9 +126,9 @@ extension EmbarkPlans: Presentable {
                         "",
                         plans.enumerated().map { offset, story in
                             PlanRow(
-                                title: story.localisedTitle,
+                                title: story.title,
                                 discount: story.discount,
-                                message: story.localisedDescription,
+                                message: story.description,
                                 gradientType: story.gradientViewPreset,
                                 isSelected: isSelected(offset: offset)
                             )
@@ -156,28 +156,6 @@ extension EmbarkPlans: Presentable {
 }
 
 private extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
-    var localisedTitle: String {
-        switch name {
-        case "Web Onboarding NO - English Combo":
-            return "Bundle"
-        case "Web Onboarding NO - English Contents":
-            return "Home Contents"
-        default:
-            return name
-        }
-    }
-
-    var localisedDescription: String {
-        switch name {
-        case "Web Onboarding NO - English Combo":
-            return "Combination of both contents and travel insurance"
-        case "Web Onboarding NO - English Contents":
-            return "Contents insurance covers everything in your home"
-        default:
-            return name
-        }
-    }
-
     var discount: String? {
         metadata.compactMap { $0.asEmbarkStoryMetadataEntryPill }.first?.pill
     }
