@@ -202,10 +202,8 @@ extension Embark: Presentable {
                     
                     guard let tooltip = passage?.tooltips.first else { return }
                     
-                    let alert = EmbarkAlert(tooltip: tooltip)
-                    
                     viewController.present(
-                        alert.wrappedInCloseButton(),
+                        tooltip.wrappedInCloseButton(),
                         style: .detented(.preferredContentSize),
                         options: [
                             .defaults,

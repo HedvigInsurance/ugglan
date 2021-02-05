@@ -15,12 +15,8 @@ import hGraphQL
 
 typealias Tooltip = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Tooltip
 
-struct EmbarkAlert {
-    let tooltip: Tooltip
-}
-
-extension EmbarkAlert: Presentable {
-    func materialize() -> (UIViewController, Future<Void>)  {
+extension Tooltip: Presentable {
+    public func materialize() -> (UIViewController, Future<Void>)  {
         
         let containerView = UIStackView()
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 32, verticalInset: 20)
@@ -37,7 +33,7 @@ extension EmbarkAlert: Presentable {
             make.bottom.equalToSuperview().inset(viewController.view.safeAreaInsets.bottom)
         }
         
-        viewController.title = tooltip.title
+        viewController.title = title
         
         bag += containerView.didLayoutSignal.onValue({ (_) in
             viewController.preferredContentSize = containerView.systemLayoutSizeFitting(.zero)
@@ -45,7 +41,7 @@ extension EmbarkAlert: Presentable {
         
         return (viewController, Future { completion in
             
-            let messageLabel = MultilineLabel(value: tooltip.description, style: .brand(.body(color: .secondary(state: .dynamic))))
+            let messageLabel = MultilineLabel(value: description, style: .brand(.body(color: .secondary(state: .dynamic))))
             bag += containerView.addArranged(messageLabel)
             
             return bag
