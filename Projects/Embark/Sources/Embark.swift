@@ -145,19 +145,65 @@ extension Embark: Presentable {
             activityIndicator.removeFromSuperview()
 
             self.state.storySignal.value = embarkStory
-
             self.state.passagesSignal.value = embarkStory.passages
-
-            let startPassageId = embarkStory.startPassage
-
-            self.state.currentPassageSignal.value = embarkStory.passages.first(where: { passage -> Bool in
-                passage.id == startPassageId
-            })
+            self.state.startPassageIDSignal.value = embarkStory.startPassage
+            self.state.restart()
         }
 
         return (viewController, Future { completion in
             let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
+
+            if #available(iOS 14.0, *) {
+                func createBackMenu(canGoBack: Bool) -> UIMenu {
+                    let previousAction = UIAction(
+                        title: L10n.embarkGoBackButton,
+                        image: nil
+                    ) { _ in
+                        state.goBack()
+                    }
+
+                    let closeAction = UIAction(
+                        title: L10n.embarkExitButton,
+                        image: hCoreUIAssets.tinyCircledX.image,
+                        attributes: .destructive
+                    ) { _ in
+                        completion(.success)
+                    }
+
+                    let menuActions = [canGoBack ? previousAction : nil, closeAction].compactMap { $0 }
+
+                    let addNewMenu = UIMenu(
+                        title: "",
+                        children: menuActions
+                    )
+
+                    return addNewMenu
+                }
+
+                bag += state.canGoBackSignal.atOnce().map(createBackMenu).bindTo(backButton, \.menu)
+            }
+
             viewController.navigationItem.leftBarButtonItem = backButton
+
+            let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
+
+            bag += optionsButton.attachSinglePressMenu(
+                viewController: viewController,
+                menu: Menu(
+                    title: nil,
+                    children: [
+                        MenuChild(
+                            title: "Restart questions",
+                            style: .destructive,
+                            image: hCoreUIAssets.restart.image
+                        ) {
+                            state.restart()
+                        },
+                    ]
+                )
+            )
+
+            viewController.navigationItem.rightBarButtonItem = optionsButton
 
             bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue { _, canGoBack in
                 if canGoBack {

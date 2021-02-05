@@ -33,7 +33,9 @@ extension Action: Viewable {
 
         func handleViewState(_ isHidden: Bool) {
             let extraPadding: CGFloat = 40
-            let viewHeight = view.systemLayoutSizeFitting(.zero).height + (view.superview?.safeAreaInsets.bottom ?? 0) + extraPadding
+            let viewHeight = view.systemLayoutSizeFitting(.zero).height +
+                (view.viewController?.view.safeAreaInsets.bottom ?? 0)
+                + extraPadding
             view.transform = isHidden ? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
         }
 
