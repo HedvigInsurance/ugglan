@@ -16,9 +16,13 @@ public struct EmbarkState {
     let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
+    let bag = DisposeBag()
 
     public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
         self.externalRedirectHandler = externalRedirectHandler
+        defer {
+            startTracking()
+        }
     }
 
     enum AnimationDirection {
@@ -40,6 +44,17 @@ public struct EmbarkState {
         currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
             passage.id == startPassageIDSignal.value
         })
+    }
+    
+    func startTracking() {
+        bag += currentPassageSignal
+                .readOnly()
+                .compactMap { $0 }
+                .map { passage in
+                    trackingEvents(from: passage)
+                }.onValue({ (events) in
+                    events.forEach { embarkEvent in embarkEvent.send() }
+                })
     }
 
     func goBack() {

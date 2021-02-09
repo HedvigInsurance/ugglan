@@ -200,6 +200,12 @@ query EmbarkStory($name: String!, $locale: String!) {
             redirects {
               ...EmbarkRedirectFragment
             }
+            tracks {
+              eventName
+              eventKeys
+              includeAllKeys
+              customData
+            }
             action {
                 ... on EmbarkActionCore {
                     component

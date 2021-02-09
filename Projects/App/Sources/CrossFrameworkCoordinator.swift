@@ -8,9 +8,15 @@ import Market
 import Mixpanel
 import Payment
 import UIKit
+import Embark
 
 struct CrossFrameworkCoordinator {
     static func setup() {
+        
+        EmbarkTrackingEvent.trackingHandler = { event in
+            Mixpanel.mainInstance().track(event: event.title, properties: event.properties)
+        }
+        
         Button.trackingHandler = { button in
             if let localizationKey = button.title.value.displayValue.derivedFromL10n?.key {
                 Mixpanel.mainInstance().track(event: localizationKey, properties: [
