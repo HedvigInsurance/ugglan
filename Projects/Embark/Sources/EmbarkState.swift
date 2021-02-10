@@ -49,15 +49,14 @@ public struct EmbarkState {
     func startTracking() {
         bag += currentPassageSignal
                 .readOnly()
-                .compactMap { $0 }
-                .map { passage in
-                    trackingEvents(from: passage)
-                }.onValue({ (events) in
-                    events.forEach { embarkEvent in embarkEvent.send() }
+                .compactMap { $0?.tracks }
+                .onValue({ (tracks) in
+                    tracks.forEach { track in track.trackingEvent(store: store).send() }
                 })
     }
 
     func goBack() {
+        trackGoBack()
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passageHistorySignal.value.last
         var history = passageHistorySignal.value
@@ -78,6 +77,9 @@ public struct EmbarkState {
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
+                
+                externalRedirect.trackingEvent(store: store).send()
+                
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectHandler(ExternalRedirect.mailingList)
