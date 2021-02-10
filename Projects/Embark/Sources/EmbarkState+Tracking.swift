@@ -1,9 +1,10 @@
 import Foundation
 import hGraphQL
+import hCore
 
 public struct EmbarkTrackingEvent {
     var title: String
-    var properties: [String:String]?
+    var properties: [String:Any]?
     
     func send() {
         Self.trackingHandler(self)
@@ -30,14 +31,23 @@ internal extension EmbarkPassage.Track {
         return .init(title: self.eventName, properties: properties(store: store))
     }
     
-    private func properties(store: EmbarkStore) -> [String:String]? {
+    private func properties(store: EmbarkStore) -> [String:Any]? {
+        var properties = Dictionary<String,Any>()
         if includeAllKeys {
-            return store.revisions.last
+            properties = properties.merging((store.revisions.last ?? [:])) { return $1 }
         } else {
-            return store.revisions.last?.filter { key, value in
+            let storeProperties = store.revisions.last?.filter { key, value in
                 return eventKeys.contains(key)
-            }
+            } ?? [:]
+            
+            properties = properties.merging(storeProperties, uniquingKeysWith: { return $1 })
         }
+        
+        if let customData = customData {
+            properties = properties.merging((customData.toJSONDictionary() ?? [:]), uniquingKeysWith: { return $1 })
+        }
+        
+        return properties
     }
 }
 
