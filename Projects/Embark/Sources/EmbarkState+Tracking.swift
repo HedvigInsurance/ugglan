@@ -3,16 +3,16 @@ import hGraphQL
 import hCore
 
 public struct EmbarkTrackingEvent {
-    var title: String
-    var properties: [String:Any]?
+    public var title: String
+    public var properties: [String:Any]
     
     func send() {
         Self.trackingHandler(self)
     }
 }
 
-extension EmbarkTrackingEvent {
-    public static var trackingHandler: (_ Event: EmbarkTrackingEvent) -> Void = { _ in }
+public extension EmbarkTrackingEvent {
+    static var trackingHandler: (_ Event: EmbarkTrackingEvent) -> Void = { _ in }
 }
 
 internal extension GraphQL.EmbarkExternalRedirectLocation {
@@ -31,7 +31,7 @@ internal extension EmbarkPassage.Track {
         return .init(title: self.eventName, properties: properties(store: store))
     }
     
-    private func properties(store: EmbarkStore) -> [String:Any]? {
+    private func properties(store: EmbarkStore) -> [String:Any] {
         var properties = Dictionary<String,Any>()
         if includeAllKeys {
             properties = properties.merging((store.revisions.last ?? [:])) { return $1 }
@@ -53,6 +53,6 @@ internal extension EmbarkPassage.Track {
 
 extension EmbarkState {
     func trackGoBack() {
-        EmbarkTrackingEvent(title: "Passage go back - \(currentPassageSignal.value?.name ?? "")", properties: nil).send()
+        EmbarkTrackingEvent(title: "Passage go back - \(currentPassageSignal.value?.name ?? "")", properties: [:]).send()
     }
 }

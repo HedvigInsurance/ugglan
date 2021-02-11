@@ -12,9 +12,9 @@ import Embark
 
 struct CrossFrameworkCoordinator {
     static func setup() {
-        
         EmbarkTrackingEvent.trackingHandler = { event in
-            Mixpanel.mainInstance().track(event: event.title, properties: event.properties)
+            let properties = event.properties as? Properties
+            Mixpanel.mainInstance().track(event: event.title, properties: properties)
         }
         
         Button.trackingHandler = { button in
