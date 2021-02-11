@@ -40,6 +40,11 @@ public struct EmbarkState {
         currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
             passage.id == startPassageIDSignal.value
         })
+        store.computedValues = storySignal.value?.computedStoreValues?.reduce([:]) { (prev, computedValue) -> [String: String] in
+            var computedValues: [String: String] = prev
+            computedValues[computedValue.key] = computedValue.value
+            return computedValues
+        } ?? [:]
     }
 
     func goBack() {
