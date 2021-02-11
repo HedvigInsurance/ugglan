@@ -36,6 +36,10 @@ class EmbarkStore {
             }
         }
     }
+    
+    func getAllValues() -> [String:String] {
+        return revisions.last ?? [:]
+    }
 
     func getValue(key: String) -> String? {
         if let store = revisions.last {
