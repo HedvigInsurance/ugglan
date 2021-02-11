@@ -58,4 +58,18 @@ final class StoreTests: XCTestCase {
         store.removeLastRevision()
         XCTAssertTrue(store.revisions.count == 1)
     }
+
+    func testComputedValues() {
+        let store = EmbarkStore()
+
+        store.computedValues = [
+            "fish": "mock - 20 - 10",
+            "fish2": "fish + 20",
+        ]
+        store.setValue(key: "mock", value: "100")
+        store.createRevision()
+
+        XCTAssertEqual(store.getValue(key: "fish"), "70.0")
+        XCTAssertEqual(store.getValue(key: "fish2"), "90.0")
+    }
 }
