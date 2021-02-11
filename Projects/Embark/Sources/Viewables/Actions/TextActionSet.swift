@@ -49,7 +49,7 @@ extension TextActionSet: Viewable {
             let endIndex = (data.textActionSetData?.textActions.endIndex ?? 1)
             let isLastAction: Bool = index == endIndex - 1
 
-            let label = UILabel(value: "", style: .brand(.body(color: .primary)))
+            let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))
 
             let stack = UIStackView()
             stack.axis = .horizontal
