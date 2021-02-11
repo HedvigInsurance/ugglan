@@ -65,11 +65,13 @@ final class StoreTests: XCTestCase {
         store.computedValues = [
             "fish": "mock - 20 - 10",
             "fish2": "fish + 20",
+            "fish3": "fish + 20 ++ 'hej'",
         ]
         store.setValue(key: "mock", value: "100")
         store.createRevision()
 
         XCTAssertEqual(store.getValue(key: "fish"), "70.0")
         XCTAssertEqual(store.getValue(key: "fish2"), "90.0")
+        XCTAssertEqual(store.getValue(key: "fish3"), "90.0hej")
     }
 }

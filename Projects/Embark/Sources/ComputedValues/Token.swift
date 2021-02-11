@@ -3,6 +3,7 @@ import Foundation
 enum BinaryOperator: String, Equatable {
     case addition = "+"
     case subtraction = "-"
+    case concatenation = "++"
 }
 
 enum Token: Equatable {

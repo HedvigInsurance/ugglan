@@ -32,6 +32,8 @@ indirect enum Expression: Equatable {
                 return String((Double(left?.evaluate(store: store) ?? "") ?? 0) + (Double(right?.evaluate(store: store) ?? "") ?? 0))
             case .subtraction:
                 return String((Double(left?.evaluate(store: store) ?? "") ?? 0) - (Double(right?.evaluate(store: store) ?? "") ?? 0))
+            case .concatenation:
+                return (left?.evaluate(store: store) ?? "") + (right?.evaluate(store: store) ?? "")
             }
         case let .string(constant: constant):
             return constant
