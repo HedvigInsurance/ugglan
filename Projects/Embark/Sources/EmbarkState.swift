@@ -35,8 +35,8 @@ public struct EmbarkState {
         currentPassageSignal.map { $0?.name }
     }
     
-    var passageTooltipSignal: ReadSignal<Bool> {
-        currentPassageSignal.map { $0?.tooltips.count ?? 0 > 0 }
+    var passageTooltipsSignal: ReadSignal<[Tooltip]> {
+        currentPassageSignal.map { $0?.tooltips ?? [] }
     }
 
     func restart() {

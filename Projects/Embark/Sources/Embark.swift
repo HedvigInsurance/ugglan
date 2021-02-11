@@ -186,28 +186,21 @@ extension Embark: Presentable {
             viewController.navigationItem.leftBarButtonItem = backButton
             
             let tooltipButton = UIButton()
-            tooltipButton.isHidden = true
             tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
-            
-            bag += state.passageTooltipSignal.atOnce().onValue({ (shouldShow) in
-                tooltipButton.isHidden = !shouldShow
-            })
             
             let didTapTooltip = tooltipButton.signal(for: .touchUpInside)
             
             bag += didTapTooltip
-                .withLatestFrom(state.currentPassageSignal.atOnce().plain())
-                .map { tuple in return tuple.1 }
-                .onValue({ (passage) in
+                .onValue({ () in
                     
-                    guard let tooltip = passage?.tooltips.first else { return }
+                    let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
                     
                     viewController.present(
-                        tooltip.wrappedInCloseButton(),
+                        embarkTooltipsAlert.wrappedInCloseButton(),
                         style: .detented(.preferredContentSize),
                         options: [
                             .defaults,
-                            .prefersLargeTitles(false),
+                            .prefersLargeTitles(true),
                         ])
                 })
             
@@ -229,8 +222,12 @@ extension Embark: Presentable {
                     ]
                 )
             )
-
-            viewController.navigationItem.rightBarButtonItems = [optionsButton, UIBarButtonItem(button: tooltipButton)]
+            
+            bag += state.passageTooltipsSignal.atOnce()
+                .map { tooltips in tooltips.isEmpty ? [optionsButton] : [optionsButton, UIBarButtonItem(button: tooltipButton)]  }
+                .onValue({ (items) in
+                    viewController.navigationItem.setRightBarButtonItems(items, animated: true)
+            })
 
             bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue { _, canGoBack in
                 if canGoBack {
