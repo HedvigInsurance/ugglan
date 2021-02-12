@@ -34,18 +34,15 @@ extension EmbarkSelectActionOption: Viewable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
-        let valueLabel = UILabel(
-            value: data.link.fragments.embarkLinkFragment.label,
-            style: TextStyle.brand(.headline(color: .primary)).centerAligned
-        )
-        valueLabel.adjustsFontSizeToFitWidth = true
-        valueLabel.minimumScaleFactor = 0.5
-        valueLabel.numberOfLines = 1
-
-        stackView.addArrangedSubview(valueLabel)
-        bag += stackView.addArranged(MultilineLabel(value: L10n.embarkSelectOptionLabel, style: TextStyle.brand(.footnote(color: .link)).centerAligned))
-
         return (control, Signal { callback in
+            
+            let valueLabel = MultilineLabel(
+                value: data.link.fragments.embarkLinkFragment.label,
+                style: TextStyle.brand(.headline(color: .primary)).centerAligned
+            )
+            
+            bag += stackView.addArranged(valueLabel)
+
             bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 control.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
             }
