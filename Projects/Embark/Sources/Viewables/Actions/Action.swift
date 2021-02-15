@@ -89,7 +89,12 @@ extension Action: Viewable {
                 } else if let externalInsuranceProviderAction = actionData?.asEmbarkExternalInsuranceProviderAction {
                     innerBag += view.addArranged(InsuranceProviderAction(
                         state: self.state,
-                        data: externalInsuranceProviderAction
+                        data: .external(externalInsuranceProviderAction)
+                    )).onValue(callback)
+                } else if let previousInsuranceProviderAction = actionData?.asEmbarkPreviousInsuranceProviderAction {
+                    innerBag += view.addArranged(InsuranceProviderAction(
+                        state: self.state,
+                        data: .previous(previousInsuranceProviderAction)
                     )).onValue(callback)
                 }
 

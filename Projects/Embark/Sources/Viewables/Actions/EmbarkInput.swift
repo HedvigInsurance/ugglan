@@ -10,6 +10,7 @@ struct EmbarkInput {
     let placeholder: ReadWriteSignal<String>
     let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
     let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
+    let autocapitalisationTypeSignal: ReadWriteSignal<UITextAutocapitalizationType>
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<String, Bool>()
     let insets: UIEdgeInsets
@@ -21,6 +22,7 @@ struct EmbarkInput {
         placeholder: String,
         keyboardType: UIKeyboardType? = nil,
         textContentType: UITextContentType? = nil,
+        autocapitalisationType: UITextAutocapitalizationType,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true,
         masking: Masking? = nil,
@@ -32,6 +34,7 @@ struct EmbarkInput {
         keyboardTypeSignal = ReadWriteSignal(keyboardType)
         textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
+        autocapitalisationTypeSignal = ReadWriteSignal(autocapitalisationType)
         self.masking = masking
         self.shouldAutoFocus = shouldAutoFocus
         self.fieldStyle = fieldStyle
@@ -73,13 +76,16 @@ extension EmbarkInput: Viewable {
         let textField = UITextField(value: "", placeholder: "", style: fieldStyle)
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
+        textField.adjustsFontSizeToFitWidth = true
 
         bag += combineLatest(
             textContentTypeSignal.atOnce(),
-            keyboardTypeSignal.atOnce()
-        ).bindTo { textContentType, keyboardType in
+            keyboardTypeSignal.atOnce(),
+            autocapitalisationTypeSignal.atOnce()
+        ).bindTo { textContentType, keyboardType, autocapitalisationType in
             textField.textContentType = textContentType
             textField.keyboardType = keyboardType ?? .default
+            textField.autocapitalizationType = autocapitalisationType
             textField.reloadInputViews()
         }
 

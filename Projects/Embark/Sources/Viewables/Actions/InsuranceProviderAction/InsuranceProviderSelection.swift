@@ -10,6 +10,7 @@ import UIKit
 
 struct InsuranceProviderSelection {
     @Inject var client: ApolloClient
+    let data: InsuranceWrapper
 }
 
 extension GraphQL.InsuranceProviderFragment: Reusable {
@@ -62,14 +63,17 @@ extension InsuranceProviderSelection: Presentable {
 
         return (viewController, Future { completion in
             bag += tableKit.delegate.didSelectRow.onValue { row in
-                guard row.hasExternalCapabilities else {
+                guard row.hasExternalCapabilities && self.data.isExternal else {
                     completion(.success(row))
                     return
                 }
-
+                
+                let collectionAgreement =  InsuranceProviderCollectionAgreement(provider: row)
+                
                 viewController.present(
-                    InsuranceProviderCollectionAgreement(provider: row),
-                    style: .modally()
+                        collectionAgreement.withCloseButton,
+                        style: .detented(.preferredContentSize),
+                        options: .defaults
                 )
             }
 

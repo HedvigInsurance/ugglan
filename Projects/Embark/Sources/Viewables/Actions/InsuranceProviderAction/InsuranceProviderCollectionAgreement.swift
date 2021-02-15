@@ -15,33 +15,44 @@ struct InsuranceProviderCollectionAgreement {
 extension InsuranceProviderCollectionAgreement: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
+        viewController.view.backgroundColor = .brand(.secondaryBackground())
         viewController.title = ""
 
         let bag = DisposeBag()
 
-        let form = FormView()
+        let containerView = UIStackView()
+        
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 16, verticalInset: 20)
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.axis = .vertical
+        containerView.spacing = 16
+        
+        viewController.view.addSubview(containerView)
+        
+        containerView.snp.makeConstraints { (make) in
+            make.leading.trailing.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(viewController.view.safeAreaInsets.bottom)
+        }
 
         let titleLabel = MultilineLabel(
             value: L10n.Embark.ExternalInsuranceAction.Agreement.title(provider.name),
-            style: TextStyle.brand(.title2(color: .primary)).centerAligned
+            style: TextStyle.brand(.title3(color: .primary)).leftAligned
         )
-        bag += form.addArranged(titleLabel)
-
-        form.appendSpacing(.inbetween)
+        bag += containerView.addArranged(titleLabel)
 
         let bodyLabel = MultilineLabel(
             value: L10n.Embark.ExternalInsuranceAction.Agreement.body,
-            style: TextStyle.brand(.body(color: .primary)).centerAligned
+            style: TextStyle.brand(.body(color: .secondary)).leftAligned
         )
-        bag += form.addArranged(bodyLabel)
-
-        form.appendSpacing(.inbetween)
+        bag += containerView.addArranged(bodyLabel)
+        
+        containerView.appendSpacing(.custom(8))
 
         let continueButton = Button(
             title: L10n.Embark.ExternalInsuranceAction.Agreement.agreeButton,
             type: .standard(
-                backgroundColor: .brand(.primaryButtonBackgroundColor),
-                textColor: .brand(.primaryButtonTextColor)
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
             )
         )
 
@@ -49,29 +60,27 @@ extension InsuranceProviderCollectionAgreement: Presentable {
             viewController.present(InsuranceProviderLoginDetails(provider: self.provider))
         }
 
-        bag += form.addArranged(continueButton)
-
-        form.appendSpacing(.inbetween)
+        bag += containerView.addArranged(continueButton)
 
         let skipButton = Button(
             title: L10n.Embark.ExternalInsuranceAction.Agreement.skipButton,
-            type: .standardSmall(
-                backgroundColor: .brand(.primaryButtonBackgroundColor),
+            type: .standardOutline(
+                borderColor: .brand(.primaryBorderColor),
                 textColor: .brand(.primaryButtonTextColor)
             )
         )
 
-        bag += form.addArranged(skipButton)
-
-        form.appendSpacing(.inbetween)
+        bag += containerView.addArranged(skipButton)
 
         let footnoteLabel = MarkdownText(
             value: L10n.Embark.ExternalInsuranceAction.Agreement.footnote(provider.name),
             style: TextStyle.brand(.footnote(color: .tertiary)).centerAligned
         )
-        bag += form.addArranged(footnoteLabel)
-
-        bag += viewController.install(form)
+        bag += containerView.addArranged(footnoteLabel)
+        
+        bag += containerView.didLayoutSignal.onValue({ (_) in
+            viewController.preferredContentSize = containerView.systemLayoutSizeFitting(.zero)
+        })
 
         return (viewController, bag)
     }
