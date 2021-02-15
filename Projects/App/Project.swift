@@ -57,6 +57,22 @@ let appDependencies: [TargetDependency] = [
     sdkFrameworks,
 ].flatMap { $0 }
 
+let clipDependencies: [TargetDependency] = [
+    [
+        .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
+        .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
+        .project(target: "hGraphQL", path: .relativeToRoot("Projects/hGraphQL")),
+        .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
+        .project(target: "Market", path: .relativeToRoot("Projects/Market")),
+        .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
+        .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
+        .project(target: "ResourceBundledDependencies", path: .relativeToRoot("Dependencies/ResourceBundledDependencies")),
+    ],
+    [
+        .sdk(name: "AppClip.framework", status: .required),
+    ],
+].flatMap { $0 }
+
 let targetActions: [TargetAction] = [
     .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks"),
 ]
@@ -77,7 +93,12 @@ let project = Project(
             resources: ["Resources/**", "Config/Test/Resources/**"],
             entitlements: "Config/Test/Ugglan.entitlements",
             actions: targetActions,
-            dependencies: appDependencies,
+            dependencies: [
+                appDependencies,
+                [
+                    .target(name: "BabyUgglan"),
+                ],
+            ].flatMap { $0 },
             settings: Settings(configurations: ugglanConfigurations)
         ),
         Target(
@@ -110,6 +131,18 @@ let project = Project(
             actions: targetActions,
             dependencies: appDependencies,
             settings: Settings(configurations: hedvigConfigurations)
+        ),
+        Target(
+            name: "BabyUgglan",
+            platform: .iOS,
+            product: .appClip,
+            bundleId: "com.hedvig.test.app.clip",
+            infoPlist: "Config/Test/AppClip/Info.plist",
+            sources: ["AppClip/Sources/**"],
+            entitlements: "Config/Test/AppClip/BabyUgglan.entitlements",
+            actions: targetActions,
+            dependencies: [],
+            settings: Settings(configurations: testsConfigurations)
         ),
     ],
     schemes: [
