@@ -50,7 +50,8 @@ extension InsuranceProviderLoginDetails: Presentable {
         
         let inputTitle = UILabel(value: L10n.Embark.ExternalInsuranceAction.Login.personalNumberPlaceholder, style: .brand(.body(color: .primary)))
         
-        let inputField = EmbarkInput(placeholder: "YYYYMMDD-XXXX", masking: Masking(type: .personalNumber), fieldStyle: .embarkInputSmall)
+        let masking = Masking(type: .personalNumber)
+        let inputField = EmbarkInput(placeholder: "YYYYMMDD-XXXX", autocapitalisationType: masking.autocapitalizationType, masking: masking, fieldStyle: .embarkInputSmall)
         
         horizontalStack.addArrangedSubview(inputTitle)
         bag += horizontalStack.addArranged(inputField)
