@@ -26,8 +26,7 @@ jobs:
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
-        FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+        FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
