@@ -19,9 +19,7 @@ jobs:
         workflow: Upload DSYM
         token: ${{ secrets.MATCH_GITHUB_TOKEN }}
     - name: XCode Select
-      run: sudo xcode-select -s /Applications/Xcode_12.app
-    - name: Set XCODE_XCCONFIG_FILE
-      run: echo "XCODE_XCCONFIG_FILE=$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)" >> $GITHUB_ENV
+      run: sudo xcode-select -s /Applications/Xcode_12.3.app
     - name: Install Tuist
       run: bash <(curl -Ls https://install.tuist.io)
     - run: brew install getsentry/tools/sentry-cli
