@@ -18,6 +18,7 @@ struct CrossFrameworkCoordinator {
                 ])
             }
         }
+
         UIControl.trackingHandler = { control in
             if let accessibilityLabel = control.accessibilityLabel {
                 if let localizationKey = accessibilityLabel.derivedFromL10n?.key {

@@ -176,6 +176,10 @@ query EmbarkStory($name: String!, $locale: String!) {
         id
         startPassage
         name
+        computedStoreValues {
+            key
+            value
+        }
         passages {
             id
             name
