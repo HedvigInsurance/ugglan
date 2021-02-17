@@ -42,9 +42,8 @@ struct AppClip: App {
         WindowGroup {
             if hasInitialized {
                 NavigationView {
-                    EmbarkView(name: "Web Onboarding - Swedish Needer", state: .init(externalRedirectHandler: { _ in
-
-                    })).navigationBarTitleDisplayMode(.inline)
+                    EmbarkPlansView()
+                        .navigationBarTitleDisplayMode(.inline)
                 }
             } else {
                 Text("").onAppear(perform: {
@@ -61,11 +60,47 @@ struct AppClip: App {
                         Dependencies.shared.add(module: Module {
                             client
                         })
-
-                        self.hasInitialized = true
                     }
-                })
+                }).onContinueUserActivity(NSUserActivityTypeBrowsingWeb, perform: handleUserActivity)
             }
         }
+    }
+    
+    func handleUserActivity(_ userActivity: NSUserActivity) {
+        enum WebLocale: String {
+            case se
+            case se_en = "se-en"
+            case no
+            case no_en = "no-en"
+            
+            var locale: Localization.Locale {
+                switch self {
+                case .se:
+                    return .sv_SE
+                case .se_en:
+                    return .en_SE
+                case .no:
+                    return .nb_NO
+                case .no_en:
+                    return .en_NO
+                }
+            }
+        }
+        
+        guard
+            let incomingURL = userActivity.webpageURL,
+            let components = NSURLComponents(url: incomingURL, resolvingAgainstBaseURL: true)
+        else {
+            return
+        }
+        
+        guard let localeCode = components.path?.dropFirst() else {
+            return
+        }
+        
+        let webLocale = WebLocale(rawValue: String(localeCode)) ?? .se
+        
+        Localization.Locale.currentLocale = webLocale.locale
+        hasInitialized = true
     }
 }
