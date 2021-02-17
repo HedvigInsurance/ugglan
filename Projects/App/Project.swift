@@ -36,6 +36,19 @@ let hedvigConfigurations: [CustomConfiguration] = [
     ),
 ]
 
+let appClipConfigurations: [CustomConfiguration] = [
+    .debug(
+        name: "Debug",
+        settings: [:],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+    ),
+    .release(
+        name: "Release",
+        settings: [:],
+        xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+    ),
+]
+
 let testsConfigurations: [CustomConfiguration] = [
     .debug(name: "Debug", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
     .release(name: "Release", settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"], xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")),
@@ -57,7 +70,7 @@ let appDependencies: [TargetDependency] = [
     sdkFrameworks,
 ].flatMap { $0 }
 
-let clipDependencies: [TargetDependency] = [
+let appClipDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
         .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
@@ -93,12 +106,7 @@ let project = Project(
             resources: ["Resources/**", "Config/Test/Resources/**"],
             entitlements: "Config/Test/Ugglan.entitlements",
             actions: targetActions,
-            dependencies: [
-                appDependencies,
-                [
-                    .target(name: "BabyUgglan"),
-                ],
-            ].flatMap { $0 },
+            dependencies: appDependencies,
             settings: Settings(configurations: ugglanConfigurations)
         ),
         Target(
@@ -129,20 +137,25 @@ let project = Project(
             resources: ["Resources/**", "Config/Production/Resources/**"],
             entitlements: "Config/Production/Hedvig.entitlements",
             actions: targetActions,
-            dependencies: appDependencies,
+            dependencies: [
+                appDependencies,
+                [
+                    .target(name: "AppClip"),
+                ],
+            ].flatMap { $0 },
             settings: Settings(configurations: hedvigConfigurations)
         ),
         Target(
-            name: "BabyUgglan",
+            name: "AppClip",
             platform: .iOS,
             product: .appClip,
-            bundleId: "com.hedvig.test.app.clip",
-            infoPlist: "Config/Test/AppClip/Info.plist",
+            bundleId: "com.hedvig.app.clip",
+            infoPlist: "Config/AppClip/Info.plist",
             sources: ["AppClip/Sources/**"],
-            entitlements: "Config/Test/AppClip/BabyUgglan.entitlements",
+            entitlements: "Config/AppClip/Entitlements.entitlements",
             actions: targetActions,
-            dependencies: [],
-            settings: Settings(configurations: testsConfigurations)
+            dependencies: appClipDependencies,
+            settings: Settings(configurations: appClipConfigurations)
         ),
     ],
     schemes: [
