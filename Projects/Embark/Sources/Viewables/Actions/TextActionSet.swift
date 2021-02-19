@@ -41,6 +41,7 @@ extension TextActionSet: Viewable {
                 placeholder: textAction.data?.placeholder ?? "",
                 keyboardType: masking?.keyboardType,
                 textContentType: masking?.textContentType,
+                autocapitalisationType: masking?.autocapitalizationType ?? .none,
                 masking: masking,
                 shouldAutoFocus: index == 0,
                 fieldStyle: .embarkInputSmall

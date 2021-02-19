@@ -106,6 +106,15 @@ struct Masking {
             return nil
         }
     }
+    
+    var autocapitalizationType: UITextAutocapitalizationType {
+        switch type {
+        case .email:
+            return .none
+        default:
+            return .words
+        }
+    }
 
     func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
