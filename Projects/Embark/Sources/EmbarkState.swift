@@ -34,6 +34,10 @@ public struct EmbarkState {
     var passageNameSignal: ReadSignal<String?> {
         currentPassageSignal.map { $0?.name }
     }
+    
+    var passageTooltipsSignal: ReadSignal<[Tooltip]> {
+        currentPassageSignal.map { $0?.tooltips ?? [] }
+    }
 
     func restart() {
         animationDirectionSignal.value = .backwards

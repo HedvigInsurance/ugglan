@@ -189,6 +189,10 @@ query EmbarkStory($name: String!, $locale: String!) {
                     location
                 }
             }
+            tooltips {
+              description
+              title
+            }
             allLinks {
                 ...EmbarkLinkFragment
             }
