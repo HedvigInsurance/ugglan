@@ -49,6 +49,7 @@ extension EmbarkNumberAction: Viewable {
                 placeholder: self.data.numberActionData.placeholder,
                 keyboardType: masking.keyboardType,
                 textContentType: masking.textContentType,
+                autocapitalisationType: masking.autocapitalizationType,
                 masking: masking
             )
             let (textInputView, textSignal) = textField.materialize(events: events)

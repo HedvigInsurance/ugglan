@@ -20,5 +20,5 @@ extension Login: Presentable {
         case .dk:
             return NemIDLogin().wrappedInCloseButton().materialize()
         }
-    }
+    } 
 }

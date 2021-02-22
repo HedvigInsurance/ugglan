@@ -38,12 +38,21 @@ public struct EmbarkState {
     var passageNameSignal: ReadSignal<String?> {
         currentPassageSignal.map { $0?.name }
     }
+    
+    var passageTooltipsSignal: ReadSignal<[Tooltip]> {
+        currentPassageSignal.map { $0?.tooltips ?? [] }
+    }
 
     func restart() {
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
             passage.id == startPassageIDSignal.value
         })
+        store.computedValues = storySignal.value?.computedStoreValues?.reduce([:]) { (prev, computedValue) -> [String: String] in
+            var computedValues: [String: String] = prev
+            computedValues[computedValue.key] = computedValue.value
+            return computedValues
+        } ?? [:]
     }
     
     func startTracking() {

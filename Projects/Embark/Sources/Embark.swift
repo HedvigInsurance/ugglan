@@ -184,6 +184,26 @@ extension Embark: Presentable {
             }
 
             viewController.navigationItem.leftBarButtonItem = backButton
+            
+            let tooltipButton = UIButton()
+            tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
+            
+            let didTapTooltip = tooltipButton.signal(for: .touchUpInside)
+            
+            bag += didTapTooltip
+                .onValue({ () in
+                    
+                    let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+                    
+                    viewController.present(
+                        embarkTooltipsAlert.wrappedInCloseButton(),
+                        style: .detented(.preferredContentSize),
+                        options: [
+                            .defaults,
+                            .prefersLargeTitles(true),
+                        ])
+                })
+            
 
             let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
 
@@ -202,8 +222,12 @@ extension Embark: Presentable {
                     ]
                 )
             )
-
-            viewController.navigationItem.rightBarButtonItem = optionsButton
+            
+            bag += state.passageTooltipsSignal.atOnce()
+                .map { tooltips in tooltips.isEmpty ? [optionsButton] : [optionsButton, UIBarButtonItem(button: tooltipButton)]  }
+                .onValue({ (items) in
+                    viewController.navigationItem.setRightBarButtonItems(items, animated: true)
+            })
 
             bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue { _, canGoBack in
                 if canGoBack {
