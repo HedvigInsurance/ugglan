@@ -26,6 +26,11 @@ fastlane ios load_api
 fastlane ios setup
 ```
 
+### ios reprovision_everything
+```
+fastlane ios reprovision_everything
+```
+
 ### ios production_upload
 ```
 fastlane ios production_upload

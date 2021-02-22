@@ -31,6 +31,30 @@ platform :ios do
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
     end
+
+    lane :reprovision_everything do
+      sh("fastlane match nuke distribution --skip_confirmation true")
+
+      match(
+        type: "appstore",
+        app_identifier: "com.hedvig.app",
+      )
+
+      match(
+        type: "adhoc",
+        app_identifier: "com.hedvig.app",
+      )
+
+      match(
+        type: "adhoc",
+        app_identifier: "com.hedvig.test.app",
+      )
+
+      match(
+        type: "adhoc",
+        app_identifier: "com.hedvig.example.*",
+      )
+    end
     
     lane :production_upload do |options|
         setup
