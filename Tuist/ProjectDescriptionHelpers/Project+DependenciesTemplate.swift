@@ -100,7 +100,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .hero:
             return [
-                .package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.5.0")),
+                .package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.0")),
             ]
         case .sentry:
             return [
