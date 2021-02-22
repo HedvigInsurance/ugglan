@@ -179,7 +179,6 @@ query EmbarkStory($name: String!, $locale: String!) {
         passages {
             id
             name
-            externalRedirect
             allLinks {
                 ...EmbarkLinkFragment
             }
