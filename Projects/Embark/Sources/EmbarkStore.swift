@@ -39,7 +39,9 @@ class EmbarkStore {
     }
     
     func getAllValues() -> [String:String] {
-        return revisions.last ?? [:]
+        let mappedComputedValues = computedValues.compactMapValues { value in parseComputedExpression(value) }
+        
+        return mappedComputedValues.merging(revisions.last ?? [:], uniquingKeysWith: { $1 })
     }
 
     private func parseComputedExpression(_ expression: String) -> String? {
