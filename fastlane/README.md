@@ -21,6 +21,11 @@ or alternatively using `brew install fastlane`
 fastlane ios upload_dsyms_to_sentry
 ```
 
+### ios load_api
+```
+fastlane ios load_api
+```
+
 ### ios upload_dsyms_to_sentry_after_processing
 ```
 fastlane ios upload_dsyms_to_sentry_after_processing

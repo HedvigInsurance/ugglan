@@ -21,6 +21,16 @@ platform :ios do
         sentry_upload_dsym
         clean_build_artifacts
     end
+
+    lane :load_api do
+      app_store_connect_api_key(
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+        duration: 1200,
+        in_house: false
+      )
+    end
     
     lane :upload_dsyms_to_sentry_after_processing do
         require 'spaceship'
@@ -60,6 +70,7 @@ platform :ios do
     end
     
     lane :setup do
+        load_api
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
     end
