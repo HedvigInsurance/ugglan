@@ -154,4 +154,20 @@ public extension JSONObject {
             makeCommonClaims(),
         ])
     }
+
+    public static func makeTerminatedInTheFuture() -> JSONObject {
+        combineMultiple([
+            GraphQL.HomeQuery.Data(
+                member: .init(firstName: "Mock"),
+                contracts: [
+                    .init(
+                        displayName: "Home insurance",
+                        switchedFromInsuranceProvider: "Hedvig",
+                        status: .makeTerminatedInFutureStatus()
+                    ),
+                ]
+            ).jsonObject,
+            makeCommonClaims(),
+        ])
+    }
 }
