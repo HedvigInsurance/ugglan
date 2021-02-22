@@ -41,9 +41,16 @@ extension PayoutDetailsSection: Viewable {
             }
         }
 
-        bag += dataSignal.onValueDisposePrevious { data in
+        bag += combineLatest(
+            dataSignal,
+            payOutOptions.valueSignal.plain()
+        ).onValueDisposePrevious { data, options in
             let bag = DisposeBag()
             let status = data.activePayoutMethods?.status
+
+            if options.paymentMethods.regular.isEmpty {
+                return bag
+            }
 
             if status == .active {
                 let valueRow = RowView()

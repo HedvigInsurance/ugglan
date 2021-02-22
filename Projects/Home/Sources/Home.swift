@@ -108,10 +108,6 @@ extension Home: Presentable {
                         return true
                     }
 
-                    if contract.status.asTerminatedInFutureStatus != nil {
-                        return true
-                    }
-
                     return false
                 }
 
