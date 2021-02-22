@@ -13,11 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Trigger DSYM
-      uses: benc-uk/workflow-dispatch@v1
-      with:
-        workflow: Upload DSYM
-        token: ${{ secrets.MATCH_GITHUB_TOKEN }}
     - name: XCode Select
       run: sudo xcode-select -s /Applications/Xcode_12.3.app
     - name: Install Tuist

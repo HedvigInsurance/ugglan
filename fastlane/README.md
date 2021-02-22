@@ -16,19 +16,9 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## iOS
-### ios upload_dsyms_to_sentry
-```
-fastlane ios upload_dsyms_to_sentry
-```
-
 ### ios load_api
 ```
 fastlane ios load_api
-```
-
-### ios upload_dsyms_to_sentry_after_processing
-```
-fastlane ios upload_dsyms_to_sentry_after_processing
 ```
 
 ### ios setup
