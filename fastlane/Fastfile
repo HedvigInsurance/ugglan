@@ -36,7 +36,6 @@ platform :ios do
         setup
         
         app_identifier = "com.hedvig.app"
-        app_profile = "match AppStore com.hedvig.app"
 
         if is_ci
             create_keychain(
@@ -90,9 +89,7 @@ platform :ios do
             export_options: {
                 method: "appstore",
                 iCloudContainerEnvironment: "Production",
-                provisioningProfiles: {
-                    app_identifier => app_profile
-                }
+                provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
             }
         )
         
@@ -156,9 +153,7 @@ platform :ios do
                 sh("security default-keychain -d user")
                 sh("security find-identity -v -p codesigning CI")
             end
-            
-            app_profile = "match AdHoc #{app_identifier}"
-            
+                        
             update_project_provisioning(
                 xcodeproj: app["project_path"],
                 profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
@@ -177,9 +172,7 @@ platform :ios do
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
                     method: "ad-hoc",
-                    provisioningProfiles: {
-                        app_identifier => app_profile
-                    },
+                    provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
                     thinning: "<none>"
                 }
             )
