@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import hGraphQL
+import hCore
 
 class EmbarkStore {
     var revisions: [[String: String]] = [[:]]
@@ -41,7 +42,7 @@ class EmbarkStore {
     func getAllValues() -> [String:String] {
         let mappedComputedValues = computedValues.compactMapValues { value in parseComputedExpression(value) }
         
-        return mappedComputedValues.merging(revisions.last ?? [:], uniquingKeysWith: { $1 })
+        return mappedComputedValues.merging(revisions.last ?? [:], uniquingKeysWith: takeLeft)
     }
 
     private func parseComputedExpression(_ expression: String) -> String? {
