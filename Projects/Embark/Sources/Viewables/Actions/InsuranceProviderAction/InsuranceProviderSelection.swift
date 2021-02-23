@@ -65,7 +65,7 @@ extension InsuranceProviderSelection: Presentable {
 
         return (viewController, Future { completion in
             bag += tableKit.delegate.didSelectRow.onValue { row in
-                guard row.hasExternalCapabilities, self.data.isExternal else {
+                guard self.data.isExternal else {
                     completion(.success(row))
                     return
                 }
