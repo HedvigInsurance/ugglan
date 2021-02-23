@@ -16,19 +16,19 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## iOS
-### ios upload_dsyms_to_sentry
+### ios load_api
 ```
-fastlane ios upload_dsyms_to_sentry
-```
-
-### ios upload_dsyms_to_sentry_after_processing
-```
-fastlane ios upload_dsyms_to_sentry_after_processing
+fastlane ios load_api
 ```
 
 ### ios setup
 ```
 fastlane ios setup
+```
+
+### ios reprovision_everything
+```
+fastlane ios reprovision_everything
 ```
 
 ### ios production_upload

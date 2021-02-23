@@ -9,6 +9,7 @@ import UIKit
 public func setupScreenShotTests() {
     Localization.Locale.currentLocale = .en_SE
     DefaultStyling.installCustom()
+    ApplicationContext.shared.hasFinishedBootstrapping = true
 
     #if RECORD
         record = true
