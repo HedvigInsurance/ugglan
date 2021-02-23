@@ -208,7 +208,7 @@ extension Embark: Presentable {
                     title: nil,
                     children: [
                         MenuChild(
-                            title: "Restart questions",
+                            title: L10n.embarkRestartButton,
                             style: .destructive,
                             image: hCoreUIAssets.restart.image
                         ) {
