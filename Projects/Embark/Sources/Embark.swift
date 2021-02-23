@@ -111,7 +111,7 @@ extension Embark: Presentable {
         }
 
         let progressView = UIProgressView()
-        progressView.tintColor = .brand(.primaryButtonBackgroundColor)
+        progressView.tintColor = .brand(.primaryText())
         scrollView.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
