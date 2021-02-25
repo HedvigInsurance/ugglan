@@ -57,11 +57,11 @@ public struct EmbarkState {
     
     func startTracking() {
         bag += currentPassageSignal
-                .readOnly()
-                .compactMap { $0?.tracks }
-                .onValue({ (tracks) in
-                    tracks.forEach { track in track.trackingEvent(store: store).send() }
-                })
+            .readOnly()
+            .compactMap { $0?.tracks }
+            .onValue(on: .background) { (tracks) in
+                tracks.forEach { track in track.trackingEvent(store: store).send() }
+            })
     }
 
     func goBack() {
