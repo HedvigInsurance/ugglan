@@ -8,12 +8,18 @@ import Presentation
 import UIKit
 import WebKit
 
-struct WebOnboarding {}
+struct WebOnboarding {
+    @Inject var client: ApolloClient
+    let webScreen: WebOnboardingScreen
+}
 
 extension WebOnboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
+        
+        ApplicationState.preserveState(webScreen.screen)
+        let urlConstructor = WebOnboardingState(screen: webScreen)
 
         let settingsButton = UIBarButtonItem()
         settingsButton.image = Asset.menuIcon.image
@@ -55,6 +61,7 @@ extension WebOnboarding: Presentable {
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .clear
         webView.isOpaque = false
+        webView.allowsBackForwardNavigationGestures = true
         webView.customUserAgent = ApolloClient.userAgent
 
         let doneButton = UIBarButtonItem(title: "done", style: .brand(.headline(color: .link)))
@@ -62,15 +69,38 @@ extension WebOnboarding: Presentable {
         bag += doneButton.onValue { _ in
             webView.resignFirstResponder()
         }
-
+        
         webView.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [doneButton], representativeItem: nil)]
 
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.00)
+        view.backgroundColor = .brand(.primaryBackground())
         viewController.view = view
 
         view.addSubview(webView)
+        
+        
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.style = .whiteLarge
+        activityIndicator.color = .brand(.primaryTintColor)
+        activityIndicator.hidesWhenStopped = true
 
+        webView.addSubview(activityIndicator)
+        
+        activityIndicator.startAnimating()
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.size.equalToSuperview()
+        }
+
+        bag += webView.isLoadingSignal.onValue { loading in
+            if loading {
+                activityIndicator.startAnimating()
+            } else {
+                activityIndicator.stopAnimating()
+            }
+        }
+        
         webView.snp.makeConstraints { make in
             make.top.bottom.trailing.leading.equalToSuperview()
         }
@@ -90,50 +120,27 @@ extension WebOnboarding: Presentable {
                 )
             }
         }
-
+    
         func loadWebOnboarding() {
-            guard let token = ApolloClient.retreiveToken() else {
-                return
-            }
-
-            let tokenString = token.token.replacingOccurrences(of: "=", with: "%3D")
-
-            var localePath: String {
-                switch Localization.Locale.currentLocale {
-                case .en_NO:
-                    return "no-en/"
-                case .nb_NO:
-                    return "no/"
-                case .da_DK:
-                    return "dk/"
-                case .en_DK:
-                    return "dk-en/"
-                default:
-                    return ""
-                }
-            }
-
-            func loadStaging() {
-                guard let url = URL(string: "https://www.dev.hedvigit.com/\(localePath)new-member?variation=ios#token=\(tokenString)") else {
-                    return
-                }
-
-                webView.load(URLRequest(url: url))
-            }
-
-            switch Environment.current {
-            case .production:
-                guard let url = URL(string: "https://www.hedvig.com/\(localePath)new-member?variation=ios#token=\(tokenString)") else {
-                    return
-                }
-                webView.load(URLRequest(url: url))
-            case .staging:
-                loadStaging()
-            case .custom(endpointURL: _, wsEndpointURL: _, assetsEndpointURL: _):
-                loadStaging()
-            }
+            guard let fragmentedUrl = urlConstructor.url else { return }
+            webView.load(URLRequest(url: fragmentedUrl))
         }
-
+        
+        if webScreen == .webOffer {
+            bag += urlConstructor.$offerIds.onValue { (ids) in
+                guard !ids.isEmpty else { return }
+                loadWebOnboarding()
+            }
+            
+            bag += client.fetch(query: GraphQL.OfferQuery()).compactMap({ (offer) in
+                return offer.lastQuoteOfMember.asCompleteQuote?.id
+            }).onValue({ (id) in
+                urlConstructor.$offerIds.value = [id]
+            })
+        } else {
+            loadWebOnboarding()
+        }
+        
         bag += restartButton.onValue { _ in
             let alert = Alert(
                 title: L10n.chatRestartAlertTitle,
@@ -155,8 +162,20 @@ extension WebOnboarding: Presentable {
             viewController.present(alert)
         }
 
-        loadWebOnboarding()
-
         return (viewController, bag)
+    }
+}
+
+internal extension Environment {
+    var baseUrl: String {
+        switch self {
+            
+        case .production:
+            return "www.hedvig.com"
+        case .staging:
+            return "www.dev.hedvigit.com"
+        case .custom:
+            return "www.dev.hedvigit.com"
+        }
     }
 }

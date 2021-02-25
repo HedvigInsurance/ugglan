@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import Presentation
 import UIKit
+import Embark
 
 struct Onboarding {}
 
@@ -13,8 +14,10 @@ extension Onboarding: Presentable {
         switch Localization.Locale.currentLocale.market {
         case .se:
             return OnboardingChat().materialize()
-        case .no, .dk:
-            return WebOnboarding().materialize()
+        case .no:
+            return EmbarkPlans(embarkRouter: EmbarkRouting()).materialize()
+        case .dk:
+            return WebOnboarding(webScreen: .webOnboarding).materialize()
         }
     }
 }

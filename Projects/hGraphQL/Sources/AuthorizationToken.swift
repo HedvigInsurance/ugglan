@@ -6,4 +6,10 @@ public struct AuthorizationToken: Codable {
     init(token: String) {
         self.token = token
     }
+    
+    public var urlEncodedString: String? {
+        let allowedCharacters = CharacterSet(charactersIn: "=").inverted
+
+        return token.addingPercentEncoding(withAllowedCharacters: allowedCharacters)
+    }
 }
