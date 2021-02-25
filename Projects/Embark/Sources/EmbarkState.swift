@@ -61,7 +61,7 @@ public struct EmbarkState {
             .compactMap { $0?.tracks }
             .onValue(on: .background) { (tracks) in
                 tracks.forEach { track in track.trackingEvent(store: store).send() }
-            })
+            }
     }
 
     func goBack() {
