@@ -9,14 +9,22 @@ import Presentation
 import SnapKit
 import UIKit
 
+
+public protocol EmbarkRouter {
+    func openMailingList(viewController: UIViewController)
+    func openOffer(viewController: UIViewController)
+}
+
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
     let state: EmbarkState
+    let router: EmbarkRouter
 
-    public init(name: String, state: EmbarkState) {
+    public init(name: String, state: EmbarkState, router: EmbarkRouter) {
         self.name = name
         self.state = state
+        self.router = router
     }
 }
 
@@ -236,6 +244,17 @@ extension Embark: Presentable {
                     completion(.success)
                 }
             }
+            
+            bag += state.externalRedirectSignal.onValue({ (redirect) in
+                switch redirect {
+                case .some(.offer):
+                    router.openOffer(viewController: viewController)
+                case .some(.mailingList):
+                    router.openMailingList(viewController: viewController)
+                default:
+                    break
+                }
+            })
 
             return bag
         })
