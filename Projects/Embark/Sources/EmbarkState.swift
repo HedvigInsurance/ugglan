@@ -15,11 +15,10 @@ public struct EmbarkState {
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
-    let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
+    let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
 
-    public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
-        self.externalRedirectHandler = externalRedirectHandler
+    public init() {
         defer {
             startTracking()
         }
@@ -59,9 +58,9 @@ public struct EmbarkState {
         bag += currentPassageSignal
                 .readOnly()
                 .compactMap { $0?.tracks }
-                .onValue({ (tracks) in
+                .onValue(on: .background) { (tracks) in
                     tracks.forEach { track in track.trackingEvent(store: store).send() }
-                })
+                }
     }
 
     func goBack() {
@@ -91,9 +90,9 @@ public struct EmbarkState {
                 
                 switch externalRedirect {
                 case .mailingList:
-                    externalRedirectHandler(ExternalRedirect.mailingList)
+                    externalRedirectSignal.value = .mailingList
                 case .offer:
-                    externalRedirectHandler(ExternalRedirect.offer)
+                    externalRedirectSignal.value = .offer
                 case .__unknown:
                     fatalError("Can't external redirect to location")
                 }
@@ -163,3 +162,5 @@ public struct EmbarkState {
         }.map { _, rhs in rhs }.readable(initial: 0)
     }
 }
+
+

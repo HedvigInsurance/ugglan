@@ -13,6 +13,7 @@ public struct EmbarkPlans {
     @Inject var client: ApolloClient
     let plansSignal = ReadWriteSignal<[GraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
     @ReadWriteState var selectedIndex = 0
+    let embarkRouter: EmbarkRouter
 
     var selectedPlan: ReadSignal<GraphQL.ChoosePlanQuery.Data.EmbarkStory?> {
         $selectedIndex.withLatestFrom(plansSignal).map { selected, plans in
@@ -22,7 +23,9 @@ public struct EmbarkPlans {
         }
     }
 
-    public init() {}
+    public init(embarkRouter: EmbarkRouter) {
+        self.embarkRouter = embarkRouter
+    }
 }
 
 extension EmbarkPlans: Presentable {
@@ -99,7 +102,7 @@ extension EmbarkPlans: Presentable {
 
         bag += client
             .fetch(
-                query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.en_NO.code)
+                query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue)
             ).valueSignal
             .compactMap { $0.embarkStories }
             .map { $0
@@ -145,10 +148,13 @@ extension EmbarkPlans: Presentable {
             .withLatestFrom(selectedPlan.atOnce().plain())
             .compactMap { _, story in story }
             .onValue { story in
-                viewController.present(Embark(
-                    name: story.name,
-                    state: EmbarkState(externalRedirectHandler: { _ in })
-                ))
+                viewController.present(
+                    Embark(
+                        name: story.name,
+                        state: EmbarkState(),
+                        router: self.embarkRouter
+                    ),
+                    options: [.autoPop, .defaults])
             }
 
         return (viewController, bag)
