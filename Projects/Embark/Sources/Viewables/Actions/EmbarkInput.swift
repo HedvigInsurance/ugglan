@@ -17,7 +17,6 @@ struct EmbarkInput {
     let masking: Masking?
     let shouldAutoFocus: Bool
     let fieldStyle: FieldStyle
-    let shouldAutoSize: Bool
 
     init(
         placeholder: String,
@@ -28,8 +27,7 @@ struct EmbarkInput {
         enabled: Bool = true,
         masking: Masking? = nil,
         shouldAutoFocus: Bool = true,
-        fieldStyle: FieldStyle = .embarkInputLarge,
-        shouldAutoSize: Bool = false
+        fieldStyle: FieldStyle = .embarkInputLarge
     ) {
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
@@ -40,7 +38,6 @@ struct EmbarkInput {
         self.masking = masking
         self.shouldAutoFocus = shouldAutoFocus
         self.fieldStyle = fieldStyle
-        self.shouldAutoSize = shouldAutoSize
     }
 }
 
@@ -79,7 +76,7 @@ extension EmbarkInput: Viewable {
         let textField = UITextField(value: "", placeholder: "", style: fieldStyle)
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
-        textField.adjustsFontSizeToFitWidth = shouldAutoSize
+        textField.adjustsFontSizeToFitWidth = true
 
         bag += combineLatest(
             textContentTypeSignal.atOnce(),
