@@ -44,12 +44,14 @@ public extension ApolloClient {
         let requestChainTransport = RequestChainNetworkTransport(interceptorProvider: networkInterceptorProvider,
                                                                  endpointURL: environment.endpointURL)
 
-        requestChainTransport.clientName = bundle?.bundleIdentifier ?? ""
+        let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
+
+        requestChainTransport.clientName = clientName
         requestChainTransport.clientVersion = appVersion
 
         let websocketNetworkTransport = WebSocketTransport(
             request: URLRequest(url: environment.wsEndpointURL),
-            clientName: bundle?.bundleIdentifier ?? "",
+            clientName: clientName,
             clientVersion: appVersion,
             connectingPayload: httpAdditionalHeaders as GraphQLMap
         )
