@@ -58,8 +58,7 @@ extension EmbarkTextAction: Viewable {
             keyboardType: masking?.keyboardType,
             textContentType: masking?.textContentType,
             autocapitalisationType: masking?.autocapitalizationType ?? .none,
-            masking: masking,
-            shouldAutoSize: true
+            masking: masking
         )
         let textSignal = boxStack.addArranged(input) { inputView in
             animator.register(key: \.input, value: inputView)

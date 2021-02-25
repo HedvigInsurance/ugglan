@@ -63,18 +63,6 @@ extension ApplicationState {
                 options: [],
                 animated: false
             )
-        case .webOnboarding:
-            return window.present(
-                WebOnboarding(webScreen: .webOnboarding),
-                options: [],
-                animated: false
-            )
-        case .webOffer:
-            return window.present(
-                WebOnboarding(webScreen: .webOffer),
-                options: [],
-                animated: false
-            )
         }
     }
 }

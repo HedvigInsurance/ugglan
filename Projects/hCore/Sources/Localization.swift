@@ -38,10 +38,6 @@ public enum Localization {
                 return .dk
             }
         }
-        
-        public var embark: Locale {
-            return .en_NO
-        }
 
         public var acceptLanguageHeader: String {
             switch self {
@@ -57,23 +53,6 @@ public enum Localization {
                 return "da-DK"
             case .en_DK:
                 return "en-DK"
-            }
-        }
-        
-        public var webPath: String {
-            switch self {
-            case .sv_SE:
-                return "se"
-            case .en_SE:
-                return "se-en"
-            case .en_NO:
-                return "no-en"
-            case .nb_NO:
-                return "no"
-            case .da_DK:
-                return "dk"
-            case .en_DK:
-                return "dk-en"
             }
         }
 
