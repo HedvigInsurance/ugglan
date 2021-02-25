@@ -8,6 +8,7 @@ import UIKit
 
 struct EmbarkSelectActionOption {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
+    @ReadWriteState var isLoading = false
 }
 
 extension EmbarkSelectActionOption: Viewable {
@@ -34,13 +35,46 @@ extension EmbarkSelectActionOption: Viewable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
+        bag += $isLoading.atOnce().filter(predicate: { $0 }).onValueDisposePrevious { _ in
+            let overlayView = UIView()
+            overlayView.alpha = 0
+            overlayView.layer.cornerRadius = 8
+            overlayView.backgroundColor = control.backgroundColor
+
+            stackView.addSubview(overlayView)
+
+            overlayView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+
+            let activityIndicator = UIActivityIndicatorView()
+            activityIndicator.startAnimating()
+
+            overlayView.addSubview(activityIndicator)
+
+            activityIndicator.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+            }
+
+            let innerBag = DisposeBag()
+
+            bag += {
+                overlayView.removeFromSuperview()
+            }
+
+            innerBag += Animated.now.animated(style: .easeOut(duration: 0.25)) {
+                overlayView.alpha = 1
+            }
+
+            return innerBag
+        }
+
         return (control, Signal { callback in
-            
             let valueLabel = MultilineLabel(
                 value: data.link.fragments.embarkLinkFragment.label,
                 style: TextStyle.brand(.headline(color: .primary)).centerAligned
             )
-            
+
             bag += stackView.addArranged(valueLabel)
 
             bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
