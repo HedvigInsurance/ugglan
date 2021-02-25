@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 store
             })
 
-            Localization.Locale.currentLocale = .sv_SE
+            Localization.Locale.currentLocale = .en_NO
             DefaultStyling.installCustom()
 
             self.bag += navigationController.present(
