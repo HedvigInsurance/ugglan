@@ -25,7 +25,7 @@ extension StoryList: Presentable {
 
         bag += plansButton.onValue { _ in
             viewController.present(
-                EmbarkPlans(),
+                EmbarkPlans(embarkRouter: EmbarkRouting()),
                 options: [.defaults, .largeTitleDisplayMode(.never)]
             )
         }
@@ -34,11 +34,14 @@ extension StoryList: Presentable {
         bag += viewController.install(tableKit)
 
         bag += tableKit.delegate.didSelectRow.onValue { storyName in
-            viewController.present(Embark(
-                name: storyName.value, state: EmbarkState { externalRedirect in
-                    print(externalRedirect)
-                }
-            ), options: [.defaults, .largeTitleDisplayMode(.never), .autoPop])
+            viewController.present(
+                Embark(
+                    name: storyName.value,
+                    state: EmbarkState(),
+                    router: EmbarkRouting()
+                ),
+                options: [.defaults, .largeTitleDisplayMode(.never), .autoPop]
+            )
         }
 
         bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery())
@@ -51,5 +54,16 @@ extension StoryList: Presentable {
             }
 
         return (viewController, bag)
+    }
+}
+
+
+struct EmbarkRouting: EmbarkRouter {
+    func openMailingList(viewController: UIViewController) {
+        
+    }
+    
+    func openOffer(viewController: UIViewController) {
+        
     }
 }
