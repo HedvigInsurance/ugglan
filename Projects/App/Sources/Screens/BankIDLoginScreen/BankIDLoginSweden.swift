@@ -140,7 +140,7 @@ extension BankIDLoginSweden: Presentable {
 
                     AnalyticsCoordinator().setUserId()
 
-                    let window = appDelegate.window
+                    let window = appDelegate.appFlow.window
                     bag += window.present(LoggedIn(), animated: true)
                 }
             }

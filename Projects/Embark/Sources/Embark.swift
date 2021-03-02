@@ -9,30 +9,21 @@ import Presentation
 import SnapKit
 import UIKit
 
-
-public protocol EmbarkRouter {
-    func openMailingList(viewController: UIViewController)
-    func openOffer(viewController: UIViewController)
-}
-
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
-    let state: EmbarkState
-    let router: EmbarkRouter
-
-    public init(name: String, state: EmbarkState, router: EmbarkRouter) {
+    let state = EmbarkState()
+    
+    public init(name: String) {
         self.name = name
-        self.state = state
-        self.router = router
     }
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, Future<Void>) {
+    public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-
+        
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
         let form = FormView()
@@ -42,23 +33,23 @@ extension Embark: Presentable {
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
             scrollView.alwaysBounceVertical = false
         }
-
+        
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = hCoreUIAssets.wordmark.image
         titleHedvigLogo.contentMode = .scaleAspectFit
-
+        
         viewController.navigationItem.titleView = titleHedvigLogo
-
+        
         titleHedvigLogo.snp.makeConstraints { make in
             make.width.equalTo(80)
         }
-
+        
         let passage = Passage(
             state: state
         )
         bag += form.append(passage) { passageView in
             var keyboardHeight: CGFloat = 20
-
+            
             func updatePassageViewHeight() {
                 passageView.snp.updateConstraints { make in
                     make.top.bottom.leading.trailing.equalToSuperview()
@@ -70,11 +61,11 @@ extension Embark: Presentable {
                     )
                 }
             }
-
+            
             bag += form.didLayoutSignal.onValue {
                 updatePassageViewHeight()
             }
-
+            
             bag += NotificationCenter.default
                 .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
                 .compactMap { notification in notification.keyboardInfo }
@@ -99,7 +90,7 @@ extension Embark: Presentable {
                     form.layoutIfNeeded()
                     scrollView.layoutIfNeeded()
                 })
-
+            
             bag += NotificationCenter.default
                 .signal(forName: UIResponder.keyboardWillHideNotification)
                 .compactMap { notification in notification.keyboardInfo }
@@ -117,33 +108,33 @@ extension Embark: Presentable {
         }.onValue { link in
             self.state.goTo(passageName: link.name)
         }
-
+        
         let progressView = UIProgressView()
         progressView.tintColor = .brand(.primaryButtonBackgroundColor)
         scrollView.addSubview(progressView)
-
+        
         progressView.snp.makeConstraints { make in
             make.top.equalTo(scrollView.safeAreaLayoutGuide.snp.top)
             make.width.equalToSuperview()
             make.height.equalTo(2)
             make.centerX.equalToSuperview()
         }
-
+        
         bag += state.progressSignal.animated(style: .lightBounce(), animations: { progress in
             progressView.setProgress(progress, animated: false)
             progressView.setNeedsLayout()
             progressView.layoutIfNeeded()
         })
-
+        
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
-
+        
         form.addSubview(activityIndicator)
-
+        
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-
+        
         bag += client.fetch(
             query: GraphQL.EmbarkStoryQuery(
                 name: name,
@@ -151,16 +142,20 @@ extension Embark: Presentable {
             )
         ).valueSignal.compactMap { $0.embarkStory }.onValue { embarkStory in
             activityIndicator.removeFromSuperview()
-
+            
             self.state.storySignal.value = embarkStory
             self.state.passagesSignal.value = embarkStory.passages
             self.state.startPassageIDSignal.value = embarkStory.startPassage
             self.state.restart()
         }
-
-        return (viewController, Future { completion in
+    
+        return (viewController, FiniteSignal<ExternalRedirect> { callback in
+            bag += state.externalRedirectSignal.compactMap({ $0 }).onValue { (redirect) in
+                callback(.value(redirect))
+            }
+            
             let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
-
+            
             if #available(iOS 14.0, *) {
                 func createBackMenu(canGoBack: Bool) -> UIMenu {
                     let previousAction = UIAction(
@@ -169,28 +164,28 @@ extension Embark: Presentable {
                     ) { _ in
                         state.goBack()
                     }
-
+                    
                     let closeAction = UIAction(
                         title: L10n.embarkExitButton,
                         image: hCoreUIAssets.tinyCircledX.image,
                         attributes: .destructive
                     ) { _ in
-                        completion(.success)
+                        
                     }
-
+                    
                     let menuActions = [canGoBack ? previousAction : nil, closeAction].compactMap { $0 }
-
+                    
                     let addNewMenu = UIMenu(
                         title: "",
                         children: menuActions
                     )
-
+                    
                     return addNewMenu
                 }
-
+                
                 bag += state.canGoBackSignal.atOnce().map(createBackMenu).bindTo(backButton, \.menu)
             }
-
+            
             viewController.navigationItem.leftBarButtonItem = backButton
             
             let tooltipButton = UIButton()
@@ -212,9 +207,9 @@ extension Embark: Presentable {
                         ])
                 })
             
-
+            
             let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
-
+            
             bag += optionsButton.attachSinglePressMenu(
                 viewController: viewController,
                 menu: Menu(
@@ -235,27 +230,16 @@ extension Embark: Presentable {
                 .map { tooltips in tooltips.isEmpty ? [optionsButton] : [optionsButton, UIBarButtonItem(button: tooltipButton)]  }
                 .onValue({ (items) in
                     viewController.navigationItem.setRightBarButtonItems(items, animated: true)
-            })
-
+                })
+            
             bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue { _, canGoBack in
                 if canGoBack {
                     state.goBack()
                 } else {
-                    completion(.success)
+                    callback(.end)
                 }
             }
             
-            bag += state.externalRedirectSignal.onValue({ (redirect) in
-                switch redirect {
-                case .some(.offer):
-                    router.openOffer(viewController: viewController)
-                case .some(.mailingList):
-                    router.openMailingList(viewController: viewController)
-                default:
-                    break
-                }
-            })
-
             return bag
         })
     }

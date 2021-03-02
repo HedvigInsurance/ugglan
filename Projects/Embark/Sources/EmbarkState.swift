@@ -5,7 +5,7 @@ import hGraphQL
 
 public enum ExternalRedirect {
     case mailingList
-    case offer
+    case offer(ids: [String])
 }
 
 public struct EmbarkState {
@@ -92,7 +92,8 @@ public struct EmbarkState {
                 case .mailingList:
                     externalRedirectSignal.value = .mailingList
                 case .offer:
-                    externalRedirectSignal.value = .offer
+                    // MARK: This needs to be updated to handle multiple quote ID's
+                    externalRedirectSignal.value = .offer(ids: store.getQuoteIds())
                 case .__unknown:
                     fatalError("Can't external redirect to location")
                 }

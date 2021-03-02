@@ -40,12 +40,14 @@ extension GraphQL.ApiSingleVariableFragment {
 }
 
 extension GraphQL.ApiGeneratedVariableFragment {
-    func graphQLMap(store _: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
         switch type {
         case .uuid:
-            map[key] = UUID().uuidString
+            let uuid = UUID().uuidString
+            map[key] = uuid
+            store.setValue(key: key, value: uuid)
         case .__unknown:
             break
         }

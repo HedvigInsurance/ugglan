@@ -14,11 +14,10 @@ struct WebOnboarding {
 }
 
 extension WebOnboarding: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
-        ApplicationState.preserveState(webScreen.screen)
         let urlConstructor = WebOnboardingState(screen: webScreen)
 
         let settingsButton = UIBarButtonItem()
@@ -109,36 +108,10 @@ extension WebOnboarding: Presentable {
             let credentials = URLCredential(user: "hedvig", password: "hedvig1234", persistence: .forSession)
             return (.useCredential, credentials)
         }
-
-        bag += webView.signal(for: \.url).onValue { url in
-            let urlString = String(describing: url)
-
-            if urlString.contains("connect-payment") {
-                viewController.present(
-                    PostOnboarding(),
-                    style: .detented(.large)
-                )
-            }
-        }
     
         func loadWebOnboarding() {
             guard let fragmentedUrl = urlConstructor.url else { return }
             webView.load(URLRequest(url: fragmentedUrl))
-        }
-        
-        if webScreen == .webOffer {
-            bag += urlConstructor.$offerIds.onValue { (ids) in
-                guard !ids.isEmpty else { return }
-                loadWebOnboarding()
-            }
-            
-            bag += client.fetch(query: GraphQL.OfferQuery()).compactMap({ (offer) in
-                return offer.lastQuoteOfMember.asCompleteQuote?.id
-            }).onValue({ (id) in
-                urlConstructor.$offerIds.value = [id]
-            })
-        } else {
-            loadWebOnboarding()
         }
         
         bag += restartButton.onValue { _ in
@@ -161,8 +134,20 @@ extension WebOnboarding: Presentable {
 
             viewController.present(alert)
         }
+        
+        loadWebOnboarding()
 
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            bag += webView.signal(for: \.url).map { url in
+                let urlString = String(describing: url)
+
+                if urlString.contains("connect-payment") {
+                    completion(.success)
+                }
+            }
+            
+            return bag
+        })
     }
 }
 

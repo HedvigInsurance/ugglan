@@ -50,7 +50,11 @@ extension ApplicationState {
                 animated: false
             )
         case .onboardingChat, .onboarding:
-            return window.present(Onboarding(), options: [.defaults], animated: false)
+            return window.present(
+                Onboarding(),
+                options: [.defaults],
+                animated: false
+            )
         case .offer:
             return window.present(
                 Offer(),
@@ -60,18 +64,6 @@ extension ApplicationState {
         case .loggedIn:
             return window.present(
                 LoggedIn(),
-                options: [],
-                animated: false
-            )
-        case .webOnboarding:
-            return window.present(
-                WebOnboarding(webScreen: .webOnboarding),
-                options: [],
-                animated: false
-            )
-        case .webOffer:
-            return window.present(
-                WebOnboarding(webScreen: .webOffer),
                 options: [],
                 animated: false
             )

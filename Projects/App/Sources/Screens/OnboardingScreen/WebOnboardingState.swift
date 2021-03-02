@@ -7,22 +7,12 @@ import UIKit
 import WebKit
 
 enum WebOnboardingScreen {
-    case webOffer
+    case webOffer(ids: [String])
     case webOnboarding
-    
-    var screen: ApplicationState.Screen {
-        switch self {
-        case .webOffer:
-            return .webOffer
-        case .webOnboarding:
-            return .webOnboarding
-        }
-    }
 }
 
 struct WebOnboardingState {
     let screen: WebOnboardingScreen
-    @ReadWriteState var offerIds: [String] = []
     
     private var locale: String {
         Localization.Locale.currentLocale.webPath
@@ -51,8 +41,8 @@ struct WebOnboardingState {
     
     private var queryItems: [URLQueryItem] {
         switch screen {
-        case .webOffer:
-            return [URLQueryItem(name: "quoteIds", value: "[" + offerIds.joined(separator: ",") + "]")]
+        case .webOffer(let ids):
+            return [URLQueryItem(name: "quoteIds", value: "[" + ids.joined(separator: ",") + "]")]
         case .webOnboarding:
             return [URLQueryItem(name: "", value: "variation=ios")]
         }

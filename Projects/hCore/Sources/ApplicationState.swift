@@ -3,7 +3,7 @@ import hGraphQL
 
 public struct ApplicationState {
     public enum Screen: String {
-        case onboardingChat, offer, loggedIn, languagePicker, marketPicker, onboarding, webOnboarding, webOffer
+        case onboardingChat, offer, loggedIn, languagePicker, marketPicker, onboarding
 
         @available(*, deprecated, message: "use marketPicker instead")
         case marketing
