@@ -16,35 +16,28 @@ public extension EmbarkTrackingEvent {
 }
 
 internal extension GraphQL.EmbarkExternalRedirectLocation {
-    func trackingEvent(store: EmbarkStore) -> EmbarkTrackingEvent {
-        var properties = store.getAllValues()
-        properties["redirectLocation"] = self.rawValue
-        return EmbarkTrackingEvent(title: "External Redirect", properties: properties)
+    func trackingEvent(storeValues: [String:Any]) -> EmbarkTrackingEvent {
+        var trackingProperties = properties
+        trackingProperties["redirectLocation"] = self.rawValue
+        return EmbarkTrackingEvent(title: "External Redirect", properties: trackingProperties)
     }
 }
 
 internal extension EmbarkPassage.Track {
-    func trackingEvent(store: EmbarkStore) -> EmbarkTrackingEvent {
-        return .init(title: self.eventName, properties: properties(store: store))
+    func trackingEvent(storeValues: [String:Any]) -> EmbarkTrackingEvent {
+        return .init(title: self.eventName, properties: trackingProperties(storeValues: storeValues))
     }
     
-    private func properties(store: EmbarkStore) -> [String:Any] {
-        var properties = Dictionary<String,Any>()
-        if includeAllKeys {
-            properties = properties.merging((store.getAllValues()), uniquingKeysWith: takeRight)
-        } else {
-            let storeProperties = store.getAllValues().filter { key, value in
-                return eventKeys.contains(key)
-            }
-            
-            properties = properties.merging(storeProperties, uniquingKeysWith: takeRight)
+    private func trackingProperties(storeValues: [String:Any]) -> [String:Any] {
+        var filteredProperties = storeValues.filter { key, value in
+            return eventKeys.contains(key)
         }
         
         if let customData = customData {
-            properties = properties.merging((customData.toJSONDictionary() ?? [:]), uniquingKeysWith: takeRight)
+            filteredProperties = filteredProperties.merging((customData.toJSONDictionary() ?? [:]), uniquingKeysWith: takeRight)
         }
         
-        return properties
+        return filteredProperties
     }
 }
 

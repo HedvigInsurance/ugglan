@@ -60,7 +60,7 @@ public struct EmbarkState {
             .readOnly()
             .compactMap { $0?.tracks }
             .onValue(on: .background) { (tracks) in
-                tracks.forEach { track in track.trackingEvent(store: store).send() }
+                tracks.forEach { track in track.trackingEvent(storeValues: store.getAllValues()).send() }
             }
     }
 
@@ -87,7 +87,7 @@ public struct EmbarkState {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
                 
-                externalRedirect.trackingEvent(store: store).send()
+                externalRedirect.trackingEvent(storeValues: store.getAllValues()).send()
                 
                 switch externalRedirect {
                 case .mailingList:
