@@ -9,13 +9,57 @@ import Presentation
 import SnapKit
 import UIKit
 
+public enum EmbarkFlowType {
+    case onboarding
+}
+
+public enum EmbarkMenuRoute: CaseIterable {
+    case about
+    case appSettings
+    case restart
+    
+    var title: String {
+        switch self {
+        case .about:
+            return "About"
+        case .appSettings:
+            return "App Settings"
+        case .restart:
+            return "Restart"
+        }
+    }
+    
+    var style: MenuStyle {
+        switch self {
+        case .restart:
+            return .destructive
+        case .about, .appSettings:
+            return .default
+        }
+    }
+    
+    var image: UIImage {
+        switch self {
+        case .about:
+            return hCoreUIAssets.infoSmall.image
+        case .appSettings:
+            return hCoreUIAssets.settingsIcon.image
+        case .restart:
+            return hCoreUIAssets.restart.image
+        }
+    }
+}
+
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
+    let flowType: EmbarkFlowType
     let state = EmbarkState()
+    public let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
     
-    public init(name: String) {
+    public init(name: String, flowType: EmbarkFlowType) {
         self.name = name
+        self.flowType = flowType
     }
 }
 
@@ -210,20 +254,24 @@ extension Embark: Presentable {
             
             let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
             
+            let routes = EmbarkMenuRoute.allCases
+            
+            func routeHandler(route: EmbarkMenuRoute) -> Void {
+                if case .restart = route {
+                    state.restart()
+                } else {
+                    routeSignal.value = route
+                }
+            }
+            
             bag += optionsButton.attachSinglePressMenu(
                 viewController: viewController,
                 menu: Menu(
                     title: nil,
-                    children: [
-                        MenuChild(
-                            title: "Restart questions",
-                            style: .destructive,
-                            image: hCoreUIAssets.restart.image
-                        ) {
-                            state.restart()
-                        },
-                    ]
-                )
+                    children:
+                        routes.map { route in MenuChild.embarkChild(for: route) {
+                            routeHandler(route: route)
+                        }})
             )
             
             bag += state.passageTooltipsSignal.atOnce()
@@ -242,5 +290,17 @@ extension Embark: Presentable {
             
             return bag
         })
+    }
+}
+
+private extension MenuChild {
+    
+    static func embarkChild(for route: EmbarkMenuRoute, handler: @escaping () -> Void) -> MenuChild {
+        return MenuChild(
+            title: route.title,
+            style: route.style,
+            image: route.image,
+            handler: handler
+        )
     }
 }

@@ -28,7 +28,7 @@ public struct MenuChild {
 
 public struct Menu {
     let title: String?
-    let children: [MenuChild]
+    public var children: [MenuChild]
 
     public init(
         title: String?,
