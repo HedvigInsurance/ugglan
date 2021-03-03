@@ -3,6 +3,7 @@ import Presentation
 import Embark
 import Flow
 import hCore
+import hCoreUI
 import UIKit
 
 struct AppFlow {
@@ -18,25 +19,26 @@ struct AppFlow {
 
 struct OnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
-        let vc = UINavigationController()
+        let (viewController, future) = EmbarkOnboardingFlow().materialize()
         let bag = DisposeBag()
         
-        bag += vc.present(EmbarkOnboardingFlow()).onValue({ (redirect) in
+        bag += future.onValue({ (redirect) in
             switch redirect {
             case .mailingList:
                 break
             case .offer(let ids):
-                bag += vc.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onResult { result in
+                bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onResult { result in
                     switch result {
                     case .success:
-                        bag += vc.present(PostOnboarding())
+                        bag += viewController.present(PostOnboarding())
                     case .failure:
                         break
                     }
                 }
             }
         })
-        return (vc, bag)
+        
+        return (viewController, bag)
     }
 }
 
@@ -47,9 +49,19 @@ struct EmbarkOnboardingFlow: Presentable {
         
         return (viewController, Future { completion in
             bag += storySignal.atValue({ story in
+                let embark = Embark(name: story.name, flowType: .onboarding)
+                bag += embark.routeSignal.onValue({ (route) in
+                    guard let route = route,
+                          let presentable = presentable(for: route) else { return }
+                    
+                    viewController.present(
+                        presentable
+                    )
+                })
+                
                 bag += viewController
                     .present(
-                        Embark(name: story.name),
+                        embark,
                         options: [.autoPop]
                     ).onValue { (redirect) in completion(.success(redirect)) }
             })
@@ -57,3 +69,23 @@ struct EmbarkOnboardingFlow: Presentable {
         })
     }
 }
+
+extension EmbarkOnboardingFlow {
+    func presentable(for route: EmbarkMenuRoute) -> AnyPresentation<UIViewController, Future<Void>>? {
+        switch route {
+        case .about:
+            return Presentation(About(state: .onboarding).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
+                                                                                    .defaults,
+                                                                                    .largeTitleDisplayMode(.always),
+                                                                                    .prefersLargeTitles(true),])
+        case .appSettings:
+            return Presentation(About(state: .onboarding).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
+                                                                                    .defaults,
+                                                                                    .largeTitleDisplayMode(.always),
+                                                                                    .prefersLargeTitles(true),])
+        case .restart:
+            return nil
+        }
+    }
+}
+    
