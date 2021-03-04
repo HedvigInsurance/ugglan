@@ -17,7 +17,7 @@ public extension EmbarkTrackingEvent {
 
 internal extension GraphQL.EmbarkExternalRedirectLocation {
     func trackingEvent(storeValues: [String:Any]) -> EmbarkTrackingEvent {
-        var trackingProperties = properties
+        var trackingProperties = storeValues
         trackingProperties["redirectLocation"] = self.rawValue
         return EmbarkTrackingEvent(title: "External Redirect", properties: trackingProperties)
     }
