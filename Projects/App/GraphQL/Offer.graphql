@@ -10,8 +10,6 @@ query Offer($locale: Locale!) {
             switchable
         }
         personsInHousehold
-        presaleInformationUrl
-        policyUrl
         cost {
             ...CostFragment
         }
@@ -25,6 +23,10 @@ query Offer($locale: Locale!) {
             }
             insurableLimits(locale: $locale) {
                 ...InsurableLimitFragment
+            }
+            insuranceTerms(locale: $locale) {
+                displayName
+                url
             }
         }
     }
