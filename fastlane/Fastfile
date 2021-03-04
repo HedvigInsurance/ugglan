@@ -16,59 +16,50 @@
 default_platform(:ios)
 
 platform :ios do
-    lane :upload_dsyms_to_sentry do
-        download_dsyms
-        sentry_upload_dsym
-        clean_build_artifacts
-    end
-    
-    lane :upload_dsyms_to_sentry_after_processing do
-        require 'spaceship'
-        
-        Spaceship::ConnectAPI.login(ENV["FASTLANE_USERNAME"], ENV["FASTLANE_PASSWORD"])        
-        app = Spaceship::ConnectAPI::App.find("com.hedvig.app")
-        
-        build = nil
-                
-        loop do
-            begin
-                if build == nil
-                    app.get_builds.reject { |b| b.nil? }.each do |b|
-                        build = b if !b.processed?
-                    end
-                else
-                    app.get_builds.reject { |b| b.nil? }.each do |b|
-                        build = b if b.id == build.id
-                    end
-                end
-
-                unless build
-                    puts "No processing builds available for app"
-                else
-                    break if build.processed?
-                end
-            rescue => ex
-                puts "Got error #{ex}"
-            end
-            puts "Waiting 30 seconds"
-            sleep 30
-        end
-        
-        # wait some additional 20 minutes to make sure DSYM is ready for download
-        sleep 1200
-        upload_dsyms_to_sentry
+    lane :load_api do
+      app_store_connect_api_key(
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+        duration: 1200,
+        in_house: false
+      )
     end
     
     lane :setup do
+        load_api
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
+    end
+
+    lane :reprovision_everything do
+      sh("fastlane match nuke distribution --skip_confirmation true")
+
+      match(
+        type: "appstore",
+        app_identifier: "com.hedvig.app",
+      )
+
+      match(
+        type: "adhoc",
+        app_identifier: "com.hedvig.app",
+      )
+
+      match(
+        type: "adhoc",
+        app_identifier: "com.hedvig.test.app",
+      )
+
+      match(
+        type: "adhoc",
+        app_identifier: "com.hedvig.example.*",
+      )
     end
     
     lane :production_upload do |options|
         setup
         
         app_identifier = "com.hedvig.app"
-        app_profile = "match AppStore com.hedvig.app"
 
         if is_ci
             create_keychain(
@@ -122,9 +113,7 @@ platform :ios do
             export_options: {
                 method: "appstore",
                 iCloudContainerEnvironment: "Production",
-                provisioningProfiles: {
-                    app_identifier => app_profile
-                }
+                provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
             }
         )
         
@@ -155,6 +144,10 @@ platform :ios do
             "Hedvig" => {
                 "identifier" => "com.hedvig.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
+            },
+	    "EmbarkExample" => {
+                "identifier" => "com.hedvig.example.EmbarkExample",
+                "project_path" => "Projects/Embark/Embark.xcodeproj"
             }
         }
         
@@ -188,9 +181,7 @@ platform :ios do
                 sh("security default-keychain -d user")
                 sh("security find-identity -v -p codesigning CI")
             end
-            
-            app_profile = "match AdHoc #{app_identifier}"
-            
+                        
             update_project_provisioning(
                 xcodeproj: app["project_path"],
                 profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
@@ -209,9 +200,7 @@ platform :ios do
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
                     method: "ad-hoc",
-                    provisioningProfiles: {
-                        app_identifier => app_profile
-                    },
+                    provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
                     thinning: "<none>"
                 }
             )

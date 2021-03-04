@@ -10,23 +10,18 @@ import UIKit
 enum InsuranceWrapper {
     case external(EmbarkPassage.Action.AsEmbarkExternalInsuranceProviderAction)
     case previous(EmbarkPassage.Action.AsEmbarkPreviousInsuranceProviderAction)
-    
-    var embarkLinkFragment: GraphQL.EmbarkLinkFragment  {
+
+    var embarkLinkFragment: GraphQL.EmbarkLinkFragment {
         switch self {
-        case .external(let data):
+        case let .external(data):
             return data.externalInsuranceProviderData.next.fragments.embarkLinkFragment
-        case .previous(let data):
+        case let .previous(data):
             return data.previousInsuranceProviderData.next.fragments.embarkLinkFragment
         }
     }
-    
+
     var isExternal: Bool {
-        switch self {
-        case .external:
-            return true
-        default:
-            return false
-        }
+        false
     }
 }
 

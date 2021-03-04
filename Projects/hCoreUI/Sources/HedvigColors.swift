@@ -45,7 +45,7 @@ public extension UIColor {
                 UIColor(red: 0.886, green: 0.275, blue: 0.275, alpha: 1)
         })
     }
-    
+
     private enum Grayscale {
         static let hGray1 = UIColor(red: 0.918, green: 0.918, blue: 0.918, alpha: 1)
         static let hGray5 = UIColor(red: 0.145, green: 0.145, blue: 0.145, alpha: 1)
@@ -143,13 +143,11 @@ public extension UIColor {
                 return UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
             case let .embarkMessageBubble(negative):
                 if negative {
-                    return UIColor(dynamic: { trait -> UIColor in
-                        trait.userInterfaceStyle == .dark ? BrandColorBase.white  : BrandColorBase.lavender
-                    })
+                    return BrandColorBase.lavender
                 }
-                
+
                 return UIColor { (trait) -> UIColor in
-                    return trait.userInterfaceStyle == .dark ? Grayscale.hGray5 : Grayscale.hGray1
+                    trait.userInterfaceStyle == .dark ? Grayscale.hGray5 : Grayscale.hGray1
                 }
             }
         }

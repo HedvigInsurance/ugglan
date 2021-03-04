@@ -60,12 +60,6 @@ extension OfferTermsBulletPoints {
                     message: L10n.offerTrustIncreasedDeductible
                 )
             )
-
-            bulletList.append(
-                BulletPoint(
-                    title: L10n.offerHouseTrustHdi
-                )
-            )
         }
 
         return bulletList

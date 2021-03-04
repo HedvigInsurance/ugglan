@@ -24,31 +24,26 @@ extension OfferTermsLinks: Viewable {
             stackView.viewController?.present(SFSafariViewController(url: url), animated: true, completion: nil)
         }
 
-        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance }.onValueDisposePrevious { insurance in
+        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.lastQuoteOfMember }.onValueDisposePrevious { lastQuoteOfMember in
             let innerBag = DisposeBag()
+            
+            lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach({ term in
+                if let url = URL(string: term.url) {
+                    let button = Button(title: term.displayName, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
-            if let policyUrl = URL(string: insurance.policyUrl) {
-                let button = Button(title: L10n.offerTerms, type: .standard(backgroundColor: .lightGray, textColor: .black))
+                    innerBag += button.onTapSignal.onValue { _ in
+                        openUrl(url)
+                    }
 
-                innerBag += button.onTapSignal.onValue { _ in
-                    openUrl(policyUrl)
+                    innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
                 }
-
-                innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
-            }
-
-            if let presaleUrl = URL(string: insurance.presaleInformationUrl) {
-                let button = Button(title: L10n.offerPresaleInformation, type: .standard(backgroundColor: .lightGray, textColor: .black))
-
-                innerBag += button.onTapSignal.onValue { _ in
-                    openUrl(presaleUrl)
-                }
-
-                innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
-            }
+            })
 
             if let privacyPolicyUrl = URL(string: L10n.privacyPolicyUrl) {
-                let button = Button(title: L10n.offerPrivacyPolicy, type: .standard(backgroundColor: .lightGray, textColor: .black))
+                let button = Button(
+                    title: L10n.seOfferPersonalInformationButton,
+                    type: .standard(backgroundColor: .lightGray, textColor: .black)
+                )
 
                 innerBag += button.onTapSignal.onValue { _ in
                     openUrl(privacyPolicyUrl)

@@ -92,7 +92,10 @@ extension TextActionSet: Viewable {
 
             let button = Button(
                 title: data.textActionSetData?.link.label ?? "",
-                type: .standard(backgroundColor: .black, textColor: .white),
+                type: .standard(
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
+                ),
                 isEnabled: false
             )
 
