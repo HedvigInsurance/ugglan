@@ -17,6 +17,7 @@ public enum EmbarkMenuRoute: CaseIterable {
     case about
     case appSettings
     case restart
+    case login
     
     var title: String {
         switch self {
@@ -24,6 +25,8 @@ public enum EmbarkMenuRoute: CaseIterable {
             return "About"
         case .appSettings:
             return "App Settings"
+        case .login:
+            return "Login"
         case .restart:
             return "Restart"
         }
@@ -33,7 +36,7 @@ public enum EmbarkMenuRoute: CaseIterable {
         switch self {
         case .restart:
             return .destructive
-        case .about, .appSettings:
+        case .about, .appSettings, .login:
             return .default
         }
     }
@@ -46,6 +49,8 @@ public enum EmbarkMenuRoute: CaseIterable {
             return hCoreUIAssets.settingsIcon.image
         case .restart:
             return hCoreUIAssets.restart.image
+        case .login:
+            return hCoreUIAssets.addButton.image
         }
     }
 }

@@ -152,7 +152,7 @@ extension About: Presentable {
         )
         footerView.textAlignment = .center
 
-        form.append(footerView)
+        
 
         bag += viewController.install(form)
 

@@ -74,16 +74,18 @@ extension EmbarkOnboardingFlow {
     func presentable(for route: EmbarkMenuRoute) -> AnyPresentation<UIViewController, Future<Void>>? {
         switch route {
         case .about:
-            return Presentation(About(state: .onboarding).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
+            return Presentation(AppInfo(state: .appInformation).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
                                                                                     .defaults,
                                                                                     .largeTitleDisplayMode(.always),
                                                                                     .prefersLargeTitles(true),])
         case .appSettings:
-            return Presentation(About(state: .onboarding).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
+            return Presentation(AppInfo(state: .appSettings).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
                                                                                     .defaults,
                                                                                     .largeTitleDisplayMode(.always),
                                                                                     .prefersLargeTitles(true),])
         case .restart:
+            return nil
+        case .login:
             return nil
         }
     }
