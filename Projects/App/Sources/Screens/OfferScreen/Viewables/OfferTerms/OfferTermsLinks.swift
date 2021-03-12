@@ -24,7 +24,7 @@ extension OfferTermsLinks: Viewable {
             stackView.viewController?.present(SFSafariViewController(url: url), animated: true, completion: nil)
         }
 
-        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap(\.insurance).onValueDisposePrevious { _ in
+        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap(\.lastQuoteOfMember).onValueDisposePrevious { lastQuoteOfMember in
             let innerBag = DisposeBag()
 
             lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach { term in
