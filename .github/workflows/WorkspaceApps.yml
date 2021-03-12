@@ -29,8 +29,15 @@ jobs:
         key: ${{ runner.os }}-xcode-12-gm-carthage-${{ hashFiles('**/Cartfile.resolved') }}
     - name: Set XCODE_XCCONFIG_FILE
       run: |
-      echo "::stop-commands::`echo -n ${{ github.token }} | sha256sum | head -c 64`"
-      echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
+        # disable command workflow processing
+        echo "::stop-commands::`echo -n ${{ github.token }} | sha256sum | head -c 64`"
+
+        # set env
+        echo ::set-env name=XCODE_XCCONFIG_FILE::$(echo $GITHUB_WORKSPACE/Carthage-Xcode12-Workaround.xcconfig)
+
+        # enable workflow command processing
+        echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
+      
     - name: Install Tuist
       run: bash <(curl -Ls https://install.tuist.io)
     - name: Fastlane Action
