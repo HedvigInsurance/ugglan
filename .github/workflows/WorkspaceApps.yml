@@ -2,9 +2,9 @@ name: WorkspaceApps
 
 on:
   push:
-    branches: [ master, release ]
+    branches: [ release ]
   pull_request:
-    branches: [ master, release ]
+    branches: [ release ]
 
 jobs:
   build:
