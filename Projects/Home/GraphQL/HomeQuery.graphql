@@ -3,9 +3,14 @@ query Home {
         firstName
     }
     contracts {
+        displayName
         switchedFromInsuranceProvider
         status {
             ...ContractStatusFragment
+        }
+        upcomingRenewal {
+            renewalDate
+            draftCertificateUrl
         }
     }
 }

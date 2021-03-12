@@ -13,7 +13,8 @@ struct AttachGIFPane {
     @Inject var client: ApolloClient
 
     init(isOpenSignal: ReadWriteSignal<Bool>,
-         chatState: ChatState) {
+         chatState: ChatState)
+    {
         self.isOpenSignal = isOpenSignal
         self.chatState = chatState
     }
@@ -28,7 +29,7 @@ extension AttachGIFPane: Viewable {
                                                           animations: { isHidden in
                                                               view.animationSafeIsHidden = isHidden
                                                               view.layoutSuperviewsIfNeeded()
-        })
+                                                          })
 
         view.backgroundColor = .clear
 

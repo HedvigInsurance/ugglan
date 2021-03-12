@@ -20,7 +20,7 @@ extension Divider: Viewable {
         divider.backgroundColor = backgroundColor
 
         divider.snp.makeConstraints { make in
-            make.height.equalTo(1)
+            make.height.equalTo(CGFloat.hairlineWidth)
         }
 
         return (divider, bag)

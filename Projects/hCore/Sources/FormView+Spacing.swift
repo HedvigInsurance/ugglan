@@ -1,12 +1,13 @@
 import Form
 import Foundation
+import UIKit
 
 public enum SpacingType {
     case top
     case inbetween
     case custom(_ height: CGFloat)
 
-    var height: CGFloat {
+    public var height: CGFloat {
         switch self {
         case let .custom(height):
             return height
@@ -18,8 +19,8 @@ public enum SpacingType {
     }
 }
 
-extension SubviewOrderable {
-    public func appendSpacing(_ type: SpacingType) {
+public extension SubviewOrderable {
+    func appendSpacing(_ type: SpacingType) {
         let view = UIView()
 
         view.snp.makeConstraints { make in

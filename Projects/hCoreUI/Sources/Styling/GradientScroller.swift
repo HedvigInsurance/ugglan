@@ -38,7 +38,7 @@ extension GradientScroller {
                 if #available(iOS 13, *) {
                     return option.colors(for: traitCollection).map { $0.resolvedColor(with: traitCollection).cgColor }
                 } else {
-                    return option.colors(for: traitCollection).map { $0.cgColor }
+                    return option.colors(for: traitCollection).map(\.cgColor)
                 }
             }
 
@@ -88,7 +88,7 @@ extension GradientScroller {
     }
 
     func addGradient(into bag: DisposeBag) {
-        guard bag.isEmpty else {
+        guard bag.isEmpty, !UITraitCollection.isCatalyst else {
             return
         }
 
@@ -113,7 +113,8 @@ extension GradientScroller {
                     }
 
                     if navigationController.navigationBar.viewWithTag(colorViewTag) == nil,
-                        let barBackgroundView = navigationController.navigationBar.subviews.first {
+                       let barBackgroundView = navigationController.navigationBar.subviews.first
+                    {
                         let effectView = barBackgroundView.subviews[1]
                         barBackgroundView.addSubview(navigationBarColorView)
 

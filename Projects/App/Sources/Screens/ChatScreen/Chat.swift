@@ -49,7 +49,7 @@ extension Chat: Presentable {
             case .dashboard:
                 viewController.present(LoggedIn())
             case .login:
-                viewController.present(BankIDLogin(), style: .detented(.medium))
+                viewController.present(Login(), style: .detented(.medium))
             }
         }
 

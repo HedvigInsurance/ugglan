@@ -5,7 +5,7 @@
 //
 
 // Xcode needs this to find archived headers if SKIP_INSTALL is set
-HEADER_SEARCH_PATHS = $(OBJROOT)/UninstalledProducts/include
+HEADER_SEARCH_PATHS = $(inherited) $(OBJROOT)/UninstalledProducts/include
 
 // Where to find embedded frameworks
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
@@ -19,7 +19,10 @@ TARGETED_DEVICE_FAMILY = 1,2
 
 SWIFT_COMPILATION_MODE = wholemodule
 
-// figure out why CRuntime does this
-SWIFT_INCLUDE_PATHS = $(inherited) $(PROJECT_DIR)/../../Carthage/Checkouts/Runtime/Sources/CRuntime/Include
+SWIFT_INCLUDE_PATHS = $(inherited)
 
 CODE_SIGN_STYLE = Manual
+
+SWIFT_TREAT_WARNINGS_AS_ERRORS = NO
+
+OTHER_LDFLAGS = -ObjC

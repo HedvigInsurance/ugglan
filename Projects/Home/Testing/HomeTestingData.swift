@@ -1,11 +1,24 @@
 import Apollo
+import Foundation
 import hCore
 import hGraphQL
 import Home
 import TestingUtil
 
-extension JSONObject {
-    public static func makeCommonClaims() -> JSONObject {
+func addDaysToDate(_ days: Int = 30) -> Date {
+    let today = Date()
+
+    var dateComponent = DateComponents()
+    dateComponent.day = days
+    dateComponent.hour = 0
+
+    let futureDate = Calendar.current.date(byAdding: dateComponent, to: today)
+
+    return futureDate ?? Date()
+}
+
+public extension JSONObject {
+    static func makeCommonClaims() -> JSONObject {
         GraphQL.CommonClaimsQuery.Data(commonClaims: [
             .init(
                 title: "Mock",
@@ -25,34 +38,113 @@ extension JSONObject {
         ]).jsonObject
     }
 
-    public static func makeActive() -> JSONObject {
+    static func makeActiveWithRenewal() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
-                contracts: [.init(status: .makeActiveStatus())]
+                contracts: [.init(
+                    displayName: "Home insurance",
+                    status: .makeActiveStatus(),
+                    upcomingRenewal: .init(
+                        renewalDate: addDaysToDate().localDateString ?? "",
+                        draftCertificateUrl: "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                    )
+                )]
+            ).jsonObject,
+        ])
+    }
+
+    static func makeActiveWithMultipleRenewals() -> JSONObject {
+        combineMultiple([
+            GraphQL.HomeQuery.Data(
+                member: .init(firstName: "Mock"),
+                contracts: [
+                    .init(
+                        displayName: "Home insurance",
+                        status: .makeActiveStatus(),
+                        upcomingRenewal: .init(
+                            renewalDate: addDaysToDate().localDateString ?? "",
+                            draftCertificateUrl: "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                        )
+                    ),
+                    .init(
+                        displayName: "Travel insurance",
+                        status: .makeActiveStatus(),
+                        upcomingRenewal: .init(
+                            renewalDate: addDaysToDate().localDateString ?? "",
+                            draftCertificateUrl: "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                        )
+                    ),
+                ]
+            ).jsonObject,
+        ])
+    }
+
+    static func makeActiveWithMultipleRenewalsOnSeparateDates() -> JSONObject {
+        combineMultiple([
+            GraphQL.HomeQuery.Data(
+                member: .init(firstName: "Mock"),
+                contracts: [
+                    .init(
+                        displayName: "Home insurance",
+                        status: .makeActiveStatus(),
+                        upcomingRenewal: .init(
+                            renewalDate: addDaysToDate().localDateString ?? "",
+                            draftCertificateUrl: "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                        )
+                    ),
+                    .init(
+                        displayName: "Travel insurance",
+                        status: .makeActiveStatus(),
+                        upcomingRenewal: .init(
+                            renewalDate: addDaysToDate(20).localDateString ?? "",
+                            draftCertificateUrl: "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                        )
+                    ),
+                ]
+            ).jsonObject,
+        ])
+    }
+
+    static func makeActive() -> JSONObject {
+        combineMultiple([
+            GraphQL.HomeQuery.Data(
+                member: .init(firstName: "Mock"),
+                contracts: [
+                    .init(
+                        displayName: "Home insurance",
+                        status: .makeActiveStatus()
+                    ),
+                ]
             ).jsonObject,
             GraphQL.HomeInsuranceProvidersQuery.Data(insuranceProviders: [.init(name: "Hedvig", switchable: true)]).jsonObject,
             makeCommonClaims(),
         ])
     }
 
-    public static func makeActiveInFuture(switchable: Bool) -> JSONObject {
+    static func makeActiveInFuture(switchable: Bool) -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
-                contracts: [.init(status: .makeActiveInFutureStatus(futureInception: Date().localDateString))]
+                contracts: [
+                    .init(
+                        displayName: "Home insurance",
+                        status: .makeActiveInFutureStatus(futureInception: Date().localDateString)
+                    ),
+                ]
             ).jsonObject,
             GraphQL.HomeInsuranceProvidersQuery.Data(insuranceProviders: [.init(name: "Hedvig", switchable: switchable)]).jsonObject,
             makeCommonClaims(),
         ])
     }
 
-    public static func makePending(switchable: Bool) -> JSONObject {
+    static func makePending(switchable: Bool) -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),
                 contracts: [
                     .init(
+                        displayName: "Home insurance",
                         switchedFromInsuranceProvider: "Hedvig",
                         status: .makePendingStatus()
                     ),

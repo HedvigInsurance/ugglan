@@ -245,12 +245,12 @@ public extension DefaultStyling {
     )
 }
 
-extension DynamicSectionStyle {
-    static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in
+public extension DynamicSectionStyle {
+    internal static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in
         fatalError("never use plain style")
     }
 
-    public enum SeparatorType {
+    enum SeparatorType {
         case largeIcons, standard, none
 
         var color: UIColor {
@@ -274,9 +274,9 @@ extension DynamicSectionStyle {
         }
     }
 
-    public static func brandGroupedInset(separatorType: SeparatorType) -> DynamicSectionStyle {
+    static func brandGroupedInset(separatorType: SeparatorType) -> DynamicSectionStyle {
         DynamicSectionStyle { _ -> SectionStyle in
-            let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
+            let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
             return Style(
                 rowInsets: .init(inset: 15),
@@ -342,9 +342,9 @@ extension DynamicSectionStyle {
         }
     }
 
-    public static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear) -> DynamicSectionStyle {
+    static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear) -> DynamicSectionStyle {
         DynamicSectionStyle { trait -> SectionStyle in
-            let selectedBackgroundColor: UIColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
+            let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
             let isPad = trait.userInterfaceIdiom == .pad
 
             return Style(
@@ -411,20 +411,21 @@ extension DynamicSectionStyle {
         }
     }
 
-    public static let brandGroupedCaution = DynamicSectionStyle { _ -> SectionStyle in
+    static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
         let backgroundColor = UIColor.tint(.yellowTwo)
+        let cornerRadius = trait.userInterfaceIdiom == .pad ? CGFloat.defaultCornerRadius : 0
 
         return Style(
             rowInsets: .init(inset: 15),
             itemSpacing: 10,
             minRowHeight: 0,
             background: .init(style:
-                .init(background: .init(color: backgroundColor, border: .init(width: 0, color: .clear, cornerRadius: 0, borderEdges: .all)),
+                .init(background: .init(color: backgroundColor, border: .init(width: 0, color: .clear, cornerRadius: cornerRadius, borderEdges: .all)),
                       topSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
                       bottomSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
             ),
             selectedBackground: .init(style:
-                .init(background: .init(color: UIColor.tint(.yellowOne), border: .init(width: 0, color: .clear, cornerRadius: 0, borderEdges: .all)),
+                .init(background: .init(color: UIColor.tint(.yellowOne), border: .init(width: 0, color: .clear, cornerRadius: cornerRadius, borderEdges: .all)),
                       topSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)),
                       bottomSeparator: .init(style: .init(width: .hairlineWidth, color: UIColor.brand(.primaryBorderColor)), insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)))
             ),
@@ -433,7 +434,7 @@ extension DynamicSectionStyle {
         )
     }
 
-    public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
+    static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
         Style(
             rowInsets: .init(inset: 15),
             itemSpacing: 10,
@@ -484,13 +485,13 @@ extension DynamicFormStyle {
     }
 }
 
-extension DynamicTableViewFormStyle {
-    public static let brandInset = DynamicTableViewFormStyle(section: .default, form: .brandInset)
+public extension DynamicTableViewFormStyle {
+    static let brandInset = DynamicTableViewFormStyle(section: .default, form: .brandInset)
 }
 
 final class ListTableView: UITableView {}
 
-extension CGFloat {
-    public static var defaultCornerRadius: CGFloat = 8
-    public static var smallIconWidth: CGFloat = 16
+public extension CGFloat {
+    static var defaultCornerRadius: CGFloat = 8
+    static var smallIconWidth: CGFloat = 16
 }

@@ -46,7 +46,7 @@ extension About: Presentable {
 
             bag += loginRow.onSelect.onValue { _ in
                 viewController.present(
-                    BankIDLogin(),
+                    Login(),
                     style: .detented(.medium, .large),
                     options: [.allowSwipeDismissAlways, .defaults]
                 )

@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import Hero
 import hGraphQL
+import Kingfisher
 import Mixpanel
 import Presentation
 import UIKit
@@ -38,7 +39,7 @@ extension MarketPicker: Presentable {
         let backgroundImageView = UIImageView()
 
         bag += client.fetch(query: GraphQL.MarketingImagesQuery())
-            .compactMap { $0.appMarketingImages.filter { $0?.language?.code == Localization.Locale.currentLocale.code }.first }
+            .compactMap { $0.appMarketingImages.filter { $0.language?.code == Localization.Locale.currentLocale.code }.first }
             .compactMap { $0 }
             .onValue { marketingImage in
                 guard let url = URL(string: marketingImage.image?.url ?? "") else {
@@ -142,13 +143,10 @@ extension MarketPicker: Presentable {
                 guard let navigationController = viewController.navigationController else {
                     return
                 }
-
-                if navigationController.hero.isEnabled {
-                    navigationController.hero.isEnabled = false
+                if !UITraitCollection.isCatalyst {
+                    navigationController.hero.isEnabled = true
+                    navigationController.hero.navigationAnimationType = .fade
                 }
-
-                navigationController.hero.isEnabled = true
-                navigationController.hero.navigationAnimationType = .fade
                 viewController.present(Marketing())
             }
 
@@ -159,7 +157,7 @@ extension MarketPicker: Presentable {
                     form.transform = CGAffineTransform.identity
                     form.alpha = 1
                     form.layoutIfNeeded()
-            })
+                })
         }
 
         bag += form.didMoveToWindowSignal.onValue {

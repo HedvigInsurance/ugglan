@@ -19,11 +19,33 @@ extension PaymentHeaderCard: Viewable {
         view.isLayoutMarginsRelativeArrangement = true
         let bag = DisposeBag()
 
+        let innerBorderView = UIView()
+        innerBorderView.layer.borderWidth = .hairlineWidth
+        innerBorderView.layer.cornerRadius = .defaultCornerRadius
+        view.addArrangedSubview(innerBorderView)
+
+        bag += innerBorderView.applyBorderColor { _ in
+            .brand(.primaryBorderColor)
+        }
+
+        let innerStackView = UIStackView()
+        innerStackView.axis = .vertical
+        innerBorderView.addSubview(innerStackView)
+
+        innerStackView.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
+
         let topView = UIView()
         topView.backgroundColor = .brand(.secondaryBackground())
 
         bag += topView.didLayoutSignal.onValue { _ in
-            topView.applyRadiusMaskFor(topLeft: 10, bottomLeft: 0, bottomRight: 0, topRight: 10)
+            topView.applyRadiusMaskFor(
+                topLeft: .defaultCornerRadius,
+                bottomLeft: 0,
+                bottomRight: 0,
+                topRight: .defaultCornerRadius
+            )
         }
 
         let topViewStack = UIStackView()
@@ -36,8 +58,9 @@ extension PaymentHeaderCard: Viewable {
         }
 
         let leftTopViewStack = UIStackView()
+        leftTopViewStack.spacing = 12
         leftTopViewStack.axis = .vertical
-        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.title1(color: .primary))))
+        leftTopViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.subHeadline(color: .tertiary))))
 
         let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
 
@@ -53,28 +76,7 @@ extension PaymentHeaderCard: Viewable {
         bag += leftTopViewStack.addArranged(PaymentHeaderPrice(grossPriceSignal: grossPriceSignal, discountSignal: discountSignal, monthlyNetPriceSignal: netSignal))
 
         topViewStack.addArrangedSubview(leftTopViewStack)
-
-        let campaignTypeSignal = dataSignal.map { $0.redeemedCampaigns.first }.map { campaign -> CampaignBubble.CampaignType? in
-            guard let campaign = campaign else {
-                return nil
-            }
-
-            let incentiveFragment = campaign.fragments.campaignFragment.incentive?.fragments.incentiveFragment
-
-            if let freeMonths = incentiveFragment?.asFreeMonths {
-                return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
-            } else if let monthlyDeduction = incentiveFragment?.asMonthlyCostDeduction {
-                return CampaignBubble.CampaignType.monthlyDeduction(amount: monthlyDeduction.amount?.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount ?? "")
-            } else if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
-                return CampaignBubble.CampaignType.percentageDiscount(value: percentageDiscount.percentageDiscount, months: percentageDiscount.percentageNumberOfMonths)
-            }
-
-            return nil
-        }.plain().readable(initial: nil)
-
-        bag += topViewStack.addArranged(CampaignBubble(campaignTypeSignal: campaignTypeSignal))
-
-        view.addArrangedSubview(topView)
+        innerStackView.addArrangedSubview(topView)
 
         let bottomView = UIView()
         bag += bottomView.applyShadow { _ in
@@ -104,7 +106,7 @@ extension PaymentHeaderCard: Viewable {
         bottomViewStack.addArrangedSubview(UILabel(value: L10n.paymentsCardDate, style: .brand(.body(color: .primary))))
         bag += bottomViewStack.addArranged(PaymentHeaderNextCharge())
 
-        view.addArrangedSubview(bottomView)
+        innerStackView.addArrangedSubview(bottomView)
 
         return (view, bag)
     }

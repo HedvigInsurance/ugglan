@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
 
-extension UIView {
+public extension UIView {
     // recursively goes through all superviews and calls layoutIfNeeded()
-    public func layoutSuperviewsIfNeeded() {
+    func layoutSuperviewsIfNeeded() {
         superview?.layoutIfNeeded()
         superview?.layoutSuperviewsIfNeeded()
     }

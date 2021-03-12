@@ -5,89 +5,28 @@ import hCore
 import hGraphQL
 import Presentation
 import UIKit
-import WebKit
 
-struct BankIDLoginNorway {
+struct BankIDLoginNorway: Presentable {
     @Inject var client: ApolloClient
-}
 
-extension BankIDLoginNorway: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
-        let viewController = UIViewController()
-        viewController.preferredPresentationStyle = .detented(.large)
-        let bag = DisposeBag()
+        let redirectUrl = client.perform(
+            mutation: GraphQL.BankIdNorwayAuthMutation()
+        )
+        .compactMap { $0.norwegianBankIdAuth.redirectUrl }
+        .compactMap { URL(string: $0) }
 
-        let webView = WKWebView(frame: .zero)
-        webView.backgroundColor = .brand(.secondaryBackground())
+        let didLogin = client.subscribe(subscription: GraphQL.AuthStatusSubscription())
+            .compactMap { $0.authStatus?.status }
+            .filter(predicate: { status -> Bool in
+                status == .success
+            })
+            .take(first: 1)
+            .future
+            .toVoid()
 
-        let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.style = .whiteLarge
-        activityIndicator.color = .brand(.primaryTintColor)
+        let webViewLogin = WebViewLogin(redirectURL: redirectUrl, didLogin: didLogin)
 
-        webView.addSubview(activityIndicator)
-
-        activityIndicator.startAnimating()
-
-        activityIndicator.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.size.equalToSuperview()
-        }
-
-        bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
-            if loading {
-                activityIndicator.alpha = 1
-            } else {
-                activityIndicator.alpha = 0
-            }
-        }
-
-        viewController.view = webView
-
-        bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
-            guard let url = navigationAction.request.url else { return .allow }
-            let urlString = String(describing: url)
-
-            if urlString.contains("success") {
-                return .cancel
-            } else if urlString.contains("fail") {
-                loadBankID()
-                return .cancel
-            }
-
-            return .allow
-        }
-
-        bag += client.subscribe(subscription: GraphQL.BankIdAuthSubscriptionSubscription()).compactMap { $0.authStatus?.status }.filter(predicate: { status -> Bool in
-            status == .success
-        }).take(first: 1).onValue { _ in
-            let appDelegate = UIApplication.shared.appDelegate
-
-            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                appDelegate.registerFCMToken(fcmToken)
-            }
-
-            AnalyticsCoordinator().setUserId()
-
-            let window = appDelegate.window
-            appDelegate.bag += window.present(LoggedIn(), animated: true)
-        }
-
-        func loadBankID() {
-            bag += client.perform(
-                mutation: GraphQL.BankIdNorwayAuthMutation()
-            ).valueSignal.compactMap { $0.norwegianBankIdAuth.redirectUrl }.onValue { urlString in
-                guard let url = URL(string: urlString) else {
-                    return
-                }
-
-                webView.load(URLRequest(url: url))
-            }
-        }
-
-        loadBankID()
-
-        return (viewController, Future { _ in
-            bag
-        })
+        return webViewLogin.materialize()
     }
 }

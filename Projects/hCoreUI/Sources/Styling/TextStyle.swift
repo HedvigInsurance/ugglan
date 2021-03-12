@@ -1,152 +1,20 @@
 import Form
 import Foundation
+import UIKit
 
 public extension TextStyle {
-    enum TypographyColor {
-        case primary(state: State)
-        case secondary(state: State)
-        case tertiary(state: State)
-        case quartenary(state: State)
-        case link(state: State)
-        case destructive(state: State)
-
-        public enum State {
-            case negative
-            case positive
-            case dynamic
-            case dynamicReversed
-        }
-
-        public static var primary: Self {
-            Self.primary(state: .dynamic)
-        }
-
-        public static var secondary: Self {
-            Self.secondary(state: .dynamic)
-        }
-
-        public static var tertiary: Self {
-            Self.tertiary(state: .dynamic)
-        }
-
-        public static var quartenary: Self {
-            Self.quartenary(state: .dynamic)
-        }
-
-        public static var link: Self {
-            Self.link(state: .dynamic)
-        }
-
-        public static var destructive: Self {
-            Self.destructive(state: .dynamic)
-        }
-
-        public var positiveColor: UIColor {
-            switch self {
-            case .primary:
-                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 1)
-
-            case .secondary:
-                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.73)
-
-            case .tertiary:
-                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.56)
-
-            case .quartenary:
-                return UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.34)
-
-            case .link:
-                return UIColor(red: 0.53, green: 0.369, blue: 0.771, alpha: 1)
-
-            case .destructive:
-                return UIColor(red: 0.867, green: 0.153, blue: 0.153, alpha: 1)
-            }
-        }
-
-        public var negativeColor: UIColor {
-            switch self {
-            case .primary:
-                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 1)
-            case .secondary:
-                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.66)
-
-            case .tertiary:
-                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.44)
-
-            case .quartenary:
-                return UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.27)
-
-            case .link:
-                return UIColor(red: 0.745, green: 0.608, blue: 0.953, alpha: 1)
-
-            case .destructive:
-                return UIColor(red: 0.886, green: 0.275, blue: 0.275, alpha: 1)
-            }
-        }
-
-        var dynamicColor: UIColor {
-            UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark {
-                    return self.negativeColor
-                }
-
-                return self.positiveColor
-            })
-        }
-
-        var dynamicReversedColor: UIColor {
-            UIColor(dynamic: { trait -> UIColor in
-                if trait.userInterfaceStyle == .dark {
-                    return self.dynamicColor
-                }
-
-                return self.negativeColor
-            })
-        }
-
-        func color(for state: State) -> UIColor {
-            switch state {
-            case .dynamic:
-                return dynamicColor
-            case .dynamicReversed:
-                return dynamicReversedColor
-            case .negative:
-                return self.negativeColor
-            case .positive:
-                return self.positiveColor
-            }
-        }
-
-        var color: UIColor {
-            switch self {
-            case let .primary(state: state):
-                return color(for: state)
-            case let .secondary(state: state):
-                return color(for: state)
-            case let .tertiary(state: state):
-                return color(for: state)
-            case let .quartenary(state: state):
-                return color(for: state)
-            case let .link(state: state):
-                return color(for: state)
-            case let .destructive(state: state):
-                return color(for: state)
-            }
-        }
-    }
-
     enum BrandTextStyle {
-        case largeTitle(color: TypographyColor)
-        case title1(color: TypographyColor)
-        case title2(color: TypographyColor)
-        case title3(color: TypographyColor)
-        case headline(color: TypographyColor)
-        case subHeadline(color: TypographyColor)
-        case body(color: TypographyColor)
-        case callout(color: TypographyColor)
-        case footnote(color: TypographyColor)
-        case caption1(color: TypographyColor)
-        case caption2(color: TypographyColor)
+        case largeTitle(color: UIColor.TypographyColor)
+        case title1(color: UIColor.TypographyColor)
+        case title2(color: UIColor.TypographyColor)
+        case title3(color: UIColor.TypographyColor)
+        case headline(color: UIColor.TypographyColor)
+        case subHeadline(color: UIColor.TypographyColor)
+        case body(color: UIColor.TypographyColor)
+        case callout(color: UIColor.TypographyColor)
+        case footnote(color: UIColor.TypographyColor)
+        case caption1(color: UIColor.TypographyColor)
+        case caption2(color: UIColor.TypographyColor)
 
         private var color: UIColor {
             switch self {

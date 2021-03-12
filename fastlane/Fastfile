@@ -60,12 +60,6 @@ platform :ios do
     end
     
     lane :setup do
-        carthage(
-            command: "bootstrap",
-            cache_builds: true,
-            platform: "ios"
-        )
-        
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
     end
@@ -161,34 +155,6 @@ platform :ios do
             "Hedvig" => {
                 "identifier" => "com.hedvig.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
-            },
-            "EmbarkExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Embark/Embark.xcodeproj"
-            },
-            "ForeverExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Forever/Forever.xcodeproj"
-            },
-            "HomeExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Home/Home.xcodeproj"
-            },
-            "hCoreUIExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/hCoreUI/hCoreUI.xcodeproj"
-            },
-            "hCoreExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/hCore/hCore.xcodeproj"
-            },
-            "ContractsExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Contracts/Contracts.xcodeproj"
-            },
-            "PaymentExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Payment/Payment.xcodeproj"
             }
         }
         
@@ -391,7 +357,9 @@ platform :ios do
     end
     
     lane :workspace_tests do
-        setup
+        if !ENV["SKIP_SETUP"]
+            setup
+        end
         
         schemes = [
             "Ugglan",
@@ -403,6 +371,10 @@ platform :ios do
             "Home",
             "Payment"
         ]
+
+        if ENV["SCHEME_FILTER"]
+            schemes = schemes.filter { |scheme| scheme.include?(ENV["SCHEME_FILTER"]) }
+        end
         
         def report(schemes)
             xchtmlreport(
@@ -410,12 +382,14 @@ platform :ios do
             )
         end
         
+        device = "iPhone 11 Pro"
+        
         schemes.each { |scheme|
             begin
                 if ENV["RECORD"] == "true"
                     scan(
                         workspace: "Ugglan.xcworkspace",
-                        devices: ["iPhone 11 Pro"],
+                        devices: [device],
                         scheme: scheme,
                         derived_data_path: "scan_derived_data",
                         xcargs: "OTHER_SWIFT_FLAGS='$(inherited) -D RECORD'"
@@ -423,7 +397,7 @@ platform :ios do
                 else
                     scan(
                         workspace: "Ugglan.xcworkspace",
-                        devices: ["iPhone 11 Pro"],
+                        devices: [device],
                         scheme: scheme,
                         derived_data_path: "scan_derived_data"
                     )

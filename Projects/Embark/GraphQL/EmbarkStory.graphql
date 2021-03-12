@@ -171,8 +171,8 @@ fragment EmbarkRedirectFragment on EmbarkRedirect {
     }
 }
 
-query EmbarkStory($name: String!) {
-    embarkStory(name: $name) {
+query EmbarkStory($name: String!, $locale: String!) {
+    embarkStory(name: $name, locale: $locale) {
         id
         startPassage
         name

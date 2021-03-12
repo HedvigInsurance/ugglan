@@ -10,6 +10,7 @@ import UIKit
 struct ContractTable {
     @Inject var client: ApolloClient
     let presentingViewController: UIViewController
+    let filter: ContractFilter
 }
 
 extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
@@ -22,27 +23,15 @@ extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
             return .swedishApartment
         } else if let _ = asSwedishHouseAgreement {
             return .swedishHouse
+        } else if let _ = asDanishHomeContentAgreement {
+            return .danishHome
+        } else if let _ = asDanishTravelAgreement {
+            return .danishTravel
+        } else if let _ = asDanishAccidentAgreement {
+            return .danishAccident
         }
 
         fatalError("Unrecognised agreement provided")
-    }
-
-    var summary: String? {
-        if let norwegianHomeContents = asNorwegianHomeContentAgreement {
-            return norwegianHomeContents.address.street
-        } else if let norwegianTravel = asNorwegianTravelAgreement {
-            if norwegianTravel.numberCoInsured > 0 {
-                return L10n.dashboardMyInfoCoinsured(norwegianTravel.numberCoInsured)
-            }
-
-            return L10n.dashboardMyInfoNoCoinsured
-        } else if let swedishApartment = asSwedishApartmentAgreement {
-            return swedishApartment.address.street
-        } else if let swedishHouse = asSwedishHouseAgreement {
-            return swedishHouse.address.street
-        }
-
-        return nil
     }
 }
 
@@ -53,9 +42,9 @@ extension ContractTable: Viewable {
         let sectionStyle = SectionStyle(
             rowInsets: UIEdgeInsets(
                 top: 10,
-                left: 20,
+                left: 15,
                 bottom: 10,
-                right: 20
+                right: 15
             ),
             itemSpacing: 0,
             minRowHeight: 10,
@@ -72,7 +61,7 @@ extension ContractTable: Viewable {
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 
         let tableKit = TableKit<EmptySection, ContractRow>(style: style)
-        bag += tableKit.view.addTableFooterView(UpsellingFooter())
+        bag += tableKit.view.addTableFooterView(ContractTableFooter(filter: filter))
 
         tableKit.view.backgroundColor = .brand(.primaryBackground())
         tableKit.view.alwaysBounceVertical = true
@@ -92,12 +81,27 @@ extension ContractTable: Viewable {
             }
         }
 
-        func loadContracts() {
-            bag += client.fetch(
+        func watchContracts() {
+            bag += client.watch(
                 query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
-            ).valueSignal.compactMap { $0.contracts }.onValue { contracts in
-                let table = Table(rows: contracts.map { contract -> ContractRow in
+            ).compactMap { $0.contracts }.onValue { contracts in
+                var contractsToShow = contracts.filter {
+                    switch self.filter {
+                    case .active:
+                        return $0.status.asTerminatedStatus == nil
+                    case .terminated:
+                        return $0.status.asTerminatedStatus != nil
+                    case .none:
+                        return false
+                    }
+                }
+
+                if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts {
+                    contractsToShow = contracts
+                }
+
+                let table = Table(rows: contractsToShow.map { contract -> ContractRow in
                     ContractRow(
                         contract: contract,
                         displayName: contract.displayName,
@@ -111,7 +115,15 @@ extension ContractTable: Viewable {
             }
         }
 
-        loadContracts()
+        watchContracts()
+
+        let refreshControl = UIRefreshControl()
+        bag += client.refetchOnRefresh(
+            query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+            refreshControl: refreshControl
+        )
+
+        tableKit.view.refreshControl = refreshControl
 
         return (tableKit.view, bag)
     }

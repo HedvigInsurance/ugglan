@@ -10,16 +10,22 @@ struct Card {
     @ReadWriteState var title: DisplayableString
     @ReadWriteState var body: DisplayableString
     @ReadWriteState var buttonText: DisplayableString
+    var backgroundColor: UIColor
+    var buttonType: ButtonType
 }
 
 extension Card: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<Void>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<UIControl>) {
         let bag = DisposeBag()
         let view = UIView()
         view.accessibilityIdentifier = "Card"
         view.layer.cornerRadius = .defaultCornerRadius
+        view.layer.borderWidth = .hairlineWidth
+        bag += view.applyBorderColor { _ -> UIColor in
+            .brand(.primaryBorderColor)
+        }
 
-        view.backgroundColor = .tint(.yellowTwo)
+        view.backgroundColor = backgroundColor
 
         let contentView = UIStackView()
         contentView.axis = .vertical
@@ -45,7 +51,7 @@ extension Card: Viewable {
             let imageView = UIImageView()
             imageView.image = titleIcon
             imageView.contentMode = .scaleAspectFit
-            imageView.tintColor = .black
+            imageView.tintColor = .typographyColor(.primary(state: .matching(backgroundColor)))
 
             bag += $titleIcon.bindTo(imageView, \.image)
 
@@ -56,25 +62,29 @@ extension Card: Viewable {
             return imageView
         }())
 
-        let titleLabel = UILabel(value: title, style: TextStyle.brand(.headline(color: .primary(state: .positive))).centerAligned)
+        let titleLabel = UILabel(value: title, style: TextStyle.brand(.headline(color: .primary(state: .matching(backgroundColor)))).centerAligned)
         bag += $title.bindTo(titleLabel, \.value)
 
         headerView.addArrangedSubview(titleLabel)
 
-        let bodyLabel = MultilineLabel(value: body, style: TextStyle.brand(.subHeadline(color: .secondary(state: .positive))).centerAligned)
+        let bodyLabel = MultilineLabel(value: body, style: TextStyle.brand(.subHeadline(color: .secondary(state: .matching(backgroundColor)))).centerAligned)
         bag += $body.bindTo(bodyLabel.$value)
 
         bag += contentView.addArranged(bodyLabel) { view in
             contentView.setCustomSpacing(24, after: view)
         }
 
-        let button = Button(title: buttonText, type: .standardSmall(backgroundColor: .tint(.yellowOne), textColor: .brand(.primaryButtonTextColor)))
+        let button = Button(title: buttonText, type: buttonType)
         bag += $buttonText.bindTo(button.title)
-        bag += contentView.addArranged(button.alignedTo(alignment: .center))
 
-        return (view, Signal { callback in
-            bag += button.onTapSignal.onValue(callback)
-            return bag
+        let onTapCallbacker = Callbacker<UIControl>()
+
+        bag += contentView.addArranged(button.alignedTo(alignment: .center) { buttonView in
+            bag += button.onTapSignal.onValue {
+                onTapCallbacker.callAll(with: buttonView)
+            }
         })
+
+        return (view, onTapCallbacker.providedSignal.hold(bag))
     }
 }

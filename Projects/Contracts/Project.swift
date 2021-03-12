@@ -10,8 +10,7 @@ let project = Project.framework(
         .example,
         .testing,
     ]),
-    externalDependencies: [.apollo, .flow, .snapkit, .form, .presentation],
-    dependencies: ["hCore", "hCoreUI"],
+    projects: ["hCore", "hCoreUI"],
     sdks: [],
     includesGraphQL: true
 )

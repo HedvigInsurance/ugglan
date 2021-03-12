@@ -90,7 +90,7 @@ extension Embark: Presentable {
                     passageView.layoutIfNeeded()
                     form.layoutIfNeeded()
                     scrollView.layoutIfNeeded()
-            })
+                })
 
             bag += NotificationCenter.default
                 .signal(forName: UIResponder.keyboardWillHideNotification)
@@ -105,7 +105,7 @@ extension Embark: Presentable {
                     passageView.layoutIfNeeded()
                     form.layoutIfNeeded()
                     scrollView.layoutIfNeeded()
-            })
+                })
         }.onValue { link in
             self.state.goTo(passageName: link.name)
         }
@@ -136,7 +136,16 @@ extension Embark: Presentable {
             make.center.equalToSuperview()
         }
 
-        bag += client.fetch(query: GraphQL.EmbarkStoryQuery(name: name)).valueSignal.compactMap { $0.embarkStory }.onValue { embarkStory in
+        bag += client.fetch(
+            query: GraphQL.EmbarkStoryQuery(
+                name: name,
+                locale: Localization.Locale.currentLocale.code
+            )
+        ).valueSignal.compactMap { $0.embarkStory }.atError { error in
+            if let data = (error as? GraphQLHTTPResponseError)?.body {
+                print(String(data: data, encoding: .utf8) ?? "")
+            }
+        }.onValue { embarkStory in
             activityIndicator.removeFromSuperview()
 
             self.state.storySignal.value = embarkStory

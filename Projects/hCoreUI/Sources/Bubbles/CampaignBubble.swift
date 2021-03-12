@@ -73,7 +73,7 @@ extension CampaignBubble: Viewable {
                     if months == 1 {
                         subtitlelabel.text = L10n.offerScreenPercentageDiscountBubbleTitleSingular(Int(value))
                     } else {
-                        subtitlelabel.text = L10n.offerScreenPercentageDiscountBubbleTitlePlural(months, Int(value))
+                        subtitlelabel.text = L10n.offerScreenPercentageDiscountBubbleTitlePlural(Int(value), months)
                     }
                 case let .monthlyDeduction(amount):
                     titleLabel.text = L10n.offerScreenPercentageDiscountBubbleTitle

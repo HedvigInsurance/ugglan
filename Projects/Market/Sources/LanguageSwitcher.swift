@@ -12,9 +12,9 @@ extension Notification.Name {
     static let localeSwitched = Notification.Name("localeSwitched")
 }
 
-extension UIApplication {
+public extension UIApplication {
     // reloads all text that is derived from translations in the app
-    public func reloadAllLabels() {
+    func reloadAllLabels() {
         func reloadLabels(in base: UIView) {
             for view in base.subviews {
                 if let label = view as? UILabel {
@@ -99,111 +99,26 @@ extension LanguageSwitcher: Presentable {
             Localization.Locale.currentLocale = locale
         }
 
-        switch Localization.Locale.currentLocale.market {
-        case .se:
-            let englishRowImageView = UIImageView()
-            englishRowImageView.snp.makeConstraints { make in
+        Market.fromLocalization(Localization.Locale.currentLocale.market).languages.forEach { language in
+            let checkMarkImageView = UIImageView()
+            checkMarkImageView.snp.makeConstraints { make in
                 make.width.equalTo(20)
                 make.height.equalTo(20)
             }
 
-            if Localization.Locale.currentLocale == .en_SE {
-                englishRowImageView.image = Asset.checkmark.image
+            bag += Localization.Locale.$currentLocale.atOnce().onValue { locale in
+                if locale == language {
+                    checkMarkImageView.image = Asset.checkmark.image
+                } else {
+                    checkMarkImageView.image = nil
+                }
             }
 
-            let swedishRowImageView = UIImageView()
-            swedishRowImageView.snp.makeConstraints { make in
-                make.width.equalTo(20)
-                make.height.equalTo(20)
+            let row = RowView(title: language.displayName, style: .brand(.headline(color: .primary)), appendSpacer: false)
+            row.append(checkMarkImageView)
+            bag += section.append(row).onValue { _ in
+                pickLanguage(locale: language)
             }
-
-            if Localization.Locale.currentLocale == .sv_SE {
-                swedishRowImageView.image = Asset.checkmark.image
-            }
-
-            let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
-            bag += section.append(englishRow).onValue { _ in
-                pickLanguage(locale: .en_SE)
-
-                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    englishRowImageView.image = Asset.checkmark.image
-                       }, completion: nil)
-
-                UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    swedishRowImageView.image = nil
-                       }, completion: nil)
-            }
-
-            englishRow.append(englishRowImageView)
-
-            let swedishRow = RowView(title: "Svenska", style: .brand(.headline(color: .primary)), appendSpacer: false)
-            bag += section.append(swedishRow).onValue { _ in
-                pickLanguage(locale: .sv_SE)
-
-                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    englishRowImageView.image = nil
-                       }, completion: nil)
-
-                UIView.transition(with: swedishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    swedishRowImageView.image = Asset.checkmark.image
-                       }, completion: nil)
-            }
-
-            swedishRow.append(swedishRowImageView)
-        case .no:
-
-            let englishRowImageView = UIImageView()
-            englishRowImageView.snp.makeConstraints { make in
-                make.width.equalTo(20)
-                make.height.equalTo(20)
-            }
-
-            if Localization.Locale.currentLocale == .en_NO {
-                englishRowImageView.image = Asset.checkmark.image
-            }
-
-            let norwegianRowImageView = UIImageView()
-            norwegianRowImageView.snp.makeConstraints { make in
-                make.width.equalTo(20)
-                make.height.equalTo(20)
-            }
-
-            if Localization.Locale.currentLocale == .nb_NO {
-                norwegianRowImageView.image = Asset.checkmark.image
-            }
-
-            let englishRow = RowView(title: "English", style: .brand(.headline(color: .primary)), appendSpacer: false)
-            bag += section.append(englishRow).onValue { _ in
-                pickLanguage(locale: .en_NO)
-
-                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    englishRowImageView.image = Asset.checkmark.image
-                       }, completion: nil)
-
-                UIView.transition(with: norwegianRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    norwegianRowImageView.image = nil
-                       }, completion: nil)
-            }
-
-            englishRow.append(englishRowImageView)
-
-            let norwegianRow = RowView(title: "Norsk (Bokmål)", style: .brand(.headline(color: .primary)), appendSpacer: false)
-            bag += section.append(norwegianRow).onValue { _ in
-                pickLanguage(locale: .nb_NO)
-
-                UIView.transition(with: englishRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    englishRowImageView.image = nil
-                       }, completion: nil)
-
-                UIView.transition(with: norwegianRowImageView, duration: 0.25, options: .transitionCrossDissolve, animations: {
-                    norwegianRowImageView.image = Asset.checkmark.image
-                       }, completion: nil)
-            }
-
-            norwegianRow.append(norwegianRowImageView)
-        case .dk:
-            // TODO:
-            break
         }
 
         let marketSection = ButtonSection(text: L10n.settingsChangeMarket, style: .danger)

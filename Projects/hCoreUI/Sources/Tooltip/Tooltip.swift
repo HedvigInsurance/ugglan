@@ -20,8 +20,8 @@ public struct Tooltip {
     }
 }
 
-extension UIView {
-    public func present(_ tooltip: Tooltip) -> Disposable {
+public extension UIView {
+    func present(_ tooltip: Tooltip) -> Disposable {
         let bag = DisposeBag()
         let tooltipView = tooltip.materialize(into: bag)
         tooltipView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1).concatenating(CGAffineTransform(translationX: 0, y: -20))

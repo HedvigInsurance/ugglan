@@ -40,20 +40,20 @@ extension UpsellingFooter {
 
             bag += stackView.addArranged(MultilineLabel(
                 value: title,
-                style: TextStyle.brand(.headline(color: .primary)).centerAligned
+                style: TextStyle.brand(.title3(color: .primary)).centerAligned
             ))
             bag += stackView.addArranged(MultilineLabel(
                 value: description,
-                style: TextStyle.brand(.body(color: .primary)).centerAligned
+                style: TextStyle.brand(.body(color: .secondary)).centerAligned
             )) { view in
                 stackView.setCustomSpacing(20, after: view)
             }
 
             let button = Button(
                 title: buttonText,
-                type: .standardSmall(
-                    backgroundColor: .brand(.primaryButtonBackgroundColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                type: .outline(
+                    borderColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonBackgroundColor)
                 )
             )
 
@@ -100,7 +100,7 @@ extension UpsellingFooter: Viewable {
             case .no:
                 let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
                     contract.currentAgreement.asNorwegianTravelAgreement != nil
-                    })
+                })
 
                 if !hasTravelAgreement {
                     innerBag += stackView.addArranged(UpsellingBox(
@@ -112,7 +112,7 @@ extension UpsellingFooter: Viewable {
 
                 let hasHomeContentsAgreement = contracts.contains(where: { contract -> Bool in
                     contract.currentAgreement.asNorwegianHomeContentAgreement != nil
-                    })
+                })
 
                 if !hasHomeContentsAgreement {
                     innerBag += stackView.addArranged(UpsellingBox(

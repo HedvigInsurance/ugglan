@@ -4,15 +4,14 @@ import Flow
 import Foundation
 import hCore
 import hGraphQL
-import Kingfisher
 import UIKit
 
 public struct RemoteVectorIcon {
-    public let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
-    public let finishedLoadingSignal: Signal<Void>
-    public let finishedLoadingCallback = Callbacker<Void>()
+    let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
+    let finishedLoadingSignal: Signal<Void>
+    let finishedLoadingCallback = Callbacker<Void>()
     @Inject var environment: ApolloEnvironmentConfig
-    public let threaded: Bool
+    let threaded: Bool
 
     public init(
         _ icon: GraphQL.IconFragment? = nil,
@@ -24,75 +23,116 @@ public struct RemoteVectorIcon {
     }
 }
 
-public struct PDFProcessor: ImageProcessor {
-    public func process(item: ImageProcessItem, options _: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
-        switch item {
-        case let .image(image):
-            return image
-        case let .data(data):
-            let pdfData = data as CFData
-            guard let provider: CGDataProvider = CGDataProvider(data: pdfData) else { return nil }
-            guard let pdfDoc: CGPDFDocument = CGPDFDocument(provider) else { return nil }
-            guard let pdfPage: CGPDFPage = pdfDoc.page(at: 1) else { return nil }
-            var pageRect: CGRect = pdfPage.getBoxRect(.mediaBox)
-            pageRect.size = CGSize(width: pageRect.size.width, height: pageRect.size.height)
-            UIGraphicsBeginImageContextWithOptions(pageRect.size, false, UIScreen.main.scale)
-            guard let context: CGContext = UIGraphicsGetCurrentContext() else { return nil }
-            context.saveGState()
-            context.translateBy(x: 0.0, y: pageRect.size.height)
-            context.scaleBy(x: 1, y: -1)
-            context.concatenate(pdfPage.getDrawingTransform(.mediaBox, rect: pageRect, rotate: 0, preserveAspectRatio: true))
-            context.drawPDFPage(pdfPage)
-            context.restoreGState()
-            let pdfImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            return pdfImage
-        }
-    }
-
-    public let identifier: String
-}
-
 extension RemoteVectorIcon: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIImageView, Disposable) {
         let bag = DisposeBag()
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.alpha = 0
+
+        let pdfDocumentSignal = ReadWriteSignal<CGPDFDocument?>(nil)
+
+        func renderPdfDocument(pdfDocument: CGPDFDocument) {
+            let imageViewSize = imageView.frame.size
+
+            if let image = imageView.image {
+                if image.size == imageViewSize {
+                    return
+                }
+            }
+
+            let page = pdfDocument.page(at: 1)!
+            let rect = page.getBoxRect(CGPDFBox.mediaBox)
+
+            let imageSize = CGSize(
+                width: imageViewSize.width,
+                height: imageViewSize.width * (rect.height / rect.width)
+            )
+
+            imageView.frame.size = imageSize
+
+            func render(_ context: CGContext) {
+                context.setFillColor(gray: 1, alpha: 0)
+                context.fill(CGRect(
+                    x: rect.origin.x,
+                    y: rect.origin.y,
+                    width: imageSize.width,
+                    height: imageSize.height
+                ))
+                context.translateBy(x: 0, y: imageSize.height)
+                context.scaleBy(
+                    x: imageSize.width / rect.width,
+                    y: -(imageSize.height / rect.height)
+                )
+                context.drawPDFPage(page)
+            }
+
+            let renderer = UIGraphicsImageRenderer(size: imageSize)
+            let image = renderer.image(actions: { context in
+                render(context.cgContext)
+            })
+
+            DispatchQueue.main.async {
+                imageView.image = image
+
+                UIView.animate(withDuration: 0.25) {
+                    imageView.alpha = 1
+                }
+            }
+
+            finishedLoadingCallback.callAll()
+        }
+
+        bag += imageView.didLayoutSignal.map { imageView.bounds.size }.filter { $0.width != 0 && $0.height != 0 }.distinct()
+            .withLatestFrom(pdfDocumentSignal.atOnce().plain().compactMap { $0 })
+            .onValue { _, pdfDocument in
+                renderPdfDocument(pdfDocument: pdfDocument)
+            }
+
+        bag += pdfDocumentSignal.compactMap { $0 }.onValue { pdfDocument in
+            renderPdfDocument(pdfDocument: pdfDocument)
+        }
 
         bag += combineLatest(
-            iconSignal.atOnce().plain(),
-            imageView.traitCollectionSignal.atOnce().plain(),
-            imageView.didLayoutSignal
-        ).compactMap { iconFragment, traitCollection, _ -> String? in
+            iconSignal.atOnce(),
+            imageView.traitCollectionSignal.atOnce()
+        ).compactMap { iconFragment, traitCollection -> String? in
             if traitCollection.userInterfaceStyle == .dark {
                 return iconFragment?.variants.dark.pdfUrl
             }
 
             return iconFragment?.variants.light.pdfUrl
-        }.onValue { pdfUrlString in
+        }.map(on: .background) { pdfUrlString -> CFData? in
             guard let url = URL(string: "\(self.environment.assetsEndpointURL.absoluteString)\(pdfUrlString)") else {
-                return
+                return nil
             }
 
-            let processor = PDFProcessor(identifier: "pdf.\(imageView.frame.size.height)")
-            let cache = ImageCache(name: "pdf.\(imageView.frame.size.height)")
+            if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
+                imageView.alpha = 1
+                return data as CFData
+            }
 
-            imageView.kf.setImage(with: url, options: [
-                .processor(processor),
-                .transition(.fade(0.25)),
-                .originalCache(cache),
-                .cacheOriginalImage,
-            ], completionHandler: { _ in
-                self.finishedLoadingCallback.callAll()
-            })
-        }
+            let data = try? Data(contentsOf: url)
+
+            if let data = data {
+                try? Disk.save(data, to: .caches, as: url.absoluteString)
+
+                return data as CFData
+            }
+
+            return nil
+        }.map(on: threaded ? .background : .main) { data in
+            guard let data = data else { return nil }
+            guard let provider = CGDataProvider(data: data) else { return nil }
+            return CGPDFDocument(provider)
+        }.compactMap { $0 }.bindTo(pdfDocumentSignal)
 
         return (imageView, bag)
     }
 }
 
-extension RemoteVectorIcon {
-    public func alignedTo(
+public extension RemoteVectorIcon {
+    func alignedTo(
         _: UIStackView.Alignment,
         configure: @escaping (_ matter: Self.Matter) -> Void = { _ in }
     ) -> ContainerStackViewable<ContainerStackViewable<RemoteVectorIcon, UIImageView, UIStackView>, UIStackView, UIStackView> {

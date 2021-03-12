@@ -8,6 +8,7 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import Hero
 import hGraphQL
 import Mixpanel
 import Payment
@@ -39,7 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_: UIApplication, continue userActivity: NSUserActivity,
-                     restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+                     restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool
+    {
         guard let url = userActivity.webpageURL else { return false }
         guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else { return false }
         guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
@@ -203,6 +205,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
+            #if DEBUG
+                case let .didDeallocate(presentableId, from: context):
+                    message = "\(presentableId) was deallocated after presentation from \(context)"
+                case let .didLeak(presentableId, from: context):
+                    message = "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
+            #endif
             }
 
             presentableLogPresentation(message, data, file, function, line)
@@ -223,7 +231,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         RowAndProviderTracking.handler = { event in
             Mixpanel.mainInstance().track(event: event)
         }
-
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
@@ -311,8 +318,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-extension ApolloClient {
-    public static func initAndRegisterClient() -> Future<Void> {
+public extension ApolloClient {
+    static func initAndRegisterClient() -> Future<Void> {
         Self.initClient().onValue { store, client in
             Dependencies.shared.add(module: Module {
                 store
@@ -339,9 +346,11 @@ extension AppDelegate: MessagingDelegate {
         }
     }
 
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String) {
-        ApplicationState.setFirebaseMessagingToken(fcmToken)
-        registerFCMToken(fcmToken)
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let fcmToken = fcmToken {
+            ApplicationState.setFirebaseMessagingToken(fcmToken)
+            registerFCMToken(fcmToken)
+        }
     }
 }
 

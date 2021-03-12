@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-extension UIView {
-    public func applyRadiusMaskFor(
+public extension UIView {
+    func applyRadiusMaskFor(
         topLeft: CGFloat = 0,
         bottomLeft: CGFloat = 0,
         bottomRight: CGFloat = 0,

@@ -129,7 +129,7 @@ extension PHAsset {
                     break
                 case .audio:
                     break
-                    @unknown default:
+                @unknown default:
                     break
                 }
             }

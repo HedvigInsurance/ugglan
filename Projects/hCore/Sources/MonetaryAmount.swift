@@ -65,8 +65,8 @@ public extension MonetaryAmount {
     }
 }
 
-extension GraphQL.MonetaryAmountFragment {
-    public var monetaryAmount: MonetaryAmount {
+public extension GraphQL.MonetaryAmountFragment {
+    var monetaryAmount: MonetaryAmount {
         .init(amount: amount, currency: currency)
     }
 }

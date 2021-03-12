@@ -95,7 +95,7 @@ extension BankIDLoginSweden: Presentable {
         bag += closeButtonContainer.addArranged(closeButton)
 
         let statusSignal = client.subscribe(
-            subscription: GraphQL.BankIdAuthSubscriptionSubscription()
+            subscription: GraphQL.AuthStatusSubscription()
         ).compactMap { $0.authStatus?.status }
 
         bag += statusSignal.skip(first: 1).onValue { authStatus in

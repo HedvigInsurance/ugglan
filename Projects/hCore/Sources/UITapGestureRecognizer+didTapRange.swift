@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-extension UITapGestureRecognizer {
-    public func didTapRange(in label: UILabel, range: NSRange) -> Bool {
+public extension UITapGestureRecognizer {
+    func didTapRange(in label: UILabel, range: NSRange) -> Bool {
         guard let attrString = label.attributedText else {
             return false
         }
