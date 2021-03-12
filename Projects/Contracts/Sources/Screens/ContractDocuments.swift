@@ -21,41 +21,43 @@ extension ContractDocuments: Presentable {
 
         let section = form.appendSection()
 
-        let certificateRow = RowView(
-            title: L10n.myDocumentsInsuranceCertificate,
-            style: .brand(.body(color: .primary))
-        )
-        certificateRow.append(hCoreUIAssets.chevronRight.image)
+        func showSections() {
+            if let url = URL(string: contract.currentAgreement.certificateUrl) {
+                let certificateRow = RowView(
+                    title: L10n.myDocumentsInsuranceCertificate,
+                    style: .brand(.body(color: .primary))
+                )
+                certificateRow.append(hCoreUIAssets.chevronRight.image)
 
-        bag += section.append(certificateRow).onValue { _ in
-            guard let url = URL(string: self.contract.currentAgreement.certificateUrl) else {
-                return
+                bag += section.append(certificateRow).onValue { _ in
+                    viewController.present(
+                        Document(url: url, title: L10n.myDocumentsInsuranceCertificate).withCloseButton,
+                        style: .detented(.large)
+                    )
+                }
             }
 
-            viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceCertificate),
-                style: .detented(.large, modally: false)
-            )
-        }
+            if let url = URL(string: contract.termsAndConditions.url) {
+                let insuranceTermsRow = RowView(
+                    title: L10n.myDocumentsInsuranceTerms,
+                    style: .brand(.body(color: .primary))
+                )
+                insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
 
-        let insuranceTermsRow = RowView(
-            title: L10n.myDocumentsInsuranceTerms,
-            style: .brand(.body(color: .primary))
-        )
-        insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
-
-        bag += section.append(insuranceTermsRow).onValue { _ in
-            guard let url = URL(string: self.contract.termsAndConditions.url) else {
-                return
+                bag += section.append(insuranceTermsRow).onValue { _ in
+                    viewController.present(
+                        Document(url: url, title: L10n.myDocumentsInsuranceTerms).withCloseButton,
+                        style: .detented(.large)
+                    )
+                }
             }
-
-            viewController.present(
-                InsuranceDocument(url: url, title: L10n.myDocumentsInsuranceTerms),
-                style: .detented(.large, modally: false)
-            )
         }
 
-        bag += viewController.install(form)
+        if contract.status.asPendingStatus == nil {
+            showSections()
+        }
+
+        bag += viewController.install(form, options: [])
 
         return (viewController, bag)
     }
