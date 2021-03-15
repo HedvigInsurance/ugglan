@@ -4,10 +4,10 @@ import Form
 import hCore
 import hCoreUI
 import hGraphQL
+import Market
 import Presentation
 import SwiftUI
 import UIKit
-import Market
 
 struct AppInfo {
     @Inject var client: ApolloClient
@@ -15,14 +15,13 @@ struct AppInfo {
 
     enum State {
         case appSettings, appInformation
-        
+
         enum InfoRows: CaseIterable {
-           
             case language
             case locale
             case version
             case memberId
-            
+
             var title: String {
                 switch self {
                 case .language:
@@ -35,7 +34,7 @@ struct AppInfo {
                     return L10n.EmbarkOnboardingMoreOptions.userIdLabel
                 }
             }
-            
+
             var icon: UIImage? {
                 switch self {
                 case .language:
@@ -48,37 +47,42 @@ struct AppInfo {
                     return hCoreUIAssets.memberCard.image
                 }
             }
-            
+
             var isTappable: Bool {
                 switch self {
-                case .language, .locale:
+                case .language:
                     return true
-                case .version, .memberId:
+                case .version, .memberId, .locale:
                     return false
-                    
                 }
             }
         }
-        
-        enum ButtonRows: CaseIterable {
-            case loginButton
+
+        enum ButtonRow: CaseIterable {
             case changeButton
+
+            var title: String {
+                switch self {
+                case .changeButton:
+                    return L10n.settingsChangeMarket.displayValue
+                }
+            }
         }
-        
+
         func infoRows() -> [InfoRows] {
             switch self {
             case .appInformation:
                 return [.memberId, .version]
             case .appSettings:
-                return [.language, .locale]
+                return []
             }
         }
-        
-        func buttonRows() -> [ButtonRows] {
+
+        func button() -> ButtonRow? {
             if case .appSettings = self {
-                return [.changeButton]
+                return .changeButton
             } else {
-                return []
+                return nil
             }
         }
     }
@@ -92,41 +96,29 @@ extension AppInfo: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = L10n.settingsChangeMarket
-        
+
         let bag = DisposeBag()
-        
+
         let form = FormView()
-        
+
         form.appendSpacing(.inbetween)
-        
+
         let bodySection = form.appendSection()
-        
+
         form.appendSpacing(.inbetween)
-        
-        let buttonsSection = form.appendSection() 
-        
-        func fetchAndDisplayMarket() {
-            bag += client.fetch(query: GraphQL.GeoQuery())
-                .valueSignal
-                .compactMap { $0.geo.countryIsoCode }
-                .onValue { countryISOCode in
-                    if let market = Market(rawValue: countryISOCode) {
-                        let row = CountryRow(market: market)
-                        bag += bodySection.append(row)
-                    }
-                }
-        }
-        
+
+        let buttonsSection = form.appendSection()
+
         func addFooter() {
             let year = Calendar.current.component(.year, from: Date())
-            
+
             let footerView = UILabel(
                 value: "© Hedvig AB - \(year)",
                 style: TextStyle.brand(.footnote(color: .primary)).centerAligned
             )
             footerView.textAlignment = .center
         }
-        
+
         func value(row: State.InfoRows, completion: @escaping (String) -> Void) {
             switch row {
             case .language:
@@ -138,20 +130,81 @@ extension AppInfo: Presentable {
             case .memberId:
                 bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap {
                     $0.member.id
-                }.onValue({ (memberId) in
+                }.onValue { memberId in
                     completion(memberId)
-                })
+                }
             }
         }
-        
+
         state.infoRows().forEach { row in
-            value(row: row) { (valueString) in
+            value(row: row) { valueString in
                 bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: valueString))
             }
         }
-        
+
+        func presentAlert() {
+            let alert = Alert(
+                title: L10n.logoutAlertTitle,
+                message: nil,
+                tintColor: nil,
+                actions: [
+                    Alert.Action(
+                        title: L10n.logoutAlertActionCancel,
+                        style: UIAlertAction.Style.cancel
+                    ) { false },
+                    Alert.Action(
+                        title: L10n.logoutAlertActionConfirm,
+                        style: UIAlertAction.Style.destructive
+                    ) { true },
+                ]
+            )
+
+            bag += viewController.present(alert).onValue { shouldLogout in
+                if shouldLogout {
+                    ApplicationState.preserveState(.marketPicker)
+                    UIApplication.shared.appDelegate.logout()
+                }
+            }
+        }
+
+        if state == .appSettings {
+            let row = State.InfoRows.locale
+            let market = Localization.Locale.currentLocale.market
+            bag += bodySection.append(AppInfoRow(title: row.title, icon: market.icon, isTappable: row.isTappable, value: market.marketName))
+
+            let language = State.InfoRows.language
+            let languageRow = AppInfoRow(title: language.title, icon: language.icon, isTappable: language.isTappable, value: Localization.Locale.currentLocale.displayName)
+            bag += bodySection.append(languageRow)
+
+            bag += languageRow.onSelect.onValue { _ in
+                presentAlert()
+            }
+        }
+
+        if let buttonRow = state.button() {
+            let button = Button(title: buttonRow.title, type: .outline(borderColor: UIColor.brand(.primaryBorderColor), textColor: UIColor.brand(.primaryText())))
+            bag += buttonsSection.append(button)
+
+            bag += button.onTapSignal.onValue {
+                presentAlert()
+            }
+        }
+
         bag += viewController.install(form)
-        
+
         return (viewController, bag)
+    }
+}
+
+private extension Localization.Locale.Market {
+    var icon: UIImage {
+        switch self {
+        case .no:
+            return hCoreUIAssets.flagNO.image
+        case .se:
+            return hCoreUIAssets.flagSE.image
+        case .dk:
+            return hCoreUIAssets.flagDK.image
+        }
     }
 }

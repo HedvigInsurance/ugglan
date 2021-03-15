@@ -3,14 +3,25 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
-import UIKit
 import Market
+import UIKit
 
 public struct AppInfoRow {
+    public init(title: String, icon: UIImage?, isTappable: Bool, value: String) {
+        self.title = title
+        self.icon = icon
+        self.isTappable = isTappable
+        self.value = value
+        onSelect = onSelectCallbacker.providedSignal
+    }
+
     let title: String
     let icon: UIImage?
     let isTappable: Bool
     let value: String
+
+    private let onSelectCallbacker = Callbacker<Void>()
+    public let onSelect: Signal<Void>
 }
 
 extension AppInfoRow: Viewable {
@@ -37,11 +48,11 @@ extension AppInfoRow: Viewable {
         row.setCustomSpacing(16, after: imageView)
 
         let chevronImageView = UIImageView()
-        chevronImageView.tintColor = .white
         chevronImageView.image = hCoreUIAssets.chevronRight.image
-        
+
         if isTappable {
             row.append(chevronImageView)
+            bag += events.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
         }
 
         return (row, bag)
