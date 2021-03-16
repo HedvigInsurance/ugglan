@@ -16,6 +16,15 @@ struct AppInfo {
     enum State {
         case appSettings, appInformation
 
+        var title: String {
+            switch self {
+            case .appInformation:
+                return L10n.OnboardingContextualMenu.appInfoLabel
+            case .appSettings:
+                return L10n.EmbarkOnboardingMoreOptions.settingsLabel
+            }
+        }
+
         enum InfoRows: CaseIterable {
             case language
             case locale
@@ -69,15 +78,6 @@ struct AppInfo {
             }
         }
 
-        func infoRows() -> [InfoRows] {
-            switch self {
-            case .appInformation:
-                return [.memberId, .version]
-            case .appSettings:
-                return []
-            }
-        }
-
         func button() -> ButtonRow? {
             if case .appSettings = self {
                 return .changeButton
@@ -95,21 +95,13 @@ struct AppInfo {
 extension AppInfo: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = L10n.settingsChangeMarket
+        viewController.title = state.title
 
         let bag = DisposeBag()
 
         let form = FormView()
 
-        form.appendSpacing(.inbetween)
-
-        let bodySection = form.appendSection()
-
-        form.appendSpacing(.inbetween)
-
-        let buttonsSection = form.appendSection()
-
-        func addFooter() {
+        func footerView() -> UIView? {
             let year = Calendar.current.component(.year, from: Date())
 
             let footerView = UILabel(
@@ -117,7 +109,17 @@ extension AppInfo: Presentable {
                 style: TextStyle.brand(.footnote(color: .primary)).centerAligned
             )
             footerView.textAlignment = .center
+
+            return state == .appInformation ? footerView : nil
         }
+
+        form.appendSpacing(.inbetween)
+
+        let bodySection = form.appendSection(headerView: nil, footerView: footerView())
+
+        form.appendSpacing(.inbetween)
+
+        let buttonsSection = form.appendSection()
 
         func value(row: State.InfoRows, completion: @escaping (String) -> Void) {
             switch row {
@@ -136,26 +138,20 @@ extension AppInfo: Presentable {
             }
         }
 
-        state.infoRows().forEach { row in
-            value(row: row) { valueString in
-                bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: valueString))
-            }
-        }
-
         func presentAlert() {
             let alert = Alert(
-                title: L10n.logoutAlertTitle,
-                message: nil,
+                title: L10n.settingsAlertChangeMarketTitle,
+                message: L10n.settingsAlertChangeMarketText,
                 tintColor: nil,
                 actions: [
                     Alert.Action(
-                        title: L10n.logoutAlertActionCancel,
-                        style: UIAlertAction.Style.cancel
-                    ) { false },
-                    Alert.Action(
-                        title: L10n.logoutAlertActionConfirm,
+                        title: L10n.alertOk,
                         style: UIAlertAction.Style.destructive
                     ) { true },
+                    Alert.Action(
+                        title: L10n.settingsAlertChangeMarketCancel,
+                        style: UIAlertAction.Style.cancel
+                    ) { false },
                 ]
             )
 
@@ -167,7 +163,7 @@ extension AppInfo: Presentable {
             }
         }
 
-        if state == .appSettings {
+        func setupAppSettings() {
             let row = State.InfoRows.locale
             let market = Localization.Locale.currentLocale.market
             bag += bodySection.append(AppInfoRow(title: row.title, icon: market.icon, isTappable: row.isTappable, value: market.marketName))
@@ -181,8 +177,24 @@ extension AppInfo: Presentable {
             }
         }
 
+        func setupAppInfo() {
+            [State.InfoRows.memberId, State.InfoRows.version].forEach { row in
+                value(row: row) { rowValue in
+                    bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: rowValue))
+                }
+            }
+        }
+
+        switch state {
+        case .appSettings:
+            setupAppSettings()
+        case .appInformation:
+            setupAppInfo()
+        }
+
         if let buttonRow = state.button() {
-            let button = Button(title: buttonRow.title, type: .outline(borderColor: UIColor.brand(.primaryBorderColor), textColor: UIColor.brand(.primaryText())))
+            let button = ButtonRowViewWrapper(title: buttonRow.title, type: .outline(borderColor: .black, textColor: .black))
+
             bag += buttonsSection.append(button)
 
             bag += button.onTapSignal.onValue {

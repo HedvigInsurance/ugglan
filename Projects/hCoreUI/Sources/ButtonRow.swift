@@ -61,3 +61,36 @@ extension ButtonRow: Viewable {
         return (row, bag)
     }
 }
+
+public struct ButtonRowViewWrapper {
+    private let onTapReadWriteSignal = ReadWriteSignal<Void>(())
+
+    private let id = UUID()
+    public let title: DisplayableString
+    public let onTapSignal: Signal<Void>
+    public let type: ButtonType
+    public let animate: Bool
+    public let isEnabled: Bool
+
+    public init(title: DisplayableString, type: ButtonType, isEnabled: Bool = true, animate: Bool = true) {
+        self.title = title
+        onTapSignal = onTapReadWriteSignal.plain()
+        self.type = type
+        self.isEnabled = isEnabled
+        self.animate = animate
+    }
+}
+
+extension ButtonRowViewWrapper: Viewable {
+    public func materialize(events _: SelectableViewableEvents) -> (RowView, Disposable) {
+        let button = Button(title: title, type: type, isEnabled: isEnabled, animate: animate)
+        let rowView = RowView()
+        let bag = DisposeBag()
+
+        bag += rowView.append(button)
+
+        bag += button.onTapSignal.bindTo(onTapReadWriteSignal)
+
+        return (rowView, bag)
+    }
+}

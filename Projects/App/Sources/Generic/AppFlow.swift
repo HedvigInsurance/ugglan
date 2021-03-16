@@ -72,19 +72,35 @@ extension EmbarkOnboardingFlow {
     func presentable(for route: EmbarkMenuRoute) -> AnyPresentation<UIViewController, Future<Void>>? {
         switch route {
         case .appInformation:
-            return Presentation(AppInfo(state: .appInformation).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
-                                                                                                          .defaults,
-                                                                                                          .largeTitleDisplayMode(.always),
-                                                                                                          .prefersLargeTitles(true)])
+            return Presentation(
+                AppInfo(state: .appInformation).withCloseButton,
+                style: .modal,
+                options: [
+                    .allowSwipeDismissAlways,
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
+            )
         case .appSettings:
-            return Presentation(AppInfo(state: .appSettings).withCloseButton, style: .modal, options: [.allowSwipeDismissAlways,
-                                                                                                       .defaults,
-                                                                                                       .largeTitleDisplayMode(.always),
-                                                                                                       .prefersLargeTitles(true)])
+            return Presentation(
+                AppInfo(state: .appSettings).withCloseButton,
+                style: .modal,
+                options: [
+                    .allowSwipeDismissAlways,
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
+            )
         case .restart:
             return nil
         case .login:
-            return nil
+            return Presentation(
+                Login(),
+                style: .detented(.medium, .large),
+                options: [.allowSwipeDismissAlways, .defaults]
+            )
         }
     }
 }

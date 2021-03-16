@@ -13,48 +13,6 @@ public enum EmbarkFlowType {
     case onboarding
 }
 
-public enum EmbarkMenuRoute: CaseIterable {
-    case appInformation
-    case appSettings
-    case login
-    case restart
-
-    var title: String {
-        switch self {
-        case .appInformation:
-            return L10n.aboutScreenTitle
-        case .appSettings:
-            return L10n.Profile.AppSettingsSection.title
-        case .login:
-            return L10n.settingsLoginRow
-        case .restart:
-            return L10n.embarkRestartButton
-        }
-    }
-
-    var style: MenuStyle {
-        switch self {
-        case .restart:
-            return .destructive
-        case .appInformation, .appSettings, .login:
-            return .default
-        }
-    }
-
-    var image: UIImage {
-        switch self {
-        case .appInformation:
-            return hCoreUIAssets.infoLarge.image
-        case .appSettings:
-            return hCoreUIAssets.settingsIcon.image
-        case .restart:
-            return hCoreUIAssets.restart.image
-        case .login:
-            return hCoreUIAssets.profileCircleIcon.image
-        }
-    }
-}
-
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
@@ -260,9 +218,35 @@ extension Embark: Presentable {
 
             let routes = EmbarkMenuRoute.allCases
 
+            func presentRestartAlert(completion: @escaping (Bool) -> Void) {
+                let alert = Alert(
+                    title: L10n.Settings.alertRestartOnboardingTitle,
+                    message: L10n.Settings.alertRestartOnboardingDescription,
+                    tintColor: nil,
+                    actions: [
+                        Alert.Action(
+                            title: L10n.alertOk,
+                            style: UIAlertAction.Style.destructive
+                        ) { true },
+                        Alert.Action(
+                            title: L10n.settingsAlertChangeMarketCancel,
+                            style: UIAlertAction.Style.cancel
+                        ) { false },
+                    ]
+                )
+
+                bag += viewController.present(alert).onValue { shouldRestart in
+                    completion(shouldRestart)
+                }
+            }
+
             func routeHandler(route: EmbarkMenuRoute) {
                 if case .restart = route {
-                    state.restart()
+                    presentRestartAlert { shouldRestart in
+                        if shouldRestart {
+                            state.restart()
+                        }
+                    }
                 } else {
                     routeSignal.value = route
                 }

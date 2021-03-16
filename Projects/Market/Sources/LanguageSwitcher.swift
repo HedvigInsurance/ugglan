@@ -128,7 +128,7 @@ extension LanguageSwitcher: Presentable {
                 title: L10n.settingsAlertChangeMarketTitle,
                 message: L10n.settingsAlertChangeMarketText,
                 actions: [
-                    Alert.Action(title: L10n.settingsAlertChangeMarketOk) {
+                    Alert.Action(title: L10n.alertOk) {
                         ApolloClient.cache = InMemoryNormalizedCache()
                         ApplicationState.preserveState(.marketPicker)
                         CrossFramework.onRequestLogout()
