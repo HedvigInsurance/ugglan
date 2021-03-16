@@ -21,12 +21,12 @@ struct OnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, future) = EmbarkOnboardingFlow().materialize()
         let bag = DisposeBag()
-
-        bag += future.onValue { redirect in
+        
+        bag += future.onValue { (redirect) in
             switch redirect {
             case .mailingList:
                 break
-            case let .offer(ids):
+            case .offer(let ids):
                 bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onResult { result in
                     switch result {
                     case .success:
@@ -37,7 +37,6 @@ struct OnboardingFlow: Presentable {
                 }
             }
         }
-
         return (viewController, bag)
     }
 }
