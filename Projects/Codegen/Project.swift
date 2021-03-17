@@ -3,7 +3,7 @@ import ProjectDescription
 let project = Project(
     name: "Codegen",
     organizationName: "Hedvig AB",
-    packages: [.package(url: "https://github.com/apollographql/apollo-ios.git", .exact(from: "0.39.0"))],
+    packages: [.package(url: "https://github.com/apollographql/apollo-ios.git", .exact("0.39.0"))],
     targets: [
         Target(
             name: "Codegen",

@@ -52,7 +52,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apollo:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios", .exact(from: "0.39.0")),
+                .package(url: "https://github.com/apollographql/apollo-ios", .exact("0.39.0")),
             ]
         case .flow:
             return [
