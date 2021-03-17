@@ -12,6 +12,8 @@ jobs:
     runs-on: macos-11.0
 
     steps:
+    - name: Remove Derived Data
+      run: rm -rf ~/Library/Developer/Xcode/DerivedData
     - uses: actions/checkout@v2
     - name: XCode Select
       run: sudo xcode-select -s /Applications/Xcode_12.3.app
