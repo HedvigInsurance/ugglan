@@ -238,13 +238,7 @@ public extension Project {
                        infoPlist: .default,
                        sources: ["Sources/**/*.swift"],
                        resources: [],
-                       actions: [
-                           .post(
-                               path: "../../scripts/post-build-action.sh",
-                               arguments: [],
-                               name: "Clean frameworks"
-                           ),
-                       ],
+                       actions: [],
                        dependencies: dependencies,
                        settings: Settings(base: [:], configurations: frameworkConfigurations)),
             ],

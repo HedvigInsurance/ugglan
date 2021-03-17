@@ -26,8 +26,8 @@ extension OfferTermsLinks: Viewable {
 
         bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.lastQuoteOfMember }.onValueDisposePrevious { lastQuoteOfMember in
             let innerBag = DisposeBag()
-            
-            lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach({ term in
+
+            lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach { term in
                 if let url = URL(string: term.url) {
                     let button = Button(title: term.displayName, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
@@ -37,19 +37,6 @@ extension OfferTermsLinks: Viewable {
 
                     innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
                 }
-            })
-
-            if let privacyPolicyUrl = URL(string: L10n.privacyPolicyUrl) {
-                let button = Button(
-                    title: L10n.seOfferPersonalInformationButton,
-                    type: .standard(backgroundColor: .lightGray, textColor: .black)
-                )
-
-                innerBag += button.onTapSignal.onValue { _ in
-                    openUrl(privacyPolicyUrl)
-                }
-
-                innerBag += stackView.addArranged(button)
             }
 
             return innerBag
