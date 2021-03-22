@@ -24,11 +24,24 @@ extension OfferTermsLinks: Viewable {
             stackView.viewController?.present(SFSafariViewController(url: url), animated: true, completion: nil)
         }
 
-        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.lastQuoteOfMember }.onValueDisposePrevious { lastQuoteOfMember in
+        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap(\.lastQuoteOfMember).onValueDisposePrevious { lastQuoteOfMember in
             let innerBag = DisposeBag()
 
             lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach { term in
-                if let url = URL(string: term.url) {
+
+                var url: URL?
+
+                let isSwedishMarket = Localization.Locale.currentLocale.market == .se
+
+                if let termType = term.type,
+                   termType == .termsAndConditions, isSwedishMarket
+                {
+                    url = URL(string: "https://www.hedvig.com/se/villkor")
+                } else {
+                    url = URL(string: term.url)
+                }
+
+                if let url = url {
                     let button = Button(title: term.displayName, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
                     innerBag += button.onTapSignal.onValue { _ in
@@ -36,6 +49,14 @@ extension OfferTermsLinks: Viewable {
                     }
 
                     innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
+                }
+            }
+
+            if let privacyPolicyUrl = URL(string: L10n.privacyPolicyUrl) {
+                let button = Button(title: L10n.offerPrivacyPolicy, type: .standard(backgroundColor: .lightGray, textColor: .black))
+
+                innerBag += button.onTapSignal.onValue { _ in
+                    openUrl(privacyPolicyUrl)
                 }
             }
 
