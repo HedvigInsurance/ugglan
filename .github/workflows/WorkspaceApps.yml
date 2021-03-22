@@ -14,15 +14,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: XCode Select
       run: sudo xcode-select -s /Applications/Xcode_12.3.app
-    - name: Cache Tuist
-      uses: actions/cache@v1
-      with:
-        path: .tuist/Cache
-        key: ${{ runner.os }}-xcode-12.3-tuist
-    - uses: actions/cache@v1
-      with:
-        path: ~/Library/Developer/Xcode/DerivedData
-        key: ${{ runner.os }}-xcode-12.3-derived-data
     - name: Install Tuist
       run: bash <(curl -Ls https://install.tuist.io)
     - name: Fastlane Action
