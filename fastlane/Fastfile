@@ -30,6 +30,7 @@ platform :ios do
         load_api
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
+        ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     end
 
     lane :reprovision_everything do
