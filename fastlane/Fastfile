@@ -368,7 +368,7 @@ platform :ios do
             )
         end
         
-        device = "iPhone 11 Pro"
+        device = "iPhone 11 Pro (14.4)"
         
         schemes.each { |scheme|
             begin
