@@ -352,7 +352,6 @@ platform :ios do
             "Ugglan",
             "hCore",
             "hCoreUI",
-            "Embark",
             "Forever",
             "Contracts",
             "Home",
