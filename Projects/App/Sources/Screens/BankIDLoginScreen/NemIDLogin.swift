@@ -11,7 +11,7 @@ struct NemIDLogin: Presentable {
 
     func materialize() -> (UIViewController, Future<Void>) {
         let redirectUrl = client.perform(
-            mutation: GraphQL.NemIdAuthMutation()
+            mutation: GraphQL.NemIdAuthMutation(personalNumber: "")
         )
         .compactMap { $0.danishBankIdAuth.redirectUrl }
         .compactMap { URL(string: $0) }

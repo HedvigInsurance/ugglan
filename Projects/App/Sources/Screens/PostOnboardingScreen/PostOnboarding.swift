@@ -23,7 +23,7 @@ struct PostOnboarding {
         let bag = DisposeBag()
 
         let paymentButton = Button(
-            title: "",
+            title: L10n.PayInExplainer.buttonText,
             type: .standard(backgroundColor: .brand(.secondaryButtonBackgroundColor), textColor: .brand(.secondaryButtonTextColor))
         )
 
@@ -33,10 +33,10 @@ struct PostOnboarding {
 
         let payment = ImageTextAction<TableAction>(
             image: .init(image: Asset.paymentSetupIllustration.image),
-            title: "",
+            title: L10n.PayInExplainer.headline,
             body: isSwitching ?
-                "" :
-                "",
+                L10n.onboardingConnectDdBodySwitchers :
+                L10n.PayInExplainer.body,
             actions: [(.payment, paymentButton)],
             showLogo: false
         )

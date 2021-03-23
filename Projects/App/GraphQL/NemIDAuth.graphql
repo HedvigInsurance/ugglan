@@ -1,5 +1,5 @@
-mutation NemIDAuth {
-    danishBankIdAuth {
+mutation NemIDAuth($personalNumber: String!) {
+    danishBankIdAuth(personalNumber: $personalNumber) {
         redirectUrl
     }
 }
