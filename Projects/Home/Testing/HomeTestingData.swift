@@ -155,7 +155,7 @@ public extension JSONObject {
         ])
     }
 
-    public static func makeTerminatedInTheFuture() -> JSONObject {
+    static func makeTerminatedInTheFuture() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery.Data(
                 member: .init(firstName: "Mock"),

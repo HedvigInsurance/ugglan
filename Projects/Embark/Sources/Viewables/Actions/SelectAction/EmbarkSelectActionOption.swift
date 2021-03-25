@@ -8,6 +8,7 @@ import UIKit
 
 struct EmbarkSelectActionOption {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
+    @ReadWriteState var isLoading = false
 }
 
 extension EmbarkSelectActionOption: Viewable {
@@ -15,15 +16,9 @@ extension EmbarkSelectActionOption: Viewable {
         let bag = DisposeBag()
         let control = UIControl()
         control.backgroundColor = .brand(.secondaryBackground())
-        control.layer.cornerRadius = 10
+        control.layer.cornerRadius = 8
         bag += control.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
 
         let stackView = UIStackView()
@@ -40,18 +35,48 @@ extension EmbarkSelectActionOption: Viewable {
             make.top.bottom.trailing.leading.equalToSuperview()
         }
 
-        let valueLabel = UILabel(
-            value: data.link.fragments.embarkLinkFragment.label,
-            style: TextStyle.brand(.headline(color: .primary)).centerAligned
-        )
-        valueLabel.adjustsFontSizeToFitWidth = true
-        valueLabel.minimumScaleFactor = 0.5
-        valueLabel.numberOfLines = 1
+        bag += $isLoading.atOnce().filter(predicate: { $0 }).onValueDisposePrevious { _ in
+            let overlayView = UIView()
+            overlayView.alpha = 0
+            overlayView.layer.cornerRadius = 8
+            overlayView.backgroundColor = control.backgroundColor
 
-        stackView.addArrangedSubview(valueLabel)
-        bag += stackView.addArranged(MultilineLabel(value: L10n.embarkSelectOptionLabel, style: TextStyle.brand(.footnote(color: .link)).centerAligned))
+            stackView.addSubview(overlayView)
+
+            overlayView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+
+            let activityIndicator = UIActivityIndicatorView()
+            activityIndicator.startAnimating()
+
+            overlayView.addSubview(activityIndicator)
+
+            activityIndicator.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+            }
+
+            let innerBag = DisposeBag()
+
+            bag += {
+                overlayView.removeFromSuperview()
+            }
+
+            innerBag += Animated.now.animated(style: .easeOut(duration: 0.25)) {
+                overlayView.alpha = 1
+            }
+
+            return innerBag
+        }
 
         return (control, Signal { callback in
+            let valueLabel = MultilineLabel(
+                value: data.link.fragments.embarkLinkFragment.label,
+                style: TextStyle.brand(.headline(color: .primary)).centerAligned
+            )
+
+            bag += stackView.addArranged(valueLabel)
+
             bag += control.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 control.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
             }

@@ -35,15 +35,9 @@ extension EmbarkTextAction: Viewable {
 
         let box = UIView()
         box.backgroundColor = .brand(.secondaryBackground())
-        box.layer.cornerRadius = 10
+        box.layer.cornerRadius = 8
         bag += box.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
         animator.register(key: \.box, value: box)
 
@@ -63,20 +57,27 @@ extension EmbarkTextAction: Viewable {
             placeholder: data.textActionData.placeholder,
             keyboardType: masking?.keyboardType,
             textContentType: masking?.textContentType,
+            autocapitalisationType: masking?.autocapitalizationType ?? .none,
             masking: masking
         )
         let textSignal = boxStack.addArranged(input) { inputView in
             animator.register(key: \.input, value: inputView)
         }
-        bag += textSignal.nil()
 
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
-            type: .standard(backgroundColor: .black, textColor: .white)
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
+            )
         )
         bag += view.addArranged(button) { buttonView in
             animator.register(key: \.button, value: buttonView)
         }
+
+        bag += textSignal
+            .map { text in !text.isEmpty }
+            .bindTo(button.isEnabled)
 
         return (view, Signal { callback in
             func complete(_ value: String) {
@@ -105,12 +106,15 @@ extension EmbarkTextAction: Viewable {
                 self.state.store.createRevision()
 
                 if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
-                    bag += self.state.handleApi(apiFragment: apiFragment).valueSignal.wait(until: animator.setState(.loading)).onValue { link in
-                        guard let link = link else {
-                            return
+                    bag += animator.setState(.loading)
+                        .filter(predicate: { $0 })
+                        .mapLatestToFuture { _ in self.state.handleApi(apiFragment: apiFragment) }
+                        .onValue { link in
+                            guard let link = link else {
+                                return
+                            }
+                            callback(link)
                         }
-                        callback(link)
-                    }
                 } else {
                     callback(self.data.textActionData.link.fragments.embarkLinkFragment)
                 }

@@ -50,6 +50,21 @@ public enum ButtonType {
             return 0.0
         }
     }
+    
+    var disabledBackgroundOpacity: CGFloat {
+        switch self {
+        case .standard, .standardSmall, .standardIcon, .tinyIcon:
+            return 1
+        case .outline, .standardOutline:
+            return 0.05
+        case .pillSemiTransparent:
+            return 0.6
+        case .iconTransparent:
+            return 0.05
+        case .transparent:
+            return 0
+        }
+    }
 
     var highlightedBackgroundOpacity: CGFloat {
         switch self {
@@ -235,11 +250,13 @@ public struct Button {
     public let onTapSignal: Signal<Void>
     public let type: ReadWriteSignal<ButtonType>
     public let animate: Bool
+    public let isEnabled: ReadWriteSignal<Bool>
 
-    public init(title: DisplayableString, type: ButtonType, animate: Bool = true) {
+    public init(title: DisplayableString, type: ButtonType, isEnabled: Bool = true, animate: Bool = true) {
         self.title = ReadWriteSignal(title)
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = ReadWriteSignal<ButtonType>(type)
+        self.isEnabled = ReadWriteSignal<Bool>(isEnabled)
         self.animate = animate
     }
 }
@@ -258,6 +275,7 @@ extension Button: Viewable {
 
         let styleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
         let highlightedStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
+        let disabledStyleSignal = ReadWriteSignal<ButtonStyle>(ButtonStyle.default)
 
         func updateStyle(buttonType: ButtonType) {
             styleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
@@ -307,16 +325,45 @@ extension Button: Viewable {
                 ]
             }
         }
+        
+        func updateDisabledStyle(buttonType: ButtonType) {
+            disabledStyleSignal.value = ButtonStyle.default.restyled({ (style: inout ButtonStyle) in
+                style.buttonType = .custom
+                
+                let backgroundColor: UIColor
+                if buttonType.backgroundColor.isLight() {
+                    backgroundColor = buttonType.backgroundColor.darkened(amount: 0.05).withAlphaComponent(buttonType.disabledBackgroundOpacity)
+                } else {
+                    backgroundColor = buttonType.backgroundColor.lighter(amount: 0.10).withAlphaComponent(buttonType.disabledBackgroundOpacity)
+                }
+                
+                style.states = [
+                    .disabled: ButtonStateStyle(
+                        background: BackgroundStyle(
+                            color: backgroundColor,
+                            border: BorderStyle(
+                                width: buttonType.borderWidth,
+                                color: buttonType.borderColor,
+                                cornerRadius: 6
+                            )
+                        ),
+                        text: buttonType.textStyle
+                    ),
+                ]
+            })
+        }
 
         bag += type.atOnce().onValue { buttonType in
             updateStyle(buttonType: buttonType)
-        }
-
-        bag += type.atOnce().onValue { buttonType in
             updateHighlightedStyle(buttonType: buttonType)
+            updateDisabledStyle(buttonType: buttonType)
         }
 
         let button = UIButton(title: "", style: styleSignal.value)
+        
+        bag += isEnabled.atOnce().onValue({ (enabled) in
+            button.isEnabled = enabled
+        })
 
         bag += button.traitCollectionSignal.onValue { _ in
             updateStyle(buttonType: self.type.value)

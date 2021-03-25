@@ -26,13 +26,7 @@ extension EmbarkNumberAction: Viewable {
         box.backgroundColor = .brand(.secondaryBackground())
         box.layer.cornerRadius = 10
         bag += box.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
 
         let boxStack = UIStackView()
@@ -55,6 +49,7 @@ extension EmbarkNumberAction: Viewable {
                 placeholder: self.data.numberActionData.placeholder,
                 keyboardType: masking.keyboardType,
                 textContentType: masking.textContentType,
+                autocapitalisationType: masking.autocapitalizationType,
                 masking: masking
             )
             let (textInputView, textSignal) = textField.materialize(events: events)
@@ -79,7 +74,10 @@ extension EmbarkNumberAction: Viewable {
 
             let button = Button(
                 title: self.data.numberActionData.link.fragments.embarkLinkFragment.label,
-                type: .standard(backgroundColor: .black, textColor: .white)
+                type: .standard(
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
+                )
             )
 
             bag += view.addArranged(button)

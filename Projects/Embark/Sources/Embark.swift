@@ -21,7 +21,7 @@ public struct Embark {
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -111,7 +111,7 @@ extension Embark: Presentable {
         }
 
         let progressView = UIProgressView()
-        progressView.tintColor = .brand(.primaryButtonBackgroundColor)
+        progressView.tintColor = .brand(.primaryText())
         scrollView.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
@@ -141,24 +141,101 @@ extension Embark: Presentable {
                 name: name,
                 locale: Localization.Locale.currentLocale.code
             )
-        ).valueSignal.compactMap { $0.embarkStory }.atError { error in
-            if let data = (error as? GraphQLHTTPResponseError)?.body {
-                print(String(data: data, encoding: .utf8) ?? "")
-            }
-        }.onValue { embarkStory in
+        ).valueSignal.compactMap { $0.embarkStory }.onValue { embarkStory in
             activityIndicator.removeFromSuperview()
 
             self.state.storySignal.value = embarkStory
-
             self.state.passagesSignal.value = embarkStory.passages
-
-            let startPassageId = embarkStory.startPassage
-
-            self.state.currentPassageSignal.value = embarkStory.passages.first(where: { passage -> Bool in
-                passage.id == startPassageId
-            })
+            self.state.startPassageIDSignal.value = embarkStory.startPassage
+            self.state.restart()
         }
 
-        return (viewController, bag)
+        return (viewController, Future { completion in
+            let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
+
+            if #available(iOS 14.0, *) {
+                func createBackMenu(canGoBack: Bool) -> UIMenu {
+                    let previousAction = UIAction(
+                        title: L10n.embarkGoBackButton,
+                        image: nil
+                    ) { _ in
+                        state.goBack()
+                    }
+
+                    let closeAction = UIAction(
+                        title: L10n.embarkExitButton,
+                        image: hCoreUIAssets.tinyCircledX.image,
+                        attributes: .destructive
+                    ) { _ in
+                        completion(.success)
+                    }
+
+                    let menuActions = [canGoBack ? previousAction : nil, closeAction].compactMap { $0 }
+
+                    let addNewMenu = UIMenu(
+                        title: "",
+                        children: menuActions
+                    )
+
+                    return addNewMenu
+                }
+
+                bag += state.canGoBackSignal.atOnce().map(createBackMenu).bindTo(backButton, \.menu)
+            }
+
+            viewController.navigationItem.leftBarButtonItem = backButton
+
+            let tooltipButton = UIBarButtonItem(image: hCoreUIAssets.infoLarge.image, style: .plain, target: nil, action: nil)
+
+            bag += tooltipButton.onValue {
+                let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+
+                viewController.present(
+                    embarkTooltipsAlert.wrappedInCloseButton(),
+                    style: .detented(.preferredContentSize),
+                    options: [
+                        .defaults,
+                        .prefersLargeTitles(true),
+                    ]
+                )
+            }
+
+            let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
+
+            bag += optionsButton.attachSinglePressMenu(
+                viewController: viewController,
+                menu: Menu(
+                    title: nil,
+                    children: [
+                        MenuChild(
+                            title: L10n.embarkRestartButton,
+                            style: .destructive,
+                            image: hCoreUIAssets.restart.image
+                        ) {
+                            state.restart()
+                        },
+                    ]
+                )
+            )
+
+            viewController.navigationItem.rightBarButtonItems = [optionsButton]
+
+            bag += state.passageTooltipsSignal.atOnce()
+                .map { tooltips in tooltips.isEmpty ? [optionsButton] : [optionsButton, tooltipButton] }
+                .delay(by: 0.5)
+                .onValue { items in
+                    viewController.navigationItem.setRightBarButtonItems(items, animated: true)
+                }
+
+            bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue { _, canGoBack in
+                if canGoBack {
+                    state.goBack()
+                } else {
+                    completion(.success)
+                }
+            }
+
+            return bag
+        })
     }
 }

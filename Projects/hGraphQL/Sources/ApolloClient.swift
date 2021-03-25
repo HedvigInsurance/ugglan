@@ -6,7 +6,6 @@ import Foundation
 import UIKit
 
 public extension ApolloClient {
-    static var environment: ApolloEnvironmentConfig?
     static var acceptLanguageHeader: String = ""
     static var bundle: Bundle?
 
@@ -20,16 +19,18 @@ public extension ApolloClient {
 
     static var cache = InMemoryNormalizedCache()
 
-    internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
-        guard let environment = environment else {
-            fatalError("Environment must be defined")
-        }
-
-        let httpAdditionalHeaders = [
-            "Authorization": token,
+    static func headers(token: String?) -> [String: String] {
+        [
+            "Authorization": token ?? "",
             "Accept-Language": acceptLanguageHeader,
             "User-Agent": userAgent,
         ]
+    }
+
+    internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+        let environment = Environment.current
+
+        let httpAdditionalHeaders = headers(token: token)
 
         let store = ApolloStore(cache: ApolloClient.cache)
 
@@ -43,8 +44,15 @@ public extension ApolloClient {
         let requestChainTransport = RequestChainNetworkTransport(interceptorProvider: networkInterceptorProvider,
                                                                  endpointURL: environment.endpointURL)
 
+        let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
+
+        requestChainTransport.clientName = clientName
+        requestChainTransport.clientVersion = appVersion
+
         let websocketNetworkTransport = WebSocketTransport(
             request: URLRequest(url: environment.wsEndpointURL),
+            clientName: clientName,
+            clientVersion: appVersion,
             connectingPayload: httpAdditionalHeaders as GraphQLMap
         )
 

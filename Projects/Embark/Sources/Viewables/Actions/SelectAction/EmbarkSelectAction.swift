@@ -10,6 +10,7 @@ typealias EmbarkSelectActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Pas
 struct EmbarkSelectAction {
     let state: EmbarkState
     let data: EmbarkSelectActionData
+    @ReadWriteState private var isSelectOptionLoading = false
 }
 
 extension EmbarkSelectAction: Viewable {
@@ -32,21 +33,42 @@ extension EmbarkSelectAction: Viewable {
 
                 let optionsSlice = Array(options[2 * iteration - 2 ..< min(2 * iteration, options.count)])
                 bag += optionsSlice.map { option in
-                    stack.addArranged(EmbarkSelectActionOption(data: option)).onValue { result in
-                        result.keys.enumerated().forEach { offset, key in
-                            let value = result.values[offset]
-                            self.state.store.setValue(key: key, value: value)
-                        }
+                    let selectActionOption = EmbarkSelectActionOption(data: option)
 
-                        if let passageName = self.state.passageNameSignal.value {
-                            self.state.store.setValue(
-                                key: "\(passageName)Result",
-                                value: result.textValue
-                            )
+                    return stack.addArranged(selectActionOption)
+                        .filter(predicate: { _ in
+                            !isSelectOptionLoading
+                        })
+                        .atValue { _ in
+                            $isSelectOptionLoading.value = true
                         }
+                        .mapLatestToFuture { result -> Future<(GraphQL.EmbarkLinkFragment, ActionResponseData)> in
+                            let defaultLink = option.link.fragments.embarkLinkFragment
 
-                        callback(option.link.fragments.embarkLinkFragment)
-                    }
+                            if let apiFragment = option.api?.fragments.apiFragment {
+                                selectActionOption.$isLoading.value = true
+                                return state
+                                    .handleApi(apiFragment: apiFragment)
+                                    .map { link in (link ?? defaultLink, result) }
+                            }
+
+                            return Future((defaultLink, result))
+                        }
+                        .onValue { link, result in
+                            result.keys.enumerated().forEach { offset, key in
+                                let value = result.values[offset]
+                                self.state.store.setValue(key: key, value: value)
+                            }
+
+                            if let passageName = self.state.passageNameSignal.value {
+                                self.state.store.setValue(
+                                    key: "\(passageName)Result",
+                                    value: result.textValue
+                                )
+                            }
+
+                            callback(link)
+                        }
                 }
                 if optionsSlice.count < 2 { stack.addArrangedSubview(UIView()) }
             }

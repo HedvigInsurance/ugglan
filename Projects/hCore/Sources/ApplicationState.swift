@@ -1,4 +1,5 @@
 import Foundation
+import hGraphQL
 
 public struct ApplicationState {
     public enum Screen: String {
@@ -57,97 +58,5 @@ public struct ApplicationState {
         }
 
         return preferredLocale
-    }
-
-    public static let targetEnvironmentKey = "targetEnvironment"
-
-    public enum Environment: Hashable {
-        case production
-        case staging
-        case custom(endpointURL: URL, wsEndpointURL: URL, assetsEndpointURL: URL)
-
-        fileprivate struct RawCustomStorage: Codable {
-            let endpointURL: URL
-            let wsEndpointURL: URL
-            let assetsEndpointURL: URL
-        }
-
-        public var rawValue: String {
-            switch self {
-            case .production:
-                return "production"
-            case .staging:
-                return "staging"
-            case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
-                let rawCustomStorage = RawCustomStorage(
-                    endpointURL: endpointURL,
-                    wsEndpointURL: wsEndpointURL,
-                    assetsEndpointURL: assetsEndpointURL
-                )
-                let data = try? JSONEncoder().encode(rawCustomStorage)
-
-                if let data = data {
-                    return String(data: data, encoding: .utf8) ?? "staging"
-                }
-
-                return "staging"
-            }
-        }
-
-        public var displayName: String {
-            switch self {
-            case .production:
-                return "production"
-            case .staging:
-                return "staging"
-            case .custom:
-                return "custom"
-            }
-        }
-
-        public init?(rawValue: String) {
-            switch rawValue {
-            case "production":
-                self = .production
-            case "staging":
-                self = .staging
-            default:
-                guard let data = rawValue.data(using: .utf8) else {
-                    return nil
-                }
-
-                guard let rawCustomStorage = try? JSONDecoder().decode(RawCustomStorage.self, from: data) else {
-                    return nil
-                }
-
-                self = .custom(
-                    endpointURL: rawCustomStorage.endpointURL,
-                    wsEndpointURL: rawCustomStorage.wsEndpointURL,
-                    assetsEndpointURL: rawCustomStorage.assetsEndpointURL
-                )
-            }
-        }
-    }
-
-    public static func setTargetEnvironment(_ environment: Environment) {
-        UserDefaults.standard.set(environment.rawValue, forKey: targetEnvironmentKey)
-    }
-
-    public static func getTargetEnvironment() -> Environment {
-        guard
-            let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey) as? String,
-            let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue)
-        else {
-            if Bundle.main.bundleIdentifier == "com.hedvig.app" {
-                return .production
-            }
-
-            return .staging
-        }
-        return targetEnvironment
-    }
-
-    public static var hasOverridenTargetEnvironment: Bool {
-        UserDefaults.standard.value(forKey: targetEnvironmentKey) != nil
     }
 }

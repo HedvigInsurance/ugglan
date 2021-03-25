@@ -195,13 +195,18 @@ extension EmbarkState {
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
-            var urlRequest = URLRequest(url: apolloEnvironment.endpointURL)
+            var urlRequest = URLRequest(url: Environment.current.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query, "variables": variables], options: [])
 
+            let configuration = URLSessionConfiguration.default
+            configuration.httpAdditionalHeaders = ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
+
+            let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
+
             return Future { completion in
-                self.urlSessionClient.sendRequest(urlRequest) { result in
+                urlSessionClient.sendRequest(urlRequest) { result in
                     switch result {
                     case .failure:
                         break

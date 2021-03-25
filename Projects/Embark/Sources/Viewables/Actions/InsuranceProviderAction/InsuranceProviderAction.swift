@@ -7,9 +7,27 @@ import hGraphQL
 import Presentation
 import UIKit
 
+enum InsuranceWrapper {
+    case external(EmbarkPassage.Action.AsEmbarkExternalInsuranceProviderAction)
+    case previous(EmbarkPassage.Action.AsEmbarkPreviousInsuranceProviderAction)
+
+    var embarkLinkFragment: GraphQL.EmbarkLinkFragment {
+        switch self {
+        case let .external(data):
+            return data.externalInsuranceProviderData.next.fragments.embarkLinkFragment
+        case let .previous(data):
+            return data.previousInsuranceProviderData.next.fragments.embarkLinkFragment
+        }
+    }
+
+    var isExternal: Bool {
+        false
+    }
+}
+
 struct InsuranceProviderAction {
     let state: EmbarkState
-    let data: EmbarkPassage.Action.AsEmbarkExternalInsuranceProviderAction
+    let data: InsuranceWrapper
 }
 
 extension InsuranceProviderAction: Viewable {
@@ -17,19 +35,13 @@ extension InsuranceProviderAction: Viewable {
         let bag = DisposeBag()
         let view = UIView()
         bag += view.applyShadow { _ -> UIView.ShadowProperties in
-            UIView.ShadowProperties(
-                opacity: 0.25,
-                offset: CGSize(width: 0, height: 6),
-                radius: 8,
-                color: .brand(.primaryShadowColor),
-                path: nil
-            )
+            .embark
         }
 
         return (view, Signal { callback in
             func renderChildViewController() {
                 let options: PresentationOptions = [.defaults]
-                let (selectionViewController, didPickInsuranceProviderFuture) = InsuranceProviderSelection().materialize()
+                let (selectionViewController, didPickInsuranceProviderFuture) = InsuranceProviderSelection(data: data).materialize()
 
                 bag += didPickInsuranceProviderFuture.onValue { provider in
                     if let passageName = self.state.passageNameSignal.value {
@@ -40,7 +52,7 @@ extension InsuranceProviderAction: Viewable {
                     }
 
                     self.state.store.setValue(key: "previousInsurer", value: provider.name)
-                    callback(self.data.externalInsuranceProviderData.next.fragments.embarkLinkFragment)
+                    callback(self.data.embarkLinkFragment)
                 }.disposable
 
                 let childViewController = selectionViewController.embededInNavigationController(options)

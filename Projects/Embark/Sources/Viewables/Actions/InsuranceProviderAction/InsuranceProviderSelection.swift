@@ -6,9 +6,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 import Presentation
+import UIKit
 
 struct InsuranceProviderSelection {
     @Inject var client: ApolloClient
+    let data: InsuranceWrapper
 }
 
 extension GraphQL.InsuranceProviderFragment: Reusable {
@@ -21,24 +23,26 @@ extension GraphQL.InsuranceProviderFragment: Reusable {
         return (containerView, { `self` in
             let bag = DisposeBag()
 
-            let remoteVectorIcon = RemoteVectorIcon(
-                self.logo.fragments.iconFragment,
-                threaded: true
-            )
-            bag += containerView.addArranged(remoteVectorIcon) { view in
-                view.snp.makeConstraints { make in
-                    make.width.equalTo(35)
-                }
-            }
-
             let label = UILabel(value: "", style: .brand(.body(color: .primary)))
             containerView.addArrangedSubview(label)
 
-            bag += {
-                label.removeFromSuperview()
+            label.value = self.name
+
+            let chevronImageView = UIImageView()
+            chevronImageView.image = hCoreUIAssets.chevronRight.image
+            chevronImageView.contentMode = .scaleAspectFit
+
+            containerView.addArrangedSubview(chevronImageView)
+
+            chevronImageView.snp.makeConstraints { make in
+                make.width.equalTo(12)
             }
 
-            label.value = self.name
+            bag += {
+                label.removeFromSuperview()
+                chevronImageView.removeFromSuperview()
+            }
+
             return bag
         })
     }
@@ -57,18 +61,21 @@ extension InsuranceProviderSelection: Presentable {
             tableKit.table = Table(rows: providers.map { $0.fragments.insuranceProviderFragment })
         }
 
-        bag += viewController.install(tableKit)
+        bag += viewController.install(tableKit, options: [])
 
         return (viewController, Future { completion in
             bag += tableKit.delegate.didSelectRow.onValue { row in
-                guard row.hasExternalCapabilities else {
+                guard self.data.isExternal else {
                     completion(.success(row))
                     return
                 }
 
+                let collectionAgreement = InsuranceProviderCollectionAgreement(provider: row)
+
                 viewController.present(
-                    InsuranceProviderCollectionAgreement(provider: row),
-                    style: .modally()
+                    collectionAgreement.withCloseButton,
+                    style: .detented(.preferredContentSize),
+                    options: .defaults
                 )
             }
 

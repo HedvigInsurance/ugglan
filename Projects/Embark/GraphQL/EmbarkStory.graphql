@@ -176,9 +176,23 @@ query EmbarkStory($name: String!, $locale: String!) {
         id
         startPassage
         name
+        computedStoreValues {
+            key
+            value
+        }
         passages {
             id
             name
+            externalRedirect {
+                component
+                data {
+                    location
+                }
+            }
+            tooltips {
+              description
+              title
+            }
             allLinks {
                 ...EmbarkLinkFragment
             }
@@ -193,6 +207,12 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
             redirects {
               ...EmbarkRedirectFragment
+            }
+            tracks {
+              eventName
+              eventKeys
+              includeAllKeys
+              customData
             }
             action {
                 ... on EmbarkActionCore {
@@ -232,6 +252,7 @@ query EmbarkStory($name: String!, $locale: String!) {
                         }
                         textActions {
                             data {
+                              title
                               key
                               placeholder
                               mask
@@ -247,6 +268,9 @@ query EmbarkStory($name: String!, $locale: String!) {
                             values
                             link {
                                 ...EmbarkLinkFragment
+                            }
+                            api {
+                                ...ApiFragment
                             }
                         }
                     }

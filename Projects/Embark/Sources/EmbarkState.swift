@@ -1,4 +1,3 @@
-import Apollo
 import Flow
 import Foundation
 import hCore
@@ -9,20 +8,21 @@ public enum ExternalRedirect {
     case offer
 }
 
-public struct EmbarkState {
-    @Inject var client: ApolloClient
-    @Inject var urlSessionClient: URLSessionClient
-    @Inject var apolloEnvironment: ApolloEnvironmentConfig
-
-    let store = EmbarkStore()
+public class EmbarkState {
+    var store = EmbarkStore()
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
+    let startPassageIDSignal = ReadWriteSignal<String?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
+    let bag = DisposeBag()
 
     public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
         self.externalRedirectHandler = externalRedirectHandler
+        defer {
+            startTracking()
+        }
     }
 
     enum AnimationDirection {
@@ -39,7 +39,35 @@ public struct EmbarkState {
         currentPassageSignal.map { $0?.name }
     }
 
+    var passageTooltipsSignal: ReadSignal<[Tooltip]> {
+        currentPassageSignal.map { $0?.tooltips ?? [] }
+    }
+
+    func restart() {
+        animationDirectionSignal.value = .backwards
+        currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
+            passage.id == startPassageIDSignal.value
+        })
+        store.computedValues = storySignal.value?.computedStoreValues?.reduce([:]) { (prev, computedValue) -> [String: String] in
+            var computedValues: [String: String] = prev
+            computedValues[computedValue.key] = computedValue.value
+            return computedValues
+        } ?? [:]
+        passageHistorySignal.value = []
+        store = EmbarkStore()
+    }
+
+    func startTracking() {
+        bag += currentPassageSignal
+            .readOnly()
+            .compactMap { $0?.tracks }
+            .onValue(on: .background) { tracks in
+                tracks.forEach { track in track.trackingEvent(storeValues: self.store.getAllValues()).send() }
+            }
+    }
+
     func goBack() {
+        trackGoBack()
         animationDirectionSignal.value = .backwards
         currentPassageSignal.value = passageHistorySignal.value.last
         var history = passageHistorySignal.value
@@ -59,7 +87,9 @@ public struct EmbarkState {
             passage.name == passageName
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
-            if let externalRedirect = resultingPassage.externalRedirect {
+            if let externalRedirect = resultingPassage.externalRedirect?.data.location {
+                externalRedirect.trackingEvent(storeValues: store.getAllValues()).send()
+
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectHandler(ExternalRedirect.mailingList)

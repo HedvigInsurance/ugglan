@@ -139,6 +139,10 @@ platform :ios do
         setup
         
         apps = {
+            "EmbarkExample" => {
+                "identifier" => "com.hedvig.example.*",
+                "project_path" => "Projects/Embark/Embark.xcodeproj"
+            },
             "Ugglan" => {
                 "identifier" => "com.hedvig.test.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
