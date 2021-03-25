@@ -31,17 +31,17 @@ internal extension EmbarkPassage.Track {
     private func properties(store: EmbarkStore) -> [String:Any] {
         var properties = Dictionary<String,Any>()
         if includeAllKeys {
-            properties = properties.merging((store.getAllValues())) { return $1 }
+            properties = properties.merging((store.getAllValues()), uniquingKeysWith: takeRight)
         } else {
             let storeProperties = store.getAllValues().filter { key, value in
                 return eventKeys.contains(key)
             }
             
-            properties = properties.merging(storeProperties, uniquingKeysWith: { return $1 })
+            properties = properties.merging(storeProperties, uniquingKeysWith: takeRight)
         }
         
         if let customData = customData {
-            properties = properties.merging((customData.toJSONDictionary() ?? [:]), uniquingKeysWith: { return $1 })
+            properties = properties.merging((customData.toJSONDictionary() ?? [:]), uniquingKeysWith: takeRight)
         }
         
         return properties
