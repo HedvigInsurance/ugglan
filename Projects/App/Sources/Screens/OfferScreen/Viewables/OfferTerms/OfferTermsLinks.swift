@@ -24,36 +24,48 @@ extension OfferTermsLinks: Viewable {
             stackView.viewController?.present(SFSafariViewController(url: url), animated: true, completion: nil)
         }
 
-        bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.lastQuoteOfMember }.onValueDisposePrevious { lastQuoteOfMember in
-            let innerBag = DisposeBag()
-            
-            lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach({ term in
-                if let url = URL(string: term.url) {
-                    let button = Button(title: term.displayName, type: .standard(backgroundColor: .lightGray, textColor: .black))
+        bag += client
+            .fetch(query: GraphQL.OfferQuery())
+            .valueSignal
+            .compactMap { $0.lastQuoteOfMember }
+            .onValueDisposePrevious { lastQuoteOfMember in
+                let innerBag = DisposeBag()
 
-                    innerBag += button.onTapSignal.onValue { _ in
-                        openUrl(url)
+                lastQuoteOfMember.asCompleteQuote?.insuranceTerms.forEach { term in
+
+                    var url: URL?
+
+                    let isSwedishMarket = Localization.Locale.currentLocale.market == .se
+
+                    if let termType = term.type,
+                       termType == .termsAndConditions, isSwedishMarket
+                    {
+                        url = URL(string: "https://www.hedvig.com/se/villkor")
+                    } else {
+                        url = URL(string: term.url)
                     }
 
-                    innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
-                }
-            })
+                    if let url = url {
+                        let button = Button(title: term.displayName, type: .standard(backgroundColor: .lightGray, textColor: .black))
 
-            if let privacyPolicyUrl = URL(string: L10n.privacyPolicyUrl) {
-                let button = Button(
-                    title: L10n.seOfferPersonalInformationButton,
-                    type: .standard(backgroundColor: .lightGray, textColor: .black)
-                )
+                        innerBag += button.onTapSignal.onValue { _ in
+                            openUrl(url)
+                        }
 
-                innerBag += button.onTapSignal.onValue { _ in
-                    openUrl(privacyPolicyUrl)
+                        innerBag += stackView.addArranged(button.wrappedIn(UIStackView()))
+                    }
                 }
 
-                innerBag += stackView.addArranged(button)
+                if let privacyPolicyUrl = URL(string: L10n.privacyPolicyUrl) {
+                    let button = Button(title: L10n.offerPrivacyPolicy, type: .standard(backgroundColor: .lightGray, textColor: .black))
+
+                    innerBag += button.onTapSignal.onValue { _ in
+                        openUrl(privacyPolicyUrl)
+                    }
+                }
+
+                return innerBag
             }
-
-            return innerBag
-        }
 
         return (stackView, bag)
     }

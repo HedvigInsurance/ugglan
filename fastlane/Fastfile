@@ -30,6 +30,7 @@ platform :ios do
         load_api
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
+        ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     end
 
     lane :reprovision_everything do
@@ -121,7 +122,8 @@ platform :ios do
             force: true,
             submit_for_review: false,
             skip_screenshots: true,
-            skip_metadata: true
+            skip_metadata: true,
+            precheck_include_in_app_purchases: false
         )
     end
     
@@ -354,7 +356,6 @@ platform :ios do
             "Ugglan",
             "hCore",
             "hCoreUI",
-            "Embark",
             "Forever",
             "Contracts",
             "Home",
@@ -371,7 +372,7 @@ platform :ios do
             )
         end
         
-        device = "iPhone 11 Pro"
+        device = "iPhone 11 Pro (14.4)"
         
         schemes.each { |scheme|
             begin

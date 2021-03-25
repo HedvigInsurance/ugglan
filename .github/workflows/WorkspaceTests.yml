@@ -4,30 +4,14 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches:
-        - '*'
+    branches: ['*']
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
-    - name: XCode Select
-      run: sudo xcode-select -s /Applications/Xcode_12.3.app
-    - name: Cache Tuist
-      uses: actions/cache@v1
-      with:
-        path: .tuist/Cache
-        key: ${{ runner.os }}-xcode-12.3-tuist
-    - uses: actions/cache@v1
-      with:
-        path: ~/Library/Developer/Xcode/DerivedData
-        key: ${{ runner.os }}-xcode-12.3-derived-data
-    - name: Install Tuist
-      run: bash <(curl -Ls https://install.tuist.io)
-    - name: Install XCHTMLReport
-      run: bash <(curl -s https://raw.githubusercontent.com/TitouanVanBelle/XCTestHTMLReport/master/install.sh) '2.0.0'
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:

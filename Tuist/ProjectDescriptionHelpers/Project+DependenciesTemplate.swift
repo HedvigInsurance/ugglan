@@ -52,7 +52,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apollo:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "0.39.0")),
+                .package(url: "https://github.com/apollographql/apollo-ios", .exact("0.39.0")),
             ]
         case .flow:
             return [
@@ -238,13 +238,7 @@ public extension Project {
                        infoPlist: .default,
                        sources: ["Sources/**/*.swift"],
                        resources: [],
-                       actions: [
-                           .post(
-                               path: "../../scripts/post-build-action.sh",
-                               arguments: [],
-                               name: "Clean frameworks"
-                           ),
-                       ],
+                       actions: [],
                        dependencies: dependencies,
                        settings: Settings(base: [:], configurations: frameworkConfigurations)),
             ],
