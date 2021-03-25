@@ -8,8 +8,8 @@ public enum ExternalRedirect {
     case offer
 }
 
-public struct EmbarkState {
-    let store = EmbarkStore()
+public class EmbarkState {
+    var store = EmbarkStore()
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let startPassageIDSignal = ReadWriteSignal<String?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
@@ -38,7 +38,7 @@ public struct EmbarkState {
     var passageNameSignal: ReadSignal<String?> {
         currentPassageSignal.map { $0?.name }
     }
-    
+
     var passageTooltipsSignal: ReadSignal<[Tooltip]> {
         currentPassageSignal.map { $0?.tooltips ?? [] }
     }
@@ -53,14 +53,16 @@ public struct EmbarkState {
             computedValues[computedValue.key] = computedValue.value
             return computedValues
         } ?? [:]
+        passageHistorySignal.value = []
+        store = EmbarkStore()
     }
-    
+
     func startTracking() {
         bag += currentPassageSignal
             .readOnly()
             .compactMap { $0?.tracks }
-            .onValue(on: .background) { (tracks) in
-                tracks.forEach { track in track.trackingEvent(storeValues: store.getAllValues()).send() }
+            .onValue(on: .background) { tracks in
+                tracks.forEach { track in track.trackingEvent(storeValues: self.store.getAllValues()).send() }
             }
     }
 
@@ -86,9 +88,8 @@ public struct EmbarkState {
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                
                 externalRedirect.trackingEvent(storeValues: store.getAllValues()).send()
-                
+
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectHandler(ExternalRedirect.mailingList)
