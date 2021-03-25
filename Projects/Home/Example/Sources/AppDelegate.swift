@@ -35,10 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.window?.removeGestureRecognizer(tapGestureRecognizer)
         }
 
-        Dependencies.shared.set(
-            apolloEnvironmentConfig: ApplicationState.getTargetEnvironment().apolloEnvironmentConfig
-        )
-
         navigationController.present(
             Debug(),
             options: [
