@@ -60,8 +60,6 @@ public extension Project {
             targetDependencies.append(.project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)")))
         }
 
-        let targetActions: [TargetAction] = []
-
         var projectTargets: [Target] = []
 
         if targets.contains(.framework) {
@@ -78,7 +76,7 @@ public extension Project {
                 infoPlist: .default,
                 sources: sources,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
-                actions: targetActions,
+                actions: [],
                 dependencies: targetDependencies,
                 settings: Settings(base: [:], configurations: frameworkConfigurations)
             )
@@ -95,7 +93,7 @@ public extension Project {
                 deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
                 infoPlist: .default,
                 sources: "Testing/**/*.swift",
-                actions: targetActions,
+                actions: [],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
@@ -119,7 +117,7 @@ public extension Project {
                 deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
                 infoPlist: .default,
                 sources: "Tests/**/*.swift",
-                actions: targetActions,
+                actions: [],
                 dependencies: [
                     [
                         .target(name: "\(name)Example"),
@@ -145,7 +143,9 @@ public extension Project {
                 infoPlist: .extendingDefault(with: ["UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen"]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
-                actions: targetActions,
+                actions: [
+                    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks"),
+                ],
                 dependencies: [
                     [
                         .target(name: "\(name)"),

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-scripts/translations.sh
+arch -x86_64 scripts/translations.sh
 scripts/swiftgen.sh
 scripts/codegen.sh
 

@@ -20,6 +20,7 @@ extension PayoutDetailsSection: Viewable {
             header: L10n.PaymentScreen.payoutSectionTitle,
             footer: nil
         )
+        section.isHidden = true
 
         let dataSignal = client.watch(
             query: GraphQL.ActivePayoutMethodsQuery(),
@@ -41,9 +42,19 @@ extension PayoutDetailsSection: Viewable {
             }
         }
 
-        bag += dataSignal.onValueDisposePrevious { data in
+        bag += combineLatest(
+            dataSignal,
+            payOutOptions.valueSignal.plain()
+        ).onValueDisposePrevious { data, options in
             let bag = DisposeBag()
             let status = data.activePayoutMethods?.status
+
+            if options.paymentMethods.regular.isEmpty {
+                section.isHidden = true
+                return bag
+            }
+
+            section.isHidden = false
 
             if status == .active {
                 let valueRow = RowView()

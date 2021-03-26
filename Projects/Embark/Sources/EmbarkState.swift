@@ -8,8 +8,8 @@ public enum ExternalRedirect {
     case offer(ids: [String])
 }
 
-public struct EmbarkState {
-    let store = EmbarkStore()
+public class EmbarkState {
+    var store = EmbarkStore()
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let startPassageIDSignal = ReadWriteSignal<String?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
@@ -37,7 +37,7 @@ public struct EmbarkState {
     var passageNameSignal: ReadSignal<String?> {
         currentPassageSignal.map { $0?.name }
     }
-    
+
     var passageTooltipsSignal: ReadSignal<[Tooltip]> {
         currentPassageSignal.map { $0?.tooltips ?? [] }
     }
@@ -52,15 +52,17 @@ public struct EmbarkState {
             computedValues[computedValue.key] = computedValue.value
             return computedValues
         } ?? [:]
+        passageHistorySignal.value = []
+        store = EmbarkStore()
     }
-    
+
     func startTracking() {
         bag += currentPassageSignal
-                .readOnly()
-                .compactMap { $0?.tracks }
-                .onValue(on: .background) { (tracks) in
-                    tracks.forEach { track in track.trackingEvent(store: store).send() }
-                }
+            .readOnly()
+            .compactMap { $0?.tracks }
+            .onValue(on: .background) { tracks in
+                tracks.forEach { track in track.trackingEvent(storeValues: self.store.getAllValues()).send() }
+            }
     }
 
     func goBack() {
@@ -85,14 +87,15 @@ public struct EmbarkState {
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                
-                externalRedirect.trackingEvent(store: store).send()
-                
+                externalRedirect.trackingEvent(storeValues: store.getAllValues()).send()
+
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectSignal.value = .mailingList
                 case .offer:
+
                     // MARK: This needs to be updated to handle multiple quote ID's
+
                     externalRedirectSignal.value = .offer(ids: store.getQuoteIds())
                 case .__unknown:
                     fatalError("Can't external redirect to location")
@@ -163,5 +166,3 @@ public struct EmbarkState {
         }.map { _, rhs in rhs }.readable(initial: 0)
     }
 }
-
-

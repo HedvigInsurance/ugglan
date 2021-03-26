@@ -67,14 +67,17 @@ extension EmbarkTextAction: Viewable {
 
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
-            type: .standard(backgroundColor: .black, textColor: .white)
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
+            )
         )
         bag += view.addArranged(button) { buttonView in
             animator.register(key: \.button, value: buttonView)
         }
-        
+
         bag += textSignal
-            .map { text in text.count > 0 }
+            .map { text in !text.isEmpty }
             .bindTo(button.isEnabled)
 
         return (view, Signal { callback in
