@@ -56,14 +56,3 @@ extension StoryList: Presentable {
         return (viewController, bag)
     }
 }
-
-
-struct EmbarkRouting: EmbarkRouter {
-    func openMailingList(viewController: UIViewController) {
-        
-    }
-    
-    func openOffer(viewController: UIViewController) {
-        
-    }
-}
