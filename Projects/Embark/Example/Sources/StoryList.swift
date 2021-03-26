@@ -25,7 +25,7 @@ extension StoryList: Presentable {
 
         bag += plansButton.onValue { _ in
             viewController.present(
-                EmbarkPlans(embarkRouter: EmbarkRouting()),
+                EmbarkPlans(),
                 options: [.defaults, .largeTitleDisplayMode(.never)]
             )
         }
@@ -37,8 +37,7 @@ extension StoryList: Presentable {
             viewController.present(
                 Embark(
                     name: storyName.value,
-                    state: EmbarkState(),
-                    router: EmbarkRouting()
+                    state: EmbarkState()
                 ),
                 options: [.defaults, .largeTitleDisplayMode(.never), .autoPop]
             )
