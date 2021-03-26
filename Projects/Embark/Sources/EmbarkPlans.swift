@@ -9,24 +9,26 @@ import Presentation
 import SnapKit
 import UIKit
 
+public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
+
 public struct EmbarkPlans {
     @Inject var client: ApolloClient
     let plansSignal = ReadWriteSignal<[GraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
     @ReadWriteState var selectedIndex = 0
 
-    var selectedPlan: ReadSignal<GraphQL.ChoosePlanQuery.Data.EmbarkStory?> {
+    var selectedPlan: ReadSignal<EmbarkStory?> {
         $selectedIndex.withLatestFrom(plansSignal).map { selected, plans in
             plans.enumerated().filter { (offset, _) -> Bool in
                 offset == selected
             }.first?.element
         }
     }
-
+    
     public init() {}
 }
 
 extension EmbarkPlans: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, FiniteSignal<EmbarkStory>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -99,7 +101,7 @@ extension EmbarkPlans: Presentable {
 
         bag += client
             .fetch(
-                query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.en_NO.code)
+                query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue)
             ).valueSignal
             .compactMap { $0.embarkStories }
             .map { $0
@@ -139,19 +141,18 @@ extension EmbarkPlans: Presentable {
             table.removeEmptySections()
             tableKit.set(table)
         }
-
-        bag += continueButton
-            .onTapSignal
-            .withLatestFrom(selectedPlan.atOnce().plain())
-            .compactMap { _, story in story }
-            .onValue { story in
-                viewController.present(Embark(
-                    name: story.name,
-                    state: EmbarkState(externalRedirectHandler: { _ in })
-                ))
-            }
-
-        return (viewController, bag)
+        
+        return (viewController, FiniteSignal<EmbarkStory> { callback in
+            bag += continueButton
+                .onTapSignal
+                .withLatestFrom(selectedPlan.atOnce().plain())
+                .compactMap { _, story in story }
+                .onValue({ (story) in
+                    callback(.value(story))
+                })
+            
+            return bag
+        })
     }
 }
 

@@ -3,6 +3,8 @@ import Foundation
 import hGraphQL
 import hCore
 
+private let quoteIds = ["quoteId", "norwegianHomeContentsQuoteId", "norwegianTravelQuoteId"]
+
 class EmbarkStore {
     var revisions: [[String: String]] = [[:]]
     var queue: [String: String] = [:]
@@ -43,6 +45,10 @@ class EmbarkStore {
         let mappedComputedValues = computedValues.compactMapValues { value in parseComputedExpression(value) }
         
         return mappedComputedValues.merging(revisions.last ?? [:], uniquingKeysWith: takeLeft)
+    }
+    
+    func getQuoteIds() -> [String] {
+        return quoteIds.compactMap { key in getValue(key: key) }
     }
 
     private func parseComputedExpression(_ expression: String) -> String? {

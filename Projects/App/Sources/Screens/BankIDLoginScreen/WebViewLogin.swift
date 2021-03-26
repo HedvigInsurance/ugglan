@@ -68,7 +68,7 @@ extension WebViewLogin: Presentable {
 
             AnalyticsCoordinator().setUserId()
 
-            let window = appDelegate.window
+            let window = appDelegate.appFlow.window
             appDelegate.bag += window.present(LoggedIn(), animated: true)
         }
 

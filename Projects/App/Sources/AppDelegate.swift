@@ -23,15 +23,14 @@ let log = Logger.self
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
-    let navigationController = UINavigationController()
-    let window = UIWindow(frame: UIScreen.main.bounds)
+    let appFlow = AppFlow(window: UIWindow(frame: UIScreen.main.bounds))
 
     func logout() {
         ApolloClient.cache = InMemoryNormalizedCache()
         ApolloClient.deleteToken()
         bag += ApolloClient.initAndRegisterClient().onValue { _ in
             ChatState.shared = ChatState()
-            self.bag += ApplicationState.presentRootViewController(self.window)
+            self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
         }
     }
 
@@ -80,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            guard let rootViewController = window.rootViewController else { return false }
+            guard let rootViewController = appFlow.window.rootViewController else { return false }
 
             Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
 
@@ -151,8 +150,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
-
-        window.rootViewController = navigationController
 
         presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
             let presentationEvent = event()
@@ -229,10 +226,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
-        window.rootView.addSubview(launchView)
+        appFlow.window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
-        window.makeKeyAndVisible()
+        appFlow.window.makeKeyAndVisible()
 
         launchView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
@@ -253,7 +250,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             if #available(iOS 13, *) {
                 self.bag += toast.onTap.onValue {
-                    self.window.rootViewController?.present(
+                    self.appFlow.window.rootViewController?.present(
                         UIHostingController(rootView: Debug()),
                         style: .detented(.medium, .large),
                         options: []
@@ -296,7 +293,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 AnalyticsCoordinator().setUserId()
 
-                self.bag += ApplicationState.presentRootViewController(self.window)
+                self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
             }.onValue { _ in
                 let client: ApolloClient = Dependencies.shared.resolve()
                 self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
@@ -308,7 +305,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
         }
-
+    
         return true
     }
 }
@@ -360,7 +357,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     return
                 } else if ApplicationState.currentState == .offer {
                     bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
-                        self.window.rootViewController?.present(
+                        self.appFlow.window.rootViewController?.present(
                             OfferChat(),
                             style: .modally(
                                 presentationStyle: .pageSheet,
@@ -372,7 +369,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     return
                 } else if ApplicationState.currentState == .loggedIn {
                     bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
-                        self.window.rootViewController?.present(
+                        self.appFlow.window.rootViewController?.present(
                             FreeTextChat(),
                             style: .detented(.large)
                         )
@@ -385,7 +382,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 }
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
-                    self.window.rootViewController?.present(
+                    self.appFlow.window.rootViewController?.present(
                         PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
                         style: .modal,
                         options: [.defaults]
@@ -393,7 +390,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 }
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
-                    self.window.rootViewController?.present(
+                    self.appFlow.window.rootViewController?.present(
                         PaymentSetup(setupType: .replacement, urlScheme: Bundle.main.urlScheme ?? ""),
                         style: .modal,
                         options: [.defaults]

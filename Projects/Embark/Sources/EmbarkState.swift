@@ -5,7 +5,7 @@ import hGraphQL
 
 public enum ExternalRedirect {
     case mailingList
-    case offer
+    case offer(ids: [String])
 }
 
 public class EmbarkState {
@@ -15,11 +15,10 @@ public class EmbarkState {
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
-    let externalRedirectHandler: (_ externalRedirect: ExternalRedirect) -> Void
+    let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
 
-    public init(externalRedirectHandler: @escaping (_ externalRedirect: ExternalRedirect) -> Void) {
-        self.externalRedirectHandler = externalRedirectHandler
+    public init() {
         defer {
             startTracking()
         }
@@ -92,9 +91,12 @@ public class EmbarkState {
 
                 switch externalRedirect {
                 case .mailingList:
-                    externalRedirectHandler(ExternalRedirect.mailingList)
+                    externalRedirectSignal.value = .mailingList
                 case .offer:
-                    externalRedirectHandler(ExternalRedirect.offer)
+
+                    // MARK: This needs to be updated to handle multiple quote ID's
+
+                    externalRedirectSignal.value = .offer(ids: store.getQuoteIds())
                 case .__unknown:
                     fatalError("Can't external redirect to location")
                 }

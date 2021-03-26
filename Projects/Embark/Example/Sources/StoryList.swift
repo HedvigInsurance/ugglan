@@ -34,11 +34,13 @@ extension StoryList: Presentable {
         bag += viewController.install(tableKit)
 
         bag += tableKit.delegate.didSelectRow.onValue { storyName in
-            viewController.present(Embark(
-                name: storyName.value, state: EmbarkState { externalRedirect in
-                    print(externalRedirect)
-                }
-            ), options: [.defaults, .largeTitleDisplayMode(.never), .autoPop])
+            viewController.present(
+                Embark(
+                    name: storyName.value,
+                    state: EmbarkState()
+                ),
+                options: [.defaults, .largeTitleDisplayMode(.never), .autoPop]
+            )
         }
 
         bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery())

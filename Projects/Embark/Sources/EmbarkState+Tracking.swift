@@ -1,11 +1,11 @@
 import Foundation
-import hGraphQL
 import hCore
+import hGraphQL
 
 public struct EmbarkTrackingEvent {
     public var title: String
-    public var properties: [String:Any]
-    
+    public var properties: [String: Any]
+
     func send() {
         Self.trackingHandler(self)
     }
@@ -16,27 +16,27 @@ public extension EmbarkTrackingEvent {
 }
 
 internal extension GraphQL.EmbarkExternalRedirectLocation {
-    func trackingEvent(storeValues: [String:Any]) -> EmbarkTrackingEvent {
+    func trackingEvent(storeValues: [String: Any]) -> EmbarkTrackingEvent {
         var trackingProperties = storeValues
-        trackingProperties["redirectLocation"] = self.rawValue
+        trackingProperties["redirectLocation"] = rawValue
         return EmbarkTrackingEvent(title: "External Redirect", properties: trackingProperties)
     }
 }
 
 internal extension EmbarkPassage.Track {
-    func trackingEvent(storeValues: [String:Any]) -> EmbarkTrackingEvent {
-        return .init(title: self.eventName, properties: trackingProperties(storeValues: storeValues))
+    func trackingEvent(storeValues: [String: Any]) -> EmbarkTrackingEvent {
+        .init(title: eventName, properties: trackingProperties(storeValues: storeValues))
     }
-    
-    private func trackingProperties(storeValues: [String:Any]) -> [String:Any] {
-        var filteredProperties = storeValues.filter { key, value in
-            return eventKeys.contains(key)
+
+    private func trackingProperties(storeValues: [String: Any]) -> [String: Any] {
+        var filteredProperties = storeValues.filter { key, _ in
+            eventKeys.contains(key)
         }
-        
+
         if let customData = customData {
-            filteredProperties = filteredProperties.merging((customData.toJSONDictionary() ?? [:]), uniquingKeysWith: takeRight)
+            filteredProperties = filteredProperties.merging(customData.toJSONDictionary() ?? [:], uniquingKeysWith: takeRight)
         }
-        
+
         return filteredProperties
     }
 }

@@ -29,7 +29,7 @@ extension OfferChat: Presentable {
                         title: L10n.chatRestartAlertConfirm,
                         action: {
                             UIView.transition(
-                                with: UIApplication.shared.appDelegate.window,
+                                with: UIApplication.shared.appDelegate.appFlow.window,
                                 duration: 0.25,
                                 options: .transitionCrossDissolve,
                                 animations: {

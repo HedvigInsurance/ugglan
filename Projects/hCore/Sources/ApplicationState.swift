@@ -35,7 +35,7 @@ public struct ApplicationState {
         UserDefaults.standard.set(locale.lprojCode, forKey: "AppleLanguage")
         UserDefaults.standard.set(locale.rawValue, forKey: ApplicationState.preferredLocaleKey)
     }
-
+    
     public static var hasPreferredLocale: Bool {
         UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
     }

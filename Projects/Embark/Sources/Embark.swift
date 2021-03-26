@@ -21,7 +21,7 @@ public struct Embark {
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, Future<Void>) {
+    public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -150,7 +150,11 @@ extension Embark: Presentable {
             self.state.restart()
         }
 
-        return (viewController, Future { completion in
+        return (viewController, FiniteSignal { callback in
+            bag += state.externalRedirectSignal.compactMap { $0 }.onValue { redirect in
+                callback(.value(redirect))
+            }
+
             let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
 
             if #available(iOS 14.0, *) {
@@ -167,7 +171,7 @@ extension Embark: Presentable {
                         image: hCoreUIAssets.tinyCircledX.image,
                         attributes: .destructive
                     ) { _ in
-                        completion(.success)
+                        callback(.end)
                     }
 
                     let menuActions = [canGoBack ? previousAction : nil, closeAction].compactMap { $0 }
@@ -231,7 +235,7 @@ extension Embark: Presentable {
                 if canGoBack {
                     state.goBack()
                 } else {
-                    completion(.success)
+                    callback(.end)
                 }
             }
 

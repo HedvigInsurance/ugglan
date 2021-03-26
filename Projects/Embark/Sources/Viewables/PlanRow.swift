@@ -53,6 +53,7 @@ extension PlanRow: Reusable {
 
         let titleLabel = UILabel(value: "", style: .brand(.title2(color: .primary)))
         titleLabel.setContentHuggingPriority(.required, for: .vertical)
+        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
         horizontalContentContainer.addArrangedSubview(titleLabel)
 
         contentView.addSubview(verticalContentContainer)
