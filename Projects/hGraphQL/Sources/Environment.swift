@@ -105,7 +105,7 @@ public enum Environment: Hashable {
     public var wsEndpointURL: URL {
         switch self {
         case .staging:
-            return URL(string: "https://graphql.dev.hedvigit.com/graphql")!
+            return URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
         case .production:
             return URL(string: "wss://giraffe.hedvig.com/subscriptions")!
         case let .custom(_, wsEndpointURL, _):
