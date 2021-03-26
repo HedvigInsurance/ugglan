@@ -55,6 +55,9 @@ extension ContractDocuments: Presentable {
 
         if contract.status.asPendingStatus == nil {
             showSections()
+        } else {
+            let emptyRow = RowView(title: "")
+            section.append(emptyRow)
         }
 
         bag += viewController.install(form, options: [])

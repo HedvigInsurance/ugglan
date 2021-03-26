@@ -139,6 +139,10 @@ platform :ios do
         setup
         
         apps = {
+            "EmbarkExample" => {
+                "identifier" => "com.hedvig.example.*",
+                "project_path" => "Projects/Embark/Embark.xcodeproj"
+            },
             "Ugglan" => {
                 "identifier" => "com.hedvig.test.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
@@ -352,7 +356,6 @@ platform :ios do
             "Ugglan",
             "hCore",
             "hCoreUI",
-            "Embark",
             "Forever",
             "Contracts",
             "Home",
@@ -369,7 +372,7 @@ platform :ios do
             )
         end
         
-        device = "iPhone 11 Pro"
+        device = "iPhone 11 Pro (14.4)"
         
         schemes.each { |scheme|
             begin
