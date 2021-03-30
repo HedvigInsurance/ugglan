@@ -9,19 +9,25 @@ import Presentation
 import SnapKit
 import UIKit
 
+public enum EmbarkFlowType {
+    case onboarding
+}
+
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
-    let state: EmbarkState
+    let flowType: EmbarkFlowType
+    let state = EmbarkState()
+    let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
 
-    public init(name: String, state: EmbarkState) {
+    public init(name: String, flowType: EmbarkFlowType) {
         self.name = name
-        self.state = state
+        self.flowType = flowType
     }
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -150,9 +156,9 @@ extension Embark: Presentable {
             self.state.restart()
         }
 
-        return (viewController, FiniteSignal { callback in
+        return (viewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>> { callback in
             bag += state.externalRedirectSignal.compactMap { $0 }.onValue { redirect in
-                callback(.value(redirect))
+                callback(.value(.left(redirect)))
             }
 
             let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
@@ -171,7 +177,6 @@ extension Embark: Presentable {
                         image: hCoreUIAssets.tinyCircledX.image,
                         attributes: .destructive
                     ) { _ in
-                        callback(.end)
                     }
 
                     let menuActions = [canGoBack ? previousAction : nil, closeAction].compactMap { $0 }
@@ -189,44 +194,83 @@ extension Embark: Presentable {
 
             viewController.navigationItem.leftBarButtonItem = backButton
 
-            let tooltipButton = UIBarButtonItem(image: hCoreUIAssets.infoLarge.image, style: .plain, target: nil, action: nil)
+            let tooltipButton = UIButton()
+            tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
 
-            bag += tooltipButton.onValue {
-                let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+            let didTapTooltip = tooltipButton.signal(for: .touchUpInside)
 
-                viewController.present(
-                    embarkTooltipsAlert.wrappedInCloseButton(),
-                    style: .detented(.preferredContentSize),
-                    options: [
-                        .defaults,
-                        .prefersLargeTitles(true),
-                    ]
-                )
-            }
+            bag += didTapTooltip
+                .onValue { () in
+
+                    let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+
+                    viewController.present(
+                        embarkTooltipsAlert.wrappedInCloseButton(),
+                        style: .detented(.preferredContentSize),
+                        options: [
+                            .defaults,
+                            .prefersLargeTitles(true),
+                        ]
+                    )
+                }
 
             let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
+
+            let routes = EmbarkMenuRoute.allCases
+
+            func presentRestartAlert(completion: @escaping (Bool) -> Void) {
+                let alert = Alert(
+                    title: L10n.Settings.alertRestartOnboardingTitle,
+                    message: L10n.Settings.alertRestartOnboardingDescription,
+                    tintColor: nil,
+                    actions: [
+                        Alert.Action(
+                            title: L10n.alertOk,
+                            style: UIAlertAction.Style.destructive
+                        ) { true },
+                        Alert.Action(
+                            title: L10n.settingsAlertChangeMarketCancel,
+                            style: UIAlertAction.Style.cancel
+                        ) { false },
+                    ]
+                )
+
+                bag += viewController.present(alert).onValue { shouldRestart in
+                    completion(shouldRestart)
+                }
+            }
+
+            func routeHandler(route: EmbarkMenuRoute) {
+                if case .restart = route {
+                    presentRestartAlert { shouldRestart in
+                        if shouldRestart {
+                            state.restart()
+                        }
+                    }
+                } else {
+                    routeSignal.value = route
+                }
+            }
+
+            bag += routeSignal.onValue { route in
+                guard let route = route else { return }
+
+                callback(.value(.right(route)))
+            }
 
             bag += optionsButton.attachSinglePressMenu(
                 viewController: viewController,
                 menu: Menu(
                     title: nil,
-                    children: [
-                        MenuChild(
-                            title: L10n.embarkRestartButton,
-                            style: .destructive,
-                            image: hCoreUIAssets.restart.image
-                        ) {
-                            state.restart()
-                        },
-                    ]
+                    children:
+                    routes.map { route in MenuChild.embarkChild(for: route) {
+                        routeHandler(route: route)
+                    }}
                 )
             )
 
-            viewController.navigationItem.rightBarButtonItems = [optionsButton]
-
             bag += state.passageTooltipsSignal.atOnce()
-                .map { tooltips in tooltips.isEmpty ? [optionsButton] : [optionsButton, tooltipButton] }
-                .delay(by: 0.5)
+                .map { tooltips in tooltips.isEmpty ? [optionsButton] : [optionsButton, UIBarButtonItem(button: tooltipButton)] }
                 .onValue { items in
                     viewController.navigationItem.setRightBarButtonItems(items, animated: true)
                 }
@@ -241,5 +285,16 @@ extension Embark: Presentable {
 
             return bag
         })
+    }
+}
+
+private extension MenuChild {
+    static func embarkChild(for route: EmbarkMenuRoute, handler: @escaping () -> Void) -> MenuChild {
+        MenuChild(
+            title: route.title,
+            style: route.style,
+            image: route.image,
+            handler: handler
+        )
     }
 }

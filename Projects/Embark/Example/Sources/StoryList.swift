@@ -24,7 +24,7 @@ extension StoryList: Presentable {
         let bag = DisposeBag()
 
         bag += plansButton.onValue { _ in
-            viewController.present(
+            bag += viewController.present(
                 EmbarkPlans(),
                 options: [.defaults, .largeTitleDisplayMode(.never)]
             )
@@ -34,11 +34,8 @@ extension StoryList: Presentable {
         bag += viewController.install(tableKit)
 
         bag += tableKit.delegate.didSelectRow.onValue { storyName in
-            viewController.present(
-                Embark(
-                    name: storyName.value,
-                    state: EmbarkState()
-                ),
+            bag += viewController.present(
+                Embark(name: storyName.value, flowType: .onboarding),
                 options: [.defaults, .largeTitleDisplayMode(.never), .autoPop]
             )
         }

@@ -26,6 +26,17 @@ public enum Localization {
                     return "SEK"
                 }
             }
+            
+            public var marketName: String {
+                switch self {
+                case .no:
+                    return L10n.marketNorway
+                case .se:
+                    return L10n.marketSweden
+                case .dk:
+                    return L10n.marketDenmark
+                }
+            }
         }
 
         public var market: Market {

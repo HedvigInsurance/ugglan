@@ -3,8 +3,8 @@ import hCore
 import hGraphQL
 import UIKit
 
-public enum Market: CaseIterable {
-    case sweden, norway, denmark
+public enum Market: String, CaseIterable {
+    case sweden = "SE", norway = "NO", denmark = "DK"
 
     var id: String {
         switch self {
@@ -17,7 +17,7 @@ public enum Market: CaseIterable {
         }
     }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .norway:
             return "Norge"
@@ -28,7 +28,7 @@ public enum Market: CaseIterable {
         }
     }
 
-    var icon: UIImage {
+    public var icon: UIImage {
         switch self {
         case .norway:
             return Asset.flagNO.image

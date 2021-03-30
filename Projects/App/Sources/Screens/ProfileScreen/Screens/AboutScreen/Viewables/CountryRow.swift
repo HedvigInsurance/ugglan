@@ -4,34 +4,32 @@ import Foundation
 import hCore
 import hCoreUI
 import UIKit
+import Market
 
-public struct MarketRow {
-    @ReadWriteState var market: Market
+public struct CountryRow {
+    let market: Market
     
     public init(market: Market) {
         self.market = market
     }
 }
 
-extension MarketRow: Viewable {
+extension CountryRow: Viewable {
     public func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
         let row = RowView(
             title: L10n.MarketLanguageScreen.marketLabel,
             subtitle: market.title,
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
-                style.title = .brand(.headline(color: .primary(state: .negative)))
-                style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
+                style.title = .brand(.headline(color: .primary))
+                style.subtitle = .brand(.subHeadline(color: .secondary))
             }
         )
-        bag += $market.map { $0.title }.bindTo(row, \.subtitle)
 
         let flagImageView = UIImageView()
         flagImageView.image = market.icon
         flagImageView.contentMode = .scaleAspectFit
         row.prepend(flagImageView)
-
-        bag += $market.map { $0.icon }.bindTo(flagImageView, \.image)
 
         flagImageView.snp.makeConstraints { make in
             make.width.equalTo(24)
@@ -45,14 +43,6 @@ extension MarketRow: Viewable {
 
         row.append(chevronImageView)
 
-        bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
-            viewController.present(PickMarket(currentMarket: market).wrappedInCloseButton(), style: .detented(.scrollViewContentSize(20))).onValue { newMarket in
-                $market.value = newMarket
-            }
-        }
-
         return (row, bag)
     }
 }
-
-

@@ -2,6 +2,7 @@ import Embark
 import Flow
 import Foundation
 import hCore
+import hCoreUI
 import Presentation
 import UIKit
 
@@ -36,7 +37,6 @@ struct OnboardingFlow: Presentable {
                 }
             }
         }
-
         return (viewController, bag)
     }
 }
@@ -48,14 +48,61 @@ struct EmbarkOnboardingFlow: Presentable {
 
         return (viewController, Future { completion in
             bag += storySignal.atValue { story in
+                let embark = Embark(name: story.name, flowType: .onboarding)
+
                 bag += viewController
                     .present(
-                        Embark(name: story.name, state: EmbarkState()),
+                        embark,
                         options: [.autoPop]
-                    ).onValue { redirect in completion(.success(redirect)) }
-            }
+                    ).onValue { embarkValue in
+                        switch embarkValue {
+                        case let .left(redirect):
+                            completion(.success(redirect))
+                        case let .right(route):
+                            guard let presentable = presentable(for: route) else { return }
 
+                            bag += viewController.present(presentable)
+                        }
+                    }
+            }
             return bag
         })
+    }
+}
+
+extension EmbarkOnboardingFlow {
+    func presentable(for route: EmbarkMenuRoute) -> AnyPresentation<UIViewController, Future<Void>>? {
+        switch route {
+        case .appInformation:
+            return Presentation(
+                AppInfo(state: .appInformation).withCloseButton,
+                style: .modal,
+                options: [
+                    .allowSwipeDismissAlways,
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
+            )
+        case .appSettings:
+            return Presentation(
+                AppInfo(state: .appSettings).withCloseButton,
+                style: .modal,
+                options: [
+                    .allowSwipeDismissAlways,
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
+            )
+        case .restart:
+            return nil
+        case .login:
+            return Presentation(
+                Login(),
+                style: .detented(.medium, .large),
+                options: [.allowSwipeDismissAlways, .defaults]
+            )
+        }
     }
 }
