@@ -52,7 +52,7 @@ extension ApplicationState {
         case .onboardingChat, .onboarding:
             return window.present(
                 Onboarding(),
-                options: [.defaults, .embedInNavigationController],
+                options: [.defaults],
                 animated: false
             )
         case .offer:

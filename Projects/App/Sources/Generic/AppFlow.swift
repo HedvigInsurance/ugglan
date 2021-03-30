@@ -21,7 +21,7 @@ struct OnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, future) = EmbarkOnboardingFlow().materialize()
         let bag = DisposeBag()
-      
+
         bag += future.onValue { redirect in
             switch redirect {
             case .mailingList:
@@ -49,18 +49,21 @@ struct EmbarkOnboardingFlow: Presentable {
         return (viewController, Future { completion in
             bag += storySignal.atValue { story in
                 let embark = Embark(name: story.name, flowType: .onboarding)
-                bag += embark.routeSignal.onValue { route in
-                    guard let route = route,
-                          let presentable = presentable(for: route) else { return }
-
-                    bag += viewController.present(presentable)
-                }
 
                 bag += viewController
                     .present(
                         embark,
                         options: [.autoPop]
-                    ).onValue { redirect in completion(.success(redirect)) }
+                    ).onValue { embarkValue in
+                        switch embarkValue {
+                        case let .left(redirect):
+                            completion(.success(redirect))
+                        case let .right(route):
+                            guard let presentable = presentable(for: route) else { return }
+
+                            bag += viewController.present(presentable)
+                        }
+                    }
             }
             return bag
         })

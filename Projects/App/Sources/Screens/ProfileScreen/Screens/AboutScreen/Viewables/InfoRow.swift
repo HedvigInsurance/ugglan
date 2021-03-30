@@ -7,7 +7,7 @@ import Market
 import UIKit
 
 public struct AppInfoRow {
-    public init(title: String, icon: UIImage?, isTappable: Bool, value: String) {
+    public init(title: String, icon: UIImage?, isTappable: Bool, value: Future<String>) {
         self.title = title
         self.icon = icon
         self.isTappable = isTappable
@@ -18,7 +18,7 @@ public struct AppInfoRow {
     let title: String
     let icon: UIImage?
     let isTappable: Bool
-    let value: String
+    let value: Future<String>
 
     private let onSelectCallbacker = Callbacker<Void>()
     public let onSelect: Signal<Void>
@@ -29,7 +29,7 @@ extension AppInfoRow: Viewable {
         let bag = DisposeBag()
         let row = RowView(
             title: title,
-            subtitle: value,
+            subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
                 style.title = .brand(.headline(color: .primary))
                 style.subtitle = .brand(.subHeadline(color: .secondary))
@@ -40,6 +40,13 @@ extension AppInfoRow: Viewable {
         imageView.image = icon
         imageView.contentMode = .scaleAspectFit
         row.prepend(imageView)
+
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .brand(.primaryTintColor)
+        activityIndicator.startAnimating()
+
+        row.append(activityIndicator)
 
         imageView.snp.makeConstraints { make in
             make.width.equalTo(24)
@@ -53,6 +60,11 @@ extension AppInfoRow: Viewable {
         if isTappable {
             row.append(chevronImageView)
             bag += events.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
+        }
+
+        bag += value.onValue { string in
+            row.subtitle = string
+            activityIndicator.stopAnimating()
         }
 
         return (row, bag)

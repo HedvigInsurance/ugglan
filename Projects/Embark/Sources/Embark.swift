@@ -18,7 +18,7 @@ public struct Embark {
     let name: String
     let flowType: EmbarkFlowType
     let state = EmbarkState()
-    public let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
+    let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
 
     public init(name: String, flowType: EmbarkFlowType) {
         self.name = name
@@ -27,7 +27,7 @@ public struct Embark {
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -156,9 +156,9 @@ extension Embark: Presentable {
             self.state.restart()
         }
 
-        return (viewController, FiniteSignal<ExternalRedirect> { callback in
+        return (viewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>> { callback in
             bag += state.externalRedirectSignal.compactMap { $0 }.onValue { redirect in
-                callback(.value(redirect))
+                callback(.value(.left(redirect)))
             }
 
             let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
@@ -250,6 +250,12 @@ extension Embark: Presentable {
                 } else {
                     routeSignal.value = route
                 }
+            }
+
+            bag += routeSignal.onValue { route in
+                guard let route = route else { return }
+
+                callback(.value(.right(route)))
             }
 
             bag += optionsButton.attachSinglePressMenu(

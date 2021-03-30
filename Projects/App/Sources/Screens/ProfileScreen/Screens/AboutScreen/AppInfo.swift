@@ -121,20 +121,25 @@ extension AppInfo: Presentable {
 
         let buttonsSection = form.appendSection()
 
-        func value(row: State.InfoRows, completion: @escaping (String) -> Void) {
-            switch row {
-            case .language:
-                completion(Localization.Locale.currentLocale.displayName)
-            case .locale:
-                completion(Localization.Locale.currentLocale.market.marketName)
-            case .version:
-                completion(Bundle.main.appVersion)
-            case .memberId:
-                bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap {
-                    $0.member.id
-                }.onValue { memberId in
-                    completion(memberId)
+        func value(row: State.InfoRows) -> Future<String> {
+            let innerBag = DisposeBag()
+            return Future<String> { completion in
+                switch row {
+                case .language:
+                    completion(.success(Localization.Locale.currentLocale.displayName))
+                case .locale:
+                    completion(.success(Localization.Locale.currentLocale.market.marketName))
+                case .version:
+                    completion(.success(Bundle.main.appVersion))
+                case .memberId:
+                    innerBag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap {
+                        $0.member.id
+                    }.onValue { memberId in
+                        completion(.success(memberId))
+                    }
                 }
+
+                return innerBag
             }
         }
 
@@ -166,22 +171,33 @@ extension AppInfo: Presentable {
         func setupAppSettings() {
             let row = State.InfoRows.locale
             let market = Localization.Locale.currentLocale.market
-            bag += bodySection.append(AppInfoRow(title: row.title, icon: market.icon, isTappable: row.isTappable, value: market.marketName))
+            bag += bodySection.append(
+                AppInfoRow(
+                    title: row.title,
+                    icon: market.icon,
+                    isTappable: row.isTappable,
+                    value: value(row: row)
+                )
+            )
 
             let language = State.InfoRows.language
-            let languageRow = AppInfoRow(title: language.title, icon: language.icon, isTappable: language.isTappable, value: Localization.Locale.currentLocale.displayName)
+            let languageRow = AppInfoRow(
+                title: language.title,
+                icon: language.icon,
+                isTappable: language.isTappable,
+                value: value(row: row)
+            )
+
             bag += bodySection.append(languageRow)
 
-            bag += languageRow.onSelect.onValue { _ in
+            bag += languageRow.onSelect.onValue {
                 presentAlert()
             }
         }
 
         func setupAppInfo() {
             [State.InfoRows.memberId, State.InfoRows.version].forEach { row in
-                value(row: row) { rowValue in
-                    bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: rowValue))
-                }
+                bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: value(row: row)))
             }
         }
 
