@@ -19,6 +19,7 @@ public enum ExternalDependencies: CaseIterable {
     case sentry
     case hero
     case snapshottesting
+    case shake
 
     public var isTestDependency: Bool {
         self == .snapshottesting
@@ -84,7 +85,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .fb:
             return [
-                .package(url: "https://github.com/facebook/facebook-ios-sdk", .upToNextMajor(from: "8.2.0")),
+                .package(url: "https://github.com/facebook/facebook-ios-sdk", .upToNextMajor(from: "9.1.0")),
             ]
         case .snapkit:
             return [
@@ -109,6 +110,10 @@ public enum ExternalDependencies: CaseIterable {
         case .snapshottesting:
             return [
                 .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", .upToNextMajor(from: "1.8.2")),
+            ]
+        case .shake:
+            return [
+                .package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.3")),
             ]
         }
     }
@@ -190,6 +195,10 @@ public enum ExternalDependencies: CaseIterable {
         case .snapshottesting:
             return [
                 .package(product: "SnapshotTesting"),
+            ]
+        case .shake:
+            return [
+                .package(product: "Shake"),
             ]
         }
     }

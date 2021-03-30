@@ -11,11 +11,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
 
     internal func application(
-        _: UIApplication,
+        _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        DefaultStyling.installCustom()
-
+        application.setup()
         window = UIWindow(frame: UIScreen.main.bounds)
 
         let navigationController = UINavigationController()

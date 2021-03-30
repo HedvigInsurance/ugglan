@@ -1,5 +1,6 @@
 import Adyen
 import Apollo
+import CoreDependencies
 import Disk
 import Firebase
 import FirebaseMessaging
@@ -14,6 +15,7 @@ import Mixpanel
 import Payment
 import Presentation
 import Sentry
+import Shake
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -135,6 +137,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             #endif
             options.environment = Environment.current.displayName
             options.enableAutoSessionTracking = true
+        }
+
+        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
+            Shake.setup()
         }
 
         if let mixpanelToken = mixpanelToken {
@@ -305,7 +311,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
         }
-    
+
         return true
     }
 }
