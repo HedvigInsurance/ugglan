@@ -37,18 +37,19 @@ extension TextActionSet: Viewable {
                 return Masking(type: maskType)
             }
 
+            let endIndex = (data.textActionSetData?.textActions.endIndex ?? 1)
+            let isLastAction: Bool = index == endIndex - 1
+
             let input = EmbarkInput(
                 placeholder: textAction.data?.placeholder ?? "",
                 keyboardType: masking?.keyboardType,
                 textContentType: masking?.textContentType,
+                returnKeyType: isLastAction ? .done : .next,
                 autocapitalisationType: masking?.autocapitalizationType ?? .words,
                 masking: masking,
                 shouldAutoFocus: index == 0,
                 fieldStyle: .embarkInputSmall
             )
-
-            let endIndex = (data.textActionSetData?.textActions.endIndex ?? 1)
-            let isLastAction: Bool = index == endIndex - 1
 
             let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))
 
@@ -109,11 +110,16 @@ extension TextActionSet: Viewable {
 
             if let textActions = textActions {
                 bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { offset, shouldReturn in
-                    shouldReturn.set { _ -> Bool in
-                        if offset == textActions.count - 1 {
-                            complete()
+                    shouldReturn.set { value -> Bool in
+                        if !value.isEmpty {
+                            if offset == textActions.count - 1 {
+                                complete()
+                            }
+
+                            return true
                         }
-                        return true
+
+                        return false
                     }
                 }
 
