@@ -80,6 +80,7 @@ extension EmbarkInput: Viewable {
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
         textField.adjustsFontSizeToFitWidth = shouldAutoSize
+        textField.textAlignment = .right
 
         bag += combineLatest(
             textContentTypeSignal.atOnce(),
