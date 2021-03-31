@@ -28,14 +28,16 @@ extension TextActionSet: Viewable {
         containerView.backgroundColor = .brand(.secondaryBackground())
         containerView.layer.cornerRadius = 8
 
-        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: TextAction) in
-            var masking: Masking? {
-                guard let mask = textAction.data?.mask, let maskType = MaskType(rawValue: mask) else {
-                    return nil
-                }
-
-                return Masking(type: maskType)
+        func getMasking(_ action: TextAction) -> Masking? {
+            guard let mask = action.data?.mask, let maskType = MaskType(rawValue: mask) else {
+                return nil
             }
+
+            return Masking(type: maskType)
+        }
+
+        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: TextAction) in
+            let masking = getMasking(textAction)
 
             let endIndex = (data.textActionSetData?.textActions.endIndex ?? 1)
             let isLastAction: Bool = index == endIndex - 1
@@ -102,9 +104,9 @@ extension TextActionSet: Viewable {
 
             bag += view.addArranged(button)
 
-            func isValid(signal: ReadWriteSignal<String>, action _: TextAction) -> Signal<Bool> {
+            func isValid(signal: ReadWriteSignal<String>, action: TextAction) -> Signal<Bool> {
                 signal.map { text in
-                    !text.isEmpty
+                    !text.isEmpty && (getMasking(action)?.isValid(text: text) ?? true)
                 }.plain()
             }
 

@@ -14,8 +14,25 @@ enum MaskType: String {
 struct Masking {
     let type: MaskType
 
-    func isValid(text _: String) -> String {
-        ""
+    func isValid(text: String) -> Bool {
+        switch type {
+        case .personalNumber:
+            return text.count > 10
+        case .birthDate, .birthDateReverse:
+            return text.count == 10
+        case .email:
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+            let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+            return emailPredicate.evaluate(with: text)
+        case .norwegianPostalCode:
+            return text.count == 4
+        case .postalCode:
+            return text.count == 5
+        case .digits:
+            return CharacterSet.decimalDigits.isSuperset(
+                of: CharacterSet(charactersIn: text)
+            )
+        }
     }
 
     func unmaskedValue(text: String) -> String {
@@ -106,7 +123,7 @@ struct Masking {
             return nil
         }
     }
-    
+
     var autocapitalizationType: UITextAutocapitalizationType {
         switch type {
         case .email:

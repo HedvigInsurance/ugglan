@@ -78,7 +78,7 @@ extension EmbarkTextAction: Viewable {
 
         bag += textSignal
             .atOnce()
-            .map { text in !text.isEmpty }
+            .map { text in !text.isEmpty && (masking?.isValid(text: text) ?? true) }
             .bindTo(button.isEnabled)
 
         return (view, Signal { callback in
