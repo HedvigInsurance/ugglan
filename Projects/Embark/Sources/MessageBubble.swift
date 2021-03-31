@@ -50,11 +50,11 @@ extension MessageBubble: Viewable {
         let containerView = UIStackView()
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.insetsLayoutMarginsFromSafeArea = false
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 5)
 
         let bodyStyle = TextStyle.brand(.body(color: .primary(state: .positive)))
 
-        var label = MultilineLabel(value: "", style: bodyStyle, usePreferredMaxLayoutWidth: false)
+        let label = MarkdownTextView(textSignal: textSignal, style: bodyStyle)
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in
                 UIPasteboard.general.string = labelView.text
@@ -65,12 +65,9 @@ extension MessageBubble: Viewable {
             if animated {
                 bag += textSignal
                     .atOnce()
-                    .map { StyledText(text: $0, style: bodyStyle) }
                     .delay(by: delay)
-                    .onValue { styledText in
+                    .onValue { _ in
                         UIView.performWithoutAnimation {
-                            label.style = styledText.style
-                            label.value = styledText.text
                             containerStackView.isHidden = false
                             stylingView.alpha = 1
                             labelView.alpha = 1
@@ -79,10 +76,7 @@ extension MessageBubble: Viewable {
             } else {
                 bag += textSignal
                     .atOnce()
-                    .map { StyledText(text: $0, style: bodyStyle) }
-                    .onValue { styledText in
-                        label.style = styledText.style
-                        label.value = styledText.text
+                    .onValue { _ in
                         containerStackView.isHidden = false
                         stylingView.alpha = 1
                         labelView.alpha = 1
