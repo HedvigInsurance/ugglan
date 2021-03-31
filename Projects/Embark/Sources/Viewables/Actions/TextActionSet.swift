@@ -75,7 +75,7 @@ extension TextActionSet: Viewable {
                 }
 
                 if let passageName = self.state.passageNameSignal.value {
-                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: ",") ?? "")
+                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: " ") ?? "")
                 }
 
                 if let link = self.data.textActionSetData?.link {
