@@ -39,7 +39,10 @@ extension Passage: Viewable {
             guard let link = link else {
                 return
             }
-            self.state.goTo(passageName: link.name)
+            self.state.goTo(
+                passageName: link.name,
+                pushHistoryEntry: false
+            )
         }
 
         return (view, Signal { callback in

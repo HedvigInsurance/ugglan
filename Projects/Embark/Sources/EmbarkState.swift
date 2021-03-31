@@ -75,7 +75,7 @@ public class EmbarkState {
         store.removeLastRevision()
     }
 
-    func goTo(passageName: String) {
+    func goTo(passageName: String, pushHistoryEntry: Bool = true) {
         animationDirectionSignal.value = .forwards
         store.createRevision()
 
@@ -84,7 +84,7 @@ public class EmbarkState {
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
 
-            if let resultingPassage = currentPassageSignal.value {
+            if let resultingPassage = currentPassageSignal.value, pushHistoryEntry {
                 passageHistorySignal.value.append(resultingPassage)
             }
 
