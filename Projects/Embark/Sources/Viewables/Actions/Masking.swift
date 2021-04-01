@@ -17,9 +17,11 @@ struct Masking {
     func isValid(text: String) -> Bool {
         switch type {
         case .personalNumber:
-            return text.count > 10
+            let age = age(text: text) ?? 0
+            return text.count > 10 && age > 15 && age < 130
         case .birthDate, .birthDateReverse:
-            return text.count == 10
+            let age = age(text: text) ?? 0
+            return text.count == 10 && age > 15 && age < 130
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -60,10 +62,8 @@ struct Masking {
         }
     }
 
-    func derivedValues(text: String) -> [String: String]? {
-        let unmaskedValue = self.unmaskedValue(text: text)
-
-        func calculateAge(_ format: String, value: String) -> String? {
+    func age(text: String) -> Int? {
+        func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty {
                 return nil
             }
@@ -81,29 +81,37 @@ struct Masking {
                 return nil
             }
 
-            return String(age)
+            return age
         }
+
+        let unmaskedValue = self.unmaskedValue(text: text)
 
         switch type {
         case .personalNumber:
-            guard let age = calculateAge("yyMMdd", value: String(unmaskedValue.prefix(6))) else {
+            guard let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) else {
                 return nil
             }
 
-            return [
-                ".Age": age,
-            ]
+            return age
         case .birthDateReverse, .birthDate:
-            guard let age = calculateAge("yyyy-MM-dd", value: unmaskedValue) else {
+            guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else {
                 return nil
             }
 
-            return [
-                ".Age": age,
-            ]
+            return age
         default:
             return nil
         }
+    }
+
+    func derivedValues(text: String) -> [String: String]? {
+        guard let age = age(text: text) else {
+            return nil
+        }
+
+        return [
+            ".Age": String(age),
+        ]
     }
 
     var keyboardType: UIKeyboardType {
