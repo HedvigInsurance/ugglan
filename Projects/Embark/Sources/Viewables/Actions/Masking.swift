@@ -17,10 +17,10 @@ struct Masking {
     func isValid(text: String) -> Bool {
         switch type {
         case .personalNumber:
-            let age = age(text: text) ?? 0
+            let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15 ... 130 ~= age
         case .birthDate, .birthDateReverse:
-            let age = age(text: text) ?? 0
+            let age = calculateAge(from: text) ?? 0
             return 15 ... 130 ~= age
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -62,7 +62,7 @@ struct Masking {
         }
     }
 
-    func age(text: String) -> Int? {
+    func calculateAge(from text: String) -> Int? {
         func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty {
                 return nil
@@ -109,7 +109,7 @@ struct Masking {
     }
 
     func derivedValues(text: String) -> [String: String]? {
-        guard let age = age(text: text) else {
+        guard let age = calculateAge(from: text) else {
             return nil
         }
 
