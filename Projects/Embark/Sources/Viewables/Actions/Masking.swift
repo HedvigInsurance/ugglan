@@ -18,10 +18,10 @@ struct Masking {
         switch type {
         case .personalNumber:
             let age = age(text: text) ?? 0
-            return text.count > 10 && age > 15 && age < 130
+            return text.count > 10 && 15 ... 130 ~= age
         case .birthDate, .birthDateReverse:
             let age = age(text: text) ?? 0
-            return text.count == 10 && age > 15 && age < 130
+            return text.count == 10 && 15 ... 130 ~= age
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
