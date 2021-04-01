@@ -21,7 +21,7 @@ struct Masking {
             return text.count > 10 && 15 ... 130 ~= age
         case .birthDate, .birthDateReverse:
             let age = age(text: text) ?? 0
-            return text.count == 10 && 15 ... 130 ~= age
+            return 15 ... 130 ~= age
         case .email:
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -88,11 +88,15 @@ struct Masking {
 
         switch type {
         case .personalNumber:
-            guard let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) else {
-                return nil
+            if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) {
+                return age
             }
 
-            return age
+            if let age = calculate("yyyyMMdd", value: String(unmaskedValue.prefix(8))) {
+                return age
+            }
+
+            return nil
         case .birthDateReverse, .birthDate:
             guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else {
                 return nil
