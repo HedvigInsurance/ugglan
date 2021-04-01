@@ -80,7 +80,6 @@ extension GradientView: Viewable {
             gradientView.traitCollectionSignal.atOnce()
         )
         .onValueDisposePrevious { (shouldShow, traitCollection) -> Disposable? in
-
             let innerBag = DisposeBag()
 
             let layer = gradientLayer(traitCollection: traitCollection)
@@ -112,11 +111,35 @@ extension GradientView: Viewable {
                     shimmerView.transform = CGAffineTransform(translationX: gradientView.frame.width + shimmerView.frame.width, y: 0)
                 })
 
+                let fadeInAnimation = CABasicAnimation(keyPath: "opacity")
+                fadeInAnimation.fromValue = 0
+                fadeInAnimation.toValue = 1
+                fadeInAnimation.duration = 0.25
+                fadeInAnimation.fillMode = .forwards
+
+                layer.add(fadeInAnimation, forKey: "fadeInAnimation")
+
                 innerBag += {
-                    layer.removeFromSuperlayer()
-                    orbLayer.removeFromSuperlayer()
-                    animatedLayer.removeFromSuperlayer()
-                    shimmerView.transform = .identity
+                    CATransaction.begin()
+
+                    let fadeOutAnimation = CABasicAnimation(keyPath: "opacity")
+                    fadeOutAnimation.fromValue = 1
+                    fadeOutAnimation.toValue = 0
+                    fadeOutAnimation.duration = 0.25
+                    fadeOutAnimation.fillMode = .forwards
+
+                    layer.opacity = 0
+
+                    CATransaction.setCompletionBlock {
+                        layer.removeFromSuperlayer()
+                        orbLayer.removeFromSuperlayer()
+                        animatedLayer.removeFromSuperlayer()
+                        shimmerView.transform = .identity
+                    }
+
+                    layer.add(fadeOutAnimation, forKey: "fadeOutAnimation")
+
+                    CATransaction.commit()
                 }
             }
 
