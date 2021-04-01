@@ -27,7 +27,12 @@ extension StoryList: Presentable {
             bag += viewController.present(
                 EmbarkPlans(),
                 options: [.defaults, .largeTitleDisplayMode(.never)]
-            )
+            ).onValueDisposePrevious { story in
+                viewController.present(
+                    Embark(name: story.name, flowType: .onboarding),
+                    options: [.defaults, .autoPop]
+                ).nil()
+            }
         }
 
         let tableKit = TableKit<EmptySection, StringRow>(holdIn: bag)
