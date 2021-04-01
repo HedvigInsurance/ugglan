@@ -33,7 +33,6 @@ extension PlanRow: Reusable {
         contentView.layer.masksToBounds = true
         contentView.layer.cornerRadius = .defaultCornerRadius
         contentView.layer.borderWidth = .hairlineWidth
-        contentView.snp.makeConstraints { $0.height.greaterThanOrEqualTo(124) }
 
         view.addArrangedSubview(contentView)
 
@@ -47,7 +46,7 @@ extension PlanRow: Reusable {
         verticalContentContainer.axis = .vertical
         verticalContentContainer.distribution = .fill
         verticalContentContainer.edgeInsets = UIEdgeInsets(top: 24, left: 16, bottom: 24, right: 16)
-        verticalContentContainer.spacing = 20
+        verticalContentContainer.spacing = 5
 
         verticalContentContainer.addArrangedSubview(horizontalContentContainer)
 
@@ -78,9 +77,13 @@ extension PlanRow: Reusable {
                 style: .brand(.body(color: .primary))
             )
 
-            let checkmark = Bullet(isSelectedSignal: self.isSelected)
+            bag += verticalContentContainer.addArranged(descriptionLabel.wrappedIn({
+                let stackView = UIStackView()
+                stackView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 40)
+                return stackView
+            }()))
 
-            bag += verticalContentContainer.addArranged(descriptionLabel)
+            let bullet = Bullet(isSelectedSignal: self.isSelected)
 
             let gradientView = GradientView(
                 gradientOption: .init(preset: self.gradientType),
@@ -115,7 +118,7 @@ extension PlanRow: Reusable {
 
             horizontalContentContainer.addArrangedSubview(UIView())
 
-            bag += horizontalContentContainer.addArranged(checkmark.wrappedIn({
+            bag += horizontalContentContainer.addArranged(bullet.wrappedIn({
                 let stackView = UIStackView()
                 stackView.axis = .vertical
                 stackView.setContentHuggingPriority(.required, for: .horizontal)
