@@ -54,7 +54,6 @@ extension MarkdownText: Viewable {
             }
         }
 
-        let tapGesture = UITapGestureRecognizer()
 
         bag += markdownText.didLayoutSignal.onValue { _ in
             markdownText.preferredMaxLayoutWidth = markdownText.frame.size.width
