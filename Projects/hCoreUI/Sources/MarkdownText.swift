@@ -41,7 +41,6 @@ extension MarkdownText: Viewable {
         markdownText.numberOfLines = 0
         markdownText.lineBreakMode = .byWordWrapping
         markdownText.baselineAdjustment = .none
-        markdownText.isUserInteractionEnabled = true
 
         bag += textSignal.atOnce().onValue { text in
             let attributedString = markdownParser.parse(text)
