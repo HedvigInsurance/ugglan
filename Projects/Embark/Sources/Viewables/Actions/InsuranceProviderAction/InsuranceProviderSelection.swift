@@ -56,12 +56,16 @@ extension InsuranceProviderSelection: Presentable {
         let bag = DisposeBag()
 
         let tableKit = TableKit<EmptySection, GraphQL.InsuranceProviderFragment>()
-
-        bag += client.fetch(query: GraphQL.InsuranceProvidersQuery(locale: .svSe)).valueSignal.compactMap { $0.insuranceProviders }.onValue { providers in
-            tableKit.table = Table(rows: providers.map { $0.fragments.insuranceProviderFragment })
-        }
-
         bag += viewController.install(tableKit, options: [])
+
+        if let locale = data.locale {
+            bag += client.fetch(query: GraphQL.InsuranceProvidersQuery(locale: locale.asGraphQLLocale()))
+                .valueSignal
+                .compactMap { $0.insuranceProviders }
+                .onValue { providers in
+                    tableKit.table = Table(rows: providers.map { $0.fragments.insuranceProviderFragment })
+                }
+        }
 
         return (viewController, Future { completion in
             bag += tableKit.delegate.didSelectRow.onValue { row in

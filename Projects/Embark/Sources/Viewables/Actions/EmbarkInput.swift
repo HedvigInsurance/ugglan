@@ -11,6 +11,7 @@ struct EmbarkInput {
     let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
     let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
     let autocapitalisationTypeSignal: ReadWriteSignal<UITextAutocapitalizationType>
+    let returnKeyTypeSignal: ReadWriteSignal<UIReturnKeyType?>
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<String, Bool>()
     let insets: UIEdgeInsets
@@ -23,6 +24,7 @@ struct EmbarkInput {
         placeholder: String,
         keyboardType: UIKeyboardType? = nil,
         textContentType: UITextContentType? = nil,
+        returnKeyType: UIReturnKeyType? = nil,
         autocapitalisationType: UITextAutocapitalizationType,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true,
@@ -36,6 +38,7 @@ struct EmbarkInput {
         keyboardTypeSignal = ReadWriteSignal(keyboardType)
         textContentTypeSignal = ReadWriteSignal(textContentType)
         enabledSignal = ReadWriteSignal(enabled)
+        returnKeyTypeSignal = ReadWriteSignal(returnKeyType)
         autocapitalisationTypeSignal = ReadWriteSignal(autocapitalisationType)
         self.masking = masking
         self.shouldAutoFocus = shouldAutoFocus
@@ -84,11 +87,13 @@ extension EmbarkInput: Viewable {
         bag += combineLatest(
             textContentTypeSignal.atOnce(),
             keyboardTypeSignal.atOnce(),
-            autocapitalisationTypeSignal.atOnce()
-        ).bindTo { textContentType, keyboardType, autocapitalisationType in
+            autocapitalisationTypeSignal.atOnce(),
+            returnKeyTypeSignal.atOnce()
+        ).bindTo { textContentType, keyboardType, autocapitalisationType, returnKeyType in
             textField.textContentType = textContentType
             textField.keyboardType = keyboardType ?? .default
             textField.autocapitalizationType = autocapitalisationType
+            textField.returnKeyType = returnKeyType ?? .default
             textField.reloadInputViews()
         }
 

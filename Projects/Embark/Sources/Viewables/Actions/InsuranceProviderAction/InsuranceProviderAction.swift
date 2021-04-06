@@ -23,6 +23,24 @@ enum InsuranceWrapper {
     var isExternal: Bool {
         false
     }
+
+    var locale: Localization.Locale? {
+        switch self {
+        case .external:
+            return nil
+        case let .previous(data):
+            switch data.previousInsuranceProviderData.providers {
+            case .norwegian:
+                return .nb_NO
+            case .swedish:
+                return .sv_SE
+            case .__unknown:
+                return nil
+            case .none:
+                return nil
+            }
+        }
+    }
 }
 
 struct InsuranceProviderAction {

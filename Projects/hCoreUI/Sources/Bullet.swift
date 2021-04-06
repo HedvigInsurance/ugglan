@@ -25,8 +25,7 @@ extension Bullet: Viewable {
 
         let largeCircle = UIView()
         largeCircle.backgroundColor = .clear
-        largeCircle.isHidden = true
-        largeCircle.layer.borderWidth = 8
+        largeCircle.layer.borderWidth = 0
 
         control.snp.makeConstraints {
             $0.height.width.equalTo(24)
@@ -51,9 +50,11 @@ extension Bullet: Viewable {
             largeCircle.layer.cornerRadius = largeCircle.bounds.width / 2
         }
 
-        bag += $isSelected.atOnce().withLatestFrom(control.traitCollectionSignal).animated(style: SpringAnimationStyle.lightBounce(), animations: { isSelected, _ in
-            largeCircle.isHidden = !isSelected
-        })
+        bag += $isSelected.atOnce().onValue { isSelected in
+            UIView.transition(with: largeCircle, duration: 0.25, options: .transitionCrossDissolve, animations: {
+                largeCircle.layer.borderWidth = isSelected ? 8 : 0
+            }, completion: nil)
+        }
 
         return (control, bag)
     }

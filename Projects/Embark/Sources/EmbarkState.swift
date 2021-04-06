@@ -75,17 +75,19 @@ public class EmbarkState {
         store.removeLastRevision()
     }
 
-    func goTo(passageName: String) {
+    func goTo(passageName: String, pushHistoryEntry: Bool = true) {
         animationDirectionSignal.value = .forwards
         store.createRevision()
-        if let currentPassage = currentPassageSignal.value {
-            passageHistorySignal.value.append(currentPassage)
-        }
 
         if let newPassage = passagesSignal.value.first(where: { passage -> Bool in
             passage.name == passageName
         }) {
             let resultingPassage = handleRedirects(passage: newPassage) ?? newPassage
+
+            if let resultingPassage = currentPassageSignal.value, pushHistoryEntry {
+                passageHistorySignal.value.append(resultingPassage)
+            }
+
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
                 externalRedirect.trackingEvent(storeValues: store.getAllValues()).send()
 

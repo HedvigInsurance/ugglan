@@ -28,27 +28,30 @@ extension TextActionSet: Viewable {
         containerView.backgroundColor = .brand(.secondaryBackground())
         containerView.layer.cornerRadius = 8
 
-        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: TextAction) in
-            var masking: Masking? {
-                guard let mask = textAction.data?.mask, let maskType = MaskType(rawValue: mask) else {
-                    return nil
-                }
-
-                return Masking(type: maskType)
+        func getMasking(_ action: TextAction) -> Masking? {
+            guard let mask = action.data?.mask, let maskType = MaskType(rawValue: mask) else {
+                return nil
             }
+
+            return Masking(type: maskType)
+        }
+
+        let textActions = data.textActionSetData?.textActions.enumerated().map { index, textAction -> (signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: TextAction) in
+            let masking = getMasking(textAction)
+
+            let endIndex = (data.textActionSetData?.textActions.endIndex ?? 1)
+            let isLastAction: Bool = index == endIndex - 1
 
             let input = EmbarkInput(
                 placeholder: textAction.data?.placeholder ?? "",
                 keyboardType: masking?.keyboardType,
                 textContentType: masking?.textContentType,
-                autocapitalisationType: masking?.autocapitalizationType ?? .none,
+                returnKeyType: isLastAction ? .done : .next,
+                autocapitalisationType: masking?.autocapitalizationType ?? .words,
                 masking: masking,
                 shouldAutoFocus: index == 0,
                 fieldStyle: .embarkInputSmall
             )
-
-            let endIndex = (data.textActionSetData?.textActions.endIndex ?? 1)
-            let isLastAction: Bool = index == endIndex - 1
 
             let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))
 
@@ -75,7 +78,7 @@ extension TextActionSet: Viewable {
                 }
 
                 if let passageName = self.state.passageNameSignal.value {
-                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: ",") ?? "")
+                    self.state.store.setValue(key: "\(passageName)Result", value: textActions?.map { $0.signal.value }.joined(separator: " ") ?? "")
                 }
 
                 if let link = self.data.textActionSetData?.link {
@@ -101,19 +104,24 @@ extension TextActionSet: Viewable {
 
             bag += view.addArranged(button)
 
-            func isValid(signal: ReadWriteSignal<String>, action _: TextAction) -> Signal<Bool> {
+            func isValid(signal: ReadWriteSignal<String>, action: TextAction) -> Signal<Bool> {
                 signal.map { text in
-                    !text.isEmpty
+                    !text.isEmpty && (getMasking(action)?.isValid(text: text) ?? true)
                 }.plain()
             }
 
             if let textActions = textActions {
                 bag += textActions.map { _, shouldReturn, _ in shouldReturn }.enumerated().map { offset, shouldReturn in
-                    shouldReturn.set { _ -> Bool in
-                        if offset == textActions.count - 1 {
-                            complete()
+                    shouldReturn.set { value -> Bool in
+                        if !value.isEmpty {
+                            if offset == textActions.count - 1 {
+                                complete()
+                            }
+
+                            return true
                         }
-                        return true
+
+                        return false
                     }
                 }
 

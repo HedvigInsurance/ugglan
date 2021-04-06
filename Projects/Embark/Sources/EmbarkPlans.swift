@@ -23,7 +23,7 @@ public struct EmbarkPlans {
             }.first?.element
         }
     }
-    
+
     public init() {}
 }
 
@@ -82,10 +82,10 @@ extension EmbarkPlans: Presentable {
         )
 
         bag += containerView.add(continueButton) { buttonView in
-            
             buttonView.snp.makeConstraints { make in
                 make.bottom.equalToSuperview().inset(-buttonView.frame.height)
                 make.leading.trailing.equalTo(buttonContainerView)
+                make.width.equalToSuperview().inset(20)
             }
 
             bag += buttonView.didMoveToWindowSignal.delay(by: 0.1).take(first: 1).animated(style: SpringAnimationStyle.heavyBounce()) { () in
@@ -141,16 +141,16 @@ extension EmbarkPlans: Presentable {
             table.removeEmptySections()
             tableKit.set(table)
         }
-        
+
         return (viewController, FiniteSignal<EmbarkStory> { callback in
             bag += continueButton
                 .onTapSignal
                 .withLatestFrom(selectedPlan.atOnce().plain())
                 .compactMap { _, story in story }
-                .onValue({ (story) in
+                .onValue { story in
                     callback(.value(story))
-                })
-            
+                }
+
             return bag
         })
     }

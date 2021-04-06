@@ -52,7 +52,7 @@ extension MessageBubble: Viewable {
         containerView.insetsLayoutMarginsFromSafeArea = false
         containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
 
-        let bodyStyle = TextStyle.brand(.body(color: .primary(state: .positive)))
+        let bodyStyle = TextStyle.brand(.body(color: .primary))
 
         var label = MultilineLabel(value: "", style: bodyStyle, usePreferredMaxLayoutWidth: false)
         bag += containerView.addArranged(label) { labelView in

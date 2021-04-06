@@ -14,8 +14,27 @@ enum MaskType: String {
 struct Masking {
     let type: MaskType
 
-    func isValid(text _: String) -> String {
-        ""
+    func isValid(text: String) -> Bool {
+        switch type {
+        case .personalNumber:
+            let age = calculateAge(from: text) ?? 0
+            return text.count > 10 && 15 ... 130 ~= age
+        case .birthDate, .birthDateReverse:
+            let age = calculateAge(from: text) ?? 0
+            return 15 ... 130 ~= age
+        case .email:
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+            let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+            return emailPredicate.evaluate(with: text)
+        case .norwegianPostalCode:
+            return text.count == 4
+        case .postalCode:
+            return text.count == 5
+        case .digits:
+            return CharacterSet.decimalDigits.isSuperset(
+                of: CharacterSet(charactersIn: text)
+            )
+        }
     }
 
     func unmaskedValue(text: String) -> String {
@@ -43,10 +62,8 @@ struct Masking {
         }
     }
 
-    func derivedValues(text: String) -> [String: String]? {
-        let unmaskedValue = self.unmaskedValue(text: text)
-
-        func calculateAge(_ format: String, value: String) -> String? {
+    func calculateAge(from text: String) -> Int? {
+        func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty {
                 return nil
             }
@@ -64,29 +81,41 @@ struct Masking {
                 return nil
             }
 
-            return String(age)
+            return age
         }
+
+        let unmaskedValue = self.unmaskedValue(text: text)
 
         switch type {
         case .personalNumber:
-            guard let age = calculateAge("yyMMdd", value: String(unmaskedValue.prefix(6))) else {
-                return nil
+            if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) {
+                return age
             }
 
-            return [
-                ".Age": age,
-            ]
+            if let age = calculate("yyyyMMdd", value: String(unmaskedValue.prefix(8))) {
+                return age
+            }
+
+            return nil
         case .birthDateReverse, .birthDate:
-            guard let age = calculateAge("yyyy-MM-dd", value: unmaskedValue) else {
+            guard let age = calculate("yyyy-MM-dd", value: unmaskedValue) else {
                 return nil
             }
 
-            return [
-                ".Age": age,
-            ]
+            return age
         default:
             return nil
         }
+    }
+
+    func derivedValues(text: String) -> [String: String]? {
+        guard let age = calculateAge(from: text) else {
+            return nil
+        }
+
+        return [
+            ".Age": String(age),
+        ]
     }
 
     var keyboardType: UIKeyboardType {
@@ -106,7 +135,7 @@ struct Masking {
             return nil
         }
     }
-    
+
     var autocapitalizationType: UITextAutocapitalizationType {
         switch type {
         case .email:
