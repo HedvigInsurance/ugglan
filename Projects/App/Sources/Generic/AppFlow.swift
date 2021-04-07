@@ -17,17 +17,6 @@ struct AppFlow {
     }
 }
 
-struct OnboardingFlow: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
-        switch Localization.Locale.currentLocale.market {
-        case .dk, .se:
-            return Onboarding().materialize()
-        case .no:
-            return EmbarkOnboardingFlow().materialize()
-        }
-    }
-}
-
 struct EmbarkOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = EmbarkPlans().materialize()

@@ -8,17 +8,16 @@ import Embark
 struct Onboarding {}
 
 extension Onboarding: Presentable {
-    
     func materialize() -> (UIViewController, Disposable) {
-        ApplicationState.preserveState(.onboarding)
-        
         switch Localization.Locale.currentLocale.market {
         case .se:
+            ApplicationState.preserveState(.onboarding)
             return OnboardingChat().materialize()
         case .dk:
-            return OnboardingChat().materialize()
+            let (viewController, future) = WebOnboarding(webScreen: .webOnboarding).materialize()
+            return (viewController, future.disposable)
         case .no:
-            return OnboardingFlow().materialize()
+            return EmbarkOnboardingFlow().materialize()
         }
     }
 }
