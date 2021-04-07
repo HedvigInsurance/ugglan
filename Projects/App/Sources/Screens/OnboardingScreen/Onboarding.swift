@@ -9,9 +9,9 @@ struct Onboarding {}
 
 extension Onboarding: Presentable {
     func materialize() -> (UIViewController, Disposable) {
+        ApplicationState.preserveState(.onboarding)
         switch Localization.Locale.currentLocale.market {
         case .se:
-            ApplicationState.preserveState(.onboarding)
             return OnboardingChat().materialize()
         case .dk:
             let (viewController, future) = WebOnboarding(webScreen: .webOnboarding).materialize()
