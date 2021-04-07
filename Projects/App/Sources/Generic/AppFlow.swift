@@ -17,56 +17,42 @@ struct AppFlow {
     }
 }
 
-struct OnboardingFlow: Presentable {
+struct EmbarkOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
-        let (viewController, future) = EmbarkOnboardingFlow().materialize()
+        let (viewController, signal) = EmbarkPlans().materialize()
         let bag = DisposeBag()
+        
+        bag += signal.atValue { story in
+            let embark = Embark(name: story.name, flowType: .onboarding)
 
-        bag += future.onValue { redirect in
-            switch redirect {
-            case .mailingList:
-                break
-            case let .offer(ids):
-                bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onResult { result in
-                    switch result {
-                    case .success:
-                        bag += viewController.present(PostOnboarding())
-                    case .failure:
-                        break
+            bag += viewController
+                .present(
+                    embark,
+                    options: [.autoPop]
+                ).onValue { embarkValue in
+                    switch embarkValue {
+                    case let .left(redirect):
+                        switch redirect {
+                        case .mailingList:
+                            break
+                        case let .offer(ids):
+                            bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onResult { result in
+                                switch result {
+                                case .success:
+                                    bag += viewController.present(PostOnboarding())
+                                case .failure:
+                                    break
+                                }
+                            }
+                        }
+                    case let .right(route):
+                        guard let presentable = presentable(for: route) else { return }
+                        bag += viewController.present(presentable)
                     }
                 }
-            }
         }
+
         return (viewController, bag)
-    }
-}
-
-struct EmbarkOnboardingFlow: Presentable {
-    public func materialize() -> (UIViewController, Future<ExternalRedirect>) {
-        let (viewController, storySignal) = EmbarkPlans().materialize()
-        let bag = DisposeBag()
-
-        return (viewController, Future { completion in
-            bag += storySignal.atValue { story in
-                let embark = Embark(name: story.name, flowType: .onboarding)
-
-                bag += viewController
-                    .present(
-                        embark,
-                        options: [.autoPop]
-                    ).onValue { embarkValue in
-                        switch embarkValue {
-                        case let .left(redirect):
-                            completion(.success(redirect))
-                        case let .right(route):
-                            guard let presentable = presentable(for: route) else { return }
-
-                            bag += viewController.present(presentable)
-                        }
-                    }
-            }
-            return bag
-        })
     }
 }
 

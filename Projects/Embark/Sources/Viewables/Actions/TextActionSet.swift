@@ -50,7 +50,8 @@ extension TextActionSet: Viewable {
                 autocapitalisationType: masking?.autocapitalizationType ?? .words,
                 masking: masking,
                 shouldAutoFocus: index == 0,
-                fieldStyle: .embarkInputSmall
+                fieldStyle: .embarkInputSmall,
+                textFieldAlignment: .right
             )
 
             let label = UILabel(value: textAction.data?.title ?? "", style: .brand(.body(color: .primary)))

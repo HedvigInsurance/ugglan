@@ -177,6 +177,7 @@ extension Embark: Presentable {
                         image: hCoreUIAssets.tinyCircledX.image,
                         attributes: .destructive
                     ) { _ in
+                        callback(.end)
                     }
 
                     let menuActions = [canGoBack ? previousAction : nil, closeAction].compactMap { $0 }

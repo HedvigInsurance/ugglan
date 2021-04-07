@@ -189,6 +189,12 @@ query EmbarkStory($name: String!, $locale: String!) {
                     location
                 }
             }
+            offerRedirect {
+                component
+                data {
+                    keys
+                }
+            }
             tooltips {
               description
               title

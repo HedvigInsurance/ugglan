@@ -15,14 +15,6 @@ public extension EmbarkTrackingEvent {
     static var trackingHandler: (_ Event: EmbarkTrackingEvent) -> Void = { _ in }
 }
 
-internal extension GraphQL.EmbarkExternalRedirectLocation {
-    func trackingEvent(storeValues: [String: Any]) -> EmbarkTrackingEvent {
-        var trackingProperties = storeValues
-        trackingProperties["redirectLocation"] = rawValue
-        return EmbarkTrackingEvent(title: "External Redirect", properties: trackingProperties)
-    }
-}
-
 internal extension EmbarkPassage.Track {
     func trackingEvent(storeValues: [String: Any]) -> EmbarkTrackingEvent {
         .init(title: eventName, properties: trackingProperties(storeValues: storeValues))

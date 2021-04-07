@@ -87,21 +87,26 @@ public class EmbarkState {
             if let resultingPassage = currentPassageSignal.value, pushHistoryEntry {
                 passageHistorySignal.value.append(resultingPassage)
             }
-
+        
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                externalRedirect.trackingEvent(storeValues: store.getAllValues()).send()
-
+                EmbarkTrackingEvent(
+                    title: "External Redirect",
+                    properties: ["location": externalRedirect.rawValue]
+                ).send()
                 switch externalRedirect {
                 case .mailingList:
                     externalRedirectSignal.value = .mailingList
                 case .offer:
-
-                    // MARK: This needs to be updated to handle multiple quote ID's
-
-                    externalRedirectSignal.value = .offer(ids: store.getQuoteIds())
+                    externalRedirectSignal.value = .offer(ids: [store.getValue(key: "quoteId")].compactMap { $0 })
                 case .__unknown:
                     fatalError("Can't external redirect to location")
                 }
+            } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
+                EmbarkTrackingEvent(
+                    title: "Offer Redirect",
+                    properties: [:]
+                ).send()
+                externalRedirectSignal.value = .offer(ids: offerRedirectKeys.compactMap { key in store.getValue(key: key) })
             } else {
                 currentPassageSignal.value = resultingPassage
             }
