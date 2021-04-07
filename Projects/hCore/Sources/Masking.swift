@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-enum MaskType: String {
+public enum MaskType: String {
     case personalNumber = "PersonalNumber"
     case postalCode = "PostalCode"
     case email = "Email"
@@ -11,8 +11,8 @@ enum MaskType: String {
     case digits = "Digits"
 }
 
-struct Masking {
-    let type: MaskType
+public struct Masking {
+    public let type: MaskType
 
     func isValid(text: String) -> Bool {
         switch type {
@@ -37,7 +37,7 @@ struct Masking {
         }
     }
 
-    func unmaskedValue(text: String) -> String {
+    public func unmaskedValue(text: String) -> String {
         switch type {
         case .personalNumber:
             return text.replacingOccurrences(of: "-", with: "")
@@ -127,7 +127,7 @@ struct Masking {
         }
     }
 
-    var textContentType: UITextContentType? {
+    public var textContentType: UITextContentType? {
         switch type {
         case .email:
             return .emailAddress
@@ -145,7 +145,7 @@ struct Masking {
         }
     }
 
-    func maskValue(text: String, previousText: String) -> String {
+    public func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
             if text.count < previousText.count {
                 if text.last == delimiter {

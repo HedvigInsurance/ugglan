@@ -6,27 +6,34 @@ import hCoreUI
 import Presentation
 import UIKit
 
-struct AppFlow {
+public struct AppFlow {
     private let rootNavigationController = UINavigationController()
 
     let window: UIWindow
+    let bag = DisposeBag()
 
     init(window: UIWindow) {
         self.window = window
         self.window.rootViewController = rootNavigationController
+    }
+
+    func presentLoggedIn() {
+        ApplicationState.preserveState(.loggedIn)
+        let loggedIn = LoggedIn()
+        bag += window.present(loggedIn)
     }
 }
 
 struct WebOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = WebOnboarding(webScreen: .webOnboarding).materialize()
-        
+
         let bag = DisposeBag()
-        
+
         bag += signal.onValue { _ in
             bag += viewController.present(PostOnboarding())
         }
-        
+
         return (viewController, bag)
     }
 }
@@ -35,7 +42,7 @@ struct EmbarkOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = EmbarkPlans().materialize()
         let bag = DisposeBag()
-        
+
         bag += signal.atValue { story in
             let embark = Embark(name: story.name, flowType: .onboarding)
 
@@ -50,7 +57,7 @@ struct EmbarkOnboardingFlow: Presentable {
                         case .mailingList:
                             break
                         case let .offer(ids):
-                            bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onValue { result in
+                            bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onValue { _ in
                                 bag += viewController.present(PostOnboarding())
                             }
                         }
@@ -95,9 +102,11 @@ extension EmbarkOnboardingFlow {
         case .login:
             return Presentation(
                 Login(),
-                style: .detented(.medium, .large),
-                options: [.allowSwipeDismissAlways, .defaults]
-            )
+                style: .detented(.large),
+                options: [.allowSwipeDismissAlways, .defaults, .autoPop]
+            ).onValue {
+                UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+            }
         }
     }
 }
