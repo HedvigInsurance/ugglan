@@ -5,7 +5,7 @@ import hCore
 import MarkdownKit
 import UIKit
 
-public struct MarkdownText {
+public struct MarkdownTextView {
     public let textSignal: ReadWriteSignal<String>
     public let style: TextStyle
 
@@ -26,8 +26,8 @@ public struct MarkdownText {
     }
 }
 
-extension MarkdownText: Viewable {
-    public func materialize(events _: ViewableEvents) -> (UILabel, Disposable) {
+extension MarkdownTextView: Viewable {
+    public func materialize(events _: ViewableEvents) -> (UITextView, Disposable) {
         let bag = DisposeBag()
 
         let markdownParser = MarkdownParser(font: style.font, color: style.color)
@@ -37,10 +37,14 @@ extension MarkdownText: Viewable {
         paragraphStyle.alignment = style.alignment
         paragraphStyle.lineSpacing = 3
 
-        let markdownText = UILabel()
-        markdownText.numberOfLines = 0
-        markdownText.lineBreakMode = .byWordWrapping
-        markdownText.baselineAdjustment = .none
+        let markdownTextView = UITextView()
+        markdownTextView.isEditable = false
+        markdownTextView.isUserInteractionEnabled = true
+        markdownTextView.isScrollEnabled = false
+        markdownTextView.backgroundColor = .clear
+        markdownTextView.linkTextAttributes = [
+            .foregroundColor: UIColor.brand(.link),
+        ]
 
         bag += textSignal.atOnce().onValue { text in
             let attributedString = markdownParser.parse(text)
@@ -49,15 +53,10 @@ extension MarkdownText: Viewable {
                 let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
                 mutableAttributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, mutableAttributedString.length - 1))
 
-                markdownText.attributedText = mutableAttributedString
+                markdownTextView.attributedText = mutableAttributedString
             }
         }
 
-
-        bag += markdownText.didLayoutSignal.onValue { _ in
-            markdownText.preferredMaxLayoutWidth = markdownText.frame.size.width
-        }
-
-        return (markdownText, bag)
+        return (markdownTextView, bag)
     }
 }
