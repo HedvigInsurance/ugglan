@@ -74,7 +74,7 @@ extension PlanRow: Reusable {
 
             let descriptionLabel = MultilineLabel(
                 value: self.message,
-                style: .brand(.body(color: .primary))
+                style: .brand(.body(color: .secondary))
             )
 
             bag += verticalContentContainer.addArranged(descriptionLabel.wrappedIn({
