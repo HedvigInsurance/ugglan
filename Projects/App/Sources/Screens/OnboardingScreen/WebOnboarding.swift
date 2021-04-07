@@ -14,7 +14,7 @@ struct WebOnboarding {
 }
 
 extension WebOnboarding: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Signal<Void>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
         
@@ -137,12 +137,12 @@ extension WebOnboarding: Presentable {
         
         loadWebOnboarding()
 
-        return (viewController, Future { completion in
+        return (viewController, Signal { callback in
             bag += webView.signal(for: \.url).map { url in
                 let urlString = String(describing: url)
 
                 if urlString.contains("connect-payment") {
-                    completion(.success)
+                    callback(())
                 }
             }
             

@@ -17,6 +17,20 @@ struct AppFlow {
     }
 }
 
+struct WebOnboardingFlow: Presentable {
+    public func materialize() -> (UIViewController, Disposable) {
+        let (viewController, signal) = WebOnboarding(webScreen: .webOnboarding).materialize()
+        
+        let bag = DisposeBag()
+        
+        bag += signal.onValue { _ in
+            bag += viewController.present(PostOnboarding())
+        }
+        
+        return (viewController, bag)
+    }
+}
+
 struct EmbarkOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = EmbarkPlans().materialize()
@@ -36,13 +50,8 @@ struct EmbarkOnboardingFlow: Presentable {
                         case .mailingList:
                             break
                         case let .offer(ids):
-                            bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onResult { result in
-                                switch result {
-                                case .success:
-                                    bag += viewController.present(PostOnboarding())
-                                case .failure:
-                                    break
-                                }
+                            bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onValue { result in
+                                bag += viewController.present(PostOnboarding())
                             }
                         }
                     case let .right(route):
