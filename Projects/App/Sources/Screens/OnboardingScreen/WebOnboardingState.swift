@@ -23,7 +23,7 @@ struct WebOnboardingState {
         case .webOffer:
             return "/\(locale)/new-member/offer"
         case .webOnboarding:
-            return "\(locale)new-member"
+            return "/\(locale)/new-member"
         }
     }
 
@@ -39,7 +39,7 @@ struct WebOnboardingState {
         return token.urlEncodedString
     }
 
-    private let defaultQueryItem = URLQueryItem(name: "", value: "variation=ios")
+    private let defaultQueryItem = URLQueryItem(name: "variation", value: "ios")
 
     private var queryItems: [URLQueryItem] {
         switch screen {
