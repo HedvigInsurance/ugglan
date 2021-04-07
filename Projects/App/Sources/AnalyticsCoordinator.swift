@@ -5,6 +5,7 @@ import Foundation
 import hCore
 import hGraphQL
 import Mixpanel
+import Shake
 
 public struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient
@@ -16,6 +17,7 @@ public struct AnalyticsCoordinator {
             query: GraphQL.MemberIdQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
         ).compactMap { $0.member.id }.onValue { id in
+            Shake.setMetadata(key: "memberId", value: id)
             Mixpanel.mainInstance().identify(distinctId: id)
         }
     }
