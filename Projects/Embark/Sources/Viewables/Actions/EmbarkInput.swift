@@ -19,6 +19,7 @@ struct EmbarkInput {
     let shouldAutoFocus: Bool
     let fieldStyle: FieldStyle
     let shouldAutoSize: Bool
+    let textFieldAlignment: NSTextAlignment
 
     init(
         placeholder: String,
@@ -31,7 +32,8 @@ struct EmbarkInput {
         masking: Masking? = nil,
         shouldAutoFocus: Bool = true,
         fieldStyle: FieldStyle = .embarkInputLarge,
-        shouldAutoSize: Bool = false
+        shouldAutoSize: Bool = false,
+        textFieldAlignment: NSTextAlignment = .center
     ) {
         self.placeholder = ReadWriteSignal(placeholder)
         self.insets = insets
@@ -44,6 +46,7 @@ struct EmbarkInput {
         self.shouldAutoFocus = shouldAutoFocus
         self.fieldStyle = fieldStyle
         self.shouldAutoSize = shouldAutoSize
+        self.textFieldAlignment = textFieldAlignment
     }
 }
 
@@ -83,7 +86,7 @@ extension EmbarkInput: Viewable {
         textField.backgroundColor = .clear
         textField.placeholder = placeholder.value
         textField.adjustsFontSizeToFitWidth = shouldAutoSize
-        textField.textAlignment = .right
+        textField.textAlignment = textFieldAlignment
 
         bag += combineLatest(
             textContentTypeSignal.atOnce(),
