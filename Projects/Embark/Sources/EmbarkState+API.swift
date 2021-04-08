@@ -47,7 +47,7 @@ extension GraphQL.ApiGeneratedVariableFragment {
         case .uuid:
             let uuid = UUID().uuidString
             map[key] = uuid
-            store.setValue(key: key, value: uuid)
+            store.setValue(key: storeAs, value: uuid)
         case .__unknown:
             break
         }
