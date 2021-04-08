@@ -19,6 +19,10 @@ public struct Embark {
     let flowType: EmbarkFlowType
     let state = EmbarkState()
     let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
+    
+    public func goBack() {
+        state.goBack()
+    }
 
     public init(name: String, flowType: EmbarkFlowType) {
         self.name = name
