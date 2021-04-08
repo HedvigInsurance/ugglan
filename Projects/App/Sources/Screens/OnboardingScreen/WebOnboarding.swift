@@ -114,8 +114,18 @@ extension WebOnboarding: Presentable {
         }
     
         func loadWebOnboarding() {
-            guard let fragmentedUrl = urlConstructor.url else { return }
-            webView.load(URLRequest(url: fragmentedUrl))
+            guard let url = urlConstructor.url else { return }
+            let dataStore = WKWebsiteDataStore.default()
+            
+            dataStore.fetchDataRecords(
+                ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()
+            ) { records in
+                records.forEach { record in
+                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [record]) {}
+                }
+                
+                webView.load(URLRequest(url: url))
+            }
         }
         
         bag += restartButton.onValue { _ in
