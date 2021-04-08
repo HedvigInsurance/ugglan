@@ -54,7 +54,11 @@ extension MessageBubble: Viewable {
 
         let bodyStyle = TextStyle.brand(.body(color: .primary))
 
-        let label = MarkdownTextView(textSignal: textSignal, style: bodyStyle)
+        let label = MarkdownTextView(
+            textSignal: textSignal,
+            style: bodyStyle,
+            linkColor: messageType == .received ? UIColor.brand(.link) : bodyStyle.color
+        )
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in
                 UIPasteboard.general.string = labelView.text
