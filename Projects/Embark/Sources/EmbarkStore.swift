@@ -3,6 +3,12 @@ import Foundation
 import hGraphQL
 import hCore
 
+extension String {
+    var floatValue: Float {
+        return Float(self) ?? 0
+    }
+}
+
 class EmbarkStore {
     var revisions: [[String: String]] = [[:]]
     var queue: [String: String] = [:]
@@ -84,54 +90,38 @@ class EmbarkStore {
             print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
         }
     }
-
+    
     func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
-        guard let store = revisions.last else {
-            return false
-        }
-
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
             case .equals:
-                return store[binaryExpression.key] == binaryExpression.value
+                return getValue(key: binaryExpression.key) == binaryExpression.value
             case .lessThan:
-                if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value)
-                {
-                    return storeFloat < expressionFloat
+                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+                    return storeFloat < binaryExpression.value.floatValue
                 }
 
                 return false
             case .lessThanOrEquals:
-                if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value)
-                {
-                    return storeFloat <= expressionFloat
+                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+                    return storeFloat <= binaryExpression.value.floatValue
                 }
 
                 return false
             case .moreThan:
-                if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value)
-                {
-                    return storeFloat > expressionFloat
+                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+                    return storeFloat > binaryExpression.value.floatValue
                 }
 
                 return false
             case .moreThanOrEquals:
-                if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value)
-                {
-                    return storeFloat >= expressionFloat
+                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+                    return storeFloat >= binaryExpression.value.floatValue
                 }
 
                 return false
             case .notEquals:
-                return store[binaryExpression.key] != binaryExpression.value
+                return getValue(key: binaryExpression.key) != binaryExpression.value
             case .__unknown:
                 return false
             }
@@ -175,10 +165,6 @@ class EmbarkStore {
     }
 
     func shouldRedirectTo(redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
-        guard let store = revisions.last else {
-            return nil
-        }
-
         if let unaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectUnaryExpression {
             if unaryExpression.unaryType == .always {
                 return unaryExpression.to
@@ -188,41 +174,41 @@ class EmbarkStore {
         if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
             switch binaryExpression.binaryType {
             case .equals:
-                if store[binaryExpression.key] == binaryExpression.value {
+                if getValue(key: binaryExpression.key) == binaryExpression.value {
                     return binaryExpression.to
                 }
             case .lessThan:
                 if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat < expressionFloat
+                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+                    storeFloat < binaryExpression.value.floatValue
                 {
                     return binaryExpression.to
                 }
 
             case .lessThanOrEquals:
                 if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat <= expressionFloat
+                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+                    storeFloat <= binaryExpression.value.floatValue
                 {
                     return binaryExpression.to
                 }
             case .moreThan:
                 if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat > expressionFloat
+                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+                    storeFloat > binaryExpression.value.floatValue
                 {
                     return binaryExpression.to
                 }
             case .moreThanOrEquals:
                 if
-                    let storeFloat = Float(store[binaryExpression.key] ?? ""),
-                    let expressionFloat = Float(binaryExpression.value), storeFloat >= expressionFloat
+                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+                    storeFloat >= binaryExpression.value.floatValue
                 {
                     return binaryExpression.to
                 }
 
             case .notEquals:
-                if store[binaryExpression.key] != binaryExpression.value {
+                if getValue(key: binaryExpression.key) != binaryExpression.value {
                     return binaryExpression.to
                 }
             case .__unknown:
@@ -233,13 +219,13 @@ class EmbarkStore {
         if let multipleExpression = redirect.fragments.embarkRedirectFragment.asEmbarkRedirectMultipleExpressions {
             switch multipleExpression.multipleType {
             case .and:
-                if !multipleExpression.subExpressions.map({ subExpression -> Bool in
+                if multipleExpression.subExpressions.map({ subExpression -> Bool in
                     self.passes(expression: subExpression.fragments.expressionFragment)
-                }).contains(false) {
+                }).allSatisfy({ passes in passes }) {
                     return multipleExpression.to
                 }
             case .or:
-                if !multipleExpression.subExpressions.map({ subExpression -> Bool in
+                if multipleExpression.subExpressions.map({ subExpression -> Bool in
                     self.passes(expression: subExpression.fragments.expressionFragment)
                 }).contains(true) {
                     return multipleExpression.to
