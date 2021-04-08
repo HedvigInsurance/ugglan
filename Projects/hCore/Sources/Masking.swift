@@ -14,7 +14,11 @@ public enum MaskType: String {
 public struct Masking {
     public let type: MaskType
 
-    func isValid(text: String) -> Bool {
+    public init(type: MaskType) {
+        self.type = type
+    }
+
+    public func isValid(text: String) -> Bool {
         switch type {
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
@@ -62,7 +66,7 @@ public struct Masking {
         }
     }
 
-    func calculateAge(from text: String) -> Int? {
+    public func calculateAge(from text: String) -> Int? {
         func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty {
                 return nil
@@ -108,7 +112,7 @@ public struct Masking {
         }
     }
 
-    func derivedValues(text: String) -> [String: String]? {
+    public func derivedValues(text: String) -> [String: String]? {
         guard let age = calculateAge(from: text) else {
             return nil
         }
@@ -118,7 +122,7 @@ public struct Masking {
         ]
     }
 
-    var keyboardType: UIKeyboardType {
+    public var keyboardType: UIKeyboardType {
         switch type {
         case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode, .digits:
             return .numberPad
@@ -136,7 +140,7 @@ public struct Masking {
         }
     }
 
-    var autocapitalizationType: UITextAutocapitalizationType {
+    public var autocapitalizationType: UITextAutocapitalizationType {
         switch type {
         case .email:
             return .none
