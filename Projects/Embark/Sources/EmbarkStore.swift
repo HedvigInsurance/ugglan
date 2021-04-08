@@ -5,7 +5,7 @@ import hCore
 
 extension String {
     var floatValue: Float {
-        return Float(self.contains(".") ? self : "\(self).0") ?? 0
+        return Float(self) ?? 0
     }
 }
 
