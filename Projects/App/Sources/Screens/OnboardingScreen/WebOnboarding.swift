@@ -45,7 +45,12 @@ extension WebOnboarding: Presentable {
 
         let chatButton = UIBarButtonItem(viewable: ChatButton(presentingViewController: viewController))
 
-        viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
+        switch webScreen {
+        case .webOnboarding:
+            viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
+        case .webOffer:
+            viewController.navigationItem.rightBarButtonItems = [chatButton]
+        }
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image
