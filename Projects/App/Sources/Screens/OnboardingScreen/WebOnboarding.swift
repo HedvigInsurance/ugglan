@@ -24,8 +24,6 @@ extension WebOnboarding: Presentable {
         settingsButton.image = Asset.menuIcon.image
         settingsButton.tintColor = .brand(.primaryText())
 
-        viewController.navigationItem.leftBarButtonItem = settingsButton
-
         bag += settingsButton.onValue { _ in
             viewController.present(
                 About(state: .onboarding).withCloseButton,
@@ -45,7 +43,13 @@ extension WebOnboarding: Presentable {
 
         let chatButton = UIBarButtonItem(viewable: ChatButton(presentingViewController: viewController))
 
-        viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
+        switch webScreen {
+        case .webOnboarding:
+            viewController.navigationItem.leftBarButtonItem = settingsButton
+            viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
+        case .webOffer:
+            viewController.navigationItem.rightBarButtonItems = [chatButton, settingsButton]
+        }
 
         let titleHedvigLogo = UIImageView()
         titleHedvigLogo.image = Asset.wordmark.image

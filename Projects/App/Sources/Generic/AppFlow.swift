@@ -50,7 +50,13 @@ struct EmbarkOnboardingFlow: Presentable {
                         case .mailingList:
                             break
                         case let .offer(ids):
-                            bag += viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids))).onValue { result in
+                            let webOnboardingSignal = viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids)))
+                            
+                            bag += webOnboardingSignal.onEnd({
+                                embark.goBack()
+                            })
+                            
+                            bag += webOnboardingSignal.onValue { result in
                                 bag += viewController.present(PostOnboarding())
                             }
                         }
