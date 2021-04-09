@@ -5,6 +5,7 @@ import Foundation
 import hCore
 import Presentation
 import UIKit
+import hCoreUI
 
 struct Login {
     @Inject var client: ApolloClient
@@ -21,4 +22,19 @@ extension Login: Presentable {
             return NemIDLogin().wrappedInCloseButton().materialize()
         }
     } 
+}
+
+extension MenuChild {
+    public static var login: MenuChild {
+        MenuChild(
+            title: L10n.settingsLoginRow,
+            style: .default,
+            image: hCoreUIAssets.memberCard.image
+        ) { viewController in
+            viewController.present(
+                Login(),
+                style: .detented(.large)
+            )
+        }
+    }
 }

@@ -19,7 +19,7 @@ extension LogoutRow: Viewable {
         let logoutRow = IconRow(
             title: L10n.logoutButton,
             subtitle: "",
-            iconAsset: Asset.logoutIcon,
+            iconAsset: Asset.logoutIcon.image,
             iconTint: textStyle.color
         )
         logoutRow.titleTextStyle.value = textStyle

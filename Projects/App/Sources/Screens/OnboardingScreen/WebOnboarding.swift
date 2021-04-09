@@ -24,18 +24,17 @@ extension WebOnboarding: Presentable {
         settingsButton.image = Asset.menuIcon.image
         settingsButton.tintColor = .brand(.primaryText())
 
-        bag += settingsButton.onValue { _ in
-            viewController.present(
-                About(state: .onboarding).withCloseButton,
-                style: .detented(.scrollViewContentSize(20), .large),
-                options: [
-                    .allowSwipeDismissAlways,
-                    .defaults,
-                    .largeTitleDisplayMode(.always),
-                    .prefersLargeTitles(true),
+        bag += settingsButton.attachSinglePressMenu(
+            viewController: viewController,
+            menu: Menu(
+                title: "",
+                children: [
+                    MenuChild.appInformation,
+                    MenuChild.appSettings,
+                    MenuChild.login
                 ]
             )
-        }
+        )
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image

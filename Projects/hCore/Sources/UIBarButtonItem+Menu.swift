@@ -13,13 +13,13 @@ public struct MenuChild: MenuChildable {
     let title: String
     let style: MenuStyle
     let image: UIImage?
-    let handler: () -> Void
+    let handler: (_ from: UIViewController) -> Void
 
     public init(
         title: String,
         style: MenuStyle,
         image: UIImage?,
-        handler: @escaping () -> Void
+        handler: @escaping (_ from: UIViewController) -> Void
     ) {
         self.title = title
         self.style = style
@@ -42,7 +42,7 @@ public struct Menu: MenuChildable {
 }
 
 @available(iOS 14, *)
-func composeMenu(_ menu: Menu) -> UIMenu {
+func composeMenu(_ menu: Menu, viewController: UIViewController) -> UIMenu {
     return UIMenu(
         title: menu.title ?? "",
         options: [.displayInline],
@@ -53,10 +53,10 @@ func composeMenu(_ menu: Menu) -> UIMenu {
                     image: menuChild.image,
                     attributes: menuChild.style == .destructive ? .destructive : []
                 ) { _ in
-                    menuChild.handler()
+                    menuChild.handler(viewController)
                 }
             } else if let menu = menuChild as? Menu {
-                return composeMenu(menu)
+                return composeMenu(menu, viewController: viewController)
             }
             
             return nil
@@ -64,7 +64,7 @@ func composeMenu(_ menu: Menu) -> UIMenu {
     )
 }
 
-func composeAlertActions(_ children: [MenuChildable]) -> [Alert<Void>.Action] {
+func composeAlertActions(_ children: [MenuChildable], viewController: UIViewController) -> [Alert<Void>.Action] {
     return children.map { menuChild -> [Alert<Void>.Action] in
         if let menuChild = menuChild as? MenuChild {
             return [
@@ -72,11 +72,11 @@ func composeAlertActions(_ children: [MenuChildable]) -> [Alert<Void>.Action] {
                     title: menuChild.title,
                     style: menuChild.style == .destructive ? .destructive : .default
                 ) { _ in
-                    menuChild.handler()
+                    menuChild.handler(viewController)
                 }
             ]
         } else if let menu = menuChild as? Menu {
-            return composeAlertActions(menu.children)
+            return composeAlertActions(menu.children, viewController: viewController)
         }
         
         return []
@@ -88,13 +88,13 @@ public extension UIBarButtonItem {
         let bag = DisposeBag()
 
         if #available(iOS 14, *) {
-            self.menu = composeMenu(menu)
+            self.menu = composeMenu(menu, viewController: viewController)
         } else {
             bag += onValue {
                 let alert = Alert<Void>(
                     title: menu.title,
                     actions: [
-                        composeAlertActions(menu.children),
+                        composeAlertActions(menu.children, viewController: viewController),
                         [
                             Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in },
                         ],
