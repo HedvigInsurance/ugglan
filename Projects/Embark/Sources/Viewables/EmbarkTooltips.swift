@@ -15,11 +15,11 @@ import hGraphQL
 
 public typealias Tooltip = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Tooltip
 
-struct EmbarkTooltipAlert {
+struct EmbarkTooltips {
     let tooltips: [Tooltip]
 }
 
-extension EmbarkTooltipAlert: Presentable {
+extension EmbarkTooltips: Presentable {
     public func materialize() -> (UIViewController, Future<Void>)  {
         let containerView = UIStackView()
        
@@ -29,7 +29,7 @@ extension EmbarkTooltipAlert: Presentable {
         containerView.spacing = 16
 
         let viewController = UIViewController()
-        viewController.view.backgroundColor = .white
+        viewController.view.backgroundColor = .brand(.primaryBackground())
         let bag = DisposeBag()
 
         viewController.view.addSubview(containerView)

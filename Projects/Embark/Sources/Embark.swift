@@ -261,10 +261,10 @@ extension Embark: Presentable {
 
             bag += didTapTooltip
                 .onValue {
-                    let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+                    let embarkTooltips = EmbarkTooltips(tooltips: state.passageTooltipsSignal.value)
 
                     viewController.present(
-                        embarkTooltipsAlert.wrappedInCloseButton(),
+                        embarkTooltips.wrappedInCloseButton(),
                         style: .detented(.preferredContentSize),
                         options: [
                             .defaults,
