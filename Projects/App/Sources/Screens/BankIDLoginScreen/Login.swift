@@ -23,7 +23,7 @@ extension Login: Presentable {
 
 struct WebLoginFlow: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
-        let (viewController, future) = BankIDLoginView().materialize()
+        let (viewController, future) = SimpleSignLoginView().materialize()
         let bag = DisposeBag()
 
         return (viewController, Future { completion in

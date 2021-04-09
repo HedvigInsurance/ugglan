@@ -8,15 +8,18 @@ import hGraphQL
 import Presentation
 import UIKit
 
-struct BankIDLoginView: Presentable {
+struct SimpleSignLoginView: Presentable {
     @Inject var client: ApolloClient
 
     func materialize() -> (UIViewController, FiniteSignal<String>) {
         let viewController = UIViewController()
         viewController.preferredPresentationStyle = .modal
+
         let bag = DisposeBag()
 
         let form = FormView()
+
+        let masking = Localization.Locale.currentLocale.market.masking
 
         viewController.title = L10n.bankidLoginTitle
 
@@ -25,16 +28,12 @@ struct BankIDLoginView: Presentable {
 
         let textField = UITextField()
         textField.placeholder = L10n.SimpleSignLogin.TextField.helperText
-        textField.keyboardType = .numberPad
+        textField.keyboardType = masking.keyboardType
         textField.clearButtonMode = .whileEditing
 
         bag += textField.didMoveToWindowSignal.delay(by: 0.5).onValue {
             textField.becomeFirstResponder()
         }
-
-        form.appendSpacing(.top)
-
-        let section = form.appendSection()
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -44,17 +43,13 @@ struct BankIDLoginView: Presentable {
         stackView.addArrangedSubview(label)
         stackView.addArrangedSubview(textField)
         stackView.setCustomSpacing(8, after: textField)
+        stackView.setContentHuggingPriority(.defaultHigh, for: .vertical)
 
         bag += stackView.addArranged(Divider(backgroundColor: .brand(.primaryBorderColor)))
-        section.append(stackView)
 
-        bag += form.append(Spacing(height: 30))
+        let views = [UIView(), stackView, UIView()]
 
-        let buttonSection = form.appendSection()
-
-        form.appendSpacing(.inbetween)
-
-        let buttonRow = ButtonRowViewWrapper(
+        let continueButton = Button(
             title: Localization.Locale.currentLocale.market.buttonTitle,
             type: .standard(
                 backgroundColor: UIColor.brand(.secondaryButtonBackgroundColor),
@@ -63,16 +58,21 @@ struct BankIDLoginView: Presentable {
             isEnabled: false
         )
 
+        let buttonStack = UIStackView()
+        buttonStack.edgeInsets = .init(top: 0, left: 16, bottom: 16 + viewController.view.safeAreaInsets.bottom, right: 16)
+        bag += buttonStack.addArranged(continueButton)
+
         bag += textField.distinct()
-            .map { text in text.count == Localization.Locale.currentLocale.market.count() }
-            .bindTo(buttonRow.isEnabledSignal)
+            .map { text in masking.isValid(text: text) }
+            .bindTo(continueButton.isEnabled)
 
-        bag += buttonSection.append(buttonRow)
-
-        bag += viewController.install(form)
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.embedPinned(buttonStack, edge: .bottom, minHeight: 44)
+            bag += scrollView.embedWithSpacingBetween(views)
+        }
 
         return (viewController, FiniteSignal { callback in
-            bag += buttonRow.onTapSignal.onValue {
+            bag += continueButton.onTapSignal.onValue {
                 callback(.value(textField.text ?? ""))
             }
 
@@ -82,14 +82,14 @@ struct BankIDLoginView: Presentable {
 }
 
 private extension Localization.Locale.Market {
-    func count() -> Int {
+    var masking: Masking {
         switch self {
         case .no:
-            return 11
-        case .dk:
-            return 10
+            return .init(type: .norwegianPersonalNumber)
         case .se:
-            return 10
+            return .init(type: .personalNumber)
+        case .dk:
+            return .init(type: .danishPersonalNumber)
         }
     }
 

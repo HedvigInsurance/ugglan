@@ -18,7 +18,6 @@ public struct AppFlow {
     }
 
     func presentLoggedIn() {
-        ApplicationState.preserveState(.loggedIn)
         let loggedIn = LoggedIn()
         bag += window.present(loggedIn)
     }
@@ -102,7 +101,7 @@ extension EmbarkOnboardingFlow {
         case .login:
             return Presentation(
                 Login(),
-                style: .detented(.large),
+                style: .default,
                 options: [.allowSwipeDismissAlways, .defaults, .autoPop]
             ).onValue {
                 UIApplication.shared.appDelegate.appFlow.presentLoggedIn()

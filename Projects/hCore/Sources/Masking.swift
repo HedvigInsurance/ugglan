@@ -3,6 +3,8 @@ import UIKit
 
 public enum MaskType: String {
     case personalNumber = "PersonalNumber"
+    case norwegianPersonalNumber = "NorwegianPersonalNumber"
+    case danishPersonalNumber = "DanishPersonalNumber"
     case postalCode = "PostalCode"
     case email = "Email"
     case birthDate = "BirthDate"
@@ -20,6 +22,12 @@ public struct Masking {
 
     public func isValid(text: String) -> Bool {
         switch type {
+        case .norwegianPersonalNumber:
+            let age = calculateAge(from: text) ?? 0
+            return text.count == 11 && 15 ... 130 ~= age
+        case .danishPersonalNumber:
+            let age = calculateAge(from: text) ?? 0
+            return text.count == 10 && 15 ... 130 ~= age
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15 ... 130 ~= age
@@ -91,6 +99,11 @@ public struct Masking {
         let unmaskedValue = self.unmaskedValue(text: text)
 
         switch type {
+        case .danishPersonalNumber, .norwegianPersonalNumber:
+            if let age = calculate("ddMMyy", value: String(unmaskedValue.prefix(6))) {
+                return age
+            }
+            return nil
         case .personalNumber:
             if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) {
                 return age
@@ -124,7 +137,7 @@ public struct Masking {
 
     public var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode, .digits:
+        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode, .digits, .norwegianPersonalNumber, .danishPersonalNumber:
             return .numberPad
         case .email:
             return .emailAddress
@@ -194,7 +207,7 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [3, 6], maxCount: 10, delimiter: "-")
         case .digits:
             return text.filter { $0.isDigit }
-        case .email:
+        case .email, .norwegianPersonalNumber, .danishPersonalNumber:
             return text
         }
     }
