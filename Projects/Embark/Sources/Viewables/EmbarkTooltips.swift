@@ -29,7 +29,7 @@ extension EmbarkTooltips: Presentable {
         containerView.spacing = 16
 
         let viewController = UIViewController()
-        viewController.view.backgroundColor = .brand(.primaryBackground())
+        viewController.view.backgroundColor = .brand(.secondaryBackground())
         let bag = DisposeBag()
 
         viewController.view.addSubview(containerView)
