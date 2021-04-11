@@ -345,7 +345,7 @@ public extension DynamicSectionStyle {
     static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear) -> DynamicSectionStyle {
         DynamicSectionStyle { trait -> SectionStyle in
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-            let isPad = trait.userInterfaceIdiom == .pad
+            let isPad = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
 
             return Style(
                 rowInsets: .init(inset: 15),
@@ -413,7 +413,7 @@ public extension DynamicSectionStyle {
 
     static let brandGroupedCaution = DynamicSectionStyle { trait -> SectionStyle in
         let backgroundColor = UIColor.tint(.yellowTwo)
-        let cornerRadius = trait.userInterfaceIdiom == .pad ? CGFloat.defaultCornerRadius : 0
+        let cornerRadius = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular ? CGFloat.defaultCornerRadius : 0
 
         return Style(
             rowInsets: .init(inset: 15),
@@ -449,7 +449,7 @@ public extension DynamicSectionStyle {
 
 extension DynamicFormStyle {
     static let brandPlain = DynamicFormStyle { trait -> FormStyle in
-        if trait.userInterfaceIdiom == .pad {
+        if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
 
@@ -461,7 +461,7 @@ extension DynamicFormStyle {
     }
 
     static let brandGrouped = DynamicFormStyle { trait -> FormStyle in
-        if trait.userInterfaceIdiom == .pad {
+        if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
 
@@ -473,7 +473,7 @@ extension DynamicFormStyle {
     }
 
     public static let brandInset = DynamicFormStyle { trait -> FormStyle in
-        if trait.userInterfaceIdiom == .pad {
+        if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
 
