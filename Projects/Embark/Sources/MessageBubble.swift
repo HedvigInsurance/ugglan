@@ -71,6 +71,8 @@ extension MessageBubble: Viewable {
                             containerStackView.isHidden = false
                             stylingView.alpha = 1
                             labelView.alpha = 1
+                            labelView.layoutIfNeeded()
+                            labelView.layoutSuperviewsIfNeeded()
                         }
                     }
             } else {
