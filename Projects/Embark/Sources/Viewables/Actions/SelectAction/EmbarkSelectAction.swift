@@ -33,7 +33,7 @@ extension EmbarkSelectAction: Viewable {
 
                 let optionsSlice = Array(options[2 * iteration - 2 ..< min(2 * iteration, options.count)])
                 bag += optionsSlice.map { option in
-                    let selectActionOption = EmbarkSelectActionOption(data: option)
+                    let selectActionOption = EmbarkSelectActionOption(state: state, data: option)
 
                     return stack.addArranged(selectActionOption)
                         .filter(predicate: { _ in
