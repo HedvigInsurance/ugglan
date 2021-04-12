@@ -50,11 +50,15 @@ extension MessageBubble: Viewable {
         let containerView = UIStackView()
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.insetsLayoutMarginsFromSafeArea = false
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 5)
+        containerView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 3, right: 15)
 
         let bodyStyle = TextStyle.brand(.body(color: .primary))
 
-        let label = MarkdownTextView(textSignal: textSignal, style: bodyStyle)
+        let label = MarkdownTextView(
+            textSignal: textSignal,
+            style: bodyStyle,
+            linkColor: messageType == .received ? UIColor.brand(.link) : bodyStyle.color
+        )
         bag += containerView.addArranged(label) { labelView in
             bag += labelView.copySignal.onValue { _ in
                 UIPasteboard.general.string = labelView.text
