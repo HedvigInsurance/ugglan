@@ -20,6 +20,10 @@ extension EmbarkSelectActionOption: Viewable {
         bag += control.applyShadow { _ -> UIView.ShadowProperties in
             .embark
         }
+        
+        control.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(80)
+        }
 
         let stackView = UIStackView()
         stackView.isUserInteractionEnabled = false
