@@ -82,7 +82,7 @@ extension EmbarkNumberAction: Viewable {
 
             bag += view.addArranged(button)
 
-            bag += button.onTapSignal.withLatestFrom(textSignal.plain()).onValue { _, textValue in
+            bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain()).onFirstValue { _, textValue in
                 handleSubmit(textValue: textValue)
             }
 

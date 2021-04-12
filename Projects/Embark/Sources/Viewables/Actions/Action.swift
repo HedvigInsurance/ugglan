@@ -70,32 +70,32 @@ extension Action: Viewable {
                     innerBag += view.addArranged(EmbarkSelectAction(
                         state: self.state,
                         data: selectAction
-                    )).onValue(callback)
+                    )).onFirstValue(callback)
                 } else if let textAction = actionData?.asEmbarkTextAction {
                     innerBag += view.addArranged(EmbarkTextAction(
                         state: self.state,
                         data: textAction
-                    )).onValue(callback)
+                    )).onFirstValue(callback)
                 } else if let numberAction = actionData?.asEmbarkNumberAction {
                     innerBag += view.addArranged(EmbarkNumberAction(
                         state: self.state,
                         data: numberAction
-                    )).onValue(callback)
+                    )).onFirstValue(callback)
                 } else if let textActionSet = actionData?.asEmbarkTextActionSet {
                     innerBag += view.addArranged(TextActionSet(
                         state: self.state,
                         data: textActionSet
-                    )).onValue(callback)
+                    )).onFirstValue(callback)
                 } else if let externalInsuranceProviderAction = actionData?.asEmbarkExternalInsuranceProviderAction {
                     innerBag += view.addArranged(InsuranceProviderAction(
                         state: self.state,
                         data: .external(externalInsuranceProviderAction)
-                    )).onValue(callback)
+                    )).onFirstValue(callback)
                 } else if let previousInsuranceProviderAction = actionData?.asEmbarkPreviousInsuranceProviderAction {
                     innerBag += view.addArranged(InsuranceProviderAction(
                         state: self.state,
                         data: .previous(previousInsuranceProviderAction)
-                    )).onValue(callback)
+                    )).onFirstValue(callback)
                 }
 
                 return innerBag

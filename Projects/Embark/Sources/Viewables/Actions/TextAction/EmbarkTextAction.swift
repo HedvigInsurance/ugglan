@@ -131,12 +131,8 @@ extension EmbarkTextAction: Viewable {
                 return true
             }
 
-            bag += button.onTapSignal.withLatestFrom(textSignal.plain()).onValue { _, value in
-                let innerBag = DisposeBag()
-                innerBag += textSignal.atOnce().take(first: 1).onValue { value in
-                    complete(value)
-                    innerBag.dispose()
-                }
+            bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain()).onFirstValue { _, value in
+                complete(value)
             }
 
             return bag
