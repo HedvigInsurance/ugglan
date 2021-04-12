@@ -122,6 +122,7 @@ extension Embark: Presentable {
 
         let progressView = UIProgressView()
         progressView.tintColor = .brand(.primaryText())
+        progressView.progressViewStyle = .bar
         scrollView.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
