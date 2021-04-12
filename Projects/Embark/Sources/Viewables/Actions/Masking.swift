@@ -61,6 +61,31 @@ struct Masking {
             return text
         }
     }
+    
+    func maskValueFromStore(text: String) -> String {
+        switch type {
+        case .personalNumber:
+            return maskValue(text: text, previousText: "")
+        case .postalCode:
+            return maskValue(text: text, previousText: "")
+        case .birthDate:
+            return maskValue(text: text, previousText: "")
+        case .birthDateReverse:
+            let reverseDateFormatter = DateFormatter()
+            reverseDateFormatter.dateFormat = "yyyy-MM-dd"
+
+            guard let date = reverseDateFormatter.date(from: text) else {
+                return text
+            }
+
+            let birthDateFormatter = DateFormatter()
+            birthDateFormatter.dateFormat = "dd-MM-yyyy"
+
+            return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
+        default:
+            return maskValue(text: text, previousText: "")
+        }
+    }
 
     func calculateAge(from text: String) -> Int? {
         func calculate(_ format: String, value: String) -> Int? {

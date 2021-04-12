@@ -34,7 +34,6 @@ extension EmbarkNumberAction: Viewable {
         boxStack.edgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
         return (view, Signal { callback in
-
             func handleSubmit(textValue: String) {
                 let key = self.data.numberActionData.key
                 self.state.store.setValue(key: key, value: textValue)
@@ -53,10 +52,17 @@ extension EmbarkNumberAction: Viewable {
                 masking: masking
             )
             let (textInputView, textSignal) = textField.materialize(events: events)
+            textSignal.value = masking.maskValueFromStore(text: state.store.getPrefillValue(key: data.numberActionData.key) ?? "")
             boxStack.addArrangedSubview(textInputView)
+            
+            let isValidSignal = textSignal
+                .atOnce()
+                .map { text in !text.isEmpty && masking.isValid(text: text) }
 
             bag += textField.shouldReturn.set { value -> Bool in
-                handleSubmit(textValue: value)
+                if isValidSignal.value {
+                    handleSubmit(textValue: value)
+                }
                 return true
             }
 
@@ -79,6 +85,8 @@ extension EmbarkNumberAction: Viewable {
                     textColor: .brand(.secondaryButtonTextColor)
                 )
             )
+            
+            bag += isValidSignal.bindTo(button.isEnabled)
 
             bag += view.addArranged(button)
 
