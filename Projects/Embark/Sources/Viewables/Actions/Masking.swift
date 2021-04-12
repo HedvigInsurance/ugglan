@@ -57,18 +57,14 @@ struct Masking {
             birthDateFormatter.dateFormat = "yyyy-MM-dd"
 
             return birthDateFormatter.string(from: date)
-        default:
+        case .email, .norwegianPostalCode, .digits:
             return text
         }
     }
     
     func maskValueFromStore(text: String) -> String {
         switch type {
-        case .personalNumber:
-            return maskValue(text: text, previousText: "")
-        case .postalCode:
-            return maskValue(text: text, previousText: "")
-        case .birthDate:
+        case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits:
             return maskValue(text: text, previousText: "")
         case .birthDateReverse:
             let reverseDateFormatter = DateFormatter()
@@ -82,8 +78,6 @@ struct Masking {
             birthDateFormatter.dateFormat = "dd-MM-yyyy"
 
             return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
-        default:
-            return maskValue(text: text, previousText: "")
         }
     }
 
