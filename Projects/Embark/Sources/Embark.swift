@@ -34,6 +34,10 @@ extension Embark: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
+        
+        let edgePanGestureRecognizer = UIScreenEdgePanGestureRecognizer()
+        edgePanGestureRecognizer.edges = [.left]
+        state.edgePanGestureRecognizer = edgePanGestureRecognizer
 
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
@@ -159,6 +163,36 @@ extension Embark: Presentable {
             self.state.passagesSignal.value = embarkStory.passages
             self.state.startPassageIDSignal.value = embarkStory.startPassage
             self.state.restart()
+        }
+        
+        bag += edgePanGestureRecognizer.signal(forState: .ended).withLatestFrom(state.canGoBackSignal.atOnce().plain()).onValue({ _, canGoBack in
+            guard canGoBack else {
+                return
+            }
+            
+            let translationX = edgePanGestureRecognizer.translation(in: viewController.view).x
+            
+            if translationX > (viewController.view.frame.width * 0.4) {
+                state.goBack()
+            }
+        })
+        
+        bag += state.canGoBackSignal.atOnce().onValueDisposePrevious { canGoBack in
+            guard canGoBack else {
+                return NilDisposer()
+            }
+            
+            viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+            
+            let innerBag = DisposeBag()
+            
+            innerBag += {
+                viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+            }
+                        
+            innerBag += viewController.view.install(edgePanGestureRecognizer)
+            
+            return innerBag
         }
 
         return (viewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>> { callback in
