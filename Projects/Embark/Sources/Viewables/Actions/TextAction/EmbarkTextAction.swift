@@ -21,16 +21,16 @@ struct EmbarkTextAction {
 
         return nil
     }
-    
+
     var prefillValue: String {
         guard let value = state.store.getPrefillValue(key: data.textActionData.key) else {
             return ""
         }
-        
+
         if let masking = masking {
             return masking.maskValueFromStore(text: value)
         }
-        
+
         return value
     }
 }
@@ -150,5 +150,26 @@ extension EmbarkTextAction: Viewable {
 
             return bag
         })
+    }
+}
+
+internal extension Masking {
+    func maskValueFromStore(text: String) -> String {
+        switch type {
+        case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits, .norwegianPersonalNumber, .danishPersonalNumber:
+            return maskValue(text: text, previousText: "")
+        case .birthDateReverse:
+            let reverseDateFormatter = DateFormatter()
+            reverseDateFormatter.dateFormat = "yyyy-MM-dd"
+
+            guard let date = reverseDateFormatter.date(from: text) else {
+                return text
+            }
+
+            let birthDateFormatter = DateFormatter()
+            birthDateFormatter.dateFormat = "dd-MM-yyyy"
+
+            return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
+        }
     }
 }
