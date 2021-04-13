@@ -253,9 +253,9 @@ public extension PresentationStyle {
                 let transitioningDelegate = viewController.navigationController?.transitioningDelegate as? DetentedTransitioningDelegate
                 let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
-                let padPadding: CGFloat = containerView.traitCollection.userInterfaceIdiom == .pad ? 30 : 0
+                let minimumBottomInset: CGFloat = 30 + extraPadding
 
-                return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top + containerView.safeAreaInsets.bottom + extraPadding + padPadding
+                return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top + max(containerView.safeAreaInsets.bottom, minimumBottomInset)
             }
         }
 
