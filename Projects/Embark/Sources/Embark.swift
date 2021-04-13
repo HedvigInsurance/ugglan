@@ -42,18 +42,21 @@ extension Embark: Presentable {
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
             scrollView.alwaysBounceVertical = false
 
-            bag += scrollView.traitCollectionSignal.onValue { _ in
-                form.applyStyle(
-                    .init(insets:
-                        .init(
-                            top: 0,
-                            left: 0,
-                            bottom: scrollView.isScrollEnabled ? 16 : 0,
-                            right: 0
+            bag += scrollView
+                .traitCollectionSignal
+                .withLatestFrom(scrollView.signal(for: \.contentSize))
+                .onValue { _, _ in
+                    form.applyStyle(
+                        .init(insets:
+                            .init(
+                                top: 0,
+                                left: 0,
+                                bottom: scrollView.isScrollEnabled ? 16 : 0,
+                                right: 0
+                            )
                         )
                     )
-                )
-            }
+                }
         }
 
         let titleHedvigLogo = UIImageView()
