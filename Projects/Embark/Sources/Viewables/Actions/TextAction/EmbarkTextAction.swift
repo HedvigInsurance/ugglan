@@ -21,6 +21,18 @@ struct EmbarkTextAction {
 
         return nil
     }
+    
+    var prefillValue: String {
+        guard let value = state.store.getPrefillValue(key: data.textActionData.key) else {
+            return ""
+        }
+        
+        if let masking = masking {
+            return masking.maskValueFromStore(text: value)
+        }
+        
+        return value
+    }
 }
 
 extension EmbarkTextAction: Viewable {
@@ -64,6 +76,7 @@ extension EmbarkTextAction: Viewable {
         let textSignal = boxStack.addArranged(input) { inputView in
             animator.register(key: \.input, value: inputView)
         }
+        textSignal.value = prefillValue
 
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,

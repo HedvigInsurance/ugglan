@@ -7,6 +7,7 @@ import hGraphQL
 import UIKit
 
 struct EmbarkSelectActionOption {
+    let state: EmbarkState
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
     @ReadWriteState var isLoading = false
 }
@@ -21,6 +22,15 @@ extension EmbarkSelectActionOption: Viewable {
             .embark
         }
         
+        if data.keys.enumerated().allSatisfy({ (offset, key) in
+            state.store.getPrefillValue(key: key) == data.values[offset]
+        }) {
+            control.layer.borderWidth = 2
+            bag += control.applyBorderColor { _ in
+                UIColor.tint(.lavenderOne)
+            }
+        }
+                        
         control.snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(80)
         }
