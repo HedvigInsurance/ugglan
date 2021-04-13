@@ -3,6 +3,7 @@ import Foundation
 import UIKit
 
 public enum MaskType: String {
+    case none = "None"
     case personalNumber = "PersonalNumber"
     case norwegianPersonalNumber = "NorwegianPersonalNumber"
     case danishPersonalNumber = "DanishPersonalNumber"
@@ -37,7 +38,7 @@ public struct Masking {
         let bag = DisposeBag()
 
         bag += textField.distinct().onValue { text in
-            let newValue = maskValue(text: text, previousText: previousText)
+            let newValue = maskValue(text: text, previousText: previousText).replacingOccurrences(of: " ", with: "\u{00a0}")
             $previousText.value = newValue
             textField.text = newValue
         }
@@ -71,10 +72,12 @@ public struct Masking {
             return CharacterSet.decimalDigits.isSuperset(
                 of: CharacterSet(charactersIn: text)
             )
+        case .none:
+            return true
         }
     }
 
-    public func unmaskedValue(text: String) -> String {
+    private func unmask(text: String) -> String {
         switch type {
         case .personalNumber:
             return text.replacingOccurrences(of: "-", with: "")
@@ -100,7 +103,13 @@ public struct Masking {
             return text.replacingOccurrences(of: " ", with: "")
         case .danishPersonalNumber:
             return text.replacingOccurrences(of: " ", with: "")
+        case .none:
+            return text
         }
+    }
+    
+    public func unmaskedValue(text: String) -> String {
+        return unmask(text: text).replacingOccurrences(of: "\u{00a0}", with: " ")
     }
 
     public func calculateAge(from text: String) -> Int? {
@@ -170,6 +179,8 @@ public struct Masking {
             return .numberPad
         case .email:
             return .emailAddress
+        case .none:
+            return .default
         }
     }
 
@@ -242,6 +253,8 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [7], maxCount: 12, delimiter: "-")
         case .danishPersonalNumber:
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
+        case .none:
+            return text
         }
     }
 }

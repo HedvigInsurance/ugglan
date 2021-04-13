@@ -48,7 +48,7 @@ extension TextActionSet: Viewable {
                 textContentType: masking?.textContentType,
                 returnKeyType: isLastAction ? .done : .next,
                 autocapitalisationType: masking?.autocapitalizationType ?? .words,
-                masking: masking,
+                masking: masking ?? Masking(type: .none),
                 shouldAutoFocus: index == 0,
                 fieldStyle: .embarkInputSmall,
                 textFieldAlignment: .right
