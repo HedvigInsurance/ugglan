@@ -8,21 +8,26 @@ import UIKit
 public struct MarkdownTextView {
     public let textSignal: ReadWriteSignal<String>
     public let style: TextStyle
+    public let linkColor: UIColor
 
     public init(
         textSignal: ReadWriteSignal<String>,
-        style: TextStyle
+        style: TextStyle,
+        linkColor: UIColor
     ) {
         self.textSignal = textSignal
         self.style = style
+        self.linkColor = linkColor
     }
 
     public init(
         value: String,
-        style: TextStyle
+        style: TextStyle,
+        linkColor: UIColor
     ) {
         textSignal = ReadWriteSignal(value)
         self.style = style
+        self.linkColor = linkColor
     }
 }
 
@@ -43,7 +48,7 @@ extension MarkdownTextView: Viewable {
         markdownTextView.isScrollEnabled = false
         markdownTextView.backgroundColor = .clear
         markdownTextView.linkTextAttributes = [
-            .foregroundColor: UIColor.brand(.link),
+            .foregroundColor: linkColor,
         ]
 
         bag += textSignal.atOnce().onValue { text in

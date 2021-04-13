@@ -107,7 +107,9 @@ extension RemoteVectorIcon: Viewable {
             }
 
             if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
-                imageView.alpha = 1
+                DispatchQueue.main.async {
+                    imageView.alpha = 1
+                }
                 return data as CFData
             }
 

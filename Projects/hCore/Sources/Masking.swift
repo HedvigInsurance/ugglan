@@ -1,8 +1,11 @@
+import Flow
 import Foundation
 import UIKit
 
-enum MaskType: String {
+public enum MaskType: String {
     case personalNumber = "PersonalNumber"
+    case norwegianPersonalNumber = "NorwegianPersonalNumber"
+    case danishPersonalNumber = "DanishPersonalNumber"
     case postalCode = "PostalCode"
     case email = "Email"
     case birthDate = "BirthDate"
@@ -11,11 +14,45 @@ enum MaskType: String {
     case digits = "Digits"
 }
 
-struct Masking {
-    let type: MaskType
+public struct Masking {
+    public let type: MaskType
 
-    func isValid(text: String) -> Bool {
+    @ReadWriteState private var previousText = ""
+
+    public init(type: MaskType) {
+        self.type = type
+    }
+
+    public func applySettings(_ textField: UITextField) {
+        textField.keyboardType = keyboardType
+        textField.textContentType = textContentType
+        textField.autocapitalizationType = autocapitalizationType
+    }
+
+    public func isValidSignal(_ textField: UITextField) -> ReadSignal<Bool> {
+        textField.distinct().map { text in isValid(text: text) }
+    }
+
+    public func applyMasking(_ textField: UITextField) -> Disposable {
+        let bag = DisposeBag()
+
+        bag += textField.distinct().onValue { text in
+            let newValue = maskValue(text: text, previousText: previousText)
+            $previousText.value = newValue
+            textField.text = newValue
+        }
+
+        return bag
+    }
+
+    public func isValid(text: String) -> Bool {
         switch type {
+        case .norwegianPersonalNumber:
+            let age = calculateAge(from: text) ?? 0
+            return text.count == 12 && 15 ... 130 ~= age
+        case .danishPersonalNumber:
+            let age = calculateAge(from: text) ?? 0
+            return text.count == 11 && 15 ... 130 ~= age
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15 ... 130 ~= age
@@ -37,7 +74,7 @@ struct Masking {
         }
     }
 
-    func unmaskedValue(text: String) -> String {
+    public func unmaskedValue(text: String) -> String {
         switch type {
         case .personalNumber:
             return text.replacingOccurrences(of: "-", with: "")
@@ -57,12 +94,16 @@ struct Masking {
             birthDateFormatter.dateFormat = "yyyy-MM-dd"
 
             return birthDateFormatter.string(from: date)
-        default:
+        case .email, .norwegianPostalCode, .digits:
             return text
+        case .norwegianPersonalNumber:
+            return text.replacingOccurrences(of: " ", with: "")
+        case .danishPersonalNumber:
+            return text.replacingOccurrences(of: " ", with: "")
         }
     }
 
-    func calculateAge(from text: String) -> Int? {
+    public func calculateAge(from text: String) -> Int? {
         func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty {
                 return nil
@@ -87,6 +128,11 @@ struct Masking {
         let unmaskedValue = self.unmaskedValue(text: text)
 
         switch type {
+        case .danishPersonalNumber, .norwegianPersonalNumber:
+            if let age = calculate("ddMMyy", value: String(unmaskedValue.prefix(6))) {
+                return age
+            }
+            return nil
         case .personalNumber:
             if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) {
                 return age
@@ -108,7 +154,7 @@ struct Masking {
         }
     }
 
-    func derivedValues(text: String) -> [String: String]? {
+    public func derivedValues(text: String) -> [String: String]? {
         guard let age = calculateAge(from: text) else {
             return nil
         }
@@ -118,16 +164,16 @@ struct Masking {
         ]
     }
 
-    var keyboardType: UIKeyboardType {
+    public var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode, .digits:
+        case .birthDate, .birthDateReverse, .personalNumber, .norwegianPostalCode, .postalCode, .digits, .norwegianPersonalNumber, .danishPersonalNumber:
             return .numberPad
         case .email:
             return .emailAddress
         }
     }
 
-    var textContentType: UITextContentType? {
+    public var textContentType: UITextContentType? {
         switch type {
         case .email:
             return .emailAddress
@@ -136,7 +182,7 @@ struct Masking {
         }
     }
 
-    var autocapitalizationType: UITextAutocapitalizationType {
+    public var autocapitalizationType: UITextAutocapitalizationType {
         switch type {
         case .email:
             return .none
@@ -145,7 +191,7 @@ struct Masking {
         }
     }
 
-    func maskValue(text: String, previousText: String) -> String {
+    public func maskValue(text: String, previousText: String) -> String {
         func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
             if text.count < previousText.count {
                 if text.last == delimiter {
@@ -192,6 +238,10 @@ struct Masking {
             return text.filter { $0.isDigit }
         case .email:
             return text
+        case .norwegianPersonalNumber:
+            return delimitedDigits(delimiterPositions: [7], maxCount: 12, delimiter: "-")
+        case .danishPersonalNumber:
+            return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         }
     }
 }

@@ -9,15 +9,19 @@ import WebKit
 
 struct WebViewLogin {
     @Inject var client: ApolloClient
-    let redirectURL: Future<URL>
-    let didLogin: Future<Void>
+    let idNumber: String
 }
 
 extension WebViewLogin: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        viewController.preferredPresentationStyle = .detented(.large)
         let bag = DisposeBag()
+
+        let innerBag = DisposeBag()
+
+        bag.hold(innerBag)
+
+        let future = redirectUrl(bag: innerBag, text: idNumber)
 
         let webView = WKWebView(frame: .zero)
         webView.backgroundColor = .brand(.secondaryBackground())
@@ -25,6 +29,7 @@ extension WebViewLogin: Presentable {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .whiteLarge
         activityIndicator.color = .brand(.primaryTintColor)
+        activityIndicator.hidesWhenStopped = true
 
         webView.addSubview(activityIndicator)
 
@@ -35,8 +40,8 @@ extension WebViewLogin: Presentable {
             make.size.equalToSuperview()
         }
 
-        bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
-            if loading {
+        bag += webView.isLoadingSignal.onValue { isLoading in
+            if isLoading {
                 activityIndicator.alpha = 1
             } else {
                 activityIndicator.alpha = 0
@@ -59,29 +64,56 @@ extension WebViewLogin: Presentable {
             return .allow
         }
 
-        bag += didLogin.onValue { _ in
-            let appDelegate = UIApplication.shared.appDelegate
-
-            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                appDelegate.registerFCMToken(fcmToken)
-            }
-
-            AnalyticsCoordinator().setUserId()
-
-            let window = appDelegate.appFlow.window
-            appDelegate.bag += window.present(LoggedIn(), animated: true)
-        }
-
         func loadBankID() {
-            bag += redirectURL.onValue { url in
+            bag += future.onValue { url in
                 webView.load(URLRequest(url: url))
             }
         }
 
         loadBankID()
 
-        return (viewController, Future { _ in
-            bag
+        return (viewController, Future { completion in
+            bag += client.subscribe(subscription: GraphQL.AuthStatusSubscription())
+                .compactMap { $0.authStatus?.status }
+                .filter(predicate: { status -> Bool in
+                    status == .success
+                })
+                .take(first: 1)
+                .onValue { _ in
+                    completion(.success)
+                }
+            return bag
         })
+    }
+}
+
+extension WebViewLogin {
+    enum BankIDLoginError: Error {
+        case invalidMarket
+    }
+
+    func redirectUrl(bag: DisposeBag, text: String) -> Future<URL> {
+        Future { completion in
+            switch Localization.Locale.currentLocale.market {
+            case .dk:
+                client.perform(mutation: GraphQL.NemIdAuthMutation(personalNumber: text))
+                    .compactMap { $0.danishBankIdAuth.redirectUrl }
+                    .compactMap { URL(string: $0) }
+                    .onValue { url in
+                        completion(.success(url))
+                    }
+            case .no:
+                client.perform(mutation: GraphQL.BankIdNorwayAuthMutation(personalNumber: text))
+                    .compactMap { $0.norwegianBankIdAuth.redirectUrl }
+                    .compactMap { URL(string: $0) }
+                    .onValue { url in
+                        completion(.success(url))
+                    }
+            case .se:
+                completion(.failure(BankIDLoginError.invalidMarket))
+            }
+
+            return bag
+        }
     }
 }

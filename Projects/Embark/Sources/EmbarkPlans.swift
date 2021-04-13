@@ -60,12 +60,13 @@ extension EmbarkPlans: Presentable {
         containerView.addSubview(buttonContainerView)
 
         tableKit.view.snp.makeConstraints { make in
-            make.top.trailing.leading.bottom.equalToSuperview()
+            make.top.trailing.leading.equalToSuperview()
         }
 
         buttonContainerView.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(containerView.safeAreaInsets.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
+            make.height.lessThanOrEqualTo(50)
             make.top.equalTo(tableKit.view.snp.bottom).offset(20)
         }
 
@@ -95,7 +96,9 @@ extension EmbarkPlans: Presentable {
 
             bag += buttonView.didLayoutSignal.onValue {
                 let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
-                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+                let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+                tableKit.view.contentInset = inset
+                tableKit.view.scrollIndicatorInsets = inset
             }
         }
 

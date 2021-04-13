@@ -118,14 +118,7 @@ extension EmbarkInput: Viewable {
             textField.becomeFirstResponder()
         }
 
-        var oldText = ""
-        bag += textField.distinct().onValue { textValue in
-            if let mask = self.masking {
-                let maskedValue = mask.maskValue(text: textValue, previousText: oldText)
-                textField.value = maskedValue
-                oldText = maskedValue
-            }
-        }
+        bag += masking?.applyMasking(textField)
 
         bag += textField.shouldReturn.set { value -> Bool in
             self.shouldReturn.call(value) ?? false

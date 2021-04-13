@@ -6,27 +6,33 @@ import hCoreUI
 import Presentation
 import UIKit
 
-struct AppFlow {
+public struct AppFlow {
     private let rootNavigationController = UINavigationController()
 
     let window: UIWindow
+    let bag = DisposeBag()
 
     init(window: UIWindow) {
         self.window = window
         self.window.rootViewController = rootNavigationController
+    }
+
+    func presentLoggedIn() {
+        let loggedIn = LoggedIn()
+        bag += window.present(loggedIn)
     }
 }
 
 struct WebOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = WebOnboarding(webScreen: .webOnboarding).materialize()
-        
+
         let bag = DisposeBag()
-        
+
         bag += signal.onValue { _ in
             bag += viewController.present(PostOnboarding())
         }
-        
+
         return (viewController, bag)
     }
 }
@@ -35,7 +41,7 @@ struct EmbarkOnboardingFlow: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = EmbarkPlans().materialize()
         let bag = DisposeBag()
-        
+
         bag += signal.atValue { story in
             let embark = Embark(
                 name: story.name,

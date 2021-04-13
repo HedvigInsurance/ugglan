@@ -122,6 +122,7 @@ extension Embark: Presentable {
 
         let progressView = UIProgressView()
         progressView.tintColor = .brand(.primaryText())
+        progressView.progressViewStyle = .bar
         scrollView.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
@@ -251,10 +252,10 @@ extension Embark: Presentable {
 
             bag += didTapTooltip
                 .onValue {
-                    let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+                    let embarkTooltips = EmbarkTooltips(tooltips: state.passageTooltipsSignal.value)
 
                     viewController.present(
-                        embarkTooltipsAlert.wrappedInCloseButton(),
+                        embarkTooltips.wrappedInCloseButton(),
                         style: .detented(.preferredContentSize),
                         options: [
                             .defaults,
