@@ -7,7 +7,9 @@ public enum MenuStyle {
     case `default`, destructive
 }
 
-public struct MenuChild {
+public protocol MenuChildable {}
+
+public struct MenuChild: MenuChildable {
     let title: String
     let style: MenuStyle
     let image: UIImage?
@@ -26,17 +28,59 @@ public struct MenuChild {
     }
 }
 
-public struct Menu {
+public struct Menu: MenuChildable {
     let title: String?
-    let children: [MenuChild]
+    let children: [MenuChildable]
 
     public init(
         title: String?,
-        children: [MenuChild]
+        children: [MenuChildable]
     ) {
         self.title = title
         self.children = children
     }
+}
+
+@available(iOS 14, *)
+func composeMenu(_ menu: Menu) -> UIMenu {
+    return UIMenu(
+        title: menu.title ?? "",
+        options: [.displayInline],
+        children: menu.children.compactMap { menuChild in
+            if let menuChild = menuChild as? MenuChild {
+                return UIAction(
+                    title: menuChild.title,
+                    image: menuChild.image,
+                    attributes: menuChild.style == .destructive ? .destructive : []
+                ) { _ in
+                    menuChild.handler()
+                }
+            } else if let menu = menuChild as? Menu {
+                return composeMenu(menu)
+            }
+            
+            return nil
+        }
+    )
+}
+
+func composeAlertActions(_ children: [MenuChildable]) -> [Alert<Void>.Action] {
+    return children.map { menuChild -> [Alert<Void>.Action] in
+        if let menuChild = menuChild as? MenuChild {
+            return [
+                Alert.Action(
+                    title: menuChild.title,
+                    style: menuChild.style == .destructive ? .destructive : .default
+                ) { _ in
+                    menuChild.handler()
+                }
+            ]
+        } else if let menu = menuChild as? Menu {
+            return composeAlertActions(menu.children)
+        }
+        
+        return []
+    }.flatMap { $0 }
 }
 
 public extension UIBarButtonItem {
@@ -44,31 +88,13 @@ public extension UIBarButtonItem {
         let bag = DisposeBag()
 
         if #available(iOS 14, *) {
-            self.menu = UIMenu(
-                title: menu.title ?? "",
-                children: menu.children.map { menuChild in
-                    UIAction(
-                        title: menuChild.title,
-                        image: menuChild.image,
-                        attributes: menuChild.style == .destructive ? .destructive : []
-                    ) { _ in
-                        menuChild.handler()
-                    }
-                }
-            )
+            self.menu = composeMenu(menu)
         } else {
             bag += onValue {
                 let alert = Alert<Void>(
                     title: menu.title,
                     actions: [
-                        menu.children.map { menuChild in
-                            Alert.Action(
-                                title: menuChild.title,
-                                style: menuChild.style == .destructive ? .destructive : .default
-                            ) { _ in
-                                menuChild.handler()
-                            }
-                        },
+                        composeAlertActions(menu.children),
                         [
                             Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in },
                         ],

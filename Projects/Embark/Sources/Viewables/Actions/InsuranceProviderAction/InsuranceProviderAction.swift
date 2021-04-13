@@ -20,6 +20,15 @@ enum InsuranceWrapper {
             return data.previousInsuranceProviderData.next.fragments.embarkLinkFragment
         }
     }
+    
+    var key: String {
+        switch self {
+        case .external:
+            return "previousInsurer"
+        case let .previous(data):
+            return data.previousInsuranceProviderData.storeKey
+        }
+    }
 
     var isExternal: Bool {
         false
@@ -65,7 +74,6 @@ class InsuranceProviderPickerDelegate: NSObject, UIPickerViewDelegate {
     
     public init(providers: [GraphQL.InsuranceProviderFragment]) {
         self.providers = providers
-        selectedProvider = providers.first
     }
     
     let providers: [GraphQL.InsuranceProviderFragment]
@@ -141,8 +149,17 @@ extension InsuranceProviderAction: Viewable {
                     let delegate = InsuranceProviderPickerDelegate(providers: providers)
                     bag.hold(delegate)
                     pickerView.delegate = delegate
-                    
                     bag += delegate.$selectedProvider.atOnce().bindTo($selectedProvider)
+                    
+                    func findSelectedProvider(provider: GraphQL.InsuranceProviderFragment) -> Bool {
+                        provider.name == self.state.store.getPrefillValue(key: self.data.key)
+                    }
+                    
+                    let selectedProviderIndex = providers.firstIndex(where: findSelectedProvider)
+                    delegate.selectedProvider = providers.first(where: findSelectedProvider) ?? providers.first
+                    
+                    pickerView.reloadAllComponents()
+                    pickerView.selectRow(selectedProviderIndex ?? 0, inComponent: 0, animated: true)
                 }
         }
         
@@ -160,15 +177,15 @@ extension InsuranceProviderAction: Viewable {
                 .withLatestFrom($selectedProvider.plain())
                 .compactMap { _, provider in provider }
                 .onValue { provider in
-                if let passageName = self.state.passageNameSignal.value {
-                    self.state.store.setValue(
-                        key: "\(passageName)Result",
-                        value: provider.name
-                    )
-                }
+                    if let passageName = self.state.passageNameSignal.value {
+                        self.state.store.setValue(
+                            key: "\(passageName)Result",
+                            value: provider.name
+                        )
+                    }
 
-                self.state.store.setValue(key: "previousInsurer", value: provider.name)
-                callback(self.data.embarkLinkFragment)
+                    self.state.store.setValue(key: self.data.key, value: provider.name)
+                    callback(self.data.embarkLinkFragment)
             }
             
             bag += outerContainer.addArranged(button)

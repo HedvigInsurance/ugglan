@@ -39,7 +39,7 @@ public enum EmbarkMenuRoute: CaseIterable {
         case .restart:
             return hCoreUIAssets.restart.image
         case .login:
-            return hCoreUIAssets.profileCircleIcon.image
+            return hCoreUIAssets.memberCard.image
         }
     }
 }

@@ -14,42 +14,36 @@ extension EmbarkMessages: Viewable {
             return message.text
         }
 
-        let firstMatchingExpression = message.expressions.first { expression -> Bool in
-            self.state.store.passes(expression: expression)
-        }
-
-        if firstMatchingExpression == nil {
+        return parse(message.expressions.map { $0.fragments.expressionFragment })
+    }
+    
+    func parse(_ expressions: [GraphQL.ExpressionFragment]) -> String? {
+        guard let expression = expressions.first(where: { fragment in
+            self.state.store.passes(expression: fragment)
+        }) else {
             return nil
         }
 
-        if let multipleExpression =
-            firstMatchingExpression?.fragments.expressionFragment.asEmbarkExpressionMultiple
+        if let multipleExpression = expression.asEmbarkExpressionMultiple
         {
             return multipleExpression.text
         }
 
-        if let binaryExpression =
-            firstMatchingExpression?
-                .fragments
-                .expressionFragment
-                .fragments
+        if let binaryExpression = expression.fragments
                 .basicExpressionFragment
                 .asEmbarkExpressionBinary
         {
             return binaryExpression.text
         }
 
-        if let unaryExpression =
-            firstMatchingExpression?
-                .fragments
-                .expressionFragment
+        if let unaryExpression = expression
                 .fragments
                 .basicExpressionFragment
                 .asEmbarkExpressionUnary
         {
             return unaryExpression.text
         }
-
+        
         return nil
     }
 
@@ -95,7 +89,11 @@ extension EmbarkMessages: Viewable {
                 if let singleMessage = previousResponse?.response?.asEmbarkMessage {
                     let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
                     let responseText = self.replacePlaceholders(message: msgText ?? "")
-
+                    let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
+                    bag += view.addArranged(messageBubble)
+                } else if let embarkResponseExpression = previousResponse?.response?.asEmbarkResponseExpression {
+                    let msgText = self.parse(embarkResponseExpression.expressions.map { $0.fragments.expressionFragment })
+                    let responseText = self.replacePlaceholders(message: msgText ?? embarkResponseExpression.text)
                     let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                     bag += view.addArranged(messageBubble)
                 } else if let passageName = previousResponse?.passageName {
