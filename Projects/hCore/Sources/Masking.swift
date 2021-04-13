@@ -49,10 +49,10 @@ public struct Masking {
         switch type {
         case .norwegianPersonalNumber:
             let age = calculateAge(from: text) ?? 0
-            return text.count == 11 && 15 ... 130 ~= age
+            return text.count == 12 && 15 ... 130 ~= age
         case .danishPersonalNumber:
             let age = calculateAge(from: text) ?? 0
-            return text.count == 10 && 15 ... 130 ~= age
+            return text.count == 11 && 15 ... 130 ~= age
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15 ... 130 ~= age
@@ -232,8 +232,12 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [3, 6], maxCount: 10, delimiter: "-")
         case .digits:
             return text.filter { $0.isDigit }
-        case .email, .norwegianPersonalNumber, .danishPersonalNumber:
+        case .email:
             return text
+        case .norwegianPersonalNumber:
+            return delimitedDigits(delimiterPositions: [7], maxCount: 12, delimiter: "-")
+        case .danishPersonalNumber:
+            return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         }
     }
 }
