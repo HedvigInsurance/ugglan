@@ -19,7 +19,7 @@ public struct Embark {
     let flowType: EmbarkFlowType
     let state = EmbarkState()
     let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
-    
+
     public func goBack() {
         state.goBack()
     }
@@ -38,11 +38,22 @@ extension Embark: Presentable {
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
         let form = FormView()
-        form.dynamicStyle = DynamicFormStyle.default.restyled { (style: inout FormStyle) in
-            style.insets = .zero
-        }
+
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
             scrollView.alwaysBounceVertical = false
+
+            bag += scrollView.traitCollectionSignal.onValue { _ in
+                form.applyStyle(
+                    .init(insets:
+                        .init(
+                            top: 0,
+                            left: 0,
+                            bottom: scrollView.isScrollEnabled ? 16 : 0,
+                            right: 0
+                        )
+                    )
+                )
+            }
         }
 
         let titleHedvigLogo = UIImageView()
@@ -225,7 +236,7 @@ extension Embark: Presentable {
             }
 
             func routeHandler(route: EmbarkMenuRoute) -> () -> Void {
-                return {
+                {
                     if case .restart = route {
                         presentRestartAlert { shouldRestart in
                             if shouldRestart {
@@ -243,7 +254,7 @@ extension Embark: Presentable {
 
                 callback(.value(.right(route)))
             }
-            
+
             let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
 
             bag += optionsButton.attachSinglePressMenu(
@@ -257,13 +268,13 @@ extension Embark: Presentable {
                             title: nil,
                             children: [
                                 MenuChild.embarkChild(for: .login, handler: routeHandler(route: .login)),
-                                MenuChild.embarkChild(for: .restart, handler: routeHandler(route: .restart))
+                                MenuChild.embarkChild(for: .restart, handler: routeHandler(route: .restart)),
                             ]
-                        )
+                        ),
                     ]
                 )
             )
-            
+
             let tooltipButton = UIButton()
             tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
 
@@ -282,7 +293,7 @@ extension Embark: Presentable {
                         ]
                     )
                 }
-            
+
             viewController.navigationItem.setRightBarButtonItems([optionsButton, UIBarButtonItem(button: tooltipButton)], animated: false)
 
             bag += state.passageTooltipsSignal.atOnce()
