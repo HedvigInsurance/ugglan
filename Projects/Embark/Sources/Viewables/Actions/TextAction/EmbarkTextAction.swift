@@ -70,7 +70,7 @@ extension EmbarkTextAction: Viewable {
             keyboardType: masking?.keyboardType,
             textContentType: masking?.textContentType,
             autocapitalisationType: masking?.autocapitalizationType ?? .none,
-            masking: masking,
+            masking: masking ?? Masking(type: .none),
             shouldAutoSize: true
         )
         let textSignal = boxStack.addArranged(input) { inputView in
@@ -156,7 +156,7 @@ extension EmbarkTextAction: Viewable {
 internal extension Masking {
     func maskValueFromStore(text: String) -> String {
         switch type {
-        case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits, .norwegianPersonalNumber, .danishPersonalNumber:
+        case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits, .norwegianPersonalNumber, .danishPersonalNumber, .none:
             return maskValue(text: text, previousText: "")
         case .birthDateReverse:
             let reverseDateFormatter = DateFormatter()
