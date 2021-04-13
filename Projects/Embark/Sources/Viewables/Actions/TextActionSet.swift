@@ -68,8 +68,23 @@ extension TextActionSet: Viewable {
                 let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
                 bag += boxStack.addArranged(divider)
             }
+            
+            var prefillValue: String {
+                guard let key = textAction.data?.key, let value = state.store.getPrefillValue(key: key) else {
+                    return ""
+                }
+                
+                if let masking = masking {
+                    return masking.maskValueFromStore(text: value)
+                }
+                
+                return value
+            }
+            
+            let textSignal = stack.addArranged(input)
+            textSignal.value = prefillValue
 
-            return (signal: stack.addArranged(input), shouldReturn: input.shouldReturn, action: textAction)
+            return (signal: textSignal, shouldReturn: input.shouldReturn, action: textAction)
         }
 
         return (view, Signal { callback in
@@ -106,7 +121,7 @@ extension TextActionSet: Viewable {
             bag += view.addArranged(button)
 
             func isValid(signal: ReadWriteSignal<String>, action: TextAction) -> Signal<Bool> {
-                signal.map { text in
+                signal.atOnce().map { text in
                     !text.isEmpty && (getMasking(action)?.isValid(text: text) ?? true)
                 }.plain()
             }

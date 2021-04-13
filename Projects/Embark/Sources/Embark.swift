@@ -122,6 +122,7 @@ extension Embark: Presentable {
 
         let progressView = UIProgressView()
         progressView.tintColor = .brand(.primaryText())
+        progressView.progressViewStyle = .bar
         scrollView.addSubview(progressView)
 
         progressView.snp.makeConstraints { make in
@@ -223,15 +224,17 @@ extension Embark: Presentable {
                 }
             }
 
-            func routeHandler(route: EmbarkMenuRoute) {
-                if case .restart = route {
-                    presentRestartAlert { shouldRestart in
-                        if shouldRestart {
-                            state.restart()
+            func routeHandler(route: EmbarkMenuRoute) -> () -> Void {
+                return {
+                    if case .restart = route {
+                        presentRestartAlert { shouldRestart in
+                            if shouldRestart {
+                                state.restart()
+                            }
                         }
+                    } else {
+                        routeSignal.value = route
                     }
-                } else {
-                    routeSignal.value = route
                 }
             }
 
@@ -247,10 +250,17 @@ extension Embark: Presentable {
                 viewController: viewController,
                 menu: Menu(
                     title: nil,
-                    children:
-                    routes.map { route in MenuChild.embarkChild(for: route) {
-                        routeHandler(route: route)
-                    }}
+                    children: [
+                        MenuChild.embarkChild(for: .appSettings, handler: routeHandler(route: .appSettings)),
+                        MenuChild.embarkChild(for: .appInformation, handler: routeHandler(route: .appInformation)),
+                        Menu(
+                            title: nil,
+                            children: [
+                                MenuChild.embarkChild(for: .login, handler: routeHandler(route: .login)),
+                                MenuChild.embarkChild(for: .restart, handler: routeHandler(route: .restart))
+                            ]
+                        )
+                    ]
                 )
             )
             
@@ -261,10 +271,10 @@ extension Embark: Presentable {
 
             bag += didTapTooltip
                 .onValue {
-                    let embarkTooltipsAlert = EmbarkTooltipAlert(tooltips: state.passageTooltipsSignal.value)
+                    let embarkTooltips = EmbarkTooltips(tooltips: state.passageTooltipsSignal.value)
 
                     viewController.present(
-                        embarkTooltipsAlert.wrappedInCloseButton(),
+                        embarkTooltips.wrappedInCloseButton(),
                         style: .detented(.preferredContentSize),
                         options: [
                             .defaults,

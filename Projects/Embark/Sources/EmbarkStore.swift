@@ -10,6 +10,7 @@ extension String {
 }
 
 class EmbarkStore {
+    var prefill: [String: String] = [:]
     var revisions: [[String: String]] = [[:]]
     var queue: [String: String] = [:]
     var computedValues: [String: String] = [:]
@@ -40,6 +41,7 @@ class EmbarkStore {
                     setValue(key: String(key), value: String(values[offset]))
                 }
             } else {
+                prefill[key] = value
                 queue[key] = value
             }
         }
@@ -65,6 +67,10 @@ class EmbarkStore {
         }
 
         return nil
+    }
+    
+    func getPrefillValue(key: String) -> String? {
+        return prefill[key]
     }
 
     func createRevision() {

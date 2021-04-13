@@ -61,6 +61,12 @@ fragment ResponseFragment on EmbarkResponse {
             text
         }
     }
+    ... on EmbarkResponseExpression {
+        text
+        expressions {
+            ...ExpressionFragment
+        }
+    }
 }
 
 fragment ApiSingleVariableFragment on EmbarkAPIGraphQLSingleVariable {
