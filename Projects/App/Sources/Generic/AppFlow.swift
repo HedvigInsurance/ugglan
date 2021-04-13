@@ -18,8 +18,6 @@ public struct AppFlow {
     }
 
     func presentLoggedIn() {
-        let loggedIn = LoggedIn()
-        bag += window.present(loggedIn)
     }
 }
 
