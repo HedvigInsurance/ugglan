@@ -18,7 +18,12 @@ extension AdyenSuccess: Presentable {
         )
 
         let continueAction = ImageTextAction<Void>(
-            image: .init(image: hCoreUIAssets.circularCheckmark.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
+            image: .init(
+                image: hCoreUIAssets.circularCheckmark.image,
+                size: CGSize(width: 32, height: 32),
+                contentMode: .scaleAspectFit,
+                insets: UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
+            ),
             title: L10n.AdyenConfirmation.headline(paymentMethod.name),
             body: "",
             actions: [
