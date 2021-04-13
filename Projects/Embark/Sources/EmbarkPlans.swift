@@ -13,6 +13,7 @@ public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 
 public struct EmbarkPlans {
     @Inject var client: ApolloClient
+    let menu: Menu?
     let plansSignal = ReadWriteSignal<[GraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
     @ReadWriteState var selectedIndex = 0
 
@@ -24,7 +25,9 @@ public struct EmbarkPlans {
         }
     }
 
-    public init() {}
+    public init(menu: Menu? = nil) {
+        self.menu = menu
+    }
 }
 
 extension EmbarkPlans: Presentable {
@@ -39,6 +42,16 @@ extension EmbarkPlans: Presentable {
         }
 
         viewController.navigationItem.title = L10n.OnboardingStartpage.screenTitle
+        
+        if let menu = menu {
+            let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
+            viewController.navigationItem.rightBarButtonItem = optionsButton
+
+            bag += optionsButton.attachSinglePressMenu(
+                viewController: viewController,
+                menu: menu
+            )
+        }
 
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 

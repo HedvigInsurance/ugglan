@@ -120,7 +120,7 @@ extension AppInfo: Presentable {
         
         if type == .appInformation {
             let debugGesture = UITapGestureRecognizer()
-            debugGesture.numberOfTapsRequired = 5
+            debugGesture.numberOfTapsRequired = 3
             form.addGestureRecognizer(debugGesture)
 
             bag += debugGesture.signal(forState: .recognized).onValue { _ in
@@ -244,8 +244,8 @@ extension AppInfo: Presentable {
             let button = ButtonRowViewWrapper(
                 title: buttonRow.title,
                 type: .standardOutline(
-                    borderColor: .brand(.primaryButtonTextColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                    borderColor: .brand(.primaryText()),
+                    textColor: .brand(.primaryText())
                 )
             )
 
