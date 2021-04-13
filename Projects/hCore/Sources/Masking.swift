@@ -1,3 +1,4 @@
+import Flow
 import Foundation
 import UIKit
 
@@ -16,8 +17,32 @@ public enum MaskType: String {
 public struct Masking {
     public let type: MaskType
 
+    @ReadWriteState private var previousText = ""
+
     public init(type: MaskType) {
         self.type = type
+    }
+
+    public func applySettings(_ textField: UITextField) {
+        textField.keyboardType = keyboardType
+        textField.textContentType = textContentType
+        textField.autocapitalizationType = autocapitalizationType
+    }
+
+    public func isValidSignal(_ textField: UITextField) -> ReadSignal<Bool> {
+        textField.distinct().map { text in isValid(text: text) }
+    }
+
+    public func applyMasking(_ textField: UITextField) -> Disposable {
+        let bag = DisposeBag()
+
+        bag += textField.distinct().onValue { text in
+            let newValue = maskValue(text: text, previousText: previousText)
+            $previousText.value = newValue
+            textField.text = newValue
+        }
+
+        return bag
     }
 
     public func isValid(text: String) -> Bool {

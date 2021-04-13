@@ -26,14 +26,25 @@ struct SimpleSignLoginView: Presentable {
         let label = UILabel()
         label.text = Localization.Locale.currentLocale.market.labelTitle
 
+        let continueButton = Button(
+            title: Localization.Locale.currentLocale.market.buttonTitle,
+            type: .standard(
+                backgroundColor: UIColor.brand(.secondaryButtonBackgroundColor),
+                textColor: UIColor.brand(.secondaryButtonTextColor)
+            ),
+            isEnabled: false
+        )
+
         let textField = UITextField()
+        masking.applySettings(textField)
         textField.placeholder = L10n.SimpleSignLogin.TextField.helperText
-        textField.keyboardType = masking.keyboardType
         textField.clearButtonMode = .whileEditing
 
         bag += textField.didMoveToWindowSignal.delay(by: 0.5).onValue {
             textField.becomeFirstResponder()
         }
+
+        bag += masking.isValidSignal(textField).bindTo(continueButton.isEnabled)
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -49,22 +60,9 @@ struct SimpleSignLoginView: Presentable {
 
         let views = [UIView(), stackView, UIView()]
 
-        let continueButton = Button(
-            title: Localization.Locale.currentLocale.market.buttonTitle,
-            type: .standard(
-                backgroundColor: UIColor.brand(.secondaryButtonBackgroundColor),
-                textColor: UIColor.brand(.secondaryButtonTextColor)
-            ),
-            isEnabled: false
-        )
-
         let buttonStack = UIStackView()
         buttonStack.edgeInsets = .init(top: 0, left: 16, bottom: 16 + viewController.view.safeAreaInsets.bottom, right: 16)
         bag += buttonStack.addArranged(continueButton)
-
-        bag += textField.distinct()
-            .map { text in masking.isValid(text: text) }
-            .bindTo(continueButton.isEnabled)
 
         bag += viewController.install(form) { scrollView in
             bag += scrollView.embedPinned(buttonStack, edge: .bottom, minHeight: 44)
