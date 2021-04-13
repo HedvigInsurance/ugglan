@@ -91,8 +91,15 @@ extension MarketPicker: Presentable {
             welcomeLabel.value = L10n.MarketLanguageScreen.title
         }
 
-        welcomeLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        bag += welcomeLabel.traitCollectionSignal.atOnce().onValue { traitCollection in
+            welcomeLabel.snp.remakeConstraints { make in
+                if traitCollection.verticalSizeClass == .compact {
+                    make.centerX.equalToSuperview()
+                    make.top.equalToSuperview().offset(50)
+                } else {
+                    make.center.equalToSuperview()
+                }
+            }
         }
 
         form.snp.makeConstraints { make in
