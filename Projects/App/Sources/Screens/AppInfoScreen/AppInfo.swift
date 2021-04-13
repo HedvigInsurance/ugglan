@@ -244,8 +244,8 @@ extension AppInfo: Presentable {
             let button = ButtonRowViewWrapper(
                 title: buttonRow.title,
                 type: .standardOutline(
-                    borderColor: .brand(.primaryButtonTextColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                    borderColor: .brand(.primaryText()),
+                    textColor: .brand(.primaryText())
                 )
             )
 
