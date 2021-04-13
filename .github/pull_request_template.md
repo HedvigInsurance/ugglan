@@ -8,3 +8,4 @@
 - [ ] Dark/light mode verification
 - [ ] Landscape verification
 - [ ] iPad verification
+- [ ] iPod/iPhone 12 mini/iPhone SE verification
