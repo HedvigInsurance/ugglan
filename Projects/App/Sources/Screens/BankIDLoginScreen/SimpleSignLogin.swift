@@ -35,9 +35,8 @@ struct SimpleSignLoginView: Presentable {
             isEnabled: false
         )
 
-        let textField = UITextField()
+        let textField = UITextField(value: "", placeholder: "", style: .default)
         masking.applySettings(textField)
-        textField.style = FieldStyle.default
         textField.placeholder = L10n.SimpleSignLogin.TextField.helperText
         textField.clearButtonMode = .whileEditing
 
