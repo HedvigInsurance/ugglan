@@ -22,10 +22,25 @@ struct ActionResponseData {
 
 extension Action: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
-        let view = UIStackView()
-        view.axis = .vertical
-
         let bag = DisposeBag()
+
+        let outerContainer = UIStackView()
+        outerContainer.axis = .vertical
+        outerContainer.alignment = .center
+        
+        let widthContainer = UIStackView()
+        widthContainer.axis = .horizontal
+        outerContainer.addArrangedSubview(widthContainer)
+        
+        bag += outerContainer.didLayoutSignal.onValue{ _ in
+            widthContainer.snp.remakeConstraints { make in
+                make.width.equalTo(outerContainer.frame.width > 600 ? 600 : outerContainer.frame.width)
+            }
+        }
+        
+        let view = UIStackView()
+        view.axis = .horizontal
+        widthContainer.addArrangedSubview(view)
 
         let actionDataSignal = state.currentPassageSignal.map { $0?.action }
 
@@ -60,7 +75,7 @@ extension Action: Viewable {
             view.layoutIfNeeded()
         }
 
-        return (view, Signal { callback in
+        return (outerContainer, Signal { callback in
             let shouldUpdateUISignal = actionDataSignal.flatMapLatest { _ in hideAnimationSignal.map { _ in true }.readable(initial: false) }
 
             bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: shouldUpdateUISignal).onValueDisposePrevious { actionData, _ in
