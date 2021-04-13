@@ -1,3 +1,11 @@
+//
+//  AppInfo.swift
+//  Ugglan
+//
+//  Created by Sam Pettersson on 2021-04-09.
+//  Copyright © 2021 Hedvig AB. All rights reserved.
+//
+
 import Apollo
 import Flow
 import Form
@@ -11,9 +19,9 @@ import UIKit
 
 struct AppInfo {
     @Inject var client: ApolloClient
-    let state: State
+    let type: AppInfoType
 
-    enum State {
+    enum AppInfoType {
         case appSettings, appInformation
 
         var title: String {
@@ -24,10 +32,19 @@ struct AppInfo {
                 return L10n.EmbarkOnboardingMoreOptions.settingsLabel
             }
         }
+        
+        var icon: UIImage {
+            switch self {
+            case .appInformation:
+                return Asset.infoIcon.image
+            case .appSettings:
+                return Asset.settingsIcon.image
+            }
+        }
 
         enum InfoRows: CaseIterable {
             case language
-            case locale
+            case market
             case version
             case memberId
 
@@ -35,7 +52,7 @@ struct AppInfo {
                 switch self {
                 case .language:
                     return L10n.aboutLanguageRow
-                case .locale:
+                case .market:
                     return L10n.MarketLanguageScreen.marketLabel
                 case .version:
                     return L10n.EmbarkOnboardingMoreOptions.versionLabel
@@ -48,8 +65,8 @@ struct AppInfo {
                 switch self {
                 case .language:
                     return hCoreUIAssets.language.image
-                case .locale:
-                    return nil
+                case .market:
+                    return Localization.Locale.currentLocale.market.icon
                 case .version:
                     return hCoreUIAssets.infoLarge.image
                 case .memberId:
@@ -61,7 +78,7 @@ struct AppInfo {
                 switch self {
                 case .language:
                     return true
-                case .version, .memberId, .locale:
+                case .version, .memberId, .market:
                     return false
                 }
             }
@@ -87,20 +104,36 @@ struct AppInfo {
         }
     }
 
-    init(state: State) {
-        self.state = state
+    init(type: AppInfoType) {
+        self.type = type
     }
 }
 
 extension AppInfo: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = state.title
+        viewController.title = type.title
 
         let bag = DisposeBag()
 
         let form = FormView()
+        
+        if type == .appInformation {
+            let debugGesture = UITapGestureRecognizer()
+            debugGesture.numberOfTapsRequired = 5
+            form.addGestureRecognizer(debugGesture)
 
+            bag += debugGesture.signal(forState: .recognized).onValue { _ in
+                if #available(iOS 13, *) {
+                    viewController.present(
+                        UIHostingController(rootView: Debug()),
+                        style: .detented(.medium, .large),
+                        options: []
+                    )
+                }
+            }
+        }
+        
         func footerView() -> UIView? {
             let year = Calendar.current.component(.year, from: Date())
 
@@ -110,7 +143,7 @@ extension AppInfo: Presentable {
             )
             footerView.textAlignment = .center
 
-            return state == .appInformation ? footerView : nil
+            return type == .appInformation ? footerView : nil
         }
 
         form.appendSpacing(.inbetween)
@@ -121,13 +154,13 @@ extension AppInfo: Presentable {
 
         let buttonsSection = form.appendSection()
 
-        func value(row: State.InfoRows) -> Future<String> {
+        func value(row: AppInfoType.InfoRows) -> Future<String> {
             let innerBag = DisposeBag()
             return Future<String> { completion in
                 switch row {
                 case .language:
                     completion(.success(Localization.Locale.currentLocale.displayName))
-                case .locale:
+                case .market:
                     completion(.success(Localization.Locale.currentLocale.market.marketName))
                 case .version:
                     completion(.success(Bundle.main.appVersion))
@@ -143,7 +176,7 @@ extension AppInfo: Presentable {
             }
         }
 
-        func presentAlert() {
+        func presentChangeMarketAlert() {
             let alert = Alert(
                 title: L10n.settingsAlertChangeMarketTitle,
                 message: L10n.settingsAlertChangeMarketText,
@@ -169,52 +202,57 @@ extension AppInfo: Presentable {
         }
 
         func setupAppSettings() {
-            let row = State.InfoRows.locale
-            let market = Localization.Locale.currentLocale.market
+            let row = AppInfoType.InfoRows.market
             bag += bodySection.append(
                 AppInfoRow(
                     title: row.title,
-                    icon: market.icon,
+                    icon: row.icon,
                     isTappable: row.isTappable,
                     value: value(row: row)
                 )
             )
 
-            let language = State.InfoRows.language
+            let language = AppInfoType.InfoRows.language
             let languageRow = AppInfoRow(
                 title: language.title,
                 icon: language.icon,
                 isTappable: language.isTappable,
-                value: value(row: row)
+                value: value(row: language)
             )
 
             bag += bodySection.append(languageRow)
 
             bag += languageRow.onSelect.onValue {
-                presentAlert()
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
         }
 
         func setupAppInfo() {
-            [State.InfoRows.memberId, State.InfoRows.version].forEach { row in
+            [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version].forEach { row in
                 bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: value(row: row)))
             }
         }
 
-        switch state {
+        switch type {
         case .appSettings:
             setupAppSettings()
         case .appInformation:
             setupAppInfo()
         }
 
-        if let buttonRow = state.button() {
-            let button = ButtonRowViewWrapper(title: buttonRow.title, type: .outline(borderColor: .black, textColor: .black))
+        if let buttonRow = type.button() {
+            let button = ButtonRowViewWrapper(
+                title: buttonRow.title,
+                type: .standardOutline(
+                    borderColor: .brand(.primaryButtonTextColor),
+                    textColor: .brand(.primaryButtonTextColor)
+                )
+            )
 
             bag += buttonsSection.append(button)
 
             bag += button.onTapSignal.onValue {
-                presentAlert()
+                presentChangeMarketAlert()
             }
         }
 
@@ -224,15 +262,30 @@ extension AppInfo: Presentable {
     }
 }
 
-private extension Localization.Locale.Market {
-    var icon: UIImage {
-        switch self {
-        case .no:
-            return hCoreUIAssets.flagNO.image
-        case .se:
-            return hCoreUIAssets.flagSE.image
-        case .dk:
-            return hCoreUIAssets.flagDK.image
+extension MenuChild {
+    static var appInformation: MenuChild {
+        MenuChild(
+            title: L10n.aboutScreenTitle,
+            style: .default,
+            image: hCoreUIAssets.infoLarge.image
+        ) { viewController in
+            viewController.present(
+                AppInfo(type: .appInformation).withCloseButton,
+                style: .detented(.large)
+            )
+        }
+    }
+    
+    static var appSettings: MenuChild {
+        MenuChild(
+            title: L10n.Profile.AppSettingsSection.title,
+            style: .default,
+            image: hCoreUIAssets.settingsIcon.image
+        ) { viewController in
+            viewController.present(
+                AppInfo(type: .appSettings).withCloseButton,
+                style: .detented(.large)
+            )
         }
     }
 }

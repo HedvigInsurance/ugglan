@@ -27,6 +27,17 @@ public enum Localization {
                 }
             }
             
+            public var availableLocales: [Localization.Locale] {
+                switch self {
+                case .no:
+                    return [.nb_NO, .en_NO]
+                case .dk:
+                    return [.da_DK, .en_DK]
+                case .se:
+                    return [.sv_SE, .en_SE]
+                }
+            }
+            
             public var marketName: String {
                 switch self {
                 case .no:

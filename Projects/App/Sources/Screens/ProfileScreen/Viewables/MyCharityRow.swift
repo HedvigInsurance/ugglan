@@ -17,7 +17,7 @@ extension MyCharityRow: Viewable {
         let row = IconRow(
             title: L10n.profileMyCharityRowTitle,
             subtitle: "",
-            iconAsset: Asset.charityPlain,
+            iconAsset: Asset.charityPlain.image,
             options: [.withArrow]
         )
 

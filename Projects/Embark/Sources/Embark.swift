@@ -9,29 +9,29 @@ import Presentation
 import SnapKit
 import UIKit
 
-public enum EmbarkFlowType {
-    case onboarding
-}
+
 
 public struct Embark {
     @Inject var client: ApolloClient
     let name: String
-    let flowType: EmbarkFlowType
+    let menu: Menu?
     let state = EmbarkState()
-    let routeSignal = ReadWriteSignal<EmbarkMenuRoute?>(nil)
     
     public func goBack() {
         state.goBack()
     }
 
-    public init(name: String, flowType: EmbarkFlowType) {
+    public init(
+        name: String,
+        menu: Menu? = nil
+    ) {
         self.name = name
-        self.flowType = flowType
+        self.menu = menu
     }
 }
 
 extension Embark: Presentable {
-    public func materialize() -> (UIViewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>>) {
+    public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -161,9 +161,9 @@ extension Embark: Presentable {
             self.state.restart()
         }
 
-        return (viewController, FiniteSignal<Either<ExternalRedirect, EmbarkMenuRoute>> { callback in
+        return (viewController, FiniteSignal<ExternalRedirect> { callback in
             bag += state.externalRedirectSignal.compactMap { $0 }.onValue { redirect in
-                callback(.value(.left(redirect)))
+                callback(.value(redirect))
             }
 
             let backButton = UIBarButtonItem(image: hCoreUIAssets.backButton.image, style: .plain, target: nil, action: nil)
@@ -200,9 +200,7 @@ extension Embark: Presentable {
 
             viewController.navigationItem.leftBarButtonItem = backButton
 
-            let routes = EmbarkMenuRoute.allCases
-
-            func presentRestartAlert(completion: @escaping (Bool) -> Void) {
+            func presentRestartAlert(_ viewController: UIViewController) {
                 let alert = Alert(
                     title: L10n.Settings.alertRestartOnboardingTitle,
                     message: L10n.Settings.alertRestartOnboardingDescription,
@@ -213,35 +211,15 @@ extension Embark: Presentable {
                             style: UIAlertAction.Style.destructive
                         ) { true },
                         Alert.Action(
-                            title: L10n.settingsAlertChangeMarketCancel,
+                            title: L10n.alertCancel,
                             style: UIAlertAction.Style.cancel
                         ) { false },
                     ]
                 )
 
                 bag += viewController.present(alert).onValue { shouldRestart in
-                    completion(shouldRestart)
+                    state.restart()
                 }
-            }
-
-            func routeHandler(route: EmbarkMenuRoute) -> () -> Void {
-                return {
-                    if case .restart = route {
-                        presentRestartAlert { shouldRestart in
-                            if shouldRestart {
-                                state.restart()
-                            }
-                        }
-                    } else {
-                        routeSignal.value = route
-                    }
-                }
-            }
-
-            bag += routeSignal.onValue { route in
-                guard let route = route else { return }
-
-                callback(.value(.right(route)))
             }
             
             let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
@@ -251,16 +229,19 @@ extension Embark: Presentable {
                 menu: Menu(
                     title: nil,
                     children: [
-                        MenuChild.embarkChild(for: .appSettings, handler: routeHandler(route: .appSettings)),
-                        MenuChild.embarkChild(for: .appInformation, handler: routeHandler(route: .appInformation)),
+                        menu,
                         Menu(
                             title: nil,
                             children: [
-                                MenuChild.embarkChild(for: .login, handler: routeHandler(route: .login)),
-                                MenuChild.embarkChild(for: .restart, handler: routeHandler(route: .restart))
+                                MenuChild(
+                                    title: L10n.embarkRestartButton,
+                                    style: .destructive,
+                                    image: hCoreUIAssets.restart.image,
+                                    handler: presentRestartAlert
+                                )
                             ]
                         )
-                    ]
+                    ].compactMap { $0 }
                 )
             )
             
@@ -300,16 +281,5 @@ extension Embark: Presentable {
 
             return bag
         })
-    }
-}
-
-private extension MenuChild {
-    static func embarkChild(for route: EmbarkMenuRoute, handler: @escaping () -> Void) -> MenuChild {
-        MenuChild(
-            title: route.title,
-            style: route.style,
-            image: route.image,
-            handler: handler
-        )
     }
 }

@@ -117,6 +117,6 @@ struct Debug: View {
                 ApolloClient.saveToken(token: self.authorizationToken)
             }))
             .navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
 }

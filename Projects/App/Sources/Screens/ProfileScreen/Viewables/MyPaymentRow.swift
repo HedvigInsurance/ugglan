@@ -18,7 +18,7 @@ extension MyPaymentRow: Viewable {
         let row = IconRow(
             title: L10n.profilePaymentRowHeader,
             subtitle: "",
-            iconAsset: Asset.paymentRowIcon,
+            iconAsset: Asset.paymentRowIcon.image,
             options: [.withArrow]
         )
 

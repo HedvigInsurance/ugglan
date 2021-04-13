@@ -6,37 +6,31 @@ import hCoreUI
 import Presentation
 import UIKit
 
-struct AboutRow {
+struct SettingsRow {
     let presentingViewController: UIViewController
+    let type: AppInfo.AppInfoType
 }
 
-extension AboutRow: Viewable {
+extension SettingsRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (IconRow, Disposable) {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: L10n.Profile.AppSettingsSection.Row.headline,
-            subtitle: L10n.Profile.AppSettingsSection.Row.subheadline,
-            iconAsset: Asset.settingsIcon,
+            title: type.title,
+            subtitle: "",
+            iconAsset: type.icon,
             options: [.withArrow]
         )
 
         bag += events.onSelect.onValue {
-            let about = About(state: .loggedIn)
+            let info = AppInfo(type: type)
             self.presentingViewController.present(
-                about,
+                info,
                 style: .default,
                 options: [.autoPop, .largeTitleDisplayMode(.never)]
             )
         }
 
         return (row, bag)
-    }
-}
-
-extension AboutRow: Previewable {
-    func preview() -> (About, PresentationOptions) {
-        let about = About(state: .loggedIn)
-        return (about, [.autoPop, .largeTitleDisplayMode(.never)])
     }
 }

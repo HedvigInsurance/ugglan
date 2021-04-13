@@ -62,9 +62,13 @@ extension AppInfoRow: Viewable {
             bag += events.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
         }
 
-        bag += value.onValue { string in
-            row.subtitle = string
+        bag += value.onValue { value in
+            row.subtitle = value
             activityIndicator.stopAnimating()
+            
+            bag += row.subtitleLabel?.copySignal.onValue { _ in
+                UIPasteboard.general.value = value
+            }
         }
 
         return (row, bag)
