@@ -137,7 +137,6 @@ extension EmbarkPlans: Presentable {
         }
 
         bag += plansSignal.atOnce().compactMap { $0 }.onValue { plans in
-
             var table = Table(
                 sections: [
                     (

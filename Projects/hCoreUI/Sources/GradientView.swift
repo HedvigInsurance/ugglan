@@ -78,7 +78,7 @@ extension GradientView: Viewable {
         bag += combineLatest(
             $shouldShowGradient.atOnce(),
             gradientView.traitCollectionSignal.atOnce(),
-            gradientView.didLayoutSignal.providedSignal.readable()
+            gradientView.signal(for: \.bounds).delay(by: 0.1).atOnce()
         )
         .onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
             let innerBag = DisposeBag()
