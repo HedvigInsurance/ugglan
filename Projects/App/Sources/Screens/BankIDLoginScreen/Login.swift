@@ -43,7 +43,7 @@ struct WebLoginFlow: Presentable {
 }
 
 extension MenuChild {
-    public static var login: MenuChild {
+    public static func login(onLogin: @escaping () -> Void) -> MenuChild {
         MenuChild(
             title: L10n.settingsLoginRow,
             style: .default,
@@ -52,7 +52,7 @@ extension MenuChild {
             viewController.present(
                 Login(),
                 style: .detented(.large)
-            )
+            ).onValue(onLogin)
         }
     }
 }

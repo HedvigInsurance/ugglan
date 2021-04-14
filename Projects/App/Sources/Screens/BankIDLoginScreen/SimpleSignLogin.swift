@@ -44,7 +44,7 @@ struct SimpleSignLoginView: Presentable {
             textField.becomeFirstResponder()
         }
 
-        bag += masking.isValidSignal(textField).bindTo(continueButton.isEnabled)
+        bag += masking.isValidSignal(textField).atOnce().bindTo(continueButton.isEnabled)
         bag += masking.applyMasking(textField)
 
         let stackView = UIStackView()

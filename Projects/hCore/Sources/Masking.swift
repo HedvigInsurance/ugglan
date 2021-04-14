@@ -49,11 +49,9 @@ public struct Masking {
     public func isValid(text: String) -> Bool {
         switch type {
         case .norwegianPersonalNumber:
-            let age = calculateAge(from: text) ?? 0
-            return text.count == 12 && 15 ... 130 ~= age
+            return text.count == 11
         case .danishPersonalNumber:
-            let age = calculateAge(from: text) ?? 0
-            return text.count == 11 && 15 ... 130 ~= age
+            return text.count == 11
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15 ... 130 ~= age
@@ -97,12 +95,10 @@ public struct Masking {
             birthDateFormatter.dateFormat = "yyyy-MM-dd"
 
             return birthDateFormatter.string(from: date)
-        case .email, .norwegianPostalCode, .digits:
+        case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber:
             return text
-        case .norwegianPersonalNumber:
-            return text.replacingOccurrences(of: " ", with: "")
         case .danishPersonalNumber:
-            return text.replacingOccurrences(of: " ", with: "")
+            return text.replacingOccurrences(of: "-", with: "")
         case .none:
             return text
         }
@@ -138,9 +134,6 @@ public struct Masking {
 
         switch type {
         case .danishPersonalNumber, .norwegianPersonalNumber:
-            if let age = calculate("ddMMyy", value: String(unmaskedValue.prefix(6))) {
-                return age
-            }
             return nil
         case .personalNumber:
             if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) {
@@ -250,7 +243,7 @@ public struct Masking {
         case .email:
             return text
         case .norwegianPersonalNumber:
-            return delimitedDigits(delimiterPositions: [7], maxCount: 12, delimiter: "-")
+            return delimitedDigits(delimiterPositions: [], maxCount: 11, delimiter: " ")
         case .danishPersonalNumber:
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none:

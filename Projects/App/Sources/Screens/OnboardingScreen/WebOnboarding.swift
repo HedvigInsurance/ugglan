@@ -31,7 +31,9 @@ extension WebOnboarding: Presentable {
                 children: [
                     MenuChild.appInformation,
                     MenuChild.appSettings,
-                    MenuChild.login
+                    MenuChild.login(onLogin: {
+                        UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+                    })
                 ]
             )
         )
