@@ -8,17 +8,20 @@ public struct ImageWithOptions {
     let image: UIImage
     let size: CGSize?
     let contentMode: UIView.ContentMode
+    let insets: UIEdgeInsets
 
     public init(image: UIImage) {
         self.image = image
         size = nil
         contentMode = .scaleAspectFit
+        insets = .zero
     }
 
-    public init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode) {
+    public init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode, insets: UIEdgeInsets? = nil) {
         self.image = image
         self.size = size
         self.contentMode = contentMode
+        self.insets = insets ?? .zero
     }
 }
 
@@ -82,7 +85,8 @@ extension ImageTextAction: Viewable {
         let headerImageContainer = UIStackView()
         headerImageContainer.axis = .horizontal
         headerImageContainer.alignment = .center
-
+        headerImageContainer.edgeInsets = image.insets
+        
         let headerImageView = UIImageView()
         headerImageView.image = image.image
         headerImageView.contentMode = .scaleAspectFit
