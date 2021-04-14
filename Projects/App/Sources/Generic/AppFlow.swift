@@ -51,6 +51,7 @@ struct EmbarkOnboardingFlow: Presentable {
     
     public func materialize() -> (UIViewController, Disposable) {
         let (viewController, signal) = EmbarkPlans(menu: menu).materialize()
+        viewController.navigationItem.largeTitleDisplayMode = .always
         let bag = DisposeBag()
 
         bag += signal.atValue { story in

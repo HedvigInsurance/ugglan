@@ -33,6 +33,7 @@ public struct Embark {
 extension Embark: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
         let viewController = UIViewController()
+        viewController.navigationItem.largeTitleDisplayMode = .never
         let bag = DisposeBag()
         
         let edgePanGestureRecognizer = UIScreenEdgePanGestureRecognizer()
@@ -313,7 +314,7 @@ extension Embark: Presentable {
                 }
             }
 
-            return bag
+            return DelayedDisposer(bag, delay: 2)
         })
     }
 }

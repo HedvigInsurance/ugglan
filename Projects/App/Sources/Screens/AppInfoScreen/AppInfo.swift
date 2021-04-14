@@ -83,25 +83,6 @@ struct AppInfo {
                 }
             }
         }
-
-        enum ButtonRow: CaseIterable {
-            case changeButton
-
-            var title: String {
-                switch self {
-                case .changeButton:
-                    return L10n.settingsChangeMarket.displayValue
-                }
-            }
-        }
-
-        func button() -> ButtonRow? {
-            if case .appSettings = self {
-                return .changeButton
-            } else {
-                return nil
-            }
-        }
     }
 
     init(type: AppInfoType) {
@@ -152,8 +133,6 @@ extension AppInfo: Presentable {
 
         form.appendSpacing(.inbetween)
 
-        let buttonsSection = form.appendSection()
-
         func value(row: AppInfoType.InfoRows) -> Future<String> {
             let innerBag = DisposeBag()
             return Future<String> { completion in
@@ -202,21 +181,28 @@ extension AppInfo: Presentable {
         }
 
         func setupAppSettings() {
-            let row = AppInfoType.InfoRows.market
-            bag += bodySection.append(
-                AppInfoRow(
-                    title: row.title,
-                    icon: row.icon,
-                    isTappable: row.isTappable,
-                    value: value(row: row)
-                )
+            let market = AppInfoType.InfoRows.market
+            
+            let marketRow = AppInfoRow(
+                title: market.title,
+                icon: market.icon,
+                trailingIcon: hCoreUIAssets.chevronRight.image,
+                value: value(row: market)
             )
+            
+            bag += bodySection.append(
+                marketRow
+            )
+            
+            bag += marketRow.onSelect.onValue {
+                presentChangeMarketAlert()
+            }
 
             let language = AppInfoType.InfoRows.language
             let languageRow = AppInfoRow(
                 title: language.title,
                 icon: language.icon,
-                isTappable: language.isTappable,
+                trailingIcon: hCoreUIAssets.external.image,
                 value: value(row: language)
             )
 
@@ -229,7 +215,7 @@ extension AppInfo: Presentable {
 
         func setupAppInfo() {
             [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version].forEach { row in
-                bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, isTappable: row.isTappable, value: value(row: row)))
+                bag += bodySection.append(AppInfoRow(title: row.title, icon: row.icon, trailingIcon: nil, value: value(row: row)))
             }
         }
 
@@ -238,22 +224,6 @@ extension AppInfo: Presentable {
             setupAppSettings()
         case .appInformation:
             setupAppInfo()
-        }
-
-        if let buttonRow = type.button() {
-            let button = ButtonRowViewWrapper(
-                title: buttonRow.title,
-                type: .standardOutline(
-                    borderColor: .brand(.primaryText()),
-                    textColor: .brand(.primaryText())
-                )
-            )
-
-            bag += buttonsSection.append(button)
-
-            bag += button.onTapSignal.onValue {
-                presentChangeMarketAlert()
-            }
         }
 
         bag += viewController.install(form)
@@ -271,7 +241,8 @@ extension MenuChild {
         ) { viewController in
             viewController.present(
                 AppInfo(type: .appInformation).withCloseButton,
-                style: .detented(.large)
+                style: .detented(.large),
+                options: [.defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true)]
             )
         }
     }
@@ -284,7 +255,8 @@ extension MenuChild {
         ) { viewController in
             viewController.present(
                 AppInfo(type: .appSettings).withCloseButton,
-                style: .detented(.large)
+                style: .detented(.large),
+                options: [.defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true)]
             )
         }
     }

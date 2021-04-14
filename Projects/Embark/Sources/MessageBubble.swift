@@ -52,7 +52,7 @@ extension MessageBubble: Viewable {
         containerView.insetsLayoutMarginsFromSafeArea = false
         containerView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 3, right: 15)
 
-        let bodyStyle = TextStyle.brand(.body(color: .primary))
+        let bodyStyle = TextStyle.brand(.body(color: messageType == .replied ? .primary(state: .positive) : .primary))
 
         let label = MarkdownTextView(
             textSignal: textSignal,
