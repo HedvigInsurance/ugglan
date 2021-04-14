@@ -148,6 +148,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        
+        bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
+            ApplicationState.setPreferredLocale(locale)
+            ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
+            
+            ApolloClient.initAndRegisterClient().always {
+                ChatState.shared = ChatState()
+                let client: ApolloClient = Dependencies.shared.resolve()
+                self.bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
+            }
+        }
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
@@ -270,22 +281,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil {
             ApplicationState.setLastNewsSeen()
-        }
-
-        // reinit Apollo client every time locale updates
-        bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
-            ApplicationState.setPreferredLocale(locale)
-            ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-
-            ApolloClient.initAndRegisterClient().always {
-                ChatState.shared = ChatState()
-                let client: ApolloClient = Dependencies.shared.resolve()
-                self.bag += client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in }
-            }
-
-            DispatchQueue.main.async {
-                UIApplication.shared.reloadAllLabels()
-            }
         }
 
         bag += ApolloClient.initAndRegisterClient()

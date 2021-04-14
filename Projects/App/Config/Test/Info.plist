@@ -14,9 +14,10 @@
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
 	<array>
-		<string>no</string>
-		<string>en</string>
 		<string>sv</string>
+		<string>en</string>
+		<string>da</string>
+		<string>nb</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
@@ -56,6 +57,8 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MixpanelToken</key>
+	<string>94a297abd45b862207a9ba3f11f6bd8c</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -92,8 +95,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>MixpanelToken</key>
-	<string>94a297abd45b862207a9ba3f11f6bd8c</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict/>

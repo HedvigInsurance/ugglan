@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import hCore
 import hGraphQL
+import UIKit
 
 public enum ExternalRedirect {
     case mailingList
@@ -10,6 +11,7 @@ public enum ExternalRedirect {
 
 public class EmbarkState {
     var store = EmbarkStore()
+    var edgePanGestureRecognizer: UIScreenEdgePanGestureRecognizer? = nil
     let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let startPassageIDSignal = ReadWriteSignal<String?>(nil)
     let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])

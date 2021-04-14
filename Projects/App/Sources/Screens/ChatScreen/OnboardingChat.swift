@@ -27,18 +27,17 @@ extension OnboardingChat: Presentable {
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
-        bag += settingsButton.onValue { _ in
-            viewController.present(
-                About(state: .onboarding).withCloseButton,
-                style: .detented(.scrollViewContentSize(20), .large),
-                options: [
-                    .allowSwipeDismissAlways,
-                    .defaults,
-                    .largeTitleDisplayMode(.always),
-                    .prefersLargeTitles(true),
+        settingsButton.attachSinglePressMenu(
+            viewController: viewController,
+            menu: Menu(
+                title: nil,
+                children: [
+                    MenuChild.appInformation,
+                    MenuChild.appSettings,
+                    MenuChild.login
                 ]
             )
-        }
+        )
 
         let restartButton = UIBarButtonItem()
         restartButton.image = Asset.restart.image

@@ -14,14 +14,20 @@ extension LanguageRow: Viewable {
         let bag = DisposeBag()
 
         let row = RowView(
-            title: L10n.MarketLanguageScreen.languageLabel,
-            subtitle: Localization.Locale.currentLocale.displayName,
+            title: "",
+            subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
                 style.title = .brand(.headline(color: .primary(state: .negative)))
                 style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
             }
         )
-        bag += Localization.Locale.$currentLocale.map { $0.displayName }.bindTo(row, \.subtitle)
+        bag += Localization.Locale.$currentLocale.atOnce().map { $0.displayName }.bindTo(row, \.subtitle)
+        
+        bag += Localization.Locale.$currentLocale.atOnce()
+            .delay(by: 0)
+            .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
+                row.title = L10n.MarketLanguageScreen.languageLabel
+        }
 
         let iconImageView = UIImageView()
         iconImageView.image = Asset.globe.image

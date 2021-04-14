@@ -7,17 +7,17 @@ import Market
 import UIKit
 
 public struct AppInfoRow {
-    public init(title: String, icon: UIImage?, isTappable: Bool, value: Future<String>) {
+    public init(title: String, icon: UIImage?, trailingIcon: UIImage?, value: Future<String>) {
         self.title = title
         self.icon = icon
-        self.isTappable = isTappable
+        self.trailingIcon = trailingIcon
         self.value = value
         onSelect = onSelectCallbacker.providedSignal
     }
 
     let title: String
     let icon: UIImage?
-    let isTappable: Bool
+    let trailingIcon: UIImage?
     let value: Future<String>
 
     private let onSelectCallbacker = Callbacker<Void>()
@@ -54,17 +54,20 @@ extension AppInfoRow: Viewable {
 
         row.setCustomSpacing(16, after: imageView)
 
-        let chevronImageView = UIImageView()
-        chevronImageView.image = hCoreUIAssets.chevronRight.image
-
-        if isTappable {
-            row.append(chevronImageView)
+        if let trailingIcon = trailingIcon {
+            let trailingImageView = UIImageView()
+            trailingImageView.image = trailingIcon
+            row.append(trailingImageView)
             bag += events.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
         }
 
-        bag += value.onValue { string in
-            row.subtitle = string
+        bag += value.onValue { value in
+            row.subtitle = value
             activityIndicator.stopAnimating()
+            
+            bag += row.subtitleLabel?.copySignal.onValue { _ in
+                UIPasteboard.general.value = value
+            }
         }
 
         return (row, bag)

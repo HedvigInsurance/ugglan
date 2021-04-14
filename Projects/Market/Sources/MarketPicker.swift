@@ -78,15 +78,28 @@ extension MarketPicker: Presentable {
         }
 
         view.addSubview(form)
+        
+        let localeUpdatedSignal = Localization.Locale.$currentLocale.atOnce().delay(by: 0)
 
         let welcomeLabel = UILabel(
-            value: L10n.MarketLanguageScreen.title,
+            value: "",
             style: .brand(.title1(color: .primary(state: .negative)))
         )
         view.addSubview(welcomeLabel)
+        
+        bag += localeUpdatedSignal.transition(style: .crossDissolve(duration: 0.25), with: welcomeLabel) { _ in
+            welcomeLabel.value = L10n.MarketLanguageScreen.title
+        }
 
-        welcomeLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        bag += welcomeLabel.traitCollectionSignal.atOnce().onValue { traitCollection in
+            welcomeLabel.snp.remakeConstraints { make in
+                if traitCollection.verticalSizeClass == .compact {
+                    make.centerX.equalToSuperview()
+                    make.top.equalToSuperview().offset(50)
+                } else {
+                    make.center.equalToSuperview()
+                }
+            }
         }
 
         form.snp.makeConstraints { make in
@@ -131,12 +144,16 @@ extension MarketPicker: Presentable {
             bag += form.append(Spacing(height: 36))
 
             let continueButton = Button(
-                title: L10n.MarketLanguageScreen.continueButtonText,
+                title: "",
                 type: .standard(backgroundColor: .white, textColor: .black)
             )
             bag += form.append(continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)) { buttonView in
                 buttonView.hero.id = "ContinueButton"
                 buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
+                
+                bag += localeUpdatedSignal.atOnce().transition(style: .crossDissolve(duration: 0.25), with: buttonView) { _ in
+                    continueButton.title.value = L10n.MarketLanguageScreen.continueButtonText
+                }
             })
 
             bag += continueButton.onTapSignal.onValue {

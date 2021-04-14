@@ -13,6 +13,7 @@ public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 
 public struct EmbarkPlans {
     @Inject var client: ApolloClient
+    let menu: Menu?
     let plansSignal = ReadWriteSignal<[GraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
     @ReadWriteState var selectedIndex = 0
 
@@ -24,7 +25,9 @@ public struct EmbarkPlans {
         }
     }
 
-    public init() {}
+    public init(menu: Menu? = nil) {
+        self.menu = menu
+    }
 }
 
 extension EmbarkPlans: Presentable {
@@ -39,6 +42,16 @@ extension EmbarkPlans: Presentable {
         }
 
         viewController.navigationItem.title = L10n.OnboardingStartpage.screenTitle
+        
+        if let menu = menu {
+            let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
+            viewController.navigationItem.rightBarButtonItem = optionsButton
+
+            bag += optionsButton.attachSinglePressMenu(
+                viewController: viewController,
+                menu: menu
+            )
+        }
 
         let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 
@@ -60,12 +73,13 @@ extension EmbarkPlans: Presentable {
         containerView.addSubview(buttonContainerView)
 
         tableKit.view.snp.makeConstraints { make in
-            make.top.trailing.leading.bottom.equalToSuperview()
+            make.top.trailing.leading.equalToSuperview()
         }
 
         buttonContainerView.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(containerView.safeAreaInsets.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
+            make.height.lessThanOrEqualTo(50)
             make.top.equalTo(tableKit.view.snp.bottom).offset(20)
         }
 
@@ -95,7 +109,9 @@ extension EmbarkPlans: Presentable {
 
             bag += buttonView.didLayoutSignal.onValue {
                 let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
-                tableKit.view.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+                let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+                tableKit.view.contentInset = inset
+                tableKit.view.scrollIndicatorInsets = inset
             }
         }
 
@@ -121,7 +137,6 @@ extension EmbarkPlans: Presentable {
         }
 
         bag += plansSignal.atOnce().compactMap { $0 }.onValue { plans in
-
             var table = Table(
                 sections: [
                     (

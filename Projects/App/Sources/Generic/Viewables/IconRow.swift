@@ -10,7 +10,7 @@ struct IconRow {
         case defaults, withArrow, disabled, hidden
     }
 
-    let iconAsset: ImageAsset
+    let iconAsset: UIImage
     let iconWidth: CGFloat
     let iconTint: UIColor?
     let title: ReadWriteSignal<DisplayableString>
@@ -23,7 +23,7 @@ struct IconRow {
     init(
         title: String,
         subtitle: String,
-        iconAsset: ImageAsset,
+        iconAsset: UIImage,
         iconWidth: CGFloat = 40,
         iconTint: UIColor? = nil,
         options: [IconRow.Options] = [.defaults]
@@ -42,7 +42,7 @@ extension IconRow: Viewable {
         let bag = DisposeBag()
 
         let rowView = RowView()
-        let icon = Icon(frame: .zero, icon: iconAsset.image, iconWidth: iconWidth)
+        let icon = Icon(frame: .zero, icon: iconAsset, iconWidth: iconWidth)
         if let iconTint = iconTint {
             icon.image.tintColor = iconTint
         }

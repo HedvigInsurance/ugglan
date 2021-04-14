@@ -30,33 +30,72 @@ public struct ApplicationState {
     }
 
     private static let preferredLocaleKey = "preferredLocale"
-
+    private static let marketKey = "market"
+    
     public static func setPreferredLocale(_ locale: Localization.Locale) {
-        UserDefaults.standard.set(locale.lprojCode, forKey: "AppleLanguage")
-        UserDefaults.standard.set(locale.rawValue, forKey: ApplicationState.preferredLocaleKey)
+        UserDefaults.standard.setValue([locale.lprojCode], forKey: "AppleLanguages")
+        setMarket(locale.market)
+    }
+
+    public static func setMarket(_ market: Localization.Locale.Market) {
+        UserDefaults.standard.set(market.rawValue, forKey: ApplicationState.marketKey)
     }
     
-    public static var hasPreferredLocale: Bool {
+    public static func getMarket() -> Localization.Locale.Market? {
+        if
+            let marketRawValue = UserDefaults.standard.value(forKey: marketKey) as? String,
+            let market = Localization.Locale.Market(rawValue: marketRawValue) {
+            return market
+        }
+        
+        return nil
+    }
+    
+    private static var hasPreferredLocale: Bool {
         UserDefaults.standard.value(forKey: preferredLocaleKey) as? String != nil
     }
-
+    
     public static var preferredLocale: Localization.Locale {
-        guard
-            let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
-            let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue)
-        else {
-            let availableLanguages = Localization.Locale.allCases.map { $0.rawValue }
+        if hasPreferredLocale {
+            if
+                let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
+                let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) {
+                setPreferredLocale(preferredLocale)
+            }
+            
+            UserDefaults.standard.removeObject(forKey: preferredLocaleKey)
+        }
+        
+        func preferredLocaleForMarket(_ market: Localization.Locale.Market) -> Localization.Locale? {
+            let availableLanguages = market.availableLocales.map { $0.rawValue }
 
             let bestMatchedLanguage = Bundle.preferredLocalizations(
                 from: availableLanguages
             ).first
 
             if let bestMatchedLanguage = bestMatchedLanguage {
-                return Localization.Locale(rawValue: bestMatchedLanguage) ?? .en_SE
+                return Localization.Locale(rawValue: bestMatchedLanguage)
             }
-            return .en_SE
+            
+            return nil
+        }
+        
+        if let market = getMarket(),
+           let locale = preferredLocaleForMarket(market) {
+            return locale
+        }
+        
+        let availableLanguages = Localization.Locale.allCases.map { $0.lprojCode }
+
+        let bestMatchedLanguage = Bundle.preferredLocalizations(
+            from: availableLanguages
+        ).first
+
+        if let bestMatchedLanguage = bestMatchedLanguage,
+           let locale = Localization.Locale(rawValue: bestMatchedLanguage) {
+            return locale
         }
 
-        return preferredLocale
+        return .en_SE
     }
 }

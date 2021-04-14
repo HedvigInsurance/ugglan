@@ -70,12 +70,14 @@ public struct ButtonRowViewWrapper {
     public let onTapSignal: Signal<Void>
     public let type: ButtonType
     public let animate: Bool
-    public let isEnabled: Bool
+    private let isEnabled: Bool
+    public let isEnabledSignal: ReadWriteSignal<Bool>
 
     public init(title: DisplayableString, type: ButtonType, isEnabled: Bool = true, animate: Bool = true) {
         self.title = title
         onTapSignal = onTapReadWriteSignal.plain()
         self.type = type
+        isEnabledSignal = ReadWriteSignal<Bool>(isEnabled)
         self.isEnabled = isEnabled
         self.animate = animate
     }
@@ -90,6 +92,8 @@ extension ButtonRowViewWrapper: Viewable {
         bag += rowView.append(button)
 
         bag += button.onTapSignal.bindTo(onTapReadWriteSignal)
+
+        bag += isEnabledSignal.bindTo(button.isEnabled)
 
         return (rowView, bag)
     }

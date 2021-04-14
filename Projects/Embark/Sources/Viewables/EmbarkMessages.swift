@@ -75,6 +75,20 @@ extension EmbarkMessages: Viewable {
         view.alignment = .top
         view.spacing = 10
         let bag = DisposeBag()
+        
+        bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue({ _ in
+            guard let viewController = view.viewController, let edgePanGestureRecognizer = state.edgePanGestureRecognizer else {
+                return
+            }
+            
+            let percentage = edgePanGestureRecognizer.translation(in: viewController.view).x / viewController.view.frame.width
+            
+            view.transform = CGAffineTransform(translationX: 0, y: (-view.frame.height * (percentage * 2.5)))
+        })
+        
+        bag += state.edgePanGestureRecognizer?.signal(forState: .ended).animated(style: .heavyBounce()) {
+            view.transform = CGAffineTransform(translationX: 0, y: 0)
+        }
 
         let previousResponseSignal: ReadWriteSignal<(
             response: GraphQL.ResponseFragment?,

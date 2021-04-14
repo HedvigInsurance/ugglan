@@ -17,7 +17,7 @@ extension MarketRow: Viewable {
     public func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
         let bag = DisposeBag()
         let row = RowView(
-            title: L10n.MarketLanguageScreen.marketLabel,
+            title: "",
             subtitle: market.title,
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
                 style.title = .brand(.headline(color: .primary(state: .negative)))
@@ -25,6 +25,12 @@ extension MarketRow: Viewable {
             }
         )
         bag += $market.map { $0.title }.bindTo(row, \.subtitle)
+        
+        bag += Localization.Locale.$currentLocale.atOnce()
+            .delay(by: 0)
+            .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
+                row.title = L10n.MarketLanguageScreen.marketLabel
+        }
 
         let flagImageView = UIImageView()
         flagImageView.image = market.icon

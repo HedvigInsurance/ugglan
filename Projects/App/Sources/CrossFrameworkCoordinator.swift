@@ -1,5 +1,7 @@
 import Apollo
 import Contracts
+import Embark
+import Flow
 import Foundation
 import hCore
 import hCoreUI
@@ -8,7 +10,6 @@ import Market
 import Mixpanel
 import Payment
 import UIKit
-import Embark
 
 struct CrossFrameworkCoordinator {
     static func setup() {
@@ -16,7 +17,7 @@ struct CrossFrameworkCoordinator {
             let properties = event.properties as? Properties
             Mixpanel.mainInstance().track(event: event.title, properties: properties)
         }
-        
+
         Button.trackingHandler = { button in
             if let localizationKey = button.title.value.displayValue.derivedFromL10n?.key {
                 Mixpanel.mainInstance().track(event: localizationKey, properties: [
@@ -104,8 +105,10 @@ struct CrossFrameworkCoordinator {
         CrossFramework.presentLogin = { viewController in
             viewController.present(
                 Login(),
-                options: [.defaults, .allowSwipeDismissAlways]
-            )
+                options: [.defaults, .allowSwipeDismissAlways, .autoPop]
+            ).onValue {
+                UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+            }
         }
 
         CrossFramework.onRequestLogout = {

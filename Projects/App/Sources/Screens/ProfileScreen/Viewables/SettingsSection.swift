@@ -16,13 +16,17 @@ extension SettingsSection: Viewable {
             footer: nil
         )
 
-        let aboutRow = AboutRow(presentingViewController: presentingViewController)
-        bag += section.append(aboutRow) { row in
-            bag += self.presentingViewController.registerForPreviewing(
-                sourceView: row.viewRepresentation,
-                previewable: aboutRow
-            )
-        }
+        let appInformationRow = SettingsRow(
+            presentingViewController: presentingViewController,
+            type: .appInformation
+        )
+        bag += section.append(appInformationRow)
+        
+        let appSettingsRow = SettingsRow(
+            presentingViewController: presentingViewController,
+            type: .appSettings
+        )
+        bag += section.append(appSettingsRow)
 
         let logoutRow = LogoutRow(presentingViewController: presentingViewController)
         bag += section.append(logoutRow)

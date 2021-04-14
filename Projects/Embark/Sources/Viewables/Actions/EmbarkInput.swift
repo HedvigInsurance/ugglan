@@ -15,7 +15,7 @@ struct EmbarkInput {
     let enabledSignal: ReadWriteSignal<Bool>
     let shouldReturn = Delegate<String, Bool>()
     let insets: UIEdgeInsets
-    let masking: Masking?
+    let masking: Masking
     let shouldAutoFocus: Bool
     let fieldStyle: FieldStyle
     let shouldAutoSize: Bool
@@ -29,7 +29,7 @@ struct EmbarkInput {
         autocapitalisationType: UITextAutocapitalizationType,
         insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
         enabled: Bool = true,
-        masking: Masking? = nil,
+        masking: Masking = Masking(type: .none),
         shouldAutoFocus: Bool = true,
         fieldStyle: FieldStyle = .embarkInputLarge,
         shouldAutoSize: Bool = false,
@@ -118,14 +118,7 @@ extension EmbarkInput: Viewable {
             textField.becomeFirstResponder()
         }
 
-        var oldText = ""
-        bag += textField.distinct().onValue { textValue in
-            if let mask = self.masking {
-                let maskedValue = mask.maskValue(text: textValue, previousText: oldText)
-                textField.value = maskedValue
-                oldText = maskedValue
-            }
-        }
+        bag += masking.applyMasking(textField)
 
         bag += textField.shouldReturn.set { value -> Bool in
             self.shouldReturn.call(value) ?? false

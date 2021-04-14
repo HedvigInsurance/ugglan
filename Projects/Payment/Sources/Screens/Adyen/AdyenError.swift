@@ -22,7 +22,12 @@ extension AdyenError: Presentable {
         )
 
         let didFailAction = ImageTextAction<Bool>(
-            image: .init(image: hCoreUIAssets.warningTriangle.image, size: CGSize(width: 32, height: 32), contentMode: .scaleAspectFit),
+            image: .init(
+                image: hCoreUIAssets.warningTriangle.image,
+                size: CGSize(width: 32, height: 32),
+                contentMode: .scaleAspectFit,
+                insets: UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
+            ),
             title: L10n.PayInError.headline,
             body: L10n.PayInError.body,
             actions: [

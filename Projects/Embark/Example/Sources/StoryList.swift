@@ -29,7 +29,7 @@ extension StoryList: Presentable {
                 options: [.defaults, .largeTitleDisplayMode(.never)]
             ).onValueDisposePrevious { story in
                 viewController.present(
-                    Embark(name: story.name, flowType: .onboarding),
+                    Embark(name: story.name),
                     options: [.defaults, .autoPop]
                 ).nil()
             }
@@ -40,7 +40,7 @@ extension StoryList: Presentable {
 
         bag += tableKit.delegate.didSelectRow.onValue { storyName in
             bag += viewController.present(
-                Embark(name: storyName.value, flowType: .onboarding),
+                Embark(name: storyName.value),
                 options: [.defaults, .largeTitleDisplayMode(.never), .autoPop]
             )
         }
