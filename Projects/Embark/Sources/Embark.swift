@@ -43,11 +43,25 @@ extension Embark: Presentable {
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
         let form = FormView()
-        form.dynamicStyle = DynamicFormStyle.default.restyled { (style: inout FormStyle) in
-            style.insets = .zero
-        }
+
         bag += viewController.install(form, options: [], scrollView: scrollView) { scrollView in
             scrollView.alwaysBounceVertical = false
+
+            bag += combineLatest(
+                scrollView.traitCollectionSignal.atOnce(),
+                scrollView.signal(for: \.contentSize).atOnce()
+            ).onValue { _, _ in
+                form.applyStyle(
+                    .init(insets:
+                        .init(
+                            top: 0,
+                            left: 0,
+                            bottom: scrollView.isScrollEnabled ? 16 : 0,
+                            right: 0
+                        )
+                    )
+                )
+            }
         }
 
         let titleHedvigLogo = UIImageView()
@@ -279,7 +293,7 @@ extension Embark: Presentable {
                     ].compactMap { $0 }
                 )
             )
-            
+
             let tooltipButton = UIButton()
             tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
 
@@ -298,7 +312,7 @@ extension Embark: Presentable {
                         ]
                     )
                 }
-            
+
             viewController.navigationItem.setRightBarButtonItems([optionsButton, UIBarButtonItem(button: tooltipButton)], animated: false)
 
             bag += state.passageTooltipsSignal.atOnce()
