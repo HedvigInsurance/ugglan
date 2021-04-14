@@ -100,20 +100,29 @@ extension EmbarkMessages: Viewable {
 
         let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
             if self.state.animationDirectionSignal.value == .forwards {
+                let passageName = previousResponse?.passageName ?? ""
+                let autoResponseKey = "\(passageName)Result"
+                
                 if let singleMessage = previousResponse?.response?.asEmbarkMessage {
                     let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
                     let responseText = self.replacePlaceholders(message: msgText ?? "")
-                    let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
-                    bag += view.addArranged(messageBubble)
+                    
+                    if responseText != autoResponseKey {
+                        let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
+                        bag += view.addArranged(messageBubble)
+                    }
                 } else if let embarkResponseExpression = previousResponse?.response?.asEmbarkResponseExpression {
                     let msgText = self.parse(embarkResponseExpression.expressions.map { $0.fragments.expressionFragment })
                     let responseText = self.replacePlaceholders(message: msgText ?? embarkResponseExpression.text)
                     let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                     bag += view.addArranged(messageBubble)
-                } else if let passageName = previousResponse?.passageName {
-                    let responseText = self.replacePlaceholders(message: "{\(passageName)Result}")
-                    let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
-                    bag += view.addArranged(messageBubble)
+                } else {
+                    let responseText = self.replacePlaceholders(message: "{\(autoResponseKey)}")
+                    
+                    if responseText != autoResponseKey {
+                        let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
+                        bag += view.addArranged(messageBubble)
+                    }
                 }
             }
             previousResponseSignal.value = (responseDataSignal.value, self.state.passageNameSignal.value)
