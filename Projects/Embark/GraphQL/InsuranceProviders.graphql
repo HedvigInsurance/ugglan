@@ -2,9 +2,6 @@ fragment InsuranceProviderFragment on InsuranceProvider {
     name
     externalCollectionId
     hasExternalCapabilities
-    logo {
-        ...IconFragment
-    }
 }
 
 query InsuranceProviders($locale: Locale!) {

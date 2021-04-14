@@ -140,7 +140,12 @@ extension InsuranceProviderAction: Viewable {
                 .valueSignal
                 .compactMap { $0.insuranceProviders }
                 .onValue { providers in
-                    let providers = providers.map { $0.fragments.insuranceProviderFragment }
+                    let providers = [
+                        providers.map { $0.fragments.insuranceProviderFragment },
+                        [
+                            .init(name: L10n.externalInsuranceProviderOtherOption, hasExternalCapabilities: false)
+                        ]
+                    ].flatMap { $0 }
                                         
                     let dataSource = InsuranceProviderPickerDataSource(providers: providers)
                     bag.hold(dataSource)
@@ -183,9 +188,30 @@ extension InsuranceProviderAction: Viewable {
                             value: provider.name
                         )
                     }
+                    
+                    if provider.name != L10n.externalInsuranceProviderOtherOption {
+                        self.state.store.setValue(key: self.data.key, value: provider.name)
+                        callback(self.data.embarkLinkFragment)
+                    } else {
+                        outerContainer.viewController?.present(
+                            Alert(
+                                title: L10n.externalInsuranceProviderAlertTitle,
+                                message: L10n.externalInsuranceProviderAlertMessage,
+                                actions: [
+                                    Alert.Action(
+                                        title: L10n.alertOk,
+                                        action: {
+                                            return true
+                                        }
+                                    )
+                                ]
+                            )
+                        ).onValue { _ in
+                            callback(self.data.embarkLinkFragment)
+                        }
+                    }
 
-                    self.state.store.setValue(key: self.data.key, value: provider.name)
-                    callback(self.data.embarkLinkFragment)
+                    
             }
             
             bag += outerContainer.addArranged(button)
