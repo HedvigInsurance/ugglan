@@ -49,11 +49,9 @@ public struct Masking {
     public func isValid(text: String) -> Bool {
         switch type {
         case .norwegianPersonalNumber:
-            let age = calculateAge(from: text) ?? 0
-            return text.count == 11 && 15 ... 130 ~= age
+            return text.count == 11
         case .danishPersonalNumber:
-            let age = calculateAge(from: text) ?? 0
-            return text.count == 11 && 15 ... 130 ~= age
+            return text.count == 11
         case .personalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count > 10 && 15 ... 130 ~= age
@@ -118,8 +116,6 @@ public struct Masking {
 
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = format
-            let oneCenturyAgo = Calendar.current.date(byAdding: .year, value: -100, to: Dat)
-            dateFormatter.twoDigitStartDate = oneCenturyAgo
 
             guard let dateOfBirth = dateFormatter.date(from: value) else {
                 return nil
@@ -138,9 +134,6 @@ public struct Masking {
 
         switch type {
         case .danishPersonalNumber, .norwegianPersonalNumber:
-            if let age = calculate("ddMMyy", value: String(unmaskedValue.prefix(6))) {
-                return age
-            }
             return nil
         case .personalNumber:
             if let age = calculate("yyMMdd", value: String(unmaskedValue.prefix(6))) {
