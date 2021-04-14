@@ -50,7 +50,7 @@ public struct Masking {
         switch type {
         case .norwegianPersonalNumber:
             let age = calculateAge(from: text) ?? 0
-            return text.count == 10 && 15 ... 130 ~= age
+            return text.count == 11 && 15 ... 130 ~= age
         case .danishPersonalNumber:
             let age = calculateAge(from: text) ?? 0
             return text.count == 11 && 15 ... 130 ~= age
@@ -118,6 +118,8 @@ public struct Masking {
 
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = format
+            let oneCenturyAgo = Calendar.current.date(byAdding: .year, value: -100, to: Dat)
+            dateFormatter.twoDigitStartDate = oneCenturyAgo
 
             guard let dateOfBirth = dateFormatter.date(from: value) else {
                 return nil
@@ -248,7 +250,7 @@ public struct Masking {
         case .email:
             return text
         case .norwegianPersonalNumber:
-            return delimitedDigits(delimiterPositions: [], maxCount: 10, delimiter: " ")
+            return delimitedDigits(delimiterPositions: [], maxCount: 11, delimiter: " ")
         case .danishPersonalNumber:
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none:
