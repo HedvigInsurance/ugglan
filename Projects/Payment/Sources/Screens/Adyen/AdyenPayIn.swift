@@ -27,6 +27,7 @@ extension AdyenMethodsList {
 
 struct AdyenPayIn: Presentable {
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -66,6 +67,10 @@ struct AdyenPayIn: Presentable {
                 }
             }
         } onSuccess: {
+            store.update(query: GraphQL.PayInMethodStatusQuery()) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+                data.payinMethodStatus = .active
+            }
+            
             // refetch to refresh UI
             Future()
                 .delay(by: 0.5)
