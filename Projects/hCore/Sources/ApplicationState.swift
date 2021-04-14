@@ -61,9 +61,9 @@ public struct ApplicationState {
                 let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey) as? String,
                 let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) {
                 setPreferredLocale(preferredLocale)
+                UserDefaults.standard.removeObject(forKey: preferredLocaleKey)
+                return preferredLocale
             }
-            
-            UserDefaults.standard.removeObject(forKey: preferredLocaleKey)
         }
         
         func preferredLocaleForMarket(_ market: Localization.Locale.Market) -> Localization.Locale? {
