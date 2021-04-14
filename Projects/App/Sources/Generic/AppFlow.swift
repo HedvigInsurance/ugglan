@@ -38,26 +38,26 @@ struct WebOnboardingFlow: Presentable {
 }
 
 struct EmbarkOnboardingFlow: Presentable {
-    private var menu: Menu {
-        Menu(
-            title: nil,
-            children: [
-                MenuChild.appInformation,
-                MenuChild.appSettings,
-                MenuChild.login
-            ]
-        )
-    }
-    
     public func materialize() -> (UIViewController, Disposable) {
-        let (viewController, signal) = EmbarkPlans(menu: menu).materialize()
+        let menuChildren: [MenuChildable] = [
+            MenuChild.appInformation,
+            MenuChild.appSettings,
+            MenuChild.login(onLogin: {
+                UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+            })
+        ]
+        
+        let (viewController, signal) = EmbarkPlans(menu: Menu(title: nil, children: menuChildren)).materialize()
         viewController.navigationItem.largeTitleDisplayMode = .always
         let bag = DisposeBag()
 
         bag += signal.atValue { story in
             let embark = Embark(
                 name: story.name,
-                menu: menu
+                menu: Menu(
+                    title: nil,
+                    children: menuChildren
+                )
             )
 
             bag += viewController
