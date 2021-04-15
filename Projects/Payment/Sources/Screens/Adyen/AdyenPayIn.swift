@@ -67,8 +67,10 @@ struct AdyenPayIn: Presentable {
                 }
             }
         } onSuccess: {
-            store.update(query: GraphQL.PayInMethodStatusQuery()) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
-                data.payinMethodStatus = .active
+            store.withinReadWriteTransaction { transaction in
+                try? transaction.update(query: GraphQL.PayInMethodStatusQuery(), { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+                    data.payinMethodStatus = .active
+                })
             }
             
             // refetch to refresh UI

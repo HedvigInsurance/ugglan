@@ -14,7 +14,8 @@ extension Onboarding: Presentable {
         case .se:
             return OnboardingChat().materialize()
         case .dk:
-            return WebOnboardingFlow().materialize()
+            let (viewController, signal) = WebOnboardingFlow(webScreen: .webOnboarding).materialize()
+            return (viewController, signal.nil())
         case .no:
             return EmbarkOnboardingFlow().materialize()
         }
