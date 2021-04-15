@@ -24,16 +24,24 @@ public struct AppFlow {
 }
 
 struct WebOnboardingFlow: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
-        let (viewController, signal) = WebOnboarding(webScreen: .webOnboarding).materialize()
+    let webScreen: WebOnboardingScreen
+    
+    public func materialize() -> (UIViewController, Signal<Void>) {
+        let (viewController, signal) = WebOnboarding(webScreen: webScreen).materialize()
 
         let bag = DisposeBag()
 
-        bag += signal.onValue { _ in
-            bag += viewController.present(PostOnboarding())
-        }
-
-        return (viewController, bag)
+        return (viewController, Signal { callback in
+            bag += signal.onValue { _ in
+                bag += viewController.present(
+                    PostOnboarding(),
+                    style: .detented(.large),
+                    options: [.prefersNavigationBarHidden(true)]
+                ).onValue(callback)
+            }
+            
+            return bag
+        })
     }
 }
 
@@ -69,15 +77,13 @@ struct EmbarkOnboardingFlow: Presentable {
                     case .mailingList:
                         break
                     case let .offer(ids):
-                        let webOnboardingSignal = viewController.present(WebOnboarding(webScreen: .webOffer(ids: ids)))
+                        let webOnboardingSignal = viewController.present(WebOnboardingFlow(webScreen: .webOffer(ids: ids)))
                         
                         bag += webOnboardingSignal.onEnd({
                             embark.goBack()
                         })
                         
-                        bag += webOnboardingSignal.onValue { result in
-                            bag += viewController.present(PostOnboarding())
-                        }
+                        bag += webOnboardingSignal.nil()
                     }
                 }
         }
