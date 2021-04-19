@@ -143,6 +143,10 @@ platform :ios do
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Embark/Embark.xcodeproj"
             },
+            "OfferExample" => {
+                "identifier" => "com.hedvig.example.*",
+                "project_path" => "Projects/Offer/Offer.xcodeproj"
+            },
             "Ugglan" => {
                 "identifier" => "com.hedvig.test.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
