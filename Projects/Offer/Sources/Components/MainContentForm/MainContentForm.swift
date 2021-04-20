@@ -46,18 +46,27 @@ extension MainContentForm: Presentable {
             form.traitCollectionSignal.plain().toVoid(),
             container.signal(for: \.bounds).plain().toVoid()
         ).onValue({ _ in
+            let bottomContentInset = scrollView.safeAreaInsets.bottom + 20
+            
             if container.frame.width > Header.trailingAlignmentBreakpoint {
                 form.snp.remakeConstraints { make in
                     make.width.equalTo(container.frame.width - (container.frame.width * Header.trailingAlignmentFormPercentageWidth))
                 }
                 
                 let pointInScrollView = scrollView.convert(form.frameWithoutTransform, from: container)
-                form.transform = CGAffineTransform(translationX: 0, y: -(pointInScrollView.origin.y - scrollView.safeAreaInsets.top - Header.insetTop))
+                let transformY = -(pointInScrollView.origin.y - scrollView.safeAreaInsets.top - Header.insetTop)
+                let contentInsetBottom = -(pointInScrollView.origin.y + scrollView.safeAreaInsets.top + Header.insetTop - bottomContentInset)
+                
+                form.transform = CGAffineTransform(translationX: 0, y: transformY)
+                scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
             } else {
                 form.snp.remakeConstraints { make in
                     make.width.equalToSuperview()
                 }
                 form.transform = CGAffineTransform.identity
+                scrollView.scrollIndicatorInsets = .zero
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomContentInset, right: 0)
             }
         })
                 
