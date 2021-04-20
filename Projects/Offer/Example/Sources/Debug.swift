@@ -39,15 +39,18 @@ extension Debug: Presentable {
             })
 
             viewController.present(
-                Offer(ids: []),
+                Offer(ids: []).withCloseButton,
                 style: .detented(.large),
-                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                options: [.defaults]
             )
         }
 
-
-        bag += section.appendRow(title: "Test").onValue {
+        bag += section.appendRow(title: "Swedish apartment").onValue {
             presentOffer(.makeSwedishApartment())
+        }
+        
+        bag += section.appendRow(title: "Norwegian bundle").onValue {
+            presentOffer(.makeNorwegianBundle())
         }
 
         bag += viewController.install(form)

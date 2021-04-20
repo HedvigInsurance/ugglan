@@ -251,11 +251,11 @@ public extension DynamicSectionStyle {
     }
 
     enum SeparatorType {
-        case largeIcons, standard, none
+        case largeIcons, standard, none, custom(_ left: CGFloat)
 
         var color: UIColor {
             switch self {
-            case .largeIcons, .standard:
+            case .largeIcons, .standard, .custom:
                 return UIColor.brand(.primaryBorderColor)
             case .none:
                 return UIColor.clear
@@ -270,6 +270,8 @@ public extension DynamicSectionStyle {
                 return 15
             case .none:
                 return 0
+            case let .custom(left):
+                return left
             }
         }
     }
@@ -342,7 +344,7 @@ public extension DynamicSectionStyle {
         }
     }
 
-    static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear) -> DynamicSectionStyle {
+    static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear, backgroundColor: UIColor = .clear) -> DynamicSectionStyle {
         DynamicSectionStyle { trait -> SectionStyle in
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
             let isPad = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
@@ -354,7 +356,7 @@ public extension DynamicSectionStyle {
                 background: .init(style:
                     .init(
                         background: .init(
-                            color: .clear,
+                            color: backgroundColor,
                             border: .init(
                                 width: 1 / UIScreen.main.scale,
                                 color: borderColor,

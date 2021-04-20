@@ -4,9 +4,18 @@ import UIKit
 
 public extension GradientView {
     struct GradientOption {
-        public init(preset: GradientView.Preset) {
+        public init(
+            preset: GradientView.Preset,
+            shouldShimmer: Bool = true,
+            shouldAnimate: Bool = true
+        ) {
             self.preset = preset
+            self.shouldShimmer = shouldShimmer
+            self.shouldAnimate = shouldAnimate
         }
+        
+        public let shouldShimmer: Bool
+        public let shouldAnimate: Bool
 
         public let preset: Preset
 
