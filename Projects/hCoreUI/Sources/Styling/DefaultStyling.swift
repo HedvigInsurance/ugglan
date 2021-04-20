@@ -344,7 +344,12 @@ public extension DynamicSectionStyle {
         }
     }
 
-    static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear, backgroundColor: UIColor = .clear) -> DynamicSectionStyle {
+    static func brandGrouped(
+        separatorType: SeparatorType,
+        borderColor: UIColor = .clear,
+        backgroundColor: UIColor = .clear,
+        padCornerRadius: CGFloat = .defaultCornerRadius
+    ) -> DynamicSectionStyle {
         DynamicSectionStyle { trait -> SectionStyle in
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
             let isPad = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
@@ -360,7 +365,7 @@ public extension DynamicSectionStyle {
                             border: .init(
                                 width: 1 / UIScreen.main.scale,
                                 color: borderColor,
-                                cornerRadius: isPad ? 8 : 0,
+                                cornerRadius: isPad ? padCornerRadius : 0,
                                 borderEdges: .all
                             )
                         ),
@@ -387,7 +392,7 @@ public extension DynamicSectionStyle {
                             border: .init(
                                 width: 1 / UIScreen.main.scale,
                                 color: borderColor,
-                                cornerRadius: isPad ? 8 : 0,
+                                cornerRadius: isPad ? padCornerRadius : 0,
                                 borderEdges: .all
                             )
                         ),

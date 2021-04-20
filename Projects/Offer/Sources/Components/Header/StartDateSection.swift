@@ -21,7 +21,7 @@ struct StartDateSection {
 extension StartDateSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView()
-        section.dynamicStyle = .brandGrouped(separatorType: .custom(55))
+        section.dynamicStyle = .brandGrouped(separatorType: .custom(55), padCornerRadius: 0)
         let bag = DisposeBag()
         
         func appendRow() {

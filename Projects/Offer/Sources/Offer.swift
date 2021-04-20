@@ -28,6 +28,24 @@ struct OfferState {
     }
 }
 
+class GreedyScrollView: UIStackView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if !self.clipsToBounds && !self.isHidden && self.alpha > 0.0 {
+            let subviews = self.subviews.reversed()
+            for member in subviews {
+                let subPoint = member.convert(point, from: self)
+                if let result: UIView = member.hitTest(subPoint, with:event) {
+                    return result
+                }
+            }
+        }
+        return super.hitTest(point, with: event)
+    }
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        return super.point(inside: point, with: event)
+    }
+}
+
 extension Offer: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
@@ -60,23 +78,15 @@ extension Offer: Presentable {
         scrollView.contentInsetAdjustmentBehavior = .never
         
         let form = FormView()
-        bag += viewController.install(form, scrollView: scrollView)
-        
-        bag += form.append(Header(scrollView: scrollView), options: [.autoRemove])
-        
-        let section = form.appendSection()
-        section.dynamicStyle = .brandGrouped(separatorType: .standard, backgroundColor: .brand(.primaryBackground()))
-        
-        for _ in 0...100 {
-            section.appendRow(title: "test")
+        form.allowTouchesOfViewsOutsideBounds = true
+        form.dynamicStyle = DynamicFormStyle { _ in
+            .init(insets: .zero)
         }
         
-        let firstNameLabel = UILabel(value: "", style: .default)
-        form.append(firstNameLabel)
+        bag += viewController.install(form, scrollView: scrollView)
         
-        bag += client.fetch(query: GraphQL.QuoteBundleQuery(ids: ids)).onValue({ result in
-            firstNameLabel.value = result.quoteBundle.quotes.first?.firstName ?? ""
-        })
+        bag += form.append(Header(scrollView: scrollView))
+        bag += form.append(MainContentForm(scrollView: scrollView))
         
         let navigationBarBackgroundView = UIView()
         navigationBarBackgroundView.backgroundColor = .brand(.secondaryBackground())

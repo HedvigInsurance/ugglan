@@ -31,6 +31,10 @@ extension Debug: Presentable {
 
         let section = form.appendSection(headerView: UILabel(value: "Offer", style: .default), footerView: nil)
         
+        let presentFullScreenRow = section.appendRow(title: "Present in full screen")
+        let presentFullScreenSwitch = UISwitch()
+        presentFullScreenRow.append(presentFullScreenSwitch)
+        
         func presentOffer(_ body: JSONObject) {
             let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body), store: ApolloStore())
 
@@ -40,7 +44,7 @@ extension Debug: Presentable {
 
             viewController.present(
                 Offer(ids: []).withCloseButton,
-                style: .detented(.large),
+                style: presentFullScreenSwitch.isOn ? .modally(presentationStyle: .fullScreen, transitionStyle: nil, capturesStatusBarAppearance: nil) : .detented(.large),
                 options: [.defaults]
             )
         }

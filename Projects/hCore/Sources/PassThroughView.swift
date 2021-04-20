@@ -12,3 +12,15 @@ public class PassTroughView: UIView {
         return hitView
     }
 }
+
+public class PassTroughStackView: UIStackView {
+    override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, with: event)
+
+        if hitView == self {
+            return nil
+        }
+
+        return hitView
+    }
+}

@@ -28,6 +28,7 @@ extension GradientView: Viewable {
         layer.startPoint = gradientOption.startPoint
         layer.endPoint = gradientOption.endPoint
         layer.transform = gradientOption.transform
+        layer.masksToBounds = true
         return layer
     }
 

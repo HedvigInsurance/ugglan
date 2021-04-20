@@ -16,16 +16,21 @@ import Presentation
 
 struct Header {
     let scrollView: UIScrollView
+    static let trailingAlignmentBreakpoint: CGFloat = 800
+    static let trailingAlignmentFormPercentageWidth: CGFloat = 0.40
+    static let insetTop: CGFloat = 30
 }
 
 extension Header: Presentable {
     func materialize() -> (UIStackView, Disposable) {
         let view = UIStackView()
+        view.allowTouchesOfViewsOutsideBounds = true
+        view.axis = .vertical
         let bag = DisposeBag()
         
         bag += view.didLayoutSignal.onValue {
             let safeAreaInsetTop = view.viewController?.view.safeAreaInsets.top ?? 0
-            view.edgeInsets = UIEdgeInsets(top: safeAreaInsetTop + 70, left: 15, bottom: 60, right: 15)
+            view.edgeInsets = UIEdgeInsets(top: safeAreaInsetTop + Self.insetTop, left: 15, bottom: 60, right: 15)
         }
         
         bag += view.add(GradientView(
@@ -36,6 +41,7 @@ extension Header: Presentable {
             ),
             shouldShowGradientSignal: .init(true)
         )) { headerBackgroundView in
+            headerBackgroundView.layer.masksToBounds = true
             headerBackgroundView.layer.zPosition = -1
             headerBackgroundView.snp.makeConstraints { make in
                 make.center.equalToSuperview()
@@ -61,8 +67,31 @@ extension Header: Presentable {
             }
         }
         
-        bag += view.addArrangedSubview(HeaderForm())
+        let formContainer = UIStackView()
+        formContainer.axis = .vertical
+        formContainer.alignment = .trailing
+        view.addArrangedSubview(formContainer)
         
+        bag += formContainer.addArrangedSubview(HeaderForm()) { form, _ in
+            bag += formContainer.didLayoutSignal.onValue { _ in
+                form.snp.remakeConstraints { make in
+                    if formContainer.frame.width > Self.trailingAlignmentBreakpoint {
+                        make.width.equalTo(formContainer.frame.width * Self.trailingAlignmentFormPercentageWidth)
+                    } else {
+                        make.width.equalToSuperview()
+                    }
+                }
+            }
+            
+            bag += scrollView.signal(for: \.contentOffset).atOnce().onValue({ contentOffset in
+                if formContainer.frame.width > Self.trailingAlignmentBreakpoint {
+                    formContainer.transform = CGAffineTransform(translationX: 0, y: contentOffset.y)
+                } else {
+                    formContainer.transform = CGAffineTransform.identity
+                }
+            })
+        }
+                
         return (view, bag)
     }
 }
