@@ -28,24 +28,6 @@ struct OfferState {
     }
 }
 
-class GreedyScrollView: UIStackView {
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if !self.clipsToBounds && !self.isHidden && self.alpha > 0.0 {
-            let subviews = self.subviews.reversed()
-            for member in subviews {
-                let subPoint = member.convert(point, from: self)
-                if let result: UIView = member.hitTest(subPoint, with:event) {
-                    return result
-                }
-            }
-        }
-        return super.hitTest(point, with: event)
-    }
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return super.point(inside: point, with: event)
-    }
-}
-
 extension Offer: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
