@@ -15,13 +15,7 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        quoteDetails: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.QuoteDetail.makeSwedishApartmentQuoteDetails(
-                            street: "Lilla gatan 12",
-                            zipCode: "12345",
-                            householdSize: 200,
-                            livingSpace: 20,
-                            swedishApartmentType: .rent
-                        )
+                        detailsTable: generateDetailsTable()
                     )
                 ],
                 bundleCost: .init(

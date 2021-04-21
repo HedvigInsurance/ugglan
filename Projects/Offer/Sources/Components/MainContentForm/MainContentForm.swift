@@ -40,18 +40,7 @@ extension MainContentForm: Presentable {
         form.backgroundColor = .brand(.secondaryBackground())
         formContainer.addArrangedSubview(form)
         
-        let section = form.appendSection()
-        section.dynamicStyle = .brandGrouped(
-            separatorType: .standard,
-            backgroundColor: .clear,
-            shouldRoundCorners: { _ in false }
-        )
-        
-        for _ in 0...100 {
-            bag += section.appendRow(title: "test").onValue { _ in
-                
-            }
-        }
+        bag += form.append(DetailsSection())
         
         bag += merge(
             scrollView.didLayoutSignal,

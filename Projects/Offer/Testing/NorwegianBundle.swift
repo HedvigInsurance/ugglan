@@ -5,6 +5,14 @@ import hGraphQL
 import Offer
 import TestingUtil
 
+func generateDetailsTable() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable] {
+    return [
+        .init(label: "Street", value: "An address"),
+        .init(label: "Postal code", value: "111 44"),
+        .init(label: "Co-insured", value: "You + 2")
+    ]
+}
+
 public extension JSONObject {
     static func makeNorwegianBundle() -> JSONObject {
         GraphQL.QuoteBundleQuery.Data.init(
@@ -15,24 +23,16 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        quoteDetails: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.QuoteDetail.makeNorwegianHomeContentsDetails(
-                            street: "Guleböjs vegen 12",
-                            zipCode: "11111",
-                            coInsured: 2,
-                            livingSpace: 100,
-                            isYouth: false,
-                            norwegianHomeType: .own
-                        )
+                        detailsTable: generateDetailsTable()
                     ),
                     .init(
                         id: "123",
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        quoteDetails: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.QuoteDetail.makeNorwegianTravelDetails(
-                            coInsured: 2,
-                            isYouth: false
-                        )
+                        detailsTable: [
+                            .init(label: "Co-insured", value: "You + 2")
+                        ]
                     )
                 ],
                 bundleCost: .init(

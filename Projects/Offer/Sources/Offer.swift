@@ -26,6 +26,10 @@ struct OfferState {
     var dataSignal: CoreSignal<Plain, GraphQL.QuoteBundleQuery.Data> {
         return client.watch(query: GraphQL.QuoteBundleQuery(ids: ids))
     }
+    
+    var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {
+        return dataSignal.map { $0.quoteBundle.quotes }
+    }
 }
 
 extension Offer: Presentable {
