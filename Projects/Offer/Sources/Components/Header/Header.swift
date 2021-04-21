@@ -78,7 +78,7 @@ extension Header: Presentable {
             bag += merge(
                 formContainer.didLayoutSignal,
                 view.didLayoutSignal
-            ).onValue { _ in
+            ).onValue {
                 form.snp.remakeConstraints { make in
                     if view.frame.width > Self.trailingAlignmentBreakpoint {
                         make.width.equalTo(view.frame.width * Self.trailingAlignmentFormPercentageWidth - max(view.safeAreaInsets.right, 15))
@@ -88,13 +88,13 @@ extension Header: Presentable {
                 }
             }
             
-            bag += scrollView.signal(for: \.contentOffset).atOnce().onValue({ contentOffset in
+            bag += scrollView.signal(for: \.contentOffset).atOnce().onValue { contentOffset in
                 if view.frame.width > Self.trailingAlignmentBreakpoint {
                     formContainer.transform = CGAffineTransform(translationX: 0, y: contentOffset.y)
                 } else {
                     formContainer.transform = CGAffineTransform.identity
                 }
-            })
+            }
         }
                 
         return (view, bag)

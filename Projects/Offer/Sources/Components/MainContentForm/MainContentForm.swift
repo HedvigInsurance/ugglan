@@ -54,10 +54,11 @@ extension MainContentForm: Presentable {
         }
         
         bag += merge(
+            scrollView.didLayoutSignal,
+            container.didLayoutSignal,
             formContainer.didLayoutSignal,
-            formContainer.traitCollectionSignal.plain().toVoid(),
-            container.signal(for: \.bounds).plain().toVoid()
-        ).onValue({ _ in
+            form.didLayoutSignal
+        ).onValue {
             let bottomContentInset = scrollView.safeAreaInsets.bottom + 20
             
             if container.frame.width > Header.trailingAlignmentBreakpoint {
@@ -83,7 +84,9 @@ extension MainContentForm: Presentable {
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: -bottomContentInset, right: 0)
                 formContainer.layoutMargins = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
             }
-        })
+            
+            scrollView.layoutIfNeeded()
+        }
                 
         return (container, bag)
     }
