@@ -26,9 +26,6 @@ extension MainContentForm: Presentable {
         container.allowTouchesOfViewsOutsideBounds = true
         
         let form = FormView()
-        form.dynamicStyle = DynamicFormStyle { _ in
-            .init(insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15))
-        }
         container.addArrangedSubview(form)
         let bag = DisposeBag()
         
@@ -60,13 +57,20 @@ extension MainContentForm: Presentable {
                 form.transform = CGAffineTransform(translationX: 0, y: transformY)
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
+                
+                form.dynamicStyle = DynamicFormStyle { _ in
+                    .init(insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15))
+                }
             } else {
                 form.snp.remakeConstraints { make in
                     make.width.equalToSuperview()
                 }
                 form.transform = CGAffineTransform.identity
                 scrollView.scrollIndicatorInsets = .zero
-                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomContentInset, right: 0)
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: -bottomContentInset, right: 0)
+                form.dynamicStyle = DynamicFormStyle { _ in
+                    .init(insets: .zero)
+                }
             }
         })
                 
