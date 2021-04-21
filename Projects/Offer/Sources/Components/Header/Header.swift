@@ -73,7 +73,10 @@ extension Header: Presentable {
         view.addArrangedSubview(formContainer)
         
         bag += formContainer.addArrangedSubview(HeaderForm()) { form, _ in
-            bag += formContainer.didLayoutSignal.onValue { _ in
+            bag += merge(
+                formContainer.didLayoutSignal,
+                view.didLayoutSignal
+            ).onValue { _ in
                 form.snp.remakeConstraints { make in
                     if formContainer.frame.width > Self.trailingAlignmentBreakpoint {
                         make.width.equalTo(formContainer.frame.width * Self.trailingAlignmentFormPercentageWidth)

@@ -43,7 +43,7 @@ extension Offer: Presentable {
             viewController.navigationItem.standardAppearance = appearance
         }
         let bag = DisposeBag()
-        
+                
         let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
 
         bag += optionsButton.attachSinglePressMenu(
@@ -64,7 +64,7 @@ extension Offer: Presentable {
         form.dynamicStyle = DynamicFormStyle { _ in
             .init(insets: .zero)
         }
-        
+                
         bag += viewController.install(form, scrollView: scrollView)
         
         bag += form.append(Header(scrollView: scrollView))
@@ -97,7 +97,7 @@ extension Offer: Presentable {
             navigationBarBackgroundView.alpha = scrollView.contentOffset.y / 80
         }
                 
-        bag += scrollView.signal(for: \.contentOffset).atOnce().onValue { contentOffset in
+        bag += scrollView.didScrollSignal.map { _ in scrollView.contentOffset }.onValue { contentOffset in
             navigationBarBackgroundView.alpha = contentOffset.y / 80
         }
 
