@@ -1,5 +1,6 @@
 fragment InsuranceProviderFragment on InsuranceProvider {
     name
+    id
     externalCollectionId
     hasExternalCapabilities
 }
