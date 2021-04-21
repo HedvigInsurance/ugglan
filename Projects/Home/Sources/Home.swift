@@ -10,13 +10,18 @@ import UIKit
 
 public struct Home {
     public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
+    public static var openMovingFlowHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public static var openCallMeChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public static var openConnectPaymentHandler: (_ viewController: UIViewController) -> Void = { _ in }
 
     @Inject var client: ApolloClient
 
-    public init() {}
+    public init(sections: [HomeSection]) {
+        self.sections = sections
+    }
+
+    public let sections: [HomeSection]
 }
 
 extension Future {
@@ -35,6 +40,12 @@ extension Future {
             return bag
         }
     }
+}
+
+enum HomeState {
+    case terminated
+    case future
+    case active
 }
 
 extension Home: Presentable {
@@ -75,16 +86,47 @@ extension Home: Presentable {
 
         bag += form.append(ImportantMessagesSection())
 
-        let titleSection = form.appendSection()
-        let titleRow = RowView()
-        titleRow.layoutMargins = UIEdgeInsets(
+        let rowInsets = UIEdgeInsets(
             top: 0,
             left: 25,
             bottom: 0,
             right: 25
         )
+
+        let titleSection = form.appendSection()
+        let titleRow = RowView()
         titleRow.isLayoutMarginsRelativeArrangement = true
+        titleRow.layoutMargins = rowInsets
         titleSection.append(titleRow)
+
+        func buildSections(functionBag: DisposeBag, state: HomeState) {
+            switch state {
+            case .active:
+                functionBag += titleRow.append(ActiveSection())
+            case .future:
+                functionBag += titleRow.append(FutureSection())
+            case .terminated:
+                functionBag += titleRow.append(TerminatedSection())
+            }
+
+            sections.forEach { homeSection in
+                let bottomRow = RowView()
+                bottomRow.isLayoutMarginsRelativeArrangement = true
+                bottomRow.layoutMargins = rowInsets
+                titleSection.append(bottomRow)
+
+                switch homeSection.style {
+                case .horizontal:
+                    break
+                case .vertical:
+                    guard state == .active else { return }
+                    let section = HomeVerticalSection(section: homeSection)
+                    functionBag += bottomRow.append(section)
+                case .header:
+                    break
+                }
+            }
+        }
 
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
             .mapLatestToFuture { _ in self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData) }
@@ -92,44 +134,13 @@ extension Home: Presentable {
 
         bag += client
             .watch(query: GraphQL.HomeQuery())
-            .onValueDisposePrevious { data in
+            .map { data in
+                data.homeState
+            }
+            .onValueDisposePrevious { homeState in
                 let innerBag = DisposeBag()
 
-                let terminatedState = data.contracts.allSatisfy { contract -> Bool in
-                    if contract.status.asActiveInFutureAndTerminatedInFutureStatus != nil {
-                        return true
-                    }
-
-                    if contract.status.asTerminatedStatus != nil {
-                        return true
-                    }
-
-                    if contract.status.asTerminatedTodayStatus != nil {
-                        return true
-                    }
-
-                    return false
-                }
-
-                let futureState = data.contracts.allSatisfy { contract -> Bool in
-                    if contract.status.asActiveInFutureStatus != nil {
-                        return true
-                    }
-
-                    if contract.status.asPendingStatus != nil {
-                        return true
-                    }
-
-                    return false
-                }
-
-                if terminatedState {
-                    innerBag += titleRow.append(TerminatedSection())
-                } else if futureState {
-                    innerBag += titleRow.append(FutureSection())
-                } else {
-                    innerBag += titleRow.append(ActiveSection())
-                }
+                buildSections(functionBag: innerBag, state: homeState)
 
                 return innerBag
             }
@@ -138,12 +149,42 @@ extension Home: Presentable {
     }
 }
 
-extension Home: Tabable {
-    public func tabBarItem() -> UITabBarItem {
+public extension Home {
+    static func tabBarItem() -> UITabBarItem {
         UITabBarItem(
             title: L10n.HomeTab.title,
             image: Asset.tab.image,
             selectedImage: Asset.tabSelected.image
         )
+    }
+}
+
+private extension GraphQL.HomeQuery.Data {
+    var homeState: HomeState {
+        if isTerminated {
+            return .terminated
+        } else if isFuture {
+            return .future
+        } else {
+            return .active
+        }
+    }
+
+    var hasUpcomingAgreement: Bool {
+        contracts.contains { (contract) -> Bool in
+            contract.upcomingRenewal != nil
+        }
+    }
+
+    private var isTerminated: Bool {
+        contracts.contains(where: { (contract) -> Bool in
+            contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil || contract.status.asTerminatedTodayStatus != nil
+        })
+    }
+
+    private var isFuture: Bool {
+        contracts.contains { (contract) -> Bool in
+            contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
+        }
     }
 }

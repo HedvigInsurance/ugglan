@@ -53,7 +53,7 @@ extension LoggedIn: Presentable {
 
         let indexForTabsSignal = ReadWriteSignal<[Int: Tab]>([:])
 
-        let home = Home()
+        let home = HomeFlow()
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
         let referrals = Forever(service: ForeverServiceGraphQL())
