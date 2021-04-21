@@ -348,11 +348,11 @@ public extension DynamicSectionStyle {
         separatorType: SeparatorType,
         borderColor: UIColor = .clear,
         backgroundColor: UIColor = .clear,
-        padCornerRadius: CGFloat = .defaultCornerRadius
+        roundedCornerRadius: CGFloat = .defaultCornerRadius,
+        shouldRoundCorners: @escaping (_ traitCollection: UITraitCollection) -> Bool = { trait in trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular }
     ) -> DynamicSectionStyle {
         DynamicSectionStyle { trait -> SectionStyle in
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-            let isPad = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
 
             return Style(
                 rowInsets: .init(inset: 15),
@@ -365,7 +365,7 @@ public extension DynamicSectionStyle {
                             border: .init(
                                 width: 1 / UIScreen.main.scale,
                                 color: borderColor,
-                                cornerRadius: isPad ? padCornerRadius : 0,
+                                cornerRadius: shouldRoundCorners(trait) ? roundedCornerRadius : 0,
                                 borderEdges: .all
                             )
                         ),
@@ -392,7 +392,7 @@ public extension DynamicSectionStyle {
                             border: .init(
                                 width: 1 / UIScreen.main.scale,
                                 color: borderColor,
-                                cornerRadius: isPad ? padCornerRadius : 0,
+                                cornerRadius: shouldRoundCorners(trait) ? roundedCornerRadius : 0,
                                 borderEdges: .all
                             )
                         ),

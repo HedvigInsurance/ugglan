@@ -41,6 +41,7 @@ extension Offer: Presentable {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
             viewController.navigationItem.standardAppearance = appearance
+            viewController.navigationItem.compactAppearance = appearance
         }
         let bag = DisposeBag()
                 

@@ -26,12 +26,26 @@ extension MainContentForm: Presentable {
         container.alignment = .leading
         container.allowTouchesOfViewsOutsideBounds = true
         
-        let form = FormView()
+        let formContainer = UIStackView()
+        formContainer.axis = .vertical
+        formContainer.edgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+        formContainer.insetsLayoutMarginsFromSafeArea = true
+        container.addArrangedSubview(formContainer)
         
-        container.addArrangedSubview(form)
+        let form = FormView()
+        form.dynamicStyle = DynamicFormStyle { _ in
+            .init(insets: .zero)
+        }
+        form.layer.cornerRadius = .defaultCornerRadius
+        form.backgroundColor = .brand(.secondaryBackground())
+        formContainer.addArrangedSubview(form)
         
         let section = form.appendSection()
-        section.dynamicStyle = .brandGrouped(separatorType: .standard, backgroundColor: .brand(.secondaryBackground()))
+        section.dynamicStyle = .brandGrouped(
+            separatorType: .standard,
+            backgroundColor: .clear,
+            shouldRoundCorners: { _ in false }
+        )
         
         for _ in 0...100 {
             bag += section.appendRow(title: "test").onValue { _ in
@@ -40,38 +54,34 @@ extension MainContentForm: Presentable {
         }
         
         bag += merge(
-            form.didLayoutSignal,
-            form.traitCollectionSignal.plain().toVoid(),
+            formContainer.didLayoutSignal,
+            formContainer.traitCollectionSignal.plain().toVoid(),
             container.signal(for: \.bounds).plain().toVoid()
         ).onValue({ _ in
             let bottomContentInset = scrollView.safeAreaInsets.bottom + 20
             
             if container.frame.width > Header.trailingAlignmentBreakpoint {
-                form.snp.remakeConstraints { make in
+                formContainer.snp.remakeConstraints { make in
                     make.width.equalTo(container.frame.width - (container.frame.width * Header.trailingAlignmentFormPercentageWidth))
                 }
                 
-                let pointInScrollView = scrollView.convert(form.frameWithoutTransform, from: container)
+                let pointInScrollView = scrollView.convert(formContainer.frameWithoutTransform, from: container)
                 let transformY = -(pointInScrollView.origin.y - scrollView.safeAreaInsets.top - Header.insetTop)
                 let contentInsetBottom = -(pointInScrollView.origin.y + scrollView.safeAreaInsets.top + Header.insetTop - bottomContentInset)
                 
-                form.transform = CGAffineTransform(translationX: 0, y: transformY)
+                formContainer.transform = CGAffineTransform(translationX: 0, y: transformY)
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
                 
-                form.dynamicStyle = DynamicFormStyle { _ in
-                    .init(insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15))
-                }
+                formContainer.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
             } else {
-                form.snp.remakeConstraints { make in
+                formContainer.snp.remakeConstraints { make in
                     make.width.equalToSuperview()
                 }
-                form.transform = CGAffineTransform.identity
+                formContainer.transform = CGAffineTransform.identity
                 scrollView.scrollIndicatorInsets = .zero
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: -bottomContentInset, right: 0)
-                form.dynamicStyle = DynamicFormStyle { _ in
-                    .init(insets: .zero)
-                }
+                formContainer.layoutMargins = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
             }
         })
                 

@@ -70,6 +70,8 @@ extension Header: Presentable {
         let formContainer = UIStackView()
         formContainer.axis = .vertical
         formContainer.alignment = .trailing
+        formContainer.isLayoutMarginsRelativeArrangement = true
+        formContainer.insetsLayoutMarginsFromSafeArea = true
         view.addArrangedSubview(formContainer)
         
         bag += formContainer.addArrangedSubview(HeaderForm()) { form, _ in
@@ -78,8 +80,8 @@ extension Header: Presentable {
                 view.didLayoutSignal
             ).onValue { _ in
                 form.snp.remakeConstraints { make in
-                    if formContainer.frame.width > Self.trailingAlignmentBreakpoint {
-                        make.width.equalTo(formContainer.frame.width * Self.trailingAlignmentFormPercentageWidth)
+                    if view.frame.width > Self.trailingAlignmentBreakpoint {
+                        make.width.equalTo(view.frame.width * Self.trailingAlignmentFormPercentageWidth - max(view.safeAreaInsets.right, 15))
                     } else {
                         make.width.equalToSuperview()
                     }
@@ -87,7 +89,7 @@ extension Header: Presentable {
             }
             
             bag += scrollView.signal(for: \.contentOffset).atOnce().onValue({ contentOffset in
-                if formContainer.frame.width > Self.trailingAlignmentBreakpoint {
+                if view.frame.width > Self.trailingAlignmentBreakpoint {
                     formContainer.transform = CGAffineTransform(translationX: 0, y: contentOffset.y)
                 } else {
                     formContainer.transform = CGAffineTransform.identity
