@@ -65,7 +65,6 @@ extension Offer: Presentable {
         form.dynamicStyle = DynamicFormStyle { _ in
             .init(insets: .zero)
         }
-                
         bag += viewController.install(form, scrollView: scrollView)
         
         bag += form.append(Header(scrollView: scrollView))

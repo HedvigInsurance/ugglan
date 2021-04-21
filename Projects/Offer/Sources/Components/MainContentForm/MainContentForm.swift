@@ -74,7 +74,9 @@ extension MainContentForm: Presentable {
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
                 
-                formContainer.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+                let extraInsetLeft: CGFloat = scrollView.safeAreaInsets.left > 0 ? 0 : 15
+                
+                formContainer.layoutMargins = UIEdgeInsets(top: 0, left: 15 + extraInsetLeft, bottom: 0, right: 15)
             } else {
                 formContainer.snp.remakeConstraints { make in
                     make.width.equalToSuperview()

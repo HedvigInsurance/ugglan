@@ -81,8 +81,10 @@ extension Header: Presentable {
             ).onValue {
                 form.snp.remakeConstraints { make in
                     if view.frame.width > Self.trailingAlignmentBreakpoint {
-                        make.width.equalTo(view.frame.width * Self.trailingAlignmentFormPercentageWidth - max(view.safeAreaInsets.right, 15))
+                        formContainer.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 15)
+                        make.width.equalTo(view.frame.width * Self.trailingAlignmentFormPercentageWidth - max(view.safeAreaInsets.right, 15) - 15)
                     } else {
+                        formContainer.layoutMargins = .zero
                         make.width.equalToSuperview()
                     }
                 }
