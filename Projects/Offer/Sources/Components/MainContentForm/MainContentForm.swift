@@ -20,14 +20,15 @@ struct MainContentForm {
 
 extension MainContentForm: Presentable {
     func materialize() -> (UIStackView, Disposable) {
+        let bag = DisposeBag()
         let container = PassTroughStackView()
         container.axis = .vertical
         container.alignment = .leading
         container.allowTouchesOfViewsOutsideBounds = true
         
         let form = FormView()
+        
         container.addArrangedSubview(form)
-        let bag = DisposeBag()
         
         let section = form.appendSection()
         section.dynamicStyle = .brandGrouped(separatorType: .standard, backgroundColor: .brand(.secondaryBackground()))

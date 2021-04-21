@@ -21,7 +21,6 @@ extension HeaderForm: Presentable {
         let bag = DisposeBag()
         
         let form = FormView()
-        form.allowTouchesOfViewsOutsideBounds = true
         form.dynamicStyle = DynamicFormStyle { _ in
             .init(insets: .zero)
         }
