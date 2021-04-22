@@ -143,7 +143,7 @@ extension InsuranceProviderAction: Viewable {
                     let providers = [
                         providers.map { $0.fragments.insuranceProviderFragment },
                         [
-                            .init(name: L10n.externalInsuranceProviderOtherOption, hasExternalCapabilities: false)
+                            .init(name: L10n.externalInsuranceProviderOtherOption, id: "other", hasExternalCapabilities: false)
                         ]
                     ].flatMap { $0 }
                                         
@@ -190,7 +190,7 @@ extension InsuranceProviderAction: Viewable {
                     }
                     
                     if provider.name != L10n.externalInsuranceProviderOtherOption {
-                        self.state.store.setValue(key: self.data.key, value: provider.name)
+                        self.state.store.setValue(key: self.data.key, value: provider.id)
                         callback(self.data.embarkLinkFragment)
                     } else {
                         outerContainer.viewController?.present(
