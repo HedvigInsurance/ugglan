@@ -25,10 +25,10 @@ extension PriceRow: Presentable {
         view.axis = .vertical
         view.spacing = 5
         
-        let priceLabel = UILabel(value: "109", style: .brand(.largeTitle(color: .primary)).centerAligned)
+        let priceLabel = UILabel(value: "109", style: TextStyle.brand(.largeTitle(color: .primary)).centerAligned)
         view.addArrangedSubview(priceLabel)
         
-        let perMonthLabel = UILabel(value: "SEK/mo", style: .brand(.subHeadline(color: .primary)).centerAligned)
+        let perMonthLabel = UILabel(value: "SEK/mo", style: TextStyle.brand(.subHeadline(color: .primary)).centerAligned)
         view.addArrangedSubview(perMonthLabel)
         
         row.append(view)
