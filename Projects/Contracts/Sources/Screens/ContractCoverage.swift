@@ -22,7 +22,7 @@ extension ContractCoverage: Presentable {
 
         let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
 
-        let perilCollection = ContractPerilCollection(
+        let perilCollection = PerilCollection(
             perilFragmentsSignal: ReadWriteSignal(perilFragments).readOnly()
         )
 
