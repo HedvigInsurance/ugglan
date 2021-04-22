@@ -23,6 +23,7 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
+                        displayName: "Innboforsikring",
                         detailsTable: generateDetailsTable()
                     ),
                     .init(
@@ -30,6 +31,7 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
+                        displayName: "Reiseforsikring",
                         detailsTable: [
                             .init(label: "Co-insured", value: "You + 2")
                         ]

@@ -24,7 +24,7 @@ struct OfferState {
     let ids: [String]
     
     var dataSignal: CoreSignal<Plain, GraphQL.QuoteBundleQuery.Data> {
-        return client.watch(query: GraphQL.QuoteBundleQuery(ids: ids))
+        return client.watch(query: GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale()))
     }
     
     var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {

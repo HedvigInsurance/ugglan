@@ -30,11 +30,12 @@ extension DetailsSection: Presentable {
         let bag = DisposeBag()
         
         bag += state.quotesSignal.onValueDisposePrevious { quotes in
-            quotes.map { quote -> DisposeBag in
+            quotes.enumerated().map { (offset, quote) -> DisposeBag in
                 let innerBag = DisposeBag()
                 
                 let headerContainer = UIStackView()
-                headerContainer.addArrangedSubview(UILabel(value: "Innboforsikring", style: .brand(.callout(color: .tertiary))))
+                headerContainer.edgeInsets = UIEdgeInsets(top: offset == 0 ? 0 : 15, left: 0, bottom: 0, right: 0)
+                headerContainer.addArrangedSubview(UILabel(value: quote.displayName, style: .brand(.callout(color: .tertiary))))
                 
                 let innerSection = SectionView(headerView: headerContainer, footerView: nil)
                 section.append(innerSection)

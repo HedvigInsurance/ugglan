@@ -1,4 +1,4 @@
-query QuoteBundle($ids: [ID!]!) {
+query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
     quotes {
         ... on BundledQuote {
@@ -10,6 +10,7 @@ query QuoteBundle($ids: [ID!]!) {
             }
             firstName
             lastName
+            displayName(locale: $locale)
             detailsTable(locale: $locale) {
                 label
                 value

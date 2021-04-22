@@ -15,6 +15,7 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
+                        displayName: "Apartment",
                         detailsTable: generateDetailsTable()
                     )
                 ],
