@@ -46,6 +46,8 @@ extension MainContentForm: Presentable {
         
         bag += form.append(CoverageSection())
         
+        form.appendSpacing(.inbetween)
+        
         bag += merge(
             scrollView.didLayoutSignal,
             container.didLayoutSignal,

@@ -37,7 +37,12 @@ extension PerilRow: Reusable {
         })
 
         view.backgroundColor = backgroundColor
-        view.layer.cornerRadius = 5
+        view.layer.cornerRadius = .defaultCornerRadius
+        
+        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
+        view.layer.shadowOpacity = 1
+        view.layer.shadowRadius = 2
+        view.layer.shadowOffset = CGSize(width: 0, height: 1)
 
         let contentContainer = UIStackView()
         contentContainer.spacing = 10
@@ -54,14 +59,14 @@ extension PerilRow: Reusable {
 
         return (view, { `self` in
             let bag = DisposeBag()
-
+            
             let remoteVectorIcon = RemoteVectorIcon(
                 self.fragment.icon.fragments.iconFragment,
                 threaded: true
             )
             bag += contentContainer.addArranged(remoteVectorIcon) { iconView in
                 iconView.snp.makeConstraints { make in
-                    make.width.height.equalTo(40)
+                    make.width.height.equalTo(35)
                 }
             }
 
@@ -72,7 +77,7 @@ extension PerilRow: Reusable {
             bag += contentContainer.addArranged(title)
 
             bag += view.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25), animations: { _ in
-                view.backgroundColor = DefaultStyling.current.sectionBackgroundSelected.background.color.withAlphaComponent(0.2)
+                view.backgroundColor = backgroundColor.darkened(amount: 0.05)
             })
 
             bag += view.delayedTouchCancel().animated(style: .easeOut(duration: 0.25), animations: { _ in
