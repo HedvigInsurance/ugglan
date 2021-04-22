@@ -31,5 +31,6 @@ jobs:
         SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
         BRANCH_NAME: ${{ github.head_ref }}
         GITHUB_PR_NUMBER: ${{ github.event.number }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '999999999'
       with:
        lane: ios workspace_apps
