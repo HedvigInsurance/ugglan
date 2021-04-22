@@ -19,7 +19,7 @@ struct DiscountCodeSection {}
 extension DiscountCodeSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView()
-        section.dynamicStyle = .brandGroupedNoBackground.rowInsets(UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15))
+        section.dynamicStyle = DynamicSectionStyle.brandGroupedNoBackground.rowInsets(UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15))
         let bag = DisposeBag()
         
         let row = RowView()
