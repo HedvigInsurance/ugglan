@@ -63,7 +63,7 @@ extension MainContentForm: Presentable {
                 }
                 
                 let pointInScrollView = scrollView.convert(formContainer.frameWithoutTransform, from: container)
-                let transformY = -(pointInScrollView.origin.y - scrollView.safeAreaInsets.top - Header.insetTop)
+                let transformY = -(pointInScrollView.origin.y - Header.insetTop)
                 
                 formContainer.transform = CGAffineTransform(translationX: 0, y: transformY)
                 scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: transformY + bottomContentInset, right: 0)
