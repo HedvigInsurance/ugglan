@@ -60,6 +60,14 @@ extension PerilRow: Reusable {
         return (view, { `self` in
             let bag = DisposeBag()
             
+            bag += view.didLayoutSignal.onValue{ _ in
+                view.layer.shadowPath = UIBezierPath(
+                    roundedRect: view.layer.bounds,
+                    byRoundingCorners: [.allCorners],
+                    cornerRadii: CGSize(width: .defaultCornerRadius, height: .defaultCornerRadius)
+                ).cgPath
+            }
+            
             let remoteVectorIcon = RemoteVectorIcon(
                 self.fragment.icon.fragments.iconFragment,
                 threaded: true

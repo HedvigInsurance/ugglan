@@ -32,26 +32,33 @@ extension PerilCollection: Viewable {
         
         bag += perilFragmentsSignal.atOnce().onValueDisposePrevious { perilFragments in
             return perilFragments.chunked(into: 2).map { perils -> DisposeBag in
-                let rowStackView = UIStackView()
-                rowStackView.spacing = 9
-                rowStackView.distribution = .fillEqually
+                let rowContainer = UIView()
                 
                 let innerBag = DisposeBag()
                 
-                innerBag += perils.map { perilFragment in
+                innerBag += perils.enumerated().map { (offset, perilFragment) in
                     let (row, disposable) = PerilRow(fragment: perilFragment).reuseTypeAndDisposable()
-                    rowStackView.addArrangedSubview(row)
+                    rowContainer.addSubview(row)
+                    
+                    row.snp.makeConstraints { make in
+                        make.width.equalToSuperview().dividedBy(2).inset(2.5)
+                        
+                        if offset == 0 {
+                            make.leading.equalToSuperview()
+                        } else {
+                            make.trailing.equalToSuperview()
+                        }
+                        
+                        make.top.bottom.equalToSuperview()
+                    }
+                    
                     return disposable
                 }
                 
-                if perils.count == 1 {
-                    rowStackView.addArrangedSubview(UIView())
-                }
-                
-                stackView.addArrangedSubview(rowStackView)
+                stackView.addArrangedSubview(rowContainer)
                 
                 innerBag += {
-                    rowStackView.removeFromSuperview()
+                    rowContainer.removeFromSuperview()
                 }
                 
                 return innerBag
