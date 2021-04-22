@@ -16,7 +16,8 @@ public extension JSONObject {
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
                         displayName: "Apartment",
-                        detailsTable: generateDetailsTable()
+                        detailsTable: generateDetailsTable(),
+                        perils: generatePerils()
                     )
                 ],
                 bundleCost: .init(

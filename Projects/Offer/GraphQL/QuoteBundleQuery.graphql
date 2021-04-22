@@ -15,6 +15,9 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
                 label
                 value
             }
+            perils(locale: $locale) {
+                ...PerilFragment
+            }
         }
     }
     bundleCost {

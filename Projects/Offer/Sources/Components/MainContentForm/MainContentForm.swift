@@ -42,13 +42,18 @@ extension MainContentForm: Presentable {
         
         bag += form.append(DetailsSection())
         
+        form.appendSpacing(.inbetween)
+        
+        bag += form.append(CoverageSection())
+        
         bag += merge(
             scrollView.didLayoutSignal,
             container.didLayoutSignal,
             formContainer.didLayoutSignal,
-            form.didLayoutSignal
+            form.didLayoutSignal,
+            scrollView.didScrollSignal
         ).onValue {
-            let bottomContentInset = scrollView.safeAreaInsets.bottom + 20
+            let bottomContentInset: CGFloat = scrollView.safeAreaInsets.bottom + 20
             
             if container.frame.width > Header.trailingAlignmentBreakpoint {
                 formContainer.snp.remakeConstraints { make in
@@ -57,11 +62,10 @@ extension MainContentForm: Presentable {
                 
                 let pointInScrollView = scrollView.convert(formContainer.frameWithoutTransform, from: container)
                 let transformY = -(pointInScrollView.origin.y - scrollView.safeAreaInsets.top - Header.insetTop)
-                let contentInsetBottom = -(pointInScrollView.origin.y + scrollView.safeAreaInsets.top + Header.insetTop - bottomContentInset)
                 
                 formContainer.transform = CGAffineTransform(translationX: 0, y: transformY)
-                scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
-                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: contentInsetBottom, right: 0)
+                scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: transformY + bottomContentInset, right: 0)
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: transformY + bottomContentInset, right: 0)
                 
                 let extraInsetLeft: CGFloat = scrollView.safeAreaInsets.left > 0 ? 0 : 15
                 
@@ -72,7 +76,7 @@ extension MainContentForm: Presentable {
                 }
                 formContainer.transform = CGAffineTransform.identity
                 scrollView.scrollIndicatorInsets = .zero
-                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: -bottomContentInset, right: 0)
+                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomContentInset, right: 0)
                 formContainer.layoutMargins = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
             }
             

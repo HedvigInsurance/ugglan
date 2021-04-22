@@ -24,7 +24,8 @@ public extension JSONObject {
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
                         displayName: "Innboforsikring",
-                        detailsTable: generateDetailsTable()
+                        detailsTable: generateDetailsTable(),
+                        perils: generatePerils()
                     ),
                     .init(
                         id: "123",
@@ -34,7 +35,8 @@ public extension JSONObject {
                         displayName: "Reiseforsikring",
                         detailsTable: [
                             .init(label: "Co-insured", value: "You + 2")
-                        ]
+                        ],
+                        perils: generatePerils()
                     )
                 ],
                 bundleCost: .init(
