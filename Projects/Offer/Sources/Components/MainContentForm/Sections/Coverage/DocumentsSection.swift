@@ -20,27 +20,6 @@ struct DocumentsSection {
     let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
 }
 
-extension UIImage {
-    func imageView(height: CGFloat? = nil, width: CGFloat? = nil) -> UIImageView {
-        let view = UIImageView()
-        
-        view.image = self
-        view.contentMode = .scaleAspectFit
-        
-        view.snp.makeConstraints { make in
-            if let height = height {
-                make.height.equalTo(height)
-            }
-            
-            if let width = width {
-                make.width.equalTo(width)
-            }
-        }
-        
-        return view
-    }
-}
-
 extension DocumentsSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView(headerView: UILabel(value: "Important documents", style: .default), footerView: nil)

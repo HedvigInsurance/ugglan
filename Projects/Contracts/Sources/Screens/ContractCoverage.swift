@@ -34,11 +34,11 @@ extension ContractCoverage: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        let insurableLimits = ContractInsurableLimits(
+        let insurableLimits = InsurableLimits(
             insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
         )
 
-        bag += form.append(insurableLimits.insetted(insets))
+        bag += form.append(insurableLimits)
 
         bag += viewController.install(form, options: [])
 
