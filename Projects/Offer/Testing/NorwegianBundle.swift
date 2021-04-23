@@ -25,7 +25,25 @@ public extension JSONObject {
                         lastName: "Hedvigsen",
                         displayName: "Innboforsikring",
                         detailsTable: generateDetailsTable(),
-                        perils: generatePerils()
+                        perils: generatePerils(),
+                        insurableLimits: generateInsurableLimits(),
+                        insuranceTerms: [
+                            .init(
+                                displayName: "Terms and pre-sale information",
+                                url: "https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+                                type: .termsAndConditions
+                            ),
+                            .init(
+                                displayName: "General terms",
+                                url: "https://www.hedvig.com/no-en/terms",
+                                type: .generalTerms
+                            ),
+                            .init(
+                                displayName: "EU standard pre-sale information",
+                                url: "https://www.hedvig.com/no-en/terms",
+                                type: .preSaleInfoEuStandard
+                            )
+                        ]
                     ),
                     .init(
                         id: "123",
@@ -36,7 +54,15 @@ public extension JSONObject {
                         detailsTable: [
                             .init(label: "Co-insured", value: "You + 2")
                         ],
-                        perils: generatePerils()
+                        perils: generatePerils(),
+                        insurableLimits: generateInsurableLimits(),
+                        insuranceTerms: [
+                            .init(
+                                displayName: "Terms and pre-sale information",
+                                url: "https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+                                type: .termsAndConditions
+                            )
+                        ]
                     )
                 ],
                 bundleCost: .init(

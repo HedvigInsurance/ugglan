@@ -28,14 +28,7 @@ extension PerilRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (PerilRow) -> Disposable) {
         let view = UIControl()
 
-        let backgroundColor = UIColor(dynamic: { trait -> UIColor in
-            if #available(iOS 13.0, *) {
-                return trait.userInterfaceLevel == .elevated ? .brand(.primaryBackground()) : .brand(.secondaryBackground())
-            } else {
-                return .brand(.secondaryBackground())
-            }
-        })
-
+        let backgroundColor = UIColor.brand(.secondaryBackground())
         view.backgroundColor = backgroundColor
         view.layer.cornerRadius = .defaultCornerRadius
         

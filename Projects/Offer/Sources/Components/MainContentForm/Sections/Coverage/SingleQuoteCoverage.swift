@@ -33,7 +33,21 @@ extension SingleQuoteCoverage: Presentable {
             ).insetted(UIEdgeInsets(inset: 15))
         )
         
-        bag += section.append(PerilCollection(perilFragmentsSignal: .init(quote.perils.map { $0.fragments.perilFragment })).insetted(UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)))
+        bag += section.append(
+            PerilCollection(
+                perilFragmentsSignal: .init(quote.perils.map { $0.fragments.perilFragment })
+            ).insetted(UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15))
+        )
+        
+        section.appendSpacing(.inbetween)
+        
+        bag += section.append(InsurableLimits(
+            insurableLimitFragmentsSignal: .init(quote.insurableLimits.map { $0.fragments.insurableLimitFragment })
+        ))
+        
+        section.appendSpacing(.inbetween)
+        
+        bag += section.append(DocumentsSection(quote: quote))
                 
         return (section, bag)
     }

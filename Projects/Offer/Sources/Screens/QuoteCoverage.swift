@@ -28,7 +28,12 @@ extension QuoteCoverage: Presentable {
         let form = FormView()
         
         bag += form.append(SingleQuoteCoverage(quote: quote))
-        bag += viewController.install(form)
+        
+        form.appendSpacing(.top)
+        
+        let scrollView = FormScrollView()
+        scrollView.backgroundColor = .brand(.primaryBackground())
+        bag += viewController.install(form, scrollView: scrollView)
                 
         return (viewController, bag)
     }

@@ -63,6 +63,7 @@ extension Offer: Presentable {
         viewController.navigationItem.leftBarButtonItem = optionsButton
         
         let scrollView = FormScrollView()
+        scrollView.backgroundColor = .brand(.primaryBackground())
         
         let form = FormView()
         form.allowTouchesOfViewsOutsideBounds = true

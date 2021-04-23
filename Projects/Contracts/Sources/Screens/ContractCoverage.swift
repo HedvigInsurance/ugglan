@@ -34,13 +34,6 @@ extension ContractCoverage: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        bag += form.append(MultilineLabel(
-            value: L10n.contractCoverageMoreInfo,
-            style: .brand(.headline(color: .primary))
-        ).insetted(insets))
-
-        bag += form.append(Spacing(height: 10))
-
         let insurableLimits = ContractInsurableLimits(
             insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
         )

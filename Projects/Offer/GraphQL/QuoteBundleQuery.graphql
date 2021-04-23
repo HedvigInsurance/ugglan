@@ -18,6 +18,14 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
             perils(locale: $locale) {
                 ...PerilFragment
             }
+            insurableLimits(locale: $locale) {
+                ...InsurableLimitFragment
+            }
+            insuranceTerms(locale: nb_NO) {
+                displayName
+                url
+                type
+            }
         }
     }
     bundleCost {

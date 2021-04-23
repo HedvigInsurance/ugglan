@@ -37,7 +37,7 @@ extension MainContentForm: Presentable {
             .init(insets: .zero)
         }
         form.layer.cornerRadius = .defaultCornerRadius
-        form.backgroundColor = .brand(.secondaryBackground())
+        form.backgroundColor = .brand(.primaryBackground())
         formContainer.addArrangedSubview(form)
         
         bag += form.append(DetailsSection())
@@ -79,7 +79,7 @@ extension MainContentForm: Presentable {
                 formContainer.transform = CGAffineTransform.identity
                 scrollView.scrollIndicatorInsets = .zero
                 scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomContentInset, right: 0)
-                formContainer.layoutMargins = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
+                formContainer.layoutMargins = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
             }
             
             scrollView.layoutIfNeeded()
