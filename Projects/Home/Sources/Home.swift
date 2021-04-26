@@ -149,8 +149,8 @@ extension Home: Presentable {
     }
 }
 
-public extension Home {
-    static func tabBarItem() -> UITabBarItem {
+extension Home: Tabable {
+    public func tabBarItem() -> UITabBarItem {
         UITabBarItem(
             title: L10n.HomeTab.title,
             image: Asset.tab.image,

@@ -1,0 +1,66 @@
+query UpcomingAgreement {
+  contracts {
+    status {
+      ... on ActiveStatus {
+        upcomingAgreementChange {
+          ... UpcomingAgreementFragment
+        }
+      }
+      ... on TerminatedInFutureStatus {
+        upcomingAgreementChange {
+          ... UpcomingAgreementFragment
+        }
+      }
+      ... on TerminatedTodayStatus {
+        upcomingAgreementChange {
+          ... UpcomingAgreementFragment
+        }
+      }
+    }
+  }
+}
+
+fragment UpcomingAgreementFragment on UpcomingAgreementChange {
+  newAgreement {
+    ... on SwedishApartmentAgreement {
+      address {
+        ...AddressFragment
+      }
+      squareMeters
+      activeFrom
+      saType: type
+    }
+    ... on SwedishHouseAgreement {
+      address {
+        ...AddressFragment
+      }
+      squareMeters
+      activeFrom
+    }
+    ... on NorwegianHomeContentAgreement {
+      address {
+        ...AddressFragment
+      }
+      squareMeters
+      activeFrom
+      nhcType:type
+    }
+    ... on DanishHomeContentAgreement {
+      address {
+        ...AddressFragment
+      }
+      squareMeters
+      activeFrom
+      dhcType:type
+    }
+  }
+}
+
+fragment AddressFragment on Address {
+  street
+  postalCode
+  city
+  apartment
+  floor
+}
+

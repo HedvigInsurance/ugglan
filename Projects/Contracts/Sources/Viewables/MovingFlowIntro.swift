@@ -29,8 +29,6 @@ extension MovingFlowIntro: Presentable {
 
         client.fetch(query: GraphQL.SelfChangeElibilityQuery()).onValue { data in
             if let storyId = data.selfChangeEligibility.embarkStoryId {
-                client.fetch(query: GraphQL.)
-
             } else {}
         }
 
