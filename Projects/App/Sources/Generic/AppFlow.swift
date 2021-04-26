@@ -60,7 +60,8 @@ struct EmbarkOnboardingFlow: Presentable {
         viewController.navigationItem.largeTitleDisplayMode = .always
         let bag = DisposeBag()
 
-        bag += signal.atValue { story in
+        bag += signal.onValueDisposePrevious { story in
+            let innerBag = DisposeBag()
             let embark = Embark(
                 name: story.name,
                 menu: Menu(
@@ -69,7 +70,7 @@ struct EmbarkOnboardingFlow: Presentable {
                 )
             )
 
-            bag += viewController
+            innerBag += viewController
                 .present(
                     embark,
                     options: [.autoPop]
@@ -98,6 +99,8 @@ struct EmbarkOnboardingFlow: Presentable {
                         }
                     }
                 }
+            
+            return innerBag
         }
 
         return (viewController, bag)
