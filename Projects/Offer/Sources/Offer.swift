@@ -34,11 +34,17 @@ public enum OfferIDContainer {
 public struct Offer {
     @Inject var client: ApolloClient
     let offerIDContainer: OfferIDContainer
+    let menu: Menu
     let state: OfferState
     let options: Set<OfferOption>
     
-    public init(offerIDContainer: OfferIDContainer, options: Set<OfferOption> = []) {
+    public init(
+        offerIDContainer: OfferIDContainer,
+        menu: Menu,
+        options: Set<OfferOption> = []
+    ) {
         self.offerIDContainer = offerIDContainer
+        self.menu = menu
         self.options = options
         self.state = OfferState(ids: offerIDContainer.ids)
     }
@@ -81,19 +87,19 @@ extension Offer: Presentable {
 
         bag += optionsButton.attachSinglePressMenu(
             viewController: viewController,
-            menu: Menu(
-                title: nil,
-                children: []
-            )
+            menu: menu
         )
                 
         if options.contains(.menuToTrailing) {
             viewController.navigationItem.rightBarButtonItem = optionsButton
         } else {
-            viewController.navigationItem.rightBarButtonItem = optionsButton
+            viewController.navigationItem.leftBarButtonItem = optionsButton
         }
         
-        let scrollView = FormScrollView()
+        let scrollView = FormScrollView(
+            frame: .zero,
+            appliesGradient: false
+        )
         scrollView.backgroundColor = .brand(.primaryBackground())
         
         let form = FormView()

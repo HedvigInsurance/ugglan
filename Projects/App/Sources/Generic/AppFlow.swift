@@ -78,16 +78,24 @@ struct EmbarkOnboardingFlow: Presentable {
                     case .mailingList:
                         break
                     case let .offer(ids):
-                        let offerFuture = viewController.present(
+                        viewController.present(
                             Offer(
                                 offerIDContainer: .exact(ids: ids, shouldStore: true),
+                                menu: Menu(
+                                    title: nil,
+                                    children: menuChildren
+                                ),
                                 options: [.menuToTrailing]
                             )
-                        )
-                        
-                        bag += offerFuture.onCancel({
+                        ).onValue { _ in
+                            viewController.present(
+                                PostOnboarding(),
+                                style: .detented(.large),
+                                options: [.prefersNavigationBarHidden(true)]
+                            )
+                        }.onCancel {
                             embark.goBack()
-                        })
+                        }
                     }
                 }
         }

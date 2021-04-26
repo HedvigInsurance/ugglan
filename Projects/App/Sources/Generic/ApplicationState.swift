@@ -58,7 +58,19 @@ extension ApplicationState {
             )
         case .offer:
             return window.present(
-                Offer(offerIDContainer: .stored),
+                Offer(
+                    offerIDContainer: .stored,
+                    menu: Menu(
+                        title: nil,
+                        children: [
+                            MenuChild.appInformation,
+                            MenuChild.appSettings,
+                            MenuChild.login(onLogin: {
+                                UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+                            })
+                        ]
+                    )
+                ),
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)],
                 animated: false
             )
