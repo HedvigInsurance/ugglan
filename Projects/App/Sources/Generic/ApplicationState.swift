@@ -58,7 +58,7 @@ extension ApplicationState {
             )
         case .offer:
             return window.present(
-                Offer(ids: ["TODO"]),
+                Offer(offerIDContainer: .stored),
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)],
                 animated: false
             )

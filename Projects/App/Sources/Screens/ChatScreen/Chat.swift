@@ -46,7 +46,7 @@ extension Chat: Presentable {
         bag += navigateCallbacker.onValue { navigationEvent in
             switch navigationEvent {
             case .offer:
-                viewController.present(Offer(ids: ["TODO"]))
+                viewController.present(Offer(offerIDContainer: .stored))
             case .dashboard:
                 viewController.present(LoggedIn())
             case .login:

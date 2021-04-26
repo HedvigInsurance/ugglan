@@ -9,19 +9,38 @@ import Apollo
 import hGraphQL
 
 public enum OfferOption {
-    case .menuToTrailing
+    case menuToTrailing
+}
+
+public enum OfferIDContainer {
+    private static var storageKey = "OfferIDContainer"
+    
+    var ids: [String] {
+        switch self {
+        case .stored:
+            return UserDefaults.standard.value(forKey: Self.storageKey) as? [String] ?? []
+        case let .exact(ids, shouldStore):
+            if shouldStore {
+                UserDefaults.standard.set(ids, forKey: Self.storageKey)
+            }
+            
+            return ids
+        }
+    }
+    
+    case stored, exact(ids: [String], shouldStore: Bool)
 }
 
 public struct Offer {
     @Inject var client: ApolloClient
-    let ids: [String]
+    let offerIDContainer: OfferIDContainer
     let state: OfferState
     let options: Set<OfferOption>
     
-    public init(ids: [String], options: Set<OfferOption> = []) {
-        self.ids = ids
+    public init(offerIDContainer: OfferIDContainer, options: Set<OfferOption> = []) {
+        self.offerIDContainer = offerIDContainer
         self.options = options
-        self.state = OfferState(ids: ids)
+        self.state = OfferState(ids: offerIDContainer.ids)
     }
 }
 
@@ -42,6 +61,8 @@ extension Offer: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         viewController.title = "Your offer"
+        
+        ApplicationState.preserveState(.offer)
         
         Dependencies.shared.add(module: Module {
             return state
