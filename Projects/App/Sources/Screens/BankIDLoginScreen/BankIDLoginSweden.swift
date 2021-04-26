@@ -16,7 +16,11 @@ extension BankIDLoginSweden {
     enum AutoStartTokenError: Error {
         case failedToGenerate
     }
-
+    
+    enum FailedError: Error {
+        case failed
+    }
+    
     func generateAutoStartToken() -> Future<URL> {
         client.perform(mutation: GraphQL.BankIdAuthMutation()).compactMap { $0.bankIdAuth.autoStartToken }.flatMap { autoStartToken in
             let urlScheme = Bundle.main.urlScheme ?? ""
@@ -127,7 +131,7 @@ extension BankIDLoginSweden: Presentable {
 
         return (viewController, Future { completion in
             bag += closeButton.onTapSignal.onValue {
-                completion(.failure(BankIdSignError.failed))
+                completion(.failure(FailedError.failed))
             }
 
             bag += statusSignal.distinct().onValue { authState in

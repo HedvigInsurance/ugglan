@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 import Presentation
 import UIKit
+import Offer
 
 public struct AppFlow {
     private let rootNavigationController = UINavigationController()
@@ -77,13 +78,11 @@ struct EmbarkOnboardingFlow: Presentable {
                     case .mailingList:
                         break
                     case let .offer(ids):
-                        let webOnboardingSignal = viewController.present(WebOnboardingFlow(webScreen: .webOffer(ids: ids)))
+                        let offerFuture = viewController.present(Offer(ids: ids))
                         
-                        bag += webOnboardingSignal.onEnd({
+                        bag += offerFuture.onCancel({
                             embark.goBack()
                         })
-                        
-                        bag += webOnboardingSignal.nil()
                     }
                 }
         }

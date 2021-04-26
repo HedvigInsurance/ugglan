@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 import Market
+import Offer
 import UIKit
 
 extension ApplicationState {
@@ -57,7 +58,7 @@ extension ApplicationState {
             )
         case .offer:
             return window.present(
-                Offer(),
+                Offer(ids: ["TODO"]),
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)],
                 animated: false
             )

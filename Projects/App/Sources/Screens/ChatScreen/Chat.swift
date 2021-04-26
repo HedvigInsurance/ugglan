@@ -5,6 +5,7 @@ import Form
 import hCore
 import Presentation
 import UIKit
+import Offer
 
 struct Chat {
     @Inject var client: ApolloClient
@@ -45,7 +46,7 @@ extension Chat: Presentable {
         bag += navigateCallbacker.onValue { navigationEvent in
             switch navigationEvent {
             case .offer:
-                viewController.present(Offer())
+                viewController.present(Offer(ids: ["TODO"]))
             case .dashboard:
                 viewController.present(LoggedIn())
             case .login:

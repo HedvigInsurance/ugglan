@@ -8,13 +8,19 @@ import UIKit
 import Apollo
 import hGraphQL
 
+public enum OfferOption {
+    case .menuToTrailing
+}
+
 public struct Offer {
     @Inject var client: ApolloClient
     let ids: [String]
     let state: OfferState
+    let options: Set<OfferOption>
     
-    public init(ids: [String]) {
+    public init(ids: [String], options: Set<OfferOption> = []) {
         self.ids = ids
+        self.options = options
         self.state = OfferState(ids: ids)
     }
 }
@@ -49,7 +55,7 @@ extension Offer: Presentable {
             viewController.navigationItem.compactAppearance = appearance
         }
         let bag = DisposeBag()
-                
+        
         let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
 
         bag += optionsButton.attachSinglePressMenu(
@@ -59,8 +65,12 @@ extension Offer: Presentable {
                 children: []
             )
         )
-        
-        viewController.navigationItem.leftBarButtonItem = optionsButton
+                
+        if options.contains(.menuToTrailing) {
+            viewController.navigationItem.rightBarButtonItem = optionsButton
+        } else {
+            viewController.navigationItem.rightBarButtonItem = optionsButton
+        }
         
         let scrollView = FormScrollView()
         scrollView.backgroundColor = .brand(.primaryBackground())
