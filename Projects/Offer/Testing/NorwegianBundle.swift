@@ -5,12 +5,30 @@ import hGraphQL
 import Offer
 import TestingUtil
 
-func generateDetailsTable() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable] {
-    return [
-        .init(label: "Street", value: "An address"),
-        .init(label: "Postal code", value: "111 44"),
-        .init(label: "Co-insured", value: "You + 2")
+func generateTravelRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+    [
+        .init(title: "Co-insured", subtitle: nil, value: "You + 2")
     ]
+}
+
+func generateHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+    [
+        .init(title: "Street", subtitle: nil, value: "An address"),
+        .init(title: "Postal code", subtitle: nil, value: "111 44"),
+        .init(title: "Co-insured", subtitle: nil, value: "You + 2")
+    ]
+}
+
+func generateDetailsTable(title: String, rows: [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row]) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable {
+    return .init(
+        title: title,
+        sections: [
+            .init(
+                title: "Details",
+                rows: rows
+            )
+        ]
+    )
 }
 
 public extension JSONObject {
@@ -24,8 +42,7 @@ public extension JSONObject {
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
                         displayName: "Innboforsikring",
-                        detailsTable: generateDetailsTable(),
-                        perils: generatePerils(),
+                        detailsTable: generateDetailsTable(title: "Innboforsikring", rows: generateHomeRows()), perils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(
@@ -51,9 +68,7 @@ public extension JSONObject {
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
                         displayName: "Reiseforsikring",
-                        detailsTable: [
-                            .init(label: "Co-insured", value: "You + 2")
-                        ],
+                        detailsTable: generateDetailsTable(title: "Reiseforsikring", rows: generateTravelRows()),
                         perils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [

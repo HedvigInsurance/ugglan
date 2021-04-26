@@ -57,6 +57,10 @@ extension Debug: Presentable {
             presentOffer(.makeSwedishApartment())
         }
         
+        bag += section.appendRow(title: "Swedish house").onValue {
+            presentOffer(.makeSwedishHouse())
+        }
+        
         bag += section.appendRow(title: "Norwegian bundle").onValue {
             presentOffer(.makeNorwegianBundle())
         }

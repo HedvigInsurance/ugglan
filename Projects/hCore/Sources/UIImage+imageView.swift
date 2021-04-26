@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 extension UIImage {
-    func imageView(height: CGFloat? = nil, width: CGFloat? = nil) -> UIImageView {
+    public func imageView(height: CGFloat? = nil, width: CGFloat? = nil) -> UIImageView {
         let view = UIImageView()
         
         view.image = self
