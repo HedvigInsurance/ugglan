@@ -12,8 +12,15 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
             lastName
             displayName(locale: $locale)
             detailsTable(locale: $locale) {
-                label
-                value
+                title
+                sections {
+                    title
+                    rows {
+                        title
+                        subtitle
+                        value
+                    }
+                }
             }
         }
     }

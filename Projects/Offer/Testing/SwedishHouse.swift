@@ -6,7 +6,7 @@ import Offer
 import TestingUtil
 
 public extension JSONObject {
-    static func makeSwedishApartment() -> JSONObject {
+    static func makeSwedishHouse() -> JSONObject {
         GraphQL.QuoteBundleQuery.Data.init(
             quoteBundle: .init(
                 quotes: [
@@ -16,7 +16,16 @@ public extension JSONObject {
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
                         displayName: "Apartment",
-                        detailsTable: generateDetailsTable(title: "Apartment", rows: generateHomeRows())
+                        detailsTable: .init(
+                            title: "House",
+                            sections: [
+                                .init(title: "Details", rows: generateHomeRows()),
+                                .init(title: "Extra buildings", rows: [
+                                    .init(title: "Sauna", subtitle: "Has water connected", value: "40 m2"),
+                                    .init(title: "Garage", subtitle: nil, value: "22 m2")
+                                ])
+                            ]
+                        )
                     )
                 ],
                 bundleCost: .init(

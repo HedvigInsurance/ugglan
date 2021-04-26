@@ -26,7 +26,7 @@ extension Array where Element: Disposable {
 
 extension DetailsSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
-        let section = SectionView(headerView: UILabel(value: "Your Details", style: .default), footerView: nil)
+        let section = SectionView(headerView: nil, footerView: nil)
         let bag = DisposeBag()
         
         bag += state.quotesSignal.onValueDisposePrevious { quotes in
@@ -35,7 +35,7 @@ extension DetailsSection: Presentable {
                 
                 let headerContainer = UIStackView()
                 headerContainer.edgeInsets = UIEdgeInsets(top: offset == 0 ? 0 : 15, left: 0, bottom: 0, right: 0)
-                headerContainer.addArrangedSubview(UILabel(value: quote.displayName, style: .brand(.callout(color: .tertiary))))
+                headerContainer.addArrangedSubview(UILabel(value: quote.detailsTable.title, style: .brand(.title2(color: .primary))))
                 
                 let innerSection = SectionView(headerView: headerContainer, footerView: nil)
                 section.append(innerSection)
@@ -44,15 +44,23 @@ extension DetailsSection: Presentable {
                     innerSection.removeFromSuperview()
                 }
                 
-                innerBag += quote.detailsTable.map { item in
-                    let row = RowView(title: item.label)
-                    innerSection.append(row)
+                quote.detailsTable.sections.enumerated().forEach { (offset, section) in
+                    let headerContainer = UIStackView()
+                    headerContainer.edgeInsets = UIEdgeInsets(top: offset == 0 ? 0 : 15, left: 0, bottom: 0, right: 0)
+                    headerContainer.addArrangedSubview(UILabel(value: section.title, style: .brand(.callout(color: .tertiary))))
                     
-                    let valueLabel = UILabel(value: item.value, style: .brand(.body(color: .secondary)))
-                    row.append(valueLabel)
+                    let detailsSection = SectionView(headerView: headerContainer, footerView: nil)
+                    innerSection.append(detailsSection)
                     
-                    return Disposer {
-                        innerSection.remove(row)
+                    section.rows.forEach { tableRow in
+                        let row = RowView(
+                            title: tableRow.title,
+                            subtitle: tableRow.subtitle ?? ""
+                        )
+                        detailsSection.append(row)
+                        
+                        let valueLabel = UILabel(value: tableRow.value, style: .brand(.body(color: .secondary)))
+                        row.append(valueLabel)
                     }
                 }
                 
