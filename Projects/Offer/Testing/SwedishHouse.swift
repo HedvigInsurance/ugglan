@@ -15,9 +15,9 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        displayName: "Apartment",
+                        displayName: "House insurance",
                         detailsTable: .init(
-                            title: "House",
+                            title: "House insurance",
                             sections: [
                                 .init(title: "Details", rows: generateHomeRows()),
                                 .init(title: "Extra buildings", rows: [
