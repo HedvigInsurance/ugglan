@@ -34,6 +34,7 @@ public struct ApplicationState {
     
     public static func setPreferredLocale(_ locale: Localization.Locale) {
         UserDefaults.standard.setValue([locale.lprojCode], forKey: "AppleLanguages")
+        UserDefaults.standard.synchronize()
         setMarket(locale.market)
     }
 
