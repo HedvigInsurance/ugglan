@@ -113,9 +113,9 @@ extension GradientScroller {
                     }
 
                     if navigationController.navigationBar.viewWithTag(colorViewTag) == nil,
-                       let barBackgroundView = navigationController.navigationBar.subviews.first
+                       let barBackgroundView = navigationController.navigationBar.subviews.first,
+                       let effectView = barBackgroundView.subviews.first
                     {
-                        let effectView = barBackgroundView.subviews[1]
                         barBackgroundView.addSubview(navigationBarColorView)
 
                         navigationBarColorView.snp.makeConstraints { make in

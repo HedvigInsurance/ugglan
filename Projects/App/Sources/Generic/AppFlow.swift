@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 import Presentation
 import UIKit
+import Offer
 
 public struct AppFlow {
     private let rootNavigationController = UINavigationController()
@@ -59,7 +60,8 @@ struct EmbarkOnboardingFlow: Presentable {
         viewController.navigationItem.largeTitleDisplayMode = .always
         let bag = DisposeBag()
 
-        bag += signal.atValue { story in
+        bag += signal.onValueDisposePrevious { story in
+            let innerBag = DisposeBag()
             let embark = Embark(
                 name: story.name,
                 menu: Menu(
@@ -68,7 +70,7 @@ struct EmbarkOnboardingFlow: Presentable {
                 )
             )
 
-            bag += viewController
+            innerBag += viewController
                 .present(
                     embark,
                     options: [.autoPop]
@@ -77,15 +79,28 @@ struct EmbarkOnboardingFlow: Presentable {
                     case .mailingList:
                         break
                     case let .offer(ids):
-                        let webOnboardingSignal = viewController.present(WebOnboardingFlow(webScreen: .webOffer(ids: ids)))
-                        
-                        bag += webOnboardingSignal.onEnd({
+                        viewController.present(
+                            Offer(
+                                offerIDContainer: .exact(ids: ids, shouldStore: true),
+                                menu: Menu(
+                                    title: nil,
+                                    children: menuChildren
+                                ),
+                                options: [.menuToTrailing]
+                            )
+                        ).onValue { _ in
+                            viewController.present(
+                                PostOnboarding(),
+                                style: .detented(.large),
+                                options: [.prefersNavigationBarHidden(true)]
+                            )
+                        }.onCancel {
                             embark.goBack()
-                        })
-                        
-                        bag += webOnboardingSignal.nil()
+                        }
                     }
                 }
+            
+            return innerBag
         }
 
         return (viewController, bag)

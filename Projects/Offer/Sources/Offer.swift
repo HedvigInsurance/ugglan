@@ -8,14 +8,45 @@ import UIKit
 import Apollo
 import hGraphQL
 
+public enum OfferOption {
+    case menuToTrailing
+}
+
+public enum OfferIDContainer {
+    private static var storageKey = "OfferIDContainer"
+    
+    var ids: [String] {
+        switch self {
+        case .stored:
+            return UserDefaults.standard.value(forKey: Self.storageKey) as? [String] ?? []
+        case let .exact(ids, shouldStore):
+            if shouldStore {
+                UserDefaults.standard.set(ids, forKey: Self.storageKey)
+            }
+            
+            return ids
+        }
+    }
+    
+    case stored, exact(ids: [String], shouldStore: Bool)
+}
+
 public struct Offer {
     @Inject var client: ApolloClient
-    let ids: [String]
+    let offerIDContainer: OfferIDContainer
+    let menu: Menu
     let state: OfferState
+    let options: Set<OfferOption>
     
-    public init(ids: [String]) {
-        self.ids = ids
-        self.state = OfferState(ids: ids)
+    public init(
+        offerIDContainer: OfferIDContainer,
+        menu: Menu,
+        options: Set<OfferOption> = []
+    ) {
+        self.offerIDContainer = offerIDContainer
+        self.menu = menu
+        self.options = options
+        self.state = OfferState(ids: offerIDContainer.ids)
     }
 }
 
@@ -37,6 +68,8 @@ extension Offer: Presentable {
         let viewController = UIViewController()
         viewController.title = "Your offer"
         
+        ApplicationState.preserveState(.offer)
+        
         Dependencies.shared.add(module: Module {
             return state
         })
@@ -49,20 +82,24 @@ extension Offer: Presentable {
             viewController.navigationItem.compactAppearance = appearance
         }
         let bag = DisposeBag()
-                
+        
         let optionsButton = UIBarButtonItem(image: hCoreUIAssets.menuIcon.image, style: .plain, target: nil, action: nil)
 
         bag += optionsButton.attachSinglePressMenu(
             viewController: viewController,
-            menu: Menu(
-                title: nil,
-                children: []
-            )
+            menu: menu
         )
+                
+        if options.contains(.menuToTrailing) {
+            viewController.navigationItem.rightBarButtonItem = optionsButton
+        } else {
+            viewController.navigationItem.leftBarButtonItem = optionsButton
+        }
         
-        viewController.navigationItem.leftBarButtonItem = optionsButton
-        
-        let scrollView = FormScrollView()
+        let scrollView = FormScrollView(
+            frame: .zero,
+            appliesGradient: false
+        )
         scrollView.backgroundColor = .brand(.primaryBackground())
         
         let form = FormView()
