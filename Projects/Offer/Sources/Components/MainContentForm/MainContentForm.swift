@@ -21,7 +21,7 @@ struct MainContentForm {
 extension MainContentForm: Presentable {
     func materialize() -> (UIStackView, Disposable) {
         let bag = DisposeBag()
-        let container = PassTroughStackView()
+        let container = PassThroughStackView()
         container.axis = .vertical
         container.alignment = .leading
         container.allowTouchesOfViewsOutsideBounds = true
