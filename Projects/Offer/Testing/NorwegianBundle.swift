@@ -5,6 +5,32 @@ import hGraphQL
 import Offer
 import TestingUtil
 
+func generateTravelRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+    [
+        .init(title: "Co-insured", subtitle: nil, value: "You + 2")
+    ]
+}
+
+func generateHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+    [
+        .init(title: "Street", subtitle: nil, value: "An address"),
+        .init(title: "Postal code", subtitle: nil, value: "111 44"),
+        .init(title: "Co-insured", subtitle: nil, value: "You + 2")
+    ]
+}
+
+func generateDetailsTable(title: String, rows: [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row]) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable {
+    return .init(
+        title: title,
+        sections: [
+            .init(
+                title: "Details",
+                rows: rows
+            )
+        ]
+    )
+}
+
 public extension JSONObject {
     static func makeNorwegianBundle() -> JSONObject {
         GraphQL.QuoteBundleQuery.Data.init(
@@ -15,24 +41,16 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        quoteDetails: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.QuoteDetail.makeNorwegianHomeContentsDetails(
-                            street: "Guleböjs vegen 12",
-                            zipCode: "11111",
-                            coInsured: 2,
-                            livingSpace: 100,
-                            isYouth: false,
-                            norwegianHomeType: .own
-                        )
+                        displayName: "Innboforsikring",
+                        detailsTable: generateDetailsTable(title: "Innboforsikring", rows: generateHomeRows())
                     ),
                     .init(
                         id: "123",
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        quoteDetails: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.QuoteDetail.makeNorwegianTravelDetails(
-                            coInsured: 2,
-                            isYouth: false
-                        )
+                        displayName: "Reiseforsikring",
+                        detailsTable: generateDetailsTable(title: "Reiseforsikring", rows: generateTravelRows())
                     )
                 ],
                 bundleCost: .init(

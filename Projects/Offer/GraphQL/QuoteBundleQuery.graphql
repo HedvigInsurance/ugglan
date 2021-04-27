@@ -1,81 +1,28 @@
-fragment OfferQuoteDetailsFragment on QuoteDetails {
-    ... on SwedishApartmentQuoteDetails {
-        street
-        zipCode
-        householdSize
-        livingSpace
-        swedishApartmentType: type
-    }
-    ... on SwedishHouseQuoteDetails {
-        street
-        zipCode
-        householdSize
-        livingSpace
-        ancillarySpace
-        extraBuildings {
-            ... on ExtraBuildingCore {
-                area
-                displayName
-                hasWaterConnected
-            }
-        }
-    }
-    ... on NorwegianHomeContentsDetails {
-        street
-        zipCode
-        coInsured
-        livingSpace
-        isYouth
-        norwegianHomeType: type
-    }
-    ... on NorwegianTravelDetails {
-        coInsured
-        isYouth
-    }
-    ... on DanishHomeContentsDetails {
-        street
-        zipCode
-        apartment
-        floor
-        bbrId
-        city
-        livingSpace
-        coInsured
-        isStudent
-        danishHomeType: type
-    }
-    ... on DanishAccidentDetails {
-        street
-        zipCode
-        coInsured
-        isStudent
-    }
-    ... on DanishTravelDetails {
-        street
-        zipCode
-        coInsured
-        isStudent
-    }
-}
-
-fragment OfferQuoteFragment on BundledQuote {
-    id
-    currentInsurer {
-        id
-        displayName
-        switchable
-    }
-    firstName
-    lastName
-    quoteDetails {
-        ...OfferQuoteDetailsFragment
-    }
-}
-
-query QuoteBundle($ids: [ID!]!) {
+query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
     quotes {
-        ...OfferQuoteFragment
+        ... on BundledQuote {
+            id
+            currentInsurer {
+                id
+                displayName
+                switchable
+            }
+            firstName
+            lastName
+            displayName(locale: $locale)
+            detailsTable(locale: $locale) {
+                title
+                sections {
+                    title
+                    rows {
+                        title
+                        subtitle
+                        value
+                    }
+                }
+            }
+        }
     }
     bundleCost {
         monthlyGross {
