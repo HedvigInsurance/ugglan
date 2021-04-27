@@ -62,6 +62,7 @@ public struct ApplicationState {
                 let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) {
                 setPreferredLocale(preferredLocale)
                 UserDefaults.standard.removeObject(forKey: preferredLocaleKey)
+                UserDefaults.standard.synchronize()
                 return preferredLocale
             }
         }
