@@ -15,8 +15,16 @@ public extension JSONObject {
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
-                        displayName: "Apartment",
-                        detailsTable: generateDetailsTable(title: "Apartment", rows: generateHomeRows())
+                        displayName: "Home insurance rental",
+                        detailsTable: generateDetailsTable(title: "Home insurance rental", rows: generateHomeRows()), perils: generatePerils(),
+                        insurableLimits: generateInsurableLimits(),
+                        insuranceTerms: [
+                            .init(
+                                displayName: "Terms and pre-sale information",
+                                url: "https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+                                type: .termsAndConditions
+                            )
+                        ]
                     )
                 ],
                 bundleCost: .init(

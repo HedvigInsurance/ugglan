@@ -44,6 +44,7 @@ extension Offer: Presentable {
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
+            DefaultStyling.applyCommonNavigationBarStyling(appearance)
             viewController.navigationItem.standardAppearance = appearance
             viewController.navigationItem.compactAppearance = appearance
         }
@@ -62,7 +63,7 @@ extension Offer: Presentable {
         viewController.navigationItem.leftBarButtonItem = optionsButton
         
         let scrollView = FormScrollView()
-        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.backgroundColor = .brand(.primaryBackground())
         
         let form = FormView()
         form.allowTouchesOfViewsOutsideBounds = true
@@ -76,6 +77,7 @@ extension Offer: Presentable {
         
         let navigationBarBackgroundView = UIView()
         navigationBarBackgroundView.backgroundColor = .brand(.secondaryBackground())
+        navigationBarBackgroundView.alpha = 0
         scrollView.addSubview(navigationBarBackgroundView)
         
         navigationBarBackgroundView.snp.makeConstraints { make in
@@ -93,16 +95,15 @@ extension Offer: Presentable {
             make.bottom.equalToSuperview()
             make.height.equalTo(CGFloat.hairlineWidth)
         }
-        
-        bag += scrollView.didLayoutSignal.onValue {
-            navigationBarBackgroundView.snp.updateConstraints { make in
-                make.height.equalTo(viewController.view.safeAreaInsets.top)
-            }
-            navigationBarBackgroundView.alpha = scrollView.contentOffset.y / 80
-        }
                 
         bag += scrollView.didScrollSignal.map { _ in scrollView.contentOffset }.onValue { contentOffset in
-            navigationBarBackgroundView.alpha = contentOffset.y / 80
+            navigationBarBackgroundView.alpha = contentOffset.y / Header.insetTop
+            navigationBarBackgroundView.snp.updateConstraints { make in
+                if let navigationBar = viewController.navigationController?.navigationBar,
+                   let insetTop = viewController.navigationController?.view.safeAreaInsets.top {
+                    make.height.equalTo(navigationBar.frame.height + insetTop)
+                }
+            }
         }
 
         return (viewController, bag)

@@ -2,7 +2,6 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
 import hGraphQL
 import Presentation
 import UIKit
@@ -13,8 +12,8 @@ extension GraphQL.PerilFragment: Equatable {
     }
 }
 
-struct ContractPerilRow: Hashable, Equatable {
-    static func == (lhs: ContractPerilRow, rhs: ContractPerilRow) -> Bool {
+struct PerilRow: Hashable, Equatable {
+    static func == (lhs: PerilRow, rhs: PerilRow) -> Bool {
         lhs.fragment == rhs.fragment
     }
 
@@ -25,20 +24,18 @@ struct ContractPerilRow: Hashable, Equatable {
     let fragment: GraphQL.PerilFragment
 }
 
-extension ContractPerilRow: Reusable {
-    static func makeAndConfigure() -> (make: UIView, configure: (ContractPerilRow) -> Disposable) {
+extension PerilRow: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (PerilRow) -> Disposable) {
         let view = UIControl()
 
-        let backgroundColor = UIColor(dynamic: { trait -> UIColor in
-            if #available(iOS 13.0, *) {
-                return trait.userInterfaceLevel == .elevated ? .brand(.primaryBackground()) : .brand(.secondaryBackground())
-            } else {
-                return .brand(.secondaryBackground())
-            }
-        })
-
+        let backgroundColor = UIColor.brand(.secondaryBackground())
         view.backgroundColor = backgroundColor
-        view.layer.cornerRadius = 5
+        view.layer.cornerRadius = .defaultCornerRadius
+        
+        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
+        view.layer.shadowOpacity = 1
+        view.layer.shadowRadius = 2
+        view.layer.shadowOffset = CGSize(width: 0, height: 1)
 
         let contentContainer = UIStackView()
         contentContainer.spacing = 10
@@ -55,14 +52,22 @@ extension ContractPerilRow: Reusable {
 
         return (view, { `self` in
             let bag = DisposeBag()
-
+            
+            bag += view.didLayoutSignal.onValue{ _ in
+                view.layer.shadowPath = UIBezierPath(
+                    roundedRect: view.layer.bounds,
+                    byRoundingCorners: [.allCorners],
+                    cornerRadii: CGSize(width: .defaultCornerRadius, height: .defaultCornerRadius)
+                ).cgPath
+            }
+            
             let remoteVectorIcon = RemoteVectorIcon(
                 self.fragment.icon.fragments.iconFragment,
                 threaded: true
             )
             bag += contentContainer.addArranged(remoteVectorIcon) { iconView in
                 iconView.snp.makeConstraints { make in
-                    make.width.height.equalTo(40)
+                    make.width.height.equalTo(35)
                 }
             }
 
@@ -73,7 +78,7 @@ extension ContractPerilRow: Reusable {
             bag += contentContainer.addArranged(title)
 
             bag += view.signal(for: .touchDown).animated(style: .easeOut(duration: 0.25), animations: { _ in
-                view.backgroundColor = DefaultStyling.current.sectionBackgroundSelected.background.color.withAlphaComponent(0.2)
+                view.backgroundColor = backgroundColor.darkened(amount: 0.05)
             })
 
             bag += view.delayedTouchCancel().animated(style: .easeOut(duration: 0.25), animations: { _ in

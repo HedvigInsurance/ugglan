@@ -28,10 +28,7 @@ extension Header: Presentable {
         view.axis = .vertical
         let bag = DisposeBag()
         
-        bag += view.didLayoutSignal.onValue {
-            let safeAreaInsetTop = view.viewController?.view.safeAreaInsets.top ?? 0
-            view.edgeInsets = UIEdgeInsets(top: safeAreaInsetTop + Self.insetTop, left: 15, bottom: 60, right: 15)
-        }
+        view.edgeInsets = UIEdgeInsets(top: Self.insetTop, left: 15, bottom: 60, right: 15)
         
         bag += view.add(GradientView(
             gradientOption: .init(
@@ -91,11 +88,16 @@ extension Header: Presentable {
             }
             
             bag += scrollView.signal(for: \.contentOffset).atOnce().onValue { contentOffset in
-                if view.frame.width > Self.trailingAlignmentBreakpoint {
-                    formContainer.transform = CGAffineTransform(translationX: 0, y: contentOffset.y)
-                } else {
-                    formContainer.transform = CGAffineTransform.identity
+                if let navigationBar = view.viewController?.navigationController?.navigationBar,
+                   let insetTop = view.viewController?.navigationController?.view.safeAreaInsets.top {
+                    let contentOffsetY = contentOffset.y + navigationBar.frame.height + insetTop
+                    if view.frame.width > Self.trailingAlignmentBreakpoint, contentOffsetY > 0 {
+                        formContainer.transform = CGAffineTransform(translationX: 0, y: contentOffsetY)
+                    } else {
+                        formContainer.transform = CGAffineTransform.identity
+                    }
                 }
+               
             }
         }
                 

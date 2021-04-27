@@ -18,15 +18,10 @@ struct DetailsSection {
     @Inject var state: OfferState
 }
 
-extension Array where Element: Disposable {
-    var disposable: Disposable {
-        DisposeBag(self)
-    }
-}
-
 extension DetailsSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView(headerView: nil, footerView: nil)
+        section.dynamicStyle = .brandGrouped(separatorType: .none)
         let bag = DisposeBag()
         
         bag += state.quotesSignal.onValueDisposePrevious { quotes in

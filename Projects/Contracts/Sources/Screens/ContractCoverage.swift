@@ -22,7 +22,7 @@ extension ContractCoverage: Presentable {
 
         let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
 
-        let perilCollection = ContractPerilCollection(
+        let perilCollection = PerilCollection(
             perilFragmentsSignal: ReadWriteSignal(perilFragments).readOnly()
         )
 
@@ -34,18 +34,11 @@ extension ContractCoverage: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        bag += form.append(MultilineLabel(
-            value: L10n.contractCoverageMoreInfo,
-            style: .brand(.headline(color: .primary))
-        ).insetted(insets))
-
-        bag += form.append(Spacing(height: 10))
-
-        let insurableLimits = ContractInsurableLimits(
+        let insurableLimits = InsurableLimits(
             insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
         )
 
-        bag += form.append(insurableLimits.insetted(insets))
+        bag += form.append(insurableLimits)
 
         bag += viewController.install(form, options: [])
 

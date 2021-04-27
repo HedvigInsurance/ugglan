@@ -46,7 +46,7 @@ extension OfferCoverage: Viewable {
             .plain()
             .readable(initial: [])
 
-        bag += stackView.addArranged(ContractPerilCollection(perilFragmentsSignal: perilFragmentsSignal))
+        bag += stackView.addArranged(PerilCollection(perilFragmentsSignal: perilFragmentsSignal))
 
         let insurableLimitFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal
             .compactMap { $0.lastQuoteOfMember.asCompleteQuote?.insurableLimits.map { $0.fragments.insurableLimitFragment } }
@@ -56,7 +56,7 @@ extension OfferCoverage: Viewable {
         bag += stackView.addArranged(Spacing(height: 20))
 
         stackView.addArrangedSubview(UILabel(value: L10n.offerScreenInsuredAmountsTitle, style: TextStyle.brand(.headline(color: .primary)).centerAligned))
-        bag += stackView.addArranged(ContractInsurableLimits(insurableLimitFragmentsSignal: insurableLimitFragmentsSignal))
+        bag += stackView.addArranged(InsurableLimits(insurableLimitFragmentsSignal: insurableLimitFragmentsSignal))
 
         return (stackView, bag)
     }

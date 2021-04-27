@@ -35,6 +35,10 @@ extension Debug: Presentable {
         let presentFullScreenSwitch = UISwitch()
         presentFullScreenRow.append(presentFullScreenSwitch)
         
+        let presentWithLargeTitlesRow = section.appendRow(title: "Present with large titles")
+        let presentWithLargeTitleSwitch = UISwitch()
+        presentWithLargeTitlesRow.append(presentWithLargeTitleSwitch)
+        
         func presentOffer(_ body: JSONObject) {
             let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body), store: ApolloStore())
 
@@ -45,7 +49,7 @@ extension Debug: Presentable {
             viewController.present(
                 Offer(ids: []).withCloseButton,
                 style: presentFullScreenSwitch.isOn ? .modally(presentationStyle: .fullScreen, transitionStyle: nil, capturesStatusBarAppearance: nil) : .detented(.large),
-                options: [.defaults]
+                options: presentWithLargeTitleSwitch.isOn ? [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)] : [.defaults]
             )
         }
 
