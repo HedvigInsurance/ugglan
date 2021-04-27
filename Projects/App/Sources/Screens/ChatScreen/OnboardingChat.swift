@@ -27,7 +27,7 @@ extension OnboardingChat: Presentable {
 
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
-        settingsButton.attachSinglePressMenu(
+        bag += settingsButton.attachSinglePressMenu(
             viewController: viewController,
             menu: Menu(
                 title: nil,
