@@ -12,8 +12,10 @@ struct MovingFlowIntro {
     @Inject var client: ApolloClient
 }
 
+typealias Contract = GraphQL.UpcomingAgreementQuery.Data.Contract
+
 enum MovingFlowIntroState {
-    case manual
+    case manual(Contract)
     case existing
     case normal
 }
@@ -27,9 +29,29 @@ extension MovingFlowIntro: Presentable {
 
         bag += viewController.install(form)
 
-        client.fetch(query: GraphQL.SelfChangeElibilityQuery()).onValue { data in
-            if let storyId = data.selfChangeEligibility.embarkStoryId {
-            } else {}
+        func showSections(for state: MovingFlowIntroState) {
+            switch state {
+            case let .manual(contract):
+                contract.status.asActiveStatus?.upcomingAgreementChange!.newAgreement.asSwedishHouseAgreement?.address
+            case .existing:
+                break
+            case .normal:
+                break
+            }
+        }
+
+        client.fetch(query: GraphQL.UpcomingAgreementQuery()).onValue { data in
+            if let contract = data.contracts.first {
+                showSections(for: .manual(contract))
+            } else {
+                client.fetch(query: GraphQL.SelfChangeElibilityQuery()).onValue { data in
+                    if let storyId = data.selfChangeEligibility.embarkStoryId {
+                        showSections(for: .normal)
+                    } else {
+                        showSections(for: .existing)
+                    }
+                }
+            }
         }
 
         return (viewController, bag)

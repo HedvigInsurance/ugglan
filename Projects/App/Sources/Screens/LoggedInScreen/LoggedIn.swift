@@ -199,19 +199,17 @@ extension LoggedIn: Presentable {
 
 public extension Contracts {
     static func getSections() -> [HomeSection] {
-        [
-            HomeSection(
-                title: L10n.HomeTab.editingSectionTitle,
-                style: .vertical,
-                children:
-                [.init(
-                    title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                    icon: hCoreUIAssets.apartment.image,
-                    handler: { viewController in
-                        viewController.present(MovingFlow())
-                    }
-                )]
-            ),
-        ]
+        [HomeSection(
+            title: L10n.HomeTab.editingSectionTitle,
+            style: .vertical,
+            children:
+            [.init(
+                title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                icon: hCoreUIAssets.apartment.image,
+                handler: { viewController in
+                    viewController.present(MovingFlow())
+                }
+            )]
+        )]
     }
 }

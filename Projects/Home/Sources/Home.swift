@@ -121,7 +121,7 @@ extension Home: Presentable {
                 case .vertical:
                     guard state == .active else { return }
                     let section = HomeVerticalSection(section: homeSection)
-                    functionBag += bottomRow.append(section)
+                    functionBag += titleRow.append(section)
                 case .header:
                     break
                 }
