@@ -28,11 +28,13 @@ extension GradientView: Viewable {
         layer.startPoint = gradientOption.startPoint
         layer.endPoint = gradientOption.endPoint
         layer.transform = gradientOption.transform
+        layer.masksToBounds = true
         return layer
     }
 
     var shimmerLayer: CAGradientLayer {
         let layer = CAGradientLayer()
+        layer.isHidden = !self.gradientOption.shouldShimmer
         layer.colors = [
             UIColor(red: 1, green: 1, blue: 1, alpha: 0).cgColor,
             UIColor(red: 1, green: 1, blue: 1, alpha: 0.5).cgColor,
@@ -111,36 +113,44 @@ extension GradientView: Viewable {
                 innerBag += shimmerView.didLayoutSignal.delay(by: 0.1).animated(style: .easeOut(duration: 0.5), animations: {
                     shimmerView.transform = CGAffineTransform(translationX: gradientView.frame.width + shimmerView.frame.width, y: 0)
                 })
+                
+                func remove() {
+                    layer.removeFromSuperlayer()
+                    orbLayer.removeFromSuperlayer()
+                    animatedLayer.removeFromSuperlayer()
+                    shimmerView.transform = .identity
+                }
 
-                let fadeInAnimation = CABasicAnimation(keyPath: "opacity")
-                fadeInAnimation.fromValue = 0
-                fadeInAnimation.toValue = 1
-                fadeInAnimation.duration = 0.25
-                fadeInAnimation.fillMode = .forwards
+                if gradientOption.shouldAnimate {
+                    let fadeInAnimation = CABasicAnimation(keyPath: "opacity")
+                    fadeInAnimation.fromValue = 0
+                    fadeInAnimation.toValue = 1
+                    fadeInAnimation.duration = 0.25
+                    fadeInAnimation.fillMode = .forwards
 
-                layer.add(fadeInAnimation, forKey: "fadeInAnimation")
+                    layer.add(fadeInAnimation, forKey: "fadeInAnimation")
 
-                innerBag += {
-                    CATransaction.begin()
+                    innerBag += {
+                        CATransaction.begin()
 
-                    let fadeOutAnimation = CABasicAnimation(keyPath: "opacity")
-                    fadeOutAnimation.fromValue = 1
-                    fadeOutAnimation.toValue = 0
-                    fadeOutAnimation.duration = 0.25
-                    fadeOutAnimation.fillMode = .forwards
+                        let fadeOutAnimation = CABasicAnimation(keyPath: "opacity")
+                        fadeOutAnimation.fromValue = 1
+                        fadeOutAnimation.toValue = 0
+                        fadeOutAnimation.duration = 0.25
+                        fadeOutAnimation.fillMode = .forwards
 
-                    layer.opacity = 0
+                        layer.opacity = 0
 
-                    CATransaction.setCompletionBlock {
-                        layer.removeFromSuperlayer()
-                        orbLayer.removeFromSuperlayer()
-                        animatedLayer.removeFromSuperlayer()
-                        shimmerView.transform = .identity
+                        CATransaction.setCompletionBlock {
+                            remove()
+                        }
+
+                        layer.add(fadeOutAnimation, forKey: "fadeOutAnimation")
+
+                        CATransaction.commit()
                     }
-
-                    layer.add(fadeOutAnimation, forKey: "fadeOutAnimation")
-
-                    CATransaction.commit()
+                } else {
+                    innerBag += remove
                 }
             }
 

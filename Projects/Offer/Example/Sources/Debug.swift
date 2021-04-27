@@ -31,6 +31,10 @@ extension Debug: Presentable {
 
         let section = form.appendSection(headerView: UILabel(value: "Offer", style: .default), footerView: nil)
         
+        let presentFullScreenRow = section.appendRow(title: "Present in full screen")
+        let presentFullScreenSwitch = UISwitch()
+        presentFullScreenRow.append(presentFullScreenSwitch)
+        
         func presentOffer(_ body: JSONObject) {
             let apolloClient = ApolloClient(networkTransport: MockNetworkTransport(body: body), store: ApolloStore())
 
@@ -39,15 +43,18 @@ extension Debug: Presentable {
             })
 
             viewController.present(
-                Offer(ids: []),
-                style: .detented(.large),
-                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                Offer(ids: []).withCloseButton,
+                style: presentFullScreenSwitch.isOn ? .modally(presentationStyle: .fullScreen, transitionStyle: nil, capturesStatusBarAppearance: nil) : .detented(.large),
+                options: [.defaults]
             )
         }
 
-
-        bag += section.appendRow(title: "Test").onValue {
+        bag += section.appendRow(title: "Swedish apartment").onValue {
             presentOffer(.makeSwedishApartment())
+        }
+        
+        bag += section.appendRow(title: "Norwegian bundle").onValue {
+            presentOffer(.makeNorwegianBundle())
         }
 
         bag += viewController.install(form)

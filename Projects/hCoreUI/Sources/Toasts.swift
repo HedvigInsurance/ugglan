@@ -210,7 +210,7 @@ extension Toasts: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
-        let containerView = PassTroughView()
+        let containerView = PassThroughView()
 
         containerView.layer.zPosition = .greatestFiniteMagnitude
 
