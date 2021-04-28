@@ -47,7 +47,10 @@ extension Debug: Presentable {
             })
 
             viewController.present(
-                Offer(ids: []).withCloseButton,
+                Offer(
+                    offerIDContainer: .stored,
+                    menu: Menu(title: nil, children: [])
+                ).withCloseButton,
                 style: presentFullScreenSwitch.isOn ? .modally(presentationStyle: .fullScreen, transitionStyle: nil, capturesStatusBarAppearance: nil) : .detented(.large),
                 options: presentWithLargeTitleSwitch.isOn ? [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)] : [.defaults]
             )
