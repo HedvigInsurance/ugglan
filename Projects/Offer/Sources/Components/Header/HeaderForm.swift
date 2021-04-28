@@ -17,16 +17,23 @@ import Presentation
 struct HeaderForm {}
 
 extension HeaderForm: Presentable {
-    func materialize() -> (FormView, Disposable) {
+    func materialize() -> (UIView, Disposable) {
         let bag = DisposeBag()
+        
+        let backgroundView = UIView()
+        backgroundView.layer.cornerRadius = .defaultCornerRadius
+        backgroundView.backgroundColor = .brand(.secondaryBackground())
         
         let form = FormView()
         form.dynamicStyle = DynamicFormStyle { _ in
             .init(insets: .zero)
         }
         
-        form.layer.cornerRadius = .defaultCornerRadius
-        form.backgroundColor = .brand(.secondaryBackground())
+        backgroundView.addSubview(form)
+        
+        form.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         let section = form.appendSection()
         section.dynamicStyle = .brandGroupedNoBackground
@@ -41,6 +48,6 @@ extension HeaderForm: Presentable {
         
         bag += form.append(DiscountCodeSection())
         
-        return (form, bag)
+        return (backgroundView, bag)
     }
 }
