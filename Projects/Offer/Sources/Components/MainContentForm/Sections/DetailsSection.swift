@@ -19,7 +19,7 @@ struct DetailsSection {
 }
 
 extension DetailsSection: Presentable {
-    func materialize() -> (SectionView, Disposable) {
+    func materialize() -> (UIView, Disposable) {
         let section = SectionView(headerView: nil, footerView: nil)
         section.dynamicStyle = .brandGrouped(separatorType: .none)
         let bag = DisposeBag()
@@ -62,7 +62,13 @@ extension DetailsSection: Presentable {
                 return innerBag
             }.disposable
         }
+        
+        let expandableView = ExpandableContent(
+            contentView: section,
+            isExpanded: .init(false),
+            collapsedMaxHeight: 400
+        ).materialize(into: bag)
                 
-        return (section, bag)
+        return (expandableView, bag)
     }
 }

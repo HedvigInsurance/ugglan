@@ -11,6 +11,7 @@ public enum ButtonType {
     case standardOutline(borderColor: UIColor, textColor: UIColor)
     case tinyIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
     case outline(borderColor: UIColor, textColor: UIColor)
+    case outlineIcon(borderColor: UIColor, textColor: UIColor, icon: ButtonIcon)
     case pillSemiTransparent(backgroundColor: UIColor, textColor: UIColor)
     case transparent(textColor: UIColor)
     case iconTransparent(textColor: UIColor, icon: ButtonIcon)
@@ -42,7 +43,7 @@ public enum ButtonType {
         switch self {
         case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
-        case .outline, .transparent, .standardOutline:
+        case .outline, .outlineIcon, .transparent, .standardOutline:
             return 0
         case .pillSemiTransparent:
             return 0.6
@@ -55,7 +56,7 @@ public enum ButtonType {
         switch self {
         case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
-        case .outline, .standardOutline:
+        case .outline, .outlineIcon, .standardOutline:
             return 0.05
         case .pillSemiTransparent:
             return 0.6
@@ -70,7 +71,7 @@ public enum ButtonType {
         switch self {
         case .standard, .standardSmall, .standardIcon, .tinyIcon:
             return 1
-        case .outline, .standardOutline:
+        case .outline, .outlineIcon, .standardOutline:
             return 0.05
         case .pillSemiTransparent:
             return 0.6
@@ -92,6 +93,8 @@ public enum ButtonType {
         case let .tinyIcon(backgroundColor, _, _):
             return backgroundColor
         case let .outline(borderColor, _):
+            return borderColor
+        case let .outlineIcon(borderColor, _, _):
             return borderColor
         case let .standardOutline(borderColor, _):
             return borderColor
@@ -116,6 +119,8 @@ public enum ButtonType {
             return textColor
         case let .outline(_, textColor):
             return textColor
+        case let .outlineIcon(_, textColor, _):
+            return textColor
         case let .standardOutline(_, textColor):
             return textColor
         case let .pillSemiTransparent(_, textColor):
@@ -133,7 +138,7 @@ public enum ButtonType {
             return 50
         case .standardSmall:
             return 34
-        case .outline:
+        case .outline, .outlineIcon:
             return 34
         case .pillSemiTransparent:
             return 30
@@ -156,7 +161,7 @@ public enum ButtonType {
             return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
         case .iconTransparent:
             return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
-        case .tinyIcon:
+        case .tinyIcon, .outlineIcon:
             return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
         case .transparent:
             return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
@@ -170,6 +175,8 @@ public enum ButtonType {
         case .standardSmall:
             return 40
         case .outline:
+            return 35
+        case .outlineIcon:
             return 35
         case .pillSemiTransparent:
             return 35
@@ -188,6 +195,8 @@ public enum ButtonType {
             return icon
         case let .standardIcon(_, _, icon):
             return icon
+        case let .outlineIcon(_, _, icon):
+            return icon
         case let .tinyIcon(_, _, icon):
             return icon
         default:
@@ -203,6 +212,8 @@ public enum ButtonType {
             return textColor
         case .tinyIcon:
             return textColor
+        case .outlineIcon:
+            return textColor
         default:
             return nil
         }
@@ -215,7 +226,9 @@ public enum ButtonType {
         case .standardIcon:
             return 4
         case .tinyIcon:
-            return 3
+            return 4
+        case .outlineIcon:
+            return 7
         default:
             return 0
         }
@@ -223,7 +236,7 @@ public enum ButtonType {
 
     var borderWidth: CGFloat {
         switch self {
-        case .outline, .standardOutline:
+        case .outline, .outlineIcon, .standardOutline:
             return 1
         default:
             return 0
@@ -235,6 +248,8 @@ public enum ButtonType {
         case let .outline(borderColor, _):
             return borderColor
         case let .standardOutline(borderColor, _):
+            return borderColor
+        case let .outlineIcon(borderColor, _, _):
             return borderColor
         default:
             return UIColor.clear
@@ -434,22 +449,8 @@ extension Button: Viewable {
             }
         }
 
-        bag += title.atOnce().withLatestFrom(type).onValueDisposePrevious { title, type in
-            let innerBag = DisposeBag()
-
+        bag += title.atOnce().onValue { title in
             button.setTitle(title)
-
-            let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
-
-            innerBag += button.didLayoutSignal.take(first: 1).onValue { _ in
-                button.snp.updateConstraints { make in
-                    make.width.equalTo(
-                        button.intrinsicContentSize.width + type.extraWidthOffset + iconWidth
-                    )
-                }
-            }
-
-            return innerBag
         }
 
         bag += button.signal(for: .touchDown).filter { self.animate }
@@ -503,17 +504,19 @@ extension Button: Viewable {
             make.width.equalTo(0)
             make.height.equalTo(0)
         }
+        
+        bag += button.didMoveToWindowSignal.onFirstValue {
+            button.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+            }
+        }
 
-        bag += button.didLayoutSignal.take(first: 1).onValue { _ in
-            let type = self.type.value
+        bag += combineLatest(button.didLayoutSignal, type.atOnce().plain()).onValue { _, type in
             let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
 
             button.snp.updateConstraints { make in
                 make.width.equalTo(button.intrinsicContentSize.width + self.type.value.extraWidthOffset + iconWidth)
                 make.height.equalTo(self.type.value.height)
-            }
-            button.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
             }
         }
 
