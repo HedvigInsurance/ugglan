@@ -69,7 +69,7 @@ public struct ApplicationState {
         }
         
         func preferredLocaleForMarket(_ market: Localization.Locale.Market) -> Localization.Locale? {
-            let availableLanguages = market.availableLocales.map { $0.rawValue }
+            let availableLanguages = market.availableLocales.map { $0.lprojCode }
 
             let bestMatchedLanguage = Bundle.preferredLocalizations(
                 from: availableLanguages
