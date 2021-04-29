@@ -61,12 +61,6 @@ extension OfferChat: Presentable {
             make.width.equalTo(80)
         }
 
-        bag += client.perform(mutation: GraphQL.OfferClosedMutation()).onValue { _ in
-            chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
-                chat.chatState.subscribe()
-            }
-        }
-
         return (viewController, Future { completion in
             bag += future.onResult { result in
                 completion(result)
