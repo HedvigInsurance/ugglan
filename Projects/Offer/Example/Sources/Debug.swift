@@ -61,7 +61,76 @@ extension Debug: Presentable {
         }
         
         bag += section.appendRow(title: "Swedish house").onValue {
-            presentOffer(.makeSwedishHouse())
+            presentOffer(
+                .makeSwedishHouse(
+                    bundleCost: .init(
+                        monthlyGross: .init(amount: "100", currency: "SEK"),
+                        monthlyDiscount: .init(amount: "0", currency: "SEK"),
+                        monthlyNet: .init(amount: "100", currency: "SEK")
+                    ),
+                    redeemedCampaigns: []
+                )
+            )
+        }
+        
+        bag += section.appendRow(title: "Swedish house - discounted").onValue {
+            presentOffer(
+                .makeSwedishHouse(
+                    bundleCost: .init(
+                        monthlyGross: .init(amount: "110", currency: "SEK"),
+                        monthlyDiscount: .init(amount: "10", currency: "SEK"),
+                        monthlyNet: .init(amount: "100", currency: "SEK")
+                    ),
+                    redeemedCampaigns: [
+                        .init(code: "ABC", incentive: .makeMonthlyCostDeduction(amount: .init(amount: "10", currency: "SEK")))
+                    ]
+                )
+            )
+        }
+        
+        bag += section.appendRow(title: "Swedish house - discounted indefinite").onValue {
+            presentOffer(
+                .makeSwedishHouse(
+                    bundleCost: .init(
+                        monthlyGross: .init(amount: "110", currency: "SEK"),
+                        monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
+                        monthlyNet: .init(amount: "82.5", currency: "SEK")
+                    ),
+                    redeemedCampaigns: [
+                        .init(code: "ABC", incentive: .makeIndefinitePercentageDiscount(percentageDiscount: 25))
+                    ]
+                )
+            )
+        }
+        
+        bag += section.appendRow(title: "Swedish house - discounted free months").onValue {
+            presentOffer(
+                .makeSwedishHouse(
+                    bundleCost: .init(
+                        monthlyGross: .init(amount: "110", currency: "SEK"),
+                        monthlyDiscount: .init(amount: "110", currency: "SEK"),
+                        monthlyNet: .init(amount: "0", currency: "SEK")
+                    ),
+                    redeemedCampaigns: [
+                        .init(code: "ABC", incentive: .makeFreeMonths(quantity: 3))
+                    ]
+                )
+            )
+        }
+        
+        bag += section.appendRow(title: "Swedish house - discounted percentage for months").onValue {
+            presentOffer(
+                .makeSwedishHouse(
+                    bundleCost: .init(
+                        monthlyGross: .init(amount: "110", currency: "SEK"),
+                        monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
+                        monthlyNet: .init(amount: "82.5", currency: "SEK")
+                    ),
+                    redeemedCampaigns: [
+                        .init(code: "ABC", incentive: .makePercentageDiscountMonths(percentageDiscount: 25, percentageNumberOfMonths: 3))
+                    ]
+                )
+            )
         }
         
         bag += section.appendRow(title: "Norwegian bundle").onValue {

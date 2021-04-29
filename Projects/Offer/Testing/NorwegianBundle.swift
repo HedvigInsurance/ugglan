@@ -85,7 +85,8 @@ public extension JSONObject {
                     monthlyDiscount: .init(amount: "100", currency: "SEK"),
                     monthlyNet: .init(amount: "100", currency: "SEK")
                 )
-            )
+            ),
+            redeemedCampaigns: []
         ).jsonObject
     }
 }

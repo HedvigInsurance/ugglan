@@ -48,4 +48,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         freeUntil
     }
   }
+  redeemedCampaigns {
+    ...CampaignFragment
+  }
 }
