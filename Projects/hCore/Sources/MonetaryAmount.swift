@@ -54,7 +54,7 @@ public extension MonetaryAmount {
         case "DKK":
             return Locale(identifier: "da_DK")
         default:
-            fatalError("Missing defined locale for currency \(currency)")
+            return Localization.Locale.currentLocale.foundation
         }
     }
     
