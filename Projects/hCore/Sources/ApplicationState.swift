@@ -76,7 +76,7 @@ public struct ApplicationState {
             ).first
 
             if let bestMatchedLanguage = bestMatchedLanguage {
-                return Localization.Locale(rawValue: bestMatchedLanguage)
+                return Localization.Locale(rawValue: bestMatchedLanguage.replacingOccurrences(of: "-", with: "_"))
             }
             
             return nil
@@ -94,7 +94,7 @@ public struct ApplicationState {
         ).first
 
         if let bestMatchedLanguage = bestMatchedLanguage,
-           let locale = Localization.Locale(rawValue: bestMatchedLanguage) {
+           let locale = Localization.Locale(rawValue: bestMatchedLanguage.replacingOccurrences(of: "-", with: "_")) {
             return locale
         }
 

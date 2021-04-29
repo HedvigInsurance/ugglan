@@ -4,12 +4,15 @@ import Foundation
 import hCore
 import hCoreUI
 import UIKit
+import hGraphQL
 
 public struct MarketRow {
     @ReadWriteState var market: Market
+    var availableLocales: [GraphQL.Locale]
     
-    public init(market: Market) {
+    public init(market: Market, availableLocales: [GraphQL.Locale]) {
         self.market = market
+        self.availableLocales = availableLocales
     }
 }
 
@@ -52,7 +55,13 @@ extension MarketRow: Viewable {
         row.append(chevronImageView)
 
         bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
-            viewController.present(PickMarket(currentMarket: market).wrappedInCloseButton(), style: .detented(.scrollViewContentSize(20))).onValue { newMarket in
+            viewController.present(
+                PickMarket(
+                    currentMarket: market,
+                    availableLocales: availableLocales
+                ).wrappedInCloseButton(),
+                style: .detented(.scrollViewContentSize(20))
+            ).onValue { newMarket in
                 $market.value = newMarket
             }
         }

@@ -5,9 +5,11 @@ import hCore
 import hCoreUI
 import Presentation
 import UIKit
+import hGraphQL
 
 struct PickMarket {
     let currentMarket: Market
+    let availableLocales: [GraphQL.Locale]
 }
 
 extension PickMarket: Presentable {
@@ -22,7 +24,11 @@ extension PickMarket: Presentable {
         let section = form.appendSection()
 
         return (viewController, Future { completion in
-            Market.allCases.filter { $0.enabled }.forEach { market in
+            Market.allCases.filter { market in
+                availableLocales.first { locale -> Bool in
+                    locale.rawValue.lowercased().contains(market.id)
+                } != nil
+            }.forEach { market in
                 let row = RowView(title: market.title)
 
                 let iconImageView = UIImageView()

@@ -50,15 +50,6 @@ public enum Market: String, CaseIterable {
         }
     }
 
-    var enabled: Bool {
-        switch self {
-        case .norway, .sweden:
-            return true
-        case .denmark:
-            return Environment.current == .staging
-        }
-    }
-
     var preferredLanguage: Localization.Locale {
         guard let firstLanguage = languages.first else {
             return .sv_SE

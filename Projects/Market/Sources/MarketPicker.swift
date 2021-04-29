@@ -113,16 +113,17 @@ extension MarketPicker: Presentable {
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
-        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal.compactMap { $0.geo.countryIsoCode }.onValue { countryISOCode in
-            switch countryISOCode {
-            case "SE":
-                pickedMarketSignal.value = .sweden
-            case "NO":
-                pickedMarketSignal.value = .norway
-            default:
+        bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal.onValue { data in
+            if let bestMatchedLocale = data.availableLocales.first(where: { locale -> Bool in
+                locale.rawValue.lowercased().contains(data.geo.countryIsoCode.lowercased())
+            }) {
+                let locale = Localization.Locale(rawValue: bestMatchedLocale.rawValue)!
+                let market = Market(rawValue: locale.market.rawValue)!
+                pickedMarketSignal.value = market
+            } else {
                 pickedMarketSignal.value = .sweden
             }
-
+        
             Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
 
             let section = form.appendSection()
@@ -130,7 +131,10 @@ extension MarketPicker: Presentable {
                 section.overrideUserInterfaceStyle = .dark
             }
 
-            let marketRow = MarketRow(market: pickedMarketSignal.value)
+            let marketRow = MarketRow(
+                market: pickedMarketSignal.value,
+                availableLocales: data.availableLocales
+            )
             bag += section.append(marketRow)
 
             bag += marketRow.$market.onValue { newMarket in

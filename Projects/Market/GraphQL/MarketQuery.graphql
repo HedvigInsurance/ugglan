@@ -1,4 +1,5 @@
-query Geo {
+query Market {
+    availableLocales
     geo {
         countryISOCode
     }
