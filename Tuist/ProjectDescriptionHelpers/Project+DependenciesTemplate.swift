@@ -113,7 +113,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .shake:
             return [
-                .package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.3")),
+                .package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5")),
             ]
         }
     }
