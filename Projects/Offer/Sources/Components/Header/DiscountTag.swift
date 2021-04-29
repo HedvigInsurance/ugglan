@@ -42,11 +42,18 @@ extension DiscountTag: Presentable {
         contentStackView.distribution = .equalCentering
         horizontalCenteringStackView.addArrangedSubview(contentStackView)
         
+        let textStyle = TextStyle.brand(.caption1(color: .primary(state: .positive))).centerAligned.uppercased
         
-        let titleLabel = UILabel(value: "", style: .brand(.caption1(color: .primary)).centerAligned.uppercased)
+        let titleLabel = UILabel(
+            value: "",
+            style: textStyle
+        )
         contentStackView.addArrangedSubview(titleLabel)
 
-        let subtitleLabel = UILabel(value: "", style: .brand(.caption1(color: .primary)).centerAligned.uppercased)
+        let subtitleLabel = UILabel(
+            value: "",
+            style: textStyle
+        )
         contentStackView.addArrangedSubview(subtitleLabel)
         
         bag += state.dataSignal.map { $0.redeemedCampaigns.first }.onValue { campaign in
