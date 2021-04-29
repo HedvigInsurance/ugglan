@@ -43,7 +43,7 @@ extension FutureSection: Viewable {
                 } else if
                     let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider,
                     let insuranceProvider = insuranceProvidersData.insuranceProviders.first(where: { provider -> Bool in
-                        provider.name == switchedFromInsuranceProvider
+                        provider.id == switchedFromInsuranceProvider
                     }),
                     insuranceProvider.switchable
                 {
