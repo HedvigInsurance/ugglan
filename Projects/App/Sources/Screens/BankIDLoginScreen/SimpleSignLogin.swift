@@ -35,14 +35,10 @@ struct SimpleSignLoginView: Presentable {
             isEnabled: false
         )
 
-        let textField = UITextField(value: "", placeholder: "", style: .default)
+        let textField = UITextField(value: "", placeholder: L10n.SimpleSignLogin.TextField.helperText, style: .default)
         masking.applySettings(textField)
-        textField.placeholder = L10n.SimpleSignLogin.TextField.helperText
         textField.clearButtonMode = .whileEditing
-
-        bag += textField.didMoveToWindowSignal.delay(by: 0.5).onValue {
-            textField.becomeFirstResponder()
-        }
+        textField.becomeFirstResponder()
 
         bag += masking.isValidSignal(textField).atOnce().bindTo(continueButton.isEnabled)
         bag += masking.applyMasking(textField)
@@ -72,7 +68,7 @@ struct SimpleSignLoginView: Presentable {
 
         return (viewController, FiniteSignal { callback in
             bag += continueButton.onTapSignal.onValue {
-                callback(.value(textField.text ?? ""))
+                callback(.value(masking.unmaskedValue(text: textField.value)))
             }
 
             return bag
