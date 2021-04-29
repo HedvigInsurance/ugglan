@@ -21,6 +21,7 @@ struct DiscountTag {
 extension DiscountTag: Presentable {
     func materialize() -> (UIView, Disposable) {
         let view = UIView()
+        view.isHidden = true
         view.backgroundColor = .tint(.lavenderOne)
         let bag = DisposeBag()
         
