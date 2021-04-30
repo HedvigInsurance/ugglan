@@ -108,7 +108,7 @@ extension AppInfo: Presentable {
                 if #available(iOS 13, *) {
                     viewController.present(
                         UIHostingController(rootView: Debug()),
-                        style: .detented(.medium, .large),
+                        style: .detented(.large),
                         options: []
                     )
                 }

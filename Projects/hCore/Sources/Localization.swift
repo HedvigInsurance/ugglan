@@ -2,7 +2,7 @@ import Foundation
 import hGraphQL
 
 public enum Localization {
-    public enum Locale: String, CaseIterable {
+    public enum Locale: String, CaseIterable, Hashable {
         @ReadWriteState public static var currentLocale: Locale = .sv_SE
         case sv_SE
         case en_SE

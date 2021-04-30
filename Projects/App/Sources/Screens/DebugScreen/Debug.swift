@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 import SwiftUI
+import Flow
 
 @available(iOS 13, *)
 struct Debug: View {
@@ -73,6 +74,21 @@ struct Debug: View {
 
                         userDefaultsDict.filter { key, _ in key.contains("tooltip") }.forEach { key, _ in
                             UserDefaults.standard.setValue(nil, forKey: key)
+                        }
+                    })
+                }
+                Section {
+                    SwiftUI.NavigationLink("Exchange token", destination: ExchangeToken { token, locale in
+                        Localization.Locale.currentLocale = locale
+                        ApolloClient.cache = InMemoryNormalizedCache()
+                        ApolloClient.saveToken(token: token)
+                        
+                        ApolloClient.initAndRegisterClient().always {
+                            ChatState.shared = ChatState()
+                            let client: ApolloClient = Dependencies.shared.resolve()
+                            client.perform(mutation: GraphQL.UpdateLanguageMutation(language: locale.code, pickedLocale: locale.asGraphQLLocale())).onValue { _ in
+                                UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+                            }
                         }
                     })
                 }
