@@ -256,7 +256,7 @@ extension Toasts: Viewable {
             .compactMap { $0 }
             .wait(until: pauseSignal.distinct().map { !$0 })
             .distinct()
-            .onValueDisposePrevious { toast in
+            .onValueDisposePrevious { toast in                
                 let innerBag = bag.innerBag()
                 pauseSignal.value = true
                 hideBag.dispose()

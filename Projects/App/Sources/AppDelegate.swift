@@ -257,27 +257,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
-        if Environment.hasOverridenDefault {
-            let toast = Toast(
-                symbol: .icon(hCoreUIAssets.settingsIcon.image),
-                body: "Targeting \(Environment.current.displayName) environment",
-                textColor: .black,
-                backgroundColor: .brand(.regularCaution)
-            )
-
-            if #available(iOS 13, *) {
-                self.bag += toast.onTap.onValue {
-                    self.appFlow.window.rootViewController?.present(
-                        UIHostingController(rootView: Debug()),
-                        style: .detented(.medium, .large),
-                        options: []
-                    )
-                }
-            }
-
-            Toasts.shared.displayToast(toast: toast)
-        }
-
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil {
             ApplicationState.setLastNewsSeen()
@@ -305,9 +284,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag += launchFuture.onValue { _ in
             launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
+            
+            if Environment.hasOverridenDefault {
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
+                    body: "Targeting \(Environment.current.displayName) environment",
+                    textColor: .black,
+                    backgroundColor: .brand(.regularCaution)
+                )
+
+                if #available(iOS 13, *) {
+                    self.bag += toast.onTap.onValue {
+                        self.appFlow.window.rootViewController?.present(
+                            UIHostingController(rootView: Debug()),
+                            style: .detented(.medium, .large),
+                            options: []
+                        )
+                    }
+                }
+
+                Toasts.shared.displayToast(toast: toast)
+            }
         }
 
         return true
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let toast = Toast(
+            symbol: .none,
+            body: notification.request.content.title,
+            subtitle: notification.request.content.body
+        )
+
+        if ChatState.shared.allowNewMessageToast {
+            Toasts.shared.displayToast(toast: toast)
+        }
     }
 }
 
