@@ -28,19 +28,25 @@ struct MessageBubble {
 }
 
 extension MessageBubble: Viewable {
-    func itemView(value: String) -> UILabel {
-        let label = UILabel(value: value, style: .brand(.body(color: .primary(state: .positive))))
+    func itemView(value: String) -> UIView {
+        let label = UILabel(value: "", style: .brand(.body(color: .primary(state: .positive))))
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor(red: 0.235, green: 0.235, blue: 0.263, alpha: 0.29)
+        backgroundView.layer.cornerRadius = 6
+        backgroundView.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(10)
+        }
         label.text = value
-        label.backgroundColor = UIColor.brand(.embarkMessageBubble()).withAlphaComponent(0.29)
-        return label
+        return backgroundView
     }
 
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let containerStackView = UIStackView()
-        containerStackView.axis = .horizontal
-        containerStackView.alignment = .leading
+        containerStackView.axis = .vertical
+        containerStackView.alignment = messageType == .received ? .leading : .trailing
         containerStackView.isHidden = true
 
         let stylingView = UIView()
@@ -57,9 +63,10 @@ extension MessageBubble: Viewable {
         stylingView.alpha = 0
 
         let containerView = UIStackView()
+        containerView.axis = .vertical
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.insetsLayoutMarginsFromSafeArea = false
-        containerView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 3, right: 15)
+        containerView.layoutMargins = UIEdgeInsets(top: 12, left: 15, bottom: 12, right: 15)
 
         let bodyStyle = TextStyle.brand(.body(color: messageType == .replied ? .primary(state: .positive) : .primary))
 
@@ -105,10 +112,12 @@ extension MessageBubble: Viewable {
         pillStack.alignment = .leading
 
         pills.forEach { value in
-            pillStack.addSubview(itemView(value: value))
+            pillStack.addArrangedSubview(itemView(value: value))
         }
 
-        containerView.addSubview(pillStack)
+        if !pills.isEmpty {
+            containerView.addArrangedSubview(pillStack)
+        }
 
         stylingView.addSubview(containerView)
 
@@ -124,7 +133,7 @@ extension MessageBubble: Viewable {
             bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in
                 let pushView = UIView()
                 pushView.snp.makeConstraints { make in
-                    make.height.equalTo(50)
+                    make.height.equalTo(20)
                 }
                 pushView.setContentHuggingPriority(.defaultLow, for: .horizontal)
                 containerStackView.insertArrangedSubview(pushView, at: 0)

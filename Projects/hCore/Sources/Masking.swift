@@ -65,7 +65,7 @@ public struct Masking {
         case .norwegianPostalCode:
             return text.count == 4
         case .postalCode:
-            return text.count == 5
+            return unmask(text: text).count == 5
         case .digits:
             return CharacterSet.decimalDigits.isSuperset(
                 of: CharacterSet(charactersIn: text)
@@ -80,7 +80,7 @@ public struct Masking {
         case .personalNumber:
             return text.replacingOccurrences(of: "-", with: "")
         case .postalCode:
-            return text.replacingOccurrences(of: " ", with: "")
+            return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .birthDate:
             return text
         case .birthDateReverse:
@@ -103,9 +103,9 @@ public struct Masking {
             return text
         }
     }
-    
+
     public func unmaskedValue(text: String) -> String {
-        return unmask(text: text).replacingOccurrences(of: "\u{00a0}", with: " ")
+        unmask(text: text).replacingOccurrences(of: "\u{00a0}", with: " ")
     }
 
     public func calculateAge(from text: String) -> Int? {
