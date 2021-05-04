@@ -76,8 +76,7 @@ extension EmbarkActionSetInputData: Viewable {
         }
 
         let actionSignals = actions.enumerated().map { index, action -> (signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: Action) in
-
-            let endIndex = (actions.endIndex ?? 1)
+            let endIndex = actions.endIndex
             let isLastAction: Bool = index == endIndex - 1
 
             let masking = getMasking(action)

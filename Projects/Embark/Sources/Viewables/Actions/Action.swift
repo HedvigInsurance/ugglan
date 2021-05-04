@@ -87,6 +87,7 @@ extension Action: Viewable {
 
         let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal).animated(style: animationStyle) { _, _ in
             isHiddenSignal.value = true
+            view.firstPossibleResponder?.resignFirstResponder()
             view.layoutIfNeeded()
         }.delay(by: 0)
 
