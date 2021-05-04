@@ -17,7 +17,14 @@ struct MessageBubble {
     let messageType: MessageType
     let pills: [String]
 
-    init(text: String, delay: TimeInterval, animated: Bool = false, animationDelay: TimeInterval = 0, messageType: MessageType = .received, pills: [String] = []) {
+    init(
+        text: String,
+        delay: TimeInterval,
+        animated: Bool = false,
+        animationDelay: TimeInterval = 0,
+        messageType: MessageType = .received,
+        pills: [String] = []
+    ) {
         self.delay = delay
         textSignal = ReadWriteSignal(text)
         self.animated = animated
@@ -31,7 +38,8 @@ extension MessageBubble: Viewable {
     func itemView(value: String) -> UIView {
         let label = UILabel(value: "", style: .brand(.body(color: .primary(state: .positive))))
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor(red: 0.235, green: 0.235, blue: 0.263, alpha: 0.29)
+        backgroundView.layer.borderWidth = 1.0
+        backgroundView.layer.borderColor = UIColor.brand(.primaryBorderColor).cgColor
         backgroundView.layer.cornerRadius = 6
         backgroundView.addSubview(label)
         label.snp.makeConstraints { make in
@@ -66,7 +74,7 @@ extension MessageBubble: Viewable {
         containerView.axis = .vertical
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.insetsLayoutMarginsFromSafeArea = false
-        containerView.layoutMargins = UIEdgeInsets(top: 12, left: 15, bottom: 12, right: 15)
+        containerView.layoutMargins = UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 15)
 
         let bodyStyle = TextStyle.brand(.body(color: messageType == .replied ? .primary(state: .positive) : .primary))
 
@@ -116,6 +124,7 @@ extension MessageBubble: Viewable {
         }
 
         if !pills.isEmpty {
+            pillStack.addArrangedSubview(.init(height: 5))
             containerView.addArrangedSubview(pillStack)
         }
 
