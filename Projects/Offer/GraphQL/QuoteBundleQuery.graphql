@@ -28,7 +28,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
             insurableLimits(locale: $locale) {
                 ...InsurableLimitFragment
             }
-            insuranceTerms(locale: nb_NO) {
+            insuranceTerms(locale: $locale) {
                 displayName
                 url
                 type
@@ -49,6 +49,6 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     }
   }
   redeemedCampaigns {
-    ...CampaignFragment
+    displayValue(locale: $locale)
   }
 }

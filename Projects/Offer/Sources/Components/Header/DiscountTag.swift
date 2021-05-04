@@ -50,46 +50,15 @@ extension DiscountTag: Presentable {
             style: textStyle
         )
         contentStackView.addArrangedSubview(titleLabel)
-
-        let subtitleLabel = UILabel(
-            value: "",
-            style: textStyle
-        )
-        contentStackView.addArrangedSubview(subtitleLabel)
         
         bag += state.dataSignal.map { $0.redeemedCampaigns.first }.onValue { campaign in
-            guard let campaign = campaign else {
+            guard let displayValue = campaign?.displayValue else {
                 view.isHidden = true
                 return
             }
             
             view.isHidden = false
-            
-            let incentiveFragment = campaign.fragments.campaignFragment.incentive?.fragments.incentiveFragment
-
-            if let freeMonths = incentiveFragment?.asFreeMonths {
-                titleLabel.value = L10n.offerScreenFreeMonthsBubbleTitle
-                titleLabel.animationSafeIsHidden = false
-                subtitleLabel.value = L10n.offerScreenFreeMonthsBubble(freeMonths.quantity ?? 0)
-            } else if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
-                titleLabel.value = L10n.offerScreenPercentageDiscountBubbleTitle
-                titleLabel.animationSafeIsHidden = false
-                let months = percentageDiscount.percentageNumberOfMonths
-                if months == 1 {
-                    subtitleLabel.value = L10n.offerScreenPercentageDiscountBubbleTitleSingular(Int(percentageDiscount.percentageDiscount))
-                } else {
-                    subtitleLabel.value = L10n.offerScreenPercentageDiscountBubbleTitlePlural(Int(percentageDiscount.percentageDiscount), months)
-                }
-            } else if let monthlyDeduction = incentiveFragment?.asMonthlyCostDeduction {
-                titleLabel.value = L10n.offerScreenPercentageDiscountBubbleTitle
-                titleLabel.animationSafeIsHidden = false
-                subtitleLabel.value = "-\(monthlyDeduction.amount?.fragments.monetaryAmountFragment.monetaryAmount.formattedAmount ?? "")\(L10n.perMonth)"
-            } else if let indefiniteDiscount = incentiveFragment?.asIndefinitePercentageDiscount {
-                titleLabel.value = L10n.offerScreenPercentageDiscountBubbleTitle
-                subtitleLabel.value = "\(Int(indefiniteDiscount.percentageDiscount))%"
-            } else {
-                view.isHidden = true
-            }
+            titleLabel.value = displayValue
         }
                 
         return (view, bag)
