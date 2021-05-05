@@ -15,23 +15,46 @@ struct MessageBubble {
     let animationDelay: TimeInterval
     let animated: Bool
     let messageType: MessageType
+    let pills: [String]
 
-    init(text: String, delay: TimeInterval, animated: Bool = false, animationDelay: TimeInterval = 0, messageType: MessageType = .received) {
+    init(
+        text: String,
+        delay: TimeInterval,
+        animated: Bool = false,
+        animationDelay: TimeInterval = 0,
+        messageType: MessageType = .received,
+        pills: [String] = []
+    ) {
         self.delay = delay
         textSignal = ReadWriteSignal(text)
         self.animated = animated
         self.animationDelay = animationDelay
         self.messageType = messageType
+        self.pills = pills
     }
 }
 
 extension MessageBubble: Viewable {
+    func itemView(value: String) -> UIView {
+        let label = UILabel(value: "", style: .brand(.body(color: .primary(state: .positive))))
+        let backgroundView = UIView()
+        backgroundView.layer.borderWidth = 1.0
+        backgroundView.layer.borderColor = UIColor.brand(.primaryBorderColor).cgColor
+        backgroundView.layer.cornerRadius = 6
+        backgroundView.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(10)
+        }
+        label.text = value
+        return backgroundView
+    }
+
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
         let containerStackView = UIStackView()
-        containerStackView.axis = .horizontal
-        containerStackView.alignment = .leading
+        containerStackView.axis = .vertical
+        containerStackView.alignment = messageType == .received ? .leading : .trailing
         containerStackView.isHidden = true
 
         let stylingView = UIView()
@@ -48,9 +71,10 @@ extension MessageBubble: Viewable {
         stylingView.alpha = 0
 
         let containerView = UIStackView()
+        containerView.axis = .vertical
         containerView.isLayoutMarginsRelativeArrangement = true
         containerView.insetsLayoutMarginsFromSafeArea = false
-        containerView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 3, right: 15)
+        containerView.layoutMargins = UIEdgeInsets(top: 3, left: 15, bottom: 3, right: 15)
 
         let bodyStyle = TextStyle.brand(.body(color: messageType == .replied ? .primary(state: .positive) : .primary))
 
@@ -90,6 +114,20 @@ extension MessageBubble: Viewable {
             }
         }
 
+        let pillStack = UIStackView()
+        pillStack.axis = .vertical
+        pillStack.spacing = 8
+        pillStack.alignment = .leading
+
+        pills.forEach { value in
+            pillStack.addArrangedSubview(itemView(value: value))
+        }
+
+        if !pills.isEmpty {
+            pillStack.addArrangedSubview(.init(height: 5))
+            containerView.addArrangedSubview(pillStack)
+        }
+
         stylingView.addSubview(containerView)
 
         containerView.snp.makeConstraints { make in
@@ -104,7 +142,7 @@ extension MessageBubble: Viewable {
             bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in
                 let pushView = UIView()
                 pushView.snp.makeConstraints { make in
-                    make.height.equalTo(50)
+                    make.height.equalTo(20)
                 }
                 pushView.setContentHuggingPriority(.defaultLow, for: .horizontal)
                 containerStackView.insertArrangedSubview(pushView, at: 0)

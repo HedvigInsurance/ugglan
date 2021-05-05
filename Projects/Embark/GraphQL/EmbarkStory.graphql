@@ -311,6 +311,25 @@ query EmbarkStory($name: String!, $locale: String!) {
                         storeKey
                     }
                 }
+              ... on EmbarkNumberActionSet {
+                component
+                data {
+                  link {
+                    ...EmbarkLinkFragment
+                  }
+                  numberActions {
+                    data {
+                      key
+                      placeholder
+                      unit
+                      label
+                      maxValue
+                      minValue
+                      title
+                    }
+                  }
+                }
+              }
             }
         }
     }
