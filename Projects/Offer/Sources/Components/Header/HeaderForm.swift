@@ -21,6 +21,7 @@ extension HeaderForm: Presentable {
         let bag = DisposeBag()
         
         let backgroundView = UIView()
+        backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = .defaultCornerRadius
         backgroundView.backgroundColor = .brand(.secondaryBackground())
         
@@ -34,6 +35,8 @@ extension HeaderForm: Presentable {
         form.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        bag += form.append(DiscountTag())
         
         let section = form.appendSection()
         section.dynamicStyle = .brandGroupedNoBackground

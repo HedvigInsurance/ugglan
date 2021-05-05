@@ -36,6 +36,49 @@ public extension MonetaryAmount {
 }
 
 public extension MonetaryAmount {
+    var floatAmount: Float {
+        if let floatValue = Float(amount) {
+            return floatValue
+        }
+        
+        return 0
+    }
+    
+    /// locale for current currency
+    var currencyLocale: Locale {
+        switch currency {
+        case "SEK":
+            return Locale(identifier: "sv_SE")
+        case "NOK":
+            return Locale(identifier: "nb_NO")
+        case "DKK":
+            return Locale(identifier: "da_DK")
+        default:
+            return Localization.Locale.currentLocale.foundation
+        }
+    }
+    
+    /// symbol according to currency in MonetaryAmount
+    var currencySymbol: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.locale = currencyLocale
+        return formatter.currencySymbol
+    }
+    
+    /// amount formatted according to currency specifications, ready to be displayed
+    var formattedAmountWithoutSymbol: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.currencySymbol = ""
+        formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
+        formatter.maximumFractionDigits = 2
+        formatter.locale = currencyLocale
+        return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
+    }
+    
     /// amount formatted according to currency specifications, ready to be displayed
     var formattedAmount: String {
         let formatter = NumberFormatter()
@@ -43,25 +86,8 @@ public extension MonetaryAmount {
         formatter.currencyCode = currency
         formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
         formatter.maximumFractionDigits = 2
-
-        switch currency {
-        case "SEK":
-            if let floatValue = Float(amount) {
-                formatter.locale = Locale(identifier: "sv_SE")
-                return formatter.string(from: NSNumber(value: floatValue)) ?? ""
-            }
-        case "NOK":
-            if let floatValue = Float(amount) {
-                formatter.locale = Locale(identifier: "nb_NO")
-                return formatter.string(from: NSNumber(value: floatValue)) ?? ""
-            }
-        default:
-            if let floatValue = Float(amount) {
-                return formatter.string(from: NSNumber(value: floatValue)) ?? ""
-            }
-        }
-
-        return "\(amount) \(currency)"
+        formatter.locale = currencyLocale
+        return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
     }
 }
 

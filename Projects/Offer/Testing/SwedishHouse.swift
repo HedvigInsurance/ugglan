@@ -6,7 +6,10 @@ import Offer
 import TestingUtil
 
 public extension JSONObject {
-    static func makeSwedishHouse() -> JSONObject {
+    static func makeSwedishHouse(
+        bundleCost: GraphQL.QuoteBundleQuery.Data.QuoteBundle.BundleCost,
+        redeemedCampaigns: [GraphQL.QuoteBundleQuery.Data.RedeemedCampaign]
+    ) -> JSONObject {
         GraphQL.QuoteBundleQuery.Data.init(
             quoteBundle: .init(
                 quotes: [
@@ -37,12 +40,9 @@ public extension JSONObject {
                         ]
                     )
                 ],
-                bundleCost: .init(
-                    monthlyGross: .init(amount: "100", currency: "SEK"),
-                    monthlyDiscount: .init(amount: "100", currency: "SEK"),
-                    monthlyNet: .init(amount: "100", currency: "SEK")
-                )
-            )
+                bundleCost: bundleCost
+            ),
+            redeemedCampaigns: redeemedCampaigns
         ).jsonObject
     }
 }
