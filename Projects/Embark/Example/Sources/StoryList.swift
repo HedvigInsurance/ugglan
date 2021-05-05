@@ -23,6 +23,8 @@ extension StoryList: Presentable {
 
         let bag = DisposeBag()
 
+        Localization.Locale.$currentLocale.value = .en_SE
+
         bag += plansButton.onValue { _ in
             bag += viewController.present(
                 EmbarkPlans(),

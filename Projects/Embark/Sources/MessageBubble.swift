@@ -15,17 +15,26 @@ struct MessageBubble {
     let animationDelay: TimeInterval
     let animated: Bool
     let messageType: MessageType
+    let pills: [String]
 
-    init(text: String, delay: TimeInterval, animated: Bool = false, animationDelay: TimeInterval = 0, messageType: MessageType = .received) {
+    init(text: String, delay: TimeInterval, animated: Bool = false, animationDelay: TimeInterval = 0, messageType: MessageType = .received, pills: [String] = []) {
         self.delay = delay
         textSignal = ReadWriteSignal(text)
         self.animated = animated
         self.animationDelay = animationDelay
         self.messageType = messageType
+        self.pills = pills
     }
 }
 
 extension MessageBubble: Viewable {
+    func itemView(value: String) -> UILabel {
+        let label = UILabel(value: value, style: .brand(.body(color: .primary(state: .positive))))
+        label.text = value
+        label.backgroundColor = UIColor.brand(.embarkMessageBubble()).withAlphaComponent(0.29)
+        return label
+    }
+
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
         let bag = DisposeBag()
 
@@ -89,6 +98,17 @@ extension MessageBubble: Viewable {
                     }
             }
         }
+
+        let pillStack = UIStackView()
+        pillStack.axis = .vertical
+        pillStack.spacing = 8
+        pillStack.alignment = .leading
+
+        pills.forEach { value in
+            pillStack.addSubview(itemView(value: value))
+        }
+
+        containerView.addSubview(pillStack)
 
         stylingView.addSubview(containerView)
 

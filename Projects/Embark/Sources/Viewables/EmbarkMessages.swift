@@ -16,7 +16,7 @@ extension EmbarkMessages: Viewable {
 
         return parse(message.expressions.map { $0.fragments.expressionFragment })
     }
-    
+
     func parse(_ expressions: [GraphQL.ExpressionFragment]) -> String? {
         guard let expression = expressions.first(where: { fragment in
             self.state.store.passes(expression: fragment)
@@ -24,26 +24,25 @@ extension EmbarkMessages: Viewable {
             return nil
         }
 
-        if let multipleExpression = expression.asEmbarkExpressionMultiple
-        {
+        if let multipleExpression = expression.asEmbarkExpressionMultiple {
             return multipleExpression.text
         }
 
         if let binaryExpression = expression.fragments
-                .basicExpressionFragment
-                .asEmbarkExpressionBinary
+            .basicExpressionFragment
+            .asEmbarkExpressionBinary
         {
             return binaryExpression.text
         }
 
         if let unaryExpression = expression
-                .fragments
-                .basicExpressionFragment
-                .asEmbarkExpressionUnary
+            .fragments
+            .basicExpressionFragment
+            .asEmbarkExpressionUnary
         {
             return unaryExpression.text
         }
-        
+
         return nil
     }
 
@@ -75,17 +74,17 @@ extension EmbarkMessages: Viewable {
         view.alignment = .top
         view.spacing = 10
         let bag = DisposeBag()
-        
-        bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue({ _ in
+
+        bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue { _ in
             guard let viewController = view.viewController, let edgePanGestureRecognizer = state.edgePanGestureRecognizer else {
                 return
             }
-            
+
             let percentage = edgePanGestureRecognizer.translation(in: viewController.view).x / viewController.view.frame.width
-            
-            view.transform = CGAffineTransform(translationX: 0, y: (-view.frame.height * (percentage * 2.5)))
-        })
-        
+
+            view.transform = CGAffineTransform(translationX: 0, y: -view.frame.height * (percentage * 2.5))
+        }
+
         bag += state.edgePanGestureRecognizer?.signal(forState: .ended).animated(style: .heavyBounce()) {
             view.transform = CGAffineTransform(translationX: 0, y: 0)
         }
@@ -98,15 +97,21 @@ extension EmbarkMessages: Viewable {
         let messagesDataSignal = state.currentPassageSignal.map { $0?.messages }
         let responseDataSignal = state.currentPassageSignal.map { $0?.response.fragments.responseFragment }
 
+        func mapItems(item: GraphQL.ResponseFragment.AsEmbarkGroupedResponse.Item) -> String {
+            let msgText = parse(item.expressions.map { $0.fragments.expressionFragment })
+            let responseText = replacePlaceholders(message: msgText ?? item.text)
+            return responseText
+        }
+
         let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
             if self.state.animationDirectionSignal.value == .forwards {
                 let passageName = previousResponse?.passageName ?? ""
                 let autoResponseKey = "\(passageName)Result"
-                
+
                 if let singleMessage = previousResponse?.response?.asEmbarkMessage {
                     let msgText = self.parseMessage(message: singleMessage.fragments.messageFragment)
                     let responseText = self.replacePlaceholders(message: msgText ?? "")
-                    
+
                     if responseText != autoResponseKey {
                         let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                         bag += view.addArranged(messageBubble)
@@ -116,9 +121,15 @@ extension EmbarkMessages: Viewable {
                     let responseText = self.replacePlaceholders(message: msgText ?? embarkResponseExpression.text)
                     let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                     bag += view.addArranged(messageBubble)
+                } else if let embarkGroupedResponse = previousResponse?.response?.asEmbarkGroupedResponse {
+                    let pills = embarkGroupedResponse.items.map { item in
+                        mapItems(item: item)
+                    }
+                    let messageBubble = MessageBubble(text: embarkGroupedResponse.title.text, delay: 0, animated: true, messageType: .replied, pills: pills)
+                    bag += view.addArranged(messageBubble)
                 } else {
                     let responseText = self.replacePlaceholders(message: "{\(autoResponseKey)}")
-                    
+
                     if responseText != autoResponseKey {
                         let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                         bag += view.addArranged(messageBubble)

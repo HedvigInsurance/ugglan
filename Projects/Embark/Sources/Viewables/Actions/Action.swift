@@ -27,36 +27,37 @@ extension Action: Viewable {
         let outerContainer = UIStackView()
         outerContainer.axis = .vertical
         outerContainer.alignment = .center
-        
-        bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue({ _ in
+
+        bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue { _ in
             guard let viewController = outerContainer.viewController, let edgePanGestureRecognizer = state.edgePanGestureRecognizer else {
                 return
             }
-            
+
             let percentage = edgePanGestureRecognizer.translation(in: viewController.view).x / viewController.view.frame.width
-            
+
             outerContainer.transform = CGAffineTransform(translationX: 0, y: outerContainer.frame.height * (percentage * 2.5))
-        })
-        
+        }
+
         bag += state.edgePanGestureRecognizer?.signal(forState: .ended).animated(style: .heavyBounce()) {
             outerContainer.transform = CGAffineTransform(translationX: 0, y: 0)
         }
-        
+
         let widthContainer = UIStackView()
         widthContainer.axis = .horizontal
         outerContainer.addArrangedSubview(widthContainer)
-        
-        bag += outerContainer.didLayoutSignal.onValue{ _ in
+
+        bag += outerContainer.didLayoutSignal.onValue { _ in
             widthContainer.snp.remakeConstraints { make in
                 if outerContainer.traitCollection.horizontalSizeClass == .regular,
-                   outerContainer.traitCollection.userInterfaceIdiom == .pad {
+                   outerContainer.traitCollection.userInterfaceIdiom == .pad
+                {
                     make.width.equalTo(outerContainer.frame.width > 600 ? 600 : outerContainer.frame.width)
                 } else {
                     make.width.equalTo(outerContainer.frame.width)
                 }
             }
         }
-        
+
         let view = UIStackView()
         view.axis = .horizontal
         widthContainer.addArrangedSubview(view)
@@ -99,9 +100,9 @@ extension Action: Viewable {
 
             bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(until: shouldUpdateUISignal).onValueDisposePrevious { actionData, _ in
                 let innerBag = DisposeBag()
-                
+
                 let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
-                
+
                 func performCallback(_ link: GraphQL.EmbarkLinkFragment) {
                     if !hasCallbackedSignal.value {
                         hasCallbackedSignal.value = true
@@ -124,11 +125,20 @@ extension Action: Viewable {
                         state: self.state,
                         data: numberAction
                     )).onValue(performCallback)
-                } else if let textActionSet = actionData?.asEmbarkTextActionSet {
-                    innerBag += view.addArranged(TextActionSet(
-                        state: self.state,
-                        data: textActionSet
-                    )).onValue(performCallback)
+                } else if let numberActionSetData = actionData?.asEmbarkNumberActionSet?.data {
+                    let inputSet = EmbarkActionSetInputData(
+                        numberActionSet: numberActionSetData,
+                        state: self.state
+                    )
+                    innerBag += view.addArranged(inputSet)
+                        .onValue(performCallback)
+                } else if let textActionSet = actionData?.asEmbarkTextActionSet?.textActionSetData {
+                    let inputSet = EmbarkActionSetInputData(
+                        textActionSet: textActionSet,
+                        state: self.state
+                    )
+                    innerBag += view.addArranged(inputSet)
+                        .onValue(performCallback)
                 } else if let externalInsuranceProviderAction = actionData?.asEmbarkExternalInsuranceProviderAction {
                     innerBag += view.addArranged(InsuranceProviderAction(
                         state: self.state,
