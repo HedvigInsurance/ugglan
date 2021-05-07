@@ -1,60 +1,62 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
-struct ReusableDisposableViewable<View: Viewable>: Reusable where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Disposable {
-    let viewable: View
+struct ReusableDisposableViewable<View: Viewable>: Reusable
+where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Disposable {
+	let viewable: View
 
-    static func makeAndConfigure() -> (make: UIView, configure: (Self) -> Disposable) {
-        let containerView = UIView()
+	static func makeAndConfigure() -> (make: UIView, configure: (Self) -> Disposable) {
+		let containerView = UIView()
 
-        return (containerView, { anyReusable in
-            let bag = DisposeBag()
+		return (
+			containerView,
+			{ anyReusable in let bag = DisposeBag()
 
-            bag += containerView.add(anyReusable.viewable) { view in
-                view.snp.remakeConstraints { make in
-                    make.top.bottom.trailing.leading.equalToSuperview()
-                }
-            }
+				bag += containerView.add(anyReusable.viewable) { view in
+					view.snp.remakeConstraints { make in
+						make.top.bottom.trailing.leading.equalToSuperview()
+					}
+				}
 
-            return bag
-        })
-    }
+				return bag
+			}
+		)
+	}
 }
 
-struct ReusableSignalViewable<View: Viewable, SignalValue>: Reusable, SignalProvider where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<SignalValue> {
-    let viewable: View
-    var providedSignal: Signal<SignalValue> {
-        callbacker.providedSignal
-    }
+struct ReusableSignalViewable<View: Viewable, SignalValue>: Reusable, SignalProvider
+where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<SignalValue> {
+	let viewable: View
+	var providedSignal: Signal<SignalValue> { callbacker.providedSignal }
 
-    private let callbacker = Callbacker<SignalValue>()
+	private let callbacker = Callbacker<SignalValue>()
 
-    static func makeAndConfigure() -> (make: UIView, configure: (Self) -> Disposable) {
-        let containerView = UIView()
+	static func makeAndConfigure() -> (make: UIView, configure: (Self) -> Disposable) {
+		let containerView = UIView()
 
-        return (containerView, { anyReusable in
-            let bag = DisposeBag()
+		return (
+			containerView,
+			{ anyReusable in let bag = DisposeBag()
 
-            bag += containerView.add(anyReusable.viewable) { view in
-                view.snp.remakeConstraints { make in
-                    make.top.bottom.trailing.leading.equalToSuperview()
-                }
-            }.onValue { value in anyReusable.callbacker.callAll(with: value) }
+				bag += containerView.add(anyReusable.viewable) { view in
+					view.snp.remakeConstraints { make in
+						make.top.bottom.trailing.leading.equalToSuperview()
+					}
+				}.onValue { value in anyReusable.callbacker.callAll(with: value) }
 
-            return bag
-        })
-    }
+				return bag
+			}
+		)
+	}
 }
 
 extension ReusableSignalViewable: Hashable {
-    static func == (_: ReusableSignalViewable<View, SignalValue>, _: ReusableSignalViewable<View, SignalValue>) -> Bool {
-        true
-    }
+	static func == (_: ReusableSignalViewable<View, SignalValue>, _: ReusableSignalViewable<View, SignalValue>)
+		-> Bool
+	{ true }
 
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(true)
-    }
+	func hash(into hasher: inout Hasher) { hasher.combine(true) }
 }

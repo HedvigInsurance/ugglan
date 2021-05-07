@@ -1,50 +1,10 @@
 #!/bin/bash
 
-git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).swift$' | while read line; do
-  /usr/local/bin/swiftformat "${line}";
-  git add "$line";
-done
-
-#Path to swiftlint
-SWIFT_LINT=/usr/local/bin/swiftlint
-
-#if $SWIFT_LINT >/dev/null 2>&1; then
-if [[ -e "${SWIFT_LINT}" ]]; then
-    count=0
-
-##### Check for modified files in unstaged/Staged area #####
-    for file_path in $(git diff --name-only --staged --diff-filter=d | grep ".swift$"); do
-        if [ -f $file_path ]; then
-            export SCRIPT_INPUT_FILE_$count=$file_path
-            count=$((count + 1))
-        fi
+swift-format --version 1>/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).swift$' | while read line; do
+        swift-format -i "${line}";
+        git add "$line";
     done
-
-##### Make the count avilable as global variable #####
-    export SCRIPT_INPUT_FILE_COUNT=$count
-
-    echo "${SCRIPT_INPUT_FILE_COUNT}"
-
-##### Lint files or exit if no files found for lintint #####
-    if [ "$count" -ne 0 ]; then
-        echo "Found lintable files! Linting..."
-        $SWIFT_LINT lint --use-script-input-files --config .swiftlint.yml #--reporter json
-    else
-        echo "No files to lint!"
-        exit 0
-    fi
-
-    RESULT=$?
-
-    if [ $RESULT -eq 0 ]; then
-        echo ""
-        echo "Violation found of the type WARNING! Consider fixing them before commit!"
-    else
-        echo ""
-        echo "Violation found of the type ERROR! Must fix before commit!"
-    fi
-    exit $RESULT
-
-else
-    echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
 fi

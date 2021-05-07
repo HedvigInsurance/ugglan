@@ -1,28 +1,25 @@
 import Foundation
 import UIKit
 
-public extension UIColor {
-    convenience init(light: UIColor, dark: UIColor) {
-        if #available(iOS 13, *) {
-            self.init(dynamicProvider: { trait in
-                if trait.userInterfaceStyle == .dark {
-                    return dark
-                }
+extension UIColor {
+	public convenience init(light: UIColor, dark: UIColor) {
+		if #available(iOS 13, *) {
+			self.init(dynamicProvider: { trait in if trait.userInterfaceStyle == .dark { return dark }
 
-                return light
-            })
-            return
-        }
+				return light
+			})
+			return
+		}
 
-        self.init(cgColor: light.cgColor)
-    }
+		self.init(cgColor: light.cgColor)
+	}
 
-    convenience init(dynamic: @escaping (_ trait: UITraitCollection) -> UIColor) {
-        if #available(iOS 13, *) {
-            self.init(dynamicProvider: dynamic)
-            return
-        }
+	public convenience init(dynamic: @escaping (_ trait: UITraitCollection) -> UIColor) {
+		if #available(iOS 13, *) {
+			self.init(dynamicProvider: dynamic)
+			return
+		}
 
-        self.init(cgColor: dynamic(UITraitCollection()).cgColor)
-    }
+		self.init(cgColor: dynamic(UITraitCollection()).cgColor)
+	}
 }

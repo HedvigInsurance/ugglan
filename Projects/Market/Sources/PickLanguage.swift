@@ -1,43 +1,45 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
-struct PickLanguage {
-    let currentMarket: Market
-}
+struct PickLanguage { let currentMarket: Market }
 
 extension PickLanguage: Presentable {
-    func materialize() -> (UIViewController, Future<Localization.Locale>) {
-        let viewController = UIViewController()
-        viewController.title = L10n.LanguagePickerModal.title
-        let bag = DisposeBag()
+	func materialize() -> (UIViewController, Future<Localization.Locale>) {
+		let viewController = UIViewController()
+		viewController.title = L10n.LanguagePickerModal.title
+		let bag = DisposeBag()
 
-        let form = FormView()
-        bag += viewController.install(form)
+		let form = FormView()
+		bag += viewController.install(form)
 
-        let titleSection = form.appendSection()
-        bag += titleSection.append(MultilineLabel(value: L10n.LanguagePickerModal.text, style: .brand(.body(color: .secondary))).insetted(UIEdgeInsets(inset: 15)))
+		let titleSection = form.appendSection()
+		bag += titleSection.append(
+			MultilineLabel(value: L10n.LanguagePickerModal.text, style: .brand(.body(color: .secondary)))
+				.insetted(UIEdgeInsets(inset: 15))
+		)
 
-        let section = form.appendSection()
-        return (viewController, Future { completion in
+		let section = form.appendSection()
+		return (
+			viewController,
+			Future { completion in
 
-            currentMarket.languages.forEach { language in
-                let row = RowView(title: language.displayName)
+				currentMarket.languages.forEach { language in
+					let row = RowView(title: language.displayName)
 
-                if language == Localization.Locale.currentLocale {
-                    row.append(Asset.checkmark.image)
-                }
+					if language == Localization.Locale.currentLocale {
+						row.append(Asset.checkmark.image)
+					}
 
-                bag += section.append(row).onValue {
-                    completion(.success(language))
-                }
-            }
+					bag += section.append(row).onValue { completion(.success(language)) }
+				}
 
-            return bag
-        })
-    }
+				return bag
+			}
+		)
+	}
 }

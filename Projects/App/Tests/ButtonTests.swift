@@ -1,22 +1,21 @@
-import hCore
-import hCoreUI
 import SnapshotTesting
 import Testing
-@testable import Ugglan
 import UIKit
 import XCTest
+import hCore
+import hCoreUI
+
+@testable import Ugglan
 
 class ButtonTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        setupScreenShotTests()
-    }
+	override func setUp() {
+		super.setUp()
+		setupScreenShotTests()
+	}
 
-    func testChatButton() {
-        let chatButton = ChatButton(presentingViewController: UIViewController())
+	func testChatButton() {
+		let chatButton = ChatButton(presentingViewController: UIViewController())
 
-        materializeViewable(chatButton) { view in
-            assertSnapshot(matching: view, as: .image)
-        }
-    }
+		materializeViewable(chatButton) { view in assertSnapshot(matching: view, as: .image) }
+	}
 }

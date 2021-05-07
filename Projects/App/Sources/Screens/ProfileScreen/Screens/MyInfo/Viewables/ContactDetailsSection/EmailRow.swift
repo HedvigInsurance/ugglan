@@ -1,58 +1,44 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
-struct EmailRow {
-    let state: MyInfoState
-}
+struct EmailRow { let state: MyInfoState }
 
 extension EmailRow: Viewable {
-    func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
-        let bag = DisposeBag()
-        let row = RowView(title: L10n.emailRowTitle, style: .brand(.headline(color: .primary)))
+	func materialize(events _: ViewableEvents) -> (RowView, Disposable) {
+		let bag = DisposeBag()
+		let row = RowView(title: L10n.emailRowTitle, style: .brand(.headline(color: .primary)))
 
-        let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
-            style.autocorrection = .no
-            style.autocapitalization = .none
-            style.keyboard = .emailAddress
-        }
+		let textFieldStyle = FieldStyle.editableRow.restyled { (style: inout FieldStyle) in
+			style.autocorrection = .no
+			style.autocapitalization = .none
+			style.keyboard = .emailAddress
+		}
 
-        let valueTextField = UITextField(
-            value: "",
-            placeholder: "",
-            style: textFieldStyle
-        )
-        valueTextField.textContentType = .emailAddress
+		let valueTextField = UITextField(value: "", placeholder: "", style: textFieldStyle)
+		valueTextField.textContentType = .emailAddress
 
-        row.append(valueTextField)
+		row.append(valueTextField)
 
-        valueTextField.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.5)
-        }
+		valueTextField.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.5) }
 
-        bag += valueTextField.shouldReturn.set { _ in
-            bag += self.state.save()
-            return true
-        }
+		bag += valueTextField.shouldReturn.set { _ in bag += self.state.save()
+			return true
+		}
 
-        bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
-        bag += state.emailSignal.bindTo(valueTextField, \.value)
+		bag += valueTextField.isEditingSignal.bindTo(state.isEditingSignal)
+		bag += state.emailSignal.bindTo(valueTextField, \.value)
 
-        bag += valueTextField
-            .withLatestFrom(state.emailSignal)
-            .skip(first: 1)
-            .filter { $0 != $1 }
-            .map { _ in false }
-            .bindTo(state.emailInputPristineSignal)
+		bag += valueTextField.withLatestFrom(state.emailSignal).skip(first: 1).filter { $0 != $1 }.map { _ in
+			false
+		}.bindTo(state.emailInputPristineSignal)
 
-        bag += valueTextField.bindTo(state.emailInputValueSignal)
+		bag += valueTextField.bindTo(state.emailInputValueSignal)
 
-        bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in
-            valueTextField.endEditing(true)
-        }
+		bag += state.onSaveSignal.filter { $0.isSuccess() }.onValue { _ in valueTextField.endEditing(true) }
 
-        return (row, bag)
-    }
+		return (row, bag)
+	}
 }
