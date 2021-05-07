@@ -40,7 +40,8 @@ public extension JSONObject {
                         ]
                     )
                 ],
-                bundleCost: bundleCost
+                bundleCost: bundleCost,
+                frequentlyAskedQuestions: generateFrequentlyAskedQuestions()
             ),
             redeemedCampaigns: redeemedCampaigns
         ).jsonObject

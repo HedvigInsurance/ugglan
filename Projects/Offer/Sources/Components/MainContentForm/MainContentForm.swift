@@ -48,6 +48,8 @@ extension MainContentForm: Presentable {
         
         form.appendSpacing(.inbetween)
         
+        bag += form.append(FrequentlyAskedQuestionsSection())
+        
         bag += merge(
             scrollView.didLayoutSignal,
             container.didLayoutSignal,
