@@ -27,6 +27,24 @@ Hedvig is a new approach to insurance currently available in Sweden and Norway, 
 5. Open workspace
 
    `open Ugglan.xcworkspace`
+   
+## Formatting
+
+We use swift-format for formatting, it's ran on all staged files automatically in a pre-commit hook.
+
+1. Install githooks
+   
+   sh `scripts/githooks.sh`
+   
+2. In a separate directory from ugglan
+   
+   sh `git clone -b swift-5.4-branch https://github.com/apple/swift-format.git`
+   
+3. sh `swift build -c release --disable-sandbox`
+4. sh `find . -type f -name swift-format`
+5. Find the corresponding build, should be something like `./.build/arm64-apple-macosx/release/swift-format`
+6. sh `cp .build/arm64-apple-macosx/release/swift-format /usr/local/bin/swift-format`
+7. Done!
 
 ## How to release
 
