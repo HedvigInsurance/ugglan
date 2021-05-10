@@ -5,7 +5,9 @@ import hCore
 import Photos
 import UIKit
 
-struct FilePickerHeader { weak var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>() }
+struct FilePickerHeader {
+    var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
+}
 
 extension FilePickerHeader: Reusable {
 	static func makeAndConfigure() -> (make: UIView, configure: (FilePickerHeader) -> Disposable) {

@@ -9,7 +9,7 @@ import UIKit
 struct AttachGIFImage {
 	let url: URL
 	let chatstate: ChatState
-	weak var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
+    var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
 
 	init(
 		url: URL,
@@ -86,7 +86,7 @@ extension AttachGIFImage: Reusable {
 
 						sendOverlayBag += loadableButton.onTapSignal.onValue { _ in
 							loadableButton.isLoadingSignal.value = true
-							bag += self.uploadGifDelegate.call(self.url.absoluteString)?
+                            bag += self.uploadGifDelegate.call(self.url.absoluteString)?
 								.onValue { _ in
 
 									loadableButton.isLoadingSignal.value = false

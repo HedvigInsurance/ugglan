@@ -10,7 +10,7 @@ import UIKit
 struct AttachFileAsset: Reusable {
 	let asset: PHAsset
 	let type: AssetType
-	weak var uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
+    var uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 
 	enum AssetType { case image, video }
 
@@ -69,7 +69,7 @@ struct AttachFileAsset: Reusable {
 							loadableButton.isLoadingSignal.value = true
 
 							self.asset.fileUpload.onValue { fileUpload in
-								self.uploadFileDelegate.call(fileUpload)?
+                                self.uploadFileDelegate.call(fileUpload)?
 									.onValue { _ in
 										loadableButton.isLoadingSignal.value =
 											false
