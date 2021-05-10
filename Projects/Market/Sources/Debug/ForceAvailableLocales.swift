@@ -10,12 +10,10 @@ import hGraphQL
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 
-    @State private var availableLocales = GraphQL.Locale.allCases {
+    @State private var availableLocales: [GraphQL.Locale] = [] {
         didSet {
-            client.fetch(query: GraphQL.MarketQuery()).onValue { _ in
-                store.update(query: GraphQL.MarketQuery()) { (data: inout GraphQL.MarketQuery.Data) in
-                    data.availableLocales = availableLocales
-                }
+            store.update(query: GraphQL.MarketQuery()) { (data: inout GraphQL.MarketQuery.Data) in
+                data.availableLocales = availableLocales
             }
         }
     }
@@ -37,6 +35,10 @@ import hGraphQL
             Toggle(isOn: bindingFor(locale)){
                 Text(locale.rawValue)
             }.toggleStyle(CheckmarkToggleStyle())
-        }
+        }.onAppear(perform: {
+            client.fetch(query: GraphQL.MarketQuery()).onValue { data in
+                availableLocales = data.availableLocales
+            }
+        })
     }
 }
