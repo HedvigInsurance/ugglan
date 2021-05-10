@@ -7,7 +7,7 @@ import hGraphQL
 import Presentation
 import UIKit
 
-typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
+internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
 
 struct EmbarkNumberAction {
     let state: EmbarkState
