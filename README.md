@@ -48,7 +48,7 @@ We use swift-format for formatting, it's ran on all staged files automatically i
 
 ## How to release
 
-1. Go to `Actions` -> `ProductionDeploy` ([link](https://github.com/HedvigInsurance/ugglan/actions?query=workflow%3AProductionDeploy))
+1. Go to `Actions` -> `ProductionDeploy`
 
 2. Click `Run workflow`
 
