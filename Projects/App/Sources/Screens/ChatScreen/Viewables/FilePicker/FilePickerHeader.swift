@@ -6,7 +6,7 @@ import Photos
 import UIKit
 
 struct FilePickerHeader {
-    var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
+    weak var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 }
 
 extension FilePickerHeader: Reusable {

@@ -9,7 +9,7 @@ import UIKit
 struct AttachGIFImage {
 	let url: URL
 	let chatstate: ChatState
-    var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
+    weak var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
 
 	init(
 		url: URL,
