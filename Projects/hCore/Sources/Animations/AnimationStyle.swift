@@ -6,7 +6,11 @@ public struct AnimationStyle {
 	public var duration: TimeInterval
 	public var delay: TimeInterval
 
-	public init(options: UIView.AnimationOptions, duration: TimeInterval, delay: TimeInterval) {
+	public init(
+		options: UIView.AnimationOptions,
+		duration: TimeInterval,
+		delay: TimeInterval
+	) {
 		self.options = options
 		self.duration = duration
 		self.delay = delay

@@ -38,15 +38,16 @@ extension Bullet: Viewable {
 			largeCircle.layer.cornerRadius = largeCircle.bounds.width / 2
 		}
 
-		bag += $isSelected.atOnce().onValue { isSelected in
-			UIView.transition(
-				with: largeCircle,
-				duration: 0.25,
-				options: .transitionCrossDissolve,
-				animations: { largeCircle.layer.borderWidth = isSelected ? 8 : 0 },
-				completion: nil
-			)
-		}
+		bag += $isSelected.atOnce()
+			.onValue { isSelected in
+				UIView.transition(
+					with: largeCircle,
+					duration: 0.25,
+					options: .transitionCrossDissolve,
+					animations: { largeCircle.layer.borderWidth = isSelected ? 8 : 0 },
+					completion: nil
+				)
+			}
 
 		return (control, bag)
 	}

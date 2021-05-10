@@ -103,24 +103,27 @@ extension Pager: Presentable {
 
 		bag += controlsWrapper.addArranged(proceedButton)
 
-		bag += $pages.atOnce().onValueDisposePrevious { pages -> Disposable? in let innerBag = DisposeBag()
+		bag += $pages.atOnce()
+			.onValueDisposePrevious { pages -> Disposable? in let innerBag = DisposeBag()
 
-			if pages.isEmpty {
-				let activityIndicator = UIActivityIndicatorView()
-				activityIndicator.startAnimating()
-				view.addSubview(activityIndicator)
+				if pages.isEmpty {
+					let activityIndicator = UIActivityIndicatorView()
+					activityIndicator.startAnimating()
+					view.addSubview(activityIndicator)
 
-				activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
+					activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
 
-				innerBag += Disposer {
-					bag += Signal(after: 0).animated(style: .easeOut(duration: 0.25)) { _ in
-						activityIndicator.alpha = 0
-					}.onValue { activityIndicator.removeFromSuperview() }
+					innerBag += Disposer {
+						bag += Signal(after: 0)
+							.animated(style: .easeOut(duration: 0.25)) { _ in
+								activityIndicator.alpha = 0
+							}
+							.onValue { activityIndicator.removeFromSuperview() }
+					}
 				}
-			}
 
-			return innerBag
-		}
+				return innerBag
+			}
 
 		bag += $pages.atOnce().onValue { pages in controlsWrapper.animationSafeIsHidden = pages.isEmpty }
 		bag += $pages.atOnce().bindTo(pager.$pages)
@@ -130,15 +133,15 @@ extension Pager: Presentable {
 		bag += pager.scrolledToPageIndexCallbacker.bindTo(pagerDots.pageIndexSignal)
 		bag += pager.scrolledToPageIndexCallbacker.bindTo(proceedButton.onScrolledToPageIndexSignal)
 
-		bag += combineLatest(proceedButton.onScrolledToPageIndexSignal, $pages).driven(
-			by: proceedButton.onTapSignal
-		).onValue { index, pages in
-			if index == (pages.count - 1) {
-				scrolledToEndCallbacker.callAll()
-			} else {
-				scrollToNextCallbacker.callAll()
+		bag += combineLatest(proceedButton.onScrolledToPageIndexSignal, $pages)
+			.driven(by: proceedButton.onTapSignal)
+			.onValue { index, pages in
+				if index == (pages.count - 1) {
+					scrolledToEndCallbacker.callAll()
+				} else {
+					scrollToNextCallbacker.callAll()
+				}
 			}
-		}
 
 		viewController.view = view
 

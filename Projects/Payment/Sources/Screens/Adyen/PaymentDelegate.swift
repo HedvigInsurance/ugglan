@@ -44,11 +44,11 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 			viewController.present(
 				AdyenSuccess(paymentMethod: paymentMethod),
 				style: .detented(.large, modally: false)
-			).onValue { _ in self.onCompletion() }
+			)
+			.onValue { _ in self.onCompletion() }
 		} else {
-			viewController.present(AdyenError.failed, style: .detented(.large, modally: false)).onValue {
-				_ in self.onRetry()
-			}.onError { _ in self.onCompletion() }
+			viewController.present(AdyenError.failed, style: .detented(.large, modally: false))
+				.onValue { _ in self.onRetry() }.onError { _ in self.onCompletion() }
 		}
 	}
 

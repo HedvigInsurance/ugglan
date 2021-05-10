@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Foundation
+import Market
 import SwiftUI
 import hCore
 import hGraphQL
-import Market
 
 @available(iOS 13, *) struct Debug: View {
 	enum EnvironmentOption: String, CaseIterable {
@@ -53,11 +53,11 @@ import Market
 						label: Text("Which environment do you want to use?")
 					) {
 						ForEach(0..<EnvironmentOption.allCases.count) { index in
-							Text(EnvironmentOption.allCases[index].rawValue).tag(
-								EnvironmentOption.allCases[index]
-							)
+							Text(EnvironmentOption.allCases[index].rawValue)
+								.tag(EnvironmentOption.allCases[index])
 						}
-					}.pickerStyle(SegmentedPickerStyle())
+					}
+					.pickerStyle(SegmentedPickerStyle())
 				}
 				if pickedEnvironment == .custom {
 					Section {
@@ -81,10 +81,10 @@ import Market
 						}
 					)
 				}
-                Section {
-                    Text("Available locales")
-                    ForceAvailableLocales()
-                }
+				Section {
+					Text("Available locales")
+					ForceAvailableLocales()
+				}
 				Section {
 					SwiftUI.NavigationLink(
 						"Exchange token",
@@ -93,31 +93,40 @@ import Market
 							ApolloClient.cache = InMemoryNormalizedCache()
 							ApolloClient.saveToken(token: token)
 
-							ApolloClient.initAndRegisterClient().always {
-								ChatState.shared = ChatState()
-								let client: ApolloClient = Dependencies.shared.resolve()
-								client.perform(
-									mutation: GraphQL.UpdateLanguageMutation(
-										language: locale.code,
-										pickedLocale: locale.asGraphQLLocale()
+							ApolloClient.initAndRegisterClient()
+								.always {
+									ChatState.shared = ChatState()
+									let client: ApolloClient = Dependencies.shared
+										.resolve()
+									client.perform(
+										mutation:
+											GraphQL.UpdateLanguageMutation(
+												language: locale.code,
+												pickedLocale:
+													locale
+													.asGraphQLLocale()
+											)
 									)
-								).onValue { _ in
-									UIApplication.shared.appDelegate.appFlow
-										.presentLoggedIn()
+									.onValue { _ in
+										UIApplication.shared.appDelegate.appFlow
+											.presentLoggedIn()
+									}
 								}
-							}
 						}
 					)
 				}
-                Section {
-                    SwiftUI.Button(
-                        "Go to market picker",
-                        action: {
-                            ApplicationState.preserveState(.marketPicker)
-                            UIApplication.shared.appDelegate.appFlow.bag += ApplicationState.presentRootViewController(UIApplication.shared.appDelegate.appFlow.window)
-                        }
-                    )
-                }
+				Section {
+					SwiftUI.Button(
+						"Go to market picker",
+						action: {
+							ApplicationState.preserveState(.marketPicker)
+							UIApplication.shared.appDelegate.appFlow.bag +=
+								ApplicationState.presentRootViewController(
+									UIApplication.shared.appDelegate.appFlow.window
+								)
+						}
+					)
+				}
 				Section {
 					SwiftUI.Button(
 						"Logout",
@@ -127,9 +136,11 @@ import Market
 						}
 					)
 				}
-			}.alert(isPresented: $showFaultyEndpointAlert) {
+			}
+			.alert(isPresented: $showFaultyEndpointAlert) {
 				Alert(title: Text("Endpoint config is faulty"), dismissButton: .default(Text("OK!")))
-			}.navigationBarItems(
+			}
+			.navigationBarItems(
 				trailing: SwiftUI.Button(
 					"Update",
 					action: {
@@ -167,7 +178,9 @@ import Market
 						ApolloClient.saveToken(token: self.authorizationToken)
 					}
 				)
-			).navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
-		}.navigationViewStyle(StackNavigationViewStyle())
+			)
+			.navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
+		}
+		.navigationViewStyle(StackNavigationViewStyle())
 	}
 }

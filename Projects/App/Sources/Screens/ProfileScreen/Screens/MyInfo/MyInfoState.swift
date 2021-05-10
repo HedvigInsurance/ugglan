@@ -31,31 +31,37 @@ struct MyInfoState {
 
 		isSavingSignal.value = true
 
-		let phoneNumberFuture = phoneNumberInputValueSignal.atOnce().withLatestFrom(
-			phoneNumberInputPristineSignal
-		).mapLatestToFuture { phoneNumber, isPristine in
-			Future<Void> { completion in
-				if isPristine {
-					completion(.success)
-					return NilDisposer()
+		let phoneNumberFuture = phoneNumberInputValueSignal.atOnce()
+			.withLatestFrom(phoneNumberInputPristineSignal)
+			.mapLatestToFuture { phoneNumber, isPristine in
+				Future<Void> { completion in
+					if isPristine {
+						completion(.success)
+						return NilDisposer()
+					}
+
+					if phoneNumber.isEmpty {
+						completion(.failure(MyInfoSaveError.phoneNumberEmpty))
+						return NilDisposer()
+					}
+
+					let innerBag = bag.innerBag()
+
+					innerBag += self.client
+						.perform(
+							mutation: GraphQL.UpdatePhoneNumberMutation(
+								phoneNumber: phoneNumber
+							)
+						)
+						.onValue { _ in completion(.success) }
+						.onError { _ in
+							completion(.failure(MyInfoSaveError.phoneNumberMalformed))
+						}
+
+					return innerBag
 				}
-
-				if phoneNumber.isEmpty {
-					completion(.failure(MyInfoSaveError.phoneNumberEmpty))
-					return NilDisposer()
-				}
-
-				let innerBag = bag.innerBag()
-
-				innerBag += self.client.perform(
-					mutation: GraphQL.UpdatePhoneNumberMutation(phoneNumber: phoneNumber)
-				).onValue { _ in completion(.success) }.onError { _ in
-					completion(.failure(MyInfoSaveError.phoneNumberMalformed))
-				}
-
-				return innerBag
 			}
-		}.future
+			.future
 
 		let emailFuture = emailInputValueSignal.atOnce().withLatestFrom(emailInputPristineSignal)
 			.mapLatestToFuture { email, isPristine in
@@ -72,19 +78,21 @@ struct MyInfoState {
 
 					let innerBag = bag.innerBag()
 
-					innerBag += self.client.perform(
-						mutation: GraphQL.UpdateEmailMutation(email: email)
-					).onValue { _ in completion(.success)
+					innerBag += self.client
+						.perform(mutation: GraphQL.UpdateEmailMutation(email: email))
+						.onValue { _ in completion(.success)
 
-						self.store.update(query: GraphQL.MyInfoQuery()) {
-							(data: inout GraphQL.MyInfoQuery.Data) in
-							data.member.email = email
+							self.store.update(query: GraphQL.MyInfoQuery()) {
+								(data: inout GraphQL.MyInfoQuery.Data) in
+								data.member.email = email
+							}
 						}
-					}.onError { _ in completion(.failure(MyInfoSaveError.emailMalformed)) }
+						.onError { _ in completion(.failure(MyInfoSaveError.emailMalformed)) }
 
 					return innerBag
 				}
-			}.future
+			}
+			.future
 
 		join(phoneNumberFuture, emailFuture).onValue { _, _ in self.onSaveCallbacker.callAll(with: .success) }
 			.onError { error in self.onSaveCallbacker.callAll(with: .failure(error))
@@ -94,7 +102,8 @@ struct MyInfoState {
 					actions: [Alert.Action(title: L10n.myInfoAlertSaveFailureButton) { () }]
 				)
 				self.presentingViewController.present(alert)
-			}.onResult { _ in self.isSavingSignal.value = false }
+			}
+			.onResult { _ in self.isSavingSignal.value = false }
 
 		return bag
 	}
@@ -110,7 +119,9 @@ struct MyInfoState {
 		return bag
 	}
 
-	init(presentingViewController: UIViewController) {
+	init(
+		presentingViewController: UIViewController
+	) {
 		self.presentingViewController = presentingViewController
 		onSaveSignal = onSaveCallbacker.signal()
 	}

@@ -131,9 +131,10 @@ extension EmergencyActions: Viewable {
 
 		tableKit.set(Table(rows: rows), rowIdentifier: { $0.title })
 
-		bag += tableKit.view.signal(for: \.contentSize).onValue { contentSize in
-			tableKit.view.snp.updateConstraints { make in make.height.equalTo(contentSize.height) }
-		}
+		bag += tableKit.view.signal(for: \.contentSize)
+			.onValue { contentSize in
+				tableKit.view.snp.updateConstraints { make in make.height.equalTo(contentSize.height) }
+			}
 
 		return (tableKit.view, bag)
 	}

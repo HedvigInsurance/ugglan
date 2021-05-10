@@ -7,7 +7,12 @@ import hCore
 import hCoreUI
 
 public struct AppInfoRow {
-	public init(title: String, icon: UIImage?, trailingIcon: UIImage?, value: Future<String>) {
+	public init(
+		title: String,
+		icon: UIImage?,
+		trailingIcon: UIImage?,
+		value: Future<String>
+	) {
 		self.title = title
 		self.icon = icon
 		self.trailingIcon = trailingIcon

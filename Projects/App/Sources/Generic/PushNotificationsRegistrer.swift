@@ -12,7 +12,11 @@ struct PushNotificationsRegister: Presentable {
 	let message: String
 	let forceAsk: Bool
 
-	init(title: String, message: String, forceAsk: Bool = false) {
+	init(
+		title: String,
+		message: String,
+		forceAsk: Bool = false
+	) {
 		self.title = title
 		self.message = message
 		self.forceAsk = forceAsk
@@ -32,8 +36,8 @@ struct PushNotificationsRegister: Presentable {
 				Alert.Action(
 					title: L10n.pushNotificationsAlertActionOk,
 					action: {
-						UIApplication.shared.appDelegate.registerForPushNotifications().onValue
-						{ _ in }
+						UIApplication.shared.appDelegate.registerForPushNotifications()
+							.onValue { _ in }
 					}
 				),
 				Alert.Action(

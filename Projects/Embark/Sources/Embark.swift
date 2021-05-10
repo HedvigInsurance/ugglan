@@ -17,7 +17,10 @@ public struct Embark {
 
 	public func goBack() { state.goBack() }
 
-	public init(name: String, menu: Menu? = nil) {
+	public init(
+		name: String,
+		menu: Menu? = nil
+	) {
 		self.name = name
 		self.menu = menu
 	}
@@ -43,7 +46,8 @@ extension Embark: Presentable {
 			bag += combineLatest(
 				scrollView.traitCollectionSignal.atOnce(),
 				scrollView.signal(for: \.contentSize).atOnce()
-			).onValue { _, _ in
+			)
+			.onValue { _, _ in
 				form.applyStyle(
 					.init(
 						insets: .init(
@@ -66,70 +70,77 @@ extension Embark: Presentable {
 		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
 
 		let passage = Passage(state: state)
-		bag += form.append(passage) { passageView in var keyboardHeight: CGFloat = 20
+		bag +=
+			form.append(passage) { passageView in var keyboardHeight: CGFloat = 20
 
-			func updatePassageViewHeight() {
-				passageView.snp.updateConstraints { make in
-					make.top.bottom.leading.trailing.equalToSuperview()
-					make.height.greaterThanOrEqualTo(
-						scrollView.frame.height - scrollView.safeAreaInsets.top
-							- scrollView.safeAreaInsets.bottom - keyboardHeight
-					)
-				}
-			}
-
-			bag += form.didLayoutSignal.onValue { updatePassageViewHeight() }
-
-			bag += NotificationCenter.default.signal(
-				forName: UIResponder.keyboardWillChangeFrameNotification
-			).compactMap { notification in notification.keyboardInfo }.animated(
-				mapStyle: { (keyboardInfo) -> AnimationStyle in
-					AnimationStyle(
-						options: keyboardInfo.animationCurve,
-						duration: keyboardInfo.animationDuration,
-						delay: 0
-					)
-				},
-				animations: { keyboardInfo in
-					scrollView.contentInset = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: keyboardInfo.height - 20 - scrollView.safeAreaInsets.bottom,
-						right: 0
-					)
-					scrollView.scrollIndicatorInsets = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: keyboardInfo.height,
-						right: 0
-					)
-					keyboardHeight = keyboardInfo.height - scrollView.safeAreaInsets.bottom
-					updatePassageViewHeight()
-					passageView.layoutIfNeeded()
-					form.layoutIfNeeded()
-					scrollView.layoutIfNeeded()
-				}
-			)
-
-			bag += NotificationCenter.default.signal(forName: UIResponder.keyboardWillHideNotification)
-				.compactMap { notification in notification.keyboardInfo }.animated(
-					mapStyle: { (keyboardInfo) -> AnimationStyle in
-						AnimationStyle(
-							options: keyboardInfo.animationCurve,
-							duration: keyboardInfo.animationDuration,
-							delay: 0
+				func updatePassageViewHeight() {
+					passageView.snp.updateConstraints { make in
+						make.top.bottom.leading.trailing.equalToSuperview()
+						make.height.greaterThanOrEqualTo(
+							scrollView.frame.height - scrollView.safeAreaInsets.top
+								- scrollView.safeAreaInsets.bottom - keyboardHeight
 						)
-					},
-					animations: { _ in keyboardHeight = 20
-						scrollView.contentInset = .zero
-						scrollView.scrollIndicatorInsets = .zero
-						updatePassageViewHeight()
-						passageView.layoutIfNeeded()
-						form.layoutIfNeeded()
-						scrollView.layoutIfNeeded()
 					}
-				)
-		}.onValue { link in self.state.goTo(passageName: link.name) }
+				}
+
+				bag += form.didLayoutSignal.onValue { updatePassageViewHeight() }
+
+				bag += NotificationCenter.default
+					.signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+					.compactMap { notification in notification.keyboardInfo }
+					.animated(
+						mapStyle: { (keyboardInfo) -> AnimationStyle in
+							AnimationStyle(
+								options: keyboardInfo.animationCurve,
+								duration: keyboardInfo.animationDuration,
+								delay: 0
+							)
+						},
+						animations: { keyboardInfo in
+							scrollView.contentInset = UIEdgeInsets(
+								top: 0,
+								left: 0,
+								bottom: keyboardInfo.height - 20
+									- scrollView.safeAreaInsets.bottom,
+								right: 0
+							)
+							scrollView.scrollIndicatorInsets = UIEdgeInsets(
+								top: 0,
+								left: 0,
+								bottom: keyboardInfo.height,
+								right: 0
+							)
+							keyboardHeight =
+								keyboardInfo.height - scrollView.safeAreaInsets.bottom
+							updatePassageViewHeight()
+							passageView.layoutIfNeeded()
+							form.layoutIfNeeded()
+							scrollView.layoutIfNeeded()
+						}
+					)
+
+				bag += NotificationCenter.default
+					.signal(forName: UIResponder.keyboardWillHideNotification)
+					.compactMap { notification in notification.keyboardInfo }
+					.animated(
+						mapStyle: { (keyboardInfo) -> AnimationStyle in
+							AnimationStyle(
+								options: keyboardInfo.animationCurve,
+								duration: keyboardInfo.animationDuration,
+								delay: 0
+							)
+						},
+						animations: { _ in keyboardHeight = 20
+							scrollView.contentInset = .zero
+							scrollView.scrollIndicatorInsets = .zero
+							updatePassageViewHeight()
+							passageView.layoutIfNeeded()
+							form.layoutIfNeeded()
+							scrollView.layoutIfNeeded()
+						}
+					)
+			}
+			.onValue { link in self.state.goTo(passageName: link.name) }
 
 		let progressView = UIProgressView()
 		progressView.tintColor = .brand(.primaryText())
@@ -157,48 +168,53 @@ extension Embark: Presentable {
 
 		activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
 
-		bag += client.fetch(
-			query: GraphQL.EmbarkStoryQuery(name: name, locale: Localization.Locale.currentLocale.code)
-		).valueSignal.compactMap { $0.embarkStory }.onValue { embarkStory in
-			activityIndicator.removeFromSuperview()
+		bag +=
+			client.fetch(
+				query: GraphQL.EmbarkStoryQuery(
+					name: name,
+					locale: Localization.Locale.currentLocale.code
+				)
+			)
+			.valueSignal.compactMap { $0.embarkStory }
+			.onValue { embarkStory in activityIndicator.removeFromSuperview()
 
-			self.state.storySignal.value = embarkStory
-			self.state.passagesSignal.value = embarkStory.passages
-			self.state.startPassageIDSignal.value = embarkStory.startPassage
-			self.state.restart()
-		}
-
-		bag += edgePanGestureRecognizer.signal(forState: .ended).withLatestFrom(
-			state.canGoBackSignal.atOnce().plain()
-		).onValue { _, canGoBack in guard canGoBack else { return }
-
-			let translationX = edgePanGestureRecognizer.translation(in: viewController.view).x
-
-			if translationX > (viewController.view.frame.width * 0.4) { state.goBack() }
-		}
-
-		bag += state.canGoBackSignal.atOnce().onValueDisposePrevious { canGoBack in
-			guard canGoBack else { return NilDisposer() }
-
-			viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-
-			let innerBag = DisposeBag()
-
-			innerBag += {
-				viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+				self.state.storySignal.value = embarkStory
+				self.state.passagesSignal.value = embarkStory.passages
+				self.state.startPassageIDSignal.value = embarkStory.startPassage
+				self.state.restart()
 			}
 
-			innerBag += viewController.view.install(edgePanGestureRecognizer)
+		bag += edgePanGestureRecognizer.signal(forState: .ended)
+			.withLatestFrom(state.canGoBackSignal.atOnce().plain())
+			.onValue { _, canGoBack in guard canGoBack else { return }
 
-			return innerBag
-		}
+				let translationX = edgePanGestureRecognizer.translation(in: viewController.view).x
+
+				if translationX > (viewController.view.frame.width * 0.4) { state.goBack() }
+			}
+
+		bag += state.canGoBackSignal.atOnce()
+			.onValueDisposePrevious { canGoBack in guard canGoBack else { return NilDisposer() }
+
+				viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+
+				let innerBag = DisposeBag()
+
+				innerBag += {
+					viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled =
+						true
+				}
+
+				innerBag += viewController.view.install(edgePanGestureRecognizer)
+
+				return innerBag
+			}
 
 		return (
 			viewController,
 			FiniteSignal<ExternalRedirect> { callback in
-				bag += state.externalRedirectSignal.compactMap { $0 }.onValue { redirect in
-					callback(.value(redirect))
-				}
+				bag += state.externalRedirectSignal.compactMap { $0 }
+					.onValue { redirect in callback(.value(redirect)) }
 
 				let backButton = UIBarButtonItem(
 					image: hCoreUIAssets.backButton.image,
@@ -228,10 +244,8 @@ extension Embark: Presentable {
 						return addNewMenu
 					}
 
-					bag += state.canGoBackSignal.atOnce().map(createBackMenu).bindTo(
-						backButton,
-						\.menu
-					)
+					bag += state.canGoBackSignal.atOnce().map(createBackMenu)
+						.bindTo(backButton, \.menu)
 				}
 
 				viewController.navigationItem.leftBarButtonItem = backButton
@@ -280,7 +294,8 @@ extension Embark: Presentable {
 									)
 								]
 							),
-						].compactMap { $0 }
+						]
+						.compactMap { $0 }
 					)
 				)
 
@@ -304,14 +319,15 @@ extension Embark: Presentable {
 					animated: false
 				)
 
-				bag += state.passageTooltipsSignal.atOnce().animated(style: .easeOut(duration: 0.25)) {
-					tooltips in tooltipButton.alpha = tooltips.isEmpty ? 0 : 1
-				}
+				bag += state.passageTooltipsSignal.atOnce()
+					.animated(style: .easeOut(duration: 0.25)) { tooltips in
+						tooltipButton.alpha = tooltips.isEmpty ? 0 : 1
+					}
 
-				bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal).onValue {
-					_,
-					canGoBack in if canGoBack { state.goBack() } else { callback(.end) }
-				}
+				bag += backButton.throttle(1).withLatestFrom(state.canGoBackSignal)
+					.onValue { _, canGoBack in
+						if canGoBack { state.goBack() } else { callback(.end) }
+					}
 
 				return DelayedDisposer(bag, delay: 2)
 			}

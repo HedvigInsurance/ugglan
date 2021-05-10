@@ -16,7 +16,13 @@ struct CharityOption {
 	private let onSelectCallbacker = Callbacker<UIView>()
 	let onSelectSignal: Signal<UIView>
 
-	init(id: GraphQLID, name: String, title: String, description: String, paragraph: String) {
+	init(
+		id: GraphQLID,
+		name: String,
+		title: String,
+		description: String,
+		paragraph: String
+	) {
 		self.id = id
 		self.name = name
 		self.title = title

@@ -86,22 +86,19 @@ extension ChangeCode: Presentable {
 
 		let clearButton = makeClearButton(textFieldRow.row)
 
-		bag += clearButton.signal(for: .touchUpInside).atValue { textField.value = "" }.animated(
-			style: .easeOut(duration: 0.25)
-		) { clearButton.alpha = 0 }
+		bag += clearButton.signal(for: .touchUpInside).atValue { textField.value = "" }
+			.animated(style: .easeOut(duration: 0.25)) { clearButton.alpha = 0 }
 
-		bag += service.dataSignal.atOnce().compactMap { $0?.discountCode }.take(first: 1).bindTo(
-			textField,
-			\.value
-		)
+		bag += service.dataSignal.atOnce().compactMap { $0?.discountCode }.take(first: 1)
+			.bindTo(textField, \.value)
 
 		textField.becomeFirstResponder()
 
 		let textFieldErrorSignal: ReadWriteSignal<ForeverChangeCodeError?> = ReadWriteSignal(nil).distinct()
 
-		bag += textField.atValue { _ in textFieldErrorSignal.value = nil }.animated(
-			style: .easeOut(duration: 0.25)
-		) { value in clearButton.alpha = value.isEmpty ? 0 : 1 }
+		bag += textField.atValue { _ in textFieldErrorSignal.value = nil }
+			.animated(style: .easeOut(duration: 0.25)) { value in clearButton.alpha = value.isEmpty ? 0 : 1
+			}
 
 		let errorMessageLabel = MultilineLabel(
 			value: "",
@@ -118,13 +115,19 @@ extension ChangeCode: Presentable {
 				errorMessageLabelView.animationSafeIsHidden = error == nil
 			}
 
-			bag += textFieldErrorSignal.atOnce().animated(style: .easeOut(duration: 0.15)) { error in
-				if error == nil { alphaAnimation(error) } else { isHiddenAnimation(error) }
-			}.animated(style: .easeOut(duration: 0.15)) { error in
-				if error == nil { isHiddenAnimation(error) } else { alphaAnimation(error) }
-			}.onValue { _ in
-				viewController.navigationItem.setRightBarButton(saveBarButtonItem, animated: true)
-			}
+			bag += textFieldErrorSignal.atOnce()
+				.animated(style: .easeOut(duration: 0.15)) { error in
+					if error == nil { alphaAnimation(error) } else { isHiddenAnimation(error) }
+				}
+				.animated(style: .easeOut(duration: 0.15)) { error in
+					if error == nil { isHiddenAnimation(error) } else { alphaAnimation(error) }
+				}
+				.onValue { _ in
+					viewController.navigationItem.setRightBarButton(
+						saveBarButtonItem,
+						animated: true
+					)
+				}
 		}
 
 		func onSave() -> Signal<Void> {
@@ -135,9 +138,10 @@ extension ChangeCode: Presentable {
 				animated: true
 			)
 
-			return service.changeDiscountCode(textField.value).delay(by: 0.25).atValue { result in
-				if let error = result.right { textFieldErrorSignal.value = error }
-			}.filter(predicate: { $0.left != nil }).toVoid()
+			return service.changeDiscountCode(textField.value).delay(by: 0.25)
+				.atValue { result in if let error = result.right { textFieldErrorSignal.value = error }
+				}
+				.filter(predicate: { $0.left != nil }).toVoid()
 		}
 
 		return (

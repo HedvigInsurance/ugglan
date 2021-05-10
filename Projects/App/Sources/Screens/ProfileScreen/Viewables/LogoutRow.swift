@@ -39,12 +39,13 @@ extension LogoutRow: Viewable {
 				]
 			)
 
-			bag += self.presentingViewController.present(alert).onValue { shouldLogout in
-				if shouldLogout {
-					ApplicationState.preserveState(.marketPicker)
-					UIApplication.shared.appDelegate.logout()
+			bag += self.presentingViewController.present(alert)
+				.onValue { shouldLogout in
+					if shouldLogout {
+						ApplicationState.preserveState(.marketPicker)
+						UIApplication.shared.appDelegate.logout()
+					}
 				}
-			}
 		}
 
 		return (logoutRow, bag)

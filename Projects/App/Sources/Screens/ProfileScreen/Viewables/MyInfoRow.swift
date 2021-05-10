@@ -21,9 +21,8 @@ extension MyInfoRow: Viewable {
 			options: [.withArrow]
 		)
 
-		bag += nameSignal.atOnce().compactMap { $0 }.map { firstName, lastName -> String in
-			"\(firstName) \(lastName)"
-		}.bindTo(row.subtitle)
+		bag += nameSignal.atOnce().compactMap { $0 }
+			.map { firstName, lastName -> String in "\(firstName) \(lastName)" }.bindTo(row.subtitle)
 
 		bag += events.onSelect.onValue {
 			let myInfo = MyInfo()

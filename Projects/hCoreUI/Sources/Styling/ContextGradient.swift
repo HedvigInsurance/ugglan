@@ -129,16 +129,19 @@ public enum ContextGradient {
 	@ReadWriteState public static var currentOption: Option = .none
 
 	public static func animateTabBarColor(_ view: UIView) -> Disposable {
-		combineLatest($currentOption.atOnce(), view.traitCollectionSignal.atOnce()).animated(
-			style: .easeOut(duration: 1)
-		) { option, traitCollection in view.backgroundColor = option.tabBarColor(for: traitCollection) }.nil()
+		combineLatest($currentOption.atOnce(), view.traitCollectionSignal.atOnce())
+			.animated(style: .easeOut(duration: 1)) { option, traitCollection in
+				view.backgroundColor = option.tabBarColor(for: traitCollection)
+			}
+			.nil()
 	}
 
 	public static func animateNavigationBarColor(_ view: UIView) -> Disposable {
-		combineLatest($currentOption.atOnce(), view.traitCollectionSignal.atOnce()).animated(
-			style: .easeOut(duration: 1)
-		) { option, traitCollection in view.backgroundColor = option.navigationBarColor(for: traitCollection) }
-		.nil()
+		combineLatest($currentOption.atOnce(), view.traitCollectionSignal.atOnce())
+			.animated(style: .easeOut(duration: 1)) { option, traitCollection in
+				view.backgroundColor = option.navigationBarColor(for: traitCollection)
+			}
+			.nil()
 	}
 
 	public enum ColorViewLocation { case navigationBar, tabBar }

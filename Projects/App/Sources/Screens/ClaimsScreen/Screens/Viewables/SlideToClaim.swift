@@ -74,31 +74,31 @@ extension SlideToClaim: Viewable {
 
 		var handleCenterX: CGFloat { handle.frame.width / 2 }
 
-		bag += pan.signal(forState: .changed).onValue {
-			let location = pan.translation(in: view)
+		bag += pan.signal(forState: .changed)
+			.onValue {
+				let location = pan.translation(in: view)
 
-			let maxLocationX = track.frame.size.width - handle.frame.size.width
-			let cappedLocationX = location.x >= maxLocationX ? maxLocationX : location.x
+				let maxLocationX = track.frame.size.width - handle.frame.size.width
+				let cappedLocationX = location.x >= maxLocationX ? maxLocationX : location.x
 
-			if location.x >= maxLocationX { self.providedSignalCallbacker.callAll() }
+				if location.x >= maxLocationX { self.providedSignalCallbacker.callAll() }
 
-			let tracklabelOriginX = (view.frame.width - trackLabel.intrinsicContentSize.width) / 2
-			trackLabel.alpha = 1 - (cappedLocationX / tracklabelOriginX)
+				let tracklabelOriginX = (view.frame.width - trackLabel.intrinsicContentSize.width) / 2
+				trackLabel.alpha = 1 - (cappedLocationX / tracklabelOriginX)
 
-			ease.value = max(handleCenterX + cappedLocationX, handleCenterX)
-			handle.center.x = ease.value
-			ease.targetValue = ease.value
-		}
+				ease.value = max(handleCenterX + cappedLocationX, handleCenterX)
+				handle.center.x = ease.value
+				ease.targetValue = ease.value
+			}
 
-		bag += pan.signal(forState: .ended).onValue {
-			ease.velocity = pan.velocity(in: view).x
-			ease.targetValue = handleCenterX
-		}
+		bag += pan.signal(forState: .ended)
+			.onValue {
+				ease.velocity = pan.velocity(in: view).x
+				ease.targetValue = handleCenterX
+			}
 
-		bag += pan.signal(forState: .ended).animated(
-			style: .easeOut(duration: 0.25),
-			animations: { _ in trackLabel.alpha = 1 }
-		)
+		bag += pan.signal(forState: .ended)
+			.animated(style: .easeOut(duration: 0.25), animations: { _ in trackLabel.alpha = 1 })
 
 		bag += view.didLayoutSignal.onValue {
 			track.layer.cornerRadius = view.frame.height / 2

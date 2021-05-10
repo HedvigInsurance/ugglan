@@ -37,7 +37,9 @@ public enum Environment: Hashable {
 		}
 	}
 
-	public init?(rawValue: String) {
+	public init?(
+		rawValue: String
+	) {
 		switch rawValue {
 		case "production": self = .production
 		case "staging": self = .staging

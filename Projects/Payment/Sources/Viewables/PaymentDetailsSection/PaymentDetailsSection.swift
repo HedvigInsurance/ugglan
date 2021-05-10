@@ -28,11 +28,12 @@ extension PaymentDetailsSection: Viewable {
 		grossPriceRow.keySignal.value = L10n.profilePaymentPriceLabel
 		grossPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-		bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyGross.amount }.toInt().map {
-			amount in if let amount = amount { return L10n.profilePaymentPrice(String(amount)) }
+		bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyGross.amount }.toInt()
+			.map { amount in if let amount = amount { return L10n.profilePaymentPrice(String(amount)) }
 
-			return L10n.priceMissing
-		}.bindTo(grossPriceRow.valueSignal)
+				return L10n.priceMissing
+			}
+			.bindTo(grossPriceRow.valueSignal)
 
 		bag += section.append(grossPriceRow)
 
@@ -40,11 +41,12 @@ extension PaymentDetailsSection: Viewable {
 		discountRow.keySignal.value = L10n.profilePaymentDiscountLabel
 		discountRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-		bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }.toInt().map {
-			amount in if let amount = amount { return L10n.profilePaymentDiscount(String(amount)) }
+		bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyDiscount.amount }.toInt()
+			.map { amount in if let amount = amount { return L10n.profilePaymentDiscount(String(amount)) }
 
-			return L10n.priceMissing
-		}.bindTo(discountRow.valueSignal)
+				return L10n.priceMissing
+			}
+			.bindTo(discountRow.valueSignal)
 
 		bag += section.append(discountRow)
 
@@ -52,11 +54,12 @@ extension PaymentDetailsSection: Viewable {
 		netPriceRow.keySignal.value = L10n.profilePaymentFinalCostLabel
 		netPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-		bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyNet.amount }.toInt().map {
-			amount in if let amount = amount { return L10n.profilePaymentFinalCost(String(amount)) }
+		bag += dataSignal.map { $0.insuranceCost?.fragments.costFragment.monthlyNet.amount }.toInt()
+			.map { amount in if let amount = amount { return L10n.profilePaymentFinalCost(String(amount)) }
 
-			return L10n.priceMissing
-		}.bindTo(netPriceRow.valueSignal)
+				return L10n.priceMissing
+			}
+			.bindTo(netPriceRow.valueSignal)
 
 		bag += section.append(netPriceRow)
 

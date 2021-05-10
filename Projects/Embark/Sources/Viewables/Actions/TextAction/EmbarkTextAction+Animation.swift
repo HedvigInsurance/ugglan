@@ -57,21 +57,23 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
 			layoutAllContainers()
 		}
 
-		bag += inputAndLoader.atValue { _ in boxStack.addArrangedSubview(dummyActivityIndicator)
-			boxStack.addSubview(activityIndicator)
+		bag +=
+			inputAndLoader.atValue { _ in boxStack.addArrangedSubview(dummyActivityIndicator)
+				boxStack.addSubview(activityIndicator)
 
-			activityIndicator.snp.makeConstraints { make in make.center.equalTo(box.snp.center) }
+				activityIndicator.snp.makeConstraints { make in make.center.equalTo(box.snp.center) }
 
-			dummyActivityIndicator.snp.makeConstraints { make in
-				make.width.height.equalTo(activityIndicator)
+				dummyActivityIndicator.snp.makeConstraints { make in
+					make.width.height.equalTo(activityIndicator)
+				}
+
+				dummyActivityIndicator.layoutIfNeeded()
+				activityIndicator.layoutIfNeeded()
 			}
-
-			dummyActivityIndicator.layoutIfNeeded()
-			activityIndicator.layoutIfNeeded()
-		}.animated(style: .easeIn(duration: 0.25, delay: 0.20)) {
-			activityIndicator.alpha = 1
-			activityIndicator.layoutIfNeeded()
-		}
+			.animated(style: .easeIn(duration: 0.25, delay: 0.20)) {
+				activityIndicator.alpha = 1
+				activityIndicator.layoutIfNeeded()
+			}
 
 		let completionSignal = inputAndLoader.animated(style: .lightBounce(duration: 0.5)) {
 			input.isHidden = true

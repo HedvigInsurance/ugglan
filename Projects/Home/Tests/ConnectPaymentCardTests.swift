@@ -35,10 +35,10 @@ final class ConnectPaymentCardTests: XCTestCase {
 		let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
 		self.bag += bag
 
-		apolloClient.fetch(query: GraphQL.PayInMethodStatusQuery()).delay(by: 0.1).onValue { _ in
-			XCTAssertNotEqual(view.subviews.count, 0)
-			waitForApollo.fulfill()
-		}
+		apolloClient.fetch(query: GraphQL.PayInMethodStatusQuery()).delay(by: 0.1)
+			.onValue { _ in XCTAssertNotEqual(view.subviews.count, 0)
+				waitForApollo.fulfill()
+			}
 
 		wait(for: [waitForApollo], timeout: 1)
 	}
@@ -58,10 +58,10 @@ final class ConnectPaymentCardTests: XCTestCase {
 		let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
 		self.bag += bag
 
-		apolloClient.fetch(query: GraphQL.PayInMethodStatusQuery()).delay(by: 0.1).onValue { _ in
-			XCTAssertEqual(view.subviews.count, 0)
-			waitForApollo.fulfill()
-		}
+		apolloClient.fetch(query: GraphQL.PayInMethodStatusQuery()).delay(by: 0.1)
+			.onValue { _ in XCTAssertEqual(view.subviews.count, 0)
+				waitForApollo.fulfill()
+			}
 
 		wait(for: [waitForApollo], timeout: 1)
 	}

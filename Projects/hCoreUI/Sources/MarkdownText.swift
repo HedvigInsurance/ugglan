@@ -9,12 +9,18 @@ public struct MarkdownText {
 	public let textSignal: ReadWriteSignal<String>
 	public let style: TextStyle
 
-	public init(textSignal: ReadWriteSignal<String>, style: TextStyle) {
+	public init(
+		textSignal: ReadWriteSignal<String>,
+		style: TextStyle
+	) {
 		self.textSignal = textSignal
 		self.style = style
 	}
 
-	public init(value: String, style: TextStyle) {
+	public init(
+		value: String,
+		style: TextStyle
+	) {
 		textSignal = ReadWriteSignal(value)
 		self.style = style
 	}
@@ -36,21 +42,22 @@ extension MarkdownText: Viewable {
 		markdownText.lineBreakMode = .byWordWrapping
 		markdownText.baselineAdjustment = .none
 
-		bag += textSignal.atOnce().onValue { text in let attributedString = markdownParser.parse(text)
+		bag += textSignal.atOnce()
+			.onValue { text in let attributedString = markdownParser.parse(text)
 
-			if !text.isEmpty {
-				let mutableAttributedString = NSMutableAttributedString(
-					attributedString: attributedString
-				)
-				mutableAttributedString.addAttribute(
-					.paragraphStyle,
-					value: paragraphStyle,
-					range: NSMakeRange(0, mutableAttributedString.length - 1)
-				)
+				if !text.isEmpty {
+					let mutableAttributedString = NSMutableAttributedString(
+						attributedString: attributedString
+					)
+					mutableAttributedString.addAttribute(
+						.paragraphStyle,
+						value: paragraphStyle,
+						range: NSMakeRange(0, mutableAttributedString.length - 1)
+					)
 
-				markdownText.attributedText = mutableAttributedString
+					markdownText.attributedText = mutableAttributedString
+				}
 			}
-		}
 
 		bag += markdownText.didLayoutSignal.onValue { _ in
 			markdownText.preferredMaxLayoutWidth = markdownText.frame.size.width

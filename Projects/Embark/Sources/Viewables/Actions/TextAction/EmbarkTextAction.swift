@@ -109,7 +109,8 @@ extension EmbarkTextAction: Viewable {
 						bag += animator.setState(.loading).filter(predicate: { $0 })
 							.mapLatestToFuture { _ in
 								self.state.handleApi(apiFragment: apiFragment)
-							}.onValue { link in guard let link = link else { return }
+							}
+							.onValue { link in guard let link = link else { return }
 								callback(link)
 							}
 					} else {
@@ -118,17 +119,15 @@ extension EmbarkTextAction: Viewable {
 				}
 
 				bag += input.shouldReturn.set { _ -> Bool in let innerBag = DisposeBag()
-					innerBag += textSignal.atOnce().take(first: 1).onValue { value in
-						complete(value)
-						innerBag.dispose()
-					}
+					innerBag += textSignal.atOnce().take(first: 1)
+						.onValue { value in complete(value)
+							innerBag.dispose()
+						}
 					return true
 				}
 
-				bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain()).onFirstValue {
-					_,
-					value in complete(value)
-				}
+				bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain())
+					.onFirstValue { _, value in complete(value) }
 
 				return bag
 			}

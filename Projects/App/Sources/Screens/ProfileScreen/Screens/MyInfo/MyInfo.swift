@@ -35,10 +35,10 @@ extension MyInfo: Presentable {
 			style: .brand(.body(color: .primary))
 		)
 
-		bag += state.isEditingSignal.atOnce().filter { $0 }.onValue { _ in
-			saveButton.attachTo(viewController.navigationItem)
-			viewController.navigationItem.setLeftBarButtonItems([cancelButton], animated: true)
-		}
+		bag += state.isEditingSignal.atOnce().filter { $0 }
+			.onValue { _ in saveButton.attachTo(viewController.navigationItem)
+				viewController.navigationItem.setLeftBarButtonItems([cancelButton], animated: true)
+			}
 
 		bag += state.onSaveSignal.onValue { result in
 			if result.isSuccess() {
@@ -74,9 +74,9 @@ extension MyInfo: Presentable {
 							},
 						]
 					)
-					bag += viewController.present(alert).onValue { shouldContinue in
-						if shouldContinue { completion(.success) }
-					}
+					bag += viewController.present(alert)
+						.onValue { shouldContinue in if shouldContinue { completion(.success) }
+						}
 				}
 
 				return DelayedDisposer(bag, delay: 2)

@@ -14,9 +14,10 @@ struct PostOnboarding {
 
 	enum TableAction { case payment, push, pushSkip }
 
-	func makeTable(isSwitching: Bool, onAction: @escaping (_ tableAction: TableAction) -> Void) -> (
-		Table<EmptySection, Content>, Disposable
-	) {
+	func makeTable(
+		isSwitching: Bool,
+		onAction: @escaping (_ tableAction: TableAction) -> Void
+	) -> (Table<EmptySection, Content>, Disposable) {
 		let bag = DisposeBag()
 
 		let paymentButton = Button(
@@ -113,11 +114,11 @@ extension PostOnboarding: Presentable {
 							transitionStyle: nil,
 							capturesStatusBarAppearance: true
 						)
-					).onResult { _ in collectionKit.scrollToNextItem() }
+					)
+					.onResult { _ in collectionKit.scrollToNextItem() }
 				case .push:
-					UIApplication.shared.appDelegate.registerForPushNotifications().onValue { _ in
-						presentLoggedIn()
-					}
+					UIApplication.shared.appDelegate.registerForPushNotifications()
+						.onValue { _ in presentLoggedIn() }
 				case .pushSkip: presentLoggedIn()
 				}
 			}

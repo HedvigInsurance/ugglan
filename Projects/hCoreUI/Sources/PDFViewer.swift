@@ -19,10 +19,13 @@ public struct PDFViewer {
 
 extension PDFViewer: Viewable {
 	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-		let dataFetchSignal = url.atOnce().map(on: .background) { pdfUrl -> Data? in
-			guard let pdfUrl = pdfUrl, let pdfData = try? Data(contentsOf: pdfUrl) else { return nil }
-			return pdfData
-		}
+		let dataFetchSignal = url.atOnce()
+			.map(on: .background) { pdfUrl -> Data? in
+				guard let pdfUrl = pdfUrl, let pdfData = try? Data(contentsOf: pdfUrl) else {
+					return nil
+				}
+				return pdfData
+			}
 
 		let bag = DisposeBag()
 
@@ -58,9 +61,9 @@ extension PDFViewer: Viewable {
 
 		activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
 
-		bag += dataFetchSignal.delay(by: 1).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-			loadingView.alpha = 0
-		}.onValue { _ in loadingView.removeFromSuperview() }
+		bag += dataFetchSignal.delay(by: 1)
+			.animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in loadingView.alpha = 0 }
+			.onValue { _ in loadingView.removeFromSuperview() }
 
 		return (pdfView, bag)
 	}

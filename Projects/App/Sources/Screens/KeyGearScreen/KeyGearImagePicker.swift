@@ -45,7 +45,8 @@ struct KeyGearImagePicker: Presentable {
 					action: { _ in throw GenericError.cancelled }
 				)
 			],
-		].flatMap { $0 }
+		]
+		.flatMap { $0 }
 	}
 
 	func materialize() -> (UIViewController, Future<Either<Future<Either<PHAsset, UIImage>>, Future<[URL]>>>) {
@@ -96,7 +97,8 @@ struct KeyGearImagePicker: Presentable {
 							)
 						)
 					}
-				}.onError { error in completion(.failure(error)) }
+				}
+				.onError { error in completion(.failure(error)) }
 
 				return NilDisposer()
 			}

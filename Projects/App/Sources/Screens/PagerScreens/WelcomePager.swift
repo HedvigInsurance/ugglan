@@ -20,13 +20,15 @@ extension WelcomePager: Presentable {
 		let (viewController, future) = pager.materialize()
 
 		client.fetch(query: GraphQL.WelcomeQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()))
-			.compactMap { $0.welcome }.onValue { welcome in
+			.compactMap { $0.welcome }
+			.onValue { welcome in
 				pager.pages = welcome.map {
 					ContentIconPagerItem(
 						title: $0.title,
 						paragraph: $0.paragraph,
 						icon: $0.illustration.fragments.iconFragment
-					).pagerItem
+					)
+					.pagerItem
 				}
 			}
 

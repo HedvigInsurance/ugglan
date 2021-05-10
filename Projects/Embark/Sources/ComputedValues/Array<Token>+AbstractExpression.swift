@@ -1,7 +1,6 @@
 import Foundation
 
-indirect enum Expression: Equatable {
-	case binary(operator: BinaryOperator, left: Expression?, right: Expression?)
+indirect enum Expression: Equatable { case binary(operator: BinaryOperator, left: Expression?, right: Expression?)
 	case string(constant: String)
 	case number(constant: Double)
 	case store(key: String)

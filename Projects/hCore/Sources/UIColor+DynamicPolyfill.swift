@@ -2,7 +2,10 @@ import Foundation
 import UIKit
 
 extension UIColor {
-	public convenience init(light: UIColor, dark: UIColor) {
+	public convenience init(
+		light: UIColor,
+		dark: UIColor
+	) {
 		if #available(iOS 13, *) {
 			self.init(dynamicProvider: { trait in if trait.userInterfaceStyle == .dark { return dark }
 
@@ -14,7 +17,9 @@ extension UIColor {
 		self.init(cgColor: light.cgColor)
 	}
 
-	public convenience init(dynamic: @escaping (_ trait: UITraitCollection) -> UIColor) {
+	public convenience init(
+		dynamic: @escaping (_ trait: UITraitCollection) -> UIColor
+	) {
 		if #available(iOS 13, *) {
 			self.init(dynamicProvider: dynamic)
 			return

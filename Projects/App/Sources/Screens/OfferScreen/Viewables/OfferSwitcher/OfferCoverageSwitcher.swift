@@ -44,7 +44,8 @@ extension OfferCoverageSwitcher: Viewable {
 				if !previousInsurer.switchable { return L10n.offerSwitchTitleNonSwitchableApp }
 
 				return L10n.offerSwitchTitleApp(previousInsurer.displayName ?? "")
-			}.bindTo(titleLabel.$value)
+			}
+			.bindTo(titleLabel.$value)
 
 		bag += stackView.addArranged(OfferSwitcherBulletList())
 

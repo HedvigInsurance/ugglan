@@ -63,29 +63,35 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 	var keyboardFrame: CGRect = .zero
 
 	func listenToKeyboardFrame() {
-		bag += viewController.view.keyboardSignal(priority: .highest).onValue { event in
-			switch event {
-			case let .willShow(frame, _): self.keyboardFrame = frame
-			case .willHide: self.keyboardFrame = .zero
-			}
+		bag += viewController.view.keyboardSignal(priority: .highest)
+			.onValue { event in
+				switch event {
+				case let .willShow(frame, _): self.keyboardFrame = frame
+				case .willHide: self.keyboardFrame = .zero
+				}
 
-			if let presentationController = self.viewController.navigationController?.presentationController
-			{
-				if let lastViewController = self.viewController.navigationController?
-					.visibleViewController
+				if let presentationController = self.viewController.navigationController?
+					.presentationController
 				{
-					PresentationStyle.Detent.set(
-						lastViewController.appliedDetents,
-						on: presentationController,
-						viewController: lastViewController,
-						keyboardAnimation: event.animation
-					)
+					if let lastViewController = self.viewController.navigationController?
+						.visibleViewController
+					{
+						PresentationStyle.Detent.set(
+							lastViewController.appliedDetents,
+							on: presentationController,
+							viewController: lastViewController,
+							keyboardAnimation: event.animation
+						)
+					}
 				}
 			}
-		}
 	}
 
-	init(detents: [PresentationStyle.Detent], wantsGrabber: Bool, viewController: UIViewController) {
+	init(
+		detents: [PresentationStyle.Detent],
+		wantsGrabber: Bool,
+		viewController: UIViewController
+	) {
 		self.detents = detents
 		self.wantsGrabber = wantsGrabber
 		self.viewController = viewController
@@ -177,14 +183,14 @@ extension UIViewController {
 	public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
 		Signal { callback in let bag = DisposeBag()
 
-			bag += (self.view as? UIScrollView)?.panGestureRecognizer.onValue { _ in
-				callback(self.currentDetent)
-			}
+			bag += (self.view as? UIScrollView)?.panGestureRecognizer
+				.onValue { _ in callback(self.currentDetent) }
 
 			bag += self.view.didLayoutSignal.onValue { callback(self.currentDetent) }
 
 			return bag
-		}.distinct().readable { self.currentDetent }.writable { detent in self.currentDetent = detent }
+		}
+		.distinct().readable { self.currentDetent }.writable { detent in self.currentDetent = detent }
 	}
 
 	private static var _lastDetentIndex: UInt8 = 1
@@ -367,39 +373,47 @@ extension PresentationStyle {
 							to: options.contains(.wantsGrabber)
 						)
 
-						bag += navigationController.willPopViewControllerSignal.wait(
-							until: navigationController.interactivePopGestureRecognizer?.map
-							{ $0 == .possible || $0 == .ended } ?? ReadSignal(true)
-						).debug().filter(predicate: { $0 == viewController }).onValue { _ in
-							guard
-								let previousViewController = navigationController
-									.viewControllers.last
-							else { return }
+						bag += navigationController.willPopViewControllerSignal
+							.wait(
+								until: navigationController
+									.interactivePopGestureRecognizer?
+									.map { $0 == .possible || $0 == .ended }
+									?? ReadSignal(true)
+							)
+							.debug().filter(predicate: { $0 == viewController })
+							.onValue { _ in
+								guard
+									let previousViewController =
+										navigationController.viewControllers
+										.last
+								else { return }
 
-							func handleDismiss() {
-								navigationController.view.backgroundColor =
-									previousViewController.view.backgroundColor
-								Self.Detent.set(
-									previousViewController.appliedDetents,
-									on: presentationController,
-									viewController: previousViewController,
-									lastDetentIndex: previousViewController
-										.lastDetentIndex
-								)
-							}
+								func handleDismiss() {
+									navigationController.view.backgroundColor =
+										previousViewController.view
+										.backgroundColor
+									Self.Detent.set(
+										previousViewController.appliedDetents,
+										on: presentationController,
+										viewController: previousViewController,
+										lastDetentIndex: previousViewController
+											.lastDetentIndex
+									)
+								}
 
-							if navigationController.interactivePopGestureRecognizer?.state
-								== .ended,
-								!(navigationController.transitionCoordinator?
-									.isCancelled ?? false)
-							{
-								handleDismiss()
-							} else if navigationController.interactivePopGestureRecognizer?
-								.state == .possible
-							{
-								handleDismiss()
+								if navigationController.interactivePopGestureRecognizer?
+									.state == .ended,
+									!(navigationController.transitionCoordinator?
+										.isCancelled ?? false)
+								{
+									handleDismiss()
+								} else if navigationController
+									.interactivePopGestureRecognizer?
+									.state == .possible
+								{
+									handleDismiss()
+								}
 							}
-						}
 					}
 
 					let defaultPresentation = PresentationStyle.default.present(

@@ -35,17 +35,22 @@ extension Charity: Presentable {
 				} else {
 					scrollView.isScrollEnabled = false
 					let charityPicker = CharityPicker(presentingViewController: viewController)
-					innerBag += scrollView.add(charityPicker) { table in
-						table.snp.makeConstraints { make in make.edges.equalToSuperview()
-							make.height.width.equalToSuperview()
+					innerBag +=
+						scrollView.add(charityPicker) { table in
+							table.snp.makeConstraints { make in
+								make.edges.equalToSuperview()
+								make.height.width.equalToSuperview()
+							}
 						}
-					}.onValue { _ in
-						bag +=
-							self.client.fetch(
-								query: GraphQL.SelectedCharityQuery(),
-								cachePolicy: .fetchIgnoringCacheData
-							).disposable
-					}
+						.onValue { _ in
+							bag +=
+								self.client
+								.fetch(
+									query: GraphQL.SelectedCharityQuery(),
+									cachePolicy: .fetchIgnoringCacheData
+								)
+								.disposable
+						}
 				}
 
 				return innerBag

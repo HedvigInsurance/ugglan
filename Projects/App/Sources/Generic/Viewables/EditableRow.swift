@@ -33,17 +33,11 @@ extension EditableRow: Viewable {
 			type: .outline(borderColor: .clear, textColor: .brand(.primaryTintColor))
 		)
 
-		bag += textField.signal(for: .editingDidBegin).map { _ in L10n.editableRowSave }.bindTo(
-			animate: AnimationStyle.easeOut(duration: 0.25),
-			button.title,
-			\.value
-		)
+		bag += textField.signal(for: .editingDidBegin).map { _ in L10n.editableRowSave }
+			.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), button.title, \.value)
 
-		bag += textField.signal(for: .editingDidEnd).map { _ in L10n.editableRowEdit }.bindTo(
-			animate: AnimationStyle.easeOut(duration: 0.25),
-			button.title,
-			\.value
-		)
+		bag += textField.signal(for: .editingDidEnd).map { _ in L10n.editableRowEdit }
+			.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), button.title, \.value)
 
 		row.append(textField)
 
@@ -52,15 +46,15 @@ extension EditableRow: Viewable {
 		return (
 			row,
 			Signal { callback in
-				bag += merge(textField.signal(for: .primaryActionTriggered), button.onTapSignal).onValue
-				{ _ in
-					if textField.isFirstResponder {
-						callback(textField.value)
-						textField.resignFirstResponder()
-					} else {
-						textField.becomeFirstResponder()
+				bag += merge(textField.signal(for: .primaryActionTriggered), button.onTapSignal)
+					.onValue { _ in
+						if textField.isFirstResponder {
+							callback(textField.value)
+							textField.resignFirstResponder()
+						} else {
+							textField.becomeFirstResponder()
+						}
 					}
-				}
 
 				return bag
 			}

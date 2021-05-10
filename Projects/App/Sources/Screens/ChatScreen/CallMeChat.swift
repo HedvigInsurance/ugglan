@@ -22,9 +22,8 @@ extension CallMeChat: Presentable {
 
 		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
 
-		bag += client.perform(mutation: GraphQL.TriggerCallMeChatMutation()).onValue { _ in
-			chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
-		}
+		bag += client.perform(mutation: GraphQL.TriggerCallMeChatMutation())
+			.onValue { _ in chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) }
 
 		return (
 			viewController,

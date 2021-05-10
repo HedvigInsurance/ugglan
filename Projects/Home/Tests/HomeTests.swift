@@ -30,10 +30,11 @@ class HomeTests: XCTestCase {
 
 		let waitForApollo = expectation(description: "wait for apollo")
 
-		apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.5).onValue { _ in assertions(window)
-			waitForApollo.fulfill()
-			self.bag.dispose()
-		}
+		apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.5)
+			.onValue { _ in assertions(window)
+				waitForApollo.fulfill()
+				self.bag.dispose()
+			}
 
 		wait(for: [waitForApollo], timeout: 2)
 	}

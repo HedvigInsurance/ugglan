@@ -51,16 +51,18 @@ extension AnimatedSavingsLabel: Viewable {
 
 		bag += to.atOnce().onValue { amount in toLabel.value = amount?.formattedAmount ?? "" }
 
-		bag += combineLatest(from, to).toVoid().animated(style: SpringAnimationStyle.lightBounce()) { _ in
-			fromLabel.transform = .identity
-			toLabel.transform = CGAffineTransform(translationX: 0, y: -100)
-		}.delay(by: 1.5).animated(style: SpringAnimationStyle.lightBounce()) { _ in fromLabel.isHidden = true
-			fromLabel.alpha = 0
-			fromLabel.transform = CGAffineTransform(translationX: 0, y: 100)
-			toLabel.isHidden = false
-			toLabel.alpha = 1
-			toLabel.transform = .identity
-		}
+		bag += combineLatest(from, to).toVoid()
+			.animated(style: SpringAnimationStyle.lightBounce()) { _ in fromLabel.transform = .identity
+				toLabel.transform = CGAffineTransform(translationX: 0, y: -100)
+			}
+			.delay(by: 1.5)
+			.animated(style: SpringAnimationStyle.lightBounce()) { _ in fromLabel.isHidden = true
+				fromLabel.alpha = 0
+				fromLabel.transform = CGAffineTransform(translationX: 0, y: 100)
+				toLabel.isHidden = false
+				toLabel.alpha = 1
+				toLabel.transform = .identity
+			}
 
 		return (maskContainer, bag)
 	}

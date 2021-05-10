@@ -9,7 +9,10 @@ where Content.Matter: UIView, Content.Result == Disposable, Content.Events == Vi
 	let content: Content
 	let isExpanded: ReadWriteSignal<Bool>
 
-	init(content: Content, isExpanded: ReadWriteSignal<Bool>) {
+	init(
+		content: Content,
+		isExpanded: ReadWriteSignal<Bool>
+	) {
 		self.content = content
 		self.isExpanded = isExpanded
 	}
@@ -53,27 +56,25 @@ extension ExpandableContent: Viewable {
 
 		bag += contentDisposable
 
-		bag += combineLatest(scrollView.contentSizeSignal.atOnce(), isExpanded.atOnce()).animated(
-			style: .mediumBounce()
-		) { size, _ in
-			outerContainer.snp.remakeConstraints { make in make.width.equalTo(size.width)
-				let outerContainerHeight = buttonHalfHeight + size.height
-				make.height.equalTo(
-					self.isExpanded.value
-						? outerContainerHeight + (buttonHalfHeight * 2)
-						: outerContainerHeight * 0.5
-				)
+		bag += combineLatest(scrollView.contentSizeSignal.atOnce(), isExpanded.atOnce())
+			.animated(style: .mediumBounce()) { size, _ in
+				outerContainer.snp.remakeConstraints { make in make.width.equalTo(size.width)
+					let outerContainerHeight = buttonHalfHeight + size.height
+					make.height.equalTo(
+						self.isExpanded.value
+							? outerContainerHeight + (buttonHalfHeight * 2)
+							: outerContainerHeight * 0.5
+					)
+				}
+				outerContainer.layoutSuperviewsIfNeeded()
+				outerContainer.subviews.forEach { subview in
+					if subview is UIStackView { subview.layoutIfNeeded() }
+				}
+				scrollView.subviews.forEach { subview in subview.layoutIfNeeded() }
 			}
-			outerContainer.layoutSuperviewsIfNeeded()
-			outerContainer.subviews.forEach { subview in
-				if subview is UIStackView { subview.layoutIfNeeded() }
-			}
-			scrollView.subviews.forEach { subview in subview.layoutIfNeeded() }
-		}
 
-		bag += expandButton.onTapSignal.withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }.bindTo(
-			isExpanded
-		)
+		bag += expandButton.onTapSignal.withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }
+			.bindTo(isExpanded)
 
 		let shadowView = UIView()
 
@@ -102,29 +103,30 @@ extension ExpandableContent: Viewable {
 		}
 
 		bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
-			bag += isExpanded.atOnce().map {
-				!$0 ? L10n.expandableContentExpand : L10n.expandableContentCollapse
-			}.onValue { value in
-				UIView.transition(
-					with: buttonView,
-					duration: 0.25,
-					options: .transitionCrossDissolve,
-					animations: {
-						expandButton.title.value = value
-						buttonView.layoutIfNeeded()
-					},
-					completion: nil
-				)
-			}
+			bag += isExpanded.atOnce()
+				.map { !$0 ? L10n.expandableContentExpand : L10n.expandableContentCollapse }
+				.onValue { value in
+					UIView.transition(
+						with: buttonView,
+						duration: 0.25,
+						options: .transitionCrossDissolve,
+						animations: {
+							expandButton.title.value = value
+							buttonView.layoutIfNeeded()
+						},
+						completion: nil
+					)
+				}
 
 			buttonView.snp.makeConstraints { make in make.bottom.equalToSuperview()
 				make.centerX.equalToSuperview()
 			}
 		}
 
-		bag += isExpanded.atOnce().animated(mapStyle: {
-			$0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.30)
-		}) { isExpanded in shadowView.alpha = isExpanded ? 0 : 1 }
+		bag += isExpanded.atOnce()
+			.animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.30) }) {
+				isExpanded in shadowView.alpha = isExpanded ? 0 : 1
+			}
 
 		return (outerContainer, bag)
 	}

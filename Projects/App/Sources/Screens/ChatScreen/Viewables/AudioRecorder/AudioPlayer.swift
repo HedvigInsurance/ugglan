@@ -87,28 +87,29 @@ extension AudioPlayer: Viewable {
 			updateShader(audioPlayer: audioPlayer)
 		}
 
-		bag += control.signal(for: .touchUpInside).onValue { _ in
+		bag += control.signal(for: .touchUpInside)
+			.onValue { _ in
 
-			guard let audioPlayer = self.audioPlayerSignal.value else { return }
+				guard let audioPlayer = self.audioPlayerSignal.value else { return }
 
-			if audioPlayer.isPlaying {
-				pause(audioPlayer: audioPlayer)
-				return
+				if audioPlayer.isPlaying {
+					pause(audioPlayer: audioPlayer)
+					return
+				}
+
+				play(audioPlayer: audioPlayer)
+
+				timerBag += Signal(every: 1 / 60)
+					.onValue { _ in updateShader(audioPlayer: audioPlayer)
+
+						if !audioPlayer.isPlaying { pause(audioPlayer: audioPlayer) }
+					}
+
+				timerBag += Signal(every: 1).onValue { _ in updateTimeStamp(audioPlayer: audioPlayer) }
 			}
 
-			play(audioPlayer: audioPlayer)
-
-			timerBag += Signal(every: 1 / 60).onValue { _ in updateShader(audioPlayer: audioPlayer)
-
-				if !audioPlayer.isPlaying { pause(audioPlayer: audioPlayer) }
-			}
-
-			timerBag += Signal(every: 1).onValue { _ in updateTimeStamp(audioPlayer: audioPlayer) }
-		}
-
-		bag += audioPlayerSignal.atOnce().compactMap { $0 }.onValue { audioPlayer in
-			updateTimeStamp(audioPlayer: audioPlayer)
-		}
+		bag += audioPlayerSignal.atOnce().compactMap { $0 }
+			.onValue { audioPlayer in updateTimeStamp(audioPlayer: audioPlayer) }
 
 		return (control, bag)
 	}

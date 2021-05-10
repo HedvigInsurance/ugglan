@@ -34,27 +34,28 @@ extension OfferCoverage: Viewable {
 		)
 		bag += stackView.addArranged(bodyLabel)
 
-		bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.type }.onValue {
-			type in
-			switch type {
-			case .brf, .studentBrf: bodyLabel.value = L10n.offerScreenCoverageBodyBrf
-			case .rent, .studentRent: bodyLabel.value = L10n.offerScreenCoverageBodyRental
-			case .house: bodyLabel.value = L10n.offerScreenCoverageBodyHouse
-			case .__unknown: break
+		bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.type }
+			.onValue { type in
+				switch type {
+				case .brf, .studentBrf: bodyLabel.value = L10n.offerScreenCoverageBodyBrf
+				case .rent, .studentRent: bodyLabel.value = L10n.offerScreenCoverageBodyRental
+				case .house: bodyLabel.value = L10n.offerScreenCoverageBodyHouse
+				case .__unknown: break
+				}
 			}
-		}
 
-		let perilFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap {
-			$0.lastQuoteOfMember.asCompleteQuote?.perils.map { $0.fragments.perilFragment }
-		}.plain().readable(initial: [])
+		let perilFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal
+			.compactMap { $0.lastQuoteOfMember.asCompleteQuote?.perils.map { $0.fragments.perilFragment } }
+			.plain().readable(initial: [])
 
 		bag += stackView.addArranged(ContractPerilCollection(perilFragmentsSignal: perilFragmentsSignal))
 
-		let insurableLimitFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap {
-			$0.lastQuoteOfMember.asCompleteQuote?.insurableLimits.map {
-				$0.fragments.insurableLimitFragment
+		let insurableLimitFragmentsSignal = client.fetch(query: GraphQL.OfferQuery()).valueSignal
+			.compactMap {
+				$0.lastQuoteOfMember.asCompleteQuote?.insurableLimits
+					.map { $0.fragments.insurableLimitFragment }
 			}
-		}.plain().readable(initial: [])
+			.plain().readable(initial: [])
 
 		bag += stackView.addArranged(Spacing(height: 20))
 

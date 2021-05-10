@@ -6,7 +6,12 @@ class NetworkInterceptorProvider: LegacyInterceptorProvider {
 	let acceptLanguageHeader: String
 	let userAgent: String
 
-	init(store: ApolloStore, token: String, acceptLanguageHeader: String, userAgent: String) {
+	init(
+		store: ApolloStore,
+		token: String,
+		acceptLanguageHeader: String,
+		userAgent: String
+	) {
 		self.token = token
 		self.acceptLanguageHeader = acceptLanguageHeader
 		self.userAgent = userAgent

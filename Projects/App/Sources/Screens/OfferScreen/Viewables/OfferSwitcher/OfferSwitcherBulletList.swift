@@ -55,9 +55,11 @@ extension OfferSwitcherBulletList: Viewable {
 		stackView.axis = .vertical
 		stackView.spacing = 15
 
-		bag += stackView.didMoveToWindowSignal.take(first: 1).onValue {
-			stackView.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.8) }
-		}
+		bag += stackView.didMoveToWindowSignal.take(first: 1)
+			.onValue {
+				stackView.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.8)
+				}
+			}
 
 		bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.previousInsurer }
 			.onValueDisposePrevious { previousInsurer -> Disposable? in let innerBag = DisposeBag()

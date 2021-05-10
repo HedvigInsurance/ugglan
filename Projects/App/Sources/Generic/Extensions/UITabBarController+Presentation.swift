@@ -5,9 +5,9 @@ import UIKit
 import hCore
 
 extension UITabBarController {
-	private func materializeTab<P: Presentable & Tabable, Matter: UIViewController>(_ presentation: Presentation<P>)
-		-> (UIViewController, Disposable) where P.Matter == Matter, P.Result == Disposable
-	{
+	private func materializeTab<P: Presentable & Tabable, Matter: UIViewController>(
+		_ presentation: Presentation<P>
+	) -> (UIViewController, Disposable) where P.Matter == Matter, P.Result == Disposable {
 		let bag = DisposeBag()
 
 		let materialized = presentation.presentable.materialize()
@@ -48,8 +48,13 @@ extension UITabBarController {
 		DMatter: UIViewController,
 		E: Presentable & Tabable,
 		EMatter: UIViewController
-	>(_ a: Presentation<A>, _ b: Presentation<B>, _ c: Presentation<C>, _ d: Presentation<D>, _ e: Presentation<E>)
-		-> Disposable
+	>(
+		_ a: Presentation<A>,
+		_ b: Presentation<B>,
+		_ c: Presentation<C>,
+		_ d: Presentation<D>,
+		_ e: Presentation<E>
+	) -> Disposable
 	where
 		A.Matter == AMatter, A.Result == Disposable, B.Matter == BMatter, B.Result == Disposable,
 		C.Matter == CMatter, C.Result == Disposable, D.Matter == DMatter, D.Result == Disposable,

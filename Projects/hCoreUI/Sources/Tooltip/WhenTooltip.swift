@@ -22,7 +22,11 @@ public struct WhenTooltip {
 	/// reset eventual external dependencies like time
 	func reset() { UserDefaults.standard.setValue(nil, forKey: userDefaultsKey) }
 
-	init(when: When, tooltip: Tooltip, dateProvider: DateProvider = RealDateProvider()) {
+	init(
+		when: When,
+		tooltip: Tooltip,
+		dateProvider: DateProvider = RealDateProvider()
+	) {
 		self.when = when
 		self.tooltip = tooltip
 		self.dateProvider = dateProvider

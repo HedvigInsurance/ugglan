@@ -103,12 +103,14 @@ extension ApolloClient {
 		Future { completion in let tokenData = self.retreiveToken()
 
 			if tokenData == nil {
-				return self.createClientFromNewSession().onResult { result in
-					switch result {
-					case let .success(result): completion(.success(result))
-					case let .failure(error): completion(.failure(error))
+				return self.createClientFromNewSession()
+					.onResult { result in
+						switch result {
+						case let .success(result): completion(.success(result))
+						case let .failure(error): completion(.failure(error))
+						}
 					}
-				}.disposable
+					.disposable
 			} else {
 				let result = self.createClient(token: tokenData!.token)
 				completion(.success(result))

@@ -26,26 +26,32 @@ extension CommonClaimsCollection: Viewable {
 			CGSize(width: min(190, (collectionKit.view.frame.width / 2) - 10), height: 140)
 		}
 
-		bag += collectionKit.view.signal(for: \.bounds).delay(by: 0.25).onValue { _ in
-			collectionKit.view.reloadData()
-		}
+		bag += collectionKit.view.signal(for: \.bounds).delay(by: 0.25)
+			.onValue { _ in collectionKit.view.reloadData() }
 
 		bag += collectionKit.delegate.willDisplayCell.onValue { cell, indexPath in
 			cell.layer.zPosition = CGFloat(indexPath.row)
 		}
 
 		func fetchData() {
-			bag += client.fetch(
-				query: GraphQL.CommonClaimsQuery(
-					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+			bag +=
+				client.fetch(
+					query: GraphQL.CommonClaimsQuery(
+						locale: Localization.Locale.currentLocale.asGraphQLLocale()
+					)
 				)
-			).valueSignal.onValue { data in
-				let rows = data.commonClaims.enumerated().map {
-					CommonClaimCard(data: $0.element, index: TableIndex(section: 0, row: $0.offset))
-				}
+				.valueSignal
+				.onValue { data in
+					let rows = data.commonClaims.enumerated()
+						.map {
+							CommonClaimCard(
+								data: $0.element,
+								index: TableIndex(section: 0, row: $0.offset)
+							)
+						}
 
-				collectionKit.set(Table(rows: rows), rowIdentifier: { $0.data.title })
-			}
+					collectionKit.set(Table(rows: rows), rowIdentifier: { $0.data.title })
+				}
 		}
 
 		fetchData()
@@ -66,13 +72,14 @@ extension CommonClaimsCollection: Viewable {
 
 		collectionKit.view.snp.updateConstraints { make in make.height.equalTo(140) }
 
-		bag += collectionKit.view.signal(for: \.contentSize).onValue { _ in
-			collectionKit.view.snp.updateConstraints { make in
-				make.height.equalTo(
-					collectionKit.view.collectionViewLayout.collectionViewContentSize.height
-				)
+		bag += collectionKit.view.signal(for: \.contentSize)
+			.onValue { _ in
+				collectionKit.view.snp.updateConstraints { make in
+					make.height.equalTo(
+						collectionKit.view.collectionViewLayout.collectionViewContentSize.height
+					)
+				}
 			}
-		}
 
 		return (stackView, bag)
 	}

@@ -88,25 +88,27 @@ extension HonestyPledge: Presentable {
 						viewController.present(
 							ClaimsChat().withCloseButton,
 							style: .detented(.large, modally: false)
-						).onResult(completion)
+						)
+						.onResult(completion)
 					}
 
 					if UIApplication.shared.isRegisteredForRemoteNotifications {
 						presentClaimsChat()
 					} else {
-						bag += viewController.present(
-							self.pushNotificationsPresentable(),
-							style: .detented(.large, modally: false)
-						).onValue { action in
-							if action == .ask {
-								UIApplication.shared.appDelegate
-									.registerForPushNotifications().onValue { _ in
-										presentClaimsChat()
-									}
-							} else {
-								presentClaimsChat()
+						bag +=
+							viewController.present(
+								self.pushNotificationsPresentable(),
+								style: .detented(.large, modally: false)
+							)
+							.onValue { action in
+								if action == .ask {
+									UIApplication.shared.appDelegate
+										.registerForPushNotifications()
+										.onValue { _ in presentClaimsChat() }
+								} else {
+									presentClaimsChat()
+								}
 							}
-						}
 					}
 				}
 

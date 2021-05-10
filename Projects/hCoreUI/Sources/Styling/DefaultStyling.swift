@@ -161,41 +161,43 @@ extension DefaultStyling {
 				.asImage()
 
 			UITabBar.appearance(for: UITraitCollection(userInterfaceStyle: .dark)).shadowImage =
-				UIColor.brand(.primaryBorderColor).resolvedColor(
-					with: UITraitCollection(userInterfaceStyle: .dark)
-				).asImage()
+				UIColor.brand(.primaryBorderColor)
+				.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
 			UITabBar.appearance(for: UITraitCollection(userInterfaceStyle: .light)).shadowImage =
-				UIColor.brand(.primaryBorderColor).resolvedColor(
-					with: UITraitCollection(userInterfaceStyle: .light)
-				).asImage()
+				UIColor.brand(.primaryBorderColor)
+				.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 		} else {
 			UITabBar.appearance().backgroundImage = tabBarBackgroundColor.asImage()
 			UITabBar.appearance().shadowImage = UIColor.brand(.primaryBorderColor).asImage()
 		}
 
-		UITabBarItem.appearance().setTitleTextAttributes(
-			[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
-			for: .normal
-		)
-		UITabBarItem.appearance().setTitleTextAttributes(
-			[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
-			for: .selected
-		)
+		UITabBarItem.appearance()
+			.setTitleTextAttributes(
+				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				for: .normal
+			)
+		UITabBarItem.appearance()
+			.setTitleTextAttributes(
+				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				for: .selected
+			)
 
 		UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
 			.primaryTintColor
 		)
 
-		UIBarButtonItem.appearance().setTitleTextAttributes(
-			[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
-			for: .normal
-		)
+		UIBarButtonItem.appearance()
+			.setTitleTextAttributes(
+				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				for: .normal
+			)
 
-		UIBarButtonItem.appearance().setTitleTextAttributes(
-			[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
-			for: .highlighted
-		)
+		UIBarButtonItem.appearance()
+			.setTitleTextAttributes(
+				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				for: .highlighted
+			)
 
 		UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
 
@@ -373,9 +375,10 @@ extension DynamicSectionStyle {
 		}
 	}
 
-	public static func brandGrouped(separatorType: SeparatorType, borderColor: UIColor = .clear)
-		-> DynamicSectionStyle
-	{
+	public static func brandGrouped(
+		separatorType: SeparatorType,
+		borderColor: UIColor = .clear
+	) -> DynamicSectionStyle {
 		DynamicSectionStyle { trait -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 			let isPad = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular

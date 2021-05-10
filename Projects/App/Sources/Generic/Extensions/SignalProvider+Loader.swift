@@ -19,17 +19,18 @@ extension SignalProvider {
 
 		overlayView.snp.makeConstraints { make in make.width.height.centerY.centerX.equalToSuperview() }
 
-		bag += overlayView.didLayoutSignal.take(first: 1).onValue { _ in
-			if let navigationController = overlayView.viewController?.navigationController {
-				let navigationBarHeight = navigationController.navigationBar.frame.size.height
-				overlayView.layoutMargins = UIEdgeInsets(
-					top: 0,
-					left: 0,
-					bottom: navigationBarHeight,
-					right: 0
-				)
+		bag += overlayView.didLayoutSignal.take(first: 1)
+			.onValue { _ in
+				if let navigationController = overlayView.viewController?.navigationController {
+					let navigationBarHeight = navigationController.navigationBar.frame.size.height
+					overlayView.layoutMargins = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: navigationBarHeight,
+						right: 0
+					)
+				}
 			}
-		}
 
 		bag += onValue { _ in
 			UIView.animate(

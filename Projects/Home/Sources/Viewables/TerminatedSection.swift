@@ -21,9 +21,10 @@ extension TerminatedSection: Viewable {
 
 		section.appendSpacing(.inbetween)
 
-		client.fetch(query: GraphQL.HomeQuery()).onValue { data in
-			titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
-		}
+		client.fetch(query: GraphQL.HomeQuery())
+			.onValue { data in
+				titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
+			}
 
 		let subtitleLabel = MultilineLabel(
 			value: L10n.HomeTab.terminatedBody,

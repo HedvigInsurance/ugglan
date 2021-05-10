@@ -75,10 +75,14 @@ extension AddKeyGearItem {
 				func process(request: VNCoreMLRequest, image: UIImage) {
 					guard let ciImage = CIImage(image: image) else { return }
 
-					DispatchQueue.global(qos: .userInitiated).async {
-						let handler = VNImageRequestHandler(ciImage: ciImage, orientation: .up)
-						try? handler.perform([request])
-					}
+					DispatchQueue.global(qos: .userInitiated)
+						.async {
+							let handler = VNImageRequestHandler(
+								ciImage: ciImage,
+								orientation: .up
+							)
+							try? handler.perform([request])
+						}
 				}
 
 				process(request: request, image: image)
@@ -148,9 +152,9 @@ extension VNCoreMLModel {
 				return bag
 			}
 
-			bag += client.fetch(query: GraphQL.KeyGearClassifierQuery()).map { data in
-				data.coreMlModels.first?.file?.url
-			}.valueSignal.compactMap { url in URL(string: url) }.onValue { url in downloadModel(url) }
+			bag += client.fetch(query: GraphQL.KeyGearClassifierQuery())
+				.map { data in data.coreMlModels.first?.file?.url }.valueSignal
+				.compactMap { url in URL(string: url) }.onValue { url in downloadModel(url) }
 
 			return bag
 		}
@@ -158,7 +162,10 @@ extension VNCoreMLModel {
 }
 
 extension VNCoreMLRequest {
-	convenience init(model: VNCoreMLModel, delegate: Delegate<Either<VNRequest, Error>, Void>) {
+	convenience init(
+		model: VNCoreMLModel,
+		delegate: Delegate<Either<VNRequest, Error>, Void>
+	) {
 		self.init(model: model) { request, error in
 			guard let error = error else {
 				delegate.call(.left(request))

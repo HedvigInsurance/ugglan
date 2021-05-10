@@ -14,8 +14,11 @@ public struct LoadingIndicator {
 		trait.userInterfaceStyle == .dark ? .white : .brand(.primaryTintColor)
 	})
 
-	public init(showAfter: TimeInterval, color: UIColor = LoadingIndicator.defaultLoaderColor, size: CGFloat = 100)
-	{
+	public init(
+		showAfter: TimeInterval,
+		color: UIColor = LoadingIndicator.defaultLoaderColor,
+		size: CGFloat = 100
+	) {
 		self.showAfter = showAfter
 		self.color = color
 		self.size = size
@@ -30,20 +33,22 @@ extension LoadingIndicator: Viewable {
 
 		let bag = DisposeBag()
 
-		bag += loadingIndicator.didMoveToWindowSignal.take(first: 1).onValue { _ in
-			loadingIndicator.snp.makeConstraints { make in make.width.equalTo(self.size)
-				make.height.equalTo(self.size)
-				make.centerX.equalToSuperview()
+		bag += loadingIndicator.didMoveToWindowSignal.take(first: 1)
+			.onValue { _ in
+				loadingIndicator.snp.makeConstraints { make in make.width.equalTo(self.size)
+					make.height.equalTo(self.size)
+					make.centerX.equalToSuperview()
+				}
 			}
-		}
 
-		bag += Signal(after: showAfter).animated(
-			style: AnimationStyle.easeOut(duration: 0.5),
-			animations: {
-				loadingIndicator.alpha = 1
-				loadingIndicator.startAnimating()
-			}
-		)
+		bag += Signal(after: showAfter)
+			.animated(
+				style: AnimationStyle.easeOut(duration: 0.5),
+				animations: {
+					loadingIndicator.alpha = 1
+					loadingIndicator.startAnimating()
+				}
+			)
 
 		return (loadingIndicator, bag)
 	}

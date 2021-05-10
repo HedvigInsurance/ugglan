@@ -28,24 +28,31 @@ extension ConnectPaymentCard: Viewable {
 
 				if status == .needsSetup {
 					bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
-					bag += stackView.addArranged(
-						Card(
-							titleIcon: hCoreUIAssets.warningTriangle.image,
-							title: L10n.InfoCardMissingPayment.title,
-							body: L10n.InfoCardMissingPayment.body,
-							buttonText: L10n.InfoCardMissingPayment.buttonText,
-							backgroundColor: .tint(.yellowOne),
-							buttonType: .standardSmall(
-								backgroundColor: .tint(.yellowTwo),
-								textColor: .typographyColor(
-									.primary(state: .matching(.tint(.yellowTwo)))
+					bag +=
+						stackView.addArranged(
+							Card(
+								titleIcon: hCoreUIAssets.warningTriangle.image,
+								title: L10n.InfoCardMissingPayment.title,
+								body: L10n.InfoCardMissingPayment.body,
+								buttonText: L10n.InfoCardMissingPayment.buttonText,
+								backgroundColor: .tint(.yellowOne),
+								buttonType: .standardSmall(
+									backgroundColor: .tint(.yellowTwo),
+									textColor: .typographyColor(
+										.primary(
+											state: .matching(
+												.tint(.yellowTwo)
+											)
+										)
+									)
 								)
-							)
-						),
-						onCreate: animateIn
-					).compactMap { _ in stackView.viewController }.onValue { viewController in
-						Home.openConnectPaymentHandler(viewController)
-					}
+							),
+							onCreate: animateIn
+						)
+						.compactMap { _ in stackView.viewController }
+						.onValue { viewController in
+							Home.openConnectPaymentHandler(viewController)
+						}
 				}
 
 				return bag

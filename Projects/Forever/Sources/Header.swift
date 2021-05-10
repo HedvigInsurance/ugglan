@@ -14,16 +14,16 @@ extension Header: Viewable {
 
 		let bag = DisposeBag()
 
-		bag += stackView.traitCollectionSignal.atOnce().onValue { trait in
-			let style = DynamicFormStyle.brandInset.style(from: trait)
-			let insets = style.insets
-			stackView.layoutMargins = UIEdgeInsets(
-				top: insets.top,
-				left: insets.left,
-				bottom: 24,
-				right: insets.right
-			)
-		}
+		bag += stackView.traitCollectionSignal.atOnce()
+			.onValue { trait in let style = DynamicFormStyle.brandInset.style(from: trait)
+				let insets = style.insets
+				stackView.layoutMargins = UIEdgeInsets(
+					top: insets.top,
+					left: insets.left,
+					bottom: 24,
+					right: insets.right
+				)
+			}
 
 		stackView.isLayoutMarginsRelativeArrangement = true
 
@@ -34,11 +34,11 @@ extension Header: Viewable {
 		piePrice.alpha = 0
 		stackView.addArrangedSubview(piePrice)
 
-		bag += service.dataSignal.compactMap { $0?.grossAmount }.animated(
-			style: SpringAnimationStyle.lightBounce()
-		) { amount in piePrice.value = amount.formattedAmount
-			piePrice.alpha = 1
-		}
+		bag += service.dataSignal.compactMap { $0?.grossAmount }
+			.animated(style: SpringAnimationStyle.lightBounce()) { amount in
+				piePrice.value = amount.formattedAmount
+				piePrice.alpha = 1
+			}
 
 		let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
 		bag += stackView.addArranged(pieChart)
@@ -66,14 +66,16 @@ extension Header: Viewable {
 			service.dataSignal.map { $0?.grossAmount }.atOnce().compactMap { $0 },
 			service.dataSignal.map { $0?.netAmount }.atOnce().compactMap { $0 },
 			service.dataSignal.map { $0?.potentialDiscountAmount }.atOnce().compactMap { $0 }
-		).onValue { grossAmount, netAmount, potentialDiscountAmount in
-			bag += Signal(after: 0.8).onValue { _ in
-				pieChart.stateSignal.value = .init(
-					grossAmount: grossAmount,
-					netAmount: netAmount,
-					potentialDiscountAmount: potentialDiscountAmount
-				)
-			}
+		)
+		.onValue { grossAmount, netAmount, potentialDiscountAmount in
+			bag += Signal(after: 0.8)
+				.onValue { _ in
+					pieChart.stateSignal.value = .init(
+						grossAmount: grossAmount,
+						netAmount: netAmount,
+						potentialDiscountAmount: potentialDiscountAmount
+					)
+				}
 
 			emptyStateHeader.isHiddenSignal.value = grossAmount.amount != netAmount.amount
 			priceSection.isHiddenSignal.value = grossAmount.amount == netAmount.amount

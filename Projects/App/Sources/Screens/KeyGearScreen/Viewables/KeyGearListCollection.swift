@@ -47,29 +47,31 @@ extension KeyGearListCollection: Viewable {
 			CGSize(width: collectionKit.view.frame.width / 2 - 20, height: 120)
 		}
 
-		bag += client.watch(query: GraphQL.KeyGearItemsQuery()).map { $0.keyGearItems }.onValue { items in
-			guard !items.isEmpty else {
-				collectionKit.set(Table(rows: [.make(addButton)]))
-				return
+		bag += client.watch(query: GraphQL.KeyGearItemsQuery()).map { $0.keyGearItems }
+			.onValue { items in
+				guard !items.isEmpty else {
+					collectionKit.set(Table(rows: [.make(addButton)]))
+					return
+				}
+
+				var rows: [KeyGearListCollectionRow] = items.compactMap { $0 }
+					.map { item in let photo = item.photos.first
+						return .make(
+							KeyGearListItem(
+								id: item.id,
+								imageUrl: URL(string: photo?.file.preSignedUrl),
+								name: item.name,
+								wasAddedAutomatically: item.physicalReferenceHash
+									!= nil,
+								category: item.category
+							)
+						)
+					}
+
+				rows.insert(.make(addButton), at: 0)
+
+				collectionKit.set(Table(rows: rows))
 			}
-
-			var rows: [KeyGearListCollectionRow] = items.compactMap { $0 }.map { item in
-				let photo = item.photos.first
-				return .make(
-					KeyGearListItem(
-						id: item.id,
-						imageUrl: URL(string: photo?.file.preSignedUrl),
-						name: item.name,
-						wasAddedAutomatically: item.physicalReferenceHash != nil,
-						category: item.category
-					)
-				)
-			}
-
-			rows.insert(.make(addButton), at: 0)
-
-			collectionKit.set(Table(rows: rows))
-		}
 
 		return (
 			collectionKit.view,

@@ -111,29 +111,35 @@ extension TypingIndicator: Viewable {
 			}
 		}
 
-		bag += Signal(every: 2, delay: 0).animated(
-			style: AnimationStyle.easeOut(duration: 0.2),
-			animations: { _ in firstDot.transform = CGAffineTransform(translationX: 0, y: -10) }
-		).animated(
-			style: SpringAnimationStyle.ludicrousBounce(),
-			animations: { _ in firstDot.transform = CGAffineTransform.identity }
-		)
+		bag += Signal(every: 2, delay: 0)
+			.animated(
+				style: AnimationStyle.easeOut(duration: 0.2),
+				animations: { _ in firstDot.transform = CGAffineTransform(translationX: 0, y: -10) }
+			)
+			.animated(
+				style: SpringAnimationStyle.ludicrousBounce(),
+				animations: { _ in firstDot.transform = CGAffineTransform.identity }
+			)
 
-		bag += Signal(every: 2, delay: 0.1).animated(
-			style: AnimationStyle.easeOut(duration: 0.2),
-			animations: { _ in secondDot.transform = CGAffineTransform(translationX: 0, y: -6) }
-		).animated(
-			style: SpringAnimationStyle.ludicrousBounce(),
-			animations: { _ in secondDot.transform = CGAffineTransform.identity }
-		)
+		bag += Signal(every: 2, delay: 0.1)
+			.animated(
+				style: AnimationStyle.easeOut(duration: 0.2),
+				animations: { _ in secondDot.transform = CGAffineTransform(translationX: 0, y: -6) }
+			)
+			.animated(
+				style: SpringAnimationStyle.ludicrousBounce(),
+				animations: { _ in secondDot.transform = CGAffineTransform.identity }
+			)
 
-		bag += Signal(every: 2, delay: 0.2).animated(
-			style: AnimationStyle.easeOut(duration: 0.2),
-			animations: { _ in thirdDot.transform = CGAffineTransform(translationX: 0, y: -4) }
-		).animated(
-			style: SpringAnimationStyle.ludicrousBounce(),
-			animations: { _ in thirdDot.transform = CGAffineTransform.identity }
-		)
+		bag += Signal(every: 2, delay: 0.2)
+			.animated(
+				style: AnimationStyle.easeOut(duration: 0.2),
+				animations: { _ in thirdDot.transform = CGAffineTransform(translationX: 0, y: -4) }
+			)
+			.animated(
+				style: SpringAnimationStyle.ludicrousBounce(),
+				animations: { _ in thirdDot.transform = CGAffineTransform.identity }
+			)
 
 		return (bubble, bag)
 	}

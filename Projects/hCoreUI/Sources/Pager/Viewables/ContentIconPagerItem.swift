@@ -13,7 +13,11 @@ public struct ContentIconPagerItem {
 
 	public var pagerItem: PagerItem { PagerItem(id: .init(), content: AnyPresentable(self)) }
 
-	public init(title: String?, paragraph: String, icon: GraphQL.IconFragment) {
+	public init(
+		title: String?,
+		paragraph: String,
+		icon: GraphQL.IconFragment
+	) {
 		self.title = title
 		self.paragraph = paragraph
 		self.icon = icon
@@ -52,13 +56,14 @@ extension ContentIconPagerItem: Presentable {
 		innerContainerView.snp.makeConstraints { make in make.width.centerX.equalToSuperview() }
 
 		bag += remoteVectorIcon.finishedLoadingSignal.onValue { _ in
-			bag += Signal(after: 0).animated(
-				style: AnimationStyle.easeOut(duration: 0.25),
-				animations: {
-					innerContainerView.alpha = 1
-					loadingIndicatorBag.dispose()
-				}
-			)
+			bag += Signal(after: 0)
+				.animated(
+					style: AnimationStyle.easeOut(duration: 0.25),
+					animations: {
+						innerContainerView.alpha = 1
+						loadingIndicatorBag.dispose()
+					}
+				)
 		}
 
 		bag += innerContainerView.addArranged(remoteVectorIcon) { iconView in
@@ -88,9 +93,11 @@ extension ContentIconPagerItem: Presentable {
 		let bodyLabel = MultilineLabel(
 			styledText: StyledText(
 				text: paragraph,
-				style: TextStyle.brand(
-					title != nil ? .body(color: .secondary) : .title3(color: .primary)
-				).centerAligned
+				style:
+					TextStyle.brand(
+						title != nil ? .body(color: .secondary) : .title3(color: .primary)
+					)
+					.centerAligned
 			)
 		)
 

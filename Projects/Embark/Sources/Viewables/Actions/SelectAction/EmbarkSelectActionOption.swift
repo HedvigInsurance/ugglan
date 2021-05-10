@@ -20,9 +20,9 @@ extension EmbarkSelectActionOption: Viewable {
 		control.layer.cornerRadius = 8
 		bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
-		if data.keys.enumerated().allSatisfy({ offset, key in
-			state.store.getPrefillValue(key: key) == data.values[offset]
-		}) {
+		if data.keys.enumerated()
+			.allSatisfy({ offset, key in state.store.getPrefillValue(key: key) == data.values[offset] })
+		{
 			control.layer.borderWidth = 2
 			bag += control.applyBorderColor { _ in UIColor.tint(.lavenderOne) }
 		}
@@ -41,31 +41,33 @@ extension EmbarkSelectActionOption: Viewable {
 
 		stackView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
 
-		bag += $isLoading.atOnce().filter(predicate: { $0 }).onValueDisposePrevious { _ in
-			let overlayView = UIView()
-			overlayView.alpha = 0
-			overlayView.layer.cornerRadius = 8
-			overlayView.backgroundColor = control.backgroundColor
+		bag += $isLoading.atOnce().filter(predicate: { $0 })
+			.onValueDisposePrevious { _ in let overlayView = UIView()
+				overlayView.alpha = 0
+				overlayView.layer.cornerRadius = 8
+				overlayView.backgroundColor = control.backgroundColor
 
-			stackView.addSubview(overlayView)
+				stackView.addSubview(overlayView)
 
-			overlayView.snp.makeConstraints { make in make.edges.equalToSuperview() }
+				overlayView.snp.makeConstraints { make in make.edges.equalToSuperview() }
 
-			let activityIndicator = UIActivityIndicatorView()
-			activityIndicator.startAnimating()
+				let activityIndicator = UIActivityIndicatorView()
+				activityIndicator.startAnimating()
 
-			overlayView.addSubview(activityIndicator)
+				overlayView.addSubview(activityIndicator)
 
-			activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
+				activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
 
-			let innerBag = DisposeBag()
+				let innerBag = DisposeBag()
 
-			bag += { overlayView.removeFromSuperview() }
+				bag += { overlayView.removeFromSuperview() }
 
-			innerBag += Animated.now.animated(style: .easeOut(duration: 0.25)) { overlayView.alpha = 1 }
+				innerBag += Animated.now.animated(style: .easeOut(duration: 0.25)) {
+					overlayView.alpha = 1
+				}
 
-			return innerBag
-		}
+				return innerBag
+			}
 
 		return (
 			control,
@@ -77,26 +79,29 @@ extension EmbarkSelectActionOption: Viewable {
 
 				bag += stackView.addArranged(valueLabel)
 
-				bag += control.signal(for: .touchDown).animated(
-					style: SpringAnimationStyle.lightBounce()
-				) { _ in control.transform = CGAffineTransform(scaleX: 0.95, y: 0.95) }
+				bag += control.signal(for: .touchDown)
+					.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+						control.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+					}
 
-				bag += control.delayedTouchCancel(delay: 0.1).animated(
-					style: SpringAnimationStyle.lightBounce()
-				) { _ in control.transform = CGAffineTransform.identity }
+				bag += control.delayedTouchCancel(delay: 0.1)
+					.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+						control.transform = CGAffineTransform.identity
+					}
 
 				bag += control.signal(for: .touchUpInside).feedback(type: .impactLight)
 
-				bag += control.signal(for: .touchUpInside).onValue { _ in
-					let textValue = self.data.link.fragments.embarkLinkFragment.label
-					callback(
-						ActionResponseData(
-							keys: self.data.keys,
-							values: self.data.values,
-							textValue: textValue
+				bag += control.signal(for: .touchUpInside)
+					.onValue { _ in
+						let textValue = self.data.link.fragments.embarkLinkFragment.label
+						callback(
+							ActionResponseData(
+								keys: self.data.keys,
+								values: self.data.values,
+								textValue: textValue
+							)
 						)
-					)
-				}
+					}
 
 				return bag
 			}

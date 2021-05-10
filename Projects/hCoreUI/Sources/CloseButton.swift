@@ -20,11 +20,8 @@ extension CloseButton: Viewable {
 
 		button.snp.makeConstraints { make in make.width.height.equalTo(30) }
 
-		bag += button.signal(for: .touchDown).map { 0.5 }.bindTo(
-			animate: AnimationStyle.easeOut(duration: 0.25),
-			button,
-			\.alpha
-		)
+		bag += button.signal(for: .touchDown).map { 0.5 }
+			.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), button, \.alpha)
 
 		let touchUpInside = button.signal(for: .touchUpInside)
 
@@ -36,7 +33,8 @@ extension CloseButton: Viewable {
 			button.signal(for: .touchUpInside),
 			button.signal(for: .touchUpOutside),
 			button.signal(for: .touchCancel)
-		).map { 1 }.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), button, \.alpha)
+		)
+		.map { 1 }.bindTo(animate: AnimationStyle.easeOut(duration: 0.25), button, \.alpha)
 
 		let icon = Icon(icon: hCoreUIAssets.close.image, iconWidth: 15)
 		icon.image.tintColor = .brand(.primaryText())

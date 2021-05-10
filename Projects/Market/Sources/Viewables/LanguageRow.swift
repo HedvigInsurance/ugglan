@@ -21,10 +21,10 @@ extension LanguageRow: Viewable {
 		)
 		bag += Localization.Locale.$currentLocale.atOnce().map { $0.displayName }.bindTo(row, \.subtitle)
 
-		bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0).transition(
-			style: .crossDissolve(duration: 0.25),
-			with: row
-		) { _ in row.title = L10n.MarketLanguageScreen.languageLabel }
+		bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
+			.transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
+				row.title = L10n.MarketLanguageScreen.languageLabel
+			}
 
 		let iconImageView = UIImageView()
 		iconImageView.image = Asset.globe.image
@@ -43,12 +43,14 @@ extension LanguageRow: Viewable {
 
 		row.append(chevronImageView)
 
-		bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
-			viewController.present(
-				PickLanguage(currentMarket: currentMarket).wrappedInCloseButton(),
-				style: .detented(.scrollViewContentSize(20))
-			).onValue { locale in Localization.Locale.currentLocale = locale }
-		}
+		bag += events.onSelect.compactMap { row.viewController }
+			.onValue { viewController in
+				viewController.present(
+					PickLanguage(currentMarket: currentMarket).wrappedInCloseButton(),
+					style: .detented(.scrollViewContentSize(20))
+				)
+				.onValue { locale in Localization.Locale.currentLocale = locale }
+			}
 
 		return (row, bag)
 	}

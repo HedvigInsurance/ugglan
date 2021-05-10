@@ -62,7 +62,8 @@ let appDependencies: [TargetDependency] = [
 			path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
 		), .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
 	], sdkFrameworks,
-].flatMap { $0 }
+]
+.flatMap { $0 }
 
 let targetActions: [TargetAction] = [
 	.post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks")
@@ -105,7 +106,8 @@ let project = Project(
 						path: .relativeToRoot("Dependencies/TestDependencies")
 					), .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
 				]
-			].flatMap { $0 },
+			]
+			.flatMap { $0 },
 			settings: Settings(configurations: testsConfigurations)
 		),
 		Target(

@@ -52,21 +52,20 @@ struct PurchasePrice: Viewable {
 
 		bag += textField.addDoneToolbar()
 
-		let amountSignal = client.watch(query: GraphQL.KeyGearItemQuery(id: id)).compactMap {
-			$0.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount
-		}.readable(initial: "0")
+		let amountSignal = client.watch(query: GraphQL.KeyGearItemQuery(id: id))
+			.compactMap { $0.keyGearItem?.maxInsurableAmount?.fragments.monetaryAmountFragment.amount }
+			.readable(initial: "0")
 
-		bag += combineLatest(textField, amountSignal).animated(style: SpringAnimationStyle.lightBounce()) {
-			value,
-			amount in
-			if let amount = Float(amount), let value = Float(value), value > amount {
-				footerViewContainer.animationSafeIsHidden = false
-			} else {
-				footerViewContainer.animationSafeIsHidden = true
+		bag += combineLatest(textField, amountSignal)
+			.animated(style: SpringAnimationStyle.lightBounce()) { value, amount in
+				if let amount = Float(amount), let value = Float(value), value > amount {
+					footerViewContainer.animationSafeIsHidden = false
+				} else {
+					footerViewContainer.animationSafeIsHidden = true
+				}
+				footerViewContainer.layoutIfNeeded()
+				section.layoutIfNeeded()
 			}
-			footerViewContainer.layoutIfNeeded()
-			section.layoutIfNeeded()
-		}
 
 		row.append(textField)
 
@@ -169,24 +168,27 @@ extension KeyGearAddValuation: Presentable {
 			Future { completion in
 				bag += button.onTapSignal.onValue { _ in button.isLoadingSignal.value = true
 
-					self.client.perform(
-						mutation: GraphQL.UpdateKeyGearValuationMutation(
-							itemId: self.id,
-							purchasePrice: GraphQL.MonetaryAmountV2Input(
-								amount: self.state.purchasePriceSignal.value
-									.description,
-								currency: "SEK"
-							),
-							purchaseDate:
-								self.state.purchaseDateSignal.value.localDateString
-								?? ""
+					self.client
+						.perform(
+							mutation: GraphQL.UpdateKeyGearValuationMutation(
+								itemId: self.id,
+								purchasePrice: GraphQL.MonetaryAmountV2Input(
+									amount: self.state.purchasePriceSignal.value
+										.description,
+									currency: "SEK"
+								),
+								purchaseDate:
+									self.state.purchaseDateSignal.value
+									.localDateString ?? ""
+							)
 						)
-					).onValue { _ in
-						viewController.present(
-							KeyGearValuation(itemId: self.id),
-							options: [.defaults]
-						).onValue { _ in completion(.success) }
-					}
+						.onValue { _ in
+							viewController.present(
+								KeyGearValuation(itemId: self.id),
+								options: [.defaults]
+							)
+							.onValue { _ in completion(.success) }
+						}
 				}
 
 				return DelayedDisposer(bag, delay: 2.0)

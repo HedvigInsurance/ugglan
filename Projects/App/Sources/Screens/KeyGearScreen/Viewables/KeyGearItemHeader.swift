@@ -42,9 +42,9 @@ struct DeductibleBox: Viewable {
 			UILabel(value: " kr", style: .brand(.body(color: .secondary)))
 		)
 
-		bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId)).map {
-			$0.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount
-		}.bindTo(deductibleLabel, \.text)
+		bag += client.watch(query: GraphQL.KeyGearItemQuery(id: itemId))
+			.map { $0.keyGearItem?.deductible.fragments.monetaryAmountFragment.amount }
+			.bindTo(deductibleLabel, \.text)
 
 		row.append(stackView)
 
@@ -93,51 +93,54 @@ struct ValuationBox: Viewable {
 
 		let dataSignal = client.watch(query: GraphQL.KeyGearItemQuery(id: itemId))
 
-		bag += dataSignal.map { $0.keyGearItem?.valuation }.animated(
-			style: SpringAnimationStyle.lightBounce(),
-			animations: { valuation in
-				if valuation == nil {
-					emptyValuationLabel.animationSafeIsHidden = false
-					valuationValueContainer.animationSafeIsHidden = true
-					valuationValueContainer.layoutIfNeeded()
-					emptyValuationLabel.layoutIfNeeded()
-				} else {
-					valuationValueContainer.animationSafeIsHidden = false
-					emptyValuationLabel.animationSafeIsHidden = true
-					valuationValueContainer.layoutIfNeeded()
-					emptyValuationLabel.layoutIfNeeded()
+		bag += dataSignal.map { $0.keyGearItem?.valuation }
+			.animated(
+				style: SpringAnimationStyle.lightBounce(),
+				animations: { valuation in
+					if valuation == nil {
+						emptyValuationLabel.animationSafeIsHidden = false
+						valuationValueContainer.animationSafeIsHidden = true
+						valuationValueContainer.layoutIfNeeded()
+						emptyValuationLabel.layoutIfNeeded()
+					} else {
+						valuationValueContainer.animationSafeIsHidden = false
+						emptyValuationLabel.animationSafeIsHidden = true
+						valuationValueContainer.layoutIfNeeded()
+						emptyValuationLabel.layoutIfNeeded()
 
-					if let fixedValuation = valuation?.asKeyGearItemValuationFixed {
-						valuationValueLabel.value = "\(fixedValuation.ratio)%"
-						valuationValueDescription.value =
-							L10n.keyGearItemViewValuationPercentageLabel
-					} else if let marketValuation = valuation?.asKeyGearItemValuationMarketValue {
-						valuationValueLabel.value = "\(marketValuation.ratio)%"
-						valuationValueDescription.value =
-							L10n.keyGearItemViewValuationMarketDescription
+						if let fixedValuation = valuation?.asKeyGearItemValuationFixed {
+							valuationValueLabel.value = "\(fixedValuation.ratio)%"
+							valuationValueDescription.value =
+								L10n.keyGearItemViewValuationPercentageLabel
+						} else if let marketValuation = valuation?
+							.asKeyGearItemValuationMarketValue
+						{
+							valuationValueLabel.value = "\(marketValuation.ratio)%"
+							valuationValueDescription.value =
+								L10n.keyGearItemViewValuationMarketDescription
+						}
 					}
 				}
-			}
-		)
+			)
 
-		bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, data in data.keyGearItem }.onValue {
-			item in
+		bag += events.onSelect.withLatestFrom(dataSignal).compactMap { _, data in data.keyGearItem }
+			.onValue { item in
 
-			if item.valuation != nil {
-				self.presentingViewController.present(
-					KeyGearValuation(itemId: self.itemId).wrappedInCloseButton(),
-					style: .modal,
-					options: [.defaults, .allowSwipeDismissAlways]
-				)
-			} else {
-				self.presentingViewController.present(
-					KeyGearAddValuation(id: self.itemId, category: item.category)
-						.wrappedInCloseButton(),
-					style: .modal,
-					options: [.defaults, .allowSwipeDismissAlways]
-				)
+				if item.valuation != nil {
+					self.presentingViewController.present(
+						KeyGearValuation(itemId: self.itemId).wrappedInCloseButton(),
+						style: .modal,
+						options: [.defaults, .allowSwipeDismissAlways]
+					)
+				} else {
+					self.presentingViewController.present(
+						KeyGearAddValuation(id: self.itemId, category: item.category)
+							.wrappedInCloseButton(),
+						style: .modal,
+						options: [.defaults, .allowSwipeDismissAlways]
+					)
+				}
 			}
-		}
 
 		return (row, bag)
 	}

@@ -35,6 +35,7 @@ extension EmbarkState {
 		EmbarkTrackingEvent(
 			title: "Passage go back - \(currentPassageSignal.value?.name ?? "")",
 			properties: [:]
-		).send()
+		)
+		.send()
 	}
 }

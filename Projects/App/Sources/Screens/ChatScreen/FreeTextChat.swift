@@ -22,9 +22,12 @@ extension FreeTextChat: Presentable {
 
 		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
 
-		bag += client.perform(mutation: GraphQL.TriggerFreeTextChatMutation()).onValue { _ in
-			chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) { chat.chatState.subscribe() }
-		}
+		bag += client.perform(mutation: GraphQL.TriggerFreeTextChatMutation())
+			.onValue { _ in
+				chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
+					chat.chatState.subscribe()
+				}
+			}
 
 		return (
 			viewController,

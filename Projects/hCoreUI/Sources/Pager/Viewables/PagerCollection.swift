@@ -9,7 +9,10 @@ public struct PagerItem {
 	let id: UUID
 	let content: AnyPresentable<UIViewController, Disposable>
 
-	public init(id: UUID, content: AnyPresentable<UIViewController, Disposable>) {
+	public init(
+		id: UUID,
+		content: AnyPresentable<UIViewController, Disposable>
+	) {
 		self.id = id
 		self.content = content
 	}
@@ -65,9 +68,10 @@ extension PagerCollection: Viewable {
 
 		bag += collectionKit.delegate.sizeForItemAt.set { (_) -> CGSize in collectionKit.view.frame.size }
 
-		bag += $pages.atOnce().onValue { pages in
-			collectionKit.set(Table(rows: pages), animation: .none, rowIdentifier: { $0.id })
-		}
+		bag += $pages.atOnce()
+			.onValue { pages in
+				collectionKit.set(Table(rows: pages), animation: .none, rowIdentifier: { $0.id })
+			}
 
 		bag += scrollToNextSignal.onValue { collectionKit.scrollToNextItem() }
 

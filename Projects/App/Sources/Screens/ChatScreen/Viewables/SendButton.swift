@@ -26,9 +26,10 @@ extension SendButton: Viewable {
 
 		bag += touchUpInside.feedback(type: .impactLight)
 
-		bag += control.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
-			control.backgroundColor = UIColor.brand(.secondaryBackground()).darkened(amount: 0.1)
-		}
+		bag += control.signal(for: .touchDown)
+			.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+				control.backgroundColor = UIColor.brand(.secondaryBackground()).darkened(amount: 0.1)
+			}
 
 		bag += merge(touchUpInside, control.signal(for: .touchCancel), control.signal(for: .touchUpOutside))
 			.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in

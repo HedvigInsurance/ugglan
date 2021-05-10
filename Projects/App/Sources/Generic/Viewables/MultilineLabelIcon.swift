@@ -10,7 +10,11 @@ struct MultilineLabelIcon {
 	let iconAsset: ImageAsset
 	let iconWidth: CGFloat
 
-	init(styledText: StyledText, icon: ImageAsset, iconWidth: CGFloat) {
+	init(
+		styledText: StyledText,
+		icon: ImageAsset,
+		iconWidth: CGFloat
+	) {
 		styledTextSignal = ReadWriteSignal(styledText)
 		iconAsset = icon
 		self.iconWidth = iconWidth
@@ -39,12 +43,14 @@ extension MultilineLabelIcon: Viewable {
 
 		let label = UILabel()
 
-		bag += styledTextSignal.atOnce().map { styledText -> StyledText in
-			styledText.restyled { (textStyle: inout TextStyle) in textStyle.numberOfLines = 0
-				textStyle.lineBreakMode = .byWordWrapping
-				textStyle.lineHeight = 14
+		bag += styledTextSignal.atOnce()
+			.map { styledText -> StyledText in
+				styledText.restyled { (textStyle: inout TextStyle) in textStyle.numberOfLines = 0
+					textStyle.lineBreakMode = .byWordWrapping
+					textStyle.lineHeight = 14
+				}
 			}
-		}.bindTo(label, \.styledText)
+			.bindTo(label, \.styledText)
 
 		view.addArrangedSubview(label)
 

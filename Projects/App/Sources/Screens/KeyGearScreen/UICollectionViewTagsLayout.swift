@@ -9,9 +9,9 @@ class UICollectionViewTagLayout: UICollectionViewFlowLayout {
 		minimumInteritemSpacing = 10
 	}
 
-	@available(*, unavailable) required init?(coder _: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	@available(*, unavailable) required init?(
+		coder _: NSCoder
+	) { fatalError("init(coder:) has not been implemented") }
 
 	override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
 		guard let attributes = super.layoutAttributesForElements(in: rect) else { return [] }

@@ -63,9 +63,8 @@ extension CardDetailsSection: Viewable {
 
 				connectRow.append(connectImageView)
 
-				bag += section.append(connectRow).compactMap { connectRow.viewController }.onValue(
-					presentPayIn
-				)
+				bag += section.append(connectRow).compactMap { connectRow.viewController }
+					.onValue(presentPayIn)
 
 				bag += {
 					section.remove(valueRow)
@@ -83,9 +82,8 @@ extension CardDetailsSection: Viewable {
 
 				connectRow.append(connectImageView)
 
-				bag += section.append(connectRow).compactMap { connectRow.viewController }.onValue(
-					presentPayIn
-				)
+				bag += section.append(connectRow).compactMap { connectRow.viewController }
+					.onValue(presentPayIn)
 
 				bag += { section.remove(connectRow) }
 			}

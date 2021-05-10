@@ -5,14 +5,17 @@ import UIKit
 final class FormTableView: UITableView, GradientScroller {
 	let bag = DisposeBag()
 
-	override init(frame: CGRect, style: UITableView.Style) {
+	override init(
+		frame: CGRect,
+		style: UITableView.Style
+	) {
 		super.init(frame: frame, style: style)
 		addGradient(into: bag)
 	}
 
-	@available(*, unavailable) required init?(coder _: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	@available(*, unavailable) required init?(
+		coder _: NSCoder
+	) { fatalError("init(coder:) has not been implemented") }
 
 	override func didMoveToWindow() {
 		super.didMoveToWindow()

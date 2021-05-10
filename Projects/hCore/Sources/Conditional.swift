@@ -29,15 +29,15 @@ extension UIViewController {
 	) -> T.Result where T.Result == Future<Value>, T.Matter == UIViewController {
 		Future<Value> { completion in let bag = DisposeBag()
 
-			bag += presentable.condition().onValue { passed in
-				if passed {
-					bag += self.present(presentable, style: style, options: options).onResult(
-						completion
-					)
-				} else {
-					completion(.failure(ConditionalPresentation.conditionNotMet))
+			bag += presentable.condition()
+				.onValue { passed in
+					if passed {
+						bag += self.present(presentable, style: style, options: options)
+							.onResult(completion)
+					} else {
+						completion(.failure(ConditionalPresentation.conditionNotMet))
+					}
 				}
-			}
 
 			return bag
 		}

@@ -82,7 +82,8 @@ extension ContractRow {
 			return [
 				contract.currentAgreement.asSwedishApartmentAgreement?.address.street,
 				coversHowManyPill,
-			].compactMap { $0 }
+			]
+			.compactMap { $0 }
 		case .swedishHouse:
 			return [contract.currentAgreement.asSwedishHouseAgreement?.address.street, coversHowManyPill]
 				.compactMap { $0 }
@@ -90,13 +91,15 @@ extension ContractRow {
 			return [
 				contract.currentAgreement.asNorwegianHomeContentAgreement?.address.street,
 				coversHowManyPill,
-			].compactMap { $0 }
+			]
+			.compactMap { $0 }
 		case .norwegianTravel: return [coversHowManyPill]
 		case .danishHome:
 			return [
 				contract.currentAgreement.asDanishHomeContentAgreement?.address.street,
 				coversHowManyPill,
-			].compactMap { $0 }
+			]
+			.compactMap { $0 }
 		case .danishTravel: return [coversHowManyPill]
 		case .danishAccident: return [coversHowManyPill]
 		}

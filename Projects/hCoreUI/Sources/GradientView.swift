@@ -10,7 +10,10 @@ import UIKit
 import hCore
 
 public struct GradientView {
-	public init(gradientOption: GradientOption, shouldShowGradientSignal: ReadWriteSignal<Bool>) {
+	public init(
+		gradientOption: GradientOption,
+		shouldShowGradientSignal: ReadWriteSignal<Bool>
+	) {
 		self.gradientOption = gradientOption
 		_shouldShowGradient = .init(wrappedValue: shouldShowGradientSignal)
 	}
@@ -77,8 +80,8 @@ extension GradientView: Viewable {
 			$shouldShowGradient.atOnce(),
 			gradientView.traitCollectionSignal.atOnce(),
 			gradientView.signal(for: \.bounds).delay(by: 0.1).atOnce()
-		).onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
-			let innerBag = DisposeBag()
+		)
+		.onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in let innerBag = DisposeBag()
 
 			let layer = gradientLayer(traitCollection: traitCollection)
 			let animatedLayer = self.shimmerLayer
@@ -105,16 +108,17 @@ extension GradientView: Viewable {
 					dy: -0.5 * shimmerView.bounds.size.height
 				)
 
-				innerBag += shimmerView.didLayoutSignal.delay(by: 0.1).animated(
-					style: .easeOut(duration: 0.5),
-					animations: {
-						shimmerView.transform = CGAffineTransform(
-							translationX: gradientView.frame.width
-								+ shimmerView.frame.width,
-							y: 0
-						)
-					}
-				)
+				innerBag += shimmerView.didLayoutSignal.delay(by: 0.1)
+					.animated(
+						style: .easeOut(duration: 0.5),
+						animations: {
+							shimmerView.transform = CGAffineTransform(
+								translationX: gradientView.frame.width
+									+ shimmerView.frame.width,
+								y: 0
+							)
+						}
+					)
 
 				let fadeInAnimation = CABasicAnimation(keyPath: "opacity")
 				fadeInAnimation.fromValue = 0

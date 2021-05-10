@@ -9,9 +9,9 @@ import hGraphQL
 public struct ContractInsurableLimits {
 	let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
 
-	public init(insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>) {
-		self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal
-	}
+	public init(
+		insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+	) { self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal }
 }
 
 extension ContractInsurableLimits: Viewable {
@@ -22,15 +22,17 @@ extension ContractInsurableLimits: Viewable {
 
 		let bag = DisposeBag()
 
-		bag += insurableLimitFragmentsSignal.atOnce().onValue { InsurableLimitFragments in
-			collectionKit.set(
-				Table(
-					rows: InsurableLimitFragments.map { fragment -> ContractInsurableLimitRow in
-						.init(fragment: fragment)
-					}
+		bag += insurableLimitFragmentsSignal.atOnce()
+			.onValue { InsurableLimitFragments in
+				collectionKit.set(
+					Table(
+						rows: InsurableLimitFragments.map {
+							fragment -> ContractInsurableLimitRow in
+							.init(fragment: fragment)
+						}
+					)
 				)
-			)
-		}
+			}
 
 		bag += collectionKit.delegate.sizeForItemAt.set { index -> CGSize in
 			let width = collectionKit.view.frame.size.width / 2 - 5
@@ -42,9 +44,10 @@ extension ContractInsurableLimits: Viewable {
 
 		bag += collectionKit.view.signal(for: \.bounds).onValue { _ in collectionKit.view.reloadData() }
 
-		bag += collectionKit.view.signal(for: \.contentSize).onValue { size in
-			collectionKit.view.snp.updateConstraints { make in make.height.equalTo(size.height) }
-		}
+		bag += collectionKit.view.signal(for: \.contentSize)
+			.onValue { size in
+				collectionKit.view.snp.updateConstraints { make in make.height.equalTo(size.height) }
+			}
 
 		return (collectionKit.view, bag)
 	}

@@ -13,7 +13,10 @@ public struct LoadableButton {
 
 	public func stopLoading() { isLoadingSignal.value = false }
 
-	public init(button: Button, initialLoadingState: Bool = false) {
+	public init(
+		button: Button,
+		initialLoadingState: Bool = false
+	) {
 		onTapSignal = onTapCallbacker.providedSignal
 		self.button = button
 		isLoadingSignal = ReadWriteSignal<Bool>(initialLoadingState)
@@ -31,15 +34,16 @@ extension LoadableButton: Viewable {
 		let spinner = UIActivityIndicatorView()
 		buttonView.addSubview(spinner)
 
-		bag += button.type.atOnce().onValue { buttonType in
-			if buttonType.backgroundColor.isContrasting(with: .white) {
-				spinner.style = .white
-				spinner.tintColor = .white
-			} else {
-				spinner.style = .gray
-				spinner.tintColor = .gray
+		bag += button.type.atOnce()
+			.onValue { buttonType in
+				if buttonType.backgroundColor.isContrasting(with: .white) {
+					spinner.style = .white
+					spinner.tintColor = .white
+				} else {
+					spinner.style = .gray
+					spinner.tintColor = .gray
+				}
 			}
-		}
 
 		spinner.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.7)
 			make.height.equalToSuperview().multipliedBy(0.7)
@@ -72,20 +76,21 @@ extension LoadableButton: Viewable {
 				let labelDelay = isLoading ? 0 : 0.25
 				let layoutDelay = isLoading ? 0.25 : 0
 
-				bag += Signal(after: labelDelay).animated(style: AnimationStyle.easeOut(duration: 0.25))
-				{ _ in setLabelAlpha() }
+				bag += Signal(after: labelDelay)
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in setLabelAlpha()
+					}
 
-				bag += Signal(after: layoutDelay).animated(
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { _ in setSpinnerAlpha() }
+				bag += Signal(after: layoutDelay)
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+						setSpinnerAlpha()
+					}
 
-				bag += Signal(after: layoutDelay).animated(
-					on: .main,
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { _ in setButtonWidth()
-					buttonView.layoutIfNeeded()
-					buttonView.layoutSuperviewsIfNeeded()
-				}
+				bag += Signal(after: layoutDelay)
+					.animated(on: .main, style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+						setButtonWidth()
+						buttonView.layoutIfNeeded()
+						buttonView.layoutSuperviewsIfNeeded()
+					}
 			} else {
 				setLabelAlpha()
 				setSpinnerAlpha()

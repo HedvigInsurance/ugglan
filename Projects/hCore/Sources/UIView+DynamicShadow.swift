@@ -35,28 +35,29 @@ extension UIView {
 	}
 
 	public func applyShadow(_ dynamic: @escaping (_ trait: UITraitCollection) -> ShadowProperties) -> Disposable {
-		combineLatest(traitCollectionSignal.atOnce().plain(), didLayoutSignal.atOnce()).onValue { trait, _ in
-			let properties = dynamic(trait)
+		combineLatest(traitCollectionSignal.atOnce().plain(), didLayoutSignal.atOnce())
+			.onValue { trait, _ in let properties = dynamic(trait)
 
-			if let opacity = properties.opacity { self.layer.shadowOpacity = opacity }
+				if let opacity = properties.opacity { self.layer.shadowOpacity = opacity }
 
-			if let color = properties.color { self.layer.shadowColor = color.cgColor }
+				if let color = properties.color { self.layer.shadowColor = color.cgColor }
 
-			if let offset = properties.offset { self.layer.shadowOffset = offset }
+				if let offset = properties.offset { self.layer.shadowOffset = offset }
 
-			if let blurRadius = properties.blurRadius { self.layer.shadowRadius = blurRadius }
+				if let blurRadius = properties.blurRadius { self.layer.shadowRadius = blurRadius }
 
-			if let radius = properties.radius {
-				self.layer.shadowPath =
-					UIBezierPath(
-						roundedRect: self.bounds,
-						byRoundingCorners: properties.corners,
-						cornerRadii: CGSize(width: radius, height: radius)
-					).cgPath
+				if let radius = properties.radius {
+					self.layer.shadowPath =
+						UIBezierPath(
+							roundedRect: self.bounds,
+							byRoundingCorners: properties.corners,
+							cornerRadii: CGSize(width: radius, height: radius)
+						)
+						.cgPath
+				}
+
+				self.layer.shouldRasterize = properties.shouldRasterize
+				self.layer.rasterizationScale = UIScreen.main.scale
 			}
-
-			self.layer.shouldRasterize = properties.shouldRasterize
-			self.layer.rasterizationScale = UIScreen.main.scale
-		}
 	}
 }

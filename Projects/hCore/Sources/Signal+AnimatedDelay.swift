@@ -21,7 +21,8 @@ extension Signal where Kind == Plain, Value == () {
 			animator.startAnimation(afterDelay: 0)
 
 			return Disposer { animator.stopAnimation(true) }
-		}.take(first: 1).plain()
+		}
+		.take(first: 1).plain()
 	}
 
 	public func animatedDelay(after delay: TimeInterval) -> Signal<Void> {

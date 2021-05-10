@@ -65,46 +65,51 @@ extension ContractTable: Viewable {
 		loadingIndicatorBag += tableKit.view.add(loadingIndicator) { view in
 			view.snp.makeConstraints { make in make.top.equalTo(0) }
 
-			loadingIndicatorBag += tableKit.view.signal(for: \.contentSize).onValue { size in
-				view.snp.updateConstraints { make in
-					make.top.equalTo(size.height - (view.frame.height / 2))
+			loadingIndicatorBag += tableKit.view.signal(for: \.contentSize)
+				.onValue { size in
+					view.snp.updateConstraints { make in
+						make.top.equalTo(size.height - (view.frame.height / 2))
+					}
 				}
-			}
 		}
 
 		func watchContracts() {
-			bag += client.watch(
-				query: GraphQL.ContractsQuery(
-					locale: Localization.Locale.currentLocale.asGraphQLLocale()
-				),
-				cachePolicy: .fetchIgnoringCacheData
-			).compactMap { $0.contracts }.onValue { contracts in
-				var contractsToShow = contracts.filter {
-					switch self.filter {
-					case .active: return $0.status.asTerminatedStatus == nil
-					case .terminated: return $0.status.asTerminatedStatus != nil
-					case .none: return false
-					}
-				}
-
-				if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts {
-					contractsToShow = contracts
-				}
-
-				let table = Table(
-					rows: contractsToShow.map { contract -> ContractRow in
-						ContractRow(
-							contract: contract,
-							displayName: contract.displayName,
-							type: contract.currentAgreement.type
-						)
-					}
+			bag +=
+				client.watch(
+					query: GraphQL.ContractsQuery(
+						locale: Localization.Locale.currentLocale.asGraphQLLocale()
+					),
+					cachePolicy: .fetchIgnoringCacheData
 				)
+				.compactMap { $0.contracts }
+				.onValue { contracts in
+					var contractsToShow = contracts.filter {
+						switch self.filter {
+						case .active: return $0.status.asTerminatedStatus == nil
+						case .terminated: return $0.status.asTerminatedStatus != nil
+						case .none: return false
+						}
+					}
 
-				loadingIndicatorBag.dispose()
+					if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts
+					{
+						contractsToShow = contracts
+					}
 
-				tableKit.set(table)
-			}
+					let table = Table(
+						rows: contractsToShow.map { contract -> ContractRow in
+							ContractRow(
+								contract: contract,
+								displayName: contract.displayName,
+								type: contract.currentAgreement.type
+							)
+						}
+					)
+
+					loadingIndicatorBag.dispose()
+
+					tableKit.set(table)
+				}
 		}
 
 		watchContracts()

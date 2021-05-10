@@ -34,9 +34,10 @@ final class RenewalCardTests: XCTestCase {
 
 		view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-		apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1).onValue { _ in assertions(view)
-			waitForApollo.fulfill()
-		}
+		apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1)
+			.onValue { _ in assertions(view)
+				waitForApollo.fulfill()
+			}
 
 		wait(for: [waitForApollo], timeout: 1)
 	}

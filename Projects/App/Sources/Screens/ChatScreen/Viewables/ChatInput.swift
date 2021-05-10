@@ -8,7 +8,10 @@ struct ChatInput {
 	let chatState: ChatState
 	let navigateCallbacker: Callbacker<NavigationEvent>
 
-	init(chatState: ChatState, navigateCallbacker: Callbacker<NavigationEvent>) {
+	init(
+		chatState: ChatState,
+		navigateCallbacker: Callbacker<NavigationEvent>
+	) {
 		self.chatState = chatState
 		self.navigateCallbacker = navigateCallbacker
 	}
@@ -27,9 +30,12 @@ extension ChatInput: Viewable {
 		let effectView = UIVisualEffectView()
 		backgroundView.addSubview(effectView)
 
-		bag += backgroundView.traitCollectionSignal.atOnce().onValue { trait in
-			effectView.effect = UIBlurEffect(style: trait.userInterfaceStyle == .dark ? .dark : .light)
-		}
+		bag += backgroundView.traitCollectionSignal.atOnce()
+			.onValue { trait in
+				effectView.effect = UIBlurEffect(
+					style: trait.userInterfaceStyle == .dark ? .dark : .light
+				)
+			}
 
 		effectView.snp.makeConstraints { make in make.width.height.leading.trailing.equalToSuperview() }
 
@@ -54,73 +60,90 @@ extension ChatInput: Viewable {
 
 		let attachFileButton = AttachFileButton(isOpenSignal: attachFilePaneIsOpenSignal.readOnly())
 
-		bag += inputBar.addArranged(
-			attachFileButton.wrappedIn(
-				{
-					let stackView = UIStackView()
-					stackView.alignment = .bottom
-					return stackView
-				}()
-			).wrappedIn(UIStackView())
-		) { stackView in stackView.isHidden = true
-			stackView.isLayoutMarginsRelativeArrangement = true
-			stackView.layoutMargins = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: 0)
+		bag +=
+			inputBar.addArranged(
+				attachFileButton.wrappedIn(
+					{
+						let stackView = UIStackView()
+						stackView.alignment = .bottom
+						return stackView
+					}()
+				)
+				.wrappedIn(UIStackView())
+			) { stackView in stackView.isHidden = true
+				stackView.isLayoutMarginsRelativeArrangement = true
+				stackView.layoutMargins = UIEdgeInsets(
+					top: padding,
+					left: padding,
+					bottom: padding,
+					right: 0
+				)
 
-			bag += combineLatest(chatState.currentMessageSignal, attachGIFPaneIsOpenSignal).atOnce()
-				.animated(style: SpringAnimationStyle.lightBounce()) {
-					currentMessage,
-					attachGIFPaneIsOpen in var isHidden: Bool
+				bag += combineLatest(chatState.currentMessageSignal, attachGIFPaneIsOpenSignal).atOnce()
+					.animated(style: SpringAnimationStyle.lightBounce()) {
+						currentMessage,
+						attachGIFPaneIsOpen in var isHidden: Bool
 
-					if attachGIFPaneIsOpen {
-						isHidden = true
-					} else if currentMessage?.richTextCompatible == true {
-						isHidden = false
-					} else {
-						isHidden = true
+						if attachGIFPaneIsOpen {
+							isHidden = true
+						} else if currentMessage?.richTextCompatible == true {
+							isHidden = false
+						} else {
+							isHidden = true
+						}
+
+						stackView.animationSafeIsHidden = isHidden
+						stackView.alpha = isHidden ? 0 : 1
 					}
-
-					stackView.animationSafeIsHidden = isHidden
-					stackView.alpha = isHidden ? 0 : 1
-				}
-		}.onValue { _ in attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
-			contentView.firstResponder?.resignFirstResponder()
-		}
+			}
+			.onValue { _ in attachFilePaneIsOpenSignal.value = !attachFilePaneIsOpenSignal.value
+				contentView.firstResponder?.resignFirstResponder()
+			}
 
 		let attachGIFButton = AttachGIFButton(isOpenSignal: attachGIFPaneIsOpenSignal.readOnly())
 
-		bag += inputBar.addArranged(
-			attachGIFButton.wrappedIn(
-				{
-					let stackView = UIStackView()
-					stackView.alignment = .bottom
-					return stackView
-				}()
-			).wrappedIn(UIStackView())
-		) { stackView in stackView.isHidden = true
-			stackView.isLayoutMarginsRelativeArrangement = true
-			stackView.layoutMargins = UIEdgeInsets(top: padding, left: 10, bottom: padding, right: 0)
+		bag +=
+			inputBar.addArranged(
+				attachGIFButton.wrappedIn(
+					{
+						let stackView = UIStackView()
+						stackView.alignment = .bottom
+						return stackView
+					}()
+				)
+				.wrappedIn(UIStackView())
+			) { stackView in stackView.isHidden = true
+				stackView.isLayoutMarginsRelativeArrangement = true
+				stackView.layoutMargins = UIEdgeInsets(
+					top: padding,
+					left: 10,
+					bottom: padding,
+					right: 0
+				)
 
-			bag += combineLatest(chatState.currentMessageSignal, attachFilePaneIsOpenSignal).atOnce()
-				.animated(style: SpringAnimationStyle.lightBounce()) {
-					currentMessage,
-					attachFilePaneIsOpen in
+				bag += combineLatest(chatState.currentMessageSignal, attachFilePaneIsOpenSignal)
+					.atOnce()
+					.animated(style: SpringAnimationStyle.lightBounce()) {
+						currentMessage,
+						attachFilePaneIsOpen in
 
-					var isHidden: Bool
+						var isHidden: Bool
 
-					if attachFilePaneIsOpen {
-						isHidden = true
-					} else if currentMessage?.richTextCompatible == true {
-						isHidden = false
-					} else {
-						isHidden = true
+						if attachFilePaneIsOpen {
+							isHidden = true
+						} else if currentMessage?.richTextCompatible == true {
+							isHidden = false
+						} else {
+							isHidden = true
+						}
+
+						stackView.animationSafeIsHidden = isHidden
+						stackView.alpha = isHidden ? 0 : 1
 					}
-
-					stackView.animationSafeIsHidden = isHidden
-					stackView.alpha = isHidden ? 0 : 1
-				}
-		}.onValue { _ in attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
-			contentView.firstResponder?.resignFirstResponder()
-		}
+			}
+			.onValue { _ in attachGIFPaneIsOpenSignal.value = !attachGIFPaneIsOpenSignal.value
+				contentView.firstResponder?.resignFirstResponder()
+			}
 
 		let textView = ChatTextView(chatState: chatState)
 		bag += textView.didBeginEditingSignal.map { false }.bindTo(attachFilePaneIsOpenSignal)

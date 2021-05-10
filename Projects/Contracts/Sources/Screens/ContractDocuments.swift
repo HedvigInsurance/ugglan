@@ -27,13 +27,14 @@ extension ContractDocuments: Presentable {
 				)
 				certificateRow.append(hCoreUIAssets.chevronRight.image)
 
-				bag += section.append(certificateRow).onValue { _ in
-					viewController.present(
-						Document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-							.withCloseButton,
-						style: .detented(.large)
-					)
-				}
+				bag += section.append(certificateRow)
+					.onValue { _ in
+						viewController.present(
+							Document(url: url, title: L10n.myDocumentsInsuranceCertificate)
+								.withCloseButton,
+							style: .detented(.large)
+						)
+					}
 			}
 
 			if let url = URL(string: contract.termsAndConditions.url) {
@@ -43,13 +44,14 @@ extension ContractDocuments: Presentable {
 				)
 				insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
 
-				bag += section.append(insuranceTermsRow).onValue { _ in
-					viewController.present(
-						Document(url: url, title: L10n.myDocumentsInsuranceTerms)
-							.withCloseButton,
-						style: .detented(.large)
-					)
-				}
+				bag += section.append(insuranceTermsRow)
+					.onValue { _ in
+						viewController.present(
+							Document(url: url, title: L10n.myDocumentsInsuranceTerms)
+								.withCloseButton,
+							style: .detented(.large)
+						)
+					}
 			}
 		}
 

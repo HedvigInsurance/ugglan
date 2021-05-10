@@ -127,13 +127,14 @@ extension PerilDetail: Presentable {
 			gradient.locations = [0, 0.3, 1]
 			swipeHintBackgroundView.layer.addSublayer(gradient)
 
-			bag += swipeHintBackgroundView.traitCollectionSignal.atOnce().onValue { _ in
-				gradient.colors = [
-					UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
-					UIColor.brand(.secondaryBackground()).cgColor,
-					UIColor.brand(.secondaryBackground()).cgColor,
-				]
-			}
+			bag += swipeHintBackgroundView.traitCollectionSignal.atOnce()
+				.onValue { _ in
+					gradient.colors = [
+						UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
+						UIColor.brand(.secondaryBackground()).cgColor,
+						UIColor.brand(.secondaryBackground()).cgColor,
+					]
+				}
 
 			bag += swipeHintBackgroundView.didLayoutSignal.onValue { _ in
 				scrollView.bringSubviewToFront(swipeHintBackgroundView)
@@ -164,9 +165,9 @@ extension PerilDetail: Presentable {
 			let swipeHintTapGestureRecognizer = UITapGestureRecognizer()
 			swipeHintContainer.addGestureRecognizer(swipeHintTapGestureRecognizer)
 
-			bag += swipeHintTapGestureRecognizer.signal(forState: .recognized).compactMap {
-				viewController.appliedDetents.last
-			}.bindTo(viewController.currentDetentSignal)
+			bag += swipeHintTapGestureRecognizer.signal(forState: .recognized)
+				.compactMap { viewController.appliedDetents.last }
+				.bindTo(viewController.currentDetentSignal)
 
 			let chevronUpImageView = UIImageView()
 			chevronUpImageView.image = hCoreUIAssets.chevronUp.image

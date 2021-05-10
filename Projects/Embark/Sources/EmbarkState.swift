@@ -40,8 +40,9 @@ public class EmbarkState {
 			passage.id == startPassageIDSignal.value
 		})
 		store.computedValues =
-			storySignal.value?.computedStoreValues?.reduce([:]) {
-				(prev, computedValue) -> [String: String] in var computedValues: [String: String] = prev
+			storySignal.value?.computedStoreValues?
+			.reduce([:]) { (prev, computedValue) -> [String: String] in
+				var computedValues: [String: String] = prev
 				computedValues[computedValue.key] = computedValue.value
 				return computedValues
 			} ?? [:]
@@ -50,9 +51,12 @@ public class EmbarkState {
 	}
 
 	func startTracking() {
-		bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }.onValue(on: .background) { tracks in
-			tracks.forEach { track in track.trackingEvent(storeValues: self.store.getAllValues()).send() }
-		}
+		bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }
+			.onValue(on: .background) { tracks in
+				tracks.forEach { track in
+					track.trackingEvent(storeValues: self.store.getAllValues()).send()
+				}
+			}
 	}
 
 	func goBack() {
@@ -81,7 +85,8 @@ public class EmbarkState {
 				EmbarkTrackingEvent(
 					title: "External Redirect",
 					properties: ["location": externalRedirect.rawValue]
-				).send()
+				)
+				.send()
 				switch externalRedirect {
 				case .mailingList: externalRedirectSignal.value = .mailingList
 				case .offer:
@@ -101,12 +106,14 @@ public class EmbarkState {
 		}
 	}
 
-	private func handleRedirects(passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage) -> GraphQL
-		.EmbarkStoryQuery.Data.EmbarkStory.Passage?
-	{
-		passage.redirects.map { redirect in store.shouldRedirectTo(redirect: redirect) }.map { redirectTo in
-			passagesSignal.value.first(where: { passage -> Bool in passage.name == redirectTo })
-		}.compactMap { $0 }.first
+	private func handleRedirects(
+		passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
+	) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
+		passage.redirects.map { redirect in store.shouldRedirectTo(redirect: redirect) }
+			.map { redirectTo in
+				passagesSignal.value.first(where: { passage -> Bool in passage.name == redirectTo })
+			}
+			.compactMap { $0 }.first
 	}
 
 	private var totalStepsSignal = ReadWriteSignal<Int?>(nil)
@@ -121,25 +128,31 @@ public class EmbarkState {
 
 			if links.isEmpty { return previousDepth }
 
-			return links.map { linkPassageName in
-				findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
-			}.reduce(0) { result, current in max(result, current) }
+			return
+				links.map { linkPassageName in
+					findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
+				}
+				.reduce(0) { result, current in max(result, current) }
 		}
 
-		return currentPassageSignal.map { currentPassage in
-			guard let currentPassage = currentPassage else { return 0 }
+		return
+			currentPassageSignal.map { currentPassage in
+				guard let currentPassage = currentPassage else { return 0 }
 
-			let passagesLeft = currentPassage.allLinks.map { findMaxDepth(passageName: $0.name) }.reduce(0)
-			{ result, current in max(result, current) }
+				let passagesLeft = currentPassage.allLinks.map { findMaxDepth(passageName: $0.name) }
+					.reduce(0) { result, current in max(result, current) }
 
-			if self.totalStepsSignal.value == nil { self.totalStepsSignal.value = passagesLeft }
+				if self.totalStepsSignal.value == nil { self.totalStepsSignal.value = passagesLeft }
 
-			guard let totalSteps = self.totalStepsSignal.value else { return 0 }
+				guard let totalSteps = self.totalStepsSignal.value else { return 0 }
 
-			return (Float(totalSteps - passagesLeft) / Float(totalSteps))
-		}.latestTwo().delay { lhs, rhs -> TimeInterval? in if lhs > rhs { return 0 }
+				return (Float(totalSteps - passagesLeft) / Float(totalSteps))
+			}
+			.latestTwo()
+			.delay { lhs, rhs -> TimeInterval? in if lhs > rhs { return 0 }
 
-			return 0.25
-		}.map { _, rhs in rhs }.readable(initial: 0)
+				return 0.25
+			}
+			.map { _, rhs in rhs }.readable(initial: 0)
 	}
 }

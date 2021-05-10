@@ -24,10 +24,10 @@ extension Future {
 		Future<Value> { completion in let bag = DisposeBag()
 
 			self.onValue { value in
-				bag += signal.atOnce().filter(predicate: { $0 }).onValue { _ in
-					completion(.success(value))
-				}
-			}.onError { error in completion(.failure(error)) }
+				bag += signal.atOnce().filter(predicate: { $0 })
+					.onValue { _ in completion(.success(value)) }
+			}
+			.onError { error in completion(.failure(error)) }
 
 			return bag
 		}
@@ -62,9 +62,8 @@ extension Home: Presentable {
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,
-				onLoad: self.client.fetch(query: GraphQL.HomeQuery()).wait(
-					until: scrollView.safeToPerformEntryAnimationSignal
-				).delay(by: 0.1)
+				onLoad: self.client.fetch(query: GraphQL.HomeQuery())
+					.wait(until: scrollView.safeToPerformEntryAnimationSignal).delay(by: 0.1)
 			) { error in print(error) }
 		}
 
@@ -79,39 +78,42 @@ extension Home: Presentable {
 		bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
 			.mapLatestToFuture { _ in
 				self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
-			}.nil()
-
-		bag += client.watch(query: GraphQL.HomeQuery()).onValueDisposePrevious { data in
-			let innerBag = DisposeBag()
-
-			let terminatedState = data.contracts.allSatisfy { contract -> Bool in
-				if contract.status.asActiveInFutureAndTerminatedInFutureStatus != nil { return true }
-
-				if contract.status.asTerminatedStatus != nil { return true }
-
-				if contract.status.asTerminatedTodayStatus != nil { return true }
-
-				return false
 			}
+			.nil()
 
-			let futureState = data.contracts.allSatisfy { contract -> Bool in
-				if contract.status.asActiveInFutureStatus != nil { return true }
+		bag += client.watch(query: GraphQL.HomeQuery())
+			.onValueDisposePrevious { data in let innerBag = DisposeBag()
 
-				if contract.status.asPendingStatus != nil { return true }
+				let terminatedState = data.contracts.allSatisfy { contract -> Bool in
+					if contract.status.asActiveInFutureAndTerminatedInFutureStatus != nil {
+						return true
+					}
 
-				return false
+					if contract.status.asTerminatedStatus != nil { return true }
+
+					if contract.status.asTerminatedTodayStatus != nil { return true }
+
+					return false
+				}
+
+				let futureState = data.contracts.allSatisfy { contract -> Bool in
+					if contract.status.asActiveInFutureStatus != nil { return true }
+
+					if contract.status.asPendingStatus != nil { return true }
+
+					return false
+				}
+
+				if terminatedState {
+					innerBag += titleRow.append(TerminatedSection())
+				} else if futureState {
+					innerBag += titleRow.append(FutureSection())
+				} else {
+					innerBag += titleRow.append(ActiveSection())
+				}
+
+				return innerBag
 			}
-
-			if terminatedState {
-				innerBag += titleRow.append(TerminatedSection())
-			} else if futureState {
-				innerBag += titleRow.append(FutureSection())
-			} else {
-				innerBag += titleRow.append(ActiveSection())
-			}
-
-			return innerBag
-		}
 
 		return (viewController, bag)
 	}

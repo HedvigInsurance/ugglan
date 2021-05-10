@@ -12,7 +12,8 @@ extension URL {
 				kUTTagClassFilenameExtension,
 				pathExtension as NSString,
 				nil
-			)?.takeRetainedValue()
+			)?
+			.takeRetainedValue()
 		else { return fallback }
 
 		guard let mimeType = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue()

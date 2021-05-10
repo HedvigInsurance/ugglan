@@ -28,9 +28,9 @@ extension ProfileSection: Viewable {
 			)
 		}
 
-		bag += dataSignal.atOnce().compactMap { $0?.member }.filter {
-			$0.firstName != nil && $0.lastName != nil
-		}.map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
+		bag += dataSignal.atOnce().compactMap { $0?.member }
+			.filter { $0.firstName != nil && $0.lastName != nil }
+			.map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
 
 		let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
 		bag += section.append(myCharityRow) { row in

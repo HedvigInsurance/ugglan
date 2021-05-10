@@ -4,8 +4,7 @@ import Foundation
 import UIKit
 import hCore
 
-public struct CampaignBubble {
-	let campaignTypeSignal: ReadSignal<CampaignType?>
+public struct CampaignBubble { let campaignTypeSignal: ReadSignal<CampaignType?>
 
 	public enum CampaignType {
 		case freeMonths(number: Int)
@@ -52,9 +51,8 @@ extension CampaignBubble: Viewable {
 
 		view.addArrangedSubview(subtitlelabel)
 
-		containerView.transform = CGAffineTransform(scaleX: 0, y: 0).concatenating(
-			CGAffineTransform(translationX: 0, y: -30)
-		)
+		containerView.transform = CGAffineTransform(scaleX: 0, y: 0)
+			.concatenating(CGAffineTransform(translationX: 0, y: -30))
 		containerView.alpha = 0
 
 		bag += campaignTypeSignal.animated(style: SpringAnimationStyle.mediumBounce()) { value in
@@ -96,9 +94,8 @@ extension CampaignBubble: Viewable {
 				titleLabel.text = ""
 				subtitlelabel.text = ""
 
-				containerView.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(
-					CGAffineTransform(translationX: 0, y: -30)
-				)
+				containerView.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001)
+					.concatenating(CGAffineTransform(translationX: 0, y: -30))
 				containerView.alpha = 0
 			}
 		}

@@ -28,7 +28,8 @@ final class CardTests: XCTestCase {
 		bag += materializeViewable(card) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
 			assertSnapshot(matching: view, as: .image)
-		}.nil()
+		}
+		.nil()
 	}
 
 	func testYellowCard() {
@@ -47,6 +48,7 @@ final class CardTests: XCTestCase {
 		bag += materializeViewable(card) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
 			assertSnapshot(matching: view, as: .image)
-		}.nil()
+		}
+		.nil()
 	}
 }

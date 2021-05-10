@@ -87,20 +87,22 @@ extension MessageBubble: Viewable {
 			labelView.alpha = 0
 
 			if animated {
-				bag += textSignal.atOnce().delay(by: delay).onValue { _ in
-					UIView.performWithoutAnimation {
-						containerStackView.isHidden = false
+				bag += textSignal.atOnce().delay(by: delay)
+					.onValue { _ in
+						UIView.performWithoutAnimation {
+							containerStackView.isHidden = false
+							stylingView.alpha = 1
+							labelView.alpha = 1
+							labelView.layoutIfNeeded()
+							labelView.layoutSuperviewsIfNeeded()
+						}
+					}
+			} else {
+				bag += textSignal.atOnce()
+					.onValue { _ in containerStackView.isHidden = false
 						stylingView.alpha = 1
 						labelView.alpha = 1
-						labelView.layoutIfNeeded()
-						labelView.layoutSuperviewsIfNeeded()
 					}
-				}
-			} else {
-				bag += textSignal.atOnce().onValue { _ in containerStackView.isHidden = false
-					stylingView.alpha = 1
-					labelView.alpha = 1
-				}
 			}
 		}
 
@@ -126,32 +128,36 @@ extension MessageBubble: Viewable {
 		stylingView.layer.cornerRadius = 10
 
 		if messageType == .replied {
-			bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in let pushView = UIView()
-				pushView.snp.makeConstraints { make in make.height.equalTo(20) }
-				pushView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-				containerStackView.insertArrangedSubview(pushView, at: 0)
+			bag += containerStackView.didLayoutSignal.take(first: 1)
+				.onValue { _ in let pushView = UIView()
+					pushView.snp.makeConstraints { make in make.height.equalTo(20) }
+					pushView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+					containerStackView.insertArrangedSubview(pushView, at: 0)
 
-				containerStackView.snp.makeConstraints { make in
-					make.leading.trailing.equalToSuperview()
+					containerStackView.snp.makeConstraints { make in
+						make.leading.trailing.equalToSuperview()
+					}
 				}
-			}
 		}
 
 		containerStackView.addArrangedSubview(stylingView)
 
 		if animated {
-			bag += containerStackView.didLayoutSignal.take(first: 1).onValue { _ in
-				containerStackView.transform = CGAffineTransform.identity
-				containerStackView.transform = CGAffineTransform(translationX: 0, y: 40)
-				containerStackView.alpha = 0
+			bag += containerStackView.didLayoutSignal.take(first: 1)
+				.onValue { _ in containerStackView.transform = CGAffineTransform.identity
+					containerStackView.transform = CGAffineTransform(translationX: 0, y: 40)
+					containerStackView.alpha = 0
 
-				bag += Signal(after: 0.1 + Double(self.animationDelay) * 0.1).animated(
-					style: .lightBounce(),
-					animations: { _ in containerStackView.transform = CGAffineTransform.identity
-						containerStackView.alpha = 1
-					}
-				)
-			}
+					bag += Signal(after: 0.1 + Double(self.animationDelay) * 0.1)
+						.animated(
+							style: .lightBounce(),
+							animations: { _ in
+								containerStackView.transform =
+									CGAffineTransform.identity
+								containerStackView.alpha = 1
+							}
+						)
+				}
 		}
 
 		return (containerStackView, bag)

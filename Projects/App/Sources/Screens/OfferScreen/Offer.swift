@@ -15,7 +15,8 @@ extension Offer {
 			BankIdSign().wrappedInCloseButton(),
 			style: .detented(.medium, .large),
 			options: [.defaults]
-		).onValue { _ in viewController.present(PostOnboarding(), style: .detented(.large)) }
+		)
+		.onValue { _ in viewController.present(PostOnboarding(), style: .detented(.large)) }
 	}
 
 	static var primaryAccentColor: UIColor { .brand(.primaryBackground()) }
@@ -71,18 +72,18 @@ extension Offer: Presentable {
 		bag += stackView.addArranged(Spacing(height: 16))
 
 		bag += stackView.addArranged(Spacing(height: Float(UIScreen.main.bounds.height))) { spacingView in
-			bag += Signal(after: 1.25).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
-				spacingView.animationSafeIsHidden = true
-			}
+			bag += Signal(after: 1.25)
+				.animated(style: SpringAnimationStyle.mediumBounce()) { _ in
+					spacingView.animationSafeIsHidden = true
+				}
 		}
 
 		bag += stackView.addArranged(OfferSummary())
 
 		bag += stackView.addArranged(OfferCoverage())
 
-		let insuredAtOtherCompanySignal = insuranceSignal.map { $0.previousInsurer != nil }.readable(
-			initial: false
-		)
+		let insuredAtOtherCompanySignal = insuranceSignal.map { $0.previousInsurer != nil }
+			.readable(initial: false)
 
 		bag += stackView.addArranged(
 			OfferCoverageTerms(insuredAtOtherCompanySignal: insuredAtOtherCompanySignal)

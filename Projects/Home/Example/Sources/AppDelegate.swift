@@ -23,9 +23,10 @@ import hGraphQL
 		let tapGestureRecognizer = UITapGestureRecognizer()
 		tapGestureRecognizer.numberOfTouchesRequired = 3
 
-		bag += tapGestureRecognizer.signal(forState: .recognized).onValue { _ in self.bag.dispose()
-			self.run()
-		}
+		bag += tapGestureRecognizer.signal(forState: .recognized)
+			.onValue { _ in self.bag.dispose()
+				self.run()
+			}
 
 		window?.addGestureRecognizer(tapGestureRecognizer)
 

@@ -8,7 +8,10 @@ struct BubbleLoading {
 	let originatingView: UIView
 	let dismissSignal: Signal<Void>
 
-	init(originatingView: UIView?, dismissSignal: Signal<Void>) {
+	init(
+		originatingView: UIView?,
+		dismissSignal: Signal<Void>
+	) {
 		self.originatingView = originatingView ?? UIView()
 		self.dismissSignal = dismissSignal
 	}
@@ -57,18 +60,25 @@ extension BubbleLoading: Presentable {
 		return (
 			viewController,
 			Future { completion in
-				bag += Signal(after: 0.1).animated(style: AnimationStyle.easeOut(duration: 0.3)) { _ in
-					let scaleX = (UIScreen.main.bounds.height / bubbleView.frame.width) * 3
-					let scaleY = (UIScreen.main.bounds.height / bubbleView.frame.height) * 3
+				bag += Signal(after: 0.1)
+					.animated(style: AnimationStyle.easeOut(duration: 0.3)) { _ in
+						let scaleX = (UIScreen.main.bounds.height / bubbleView.frame.width) * 3
+						let scaleY = (UIScreen.main.bounds.height / bubbleView.frame.height) * 3
 
-					bubbleView.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-				}.animated(style: AnimationStyle.easeOut(duration: 0.5)) { activityIndicator.alpha = 1 }
+						bubbleView.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+					}
+					.animated(style: AnimationStyle.easeOut(duration: 0.5)) {
+						activityIndicator.alpha = 1
+					}
 
-				bag += self.dismissSignal.delay(by: 1).animated(
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { _ in activityIndicator.alpha = 0 }.animated(
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { _ in bubbleView.alpha = 0 }.onValue { _ in completion(.success) }
+				bag += self.dismissSignal.delay(by: 1)
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+						activityIndicator.alpha = 0
+					}
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+						bubbleView.alpha = 0
+					}
+					.onValue { _ in completion(.success) }
 
 				return bag
 			}

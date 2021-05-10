@@ -10,7 +10,10 @@ public struct MarketRow {
 	@ReadWriteState var market: Market
 	var availableLocales: [GraphQL.Locale]
 
-	public init(market: Market, availableLocales: [GraphQL.Locale]) {
+	public init(
+		market: Market,
+		availableLocales: [GraphQL.Locale]
+	) {
 		self.market = market
 		self.availableLocales = availableLocales
 	}
@@ -29,10 +32,10 @@ extension MarketRow: Viewable {
 		)
 		bag += $market.map { $0.title }.bindTo(row, \.subtitle)
 
-		bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0).transition(
-			style: .crossDissolve(duration: 0.25),
-			with: row
-		) { _ in row.title = L10n.MarketLanguageScreen.marketLabel }
+		bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
+			.transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
+				row.title = L10n.MarketLanguageScreen.marketLabel
+			}
 
 		let flagImageView = UIImageView()
 		flagImageView.image = market.icon
@@ -51,13 +54,15 @@ extension MarketRow: Viewable {
 
 		row.append(chevronImageView)
 
-		bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
-			viewController.present(
-				PickMarket(currentMarket: market, availableLocales: availableLocales)
-					.wrappedInCloseButton(),
-				style: .detented(.scrollViewContentSize(20))
-			).onValue { newMarket in $market.value = newMarket }
-		}
+		bag += events.onSelect.compactMap { row.viewController }
+			.onValue { viewController in
+				viewController.present(
+					PickMarket(currentMarket: market, availableLocales: availableLocales)
+						.wrappedInCloseButton(),
+					style: .detented(.scrollViewContentSize(20))
+				)
+				.onValue { newMarket in $market.value = newMarket }
+			}
 
 		return (row, bag)
 	}

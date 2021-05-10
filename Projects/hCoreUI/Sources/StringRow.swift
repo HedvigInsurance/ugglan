@@ -7,7 +7,10 @@ public struct StringRow {
 	public let value: String
 	public let style: TextStyle
 
-	public init(value: String, style: TextStyle = .brand(.body(color: .primary))) {
+	public init(
+		value: String,
+		style: TextStyle = .brand(.body(color: .primary))
+	) {
 		self.value = value
 		self.style = style
 	}

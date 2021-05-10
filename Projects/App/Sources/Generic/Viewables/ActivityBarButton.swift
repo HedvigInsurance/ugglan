@@ -36,7 +36,10 @@ class ActivityBarButton: SignalProvider {
 		navigationItem?.setRightBarButtonItems([item], animated: true)
 	}
 
-	init(item: UIBarButtonItem, position: BarButtonPosition) {
+	init(
+		item: UIBarButtonItem,
+		position: BarButtonPosition
+	) {
 		providedSignal = item.providedSignal
 		self.item = item
 		self.position = position

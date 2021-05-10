@@ -12,7 +12,10 @@ struct AttachFilePane {
 	let chatState: ChatState
 	@Inject var client: ApolloClient
 
-	init(isOpenSignal: ReadWriteSignal<Bool>, chatState: ChatState) {
+	init(
+		isOpenSignal: ReadWriteSignal<Bool>,
+		chatState: ChatState
+	) {
 		self.isOpenSignal = isOpenSignal
 		self.chatState = chatState
 	}
@@ -33,10 +36,12 @@ struct FileUpload {
 				operation: GraphQL.UploadFileMutation(file: "image"),
 				files: [file],
 				queue: DispatchQueue.global(qos: .background)
-			).onValue { data in let key = data.uploadFile.key
+			)
+			.onValue { data in let key = data.uploadFile.key
 				let bucket = data.uploadFile.bucket
 				completion(.success((key, bucket)))
-			}.disposable
+			}
+			.disposable
 		}
 	}
 }
@@ -49,12 +54,13 @@ extension AttachFilePane: Viewable {
 		view.isLayoutMarginsRelativeArrangement = true
 		view.insetsLayoutMarginsFromSafeArea = true
 
-		bag += isOpenSignal.atOnce().map { !$0 }.animated(
-			style: SpringAnimationStyle.lightBounce(),
-			animations: { isHidden in view.animationSafeIsHidden = isHidden
-				view.layoutSuperviewsIfNeeded()
-			}
-		)
+		bag += isOpenSignal.atOnce().map { !$0 }
+			.animated(
+				style: SpringAnimationStyle.lightBounce(),
+				animations: { isHidden in view.animationSafeIsHidden = isHidden
+					view.layoutSuperviewsIfNeeded()
+				}
+			)
 
 		let layout = UICollectionViewFlowLayout()
 		layout.scrollDirection = .horizontal
@@ -115,28 +121,31 @@ extension AttachFilePane: Viewable {
 			)
 		}
 
-		bag += isOpenSignal.atOnce().filter { $0 }.onValue { _ in
-			PHPhotoLibrary.requestAuthorization { _ in var list: [AttachFileAsset] = []
+		bag += isOpenSignal.atOnce().filter { $0 }
+			.onValue { _ in
+				PHPhotoLibrary.requestAuthorization { _ in var list: [AttachFileAsset] = []
 
-				let fetchOptions = PHFetchOptions()
-				fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-				fetchOptions.fetchLimit = 50
+					let fetchOptions = PHFetchOptions()
+					fetchOptions.sortDescriptors = [
+						NSSortDescriptor(key: "creationDate", ascending: false)
+					]
+					fetchOptions.fetchLimit = 50
 
-				let imageAssets = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+					let imageAssets = PHAsset.fetchAssets(with: .image, options: fetchOptions)
 
-				imageAssets.enumerateObjects { asset, _, _ in
-					list.append(AttachFileAsset(asset: asset, type: .image))
+					imageAssets.enumerateObjects { asset, _, _ in
+						list.append(AttachFileAsset(asset: asset, type: .image))
+					}
+
+					let videoAssets = PHAsset.fetchAssets(with: .video, options: fetchOptions)
+
+					videoAssets.enumerateObjects { asset, _, _ in
+						list.append(AttachFileAsset(asset: asset, type: .video))
+					}
+
+					DispatchQueue.main.async { collectionKit.table = Table(rows: list) }
 				}
-
-				let videoAssets = PHAsset.fetchAssets(with: .video, options: fetchOptions)
-
-				videoAssets.enumerateObjects { asset, _, _ in
-					list.append(AttachFileAsset(asset: asset, type: .video))
-				}
-
-				DispatchQueue.main.async { collectionKit.table = Table(rows: list) }
 			}
-		}
 
 		return (view, bag)
 	}

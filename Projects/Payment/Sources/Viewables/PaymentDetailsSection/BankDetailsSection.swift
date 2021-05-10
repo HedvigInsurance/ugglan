@@ -52,18 +52,18 @@ extension BankDetailsSection: Viewable {
 
 			paymentSetupRow.append(setupImageView)
 
-			bag += section.append(paymentSetupRow).compactMap { section.viewController }.onValue {
-				viewController in
-				let setup = PaymentSetup(
-					setupType: hasAlreadyConnected ? .replacement : .initial,
-					urlScheme: self.urlScheme
-				)
-				viewController.present(
-					setup,
-					style: .modally(),
-					options: [.defaults, .allowSwipeDismissAlways]
-				)
-			}
+			bag += section.append(paymentSetupRow).compactMap { section.viewController }
+				.onValue { viewController in
+					let setup = PaymentSetup(
+						setupType: hasAlreadyConnected ? .replacement : .initial,
+						urlScheme: self.urlScheme
+					)
+					viewController.present(
+						setup,
+						style: .modally(),
+						options: [.defaults, .allowSwipeDismissAlways]
+					)
+				}
 
 			bag += { section.remove(paymentSetupRow) }
 

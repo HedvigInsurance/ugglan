@@ -26,24 +26,26 @@ extension Action: Viewable {
 		outerContainer.axis = .vertical
 		outerContainer.alignment = .center
 
-		bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue { _ in
-			guard let viewController = outerContainer.viewController,
-				let edgePanGestureRecognizer = state.edgePanGestureRecognizer
-			else { return }
+		bag += state.edgePanGestureRecognizer?.signal(forState: .changed)
+			.onValue { _ in
+				guard let viewController = outerContainer.viewController,
+					let edgePanGestureRecognizer = state.edgePanGestureRecognizer
+				else { return }
 
-			let percentage =
-				edgePanGestureRecognizer.translation(in: viewController.view).x
-				/ viewController.view.frame.width
+				let percentage =
+					edgePanGestureRecognizer.translation(in: viewController.view).x
+					/ viewController.view.frame.width
 
-			outerContainer.transform = CGAffineTransform(
-				translationX: 0,
-				y: outerContainer.frame.height * (percentage * 2.5)
-			)
-		}
+				outerContainer.transform = CGAffineTransform(
+					translationX: 0,
+					y: outerContainer.frame.height * (percentage * 2.5)
+				)
+			}
 
-		bag += state.edgePanGestureRecognizer?.signal(forState: .ended).animated(style: .heavyBounce()) {
-			outerContainer.transform = CGAffineTransform(translationX: 0, y: 0)
-		}
+		bag += state.edgePanGestureRecognizer?.signal(forState: .ended)
+			.animated(style: .heavyBounce()) {
+				outerContainer.transform = CGAffineTransform(translationX: 0, y: 0)
+			}
 
 		let widthContainer = UIStackView()
 		widthContainer.axis = .horizontal
@@ -81,9 +83,8 @@ extension Action: Viewable {
 				? CGAffineTransform(translationX: 0, y: viewHeight) : CGAffineTransform.identity
 		}
 
-		bag += view.didLayoutSignal.withLatestFrom(isHiddenSignal.atOnce().plain()).map { _, isHidden in
-			isHidden
-		}.onValue(handleViewState)
+		bag += view.didLayoutSignal.withLatestFrom(isHiddenSignal.atOnce().plain())
+			.map { _, isHidden in isHidden }.onValue(handleViewState)
 		bag += isHiddenSignal.atOnce().onValue(handleViewState)
 
 		let animationStyle = SpringAnimationStyle(
@@ -94,17 +95,17 @@ extension Action: Viewable {
 			options: [.allowUserInteraction]
 		)
 
-		let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal).animated(
-			style: animationStyle
-		) { _, _ in isHiddenSignal.value = true
-			view.firstPossibleResponder?.resignFirstResponder()
-			view.layoutIfNeeded()
-		}.delay(by: 0)
+		let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal)
+			.animated(style: animationStyle) { _, _ in isHiddenSignal.value = true
+				view.firstPossibleResponder?.resignFirstResponder()
+				view.layoutIfNeeded()
+			}
+			.delay(by: 0)
 
-		bag += hideAnimationSignal.delay(by: 0.25).animated(style: animationStyle) { _ in
-			isHiddenSignal.value = false
-			view.layoutIfNeeded()
-		}
+		bag += hideAnimationSignal.delay(by: 0.25)
+			.animated(style: animationStyle) { _ in isHiddenSignal.value = false
+				view.layoutIfNeeded()
+			}
 
 		return (
 			outerContainer,
@@ -113,67 +114,92 @@ extension Action: Viewable {
 					hideAnimationSignal.map { _ in true }.readable(initial: false)
 				}
 
-				bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal).wait(
-					until: shouldUpdateUISignal
-				).onValueDisposePrevious { actionData, _ in let innerBag = DisposeBag()
+				bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal)
+					.wait(until: shouldUpdateUISignal)
+					.onValueDisposePrevious { actionData, _ in let innerBag = DisposeBag()
 
-					let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
+						let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
 
-					func performCallback(_ link: GraphQL.EmbarkLinkFragment) {
-						if !hasCallbackedSignal.value {
-							hasCallbackedSignal.value = true
-							callback(link)
+						func performCallback(_ link: GraphQL.EmbarkLinkFragment) {
+							if !hasCallbackedSignal.value {
+								hasCallbackedSignal.value = true
+								callback(link)
+							}
 						}
-					}
 
-					if let selectAction = actionData?.asEmbarkSelectAction {
-						innerBag += view.addArranged(
-							EmbarkSelectAction(state: self.state, data: selectAction)
-						).onValue(performCallback)
-					} else if let textAction = actionData?.asEmbarkTextAction {
-						innerBag += view.addArranged(
-							EmbarkTextAction(state: self.state, data: textAction)
-						).onValue(performCallback)
-					} else if let numberAction = actionData?.asEmbarkNumberAction {
-						innerBag += view.addArranged(
-							EmbarkNumberAction(state: self.state, data: numberAction)
-						).onValue(performCallback)
-					} else if let numberActionSetData = actionData?.asEmbarkNumberActionSet?.data {
-						let inputSet = EmbarkActionSetInputData(
-							numberActionSet: numberActionSetData,
-							state: self.state
-						)
-						innerBag += view.addArranged(inputSet).onValue(performCallback)
-					} else if let textActionSet = actionData?.asEmbarkTextActionSet?
-						.textActionSetData
-					{
-						let inputSet = EmbarkActionSetInputData(
-							textActionSet: textActionSet,
-							state: self.state
-						)
-						innerBag += view.addArranged(inputSet).onValue(performCallback)
-					} else if let externalInsuranceProviderAction = actionData?
-						.asEmbarkExternalInsuranceProviderAction
-					{
-						innerBag += view.addArranged(
-							InsuranceProviderAction(
-								state: self.state,
-								data: .external(externalInsuranceProviderAction)
+						if let selectAction = actionData?.asEmbarkSelectAction {
+							innerBag +=
+								view.addArranged(
+									EmbarkSelectAction(
+										state: self.state,
+										data: selectAction
+									)
+								)
+								.onValue(performCallback)
+						} else if let textAction = actionData?.asEmbarkTextAction {
+							innerBag +=
+								view.addArranged(
+									EmbarkTextAction(
+										state: self.state,
+										data: textAction
+									)
+								)
+								.onValue(performCallback)
+						} else if let numberAction = actionData?.asEmbarkNumberAction {
+							innerBag +=
+								view.addArranged(
+									EmbarkNumberAction(
+										state: self.state,
+										data: numberAction
+									)
+								)
+								.onValue(performCallback)
+						} else if let numberActionSetData = actionData?.asEmbarkNumberActionSet?
+							.data
+						{
+							let inputSet = EmbarkActionSetInputData(
+								numberActionSet: numberActionSetData,
+								state: self.state
 							)
-						).onValue(performCallback)
-					} else if let previousInsuranceProviderAction = actionData?
-						.asEmbarkPreviousInsuranceProviderAction
-					{
-						innerBag += view.addArranged(
-							InsuranceProviderAction(
-								state: self.state,
-								data: .previous(previousInsuranceProviderAction)
+							innerBag += view.addArranged(inputSet).onValue(performCallback)
+						} else if let textActionSet = actionData?.asEmbarkTextActionSet?
+							.textActionSetData
+						{
+							let inputSet = EmbarkActionSetInputData(
+								textActionSet: textActionSet,
+								state: self.state
 							)
-						).onValue(performCallback)
-					}
+							innerBag += view.addArranged(inputSet).onValue(performCallback)
+						} else if let externalInsuranceProviderAction = actionData?
+							.asEmbarkExternalInsuranceProviderAction
+						{
+							innerBag +=
+								view.addArranged(
+									InsuranceProviderAction(
+										state: self.state,
+										data: .external(
+											externalInsuranceProviderAction
+										)
+									)
+								)
+								.onValue(performCallback)
+						} else if let previousInsuranceProviderAction = actionData?
+							.asEmbarkPreviousInsuranceProviderAction
+						{
+							innerBag +=
+								view.addArranged(
+									InsuranceProviderAction(
+										state: self.state,
+										data: .previous(
+											previousInsuranceProviderAction
+										)
+									)
+								)
+								.onValue(performCallback)
+						}
 
-					return innerBag
-				}
+						return innerBag
+					}
 
 				return bag
 			}

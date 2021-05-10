@@ -22,7 +22,8 @@ extension GradientScroller {
 		bag += combineLatest(
 			traitCollectionSignal.atOnce().plain(),
 			ContextGradient.$currentOption.atOnce().latestTwo()
-		).onValue { traitCollection, option in
+		)
+		.onValue { traitCollection, option in
 			if #available(iOS 13.0, *), ContextGradient.rules.contains(.disallowOnElevatedTraits) {
 				if traitCollection.userInterfaceLevel == .elevated {
 					gradientLayer.isHidden = true
@@ -36,9 +37,8 @@ extension GradientScroller {
 
 			func optionToColors(_ option: ContextGradient.Option) -> [CGColor] {
 				if #available(iOS 13, *) {
-					return option.colors(for: traitCollection).map {
-						$0.resolvedColor(with: traitCollection).cgColor
-					}
+					return option.colors(for: traitCollection)
+						.map { $0.resolvedColor(with: traitCollection).cgColor }
 				} else {
 					return option.colors(for: traitCollection).map(\.cgColor)
 				}
@@ -70,22 +70,21 @@ extension GradientScroller {
 			gradientLayer.add(animationGroup, forKey: "gradientAnimation")
 		}
 
-		bag += combineLatest(signal(for: \.contentOffset).atOnce(), signal(for: \.bounds).atOnce()).onValue {
-			_,
-			bounds in CATransaction.begin()
-			CATransaction.setDisableActions(true)
-			let navigationBarHeight =
-				self.viewController?.navigationController?.navigationBar.frame.height ?? 0
+		bag += combineLatest(signal(for: \.contentOffset).atOnce(), signal(for: \.bounds).atOnce())
+			.onValue { _, bounds in CATransaction.begin()
+				CATransaction.setDisableActions(true)
+				let navigationBarHeight =
+					self.viewController?.navigationController?.navigationBar.frame.height ?? 0
 
-			gradientLayer.transform = CATransform3DMakeAffineTransform(
-				originalTransform.concatenating(
-					CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
+				gradientLayer.transform = CATransform3DMakeAffineTransform(
+					originalTransform.concatenating(
+						CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
+					)
 				)
-			)
-			gradientLayer.frame = bounds
+				gradientLayer.frame = bounds
 
-			CATransaction.commit()
-		}
+				CATransaction.commit()
+			}
 
 		return gradientLayer
 	}
@@ -97,56 +96,60 @@ extension GradientScroller {
 		let navigationBarColorView = ContextGradient.makeColorView(into: bag, for: .navigationBar)
 		let tabBarColorView = ContextGradient.makeColorView(into: bag, for: .tabBar)
 
-		bag += didMoveToWindowSignal.filter(predicate: {
-			!(self.layer.sublayers?.contains(where: { $0.name == "gradientLayer" }) ?? false)
-		}).filter(predicate: {
-			if ContextGradient.rules.contains(.disallowOnFirstLevelModals) {
-				return self.viewController?.presentingViewController == nil
+		bag +=
+			didMoveToWindowSignal.filter(predicate: {
+				!(self.layer.sublayers?.contains(where: { $0.name == "gradientLayer" }) ?? false)
+			})
+			.filter(predicate: {
+				if ContextGradient.rules.contains(.disallowOnFirstLevelModals) {
+					return self.viewController?.presentingViewController == nil
+				}
+
+				return self.viewController?.presentingViewController?.presentingViewController == nil
+			})
+			.take(first: 1)
+			.onValue { _ in
+				if let navigationController = self.viewController?.navigationController {
+					if navigationController.viewControllers.count != 1,
+						ContextGradient.rules.contains(
+							.disallowOnNestedViewControllersInNavigationControllers
+						)
+					{
+						return
+					}
+
+					if navigationController.navigationBar.viewWithTag(colorViewTag) == nil,
+						let barBackgroundView = navigationController.navigationBar.subviews
+							.first
+					{
+						let effectView = barBackgroundView.subviews[1]
+						barBackgroundView.addSubview(navigationBarColorView)
+
+						navigationBarColorView.snp.makeConstraints { make in
+							make.top.bottom.leading.trailing.equalToSuperview()
+						}
+
+						navigationBarColorView.alpha = effectView.alpha
+
+						bag += effectView.signal(for: \.alpha).distinct()
+							.onValue { alpha in navigationBarColorView.alpha = alpha }
+					}
+
+					if let tabBarController = navigationController.tabBarController,
+						tabBarController.tabBar.viewWithTag(colorViewTag) == nil
+					{
+						tabBarController.tabBar.insertSubview(tabBarColorView, at: 0)
+
+						tabBarColorView.snp.makeConstraints { make in
+							make.top.bottom.leading.trailing.equalToSuperview()
+						}
+					}
+
+					self.layer.insertSublayer(gradientLayer, at: 0)
+
+					bag += { gradientLayer.removeFromSuperlayer() }
+				}
 			}
-
-			return self.viewController?.presentingViewController?.presentingViewController == nil
-		}).take(first: 1).onValue { _ in
-			if let navigationController = self.viewController?.navigationController {
-				if navigationController.viewControllers.count != 1,
-					ContextGradient.rules.contains(
-						.disallowOnNestedViewControllersInNavigationControllers
-					)
-				{
-					return
-				}
-
-				if navigationController.navigationBar.viewWithTag(colorViewTag) == nil,
-					let barBackgroundView = navigationController.navigationBar.subviews.first
-				{
-					let effectView = barBackgroundView.subviews[1]
-					barBackgroundView.addSubview(navigationBarColorView)
-
-					navigationBarColorView.snp.makeConstraints { make in
-						make.top.bottom.leading.trailing.equalToSuperview()
-					}
-
-					navigationBarColorView.alpha = effectView.alpha
-
-					bag += effectView.signal(for: \.alpha).distinct().onValue { alpha in
-						navigationBarColorView.alpha = alpha
-					}
-				}
-
-				if let tabBarController = navigationController.tabBarController,
-					tabBarController.tabBar.viewWithTag(colorViewTag) == nil
-				{
-					tabBarController.tabBar.insertSubview(tabBarColorView, at: 0)
-
-					tabBarColorView.snp.makeConstraints { make in
-						make.top.bottom.leading.trailing.equalToSuperview()
-					}
-				}
-
-				self.layer.insertSublayer(gradientLayer, at: 0)
-
-				bag += { gradientLayer.removeFromSuperlayer() }
-			}
-		}
 
 		layoutIfNeeded()
 	}

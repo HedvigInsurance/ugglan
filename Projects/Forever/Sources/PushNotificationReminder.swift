@@ -44,20 +44,26 @@ extension PushNotificationReminder: Conditional, Presentable {
 		return (
 			viewController,
 			Future { completion in
-				bag += viewController.install(imageTextAction).onValue {
-					let center = UNUserNotificationCenter.current()
-					center.requestAuthorization(options: [.alert, .sound, .badge]) { _, error in
-						DispatchQueue.main.async {
-							if error != nil {
-								completion(
-									.failure(PushNotificationReminderError.failed)
-								)
-							} else {
-								completion(.success)
+				bag += viewController.install(imageTextAction)
+					.onValue {
+						let center = UNUserNotificationCenter.current()
+						center.requestAuthorization(options: [.alert, .sound, .badge]) {
+							_,
+							error in
+							DispatchQueue.main.async {
+								if error != nil {
+									completion(
+										.failure(
+											PushNotificationReminderError
+												.failed
+										)
+									)
+								} else {
+									completion(.success)
+								}
 							}
 						}
 					}
-				}
 
 				bag += skipBarButton.onValue {
 					completion(.failure(PushNotificationReminderError.skipped))

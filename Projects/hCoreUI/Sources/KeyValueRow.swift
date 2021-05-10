@@ -25,9 +25,8 @@ extension KeyValueRow: Viewable {
 		let valueLabel = UILabel()
 		row.append(valueLabel)
 
-		bag += valueSignal.atOnce().withLatestFrom(valueStyleSignal.atOnce()).map {
-			StyledText(text: $0, style: $1)
-		}.bindTo(valueLabel, \.styledText)
+		bag += valueSignal.atOnce().withLatestFrom(valueStyleSignal.atOnce())
+			.map { StyledText(text: $0, style: $1) }.bindTo(valueLabel, \.styledText)
 
 		return (row, bag)
 	}

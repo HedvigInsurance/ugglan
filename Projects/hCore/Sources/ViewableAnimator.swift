@@ -9,7 +9,11 @@ public protocol ViewableAnimatorHandler {
 }
 
 public class ViewableAnimator<AnimatorHandler: ViewableAnimatorHandler> {
-	public init(state: AnimatorHandler.State, handler: AnimatorHandler, views: AnimatorHandler.Views) {
+	public init(
+		state: AnimatorHandler.State,
+		handler: AnimatorHandler,
+		views: AnimatorHandler.Views
+	) {
 		self.handler = handler
 		self.state = state
 		self.views = views

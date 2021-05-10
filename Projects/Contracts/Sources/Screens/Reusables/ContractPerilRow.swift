@@ -66,25 +66,29 @@ extension ContractPerilRow: Reusable {
 				)
 				bag += contentContainer.addArranged(title)
 
-				bag += view.signal(for: .touchDown).animated(
-					style: .easeOut(duration: 0.25),
-					animations: { _ in
-						view.backgroundColor = DefaultStyling.current.sectionBackgroundSelected
-							.background.color.withAlphaComponent(0.2)
-					}
-				)
+				bag += view.signal(for: .touchDown)
+					.animated(
+						style: .easeOut(duration: 0.25),
+						animations: { _ in
+							view.backgroundColor = DefaultStyling.current
+								.sectionBackgroundSelected.background.color
+								.withAlphaComponent(0.2)
+						}
+					)
 
-				bag += view.delayedTouchCancel().animated(
-					style: .easeOut(duration: 0.25),
-					animations: { _ in view.backgroundColor = backgroundColor }
-				)
+				bag += view.delayedTouchCancel()
+					.animated(
+						style: .easeOut(duration: 0.25),
+						animations: { _ in view.backgroundColor = backgroundColor }
+					)
 
 				bag += view.trackedTouchUpInsideSignal.onValue { _ in
 					let detail = PerilDetail(perilFragment: self.fragment, icon: remoteVectorIcon)
-					view.viewController?.present(
-						detail.withCloseButton,
-						style: .detented(.preferredContentSize, .large)
-					)
+					view.viewController?
+						.present(
+							detail.withCloseButton,
+							style: .detented(.preferredContentSize, .large)
+						)
 				}
 
 				return bag

@@ -70,9 +70,9 @@ extension ChooseStartDate: Presentable {
 
 		pickerStackView.addArrangedSubview(picker)
 
-		bag += client.watch(query: GraphQL.OfferQuery()).map {
-			$0.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate
-		}.onValue { date in if let date = date { picker.date = date } else { picker.date = Date() } }
+		bag += client.watch(query: GraphQL.OfferQuery())
+			.map { $0.lastQuoteOfMember.asCompleteQuote?.startDate?.localDateToDate }
+			.onValue { date in if let date = date { picker.date = date } else { picker.date = Date() } }
 
 		let chooseDateButton = Button(
 			title: L10n.chooseDateBtn,
@@ -105,94 +105,129 @@ extension ChooseStartDate: Presentable {
 				bag += loadableChooseDateButton.onTapSignal.onValue { _ in
 					loadableChooseDateButton.isLoadingSignal.value = true
 
-					bag += self.client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap {
-						$0.lastQuoteOfMember.asCompleteQuote?.id
-					}.plain().withLatestFrom(picker.atOnce().plain()).mapLatestToFuture {
-						id,
-						pickedStartDate in
-						self.client.perform(
-							mutation: GraphQL.ChangeStartDateMutationMutation(
-								id: id,
-								startDate: pickedStartDate.localDateString ?? ""
+					bag += self.client.fetch(query: GraphQL.OfferQuery()).valueSignal
+						.compactMap { $0.lastQuoteOfMember.asCompleteQuote?.id }.plain()
+						.withLatestFrom(picker.atOnce().plain())
+						.mapLatestToFuture { id, pickedStartDate in
+							self.client.perform(
+								mutation: GraphQL.ChangeStartDateMutationMutation(
+									id: id,
+									startDate: pickedStartDate.localDateString ?? ""
+								)
 							)
-						)
-					}.onValue { data in
-						bag += Signal(after: 0.5).onValue { _ in
-							loadableChooseDateButton.isLoadingSignal.value = false
-							completion(.success)
 						}
+						.onValue { data in
+							bag += Signal(after: 0.5)
+								.onValue { _ in
+									loadableChooseDateButton.isLoadingSignal.value =
+										false
+									completion(.success)
+								}
 
-						updateStartDateCache(
-							startDate: data.editQuote.asCompleteQuote?.startDate
-						)
-					}
+							updateStartDateCache(
+								startDate: data.editQuote.asCompleteQuote?.startDate
+							)
+						}
 				}
 
-				bag += self.client.fetch(query: GraphQL.OfferQuery()).map {
-					$0.insurance.previousInsurer
-				}.onValue { previousInsurer in
-					if previousInsurer == nil {
-						activateNowButton.title.value = L10n.activateTodayBtn
+				bag += self.client.fetch(query: GraphQL.OfferQuery())
+					.map { $0.insurance.previousInsurer }
+					.onValue { previousInsurer in
+						if previousInsurer == nil {
+							activateNowButton.title.value = L10n.activateTodayBtn
 
-						bag += loadableActivateButton.onTapSignal.onValue { _ in
-							loadableActivateButton.isLoadingSignal.value = true
+							bag += loadableActivateButton.onTapSignal.onValue { _ in
+								loadableActivateButton.isLoadingSignal.value = true
 
-							self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in
-								guard
-									let id = data.lastQuoteOfMember.asCompleteQuote?
-										.id
-								else { return }
+								self.client.fetch(query: GraphQL.OfferQuery())
+									.onValue { data in
+										guard
+											let id = data.lastQuoteOfMember
+												.asCompleteQuote?
+												.id
+										else { return }
 
-								self.client.perform(
-									mutation:
-										GraphQL.ChangeStartDateMutationMutation(
-											id: id,
-											startDate:
-												Date().localDateString
-												?? ""
-										)
-								).onValue { data in
-									bag += Signal(after: 0.5).onValue { _ in
-										loadableActivateButton.isLoadingSignal
-											.value = false
-										completion(.success)
+										self.client
+											.perform(
+												mutation:
+													GraphQL
+													.ChangeStartDateMutationMutation(
+														id: id,
+														startDate:
+															Date()
+															.localDateString
+															?? ""
+													)
+											)
+											.onValue { data in
+												bag += Signal(
+													after: 0.5
+												)
+												.onValue { _ in
+													loadableActivateButton
+														.isLoadingSignal
+														.value =
+														false
+													completion(
+														.success
+													)
+												}
+
+												updateStartDateCache(
+													startDate: data
+														.editQuote
+														.asCompleteQuote?
+														.startDate
+												)
+											}
 									}
-
-									updateStartDateCache(
-										startDate: data.editQuote
-											.asCompleteQuote?.startDate
-									)
-								}
 							}
-						}
-					} else {
-						activateNowButton.title.value = L10n.activateInsuranceEndBtn
+						} else {
+							activateNowButton.title.value = L10n.activateInsuranceEndBtn
 
-						bag += loadableActivateButton.onTapSignal.onValue { _ in
-							loadableActivateButton.isLoadingSignal.value = true
+							bag += loadableActivateButton.onTapSignal.onValue { _ in
+								loadableActivateButton.isLoadingSignal.value = true
 
-							self.client.fetch(query: GraphQL.OfferQuery()).onValue { data in
-								guard
-									let quoteId = data.lastQuoteOfMember
-										.asCompleteQuote?.id
-								else { return }
+								self.client.fetch(query: GraphQL.OfferQuery())
+									.onValue { data in
+										guard
+											let quoteId = data
+												.lastQuoteOfMember
+												.asCompleteQuote?
+												.id
+										else { return }
 
-								self.client.perform(
-									mutation: GraphQL.RemoveStartDateMutation(
-										id: quoteId
-									)
-								).onValue { _ in updateStartDateCache(startDate: nil)
+										self.client
+											.perform(
+												mutation:
+													GraphQL
+													.RemoveStartDateMutation(
+														id:
+															quoteId
+													)
+											)
+											.onValue { _ in
+												updateStartDateCache(
+													startDate: nil
+												)
 
-									bag += Signal(after: 0.5).onValue { _ in
-										loadableActivateButton.isLoadingSignal
-											.value = false
-										completion(.success)
+												bag += Signal(
+													after: 0.5
+												)
+												.onValue { _ in
+													loadableActivateButton
+														.isLoadingSignal
+														.value =
+														false
+													completion(
+														.success
+													)
+												}
+											}
 									}
-								}
 							}
 						}
 					}
-				}
 
 				return bag
 			}

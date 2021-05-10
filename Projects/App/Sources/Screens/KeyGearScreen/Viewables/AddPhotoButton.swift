@@ -38,36 +38,41 @@ extension AddPhotoButton: Viewable {
 			make.centerY.equalToSuperview()
 		}
 
-		bag += pickedPhotoSignal.atOnce().onValueDisposePrevious { image -> Disposable? in
-			let imageView = UIImageView()
-			imageView.image = image
-			imageView.layer.cornerRadius = 8
-			imageView.clipsToBounds = true
-			imageView.contentMode = .scaleAspectFill
-			imageView.alpha = 0
+		bag += pickedPhotoSignal.atOnce()
+			.onValueDisposePrevious { image -> Disposable? in let imageView = UIImageView()
+				imageView.image = image
+				imageView.layer.cornerRadius = 8
+				imageView.clipsToBounds = true
+				imageView.contentMode = .scaleAspectFill
+				imageView.alpha = 0
 
-			view.addSubview(imageView)
+				view.addSubview(imageView)
 
-			imageView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+				imageView.snp.makeConstraints { make in
+					make.top.bottom.trailing.leading.equalToSuperview()
+				}
 
-			let innerBag = DisposeBag()
+				let innerBag = DisposeBag()
 
-			innerBag += imageView.didLayoutSignal.take(first: 1).animated(
-				style: AnimationStyle.easeOut(duration: 0.35)
-			) { _ in imageView.alpha = 1 }
+				innerBag += imageView.didLayoutSignal.take(first: 1)
+					.animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in
+						imageView.alpha = 1
+					}
 
-			innerBag += DelayedDisposer(Disposer { imageView.removeFromSuperview() }, delay: 2.0)
+				innerBag += DelayedDisposer(Disposer { imageView.removeFromSuperview() }, delay: 2.0)
 
-			return innerBag
-		}
+				return innerBag
+			}
 
-		bag += view.signal(for: .touchDown).animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
-			view.backgroundColor = UIColor.brand(.link).darkened(amount: 0.05)
-		}
+		bag += view.signal(for: .touchDown)
+			.animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+				view.backgroundColor = UIColor.brand(.link).darkened(amount: 0.05)
+			}
 
-		bag += view.delayedTouchCancel(delay: 0.25).animated(style: AnimationStyle.easeOut(duration: 0.5)) {
-			_ in view.backgroundColor = .brand(.link)
-		}
+		bag += view.delayedTouchCancel(delay: 0.25)
+			.animated(style: AnimationStyle.easeOut(duration: 0.5)) { _ in
+				view.backgroundColor = .brand(.link)
+			}
 
 		return (view, view.trackedTouchUpInsideSignal.hold(bag).map { _ -> UIControl in view })
 	}

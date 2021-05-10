@@ -202,9 +202,8 @@ extension Message: Reusable {
 
 					editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
 
-					bag += editButton.signal(for: .touchUpInside).onValue { _ in
-						message.onEditCallbacker.callAll()
-					}
+					bag += editButton.signal(for: .touchUpInside)
+						.onValue { _ in message.onEditCallbacker.callAll() }
 
 					func applySpacing() {
 						if message.type.isVideoOrImageType {
@@ -254,17 +253,17 @@ extension Message: Reusable {
 						)
 					}
 
-					bag += message.listSignal?.toVoid().animated(
-						style: SpringAnimationStyle.lightBounce()
-					) { _ in
-						editbuttonStackContainer.animationSafeIsHidden = !message
-							.shouldShowEditButton
-						editbuttonStackContainer.alpha = message.shouldShowEditButton ? 1 : 0
+					bag += message.listSignal?.toVoid()
+						.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+							editbuttonStackContainer.animationSafeIsHidden = !message
+								.shouldShowEditButton
+							editbuttonStackContainer.alpha =
+								message.shouldShowEditButton ? 1 : 0
 
-						applySpacing()
+							applySpacing()
 
-						spacingContainer.layoutSuperviewsIfNeeded()
-					}
+							spacingContainer.layoutSuperviewsIfNeeded()
+						}
 
 					spacingContainer.alignment = message.fromMyself ? .trailing : .leading
 
@@ -302,26 +301,26 @@ extension Message: Reusable {
 							]
 						)
 
-						bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }.onValue
-						{ image in let width = image.size.width
-							let height = image.size.height
+						bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }
+							.onValue { image in let width = image.size.width
+								let height = image.size.height
 
-							if width > height {
-								imageViewContainer.snp.remakeConstraints { make in
-									make.height.equalTo(200)
-									make.width.equalTo(300)
+								if width > height {
+									imageViewContainer.snp.remakeConstraints {
+										make in make.height.equalTo(200)
+										make.width.equalTo(300)
+									}
+								} else {
+									imageViewContainer.snp.remakeConstraints {
+										make in make.height.equalTo(200)
+										make.width.equalTo(150)
+									}
 								}
-							} else {
-								imageViewContainer.snp.remakeConstraints { make in
-									make.height.equalTo(200)
-									make.width.equalTo(150)
+
+								UIView.performWithoutAnimation {
+									imageViewContainer.layoutIfNeeded()
 								}
 							}
-
-							UIView.performWithoutAnimation {
-								imageViewContainer.layoutIfNeeded()
-							}
-						}
 
 						imageViewContainer.addSubview(imageView)
 
@@ -347,26 +346,26 @@ extension Message: Reusable {
 						)
 						imageView.kf.setImage(with: url, options: [])
 
-						bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }.onValue
-						{ image in let width = image.size.width
-							let height = image.size.height
+						bag += imageView.signal(for: \.image).atOnce().compactMap { $0 }
+							.onValue { image in let width = image.size.width
+								let height = image.size.height
 
-							if width > height {
-								imageViewContainer.snp.remakeConstraints { make in
-									make.height.equalTo(200)
-									make.width.equalTo(300)
+								if width > height {
+									imageViewContainer.snp.remakeConstraints {
+										make in make.height.equalTo(200)
+										make.width.equalTo(300)
+									}
+								} else {
+									imageViewContainer.snp.remakeConstraints {
+										make in make.height.equalTo(200)
+										make.width.equalTo(150)
+									}
 								}
-							} else {
-								imageViewContainer.snp.remakeConstraints { make in
-									make.height.equalTo(200)
-									make.width.equalTo(150)
+
+								UIView.performWithoutAnimation {
+									imageViewContainer.layoutIfNeeded()
 								}
 							}
-
-							UIView.performWithoutAnimation {
-								imageViewContainer.layoutIfNeeded()
-							}
-						}
 
 						imageViewContainer.addSubview(imageView)
 						imageView.snp.makeConstraints { make in make.height.equalToSuperview()
@@ -382,9 +381,8 @@ extension Message: Reusable {
 						bag += { imageViewContainer.removeFromSuperview() }
 
 					case let .file(url):
-						let textStyle = TextStyle.brand(.body(color: .primary)).colored(
-							messageTextColor
-						)
+						let textStyle = TextStyle.brand(.body(color: .primary))
+							.colored(messageTextColor)
 
 						let text = L10n.chatFileDownload
 
@@ -401,13 +399,14 @@ extension Message: Reusable {
 						let linkTapGestureRecognizer = UITapGestureRecognizer()
 						bag += contentContainer.install(linkTapGestureRecognizer)
 
-						bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue {
-							_ in guard let url = url else { return }
-							label.viewController?.present(
-								SFSafariViewController(url: url),
-								animated: true
-							)
-						}
+						bag += linkTapGestureRecognizer.signal(forState: .recognized)
+							.onValue { _ in guard let url = url else { return }
+								label.viewController?
+									.present(
+										SFSafariViewController(url: url),
+										animated: true
+									)
+							}
 					case let .video(url):
 						let imageViewContainer = UIView()
 
@@ -450,20 +449,20 @@ extension Message: Reusable {
 						let videoTapGestureRecognizer = UITapGestureRecognizer()
 						bag += contentContainer.install(videoTapGestureRecognizer)
 
-						bag += videoTapGestureRecognizer.signal(forState: .recognized).onValue {
-							_ in guard let url = url else { return }
-							imageView.viewController?.present(
-								VideoPlayer(player: AVPlayer(url: url)),
-								style: .modal,
-								options: []
-							)
-						}
+						bag += videoTapGestureRecognizer.signal(forState: .recognized)
+							.onValue { _ in guard let url = url else { return }
+								imageView.viewController?
+									.present(
+										VideoPlayer(player: AVPlayer(url: url)),
+										style: .modal,
+										options: []
+									)
+							}
 
 						bag += { imageViewContainer.removeFromSuperview() }
 					case .text:
-						let textStyle = TextStyle.brand(.body(color: .primary)).colored(
-							messageTextColor
-						)
+						let textStyle = TextStyle.brand(.body(color: .primary))
+							.colored(messageTextColor)
 						let attributedString = NSMutableAttributedString(
 							text: message.body,
 							style: textStyle
@@ -490,24 +489,28 @@ extension Message: Reusable {
 						let linkTapGestureRecognizer = UITapGestureRecognizer()
 						bag += contentContainer.install(linkTapGestureRecognizer)
 
-						bag += linkTapGestureRecognizer.signal(forState: .recognized).onValue {
-							_ in
-							let tappedLink = message.body.links.first { result -> Bool in
-								linkTapGestureRecognizer.didTapRange(
-									in: label,
-									range: result.range
-								)
-							}
+						bag += linkTapGestureRecognizer.signal(forState: .recognized)
+							.onValue { _ in
+								let tappedLink = message.body.links.first {
+									result -> Bool in
+									linkTapGestureRecognizer.didTapRange(
+										in: label,
+										range: result.range
+									)
+								}
 
-							if let url = tappedLink?.url,
-								["http", "https"].contains(url.scheme)
-							{
-								label.viewController?.present(
-									SFSafariViewController(url: url),
-									animated: true
-								)
+								if let url = tappedLink?.url,
+									["http", "https"].contains(url.scheme)
+								{
+									label.viewController?
+										.present(
+											SFSafariViewController(
+												url: url
+											),
+											animated: true
+										)
+								}
 							}
-						}
 
 						bag += { label.removeFromSuperview() }
 					}

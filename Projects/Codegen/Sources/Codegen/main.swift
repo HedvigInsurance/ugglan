@@ -5,9 +5,8 @@ let parentFolderOfScriptFile = FileFinder.findParentFolder()
 let sourceRootURL = parentFolderOfScriptFile.deletingLastPathComponent().deletingLastPathComponent()
 	.deletingLastPathComponent()
 
-let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!.appendingPathComponent(
-	"Codegen"
-).appendingPathComponent("ApolloCLI")
+let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!
+	.appendingPathComponent("Codegen").appendingPathComponent("ApolloCLI")
 
 try? FileManager.default.removeItem(at: cliFolderURL)
 
@@ -24,9 +23,9 @@ func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
 
 	let ownDirs = dirs.filter { $0 == "GraphQL" }.map { URL(string: "file://\(basePath)/\($0)") }.compactMap { $0 }
 
-	let nestedDirs = dirs.compactMap { $0 }.map { val -> [URL] in
-		findAllGraphQLFolders(basePath: "\(basePath)/\(val)")
-	}.flatMap { $0 }.filter { !$0.absoluteString.contains("Derived") }
+	let nestedDirs = dirs.compactMap { $0 }
+		.map { val -> [URL] in findAllGraphQLFolders(basePath: "\(basePath)/\(val)") }.flatMap { $0 }
+		.filter { !$0.absoluteString.contains("Derived") }
 
 	return [ownDirs, nestedDirs].flatMap { $0 }
 }
@@ -80,7 +79,8 @@ sourceUrls.forEach { sourceUrl in
 			)
 
 			return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) != nil
-		}.forEach { url in allGeneratedFiles.removeAll(where: { $0 == url })
+		}
+		.forEach { url in allGeneratedFiles.removeAll(where: { $0 == url })
 			try? FileManager.default.removeItem(at: url)
 		}
 
@@ -114,9 +114,9 @@ sourceUrls.forEach { sourceUrl in
 			)
 
 			return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) == nil
-		}.filter { !$0.lastPathComponent.contains("Types.graphql.swift") }.forEach { url in
-			try? FileManager.default.removeItem(at: url)
 		}
+		.filter { !$0.lastPathComponent.contains("Types.graphql.swift") }
+		.forEach { url in try? FileManager.default.removeItem(at: url) }
 	}
 
 	try? FileManager.default.removeItem(at: hGraphQLSymlinkUrl)

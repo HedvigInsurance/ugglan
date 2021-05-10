@@ -57,58 +57,62 @@ extension AdyenMethodsList: Presentable {
 					row.prepend(logoImageView)
 					row.append(hCoreUIAssets.chevronRight.image)
 
-					return section.append(row).onValue {
-						guard
-							let component = method.buildComponent(
-								using: AdyenPaymentBuilder(
-									encryptionPublicKey: adyenOptions
-										.clientEncrytionKey
+					return section.append(row)
+						.onValue {
+							guard
+								let component = method.buildComponent(
+									using: AdyenPaymentBuilder(
+										encryptionPublicKey: adyenOptions
+											.clientEncrytionKey
+									)
 								)
-							)
-						else { return }
+							else { return }
 
-						let delegate = PaymentDelegate(
-							viewController: viewController,
-							paymentMethod: method,
-							didSubmitHandler: didSubmit
-						) {
-							completion(.success)
-						} onRetry: {
-							viewController.present(
-								self.wrappedInCloseButton(),
-								configure: { vc, _ in vc.title = viewController.title }
-							).onValue { completion(.success) }.onError { error in
-								completion(.failure(error))
-							}
-						} onSuccess: {
-							self.onSuccess()
-						}
-						bag.hold(delegate)
-						bag.hold(component)
-
-						component.delegate = delegate
-
-						switch component {
-						case let component as PresentableComponent:
-							let excepted =
-								(component.viewController is UIAlertController)
-								|| (component is ApplePayComponent)
-
-							if excepted {
+							let delegate = PaymentDelegate(
+								viewController: viewController,
+								paymentMethod: method,
+								didSubmitHandler: didSubmit
+							) {
+								completion(.success)
+							} onRetry: {
 								viewController.present(
-									component.viewController,
-									animated: true
+									self.wrappedInCloseButton(),
+									configure: { vc, _ in
+										vc.title = viewController.title
+									}
 								)
-							} else {
-								viewController.present(
-									component.viewController,
-									style: .detented(.large, modally: false)
-								)
+								.onValue { completion(.success) }
+								.onError { error in completion(.failure(error)) }
+							} onSuccess: {
+								self.onSuccess()
 							}
-						case let component as EmptyPaymentComponent: component.initiatePayment()
-						default: fatalError("Adyen payment option not implemented")
+							bag.hold(delegate)
+							bag.hold(component)
+
+							component.delegate = delegate
+
+							switch component {
+							case let component as PresentableComponent:
+								let excepted =
+									(component.viewController is UIAlertController)
+									|| (component is ApplePayComponent)
+
+								if excepted {
+									viewController.present(
+										component.viewController,
+										animated: true
+									)
+								} else {
+									viewController.present(
+										component.viewController,
+										style: .detented(.large, modally: false)
+									)
+								}
+							case let component as EmptyPaymentComponent:
+								component.initiatePayment()
+							default: fatalError("Adyen payment option not implemented")
+							}
 						}
-					}
 				}
 
 				return bag

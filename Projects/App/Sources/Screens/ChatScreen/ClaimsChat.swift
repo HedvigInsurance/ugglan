@@ -16,9 +16,8 @@ extension ClaimsChat: Presentable {
 		let (viewController, future) = chat.materialize()
 		viewController.navigationItem.hidesBackButton = true
 
-		bag += client.perform(mutation: GraphQL.TriggerClaimChatMutation()).onValue { _ in
-			chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData)
-		}
+		bag += client.perform(mutation: GraphQL.TriggerClaimChatMutation())
+			.onValue { _ in chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) }
 
 		viewController.title = L10n.claimsChatTitle
 

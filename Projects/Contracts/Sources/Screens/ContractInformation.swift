@@ -132,15 +132,16 @@ extension ContractInformation: Presentable {
 					footerView: nil
 				)
 
-				bag += swedishHouse.extraBuildings.compactMap { $0 }.map { extraBuilding in
-					extraBuildingsSection.append(
-						ExtraBuildingRow(
-							data: ReadWriteSignal(
-								extraBuilding.fragments.extraBuildingFragment
+				bag += swedishHouse.extraBuildings.compactMap { $0 }
+					.map { extraBuilding in
+						extraBuildingsSection.append(
+							ExtraBuildingRow(
+								data: ReadWriteSignal(
+									extraBuilding.fragments.extraBuildingFragment
+								)
 							)
 						)
-					)
-				}
+					}
 
 				return (
 					bag,
@@ -425,9 +426,10 @@ extension ContractInformation: Presentable {
 				]
 			)
 
-			viewController.present(alert).onValue { shouldContinue in
-				if shouldContinue { Contracts.openFreeTextChatHandler(viewController) }
-			}
+			viewController.present(alert)
+				.onValue { shouldContinue in
+					if shouldContinue { Contracts.openFreeTextChatHandler(viewController) }
+				}
 		}
 
 		bag += viewController.install(form, options: [])

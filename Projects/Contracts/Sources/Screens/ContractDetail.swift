@@ -10,7 +10,9 @@ import hCoreUI
 struct ContractDetail {
 	var contractRow: ContractRow
 
-	init(contractRow: ContractRow) {
+	init(
+		contractRow: ContractRow
+	) {
 		self.contractRow = contractRow
 		self.contractRow.allowDetailNavigation = false
 	}
@@ -51,9 +53,8 @@ extension ContractDetail: Presentable {
 			currentIndex: IndexPath(row: 0, section: 0)
 		)
 
-		bag += form.append(ContractDetailSegmentedControl(form: form, scrollView: scrollView)).onValue {
-			index in contractDetailCollection.currentIndex = index
-		}
+		bag += form.append(ContractDetailSegmentedControl(form: form, scrollView: scrollView))
+			.onValue { index in contractDetailCollection.currentIndex = index }
 
 		bag += form.append(contractDetailCollection) { contractDetailCollectionView in
 			contractDetailCollectionView.hero.modifiers = [

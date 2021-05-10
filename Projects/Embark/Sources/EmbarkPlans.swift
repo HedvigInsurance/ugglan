@@ -18,9 +18,10 @@ public struct EmbarkPlans {
 	@ReadWriteState var selectedIndex = 0
 
 	var selectedPlan: ReadSignal<EmbarkStory?> {
-		$selectedIndex.withLatestFrom(plansSignal).map { selected, plans in
-			plans.enumerated().filter { (offset, _) -> Bool in offset == selected }.first?.element
-		}
+		$selectedIndex.withLatestFrom(plansSignal)
+			.map { selected, plans in
+				plans.enumerated().filter { (offset, _) -> Bool in offset == selected }.first?.element
+			}
 	}
 
 	public init(menu: Menu? = nil) { self.menu = menu }
@@ -94,14 +95,13 @@ extension EmbarkPlans: Presentable {
 				make.width.equalToSuperview().inset(20)
 			}
 
-			bag += buttonView.didMoveToWindowSignal.delay(by: 0.1).take(first: 1).animated(
-				style: SpringAnimationStyle.heavyBounce()
-			) { () in
-				let viewHeight =
-					buttonView.systemLayoutSizeFitting(.zero).height
-					+ (buttonView.superview?.safeAreaInsets.bottom ?? 0)
-				buttonView.transform = CGAffineTransform(translationX: 0, y: -viewHeight)
-			}
+			bag += buttonView.didMoveToWindowSignal.delay(by: 0.1).take(first: 1)
+				.animated(style: SpringAnimationStyle.heavyBounce()) { () in
+					let viewHeight =
+						buttonView.systemLayoutSizeFitting(.zero).height
+						+ (buttonView.superview?.safeAreaInsets.bottom ?? 0)
+					buttonView.transform = CGAffineTransform(translationX: 0, y: -viewHeight)
+				}
 
 			bag += buttonView.didLayoutSignal.onValue {
 				let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
@@ -112,38 +112,39 @@ extension EmbarkPlans: Presentable {
 		}
 
 		bag += client.fetch(query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
-			.valueSignal.compactMap { $0.embarkStories }.map {
-				$0.filter { story in story.type == .appOnboarding }
-			}.onValue {
+			.valueSignal.compactMap { $0.embarkStories }
+			.map { $0.filter { story in story.type == .appOnboarding } }
+			.onValue {
 				activityIndicator.removeFromSuperview()
 				plansSignal.value = $0
 				$selectedIndex.value = 0
 			}
 
 		func isSelected(offset: Int) -> ReadWriteSignal<Bool> {
-			$selectedIndex.map { offset == $0 }.writable { isSelected in
-				if isSelected { $selectedIndex.value = offset }
-			}
+			$selectedIndex.map { offset == $0 }
+				.writable { isSelected in if isSelected { $selectedIndex.value = offset } }
 		}
 
-		bag += plansSignal.atOnce().compactMap { $0 }.onValue { plans in
-			var table = Table(sections: [
-				(
-					"",
-					plans.enumerated().map { offset, story in
-						PlanRow(
-							title: story.title,
-							discount: story.discount,
-							message: story.description,
-							gradientType: story.gradientViewPreset,
-							isSelected: isSelected(offset: offset)
-						)
-					}
-				)
-			])
-			table.removeEmptySections()
-			tableKit.set(table)
-		}
+		bag += plansSignal.atOnce().compactMap { $0 }
+			.onValue { plans in
+				var table = Table(sections: [
+					(
+						"",
+						plans.enumerated()
+							.map { offset, story in
+								PlanRow(
+									title: story.title,
+									discount: story.discount,
+									message: story.description,
+									gradientType: story.gradientViewPreset,
+									isSelected: isSelected(offset: offset)
+								)
+							}
+					)
+				])
+				table.removeEmptySections()
+				tableKit.set(table)
+			}
 
 		return (
 			viewController,

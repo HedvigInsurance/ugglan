@@ -37,7 +37,8 @@ extension AdyenError: Presentable {
 
 		let (viewController, signal) = PresentableViewable(viewable: didFailAction) { viewController in
 			viewController.navigationItem.hidesBackButton = true
-		}.materialize()
+		}
+		.materialize()
 
 		return (
 			viewController,

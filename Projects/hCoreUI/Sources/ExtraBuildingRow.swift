@@ -29,16 +29,15 @@ extension ExtraBuildingRow: Viewable {
 		let subtitleLabel = UILabel(value: "", style: .brand(.subHeadline(color: .secondary)))
 		contentView.addArrangedSubview(subtitleLabel)
 
-		bag += data.atOnce().map { (String($0.area), $0.hasWaterConnected) }.onValue {
-			area,
-			hasWaterConnected in let baseText = L10n.myHomeRowSizeValue(area)
+		bag += data.atOnce().map { (String($0.area), $0.hasWaterConnected) }
+			.onValue { area, hasWaterConnected in let baseText = L10n.myHomeRowSizeValue(area)
 
-			if hasWaterConnected {
-				subtitleLabel.text = L10n.myHomeBuildingHasWaterSuffix(baseText)
-			} else {
-				subtitleLabel.text = baseText
+				if hasWaterConnected {
+					subtitleLabel.text = L10n.myHomeBuildingHasWaterSuffix(baseText)
+				} else {
+					subtitleLabel.text = baseText
+				}
 			}
-		}
 
 		row.append(contentView)
 

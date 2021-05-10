@@ -68,23 +68,23 @@ extension ContractDetailSegmentedControl: Viewable {
 			for: .selected
 		)
 
-		bag += scrollView.signal(for: \.contentOffset).onValue { contentOffset in
-			form.bringSubviewToFront(segmentedControlBackgroundView)
+		bag += scrollView.signal(for: \.contentOffset)
+			.onValue { contentOffset in form.bringSubviewToFront(segmentedControlBackgroundView)
 
-			let originY = segmentedControlBackgroundView.frameWithoutTransform.origin.y
-			let contentOffsetY = contentOffset.y + scrollView.adjustedContentInset.top
+				let originY = segmentedControlBackgroundView.frameWithoutTransform.origin.y
+				let contentOffsetY = contentOffset.y + scrollView.adjustedContentInset.top
 
-			if contentOffsetY > originY {
-				segmentedControlBorderView.alpha = 1
-				segmentedControlBackgroundView.transform = CGAffineTransform(
-					translationX: 0,
-					y: contentOffsetY - originY
-				)
-			} else {
-				segmentedControlBorderView.alpha = 0
-				segmentedControlBackgroundView.transform = .identity
+				if contentOffsetY > originY {
+					segmentedControlBorderView.alpha = 1
+					segmentedControlBackgroundView.transform = CGAffineTransform(
+						translationX: 0,
+						y: contentOffsetY - originY
+					)
+				} else {
+					segmentedControlBorderView.alpha = 0
+					segmentedControlBackgroundView.transform = .identity
+				}
 			}
-		}
 
 		return (
 			segmentedControlBackgroundView,

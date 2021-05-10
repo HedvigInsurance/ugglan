@@ -14,9 +14,10 @@ extension UIControl {
 				self.signal(for: .touchUpInside),
 				self.signal(for: .touchUpOutside),
 				self.signal(for: .touchCancel)
-			).withLatestFrom(touchDownDateSignal.atOnce().plain()).delay(by: { _, date in
-				date.timeIntervalSinceNow < -delay ? 0 : delay
-			}).onValue { _ in callback(()) }
+			)
+			.withLatestFrom(touchDownDateSignal.atOnce().plain())
+			.delay(by: { _, date in date.timeIntervalSinceNow < -delay ? 0 : delay })
+			.onValue { _ in callback(()) }
 
 			return bag
 		}

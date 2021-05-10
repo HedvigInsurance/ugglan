@@ -13,10 +13,10 @@ public struct AnalyticsCoordinator {
 	public init() {}
 
 	func setUserId() {
-		client.fetch(query: GraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely).compactMap {
-			$0.member.id
-		}.onValue { id in Shake.setMetadata(key: "memberId", value: id)
-			Mixpanel.mainInstance().identify(distinctId: id)
-		}
+		client.fetch(query: GraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
+			.compactMap { $0.member.id }
+			.onValue { id in Shake.setMetadata(key: "memberId", value: id)
+				Mixpanel.mainInstance().identify(distinctId: id)
+			}
 	}
 }

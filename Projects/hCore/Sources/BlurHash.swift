@@ -1,7 +1,11 @@
 import UIKit
 
 extension UIImage {
-	public convenience init?(blurHash: String, size: CGSize, punch: Float = 1) {
+	public convenience init?(
+		blurHash: String,
+		size: CGSize,
+		punch: Float = 1
+	) {
 		guard blurHash.count >= 6 else { return nil }
 
 		let sizeFlag = String(blurHash[0]).decode83()
@@ -13,15 +17,16 @@ extension UIImage {
 
 		guard blurHash.count == 4 + 2 * numX * numY else { return nil }
 
-		let colours: [(Float, Float, Float)] = (0..<numX * numY).map { i in
-			if i == 0 {
-				let value = String(blurHash[2..<6]).decode83()
-				return decodeDC(value)
-			} else {
-				let value = String(blurHash[4 + i * 2..<4 + i * 2 + 2]).decode83()
-				return decodeAC(value, maximumValue: maximumValue * punch)
+		let colours: [(Float, Float, Float)] = (0..<numX * numY)
+			.map { i in
+				if i == 0 {
+					let value = String(blurHash[2..<6]).decode83()
+					return decodeDC(value)
+				} else {
+					let value = String(blurHash[4 + i * 2..<4 + i * 2 + 2]).decode83()
+					return decodeAC(value, maximumValue: maximumValue * punch)
+				}
 			}
-		}
 
 		let width = Int(size.width)
 		let height = Int(size.height)

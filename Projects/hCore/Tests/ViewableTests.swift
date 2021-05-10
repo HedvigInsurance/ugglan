@@ -12,9 +12,8 @@ final class ViewableTests: XCTestCase {
 			}
 		}
 
-		let (result, _) = TestViewable().materialize(
-			events: ViewableEvents(wasAddedCallbacker: Callbacker<Void>())
-		)
+		let (result, _) = TestViewable()
+			.materialize(events: ViewableEvents(wasAddedCallbacker: Callbacker<Void>()))
 
 		XCTAssert(result == "mock")
 	}

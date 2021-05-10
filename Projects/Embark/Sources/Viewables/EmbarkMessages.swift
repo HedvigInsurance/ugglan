@@ -62,21 +62,24 @@ extension EmbarkMessages: Viewable {
 		view.spacing = 10
 		let bag = DisposeBag()
 
-		bag += state.edgePanGestureRecognizer?.signal(forState: .changed).onValue { _ in
-			guard let viewController = view.viewController,
-				let edgePanGestureRecognizer = state.edgePanGestureRecognizer
-			else { return }
+		bag += state.edgePanGestureRecognizer?.signal(forState: .changed)
+			.onValue { _ in
+				guard let viewController = view.viewController,
+					let edgePanGestureRecognizer = state.edgePanGestureRecognizer
+				else { return }
 
-			let percentage =
-				edgePanGestureRecognizer.translation(in: viewController.view).x
-				/ viewController.view.frame.width
+				let percentage =
+					edgePanGestureRecognizer.translation(in: viewController.view).x
+					/ viewController.view.frame.width
 
-			view.transform = CGAffineTransform(translationX: 0, y: -view.frame.height * (percentage * 2.5))
-		}
+				view.transform = CGAffineTransform(
+					translationX: 0,
+					y: -view.frame.height * (percentage * 2.5)
+				)
+			}
 
-		bag += state.edgePanGestureRecognizer?.signal(forState: .ended).animated(style: .heavyBounce()) {
-			view.transform = CGAffineTransform(translationX: 0, y: 0)
-		}
+		bag += state.edgePanGestureRecognizer?.signal(forState: .ended)
+			.animated(style: .heavyBounce()) { view.transform = CGAffineTransform(translationX: 0, y: 0) }
 
 		let previousResponseSignal:
 			ReadWriteSignal<(response: GraphQL.ResponseFragment?, passageName: String?)?> = ReadWriteSignal(
@@ -92,66 +95,42 @@ extension EmbarkMessages: Viewable {
 			return responseText
 		}
 
-		let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal).animated(
-			style: .lightBounce(),
-			animations: { _, previousResponse in
-				if self.state.animationDirectionSignal.value == .forwards {
-					let passageName = previousResponse?.passageName ?? ""
-					let autoResponseKey = "\(passageName)Result"
+		let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal)
+			.animated(
+				style: .lightBounce(),
+				animations: { _, previousResponse in
+					if self.state.animationDirectionSignal.value == .forwards {
+						let passageName = previousResponse?.passageName ?? ""
+						let autoResponseKey = "\(passageName)Result"
 
-					if let singleMessage = previousResponse?.response?.asEmbarkMessage {
-						let msgText = self.parseMessage(
-							message: singleMessage.fragments.messageFragment
-						)
-						let responseText = self.replacePlaceholders(message: msgText ?? "")
-
-						if responseText != autoResponseKey {
-							let messageBubble = MessageBubble(
-								text: responseText,
-								delay: 0,
-								animated: true,
-								messageType: .replied
+						if let singleMessage = previousResponse?.response?.asEmbarkMessage {
+							let msgText = self.parseMessage(
+								message: singleMessage.fragments.messageFragment
 							)
-							bag += view.addArranged(messageBubble)
-						}
-					} else if let embarkResponseExpression = previousResponse?.response?
-						.asEmbarkResponseExpression
-					{
-						let msgText = self.parse(
-							embarkResponseExpression.expressions.map {
-								$0.fragments.expressionFragment
+							let responseText = self.replacePlaceholders(
+								message: msgText ?? ""
+							)
+
+							if responseText != autoResponseKey {
+								let messageBubble = MessageBubble(
+									text: responseText,
+									delay: 0,
+									animated: true,
+									messageType: .replied
+								)
+								bag += view.addArranged(messageBubble)
 							}
-						)
-						let responseText = self.replacePlaceholders(
-							message: msgText ?? embarkResponseExpression.text
-						)
-						let messageBubble = MessageBubble(
-							text: responseText,
-							delay: 0,
-							animated: true,
-							messageType: .replied
-						)
-						bag += view.addArranged(messageBubble)
-					} else if let embarkGroupedResponse = previousResponse?.response?
-						.asEmbarkGroupedResponse
-					{
-						let pills = embarkGroupedResponse.items.map { item in
-							mapItems(item: item)
-						}
-						let messageBubble = MessageBubble(
-							text: embarkGroupedResponse.title.text,
-							delay: 0,
-							animated: true,
-							messageType: .replied,
-							pills: pills
-						)
-						bag += view.addArranged(messageBubble)
-					} else {
-						let responseText = self.replacePlaceholders(
-							message: "{\(autoResponseKey)}"
-						)
-
-						if responseText != autoResponseKey {
+						} else if let embarkResponseExpression = previousResponse?.response?
+							.asEmbarkResponseExpression
+						{
+							let msgText = self.parse(
+								embarkResponseExpression.expressions.map {
+									$0.fragments.expressionFragment
+								}
+							)
+							let responseText = self.replacePlaceholders(
+								message: msgText ?? embarkResponseExpression.text
+							)
 							let messageBubble = MessageBubble(
 								text: responseText,
 								delay: 0,
@@ -159,14 +138,41 @@ extension EmbarkMessages: Viewable {
 								messageType: .replied
 							)
 							bag += view.addArranged(messageBubble)
+						} else if let embarkGroupedResponse = previousResponse?.response?
+							.asEmbarkGroupedResponse
+						{
+							let pills = embarkGroupedResponse.items.map { item in
+								mapItems(item: item)
+							}
+							let messageBubble = MessageBubble(
+								text: embarkGroupedResponse.title.text,
+								delay: 0,
+								animated: true,
+								messageType: .replied,
+								pills: pills
+							)
+							bag += view.addArranged(messageBubble)
+						} else {
+							let responseText = self.replacePlaceholders(
+								message: "{\(autoResponseKey)}"
+							)
+
+							if responseText != autoResponseKey {
+								let messageBubble = MessageBubble(
+									text: responseText,
+									delay: 0,
+									animated: true,
+									messageType: .replied
+								)
+								bag += view.addArranged(messageBubble)
+							}
 						}
 					}
+					previousResponseSignal.value = (
+						responseDataSignal.value, self.state.passageNameSignal.value
+					)
 				}
-				previousResponseSignal.value = (
-					responseDataSignal.value, self.state.passageNameSignal.value
-				)
-			}
-		)
+			)
 
 		let animateOutSignal: Signal = animatedResponseSignal.animated(
 			style: .lightBounce(),
@@ -181,26 +187,27 @@ extension EmbarkMessages: Viewable {
 			}
 		)
 
-		bag += messagesDataSignal.compactMap { $0 }.driven(by: animateOutSignal).onValueDisposePrevious {
-			messages in let innerBag = DisposeBag()
+		bag += messagesDataSignal.compactMap { $0 }.driven(by: animateOutSignal)
+			.onValueDisposePrevious { messages in let innerBag = DisposeBag()
 
-			for stackedView in view.subviews { stackedView.removeFromSuperview() }
+				for stackedView in view.subviews { stackedView.removeFromSuperview() }
 
-			innerBag += messages.map { self.parseMessage(message: $0.fragments.messageFragment) }.compactMap
-			{ $0 }.enumerated().map { (arg) -> Disposable in let (index, messageText) = arg
-				let text = self.replacePlaceholders(message: messageText)
-				return view.addArranged(
-					MessageBubble(
-						text: text,
-						delay: 0,
-						animated: true,
-						animationDelay: TimeInterval(index * 2)
-					)
-				)
+				innerBag += messages.map { self.parseMessage(message: $0.fragments.messageFragment) }
+					.compactMap { $0 }.enumerated()
+					.map { (arg) -> Disposable in let (index, messageText) = arg
+						let text = self.replacePlaceholders(message: messageText)
+						return view.addArranged(
+							MessageBubble(
+								text: text,
+								delay: 0,
+								animated: true,
+								animationDelay: TimeInterval(index * 2)
+							)
+						)
+					}
+
+				return innerBag
 			}
-
-			return innerBag
-		}
 
 		return (view, bag)
 	}

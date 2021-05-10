@@ -26,24 +26,24 @@ struct CrossFrameworkCoordinator {
 		UIControl.trackingHandler = { control in
 			if let accessibilityLabel = control.accessibilityLabel {
 				if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
-					Mixpanel.mainInstance().track(
-						event: "TAP_\(localizationKey)",
-						properties: ["context": "UIControl"]
-					)
+					Mixpanel.mainInstance()
+						.track(
+							event: "TAP_\(localizationKey)",
+							properties: ["context": "UIControl"]
+						)
 				}
 			} else if let accessibilityIdentifier = control.accessibilityIdentifier {
-				Mixpanel.mainInstance().track(
-					event: "TAP_\(accessibilityIdentifier)",
-					properties: ["context": "UIControl"]
-				)
+				Mixpanel.mainInstance()
+					.track(
+						event: "TAP_\(accessibilityIdentifier)",
+						properties: ["context": "UIControl"]
+					)
 			}
 		}
 		ButtonRow.trackingHandler = { buttonRow in
 			if let localizationKey = buttonRow.text.value.derivedFromL10n?.key {
-				Mixpanel.mainInstance().track(
-					event: "TAP_\(localizationKey)",
-					properties: ["context": "ButtonRow"]
-				)
+				Mixpanel.mainInstance()
+					.track(event: "TAP_\(localizationKey)", properties: ["context": "ButtonRow"])
 			}
 		}
 		ChatButton.openChatHandler = { chatButton in

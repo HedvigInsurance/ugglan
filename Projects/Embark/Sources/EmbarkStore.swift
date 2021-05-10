@@ -29,9 +29,10 @@ class EmbarkStore {
 				var mutableKey = String(key)
 				mutableKey.removeFirst()
 				mutableKey.removeLast()
-				mutableKey.split(separator: ",").enumerated().forEach { arg in let (offset, key) = arg
-					setValue(key: String(key), value: String(values[offset]))
-				}
+				mutableKey.split(separator: ",").enumerated()
+					.forEach { arg in let (offset, key) = arg
+						setValue(key: String(key), value: String(values[offset]))
+					}
 			} else {
 				prefill[key] = value
 				queue[key] = value
@@ -128,13 +129,17 @@ class EmbarkStore {
 		if let multiple = expression.asEmbarkExpressionMultiple {
 			switch multiple.expressionMultipleType {
 			case .and:
-				return !multiple.subExpressions.map { subExpression -> Bool in
-					self.passes(expression: subExpression.fragments.basicExpressionFragment)
-				}.contains(false)
+				return !multiple.subExpressions
+					.map { subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.basicExpressionFragment)
+					}
+					.contains(false)
 			case .or:
-				return !multiple.subExpressions.map { subExpression -> Bool in
-					self.passes(expression: subExpression.fragments.basicExpressionFragment)
-				}.contains(true)
+				return !multiple.subExpressions
+					.map { subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.basicExpressionFragment)
+					}
+					.contains(true)
 			case .__unknown: return false
 			}
 		}
@@ -196,15 +201,21 @@ class EmbarkStore {
 		{
 			switch multipleExpression.multipleType {
 			case .and:
-				if multipleExpression.subExpressions.map({ subExpression -> Bool in
-					self.passes(expression: subExpression.fragments.expressionFragment)
-				}).allSatisfy({ passes in passes }) {
+				if multipleExpression.subExpressions
+					.map({ subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.expressionFragment)
+					})
+					.allSatisfy({ passes in passes })
+				{
 					return multipleExpression.to
 				}
 			case .or:
-				if multipleExpression.subExpressions.map({ subExpression -> Bool in
-					self.passes(expression: subExpression.fragments.expressionFragment)
-				}).contains(true) {
+				if multipleExpression.subExpressions
+					.map({ subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.expressionFragment)
+					})
+					.contains(true)
+				{
 					return multipleExpression.to
 				}
 			case .__unknown: break

@@ -37,34 +37,35 @@ extension PriceBubble: Viewable {
 
 		let ease: Ease<CGFloat> = Ease(0, minimumStep: 1)
 
-		let grossPriceSignal = dataSignal.compactMap {
-			$0?.insurance.cost?.fragments.costFragment.monthlyGross.amount
-		}.toInt().compactMap { $0 }
+		let grossPriceSignal =
+			dataSignal.compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyGross.amount }.toInt()
+			.compactMap { $0 }
 
 		let grossCurrencySignal = dataSignal.compactMap {
 			$0?.insurance.cost?.fragments.costFragment.monthlyGross.currency
 		}
 
-		let discountSignal = dataSignal.compactMap {
-			$0?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount
-		}.toInt().compactMap { $0 }.readable(initial: 0)
+		let discountSignal =
+			dataSignal.compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyDiscount.amount }
+			.toInt().compactMap { $0 }.readable(initial: 0)
 
-		bag += combineLatest(discountSignal.plain(), grossPriceSignal, grossCurrencySignal).animated(
-			style: SpringAnimationStyle.mediumBounce(),
-			animations: { monthlyDiscount, monthlyGross, grossCurrency in
-				grossPriceLabel.styledText = StyledText(
-					text:
-						"\(MonetaryAmount(amount: Float(monthlyGross), currency: grossCurrency).formattedAmount)\(L10n.perMonth)",
-					style: TextStyle.brand(.title2(color: .primary))
-				)
-				grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
-				grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
-			}
-		)
+		bag += combineLatest(discountSignal.plain(), grossPriceSignal, grossCurrencySignal)
+			.animated(
+				style: SpringAnimationStyle.mediumBounce(),
+				animations: { monthlyDiscount, monthlyGross, grossCurrency in
+					grossPriceLabel.styledText = StyledText(
+						text:
+							"\(MonetaryAmount(amount: Float(monthlyGross), currency: grossCurrency).formattedAmount)\(L10n.perMonth)",
+						style: TextStyle.brand(.title2(color: .primary))
+					)
+					grossPriceLabel.animationSafeIsHidden = monthlyDiscount == 0
+					grossPriceLabel.alpha = monthlyDiscount == 0 ? 0 : 1
+				}
+			)
 
-		let monthlyNetPriceSignal = dataSignal.compactMap {
-			$0?.insurance.cost?.fragments.costFragment.monthlyNet.amount
-		}.toInt().compactMap { $0 }.buffer()
+		let monthlyNetPriceSignal =
+			dataSignal.compactMap { $0?.insurance.cost?.fragments.costFragment.monthlyNet.amount }.toInt()
+			.compactMap { $0 }.buffer()
 
 		bag += monthlyNetPriceSignal.onValue { values in guard let value = values.last else { return }
 
@@ -92,28 +93,28 @@ extension PriceBubble: Viewable {
 			)
 		)
 
-		let campaignTypeSignal = dataSignal.map { $0?.redeemedCampaigns.first }.map {
-			campaign -> CampaignBubble.CampaignType? in
-			let incentiveFragment = campaign?.fragments.campaignFragment.incentive?.fragments
-				.incentiveFragment
+		let campaignTypeSignal = dataSignal.map { $0?.redeemedCampaigns.first }
+			.map { campaign -> CampaignBubble.CampaignType? in
+				let incentiveFragment = campaign?.fragments.campaignFragment.incentive?.fragments
+					.incentiveFragment
 
-			if let freeMonths = incentiveFragment?.asFreeMonths {
-				return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
+				if let freeMonths = incentiveFragment?.asFreeMonths {
+					return CampaignBubble.CampaignType.freeMonths(number: freeMonths.quantity ?? 0)
+				}
+
+				if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
+					return CampaignBubble.CampaignType.percentageDiscount(
+						value: percentageDiscount.percentageDiscount,
+						months: percentageDiscount.percentageNumberOfMonths
+					)
+				}
+
+				if incentiveFragment?.asMonthlyCostDeduction != nil {
+					return CampaignBubble.CampaignType.invited
+				}
+
+				return nil
 			}
-
-			if let percentageDiscount = incentiveFragment?.asPercentageDiscountMonths {
-				return CampaignBubble.CampaignType.percentageDiscount(
-					value: percentageDiscount.percentageDiscount,
-					months: percentageDiscount.percentageNumberOfMonths
-				)
-			}
-
-			if incentiveFragment?.asMonthlyCostDeduction != nil {
-				return CampaignBubble.CampaignType.invited
-			}
-
-			return nil
-		}
 
 		let campaignBubble = CampaignBubble(campaignTypeSignal: campaignTypeSignal)
 		bag += bubbleView.add(campaignBubble) { campaignBubbleView in
@@ -122,15 +123,14 @@ extension PriceBubble: Viewable {
 			}
 		}
 
-		bubbleView.transform = CGAffineTransform(scaleX: 0, y: 0).concatenating(
-			CGAffineTransform(translationX: 0, y: -30)
-		)
+		bubbleView.transform = CGAffineTransform(scaleX: 0, y: 0)
+			.concatenating(CGAffineTransform(translationX: 0, y: -30))
 		bubbleView.alpha = 0
 
-		bag += dataSignal.toVoid().delay(by: 0.75).animated(style: SpringAnimationStyle.mediumBounce()) { _ in
-			bubbleView.alpha = 1
-			bubbleView.transform = CGAffineTransform.identity
-		}
+		bag += dataSignal.toVoid().delay(by: 0.75)
+			.animated(style: SpringAnimationStyle.mediumBounce()) { _ in bubbleView.alpha = 1
+				bubbleView.transform = CGAffineTransform.identity
+			}
 
 		return (containerView, bag)
 	}

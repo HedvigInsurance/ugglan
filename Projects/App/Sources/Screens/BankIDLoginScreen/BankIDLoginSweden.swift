@@ -87,50 +87,52 @@ extension BankIDLoginSweden: Presentable {
 		let closeButton = Button(title: "Stäng", type: .standard(backgroundColor: .purple, textColor: .white))
 		bag += closeButtonContainer.addArranged(closeButton)
 
-		let statusSignal = client.subscribe(subscription: GraphQL.AuthStatusSubscription()).compactMap {
-			$0.authStatus?.status
-		}
+		let statusSignal = client.subscribe(subscription: GraphQL.AuthStatusSubscription())
+			.compactMap { $0.authStatus?.status }
 
-		bag += statusSignal.skip(first: 1).onValue { authStatus in let statusText: String
+		bag += statusSignal.skip(first: 1)
+			.onValue { authStatus in let statusText: String
 
-			switch authStatus {
-			case .initiated: statusText = L10n.bankIdAuthTitleInitiated
-			case .inProgress: statusText = L10n.bankIdAuthTitleInitiated
-			case .failed: statusText = L10n.bankIdAuthTitleInitiated
-			case .success: statusText = L10n.bankIdAuthTitleInitiated
-			case .__unknown: statusText = L10n.bankIdAuthTitleInitiated
+				switch authStatus {
+				case .initiated: statusText = L10n.bankIdAuthTitleInitiated
+				case .inProgress: statusText = L10n.bankIdAuthTitleInitiated
+				case .failed: statusText = L10n.bankIdAuthTitleInitiated
+				case .success: statusText = L10n.bankIdAuthTitleInitiated
+				case .__unknown: statusText = L10n.bankIdAuthTitleInitiated
+				}
+
+				statusLabel.value = statusText
 			}
 
-			statusLabel.value = statusText
-		}
-
-		generateAutoStartToken().onValue { url in
-			if UIApplication.shared.canOpenURL(url) {
-				UIApplication.shared.open(url, options: [:], completionHandler: nil)
-			} else {
-				viewController.present(BankIDLoginQR())
+		generateAutoStartToken()
+			.onValue { url in
+				if UIApplication.shared.canOpenURL(url) {
+					UIApplication.shared.open(url, options: [:], completionHandler: nil)
+				} else {
+					viewController.present(BankIDLoginQR())
+				}
 			}
-		}
 
 		return (
 			viewController,
 			Future { completion in
 				bag += closeButton.onTapSignal.onValue { completion(.failure(BankIdSignError.failed)) }
 
-				bag += statusSignal.distinct().onValue { authState in
-					if authState == .success {
-						let appDelegate = UIApplication.shared.appDelegate
+				bag += statusSignal.distinct()
+					.onValue { authState in
+						if authState == .success {
+							let appDelegate = UIApplication.shared.appDelegate
 
-						if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-							appDelegate.registerFCMToken(fcmToken)
+							if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+								appDelegate.registerFCMToken(fcmToken)
+							}
+
+							AnalyticsCoordinator().setUserId()
+
+							let window = appDelegate.appFlow.window
+							bag += window.present(LoggedIn(), animated: true)
 						}
-
-						AnalyticsCoordinator().setUserId()
-
-						let window = appDelegate.appFlow.window
-						bag += window.present(LoggedIn(), animated: true)
 					}
-				}
 
 				return bag
 			}

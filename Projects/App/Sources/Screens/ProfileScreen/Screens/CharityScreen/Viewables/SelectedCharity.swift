@@ -12,7 +12,10 @@ struct SelectedCharity {
 	let animateEntry: Bool
 	let presentingViewController: UIViewController
 
-	init(animateEntry: Bool, presentingViewController: UIViewController) {
+	init(
+		animateEntry: Bool,
+		presentingViewController: UIViewController
+	) {
 		self.animateEntry = animateEntry
 		self.presentingViewController = presentingViewController
 	}
@@ -34,63 +37,73 @@ extension SelectedCharity: Viewable {
 
 		section.append(stackView)
 
-		bag += client.watch(query: GraphQL.SelectedCharityQuery()).compactMap { $0.cashback }.onValue {
-			cashback in for subview in stackView.arrangedSubviews { subview.removeFromSuperview() }
+		bag += client.watch(query: GraphQL.SelectedCharityQuery()).compactMap { $0.cashback }
+			.onValue { cashback in
+				for subview in stackView.arrangedSubviews { subview.removeFromSuperview() }
 
-			let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
-			bag += stackView.addArranged(charityLogo)
+				let charityLogo = CharityLogo(url: URL(string: cashback.imageUrl!)!)
+				bag += stackView.addArranged(charityLogo)
 
-			let infoContainer = UIView()
-			infoContainer.backgroundColor = .brand(.secondaryBackground())
-			infoContainer.layer.cornerRadius = 8
+				let infoContainer = UIView()
+				infoContainer.backgroundColor = .brand(.secondaryBackground())
+				infoContainer.layer.cornerRadius = 8
 
-			let infoContainerStackView = UIStackView()
-			infoContainerStackView.axis = .vertical
-			infoContainerStackView.spacing = 5
-			infoContainerStackView.edgeInsets = UIEdgeInsets(top: 24, left: 16, bottom: 24, right: 16)
-			infoContainerStackView.isLayoutMarginsRelativeArrangement = true
-
-			let titleLabel = UILabel(value: cashback.name ?? "", style: .brand(.headline(color: .primary)))
-			infoContainerStackView.addArrangedSubview(titleLabel)
-
-			let descriptionLabel = MultilineLabel(
-				styledText: StyledText(
-					text: cashback.description ?? "",
-					style: .brand(.body(color: .secondary))
+				let infoContainerStackView = UIStackView()
+				infoContainerStackView.axis = .vertical
+				infoContainerStackView.spacing = 5
+				infoContainerStackView.edgeInsets = UIEdgeInsets(
+					top: 24,
+					left: 16,
+					bottom: 24,
+					right: 16
 				)
-			)
-			bag += infoContainerStackView.addArranged(descriptionLabel)
+				infoContainerStackView.isLayoutMarginsRelativeArrangement = true
 
-			infoContainer.addSubview(infoContainerStackView)
-			stackView.addArrangedSubview(infoContainer)
+				let titleLabel = UILabel(
+					value: cashback.name ?? "",
+					style: .brand(.headline(color: .primary))
+				)
+				infoContainerStackView.addArrangedSubview(titleLabel)
 
-			infoContainerStackView.snp.makeConstraints { make in
-				make.top.bottom.trailing.leading.equalToSuperview()
-			}
+				let descriptionLabel = MultilineLabel(
+					styledText: StyledText(
+						text: cashback.description ?? "",
+						style: .brand(.body(color: .secondary))
+					)
+				)
+				bag += infoContainerStackView.addArranged(descriptionLabel)
 
-			bag += infoContainerStackView.didLayoutSignal.onValue { _ in
-				let size = infoContainerStackView.systemLayoutSizeFitting(CGSize.zero)
+				infoContainer.addSubview(infoContainerStackView)
+				stackView.addArrangedSubview(infoContainer)
 
-				infoContainer.snp.remakeConstraints { make in make.height.equalTo(size.height)
-					make.width.equalToSuperview().inset(20)
+				infoContainerStackView.snp.makeConstraints { make in
+					make.top.bottom.trailing.leading.equalToSuperview()
 				}
+
+				bag += infoContainerStackView.didLayoutSignal.onValue { _ in
+					let size = infoContainerStackView.systemLayoutSizeFitting(CGSize.zero)
+
+					infoContainer.snp.remakeConstraints { make in make.height.equalTo(size.height)
+						make.width.equalToSuperview().inset(20)
+					}
+				}
+
+				let charityInformationButton = CharityInformationButton(
+					presentingViewController: self.presentingViewController
+				)
+
+				bag += stackView.addArranged(charityInformationButton)
 			}
-
-			let charityInformationButton = CharityInformationButton(
-				presentingViewController: self.presentingViewController
-			)
-
-			bag += stackView.addArranged(charityInformationButton)
-		}
 
 		if animateEntry {
 			stackView.alpha = 0
 			stackView.transform = CGAffineTransform(translationX: 0, y: 100)
 
-			bag += events.wasAdded.delay(by: 1.2).animated(style: SpringAnimationStyle.lightBounce()) {
-				stackView.alpha = 1
-				stackView.transform = CGAffineTransform.identity
-			}
+			bag += events.wasAdded.delay(by: 1.2)
+				.animated(style: SpringAnimationStyle.lightBounce()) {
+					stackView.alpha = 1
+					stackView.transform = CGAffineTransform.identity
+				}
 		}
 
 		bag += stackView.didLayoutSignal.onFirstValue {

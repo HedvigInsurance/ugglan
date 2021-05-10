@@ -35,12 +35,13 @@ extension EmptyStateHeader: Viewable {
 		var body = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .secondary)).centerAligned)
 		bag += stackView.addArranged(body)
 
-		bag += potentialDiscountAmountSignal.compactMap { $0 }.onValue { amount in
-			body.value = L10n.ReferralsEmpty.body(
-				amount.formattedAmount,
-				MonetaryAmount(amount: 0, currency: amount.currency).formattedAmount
-			)
-		}
+		bag += potentialDiscountAmountSignal.compactMap { $0 }
+			.onValue { amount in
+				body.value = L10n.ReferralsEmpty.body(
+					amount.formattedAmount,
+					MonetaryAmount(amount: 0, currency: amount.currency).formattedAmount
+				)
+			}
 
 		return (stackView, bag)
 	}

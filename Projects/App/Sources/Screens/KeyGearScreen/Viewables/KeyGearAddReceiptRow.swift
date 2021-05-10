@@ -64,102 +64,148 @@ extension KeyGearAddReceiptRow: Viewable {
 		let receiptsSignal = client.watch(query: keyGearItemQuery).compactMap { $0.keyGearItem?.receipts }
 			.readable(initial: [])
 
-		bag += receiptsSignal.map { receipts in !receipts.isEmpty }.onValue { hasReceipts in
-			button.button.title.value =
-				hasReceipts ? L10n.keyGearItemViewReceiptShow : L10n.keyGearItemViewReceiptCellAddButton
-		}
-
-		bag += button.onTapSignal.withLatestFrom(receiptsSignal.atOnce().plain()).onValue { _, receipts in
-			if let receiptUrlString = receipts.first?.file.preSignedUrl,
-				let receiptUrl = URL(string: receiptUrlString)
-			{
-				self.presentingViewController.present(KeyGearReceipt(receipt: receiptUrl))
-				return
+		bag += receiptsSignal.map { receipts in !receipts.isEmpty }
+			.onValue { hasReceipts in
+				button.button.title.value =
+					hasReceipts
+					? L10n.keyGearItemViewReceiptShow : L10n.keyGearItemViewReceiptCellAddButton
 			}
 
-			func handleDocuments(_ documents: [URL]) {
-				button.isLoadingSignal.value = true
-
-				guard let fileUrl = documents.first,
-					let file = try? GraphQLFile(
-						fieldName: "file",
-						originalName: "upload.\(fileUrl.pathExtension)",
-						fileURL: fileUrl
-					)
-				else {
-					button.isLoadingSignal.value = false
+		bag += button.onTapSignal.withLatestFrom(receiptsSignal.atOnce().plain())
+			.onValue { _, receipts in
+				if let receiptUrlString = receipts.first?.file.preSignedUrl,
+					let receiptUrl = URL(string: receiptUrlString)
+				{
+					self.presentingViewController.present(KeyGearReceipt(receipt: receiptUrl))
 					return
 				}
 
-				self.client.upload(operation: GraphQL.UploadFileMutation(file: "file"), files: [file])
-					.onValue { data in let key = data.uploadFile.key
-						let bucket = data.uploadFile.bucket
+				func handleDocuments(_ documents: [URL]) {
+					button.isLoadingSignal.value = true
 
-						self.client.perform(
-							mutation: GraphQL.AddReceiptMutation(
-								id: self.itemId,
-								file: GraphQL.S3FileInput(bucket: bucket, key: key)
-							)
-						).onValue { _ in
-							self.client.fetch(
-								query: keyGearItemQuery,
-								cachePolicy: .fetchIgnoringCacheData
-							).onValue { _ in button.isLoadingSignal.value = false }
+					guard let fileUrl = documents.first,
+						let file = try? GraphQLFile(
+							fieldName: "file",
+							originalName: "upload.\(fileUrl.pathExtension)",
+							fileURL: fileUrl
+						)
+					else {
+						button.isLoadingSignal.value = false
+						return
+					}
+
+					self.client
+						.upload(
+							operation: GraphQL.UploadFileMutation(file: "file"),
+							files: [file]
+						)
+						.onValue { data in let key = data.uploadFile.key
+							let bucket = data.uploadFile.bucket
+
+							self.client
+								.perform(
+									mutation: GraphQL.AddReceiptMutation(
+										id: self.itemId,
+										file: GraphQL.S3FileInput(
+											bucket: bucket,
+											key: key
+										)
+									)
+								)
+								.onValue { _ in
+									self.client
+										.fetch(
+											query: keyGearItemQuery,
+											cachePolicy:
+												.fetchIgnoringCacheData
+										)
+										.onValue { _ in
+											button.isLoadingSignal.value =
+												false
+										}
+								}
 						}
-					}
-			}
-
-			func handleImage(_ image: Either<PHAsset, UIImage>) {
-				button.isLoadingSignal.value = true
-
-				func getFileUpload() -> Future<FileUpload> {
-					switch image {
-					case let .left(asset): return asset.fileUpload
-					case let .right(image): return image.fileUpload
-					}
 				}
 
-				getFileUpload().onValue { fileUpload in
-					let file = GraphQLFile(
-						fieldName: "file",
-						originalName: fileUpload.fileName,
-						data: fileUpload.data
+				func handleImage(_ image: Either<PHAsset, UIImage>) {
+					button.isLoadingSignal.value = true
+
+					func getFileUpload() -> Future<FileUpload> {
+						switch image {
+						case let .left(asset): return asset.fileUpload
+						case let .right(image): return image.fileUpload
+						}
+					}
+
+					getFileUpload()
+						.onValue { fileUpload in
+							let file = GraphQLFile(
+								fieldName: "file",
+								originalName: fileUpload.fileName,
+								data: fileUpload.data
+							)
+
+							self.client
+								.upload(
+									operation: GraphQL.UploadFileMutation(
+										file: "file"
+									),
+									files: [file]
+								)
+								.onValue { data in let key = data.uploadFile.key
+									let bucket = data.uploadFile.bucket
+
+									self.client
+										.perform(
+											mutation:
+												GraphQL
+												.AddReceiptMutation(
+													id: self.itemId,
+													file:
+														GraphQL
+														.S3FileInput(
+															bucket:
+																bucket,
+															key:
+																key
+														)
+												)
+										)
+										.onValue { _ in
+											self.client
+												.fetch(
+													query:
+														keyGearItemQuery,
+													cachePolicy:
+														.fetchIgnoringCacheData
+												)
+												.onValue { _ in
+													button
+														.isLoadingSignal
+														.value =
+														false
+												}
+										}
+								}
+						}
+				}
+
+				row.viewController?
+					.present(
+						KeyGearImagePicker(
+							presentingViewController: row.viewController!,
+							allowedTypes: [.camera, .photoLibrary, .document]
+						),
+						style: .sheet(from: buttonContainer, rect: nil)
 					)
-
-					self.client.upload(
-						operation: GraphQL.UploadFileMutation(file: "file"),
-						files: [file]
-					).onValue { data in let key = data.uploadFile.key
-						let bucket = data.uploadFile.bucket
-
-						self.client.perform(
-							mutation: GraphQL.AddReceiptMutation(
-								id: self.itemId,
-								file: GraphQL.S3FileInput(bucket: bucket, key: key)
-							)
-						).onValue { _ in
-							self.client.fetch(
-								query: keyGearItemQuery,
-								cachePolicy: .fetchIgnoringCacheData
-							).onValue { _ in button.isLoadingSignal.value = false }
+					.onValue { either in
+						switch either {
+						case let .left(imageFuture): imageFuture.onValue { handleImage($0) }
+						case let .right(documentFuture):
+							documentFuture.onValue { handleDocuments($0) }
 						}
 					}
-				}
 			}
-
-			row.viewController?.present(
-				KeyGearImagePicker(
-					presentingViewController: row.viewController!,
-					allowedTypes: [.camera, .photoLibrary, .document]
-				),
-				style: .sheet(from: buttonContainer, rect: nil)
-			).onValue { either in
-				switch either {
-				case let .left(imageFuture): imageFuture.onValue { handleImage($0) }
-				case let .right(documentFuture): documentFuture.onValue { handleDocuments($0) }
-				}
-			}
-		}
 
 		return (row, bag)
 	}

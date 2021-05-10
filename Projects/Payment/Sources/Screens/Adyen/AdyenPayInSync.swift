@@ -37,9 +37,9 @@ extension AdyenPayInSync: Presentable {
 					viewController.present(
 						AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
 							.wrappedInCloseButton()
-					).onValue { _ in completion(.success) }.onError { error in
-						completion(.failure(error))
-					}
+					)
+					.onValue { _ in completion(.success) }
+					.onError { error in completion(.failure(error)) }
 				}
 
 				return bag

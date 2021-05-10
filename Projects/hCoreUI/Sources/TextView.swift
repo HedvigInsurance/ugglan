@@ -35,15 +35,14 @@ extension UITextView: SignalProvider {
 	public var providedSignal: ReadWriteSignal<String> {
 		Signal { callback in let bag = DisposeBag()
 
-			bag += NotificationCenter.default.signal(
-				forName: UITextView.textDidChangeNotification,
-				object: self
-			).onValue { _ in callback(self.text) }
+			bag += NotificationCenter.default
+				.signal(forName: UITextView.textDidChangeNotification, object: self)
+				.onValue { _ in callback(self.text) }
 
 			return bag
-		}.readable(getValue: { () -> String in self.text }).writable(setValue: { newValue in
-			self.text = newValue
-		})
+		}
+		.readable(getValue: { () -> String in self.text })
+		.writable(setValue: { newValue in self.text = newValue })
 	}
 
 	public var didBeginEditingSignal: Signal<Void> {
@@ -77,12 +76,12 @@ extension TextView: Viewable {
 		textView.font = Fonts.favoritStdBook.withSize(14)
 		textView.backgroundColor = .clear
 
-		bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce()).bindTo {
-			(textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
-			textView.textContentType = textContentType
-			textView.keyboardType = keyboardType ?? .default
-			textView.reloadInputViews()
-		}
+		bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce())
+			.bindTo { (textContentType: UITextContentType?, keyboardType: UIKeyboardType?) in
+				textView.textContentType = textContentType
+				textView.keyboardType = keyboardType ?? .default
+				textView.reloadInputViews()
+			}
 
 		textView.snp.remakeConstraints { make in make.height.equalTo(34) }
 
@@ -114,12 +113,13 @@ extension TextView: Viewable {
 		let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.footnote(color: .secondary)))
 		paddingView.addSubview(placeholderLabel)
 
-		bag += placeholder.map { Optional($0) }.bindTo(
-			transition: placeholderLabel,
-			style: .crossDissolve(duration: 0.25),
-			placeholderLabel,
-			\.text
-		)
+		bag += placeholder.map { Optional($0) }
+			.bindTo(
+				transition: placeholderLabel,
+				style: .crossDissolve(duration: 0.25),
+				placeholderLabel,
+				\.text
+			)
 
 		placeholderLabel.snp.makeConstraints { make in make.left.equalTo(paddingView.layoutMargins.left + 5)
 			make.centerY.equalToSuperview()
@@ -128,17 +128,17 @@ extension TextView: Viewable {
 
 		bag += textView.atOnce().onValue { value in placeholderLabel.alpha = value.isEmpty ? 1 : 0 }
 
-		bag += view.signal(for: .touchDown).filter { !textView.isFirstResponder }.onValue { _ in
-			textView.becomeFirstResponder()
-		}
+		bag += view.signal(for: .touchDown).filter { !textView.isFirstResponder }
+			.onValue { _ in textView.becomeFirstResponder() }
 
 		return (
 			view,
 			Signal { callback in bag += textView.providedSignal.onValue { value in callback(value) }
 
 				return bag
-			}.readable(getValue: { textView.value }).writable(setValue: { newValue in
-				placeholderLabel.alpha = newValue.isEmpty ? 1 : 0
+			}
+			.readable(getValue: { textView.value })
+			.writable(setValue: { newValue in placeholderLabel.alpha = newValue.isEmpty ? 1 : 0
 				textView.value = newValue
 			})
 		)

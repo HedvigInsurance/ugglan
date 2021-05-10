@@ -16,16 +16,16 @@ extension CharityHeader: Viewable {
 		stackView.spacing = 15
 		stackView.isLayoutMarginsRelativeArrangement = true
 
-		bag += stackView.traitCollectionSignal.atOnce().onValue { trait in
-			let style = DynamicFormStyle.brandInset.style(from: trait)
-			let insets = style.insets
-			stackView.layoutMargins = UIEdgeInsets(
-				top: insets.top,
-				left: insets.left,
-				bottom: 24,
-				right: insets.right
-			)
-		}
+		bag += stackView.traitCollectionSignal.atOnce()
+			.onValue { trait in let style = DynamicFormStyle.brandInset.style(from: trait)
+				let insets = style.insets
+				stackView.layoutMargins = UIEdgeInsets(
+					top: insets.top,
+					left: insets.left,
+					bottom: 24,
+					right: insets.right
+				)
+			}
 
 		let icon = Icon(frame: .zero, icon: Asset.charityPlain.image, iconWidth: 40)
 		stackView.addArrangedSubview(icon)

@@ -4,10 +4,11 @@ import Foundation
 import UIKit
 import hGraphQL
 
-struct Message: Equatable, Hashable {
-	static func == (lhs: Message, rhs: Message) -> Bool { lhs.globalId == rhs.globalId }
+struct Message: Equatable, Hashable { static func == (lhs: Message, rhs: Message) -> Bool {
+	lhs.globalId == rhs.globalId
+}
 
-	func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
+func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
 	let globalId: GraphQLID
 	let id: GraphQLID
@@ -37,50 +38,49 @@ struct Message: Equatable, Hashable {
 		case text, audio, none
 	}
 
-	enum MessageType: Equatable {
-		static func == (lhs: Message.MessageType, rhs: Message.MessageType) -> Bool {
-			switch (lhs, rhs) {
-			case (.file(_), .file(_)): return true
-			case (.text, .text): return true
-			case (.image(_), .image(_)): return true
-			case (.video(_), .video(_)): return true
-			case (.gif(_), .gif(_)): return true
-			default: return false
-			}
+	enum MessageType: Equatable { static func == (lhs: Message.MessageType, rhs: Message.MessageType) -> Bool {
+		switch (lhs, rhs) {
+		case (.file(_), .file(_)): return true
+		case (.text, .text): return true
+		case (.image(_), .image(_)): return true
+		case (.video(_), .video(_)): return true
+		case (.gif(_), .gif(_)): return true
+		default: return false
 		}
+	}
 
-		var isRichType: Bool {
-			switch self {
-			case .text: return false
-			case .image: return true
-			case .video: return true
-			case .gif: return true
-			case .file: return true
-			}
+	var isRichType: Bool {
+		switch self {
+		case .text: return false
+		case .image: return true
+		case .video: return true
+		case .gif: return true
+		case .file: return true
 		}
+	}
 
-		var isImageType: Bool {
-			switch self {
-			case .image: return true
-			default: return false
-			}
+	var isImageType: Bool {
+		switch self {
+		case .image: return true
+		default: return false
 		}
+	}
 
-		var isVideoType: Bool {
-			switch self {
-			case .video: return true
-			default: return false
-			}
+	var isVideoType: Bool {
+		switch self {
+		case .video: return true
+		default: return false
 		}
+	}
 
-		var isGIFType: Bool {
-			switch self {
-			case .gif: return true
-			default: return false
-			}
+	var isGIFType: Bool {
+		switch self {
+		case .gif: return true
+		default: return false
 		}
+	}
 
-		var isVideoOrImageType: Bool { isImageType || isVideoType || isGIFType }
+	var isVideoOrImageType: Bool { isImageType || isVideoType || isGIFType }
 
 		case text
 		case image(url: URL?)
@@ -90,65 +90,67 @@ struct Message: Equatable, Hashable {
 	}
 
 	var shouldShowEditButton: Bool {
-		cachedComputedProperties?.compute("shouldShowEditButton") { () -> Bool in
-			if self.richTextCompatible { return false }
+		cachedComputedProperties?
+			.compute("shouldShowEditButton") { () -> Bool in if self.richTextCompatible { return false }
 
-			if self.editingDisabledSignal.value { return false }
+				if self.editingDisabledSignal.value { return false }
 
-			if !self.fromMyself { return false }
+				if !self.fromMyself { return false }
 
-			guard let list = self.listSignal?.value else { return false }
+				guard let list = self.listSignal?.value else { return false }
 
-			guard let myIndex = list.firstIndex(of: .left(self)) else { return false }
-			guard
-				let indexOfFirstMyself = list.firstIndex(where: { message -> Bool in
-					guard let left = message.left else { return false }
+				guard let myIndex = list.firstIndex(of: .left(self)) else { return false }
+				guard
+					let indexOfFirstMyself = list.firstIndex(where: { message -> Bool in
+						guard let left = message.left else { return false }
 
-					return left.fromMyself == true
-				})
-			else { return false }
+						return left.fromMyself == true
+					})
+				else { return false }
 
-			return myIndex <= indexOfFirstMyself
-		} ?? false
+				return myIndex <= indexOfFirstMyself
+			} ?? false
 	}
 
 	var hasTypingIndicatorNext: Bool {
-		cachedComputedProperties?.compute("hasTypingIndicatorNext") { () -> Bool in
-			guard let list = self.listSignal?.value else { return false }
+		cachedComputedProperties?
+			.compute("hasTypingIndicatorNext") { () -> Bool in
+				guard let list = self.listSignal?.value else { return false }
 
-			guard let myIndex = list.firstIndex(of: .left(self)) else { return false }
-			let nextIndex = myIndex - 1
+				guard let myIndex = list.firstIndex(of: .left(self)) else { return false }
+				let nextIndex = myIndex - 1
 
-			if !list.indices.contains(nextIndex) { return false }
+				if !list.indices.contains(nextIndex) { return false }
 
-			return list[nextIndex].right != nil
-		} ?? false
+				return list[nextIndex].right != nil
+			} ?? false
 	}
 
 	var next: Message? {
-		cachedComputedProperties?.compute("next") { () -> Message? in
-			guard let list = self.listSignal?.value else { return nil }
+		cachedComputedProperties?
+			.compute("next") { () -> Message? in guard let list = self.listSignal?.value else { return nil }
 
-			guard let myIndex = list.firstIndex(of: .left(self)) else { return nil }
-			let nextIndex = myIndex - 1
+				guard let myIndex = list.firstIndex(of: .left(self)) else { return nil }
+				let nextIndex = myIndex - 1
 
-			if !list.indices.contains(nextIndex) { return nil }
+				if !list.indices.contains(nextIndex) { return nil }
 
-			return list[nextIndex].left
-		} ?? nil
+				return list[nextIndex].left
+			} ?? nil
 	}
 
 	var previous: Message? {
-		cachedComputedProperties?.compute("previous") { () -> Message? in
-			guard let list = self.listSignal?.value else { return nil }
+		cachedComputedProperties?
+			.compute("previous") { () -> Message? in
+				guard let list = self.listSignal?.value else { return nil }
 
-			guard let myIndex = list.firstIndex(of: .left(self)) else { return nil }
-			let previousIndex = myIndex + 1
+				guard let myIndex = list.firstIndex(of: .left(self)) else { return nil }
+				let previousIndex = myIndex + 1
 
-			if !list.indices.contains(previousIndex) { return nil }
+				if !list.indices.contains(previousIndex) { return nil }
 
-			return list[previousIndex].left
-		} ?? nil
+				return list[previousIndex].left
+			} ?? nil
 	}
 
 	enum Radius {
@@ -193,7 +195,9 @@ struct Message: Equatable, Hashable {
 		}
 	}
 
-	init(from message: Message) {
+	init(
+		from message: Message
+	) {
 		body = message.body
 		fromMyself = message.fromMyself
 		listSignal = message.listSignal
@@ -210,7 +214,10 @@ struct Message: Equatable, Hashable {
 		statusMessage = message.statusMessage
 	}
 
-	init(from message: Message, listSignal: ReadSignal<[ChatListContent]>?) {
+	init(
+		from message: Message,
+		listSignal: ReadSignal<[ChatListContent]>?
+	) {
 		body = message.body
 		fromMyself = message.fromMyself
 		self.listSignal = listSignal
@@ -232,7 +239,10 @@ struct Message: Equatable, Hashable {
 		}
 	}
 
-	init(from message: GraphQL.MessageData, listSignal: ReadSignal<[ChatListContent]>?) {
+	init(
+		from message: GraphQL.MessageData,
+		listSignal: ReadSignal<[ChatListContent]>?
+	) {
 		globalId = message.globalId
 		id = message.id
 		richTextCompatible = message.header.richTextChatCompatible

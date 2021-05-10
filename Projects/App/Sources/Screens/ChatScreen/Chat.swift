@@ -110,7 +110,8 @@ extension Chat: Presentable {
 		}
 
 		bag += NotificationCenter.default.signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-			.compactMap { notification in notification.keyboardInfo }.animated(
+			.compactMap { notification in notification.keyboardInfo }
+			.animated(
 				mapStyle: { (keyboardInfo) -> AnimationStyle in
 					AnimationStyle(
 						options: keyboardInfo.animationCurve,
@@ -138,19 +139,20 @@ extension Chat: Presentable {
 				}
 			)
 
-		bag += chatState.tableSignal.atOnce().delay(by: 0.5).onValue { table in
-			if tableKit.table.isEmpty {
-				tableKit.set(table, animation: .fade)
-			} else {
-				let tableAnimation = TableAnimation(
-					sectionInsert: .top,
-					sectionDelete: .top,
-					rowInsert: .top,
-					rowDelete: .fade
-				)
-				tableKit.set(table, animation: tableAnimation)
+		bag += chatState.tableSignal.atOnce().delay(by: 0.5)
+			.onValue { table in
+				if tableKit.table.isEmpty {
+					tableKit.set(table, animation: .fade)
+				} else {
+					let tableAnimation = TableAnimation(
+						sectionInsert: .top,
+						sectionDelete: .top,
+						rowInsert: .top,
+						rowDelete: .fade
+					)
+					tableKit.set(table, animation: tableAnimation)
+				}
 			}
-		}
 
 		bag += reloadChatSignal.onValue { _ in self.chatState.reset() }
 

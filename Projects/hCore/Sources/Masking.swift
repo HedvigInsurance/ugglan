@@ -35,14 +35,13 @@ public struct Masking {
 	public func applyMasking(_ textField: UITextField) -> Disposable {
 		let bag = DisposeBag()
 
-		bag += textField.distinct().onValue { text in
-			let newValue = maskValue(text: text, previousText: previousText).replacingOccurrences(
-				of: " ",
-				with: "\u{00a0}"
-			)
-			$previousText.value = newValue
-			textField.text = newValue
-		}
+		bag += textField.distinct()
+			.onValue { text in
+				let newValue = maskValue(text: text, previousText: previousText)
+					.replacingOccurrences(of: " ", with: "\u{00a0}")
+				$previousText.value = newValue
+				textField.text = newValue
+			}
 
 		return bag
 	}
@@ -167,21 +166,25 @@ public struct Masking {
 
 			if text.count <= maxCount {
 				var sanitizedText = String(
-					text.filter { $0.isDigit || $0 == delimiter }.enumerated().filter {
-						index,
-						char in
-						char == delimiter ? delimiterPositions.contains(index + 1) : true
-					}.map { _, char in char }
+					text.filter { $0.isDigit || $0 == delimiter }.enumerated()
+						.filter { index, char in
+							char == delimiter
+								? delimiterPositions.contains(index + 1) : true
+						}
+						.map { _, char in char }
 				)
 
-				delimiterPositions.map { $0 - 1 }.filter { sanitizedText.count > $0 }.filter {
-					Array(sanitizedText)[$0] != delimiter
-				}.forEach { index in
-					sanitizedText.insert(
-						delimiter,
-						at: sanitizedText.index(sanitizedText.startIndex, offsetBy: index)
-					)
-				}
+				delimiterPositions.map { $0 - 1 }.filter { sanitizedText.count > $0 }
+					.filter { Array(sanitizedText)[$0] != delimiter }
+					.forEach { index in
+						sanitizedText.insert(
+							delimiter,
+							at: sanitizedText.index(
+								sanitizedText.startIndex,
+								offsetBy: index
+							)
+						)
+					}
 
 				return sanitizedText
 			}

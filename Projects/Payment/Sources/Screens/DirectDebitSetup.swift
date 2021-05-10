@@ -109,8 +109,8 @@ extension DirectDebitSetup: Presentable {
 			viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
 
 			bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation()).valueSignal
-				.compactMap { $0.startDirectDebitRegistration }.onValue {
-					startDirectDebitRegistration in
+				.compactMap { $0.startDirectDebitRegistration }
+				.onValue { startDirectDebitRegistration in
 					webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
 				}
 		}
@@ -125,48 +125,56 @@ extension DirectDebitSetup: Presentable {
 
 					switch self.setupType {
 					case .initial:
-						alert = Alert<Bool>.init(
-							title: L10n.PayInIframeInAppCancelAlert.title,
-							message: L10n.PayInIframeInAppCancelAlert.body,
-							actions: [
-								Alert.Action(
-									title: L10n.PayInIframeInAppCancelAlert
-										.proceedButton
-								) { true },
-								Alert.Action(
-									title: L10n.PayInIframeInAppCancelAlert
-										.dismissButton
-								) { false },
-							]
-						)
+						alert = Alert<Bool>
+							.init(
+								title: L10n.PayInIframeInAppCancelAlert.title,
+								message: L10n.PayInIframeInAppCancelAlert.body,
+								actions: [
+									Alert.Action(
+										title: L10n.PayInIframeInAppCancelAlert
+											.proceedButton
+									) { true },
+									Alert.Action(
+										title: L10n.PayInIframeInAppCancelAlert
+											.dismissButton
+									) { false },
+								]
+							)
 					case .postOnboarding:
-						alert = Alert<Bool>.init(
-							title: L10n.PayInIframePostSignSkipAlert.title,
-							message: L10n.PayInIframePostSignSkipAlertDirectDebit.body,
-							actions: [
-								Alert.Action(
-									title: L10n.PayInIframePostSignSkipAlert
-										.proceedButton
-								) { true },
-								Alert.Action(
-									title: L10n.PayInIframePostSignSkipAlert
-										.dismissButton
-								) { false },
-							]
-						)
+						alert = Alert<Bool>
+							.init(
+								title: L10n.PayInIframePostSignSkipAlert.title,
+								message: L10n.PayInIframePostSignSkipAlertDirectDebit
+									.body,
+								actions: [
+									Alert.Action(
+										title: L10n.PayInIframePostSignSkipAlert
+											.proceedButton
+									) { true },
+									Alert.Action(
+										title: L10n.PayInIframePostSignSkipAlert
+											.dismissButton
+									) { false },
+								]
+							)
 					case .replacement:
 						completion(.success)
 						return
 					}
 
-					bag += viewController.present(alert).onValue { shouldDismiss in
-						if shouldDismiss {
-							self.client.perform(
-								mutation: GraphQL.CancelDirectDebitRequestMutation()
-							).onValue { _ in }
-							completion(.success)
+					bag += viewController.present(alert)
+						.onValue { shouldDismiss in
+							if shouldDismiss {
+								self.client
+									.perform(
+										mutation:
+											GraphQL
+											.CancelDirectDebitRequestMutation()
+									)
+									.onValue { _ in }
+								completion(.success)
+							}
 						}
-					}
 				}
 
 				func showResultScreen(type: DirectDebitResultType) {
@@ -179,23 +187,28 @@ extension DirectDebitSetup: Presentable {
 
 					switch type {
 					case .success:
-                        client.fetch(query: GraphQL.PayInMethodStatusQuery()).onValue { _ in
-                            self.store.update(query: GraphQL.PayInMethodStatusQuery()) {
-                                (data: inout GraphQL.PayInMethodStatusQuery.Data) in
-                                data.payinMethodStatus = .pending
-                            }
-                        }
+						client.fetch(query: GraphQL.PayInMethodStatusQuery())
+							.onValue { _ in
+								self.store.update(
+									query: GraphQL.PayInMethodStatusQuery()
+								) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+									data.payinMethodStatus = .pending
+								}
+							}
 						ClearDirectDebitStatus.clear()
 					case .failure: break
 					}
 
-					bag += containerView.add(directDebitResult) { view in
-						view.snp.makeConstraints { make in make.size.equalToSuperview()
-							make.edges.equalToSuperview()
+					bag +=
+						containerView.add(directDebitResult) { view in
+							view.snp.makeConstraints { make in make.size.equalToSuperview()
+								make.edges.equalToSuperview()
+							}
 						}
-					}.onValue { completion(.success) }.onError { _ in
-						bag += Signal(after: 0.5).onValue { _ in startRegistration() }
-					}
+						.onValue { completion(.success) }
+						.onError { _ in
+							bag += Signal(after: 0.5).onValue { _ in startRegistration() }
+						}
 
 					viewController.view = containerView
 				}
@@ -217,11 +230,12 @@ extension DirectDebitSetup: Presentable {
 				}
 
 				// if user is closing app in the middle of process make sure to inform backend
-				bag += NotificationCenter.default.signal(forName: .applicationWillTerminate).onValue {
-					_ in
-					self.client.perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
-						.onValue { _ in }
-				}
+				bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
+					.onValue { _ in
+						self.client
+							.perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
+							.onValue { _ in }
+					}
 
 				return DelayedDisposer(bag, delay: 1)
 			}

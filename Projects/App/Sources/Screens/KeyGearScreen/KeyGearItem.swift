@@ -18,10 +18,8 @@ struct KeyGearItem {
 
 		if let context = UIGraphicsGetCurrentContext() {
 			gradientLayer.render(in: context)
-			gradientImage = UIGraphicsGetImageFromCurrentImageContext()?.resizableImage(
-				withCapInsets: UIEdgeInsets.zero,
-				resizingMode: .stretch
-			)
+			gradientImage = UIGraphicsGetImageFromCurrentImageContext()?
+				.resizableImage(withCapInsets: UIEdgeInsets.zero, resizingMode: .stretch)
 		}
 
 		UIGraphicsEndImageContext()
@@ -29,9 +27,10 @@ struct KeyGearItem {
 		return gradientImage
 	}
 
-	func addNavigationBar(scrollView _: UIScrollView, viewController: UIViewController) -> (
-		Disposable, UINavigationBar
-	) {
+	func addNavigationBar(
+		scrollView _: UIScrollView,
+		viewController: UIViewController
+	) -> (Disposable, UINavigationBar) {
 		let bag = DisposeBag()
 
 		let navigationBar = UINavigationBar()
@@ -82,9 +81,9 @@ struct KeyGearItem {
 
 		init() { super.init(nibName: nil, bundle: nil) }
 
-		@available(*, unavailable) required init?(coder _: NSCoder) {
-			fatalError("init(coder:) has not been implemented")
-		}
+		@available(*, unavailable) required init?(
+			coder _: NSCoder
+		) { fatalError("init(coder:) has not been implemented") }
 
 		override func viewWillAppear(_ animated: Bool) {
 			navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -114,10 +113,15 @@ extension KeyGearItem: Presentable {
 		view.backgroundColor = .brand(.primaryBackground())
 		viewController.view = view
 
-		let dataSignal = client.watch(
-			query: GraphQL.KeyGearItemQuery(id: id, languageCode: Localization.Locale.currentLocale.code),
-			cachePolicy: .returnCacheDataAndFetch
-		).compactMap { $0.keyGearItem }
+		let dataSignal =
+			client.watch(
+				query: GraphQL.KeyGearItemQuery(
+					id: id,
+					languageCode: Localization.Locale.currentLocale.code
+				),
+				cachePolicy: .returnCacheDataAndFetch
+			)
+			.compactMap { $0.keyGearItem }
 
 		let scrollView = UIScrollView()
 		view.addSubview(scrollView)
@@ -139,26 +143,30 @@ extension KeyGearItem: Presentable {
 
 		let form = FormView()
 
-		bag += form.didLayoutSignal.take(first: 1).onValue { _ in
-			form.dynamicStyle = DynamicFormStyle.default.restyled { (style: inout FormStyle) in
-				style.insets = UIEdgeInsets(
-					top: -scrollView.safeAreaInsets.top,
-					left: 0,
-					bottom: 20,
-					right: 0
-				)
+		bag += form.didLayoutSignal.take(first: 1)
+			.onValue { _ in
+				form.dynamicStyle = DynamicFormStyle.default.restyled { (style: inout FormStyle) in
+					style.insets = UIEdgeInsets(
+						top: -scrollView.safeAreaInsets.top,
+						left: 0,
+						bottom: 20,
+						right: 0
+					)
+				}
 			}
-		}
 
 		scrollView.embedView(form, scrollAxis: .vertical)
 
-		let imagesSignal = dataSignal.map {
-			(images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category)
-		}.compactMap { data -> [Either<URL, GraphQL.KeyGearItemCategory>] in
-			if data.images.isEmpty { return [.right(data.category)] }
+		let imagesSignal =
+			dataSignal.map {
+				(images: $0.photos.compactMap { $0.file.preSignedUrl }, category: $0.category)
+			}
+			.compactMap { data -> [Either<URL, GraphQL.KeyGearItemCategory>] in
+				if data.images.isEmpty { return [.right(data.category)] }
 
-			return data.images.compactMap { URL(string: $0) }.map { .left($0) }
-		}.readable(initial: [])
+				return data.images.compactMap { URL(string: $0) }.map { .left($0) }
+			}
+			.readable(initial: [])
 
 		bag += form.prepend(KeyGearImageCarousel(imagesSignal: imagesSignal)) { imageCarouselView in
 			bag += scrollView.contentOffsetSignal.onValue { offset in
@@ -168,7 +176,8 @@ extension KeyGearItem: Presentable {
 					imageCarouselView.transform = CGAffineTransform(
 						translationX: 0,
 						y: realOffset * 0.5
-					).concatenating(
+					)
+					.concatenating(
 						CGAffineTransform(
 							scaleX: 1 + abs(realOffset / imageCarouselView.frame.height),
 							y: 1 + abs(realOffset / imageCarouselView.frame.height)
@@ -201,51 +210,52 @@ extension KeyGearItem: Presentable {
 		let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .brand(.headline(color: .primary)))
 		claimsRow.append(hCoreUIAssets.chevronRight.image)
 
-		bag += claimsSection.append(claimsRow).onValue { _ in
-			viewController.present(
-				HonestyPledge(),
-				style: .detented(.preferredContentSize),
-				options: [.defaults]
-			)
-		}
+		bag += claimsSection.append(claimsRow)
+			.onValue { _ in
+				viewController.present(
+					HonestyPledge(),
+					style: .detented(.preferredContentSize),
+					options: [.defaults]
+				)
+			}
 
 		bag += innerForm.append(Spacing(height: 10))
 
 		let coveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewCoverageTableTitle)
 
-		bag += dataSignal.map { $0.covered }.onValueDisposePrevious { covered -> Disposable? in
-			let bag = DisposeBag()
+		bag += dataSignal.map { $0.covered }
+			.onValueDisposePrevious { covered -> Disposable? in let bag = DisposeBag()
 
-			bag += covered.map { coveredItem in
-				coveragesSection.append(
-					KeyGearCoverage(
-						type: .included,
-						title: coveredItem.title?.translations.first?.text ?? ""
+				bag += covered.map { coveredItem in
+					coveragesSection.append(
+						KeyGearCoverage(
+							type: .included,
+							title: coveredItem.title?.translations.first?.text ?? ""
+						)
 					)
-				)
-			}
+				}
 
-			return bag
-		}
+				return bag
+			}
 
 		bag += innerForm.append(Spacing(height: 15))
 
 		let nonCoveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewNonCoverageTableTitle)
 
-		bag += dataSignal.map { $0.exceptions }.onValueDisposePrevious { exceptions -> Disposable? in
-			let bag = DisposeBag()
+		bag += dataSignal.map { $0.exceptions }
+			.onValueDisposePrevious { exceptions -> Disposable? in let bag = DisposeBag()
 
-			bag += exceptions.map { exceptionItem in
-				nonCoveragesSection.append(
-					KeyGearCoverage(
-						type: .excluded,
-						title: exceptionItem.title?.translations.first?.text ?? ""
+				bag += exceptions.map { exceptionItem in
+					nonCoveragesSection.append(
+						KeyGearCoverage(
+							type: .excluded,
+							title: exceptionItem.title?.translations.first?.text ?? ""
+						)
 					)
-				)
-			}
+				}
 
-			return bag
-		}
+				return bag
+			}
 
 		bag += innerForm.append(Spacing(height: 30))
 
@@ -265,8 +275,8 @@ extension KeyGearItem: Presentable {
 
 		let nameSection = innerForm.appendSection()
 
-		let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "").writable(setValue: { _ in }
-		)
+		let nameValueSignal = dataSignal.map { $0.name ?? "" }.readable(initial: "")
+			.writable(setValue: { _ in })
 		let nameRow = EditableRow(
 			valueSignal: nameValueSignal,
 			placeholderSignal: .static(L10n.keyGearItemViewItemNameTableTitle)
@@ -278,11 +288,15 @@ extension KeyGearItem: Presentable {
 		)
 		bag += navigationBarBag
 
-		bag += nameSection.append(nameRow).onValue { name in viewController.navigationItem.title = name
-			navigationBar.items = [viewController.navigationItem]
-			self.client.perform(mutation: GraphQL.UpdateKeyGearItemNameMutation(id: self.id, name: name))
-				.onValue { _ in }
-		}
+		bag += nameSection.append(nameRow)
+			.onValue { name in viewController.navigationItem.title = name
+				navigationBar.items = [viewController.navigationItem]
+				self.client
+					.perform(
+						mutation: GraphQL.UpdateKeyGearItemNameMutation(id: self.id, name: name)
+					)
+					.onValue { _ in }
+			}
 
 		bag += dataSignal.onValue { data in viewController.navigationItem.title = data.name
 			navigationBar.items = [viewController.navigationItem]
@@ -297,15 +311,18 @@ extension KeyGearItem: Presentable {
 			)
 		}
 
-		bag += navigationBar.traitCollectionSignal.atOnce().onValue { trait in
-			if trait.userInterfaceIdiom == .pad {
-				viewController.navigationItem.leftBarButtonItem = nil
-			} else {
-				viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: backButton)
-			}
+		bag += navigationBar.traitCollectionSignal.atOnce()
+			.onValue { trait in
+				if trait.userInterfaceIdiom == .pad {
+					viewController.navigationItem.leftBarButtonItem = nil
+				} else {
+					viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(
+						button: backButton
+					)
+				}
 
-			navigationBar.items = [viewController.navigationItem]
-		}
+				navigationBar.items = [viewController.navigationItem]
+			}
 
 		return (
 			viewController,
@@ -325,15 +342,20 @@ extension KeyGearItem: Presentable {
 							),
 						]),
 						style: .sheet(from: optionsButton.view, rect: nil)
-					).onValue { _ in
-						self.client.perform(
-							mutation: GraphQL.DeleteKeyGearItemMutation(id: self.id)
-						).onValue { _ in
-							self.client.fetch(
-								query: GraphQL.KeyGearItemsQuery(),
-								cachePolicy: .fetchIgnoringCacheData
-							).onValue { _ in completion(.success) }
-						}
+					)
+					.onValue { _ in
+						self.client
+							.perform(
+								mutation: GraphQL.DeleteKeyGearItemMutation(id: self.id)
+							)
+							.onValue { _ in
+								self.client
+									.fetch(
+										query: GraphQL.KeyGearItemsQuery(),
+										cachePolicy: .fetchIgnoringCacheData
+									)
+									.onValue { _ in completion(.success) }
+							}
 					}
 				}
 

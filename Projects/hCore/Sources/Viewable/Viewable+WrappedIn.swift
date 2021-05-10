@@ -49,9 +49,10 @@ where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Disposable {
 extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposable, Self.Matter: UIView {
 	public typealias StackContainer = ContainerStackViewable<Self, Self.Matter, UIStackView>
 
-	public func wrappedIn(_ stackView: UIStackView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in })
-		-> StackContainer
-	{ ContainerStackViewable(viewable: self, container: stackView, configure: configure) }
+	public func wrappedIn(
+		_ stackView: UIStackView,
+		configure: @escaping (_ view: Self.Matter) -> Void = { _ in }
+	) -> StackContainer { ContainerStackViewable(viewable: self, container: stackView, configure: configure) }
 
 	public func insetted(
 		_ layoutMargins: UIEdgeInsets,
@@ -82,7 +83,8 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
 				return stackView
 			}(),
 			configure: configure
-		).wrappedIn(
+		)
+		.wrappedIn(
 			{
 				let stackView = UIStackView()
 				stackView.axis = .vertical
@@ -95,9 +97,10 @@ extension Viewable where Self.Events == ViewableEvents, Self.Result == Disposabl
 
 	public typealias Container = ContainerViewable<Self, Self.Matter, UIView>
 
-	public func wrappedIn(_ view: UIView, configure: @escaping (_ view: Self.Matter) -> Void = { _ in })
-		-> Container
-	{ ContainerViewable(viewable: self, container: view, configure: configure) }
+	public func wrappedIn(
+		_ view: UIView,
+		configure: @escaping (_ view: Self.Matter) -> Void = { _ in }
+	) -> Container { ContainerViewable(viewable: self, container: view, configure: configure) }
 }
 
 extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
@@ -108,9 +111,9 @@ extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
 		ContainerStackViewableSignal(viewable: self, container: stackView, configure: configure)
 	}
 
-	public func insetted<SignalValue>(_ layoutMargins: UIEdgeInsets) -> ContainerStackViewableSignal<
-		Self, Self.Matter, UIStackView, SignalValue
-	> {
+	public func insetted<SignalValue>(
+		_ layoutMargins: UIEdgeInsets
+	) -> ContainerStackViewableSignal<Self, Self.Matter, UIStackView, SignalValue> {
 		wrappedIn(
 			{
 				let stackView = UIStackView()
@@ -138,7 +141,8 @@ extension Viewable where Self.Events == ViewableEvents, Self.Matter: UIView {
 				return stackView
 			}(),
 			configure: configure
-		).wrappedIn(
+		)
+		.wrappedIn(
 			{
 				let stackView = UIStackView()
 				stackView.axis = .vertical

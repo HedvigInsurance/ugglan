@@ -37,12 +37,13 @@ extension PieChartDebugger: Presentable {
 		let sliceChangerStepper = UIStepper()
 		sliceChangerStepper.maximumValue = 20
 
-		bag += sliceChangerStepper.signal(for: .touchUpInside).onValue {
-			pieChartStateSignal.value = PieChartState(
-				percentagePerSlice: 0.05,
-				slices: CGFloat(sliceChangerStepper.value)
-			)
-		}
+		bag += sliceChangerStepper.signal(for: .touchUpInside)
+			.onValue {
+				pieChartStateSignal.value = PieChartState(
+					percentagePerSlice: 0.05,
+					slices: CGFloat(sliceChangerStepper.value)
+				)
+			}
 
 		sliceChangerRow.append(sliceChangerStepper)
 		editorSection.append(sliceChangerRow)
@@ -53,10 +54,8 @@ extension PieChartDebugger: Presentable {
 		sliceChangerTextFieldRow.append(sliceChangerTextField)
 		editorSection.append(sliceChangerTextFieldRow)
 
-		bag += sliceChangerStepper.signal(for: .touchUpInside).map { String(sliceChangerStepper.value) }.bindTo(
-			sliceChangerTextField,
-			\.value
-		)
+		bag += sliceChangerStepper.signal(for: .touchUpInside).map { String(sliceChangerStepper.value) }
+			.bindTo(sliceChangerTextField, \.value)
 
 		bag += sliceChangerTextField.shouldReturn.set { _ -> Bool in true }
 

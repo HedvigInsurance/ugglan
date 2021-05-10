@@ -112,7 +112,8 @@ extension InsuranceProviderAction: Viewable {
 
 		if let locale = data.locale {
 			bag += client.fetch(query: GraphQL.InsuranceProvidersQuery(locale: locale.asGraphQLLocale()))
-				.valueSignal.compactMap { $0.insuranceProviders }.onValue { providers in
+				.valueSignal.compactMap { $0.insuranceProviders }
+				.onValue { providers in
 					let providers = [
 						providers.map { $0.fragments.insuranceProviderFragment },
 						[
@@ -122,7 +123,8 @@ extension InsuranceProviderAction: Viewable {
 								hasExternalCapabilities: false
 							)
 						],
-					].flatMap { $0 }
+					]
+					.flatMap { $0 }
 
 					let dataSource = InsuranceProviderPickerDataSource(providers: providers)
 					bag.hold(dataSource)
@@ -158,35 +160,41 @@ extension InsuranceProviderAction: Viewable {
 					isEnabled: true
 				)
 
-				bag += button.onTapSignal.withLatestFrom($selectedProvider.plain()).compactMap {
-					_,
-					provider in provider
-				}.onValue { provider in
-					if let passageName = self.state.passageNameSignal.value {
-						self.state.store.setValue(
-							key: "\(passageName)Result",
-							value: provider.name
-						)
-					}
-
-					if provider.name != L10n.externalInsuranceProviderOtherOption {
-						self.state.store.setValue(key: self.data.key, value: provider.id)
-						callback(self.data.embarkLinkFragment)
-					} else {
-						outerContainer.viewController?.present(
-							Alert(
-								title: L10n.externalInsuranceProviderAlertTitle,
-								message: L10n.externalInsuranceProviderAlertMessage,
-								actions: [
-									Alert.Action(
-										title: L10n.alertOk,
-										action: { true }
-									)
-								]
+				bag += button.onTapSignal.withLatestFrom($selectedProvider.plain())
+					.compactMap { _, provider in provider }
+					.onValue { provider in
+						if let passageName = self.state.passageNameSignal.value {
+							self.state.store.setValue(
+								key: "\(passageName)Result",
+								value: provider.name
 							)
-						).onValue { _ in callback(self.data.embarkLinkFragment) }
+						}
+
+						if provider.name != L10n.externalInsuranceProviderOtherOption {
+							self.state.store.setValue(
+								key: self.data.key,
+								value: provider.id
+							)
+							callback(self.data.embarkLinkFragment)
+						} else {
+							outerContainer.viewController?
+								.present(
+									Alert(
+										title: L10n
+											.externalInsuranceProviderAlertTitle,
+										message: L10n
+											.externalInsuranceProviderAlertMessage,
+										actions: [
+											Alert.Action(
+												title: L10n.alertOk,
+												action: { true }
+											)
+										]
+									)
+								)
+								.onValue { _ in callback(self.data.embarkLinkFragment) }
+						}
 					}
-				}
 
 				bag += outerContainer.addArranged(button)
 

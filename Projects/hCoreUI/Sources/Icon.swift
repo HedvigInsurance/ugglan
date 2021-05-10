@@ -16,16 +16,20 @@ public class Icon: UIView {
 
 	override public var tintColor: UIColor! { didSet(newValue) { image.tintColor = newValue } }
 
-	public init(frame: CGRect = .zero, icon: UIImage, iconWidth: CGFloat) {
+	public init(
+		frame: CGRect = .zero,
+		icon: UIImage,
+		iconWidth: CGFloat
+	) {
 		self.icon = icon
 		self.iconWidth = iconWidth
 		super.init(frame: frame)
 		setup()
 	}
 
-	@available(*, unavailable) required init?(coder _: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	@available(*, unavailable) required init?(
+		coder _: NSCoder
+	) { fatalError("init(coder:) has not been implemented") }
 
 	override public var intrinsicContentSize: CGSize { CGSize(width: iconWidth, height: iconWidth) }
 

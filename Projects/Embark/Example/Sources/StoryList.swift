@@ -24,12 +24,18 @@ extension StoryList: Presentable {
 		Localization.Locale.$currentLocale.value = .en_SE
 
 		bag += plansButton.onValue { _ in
-			bag += viewController.present(
-				EmbarkPlans(),
-				options: [.defaults, .largeTitleDisplayMode(.never)]
-			).onValueDisposePrevious { story in
-				viewController.present(Embark(name: story.name), options: [.defaults, .autoPop]).nil()
-			}
+			bag +=
+				viewController.present(
+					EmbarkPlans(),
+					options: [.defaults, .largeTitleDisplayMode(.never)]
+				)
+				.onValueDisposePrevious { story in
+					viewController.present(
+						Embark(name: story.name),
+						options: [.defaults, .autoPop]
+					)
+					.nil()
+				}
 		}
 
 		let tableKit = TableKit<EmptySection, StringRow>(holdIn: bag)
@@ -43,9 +49,8 @@ extension StoryList: Presentable {
 		}
 
 		bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery()).valueSignal.map { $0.embarkStoryNames }
-			.compactMap { $0 }.map { $0.map { value in StringRow(value: value) } }.onValue { storyNames in
-				tableKit.set(Table(rows: storyNames))
-			}
+			.compactMap { $0 }.map { $0.map { value in StringRow(value: value) } }
+			.onValue { storyNames in tableKit.set(Table(rows: storyNames)) }
 
 		return (viewController, bag)
 	}

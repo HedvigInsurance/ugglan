@@ -58,21 +58,28 @@ extension Marketing: Presentable {
 			make.height.equalTo(40)
 		}
 
-		bag += client.fetch(query: GraphQL.MarketingImagesQuery()).compactMap {
-			$0.appMarketingImages.filter { $0.language?.code == Localization.Locale.currentLocale.code }
-				.first
-		}.compactMap { $0 }.onValue { marketingImage in
-			guard let url = URL(string: marketingImage.image?.url ?? "") else { return }
+		bag += client.fetch(query: GraphQL.MarketingImagesQuery())
+			.compactMap {
+				$0.appMarketingImages
+					.filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
+			}
+			.compactMap { $0 }
+			.onValue { marketingImage in
+				guard let url = URL(string: marketingImage.image?.url ?? "") else { return }
 
-			let blurImage = UIImage(
-				blurHash: marketingImage.blurhash ?? "",
-				size: .init(width: 32, height: 32)
-			)
-			imageView.image = blurImage
+				let blurImage = UIImage(
+					blurHash: marketingImage.blurhash ?? "",
+					size: .init(width: 32, height: 32)
+				)
+				imageView.image = blurImage
 
-			imageView.contentMode = .scaleAspectFill
-			imageView.kf.setImage(with: url, placeholder: blurImage, options: [.transition(.fade(0.25))])
-		}
+				imageView.contentMode = .scaleAspectFill
+				imageView.kf.setImage(
+					with: url,
+					placeholder: blurImage,
+					options: [.transition(.fade(0.25))]
+				)
+			}
 
 		let contentStackView = UIStackView()
 		contentStackView.axis = .vertical

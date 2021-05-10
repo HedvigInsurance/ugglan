@@ -22,9 +22,8 @@ extension Notification.Name { static let shouldOpenReferrals = Notification.Name
 
 extension LoggedIn {
 	func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
-		NotificationCenter.default.signal(forName: .shouldOpenReferrals).onValue { _ in
-			tabBarController.selectedIndex = 3
-		}
+		NotificationCenter.default.signal(forName: .shouldOpenReferrals)
+			.onValue { _ in tabBarController.selectedIndex = 3 }
 	}
 }
 
@@ -82,7 +81,8 @@ extension LoggedIn: Presentable {
 		)
 
 		bag += client.fetch(query: GraphQL.FeaturesQuery(), cachePolicy: .fetchIgnoringCacheData).valueSignal
-			.compactMap { $0.member.features }.onValue { features in
+			.compactMap { $0.member.features }
+			.onValue { features in
 				if features.contains(.keyGear) {
 					if features.contains(.referrals) {
 						bag += tabBarController.presentTabs(
@@ -143,7 +143,8 @@ extension LoggedIn: Presentable {
 		bag += handleOpenReferrals(tabBarController: tabBarController)
 
 		bag += combineLatest(tabBarController.signal(for: \.selectedViewController), indexForTabsSignal)
-			.atOnce().onValue { viewController, indexForTabs in
+			.atOnce()
+			.onValue { viewController, indexForTabs in
 				let tab = indexForTabs[tabBarController.selectedIndex]
 
 				switch tab {

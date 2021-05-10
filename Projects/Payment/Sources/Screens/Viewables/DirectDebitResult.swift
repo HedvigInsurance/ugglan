@@ -101,12 +101,11 @@ extension DirectDebitResult: Viewable {
 			make.width.equalToSuperview()
 		}
 
-		bag += containerView.didMoveToWindowSignal.take(first: 1).animated(
-			style: SpringAnimationStyle.heavyBounce()
-		) {
-			containerView.alpha = 1
-			containerView.transform = CGAffineTransform.identity
-		}
+		bag += containerView.didMoveToWindowSignal.take(first: 1)
+			.animated(style: SpringAnimationStyle.heavyBounce()) {
+				containerView.alpha = 1
+				containerView.transform = CGAffineTransform.identity
+			}
 
 		bag += events.removeAfter.set { _ in 1 }
 
@@ -135,13 +134,15 @@ extension DirectDebitResult: Viewable {
 					)
 
 					bag += retryButton.onTapSignal.onValue { _ in
-						bag += Signal(after: 0).animated(
-							style: SpringAnimationStyle.lightBounce()
-						) { _ in
-							containerView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-							containerView.alpha = 0
-							buttonsContainer.alpha = 0
-						}
+						bag += Signal(after: 0)
+							.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+								containerView.transform = CGAffineTransform(
+									scaleX: 0.5,
+									y: 0.5
+								)
+								containerView.alpha = 0
+								buttonsContainer.alpha = 0
+							}
 
 						completion(.failure(DirectDebitResult.ResultError.retry))
 					}

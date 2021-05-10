@@ -14,7 +14,10 @@ public struct ButtonSection {
 	private let onSelectCallbacker = Callbacker<Void>()
 	public let onSelect: Signal<Void>
 
-	public init(text: String, style: Style) {
+	public init(
+		text: String,
+		style: Style
+	) {
 		self.text = ReadWriteSignal(text)
 		self.style = style
 		onSelect = onSelectCallbacker.providedSignal

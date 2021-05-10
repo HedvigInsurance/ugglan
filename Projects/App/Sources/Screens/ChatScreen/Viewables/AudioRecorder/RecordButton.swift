@@ -26,22 +26,21 @@ extension RecordButton: Viewable {
 		let touchUpInside = control.signal(for: .touchUpInside)
 		bag += touchUpInside.feedback(type: .impactLight)
 
-		bag += touchUpInside.withLatestFrom(isRecordingSignal.atOnce().plain()).map { _, isRecording in
-			!isRecording
-		}.bindTo(isRecordingSignal)
+		bag += touchUpInside.withLatestFrom(isRecordingSignal.atOnce().plain())
+			.map { _, isRecording in !isRecording }.bindTo(isRecordingSignal)
 
-		bag += combineLatest(recordIcon.didLayoutSignal.atOnce(), isRecordingSignal.atOnce().plain()).animated(
-			style: SpringAnimationStyle.lightBounce()
-		) { _, isRecording in recordIcon.layer.cornerRadius = isRecording ? 2.5 : recordIcon.frame.width / 2
+		bag += combineLatest(recordIcon.didLayoutSignal.atOnce(), isRecordingSignal.atOnce().plain())
+			.animated(style: SpringAnimationStyle.lightBounce()) { _, isRecording in
+				recordIcon.layer.cornerRadius = isRecording ? 2.5 : recordIcon.frame.width / 2
 
-			recordIcon.snp.remakeConstraints { make in
-				make.width.height.equalToSuperview().inset(isRecording ? 15 : 5)
-				make.center.equalToSuperview()
+				recordIcon.snp.remakeConstraints { make in
+					make.width.height.equalToSuperview().inset(isRecording ? 15 : 5)
+					make.center.equalToSuperview()
+				}
+
+				recordIcon.layoutIfNeeded()
+				control.layoutIfNeeded()
 			}
-
-			recordIcon.layoutIfNeeded()
-			control.layoutIfNeeded()
-		}
 
 		return (control, bag)
 	}

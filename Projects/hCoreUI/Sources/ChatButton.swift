@@ -8,7 +8,10 @@ public struct ChatButton {
 	public let presentingViewController: UIViewController
 	public let allowsChatHint: Bool
 
-	public init(presentingViewController: UIViewController, allowsChatHint: Bool = false) {
+	public init(
+		presentingViewController: UIViewController,
+		allowsChatHint: Bool = false
+	) {
 		self.presentingViewController = presentingViewController
 		self.allowsChatHint = allowsChatHint
 	}
@@ -32,24 +35,23 @@ extension ChatButton: Viewable {
 
 		if allowsChatHint {
 			let chatHintBag = bag.innerBag()
-			chatHintBag += Signal(after: 4).filter(predicate: { chatButtonView.window != nil }).onFirstValue
-			{ _ in
-				chatHintBag += chatButtonView.present(
-					Tooltip(
-						id: "chatHint",
-						value: L10n.HomeTab.chatHintText,
-						sourceRect: chatButtonView.frame
-					).when(.onceEvery(timeInterval: .days(numberOfDays: 30)))
-				)
-				chatHintBag += chatButtonView.signal(for: .touchUpInside).onValue {
-					chatHintBag.dispose()
+			chatHintBag += Signal(after: 4).filter(predicate: { chatButtonView.window != nil })
+				.onFirstValue { _ in
+					chatHintBag += chatButtonView.present(
+						Tooltip(
+							id: "chatHint",
+							value: L10n.HomeTab.chatHintText,
+							sourceRect: chatButtonView.frame
+						)
+						.when(.onceEvery(timeInterval: .days(numberOfDays: 30)))
+					)
+					chatHintBag += chatButtonView.signal(for: .touchUpInside)
+						.onValue { chatHintBag.dispose() }
 				}
-			}
 		}
 
-		bag += chatButtonView.signal(for: \.bounds).atOnce().onValue { frame in
-			chatButtonView.layer.cornerRadius = frame.height / 2
-		}
+		bag += chatButtonView.signal(for: \.bounds).atOnce()
+			.onValue { frame in chatButtonView.layer.cornerRadius = frame.height / 2 }
 
 		bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
@@ -61,18 +63,19 @@ extension ChatButton: Viewable {
 		chatIcon.contentMode = .scaleAspectFit
 		chatIcon.tintColor = .brand(.primaryText())
 
-		bag += chatButtonView.signal(for: .touchDown).animated(
-			style: AnimationStyle.easeOut(duration: 0.25),
-			animations: { _ in
-				chatButtonView.backgroundColor = UIColor.brand(.primaryBackground()).darkened(
-					amount: 0.1
-				)
-			}
-		)
+		bag += chatButtonView.signal(for: .touchDown)
+			.animated(
+				style: AnimationStyle.easeOut(duration: 0.25),
+				animations: { _ in
+					chatButtonView.backgroundColor = UIColor.brand(.primaryBackground())
+						.darkened(amount: 0.1)
+				}
+			)
 
-		bag += chatButtonView.delayedTouchCancel().animated(style: AnimationStyle.easeOut(duration: 0.25)) {
-			_ in chatButtonView.backgroundColor = .brand(.primaryBackground())
-		}
+		bag += chatButtonView.delayedTouchCancel()
+			.animated(style: AnimationStyle.easeOut(duration: 0.25)) { _ in
+				chatButtonView.backgroundColor = .brand(.primaryBackground())
+			}
 
 		chatButtonView.addSubview(chatIcon)
 

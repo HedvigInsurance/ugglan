@@ -20,9 +20,10 @@ extension KeyGearImageCarousel: Viewable {
 		collectionKit.view.backgroundColor = .brand(.secondaryBackground())
 		let bag = DisposeBag()
 
-		bag += imagesSignal.atOnce().onValue { images in
-			collectionKit.table = Table(rows: images.map { KeyGearImageCarouselItem(resource: $0) })
-		}
+		bag += imagesSignal.atOnce()
+			.onValue { images in
+				collectionKit.table = Table(rows: images.map { KeyGearImageCarouselItem(resource: $0) })
+			}
 
 		bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
 			CGSize(width: collectionKit.view.frame.width, height: 400)

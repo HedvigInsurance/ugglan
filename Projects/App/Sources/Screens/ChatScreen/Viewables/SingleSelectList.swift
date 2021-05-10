@@ -17,7 +17,11 @@ struct SingleSelectList: Hashable, Equatable {
 
 	func hash(into hasher: inout Hasher) { hasher.combine(id) }
 
-	init(options: [SingleSelectOption], chatState: ChatState, navigateCallbacker: Callbacker<NavigationEvent>) {
+	init(
+		options: [SingleSelectOption],
+		chatState: ChatState,
+		navigateCallbacker: Callbacker<NavigationEvent>
+	) {
 		self.options = options
 		self.chatState = chatState
 		self.navigateCallbacker = navigateCallbacker
@@ -67,68 +71,76 @@ extension SingleSelectList: Viewable {
 
 		view.addArrangedSubview(contentContainerView)
 
-		bag += options.enumerated().map { arg in let (index, option) = arg
-			let innerBag = DisposeBag()
-			let button = Button(
-				title: option.text,
-				type: .standardSmall(
-					backgroundColor: .brand(.primaryButtonBackgroundColor),
-					textColor: .brand(.primaryButtonTextColor)
+		bag += options.enumerated()
+			.map { arg in let (index, option) = arg
+				let innerBag = DisposeBag()
+				let button = Button(
+					title: option.text,
+					type: .standardSmall(
+						backgroundColor: .brand(.primaryButtonBackgroundColor),
+						textColor: .brand(.primaryButtonTextColor)
+					)
 				)
-			)
 
-			innerBag += button.onTapSignal.onValue { _ in
-				func removeViews() {
-					view.arrangedSubviews.forEach { subView in
-						innerBag += Signal(after: 0).animated(
-							style: SpringAnimationStyle.mediumBounce(),
-							animations: { _ in
-								subView.transform = CGAffineTransform(
-									translationX: subView.frame.width,
-									y: 0
+				innerBag += button.onTapSignal.onValue { _ in
+					func removeViews() {
+						view.arrangedSubviews.forEach { subView in
+							innerBag += Signal(after: 0)
+								.animated(
+									style: SpringAnimationStyle.mediumBounce(),
+									animations: { _ in
+										subView.transform = CGAffineTransform(
+											translationX: subView.frame
+												.width,
+											y: 0
+										)
+										subView.alpha = 0
+									}
 								)
-								subView.alpha = 0
+						}
+					}
+					switch option.type {
+					case let .link(view):
+						if view == .offer {
+							self.navigateCallbacker.callAll(with: .offer)
+						} else if view == .dashboard {
+							self.navigateCallbacker.callAll(with: .dashboard)
+						}
+						removeViews()
+					case .selection:
+						self.chatState.sendSingleSelectResponse(selectedValue: option.value)
+						removeViews()
+					case .login: self.navigateCallbacker.callAll(with: .login)
+					}
+				}
+
+				let buttonWrapper = UIStackView()
+				buttonWrapper.axis = .vertical
+				buttonWrapper.alignment = .center
+
+				innerBag += contentContainerView.addArranged(button.wrappedIn(buttonWrapper))
+
+				if let buttonView = buttonWrapper.subviews.first {
+					innerBag += buttonView.hasWindowSignal.atOnce()
+						.atValue { _ in buttonView.alpha = 0
+							buttonView.transform = CGAffineTransform(
+								translationX: buttonView.frame.width + 70,
+								y: 0
+							)
+						}
+						.delay(by: 0.2)
+						.animated(
+							style: SpringAnimationStyle.mediumBounce(
+								delay: Double(index) * 0.1
+							),
+							animations: { _ in buttonView.transform = .identity
+								buttonView.alpha = 1
 							}
 						)
-					}
 				}
-				switch option.type {
-				case let .link(view):
-					if view == .offer {
-						self.navigateCallbacker.callAll(with: .offer)
-					} else if view == .dashboard {
-						self.navigateCallbacker.callAll(with: .dashboard)
-					}
-					removeViews()
-				case .selection:
-					self.chatState.sendSingleSelectResponse(selectedValue: option.value)
-					removeViews()
-				case .login: self.navigateCallbacker.callAll(with: .login)
-				}
+
+				return innerBag
 			}
-
-			let buttonWrapper = UIStackView()
-			buttonWrapper.axis = .vertical
-			buttonWrapper.alignment = .center
-
-			innerBag += contentContainerView.addArranged(button.wrappedIn(buttonWrapper))
-
-			if let buttonView = buttonWrapper.subviews.first {
-				innerBag += buttonView.hasWindowSignal.atOnce().atValue { _ in buttonView.alpha = 0
-					buttonView.transform = CGAffineTransform(
-						translationX: buttonView.frame.width + 70,
-						y: 0
-					)
-				}.delay(by: 0.2).animated(
-					style: SpringAnimationStyle.mediumBounce(delay: Double(index) * 0.1),
-					animations: { _ in buttonView.transform = .identity
-						buttonView.alpha = 1
-					}
-				)
-			}
-
-			return innerBag
-		}
 
 		return (scrollView, bag)
 	}

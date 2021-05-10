@@ -20,25 +20,25 @@ extension KeyGearReceipt: Presentable {
 
 		let activityButton = UIBarButtonItem(system: .action)
 
-		bag += viewController.navigationItem.addItem(activityButton, position: .right).compactMap(
-			on: .background
-		) { try? Data(contentsOf: self.receipt) }.onValueDisposePrevious { data -> Disposable? in
+		bag += viewController.navigationItem.addItem(activityButton, position: .right)
+			.compactMap(on: .background) { try? Data(contentsOf: self.receipt) }
+			.onValueDisposePrevious { data -> Disposable? in
 
-			let activityView = ActivityView(
-				activityItems: [data],
-				applicationActivities: nil,
-				sourceView: activityButton.view,
-				sourceRect: activityButton.bounds
-			)
+				let activityView = ActivityView(
+					activityItems: [data],
+					applicationActivities: nil,
+					sourceView: activityButton.view,
+					sourceRect: activityButton.bounds
+				)
 
-			let activityViewPresentation = Presentation(
-				activityView,
-				style: .activityView,
-				options: .defaults
-			)
+				let activityViewPresentation = Presentation(
+					activityView,
+					style: .activityView,
+					options: .defaults
+				)
 
-			return viewController.present(activityViewPresentation).disposable
-		}
+				return viewController.present(activityViewPresentation).disposable
+			}
 
 		if receipt.pathExtension == "pdf" {
 			let pdfViewer = PDFViewer()

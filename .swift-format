@@ -7,5 +7,7 @@
     "maximumBlankLines": 1,
     "respectsExistingLineBreaks": false,
     "lineBreakBeforeControlFlowKeywords": false,
-    "lineBreakBeforeEachArgument": true
+    "lineBreakBeforeEachArgument": true,
+    "lineBreakAroundMultilineExpressionChainComponents": true,
+    "prioritizeKeepingFunctionOutputTogether": true
 }

@@ -4,15 +4,18 @@ import UIKit
 class TriangleView: UIView {
 	let color: UIColor
 
-	init(frame: CGRect, color: UIColor) {
+	init(
+		frame: CGRect,
+		color: UIColor
+	) {
 		self.color = color
 		super.init(frame: frame)
 		backgroundColor = .clear
 	}
 
-	@available(*, unavailable) required init?(coder _: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	@available(*, unavailable) required init?(
+		coder _: NSCoder
+	) { fatalError("init(coder:) has not been implemented") }
 
 	override func traitCollectionDidChange(_: UITraitCollection?) { setNeedsDisplay() }
 

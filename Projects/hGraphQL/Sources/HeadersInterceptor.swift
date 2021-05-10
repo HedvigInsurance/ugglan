@@ -6,7 +6,11 @@ class HeadersInterceptor: ApolloInterceptor {
 	let acceptLanguageHeader: String
 	let userAgent: String
 
-	init(token: String, acceptLanguageHeader: String, userAgent: String) {
+	init(
+		token: String,
+		acceptLanguageHeader: String,
+		userAgent: String
+	) {
 		self.token = token
 		self.acceptLanguageHeader = acceptLanguageHeader
 		self.userAgent = userAgent

@@ -18,9 +18,8 @@ extension ResultMap {
 				)
 			{
 				let resultMap = self[String(firstPath)] as? ResultMap
-				return resultMap?.deepFind(
-					String(path.replacingCharacters(in: range, with: "").dropFirst())
-				)
+				return resultMap?
+					.deepFind(String(path.replacingCharacters(in: range, with: "").dropFirst()))
 			}
 
 			return nil
@@ -162,39 +161,42 @@ extension ResultMap {
 	}
 
 	func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
-		mutation.data.mutationResults.compactMap { $0 }.forEach { mutationResult in
-			let value = deepFind(mutationResult.key)
-			store.setValue(key: mutationResult.as, value: value)
-		}
+		mutation.data.mutationResults.compactMap { $0 }
+			.forEach { mutationResult in let value = deepFind(mutationResult.key)
+				store.setValue(key: mutationResult.as, value: value)
+			}
 	}
 }
 
 extension EmbarkState {
 	func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<GraphQL.EmbarkLinkFragment?> {
-		handleApiRequest(apiFragment: apiFragment).mapResult { result in
-			switch result {
-			case .success:
-				if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
-					return queryApi.data.next?.fragments.embarkLinkFragment
-				} else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
-					return mutationApi.data.next?.fragments.embarkLinkFragment
+		handleApiRequest(apiFragment: apiFragment)
+			.mapResult { result in
+				switch result {
+				case .success:
+					if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
+						return queryApi.data.next?.fragments.embarkLinkFragment
+					} else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
+						return mutationApi.data.next?.fragments.embarkLinkFragment
+					}
+				case let .failure(error):
+					if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
+						return queryApi.data.queryErrors.first { queryError -> Bool in
+							guard let contains = queryError.contains else { return true }
+							return error.localizedDescription.contains(contains)
+						}?
+						.next.fragments.embarkLinkFragment
+					} else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
+						return mutationApi.data.mutationErrors.first { mutationError -> Bool in
+							guard let contains = mutationError.contains else { return true }
+							return error.localizedDescription.contains(contains)
+						}?
+						.next.fragments.embarkLinkFragment
+					}
 				}
-			case let .failure(error):
-				if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
-					return queryApi.data.queryErrors.first { queryError -> Bool in
-						guard let contains = queryError.contains else { return true }
-						return error.localizedDescription.contains(contains)
-					}?.next.fragments.embarkLinkFragment
-				} else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
-					return mutationApi.data.mutationErrors.first { mutationError -> Bool in
-						guard let contains = mutationError.contains else { return true }
-						return error.localizedDescription.contains(contains)
-					}?.next.fragments.embarkLinkFragment
-				}
-			}
 
-			return nil
-		}
+				return nil
+			}
 	}
 
 	private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
@@ -265,7 +267,8 @@ extension EmbarkState {
 			return performHTTPCall(
 				queryApi.data.query,
 				variables: queryApi.data.graphQLVariables(store: store)
-			).onValue { resultMap in guard let resultMap = resultMap else { return }
+			)
+			.onValue { resultMap in guard let resultMap = resultMap else { return }
 
 				resultMap.insertInto(store: self.store, basedOn: queryApi)
 			}
@@ -273,7 +276,8 @@ extension EmbarkState {
 			return performHTTPCall(
 				mutationApi.data.mutation,
 				variables: mutationApi.data.graphQLVariables(store: store)
-			).onValue { resultMap in guard let resultMap = resultMap else { return }
+			)
+			.onValue { resultMap in guard let resultMap = resultMap else { return }
 
 				resultMap.insertInto(store: self.store, basedOn: mutationApi)
 			}
@@ -297,13 +301,14 @@ extension EmbarkState {
 	}
 
 	var apiResponseSignal: ReadSignal<GraphQL.EmbarkLinkFragment?> {
-		currentPassageSignal.compactMap { $0 }.mapLatestToFuture {
-			passage -> Future<GraphQL.EmbarkLinkFragment?> in
-			guard let apiFragment = passage.api?.fragments.apiFragment else {
-				return Future(error: ApiError.noApi)
-			}
+		currentPassageSignal.compactMap { $0 }
+			.mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
+				guard let apiFragment = passage.api?.fragments.apiFragment else {
+					return Future(error: ApiError.noApi)
+				}
 
-			return self.handleApi(apiFragment: apiFragment)
-		}.providedSignal.plain().readable(initial: nil)
+				return self.handleApi(apiFragment: apiFragment)
+			}
+			.providedSignal.plain().readable(initial: nil)
 	}
 }

@@ -43,9 +43,9 @@ extension EmbarkSelectAction: Viewable {
 							data: option
 						)
 
-						return stack.addArranged(selectActionOption).filter(predicate: { _ in
-							!isSelectOptionLoading
-						}).atValue { _ in $isSelectOptionLoading.value = true }
+						return stack.addArranged(selectActionOption)
+							.filter(predicate: { _ in !isSelectOptionLoading })
+							.atValue { _ in $isSelectOptionLoading.value = true }
 							.mapLatestToFuture {
 								result -> Future<
 									(GraphQL.EmbarkLinkFragment, ActionResponseData)
@@ -62,14 +62,16 @@ extension EmbarkSelectAction: Viewable {
 								}
 
 								return Future((defaultLink, result))
-							}.onValue { link, result in
-								result.keys.enumerated().forEach { offset, key in
-									let value = result.values[offset]
-									self.state.store.setValue(
-										key: key,
-										value: value
-									)
-								}
+							}
+							.onValue { link, result in
+								result.keys.enumerated()
+									.forEach { offset, key in
+										let value = result.values[offset]
+										self.state.store.setValue(
+											key: key,
+											value: value
+										)
+									}
 
 								if let passageName = self.state.passageNameSignal.value
 								{

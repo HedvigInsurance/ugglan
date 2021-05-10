@@ -111,13 +111,15 @@ extension KeyGearListItem: Reusable {
 
 				bag += touchUpInsideSignal.feedback(type: .impactLight)
 
-				bag += view.signal(for: .touchDown).animated(
-					style: AnimationStyle.easeOut(duration: 0.35)
-				) { view.transform = CGAffineTransform(scaleX: 0.98, y: 0.98) }
+				bag += view.signal(for: .touchDown)
+					.animated(style: AnimationStyle.easeOut(duration: 0.35)) {
+						view.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+					}
 
-				bag += view.delayedTouchCancel(delay: 0.1).animated(
-					style: AnimationStyle.easeOut(duration: 0.35)
-				) { view.transform = CGAffineTransform.identity }
+				bag += view.delayedTouchCancel(delay: 0.1)
+					.animated(style: AnimationStyle.easeOut(duration: 0.35)) {
+						view.transform = CGAffineTransform.identity
+					}
 
 				if let imageUrl = self.imageUrl {
 					imageView.kf.setImage(

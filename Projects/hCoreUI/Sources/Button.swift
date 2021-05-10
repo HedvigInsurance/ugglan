@@ -4,8 +4,7 @@ import Foundation
 import UIKit
 import hCore
 
-public enum ButtonType {
-	case standard(backgroundColor: UIColor, textColor: UIColor)
+public enum ButtonType { case standard(backgroundColor: UIColor, textColor: UIColor)
 	case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case standardSmall(backgroundColor: UIColor, textColor: UIColor)
 	case standardOutline(borderColor: UIColor, textColor: UIColor)
@@ -184,7 +183,12 @@ public struct Button {
 	public let animate: Bool
 	public let isEnabled: ReadWriteSignal<Bool>
 
-	public init(title: DisplayableString, type: ButtonType, isEnabled: Bool = true, animate: Bool = true) {
+	public init(
+		title: DisplayableString,
+		type: ButtonType,
+		isEnabled: Bool = true,
+		animate: Bool = true
+	) {
 		self.title = ReadWriteSignal(title)
 		onTapSignal = onTapReadWriteSignal.plain()
 		self.type = ReadWriteSignal<ButtonType>(type)
@@ -287,10 +291,11 @@ extension Button: Viewable {
 			}
 		}
 
-		bag += type.atOnce().onValue { buttonType in updateStyle(buttonType: buttonType)
-			updateHighlightedStyle(buttonType: buttonType)
-			updateDisabledStyle(buttonType: buttonType)
-		}
+		bag += type.atOnce()
+			.onValue { buttonType in updateStyle(buttonType: buttonType)
+				updateHighlightedStyle(buttonType: buttonType)
+				updateDisabledStyle(buttonType: buttonType)
+			}
 
 		let button = UIButton(title: "", style: styleSignal.value)
 
@@ -300,128 +305,138 @@ extension Button: Viewable {
 			updateHighlightedStyle(buttonType: self.type.value)
 		}
 
-		bag += styleSignal.atOnce().compactMap { $0 }.bindTo(
-			transition: button,
-			style: TransitionStyle.crossDissolve(duration: 0.25),
-			button,
-			\.style
-		)
+		bag += styleSignal.atOnce().compactMap { $0 }
+			.bindTo(
+				transition: button,
+				style: TransitionStyle.crossDissolve(duration: 0.25),
+				button,
+				\.style
+			)
 
 		button.adjustsImageWhenHighlighted = false
 
 		let iconImageView = UIImageView()
 		button.addSubview(iconImageView)
 
-		bag += type.atOnce().onValue { type in
-			if let icon = type.icon {
-				iconImageView.isHidden = false
-				iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
+		bag += type.atOnce()
+			.onValue { type in
+				if let icon = type.icon {
+					iconImageView.isHidden = false
+					iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
 
-				if let iconColor = type.iconColor { iconImageView.tintColor = iconColor }
+					if let iconColor = type.iconColor { iconImageView.tintColor = iconColor }
 
-				iconImageView.contentMode = .scaleAspectFit
+					iconImageView.contentMode = .scaleAspectFit
 
-				let iconDistance = type.iconDistance
+					let iconDistance = type.iconDistance
 
-				switch icon {
-				case .left:
-					button.titleEdgeInsets = UIEdgeInsets(
-						top: 0,
-						left: icon.width + iconDistance,
-						bottom: 0,
-						right: 0
-					)
-				case .right:
-					button.titleEdgeInsets = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: 0,
-						right: icon.width + iconDistance
-					)
-				}
-
-				button.addSubview(iconImageView)
-
-				iconImageView.snp.makeConstraints { make in
 					switch icon {
-					case .left: make.left.equalTo(type.extraWidthOffset / 2)
-					case .right: make.right.equalTo(-type.extraWidthOffset / 2)
+					case .left:
+						button.titleEdgeInsets = UIEdgeInsets(
+							top: 0,
+							left: icon.width + iconDistance,
+							bottom: 0,
+							right: 0
+						)
+					case .right:
+						button.titleEdgeInsets = UIEdgeInsets(
+							top: 0,
+							left: 0,
+							bottom: 0,
+							right: icon.width + iconDistance
+						)
 					}
 
-					make.centerY.equalToSuperview()
-					make.height.equalTo(type.height)
-					make.width.equalTo(icon.width)
-				}
-			} else {
-				iconImageView.isHidden = true
-			}
-		}
+					button.addSubview(iconImageView)
 
-		bag += title.atOnce().withLatestFrom(type).onValueDisposePrevious { title, type in
-			let innerBag = DisposeBag()
+					iconImageView.snp.makeConstraints { make in
+						switch icon {
+						case .left: make.left.equalTo(type.extraWidthOffset / 2)
+						case .right: make.right.equalTo(-type.extraWidthOffset / 2)
+						}
 
-			button.setTitle(title)
-
-			let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
-
-			innerBag += button.didLayoutSignal.take(first: 1).onValue { _ in
-				button.snp.updateConstraints { make in
-					make.width.equalTo(
-						button.intrinsicContentSize.width + type.extraWidthOffset + iconWidth
-					)
+						make.centerY.equalToSuperview()
+						make.height.equalTo(type.height)
+						make.width.equalTo(icon.width)
+					}
+				} else {
+					iconImageView.isHidden = true
 				}
 			}
 
-			return innerBag
-		}
+		bag += title.atOnce().withLatestFrom(type)
+			.onValueDisposePrevious { title, type in let innerBag = DisposeBag()
 
-		bag += button.signal(for: .touchDown).filter { self.animate }.withLatestFrom(
-			highlightedStyleSignal.atOnce().plain()
-		).map { _, highlightedStyleSignalValue -> ButtonStyle in highlightedStyleSignalValue }.bindTo(
-			transition: button,
-			style: TransitionStyle.crossDissolve(duration: 0.25),
-			button,
-			\.style
-		)
+				button.setTitle(title)
+
+				let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
+
+				innerBag += button.didLayoutSignal.take(first: 1)
+					.onValue { _ in
+						button.snp.updateConstraints { make in
+							make.width.equalTo(
+								button.intrinsicContentSize.width
+									+ type.extraWidthOffset + iconWidth
+							)
+						}
+					}
+
+				return innerBag
+			}
+
+		bag += button.signal(for: .touchDown).filter { self.animate }
+			.withLatestFrom(highlightedStyleSignal.atOnce().plain())
+			.map { _, highlightedStyleSignalValue -> ButtonStyle in highlightedStyleSignalValue }
+			.bindTo(
+				transition: button,
+				style: TransitionStyle.crossDissolve(duration: 0.25),
+				button,
+				\.style
+			)
 
 		let touchUpInside = button.signal(for: .touchUpInside)
 		bag += touchUpInside.feedback(type: .impactLight)
 
 		bag += touchUpInside.map { _ -> Void in () }.bindTo(onTapReadWriteSignal)
 
-		bag += touchUpInside.filter { self.animate }.withLatestFrom(styleSignal.atOnce().plain()).map {
-			_,
-			styleSignalValue -> ButtonStyle in styleSignalValue
-		}.delay(by: 0.1).bindTo(
-			transition: button,
-			style: TransitionStyle.crossDissolve(duration: 0.25),
-			button,
-			\.style
-		)
+		bag += touchUpInside.filter { self.animate }.withLatestFrom(styleSignal.atOnce().plain())
+			.map { _, styleSignalValue -> ButtonStyle in styleSignalValue }.delay(by: 0.1)
+			.bindTo(
+				transition: button,
+				style: TransitionStyle.crossDissolve(duration: 0.25),
+				button,
+				\.style
+			)
 
 		bag += touchUpInside.onValue { _ in Button.trackingHandler(self) }
 
-		bag += merge(button.signal(for: .touchUpOutside), button.signal(for: .touchCancel)).filter {
-			self.animate
-		}.withLatestFrom(styleSignal.atOnce().plain()).map { _, styleSignalValue -> ButtonStyle in
-			styleSignalValue
-		}.bindTo(transition: button, style: TransitionStyle.crossDissolve(duration: 0.25), button, \.style)
+		bag += merge(button.signal(for: .touchUpOutside), button.signal(for: .touchCancel))
+			.filter { self.animate }.withLatestFrom(styleSignal.atOnce().plain())
+			.map { _, styleSignalValue -> ButtonStyle in styleSignalValue }
+			.bindTo(
+				transition: button,
+				style: TransitionStyle.crossDissolve(duration: 0.25),
+				button,
+				\.style
+			)
 
 		button.snp.makeConstraints { make in make.width.equalTo(0)
 			make.height.equalTo(0)
 		}
 
-		bag += button.didLayoutSignal.take(first: 1).onValue { _ in let type = self.type.value
-			let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
+		bag += button.didLayoutSignal.take(first: 1)
+			.onValue { _ in let type = self.type.value
+				let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
 
-			button.snp.updateConstraints { make in
-				make.width.equalTo(
-					button.intrinsicContentSize.width + self.type.value.extraWidthOffset + iconWidth
-				)
-				make.height.equalTo(self.type.value.height)
+				button.snp.updateConstraints { make in
+					make.width.equalTo(
+						button.intrinsicContentSize.width + self.type.value.extraWidthOffset
+							+ iconWidth
+					)
+					make.height.equalTo(self.type.value.height)
+				}
+				button.snp.makeConstraints { make in make.centerX.equalToSuperview() }
 			}
-			button.snp.makeConstraints { make in make.centerX.equalToSuperview() }
-		}
 
 		return (button, bag)
 	}

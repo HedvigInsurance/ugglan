@@ -24,10 +24,8 @@ extension DiscountCodeSection: Viewable {
 				)
 
 				bag += changeButton.onTapSignal.onValue { _ in
-					stackView.viewController?.present(
-						ChangeCode(service: self.service),
-						style: .modal
-					)
+					stackView.viewController?
+						.present(ChangeCode(service: self.service), style: .modal)
 				}
 
 				bag += stackView.addArranged(changeButton.wrappedIn(UIStackView()))
@@ -62,30 +60,30 @@ extension DiscountCodeSection: Viewable {
 		let codeLabel = UILabel(value: "", style: TextStyle.brand(.title3(color: .primary)).centerAligned)
 		codeRow.append(codeLabel)
 
-		bag += service.dataSignal.atOnce().compactMap { $0?.discountCode }.animated(
-			style: SpringAnimationStyle.lightBounce()
-		) { code in section.animationSafeIsHidden = false
-			codeLabel.value = code
-		}
-
-		bag += section.append(codeRow).trackedSignal.onValueDisposePrevious { _ in let innerBag = DisposeBag()
-
-			section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal).onResult
-			{ _ in
-				innerBag += self.service.dataSignal.atOnce().compactMap { $0?.discountCode }.bindTo(
-					UIPasteboard.general,
-					\.string
-				)
-				Toasts.shared.displayToast(
-					toast: .init(
-						symbol: .icon(Asset.toastIcon.image),
-						body: L10n.ReferralsActiveToast.text
-					)
-				)
+		bag += service.dataSignal.atOnce().compactMap { $0?.discountCode }
+			.animated(style: SpringAnimationStyle.lightBounce()) { code in
+				section.animationSafeIsHidden = false
+				codeLabel.value = code
 			}
 
-			return innerBag
-		}
+		bag += section.append(codeRow).trackedSignal
+			.onValueDisposePrevious { _ in let innerBag = DisposeBag()
+
+				section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal)
+					.onResult { _ in
+						innerBag += self.service.dataSignal.atOnce()
+							.compactMap { $0?.discountCode }
+							.bindTo(UIPasteboard.general, \.string)
+						Toasts.shared.displayToast(
+							toast: .init(
+								symbol: .icon(Asset.toastIcon.image),
+								body: L10n.ReferralsActiveToast.text
+							)
+						)
+					}
+
+				return innerBag
+			}
 
 		return (section, bag)
 	}

@@ -13,7 +13,10 @@ struct CommonClaimCard {
 	let index: TableIndex
 	@Inject var client: ApolloClient
 
-	init(data: GraphQL.CommonClaimsQuery.Data.CommonClaim, index: TableIndex) {
+	init(
+		data: GraphQL.CommonClaimsQuery.Data.CommonClaim,
+		index: TableIndex
+	) {
 		self.index = index
 		self.data = data
 	}
@@ -39,20 +42,23 @@ extension CommonClaimCard: Viewable {
 
 		bag += containerView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
-		bag += containerView.signal(for: .touchDown).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-			containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-		}
+		bag += containerView.signal(for: .touchDown)
+			.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+				containerView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+			}
 
-		bag += containerView.delayedTouchCancel().animated(style: SpringAnimationStyle.lightBounce()) { _ in
-			containerView.transform = CGAffineTransform.identity
-		}
+		bag += containerView.delayedTouchCancel()
+			.animated(style: SpringAnimationStyle.lightBounce()) { _ in
+				containerView.transform = CGAffineTransform.identity
+			}
 
 		bag += containerView.trackedTouchUpInsideSignal.onValue {
-			containerView.viewController?.present(
-				CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
-				style: .detented(.medium, .large),
-				options: [.defaults]
-			)
+			containerView.viewController?
+				.present(
+					CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
+					style: .detented(.medium, .large),
+					options: [.defaults]
+				)
 		}
 
 		let contentView = UIStackView()

@@ -42,15 +42,15 @@ extension ApolloClient {
 		queue: DispatchQueue = DispatchQueue.main
 	) -> Disposable {
 		refreshControl.onValue { [unowned self] _ in
-			self.fetch(query: query, cachePolicy: .fetchIgnoringCacheData, queue: queue).onValue { _ in
-				refreshControl.endRefreshing()
-			}
+			self.fetch(query: query, cachePolicy: .fetchIgnoringCacheData, queue: queue)
+				.onValue { _ in refreshControl.endRefreshing() }
 		}
 	}
 
-	public func perform<Mutation: GraphQLMutation>(mutation: Mutation, queue: DispatchQueue = DispatchQueue.main)
-		-> Future<Mutation.Data>
-	{
+	public func perform<Mutation: GraphQLMutation>(
+		mutation: Mutation,
+		queue: DispatchQueue = DispatchQueue.main
+	) -> Future<Mutation.Data> {
 		Future<Mutation.Data> { completion in
 			let cancellable = self.perform(
 				mutation: mutation,

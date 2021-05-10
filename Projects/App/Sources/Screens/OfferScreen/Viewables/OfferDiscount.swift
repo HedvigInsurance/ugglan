@@ -35,9 +35,8 @@ extension OfferDiscount: Viewable {
 
 		func outState(_ view: UIView) {
 			view.isUserInteractionEnabled = false
-			view.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001).concatenating(
-				CGAffineTransform(translationX: 0, y: -30)
-			)
+			view.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001)
+				.concatenating(CGAffineTransform(translationX: 0, y: -30))
 			view.alpha = 0
 		}
 
@@ -56,23 +55,23 @@ extension OfferDiscount: Viewable {
 		) {
 			outState(buttonView)
 
-			bag += dataSignal.take(first: 1).animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) {
-				redeemedCampaigns in
-				if shouldShowButton(redeemedCampaigns) {
-					inState(buttonView)
-				} else {
-					outState(buttonView)
+			bag += dataSignal.take(first: 1)
+				.animated(style: SpringAnimationStyle.mediumBounce(delay: 1)) { redeemedCampaigns in
+					if shouldShowButton(redeemedCampaigns) {
+						inState(buttonView)
+					} else {
+						outState(buttonView)
+					}
 				}
-			}
 
-			bag += dataSignal.skip(first: 1).animated(style: SpringAnimationStyle.mediumBounce()) {
-				redeemedCampaigns in
-				if shouldShowButton(redeemedCampaigns) {
-					inState(buttonView)
-				} else {
-					outState(buttonView)
+			bag += dataSignal.skip(first: 1)
+				.animated(style: SpringAnimationStyle.mediumBounce()) { redeemedCampaigns in
+					if shouldShowButton(redeemedCampaigns) {
+						inState(buttonView)
+					} else {
+						outState(buttonView)
+					}
 				}
-			}
 		}
 
 		bag += view.add(redeemButton) { buttonView in
@@ -120,20 +119,24 @@ extension OfferDiscount: Viewable {
 				actions: [
 					Alert.Action(title: L10n.offerRemoveDiscountAlertCancel) {},
 					Alert.Action(title: L10n.offerRemoveDiscountAlertRemove, style: .destructive) {
-						bag += self.client.perform(
-							mutation: GraphQL.RemoveDiscountCodeMutation()
-						).valueSignal.compactMap { $0.removeDiscountCode }.onValue { result in
-							self.store.update(query: GraphQL.OfferQuery()) {
-								(data: inout GraphQL.OfferQuery.Data) in
-								data.redeemedCampaigns = result.campaigns.compactMap {
-									try? GraphQL.OfferQuery.Data.RedeemedCampaign(
-										jsonObject: $0.jsonObject
-									)
+						bag += self.client
+							.perform(mutation: GraphQL.RemoveDiscountCodeMutation())
+							.valueSignal.compactMap { $0.removeDiscountCode }
+							.onValue { result in
+								self.store.update(query: GraphQL.OfferQuery()) {
+									(data: inout GraphQL.OfferQuery.Data) in
+									data.redeemedCampaigns = result.campaigns
+										.compactMap {
+											try? GraphQL.OfferQuery.Data
+												.RedeemedCampaign(
+													jsonObject: $0
+														.jsonObject
+												)
+										}
+									data.insurance.cost?.fragments.costFragment =
+										result.cost.fragments.costFragment
 								}
-								data.insurance.cost?.fragments.costFragment =
-									result.cost.fragments.costFragment
 							}
-						}
 					},
 				]
 			)

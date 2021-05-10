@@ -9,9 +9,9 @@ import hGraphQL
 public struct ContractPerilCollection {
 	let perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>
 
-	public init(perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>) {
-		self.perilFragmentsSignal = perilFragmentsSignal
-	}
+	public init(
+		perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>
+	) { self.perilFragmentsSignal = perilFragmentsSignal }
 }
 
 extension ContractPerilCollection: Viewable {
@@ -22,23 +22,25 @@ extension ContractPerilCollection: Viewable {
 
 		let bag = DisposeBag()
 
-		bag += perilFragmentsSignal.atOnce().onValue { perilFragments in
-			collectionKit.set(
-				Table(
-					rows: perilFragments.map { fragment -> ContractPerilRow in
-						.init(fragment: fragment)
-					}
+		bag += perilFragmentsSignal.atOnce()
+			.onValue { perilFragments in
+				collectionKit.set(
+					Table(
+						rows: perilFragments.map { fragment -> ContractPerilRow in
+							.init(fragment: fragment)
+						}
+					)
 				)
-			)
-		}
+			}
 
 		bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
 			CGSize(width: collectionKit.view.frame.size.width / 2 - 5, height: 64)
 		}
 
-		bag += collectionKit.view.signal(for: \.contentSize).onValue { size in
-			collectionKit.view.snp.updateConstraints { make in make.height.equalTo(size.height) }
-		}
+		bag += collectionKit.view.signal(for: \.contentSize)
+			.onValue { size in
+				collectionKit.view.snp.updateConstraints { make in make.height.equalTo(size.height) }
+			}
 
 		return (collectionKit.view, bag)
 	}

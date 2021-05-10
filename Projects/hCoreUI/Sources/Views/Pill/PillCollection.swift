@@ -28,11 +28,11 @@ extension PillCollection: Viewable {
 
 		collectionKit.view.snp.makeConstraints { make in make.height.equalTo(1) }
 
-		bag += collectionKit.view.signal(for: \.contentSize).atOnce().filter(predicate: { _ in
-			collectionKit.view.superview != nil
-		}).onValue { size in
-			collectionKit.view.snp.remakeConstraints { make in make.height.equalTo(size.height) }
-		}
+		bag += collectionKit.view.signal(for: \.contentSize).atOnce()
+			.filter(predicate: { _ in collectionKit.view.superview != nil })
+			.onValue { size in
+				collectionKit.view.snp.remakeConstraints { make in make.height.equalTo(size.height) }
+			}
 
 		return (collectionKit.view, bag)
 	}

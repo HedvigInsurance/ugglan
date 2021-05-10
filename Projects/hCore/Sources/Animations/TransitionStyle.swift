@@ -5,7 +5,10 @@ public struct TransitionStyle {
 	var duration: TimeInterval
 	var options: UIView.AnimationOptions
 
-	public init(duration: TimeInterval, options: UIView.AnimationOptions) {
+	public init(
+		duration: TimeInterval,
+		options: UIView.AnimationOptions
+	) {
 		self.duration = duration
 		self.options = options
 	}

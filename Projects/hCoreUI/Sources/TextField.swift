@@ -9,7 +9,11 @@ public struct TextField {
 	public let enabledSignal: ReadWriteSignal<Bool>
 	public let shouldReturn = Delegate<(String, UITextField), Bool>()
 
-	public init(value: String, placeholder: String, enabled: Bool = true) {
+	public init(
+		value: String,
+		placeholder: String,
+		enabled: Bool = true
+	) {
 		self.value = ReadWriteSignal(value)
 		self.placeholder = ReadWriteSignal(placeholder)
 		enabledSignal = ReadWriteSignal(enabled)
@@ -52,9 +56,8 @@ extension TextField: Viewable {
 
 		paddingView.addArrangedSubview(textField)
 
-		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
-			textField.becomeFirstResponder()
-		}
+		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }
+			.onValue { _ in textField.becomeFirstResponder() }
 
 		return (view, bag)
 	}

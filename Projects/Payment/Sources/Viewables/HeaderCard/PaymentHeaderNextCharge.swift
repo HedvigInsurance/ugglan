@@ -25,24 +25,24 @@ extension PaymentHeaderNextCharge: Viewable {
 
 		contentContainer.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-		bag += client.watch(query: GraphQL.MyPaymentQuery()).map { $0.nextChargeDate }.onValue {
-			nextChargeDate in
-			if let nextChargeDate = nextChargeDate {
-				let dateParsingFormatter = DateFormatter()
-				dateParsingFormatter.dateFormat = "yyyy-MM-dd"
+		bag += client.watch(query: GraphQL.MyPaymentQuery()).map { $0.nextChargeDate }
+			.onValue { nextChargeDate in
+				if let nextChargeDate = nextChargeDate {
+					let dateParsingFormatter = DateFormatter()
+					dateParsingFormatter.dateFormat = "yyyy-MM-dd"
 
-				if let date = dateParsingFormatter.date(from: nextChargeDate) {
-					let dateDisplayFormatter = DateFormatter()
-					dateDisplayFormatter.dateFormat = "dd MMMM"
-					label.value = dateDisplayFormatter.string(from: date)
+					if let date = dateParsingFormatter.date(from: nextChargeDate) {
+						let dateDisplayFormatter = DateFormatter()
+						dateDisplayFormatter.dateFormat = "dd MMMM"
+						label.value = dateDisplayFormatter.string(from: date)
+					}
+
+					view.backgroundColor = .brand(.primaryBackground())
+				} else {
+					label.value = L10n.paymentsCardNoStartdate
+					view.backgroundColor = .brand(.regularCaution)
 				}
-
-				view.backgroundColor = .brand(.primaryBackground())
-			} else {
-				label.value = L10n.paymentsCardNoStartdate
-				view.backgroundColor = .brand(.regularCaution)
 			}
-		}
 
 		return (view, bag)
 	}

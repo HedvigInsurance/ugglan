@@ -49,28 +49,32 @@ extension IconRow: Viewable {
 		labelsContainer.spacing = 4
 
 		let titleLabel = UILabel(value: "", style: .default)
-		bag += combineLatest(title.atOnce(), titleTextStyle.atOnce()).onValue { value, style in
-			titleLabel.styledText = StyledText(text: value, style: style)
-		}
+		bag += combineLatest(title.atOnce(), titleTextStyle.atOnce())
+			.onValue { value, style in titleLabel.styledText = StyledText(text: value, style: style) }
 
 		let subtitleLabel = UILabel(value: "", style: .default)
-		bag += combineLatest(subtitle.atOnce(), subtitleTextStyle.atOnce()).onValue { value, style in
-			subtitleLabel.isHidden = value.isEmpty
-			subtitleLabel.styledText = StyledText(text: value, style: style)
-		}
+		bag += combineLatest(subtitle.atOnce(), subtitleTextStyle.atOnce())
+			.onValue { value, style in subtitleLabel.isHidden = value.isEmpty
+				subtitleLabel.styledText = StyledText(text: value, style: style)
+			}
 
 		labelsContainer.addArrangedSubview(titleLabel)
 		labelsContainer.addArrangedSubview(subtitleLabel)
 
 		let row = rowView.prepend(icon).append(labelsContainer)
 
-		bag += options.atOnce().onValue { newOptions in
-			if newOptions.contains(.withArrow) { row.append(arrow) } else { arrow.removeFromSuperview() }
+		bag += options.atOnce()
+			.onValue { newOptions in
+				if newOptions.contains(.withArrow) {
+					row.append(arrow)
+				} else {
+					arrow.removeFromSuperview()
+				}
 
-			if newOptions.contains(.disabled) { row.alpha = 0.5 } else { row.alpha = 1 }
+				if newOptions.contains(.disabled) { row.alpha = 0.5 } else { row.alpha = 1 }
 
-			if newOptions.contains(.hidden) { row.isHidden = true } else { row.isHidden = false }
-		}
+				if newOptions.contains(.hidden) { row.isHidden = true } else { row.isHidden = false }
+			}
 
 		icon.snp.makeConstraints { make in make.width.equalTo(50) }
 

@@ -23,7 +23,8 @@ import hGraphQL
 				Section {
 					Picker("Locale", selection: $selectedLocale) {
 						ForEach(locales, id: \.self) { Text($0.code) }
-					}.pickerStyle(WheelPickerStyle())
+					}
+					.pickerStyle(WheelPickerStyle())
 				}
 				SwiftUI.Button("Exchange") {
 					let afterHashbang = paymentUrl.split(separator: "#").last
@@ -35,10 +36,12 @@ import hGraphQL
 						mutation: GraphQL.ExchangeTokenMutation(
 							exchangeToken: exchangeToken.removingPercentEncoding ?? ""
 						)
-					).onValue { response in
+					)
+					.onValue { response in
 						guard
 							let token = response.exchangeToken
-								.asExchangeTokenSuccessResponse?.token
+								.asExchangeTokenSuccessResponse?
+								.token
 						else { return }
 						onToken(token, selectedLocale)
 					}

@@ -10,9 +10,9 @@ struct OfferCoverageTerms {
 	@Inject var client: ApolloClient
 	let insuredAtOtherCompanySignal: ReadSignal<Bool>
 
-	init(insuredAtOtherCompanySignal: ReadSignal<Bool>) {
-		self.insuredAtOtherCompanySignal = insuredAtOtherCompanySignal
-	}
+	init(
+		insuredAtOtherCompanySignal: ReadSignal<Bool>
+	) { self.insuredAtOtherCompanySignal = insuredAtOtherCompanySignal }
 }
 
 extension OfferCoverageTerms: Viewable {

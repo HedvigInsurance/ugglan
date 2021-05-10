@@ -8,12 +8,19 @@ public struct PieChartState {
 	public let percentagePerSlice: CGFloat
 	public let slices: CGFloat
 
-	public init(percentagePerSlice: CGFloat, slices: CGFloat) {
+	public init(
+		percentagePerSlice: CGFloat,
+		slices: CGFloat
+	) {
 		self.percentagePerSlice = percentagePerSlice
 		self.slices = slices
 	}
 
-	public init(grossAmount: MonetaryAmount, netAmount: MonetaryAmount, potentialDiscountAmount: MonetaryAmount) {
+	public init(
+		grossAmount: MonetaryAmount,
+		netAmount: MonetaryAmount,
+		potentialDiscountAmount: MonetaryAmount
+	) {
 		let totalNeededSlices = grossAmount.value / potentialDiscountAmount.value
 		slices = (CGFloat(grossAmount.value - netAmount.value) / CGFloat(potentialDiscountAmount.value))
 		percentagePerSlice = 1 / CGFloat(totalNeededSlices)
@@ -24,7 +31,10 @@ public struct PieChart {
 	let stateSignal: ReadWriteSignal<PieChartState>
 	let animated: Bool
 
-	public init(stateSignal: ReadWriteSignal<PieChartState>, animated: Bool = true) {
+	public init(
+		stateSignal: ReadWriteSignal<PieChartState>,
+		animated: Bool = true
+	) {
 		self.stateSignal = stateSignal
 		self.animated = animated
 	}
@@ -88,26 +98,27 @@ extension PieChart: Viewable {
 
 		pieView.layer.addSublayer(nextSliceLayer)
 
-		bag += pieView.traitCollectionSignal.atOnce().onValue { trait in
-			filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
+		bag += pieView.traitCollectionSignal.atOnce()
+			.onValue { trait in
+				filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
 
-			if #available(iOS 13.0, *) {
-				if trait.userInterfaceLevel == .elevated {
-					sliceLayer.strokeColor = UIColor.brand(.primaryBackground()).cgColor
+				if #available(iOS 13.0, *) {
+					if trait.userInterfaceLevel == .elevated {
+						sliceLayer.strokeColor = UIColor.brand(.primaryBackground()).cgColor
+					} else {
+						sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
+					}
 				} else {
 					sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
 				}
-			} else {
-				sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
-			}
 
-			if trait.userInterfaceStyle == .dark {
-				nextSliceLayer.strokeColor = UIColor.black.withAlphaComponent(0.4).cgColor
-			} else {
-				nextSliceLayer.strokeColor =
-					UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.4).cgColor
+				if trait.userInterfaceStyle == .dark {
+					nextSliceLayer.strokeColor = UIColor.black.withAlphaComponent(0.4).cgColor
+				} else {
+					nextSliceLayer.strokeColor =
+						UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 0.4).cgColor
+				}
 			}
-		}
 
 		var previousPercentage: CGFloat = 0
 
@@ -176,42 +187,48 @@ extension PieChart: Viewable {
 					nextSliceLayer.removeAnimation(forKey: "stroke-animation")
 					nextSliceLayer.add(nextSliceAnimation, forKey: "stroke-animation")
 
-					bag += Signal(after: sliceAnimation.settlingDuration * 0.6).onValue { _ in
-						nextSliceLayer.opacity = 1
+					bag += Signal(after: sliceAnimation.settlingDuration * 0.6)
+						.onValue { _ in nextSliceLayer.opacity = 1
 
-						let nextSliceStrokeStartAnimation = CASpringAnimation(
-							keyPath: "strokeStart"
-						)
-						nextSliceStrokeStartAnimation.damping = 50
-						nextSliceStrokeStartAnimation.duration = sliceAnimation.settlingDuration
+							let nextSliceStrokeStartAnimation = CASpringAnimation(
+								keyPath: "strokeStart"
+							)
+							nextSliceStrokeStartAnimation.damping = 50
+							nextSliceStrokeStartAnimation.duration =
+								sliceAnimation.settlingDuration
 
-						nextSliceStrokeStartAnimation.fillMode = CAMediaTimingFillMode.forwards
-						nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
+							nextSliceStrokeStartAnimation.fillMode =
+								CAMediaTimingFillMode.forwards
+							nextSliceStrokeStartAnimation.isRemovedOnCompletion = false
 
-						nextSliceStrokeStartAnimation.fromValue =
-							nextSliceLayer.presentation()?.strokeStart ?? 0
-						nextSliceStrokeStartAnimation.toValue = slicePercentage
+							nextSliceStrokeStartAnimation.fromValue =
+								nextSliceLayer.presentation()?.strokeStart ?? 0
+							nextSliceStrokeStartAnimation.toValue = slicePercentage
 
-						nextSliceLayer.removeAnimation(forKey: "stroke-start-animation")
-						nextSliceLayer.add(
-							nextSliceStrokeStartAnimation,
-							forKey: "stroke-start-animation"
-						)
+							nextSliceLayer.removeAnimation(forKey: "stroke-start-animation")
+							nextSliceLayer.add(
+								nextSliceStrokeStartAnimation,
+								forKey: "stroke-start-animation"
+							)
 
-						let nextSliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
-						nextSliceAnimation.damping = 50
-						nextSliceAnimation.duration = sliceAnimation.settlingDuration
+							let nextSliceAnimation = CASpringAnimation(keyPath: "strokeEnd")
+							nextSliceAnimation.damping = 50
+							nextSliceAnimation.duration = sliceAnimation.settlingDuration
 
-						nextSliceAnimation.fillMode = CAMediaTimingFillMode.forwards
-						nextSliceAnimation.isRemovedOnCompletion = false
+							nextSliceAnimation.fillMode = CAMediaTimingFillMode.forwards
+							nextSliceAnimation.isRemovedOnCompletion = false
 
-						nextSliceAnimation.fromValue = 0
-						nextSliceAnimation.toValue =
-							slicePercentage + self.stateSignal.value.percentagePerSlice
+							nextSliceAnimation.fromValue = 0
+							nextSliceAnimation.toValue =
+								slicePercentage
+								+ self.stateSignal.value.percentagePerSlice
 
-						nextSliceLayer.removeAnimation(forKey: "stroke-animation")
-						nextSliceLayer.add(nextSliceAnimation, forKey: "stroke-animation")
-					}
+							nextSliceLayer.removeAnimation(forKey: "stroke-animation")
+							nextSliceLayer.add(
+								nextSliceAnimation,
+								forKey: "stroke-animation"
+							)
+						}
 				} else {
 					sliceLayer.strokeEnd = slicePercentage
 					nextSliceLayer.strokeStart = slicePercentage

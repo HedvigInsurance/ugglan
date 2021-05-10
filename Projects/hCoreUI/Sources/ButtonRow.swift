@@ -14,13 +14,19 @@ public struct ButtonRow {
 	private let onSelectCallbacker = Callbacker<Void>()
 	public let onSelect: Signal<Void>
 
-	public init(text: String, style: TextStyle) {
+	public init(
+		text: String,
+		style: TextStyle
+	) {
 		self.text = ReadWriteSignal(text)
 		self.style = ReadWriteSignal(style)
 		onSelect = onSelectCallbacker.providedSignal
 	}
 
-	public init(text: ReadWriteSignal<String>, style: ReadWriteSignal<TextStyle>) {
+	public init(
+		text: ReadWriteSignal<String>,
+		style: ReadWriteSignal<TextStyle>
+	) {
 		self.text = text
 		self.style = style
 		onSelect = onSelectCallbacker.providedSignal
@@ -39,12 +45,12 @@ extension ButtonRow: Viewable {
 
 		let label = UILabel()
 
-		bag += style.atOnce().map { textStyle -> TextStyle in
-			textStyle.restyled { (style: inout TextStyle) in style.alignment = .center }
-		}.map { textStyle -> StyledText in StyledText(text: label.text ?? "", style: textStyle) }.bindTo(
-			label,
-			\.styledText
-		)
+		bag += style.atOnce()
+			.map { textStyle -> TextStyle in
+				textStyle.restyled { (style: inout TextStyle) in style.alignment = .center }
+			}
+			.map { textStyle -> StyledText in StyledText(text: label.text ?? "", style: textStyle) }
+			.bindTo(label, \.styledText)
 		bag += text.atOnce().bindTo(label, \.text)
 
 		label.snp.makeConstraints { make in make.height.equalTo(20) }
@@ -68,7 +74,12 @@ public struct ButtonRowViewWrapper {
 	private let isEnabled: Bool
 	public let isEnabledSignal: ReadWriteSignal<Bool>
 
-	public init(title: DisplayableString, type: ButtonType, isEnabled: Bool = true, animate: Bool = true) {
+	public init(
+		title: DisplayableString,
+		type: ButtonType,
+		isEnabled: Bool = true,
+		animate: Bool = true
+	) {
 		self.title = title
 		onTapSignal = onTapReadWriteSignal.plain()
 		self.type = type

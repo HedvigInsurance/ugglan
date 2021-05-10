@@ -58,13 +58,16 @@ extension KeyGearCategoryButton: Reusable {
 			control,
 			{ `self` in let bag = DisposeBag()
 
-				bag += control.signal(for: .touchDown).animated(
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { control.backgroundColor = UIColor.brand(.primaryTintColor).withAlphaComponent(0.2) }
+				bag += control.signal(for: .touchDown)
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) {
+						control.backgroundColor = UIColor.brand(.primaryTintColor)
+							.withAlphaComponent(0.2)
+					}
 
-				bag += control.delayedTouchCancel().animated(
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { control.backgroundColor = UIColor.brand(.primaryBackground()) }
+				bag += control.delayedTouchCancel()
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) {
+						control.backgroundColor = UIColor.brand(.primaryBackground())
+					}
 
 				bag += control.signal(for: .touchDown).feedback(type: .selection)
 
@@ -73,18 +76,19 @@ extension KeyGearCategoryButton: Reusable {
 						self.selectedSignal.value = true
 					}
 
-				bag += self.selectedSignal.atOnce().animated(
-					style: AnimationStyle.easeOut(duration: 0.25)
-				) { selected in
-					if selected {
-						control.layer.borderColor = UIColor.brand(.primaryTintColor).cgColor
-						control.layer.borderWidth = 1
-						label.style = TextStyle.brand(.body(color: .link)).centerAligned
-					} else {
-						control.layer.borderWidth = 0
-						label.style = TextStyle.brand(.body(color: .primary)).centerAligned
+				bag += self.selectedSignal.atOnce()
+					.animated(style: AnimationStyle.easeOut(duration: 0.25)) { selected in
+						if selected {
+							control.layer.borderColor =
+								UIColor.brand(.primaryTintColor).cgColor
+							control.layer.borderWidth = 1
+							label.style = TextStyle.brand(.body(color: .link)).centerAligned
+						} else {
+							control.layer.borderWidth = 0
+							label.style =
+								TextStyle.brand(.body(color: .primary)).centerAligned
+						}
 					}
-				}
 
 				control.accessibilityLabel = self.category.rawValue
 				label.value = self.category.name

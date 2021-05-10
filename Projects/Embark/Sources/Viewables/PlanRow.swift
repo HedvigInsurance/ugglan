@@ -115,7 +115,8 @@ extension PlanRow: Reusable {
 									)
 								)
 							)
-						]).wrappedIn(
+						])
+						.wrappedIn(
 							{
 								let stack = UIStackView()
 								stack.axis = .vertical

@@ -54,9 +54,10 @@ extension SpringAnimationStyle {
 		)
 	}
 
-	public static func ludicrousBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6)
-		-> SpringAnimationStyle
-	{
+	public static func ludicrousBounce(
+		delay: TimeInterval = 0,
+		duration: TimeInterval = 0.6
+	) -> SpringAnimationStyle {
 		SpringAnimationStyle(
 			duration: duration,
 			damping: 0.2,

@@ -33,7 +33,8 @@ extension AdyenSuccess: Presentable {
 
 		let (viewController, signal) = PresentableViewable(viewable: continueAction) { viewController in
 			viewController.navigationItem.hidesBackButton = true
-		}.materialize()
+		}
+		.materialize()
 
 		return (
 			viewController,

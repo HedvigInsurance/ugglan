@@ -91,7 +91,8 @@ extension EmbarkInput: Viewable {
 			keyboardTypeSignal.atOnce(),
 			autocapitalisationTypeSignal.atOnce(),
 			returnKeyTypeSignal.atOnce()
-		).bindTo { textContentType, keyboardType, autocapitalisationType, returnKeyType in
+		)
+		.bindTo { textContentType, keyboardType, autocapitalisationType, returnKeyType in
 			textField.textContentType = textContentType
 			textField.keyboardType = keyboardType ?? .default
 			textField.autocapitalizationType = autocapitalisationType
@@ -109,9 +110,8 @@ extension EmbarkInput: Viewable {
 		bag += textField.didMoveToWindowSignal.delay(by: 0.5).filter(predicate: { self.shouldAutoFocus })
 			.onValue { _ in textField.becomeFirstResponder() }
 
-		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
-			textField.becomeFirstResponder()
-		}
+		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }
+			.onValue { _ in textField.becomeFirstResponder() }
 
 		bag += masking.applyMasking(textField)
 

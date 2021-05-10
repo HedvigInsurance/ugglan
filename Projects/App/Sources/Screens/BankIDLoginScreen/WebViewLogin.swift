@@ -66,11 +66,10 @@ extension WebViewLogin: Presentable {
 		return (
 			viewController,
 			Future { completion in
-				bag += client.subscribe(subscription: GraphQL.AuthStatusSubscription()).compactMap {
-					$0.authStatus?.status
-				}.filter(predicate: { status -> Bool in status == .success }).take(first: 1).onValue {
-					_ in completion(.success)
-				}
+				bag += client.subscribe(subscription: GraphQL.AuthStatusSubscription())
+					.compactMap { $0.authStatus?.status }
+					.filter(predicate: { status -> Bool in status == .success }).take(first: 1)
+					.onValue { _ in completion(.success) }
 				return bag
 			}
 		)
@@ -84,14 +83,13 @@ extension WebViewLogin {
 		Future { completion in
 			switch Localization.Locale.currentLocale.market {
 			case .dk:
-				client.perform(mutation: GraphQL.NemIdAuthMutation(personalNumber: text)).compactMap {
-					$0.danishBankIdAuth.redirectUrl
-				}.compactMap { URL(string: $0) }.onValue { url in completion(.success(url)) }
+				client.perform(mutation: GraphQL.NemIdAuthMutation(personalNumber: text))
+					.compactMap { $0.danishBankIdAuth.redirectUrl }.compactMap { URL(string: $0) }
+					.onValue { url in completion(.success(url)) }
 			case .no:
 				client.perform(mutation: GraphQL.BankIdNorwayAuthMutation(personalNumber: text))
-					.compactMap { $0.norwegianBankIdAuth.redirectUrl }.compactMap {
-						URL(string: $0)
-					}.onValue { url in completion(.success(url)) }
+					.compactMap { $0.norwegianBankIdAuth.redirectUrl }
+					.compactMap { URL(string: $0) }.onValue { url in completion(.success(url)) }
 			case .se: completion(.failure(BankIDLoginError.invalidMarket))
 			}
 

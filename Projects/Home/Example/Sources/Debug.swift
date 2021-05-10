@@ -37,26 +37,27 @@ extension Debug: Presentable {
 
 			Dependencies.shared.add(module: Module { () -> ApolloClient in apolloClient })
 
-			bag += UIApplication.shared.keyWindow?.present(
-				Home(),
-				options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-			)
+			bag += UIApplication.shared.keyWindow?
+				.present(
+					Home(),
+					options: [
+						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+					]
+				)
 		}
 
-		bag += section.appendRow(title: "Home - Active").append(hCoreUIAssets.chevronRight.image).onValue {
-			presentHome(.makeActive())
-		}
+		bag += section.appendRow(title: "Home - Active").append(hCoreUIAssets.chevronRight.image)
+			.onValue { presentHome(.makeActive()) }
 
 		bag += section.appendRow(title: "Home - Active in future").append(hCoreUIAssets.chevronRight.image)
 			.onValue { presentHome(.makeActiveInFuture(switchable: true)) }
 
-		bag += section.appendRow(title: "Home - Pending").append(hCoreUIAssets.chevronRight.image).onValue {
-			presentHome(.makePending(switchable: true))
-		}
+		bag += section.appendRow(title: "Home - Pending").append(hCoreUIAssets.chevronRight.image)
+			.onValue { presentHome(.makePending(switchable: true)) }
 
-		bag += section.appendRow(title: "Home - Pending non switchable").append(
-			hCoreUIAssets.chevronRight.image
-		).onValue { presentHome(.makePending(switchable: false)) }
+		bag += section.appendRow(title: "Home - Pending non switchable")
+			.append(hCoreUIAssets.chevronRight.image)
+			.onValue { presentHome(.makePending(switchable: false)) }
 
 		bag += section.appendRow(title: "Home - With payment card").append(hCoreUIAssets.chevronRight.image)
 			.onValue { presentHome(combineMultiple([.makeActive(), .makePayInMethodStatus(.needsSetup)])) }
@@ -64,13 +65,13 @@ extension Debug: Presentable {
 		bag += section.appendRow(title: "Renewals - One renewal").append(hCoreUIAssets.chevronRight.image)
 			.onValue { presentHome(combineMultiple([.makeActiveWithRenewal()])) }
 
-		bag += section.appendRow(title: "Renewals - Multiple same date").append(
-			hCoreUIAssets.chevronRight.image
-		).onValue { presentHome(.makeActiveWithMultipleRenewals()) }
+		bag += section.appendRow(title: "Renewals - Multiple same date")
+			.append(hCoreUIAssets.chevronRight.image)
+			.onValue { presentHome(.makeActiveWithMultipleRenewals()) }
 
-		bag += section.appendRow(title: "Renewals - Multiple separate dates").append(
-			hCoreUIAssets.chevronRight.image
-		).onValue { presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates()) }
+		bag += section.appendRow(title: "Renewals - Multiple separate dates")
+			.append(hCoreUIAssets.chevronRight.image)
+			.onValue { presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates()) }
 
 		bag += viewController.install(form)
 

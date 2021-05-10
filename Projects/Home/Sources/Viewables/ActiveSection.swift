@@ -19,9 +19,8 @@ extension ActiveSection: Viewable {
 		var label = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
 		bag += section.append(label)
 
-		client.fetch(query: GraphQL.HomeQuery()).onValue { data in
-			label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "")
-		}
+		client.fetch(query: GraphQL.HomeQuery())
+			.onValue { data in label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "") }
 
 		section.appendSpacing(.top)
 
@@ -45,31 +44,34 @@ extension ActiveSection: Viewable {
 			)
 		)
 		bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
-		bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }.onValue { viewController in
-			var pager = Pager(
-				title: L10n.ClaimsExplainer.title,
-				buttonContinueTitle: L10n.ClaimsExplainer.buttonNext,
-				buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
-				pages: []
-			) { viewController in Home.openClaimsHandler(viewController)
-				return Future(.forever)
-			}
-			viewController.present(pager)
+		bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }
+			.onValue { viewController in
+				var pager = Pager(
+					title: L10n.ClaimsExplainer.title,
+					buttonContinueTitle: L10n.ClaimsExplainer.buttonNext,
+					buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
+					pages: []
+				) { viewController in Home.openClaimsHandler(viewController)
+					return Future(.forever)
+				}
+				viewController.present(pager)
 
-			client.fetch(
-				query: GraphQL.HowClaimsWorkQuery(
-					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+				client.fetch(
+					query: GraphQL.HowClaimsWorkQuery(
+						locale: Localization.Locale.currentLocale.asGraphQLLocale()
+					)
 				)
-			).onValue { data in
-				pager.pages = data.howClaimsWork.map {
-					ContentIconPagerItem(
-						title: nil,
-						paragraph: $0.body,
-						icon: $0.illustration.fragments.iconFragment
-					).pagerItem
+				.onValue { data in
+					pager.pages = data.howClaimsWork.map {
+						ContentIconPagerItem(
+							title: nil,
+							paragraph: $0.body,
+							icon: $0.illustration.fragments.iconFragment
+						)
+						.pagerItem
+					}
 				}
 			}
-		}
 
 		bag += section.append(ConnectPaymentCard())
 		bag += section.append(RenewalCard())

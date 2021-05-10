@@ -55,9 +55,8 @@ extension UpsellingFooter {
 				)
 			)
 
-			bag += button.onTapSignal.compactMap { stackView.viewController }.onValue { viewController in
-				Contracts.openFreeTextChatHandler(viewController)
-			}
+			bag += button.onTapSignal.compactMap { stackView.viewController }
+				.onValue { viewController in Contracts.openFreeTextChatHandler(viewController) }
 
 			bag += stackView.addArranged(button.wrappedIn(UIStackView())) { view in view.axis = .vertical
 				view.alignment = .center
@@ -79,51 +78,55 @@ extension UpsellingFooter: Viewable {
 		stackView.transform = CGAffineTransform(translationX: 0, y: 100)
 		let bag = DisposeBag()
 
-		bag += client.watch(
-			query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-			cachePolicy: .fetchIgnoringCacheData
-		).compactMap { $0.contracts }.delay(by: 0.5).onValueDisposePrevious { contracts in
-			let innerBag = DisposeBag()
+		bag +=
+			client.watch(
+				query: GraphQL.ContractsQuery(
+					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+				),
+				cachePolicy: .fetchIgnoringCacheData
+			)
+			.compactMap { $0.contracts }.delay(by: 0.5)
+			.onValueDisposePrevious { contracts in let innerBag = DisposeBag()
 
-			innerBag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) { _ in
-				stackView.alpha = 1
-				stackView.transform = CGAffineTransform.identity
-			}
+				innerBag += Signal(after: 0)
+					.animated(style: SpringAnimationStyle.lightBounce()) { _ in stackView.alpha = 1
+						stackView.transform = CGAffineTransform.identity
+					}
 
-			switch Localization.Locale.currentLocale.market {
-			case .no:
-				let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
-					contract.currentAgreement.asNorwegianTravelAgreement != nil
-				})
+				switch Localization.Locale.currentLocale.market {
+				case .no:
+					let hasTravelAgreement = contracts.contains(where: { contract -> Bool in
+						contract.currentAgreement.asNorwegianTravelAgreement != nil
+					})
 
-				if !hasTravelAgreement {
-					innerBag += stackView.addArranged(
-						UpsellingBox(
-							title: L10n.upsellNotificationTravelTitle,
-							description: L10n.upsellNotificationTravelDescription,
-							buttonText: L10n.upsellNotificationTravelCta
+					if !hasTravelAgreement {
+						innerBag += stackView.addArranged(
+							UpsellingBox(
+								title: L10n.upsellNotificationTravelTitle,
+								description: L10n.upsellNotificationTravelDescription,
+								buttonText: L10n.upsellNotificationTravelCta
+							)
 						)
-					)
+					}
+
+					let hasHomeContentsAgreement = contracts.contains(where: { contract -> Bool in
+						contract.currentAgreement.asNorwegianHomeContentAgreement != nil
+					})
+
+					if !hasHomeContentsAgreement {
+						innerBag += stackView.addArranged(
+							UpsellingBox(
+								title: L10n.upsellNotificationContentTitle,
+								description: L10n.upsellNotificationContentDescription,
+								buttonText: L10n.upsellNotificationContentCta
+							)
+						)
+					}
+				default: break
 				}
 
-				let hasHomeContentsAgreement = contracts.contains(where: { contract -> Bool in
-					contract.currentAgreement.asNorwegianHomeContentAgreement != nil
-				})
-
-				if !hasHomeContentsAgreement {
-					innerBag += stackView.addArranged(
-						UpsellingBox(
-							title: L10n.upsellNotificationContentTitle,
-							description: L10n.upsellNotificationContentDescription,
-							buttonText: L10n.upsellNotificationContentCta
-						)
-					)
-				}
-			default: break
+				return innerBag
 			}
-
-			return innerBag
-		}
 
 		return (stackView, bag)
 	}

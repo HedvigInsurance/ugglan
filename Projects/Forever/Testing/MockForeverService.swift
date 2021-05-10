@@ -4,11 +4,13 @@ import Foundation
 
 public struct MockForeverService: ForeverService {
 	public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
-		Signal(after: 0).atValue {
-			var data = self._dataSignal.value
-			data?.updateDiscountCode(value)
-			self._dataSignal.value = data
-		}.map { .left(()) }
+		Signal(after: 0)
+			.atValue {
+				var data = self._dataSignal.value
+				data?.updateDiscountCode(value)
+				self._dataSignal.value = data
+			}
+			.map { .left(()) }
 	}
 
 	var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
@@ -21,11 +23,13 @@ public struct MockForeverService: ForeverService {
 
 public class MockDelayedForeverService: ForeverService {
 	public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
-		Signal(after: 0.5).atValue {
-			var data = self._dataSignal.value
-			data?.updateDiscountCode(value)
-			self._dataSignal.value = data
-		}.map { .left(()) }
+		Signal(after: 0.5)
+			.atValue {
+				var data = self._dataSignal.value
+				data?.updateDiscountCode(value)
+				self._dataSignal.value = data
+			}
+			.map { .left(()) }
 	}
 
 	var _dataSignal = ReadWriteSignal<ForeverData?>(nil)
@@ -36,13 +40,17 @@ public class MockDelayedForeverService: ForeverService {
 
 	func timer(data: ForeverData) {
 		let bag = DisposeBag()
-		bag += Signal(after: delay).onValue {
-			self._dataSignal.value = data
-			bag.dispose()
-		}
+		bag += Signal(after: delay)
+			.onValue {
+				self._dataSignal.value = data
+				bag.dispose()
+			}
 	}
 
-	public init(data: ForeverData, delay: TimeInterval) {
+	public init(
+		data: ForeverData,
+		delay: TimeInterval
+	) {
 		self.delay = delay
 		timer(data: data)
 	}

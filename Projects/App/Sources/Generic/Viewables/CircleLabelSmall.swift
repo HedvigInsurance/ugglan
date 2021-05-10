@@ -9,7 +9,11 @@ struct CircleLabelSmall {
 	let textColor: UIColor
 	let backgroundColor: UIColor
 
-	init(labelText: DynamicString, textColor: UIColor, backgroundColor: UIColor) {
+	init(
+		labelText: DynamicString,
+		textColor: UIColor,
+		backgroundColor: UIColor
+	) {
 		self.labelText = labelText
 		self.textColor = textColor
 		self.backgroundColor = backgroundColor

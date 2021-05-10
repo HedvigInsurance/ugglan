@@ -30,7 +30,10 @@ public struct Menu: MenuChildable {
 	let title: String?
 	let children: [MenuChildable]
 
-	public init(title: String?, children: [MenuChildable]) {
+	public init(
+		title: String?,
+		children: [MenuChildable]
+	) {
 		self.title = title
 		self.children = children
 	}
@@ -70,7 +73,8 @@ func composeAlertActions(_ children: [MenuChildable], viewController: UIViewCont
 		}
 
 		return []
-	}.flatMap { $0 }
+	}
+	.flatMap { $0 }
 }
 
 extension UIBarButtonItem {
@@ -86,7 +90,8 @@ extension UIBarButtonItem {
 					actions: [
 						composeAlertActions(menu.children, viewController: viewController),
 						[Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in }],
-					].flatMap { $0 }
+					]
+					.flatMap { $0 }
 				)
 
 				viewController.present(alert, style: .sheet(from: self.view, rect: self.bounds))

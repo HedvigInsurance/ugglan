@@ -10,9 +10,8 @@ extension UIScrollView {
 		onError: @escaping (_ error: Error) -> Void
 	) -> Disposable {
 		contentView.alpha = 0
-		contentView.transform = CGAffineTransform(translationX: 0, y: 25).concatenating(
-			CGAffineTransform(scaleX: 0.95, y: 0.95)
-		)
+		contentView.transform = CGAffineTransform(translationX: 0, y: 25)
+			.concatenating(CGAffineTransform(scaleX: 0.95, y: 0.95))
 
 		let bag = DisposeBag()
 
@@ -26,10 +25,11 @@ extension UIScrollView {
 				make.centerY.equalTo(self.frameLayoutGuide.snp.centerY)
 			}
 
-			bag += onLoad.valueSignal.animated(style: .lightBounce(duration: 0.5)) { _ in
-				loadingIndicatorView.alpha = 0
-				loadingIndicatorView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-			}.onValue { _ in loadingIndicatorBag.dispose() }
+			bag += onLoad.valueSignal
+				.animated(style: .lightBounce(duration: 0.5)) { _ in loadingIndicatorView.alpha = 0
+					loadingIndicatorView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+				}
+				.onValue { _ in loadingIndicatorBag.dispose() }
 		}
 
 		bag += onLoad.valueSignal.animated(style: .lightBounce(duration: 1)) { _ in

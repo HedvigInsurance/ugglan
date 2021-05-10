@@ -2,12 +2,18 @@ import Foundation
 import hGraphQL
 
 public struct MonetaryAmount: Equatable, Hashable, Codable {
-	public init(amount: String, currency: String) {
+	public init(
+		amount: String,
+		currency: String
+	) {
 		self.amount = amount
 		self.currency = currency
 	}
 
-	public init(amount: Float, currency: String) {
+	public init(
+		amount: Float,
+		currency: String
+	) {
 		self.amount = String(amount)
 		self.currency = currency
 	}

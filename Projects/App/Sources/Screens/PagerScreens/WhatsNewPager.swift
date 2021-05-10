@@ -18,13 +18,16 @@ extension WhatsNewPager: FutureConditional {
 				locale: Localization.Locale.currentLocale.asGraphQLLocale(),
 				sinceVersion: lastNewsSeen
 			)
-		).compactMap { $0.news }.map { news in
+		)
+		.compactMap { $0.news }
+		.map { news in
 			news.map {
 				ContentIconPagerItem(
 					title: $0.title,
 					paragraph: $0.paragraph,
 					icon: $0.illustration.fragments.iconFragment
-				).pagerItem
+				)
+				.pagerItem
 			}
 		}
 	}

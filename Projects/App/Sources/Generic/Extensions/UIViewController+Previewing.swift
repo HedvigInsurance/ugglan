@@ -45,34 +45,34 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
 		UIViewController._previewingContextDelegates[sourceView] = Delegate()
 		UIViewController._didCommitPreviewingCallbackers[sourceView] = Callbacker()
 
-		bag += UIViewController._previewingContextDelegates[sourceView]!.set {
-			() -> AnyPresentable<UIViewController, Disposable> in
-			AnyPresentable {
-				let (viewController, future) = presentable.materialize()
+		bag += UIViewController._previewingContextDelegates[sourceView]!
+			.set { () -> AnyPresentable<UIViewController, Disposable> in
+				AnyPresentable {
+					let (viewController, future) = presentable.materialize()
 
-				let autoPopFuture = future.onValue { _ in
-					viewController.navigationController?.popViewController(animated: true)
+					let autoPopFuture = future.onValue { _ in
+						viewController.navigationController?.popViewController(animated: true)
+					}
+
+					viewController.setLargeTitleDisplayMode(options)
+
+					let innerBag = bag.innerBag()
+
+					// dispose preview if it's left without a window for 500ms
+					innerBag += viewController.view.windowSignal.debounce(0.5)
+						.filter(predicate: { $0 == nil })
+						.onValue { _ in innerBag.dispose()
+							autoPopFuture.cancel()
+						}
+
+					// cancel preview disposal by disposing innerBag when a commit happens
+					innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?
+						.signal().onValue { _ in innerBag.dispose() }
+
+					bag += future.disposable
+					return (viewController, future.disposable)
 				}
-
-				viewController.setLargeTitleDisplayMode(options)
-
-				let innerBag = bag.innerBag()
-
-				// dispose preview if it's left without a window for 500ms
-				innerBag += viewController.view.windowSignal.debounce(0.5).filter(predicate: {
-					$0 == nil
-				}).onValue { _ in innerBag.dispose()
-					autoPopFuture.cancel()
-				}
-
-				// cancel preview disposal by disposing innerBag when a commit happens
-				innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?.signal()
-					.onValue { _ in innerBag.dispose() }
-
-				bag += future.disposable
-				return (viewController, future.disposable)
 			}
-		}
 
 		return Disposer {
 			bag.dispose()
@@ -93,9 +93,11 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
 		return registerForPreviewing(sourceView: sourceView, presentable: presentable, options: options)
 	}
 
-	func registerForPreviewing<P: Presentable>(sourceView: UIView, presentable: P, options: PresentationOptions)
-		-> Disposable where P.Matter == UIViewController, P.Result == Disposable
-	{
+	func registerForPreviewing<P: Presentable>(
+		sourceView: UIView,
+		presentable: P,
+		options: PresentationOptions
+	) -> Disposable where P.Matter == UIViewController, P.Result == Disposable {
 		registerForPreviewing(with: self, sourceView: sourceView)
 
 		let bag = DisposeBag()
@@ -103,27 +105,26 @@ extension UIViewController: UIViewControllerPreviewingDelegate {
 		UIViewController._previewingContextDelegates[sourceView] = Delegate()
 		UIViewController._didCommitPreviewingCallbackers[sourceView] = Callbacker()
 
-		bag += UIViewController._previewingContextDelegates[sourceView]!.set {
-			() -> AnyPresentable<UIViewController, Disposable> in
-			AnyPresentable {
-				let (viewController, disposable) = presentable.materialize()
-				let innerBag = bag.innerBag()
+		bag += UIViewController._previewingContextDelegates[sourceView]!
+			.set { () -> AnyPresentable<UIViewController, Disposable> in
+				AnyPresentable {
+					let (viewController, disposable) = presentable.materialize()
+					let innerBag = bag.innerBag()
 
-				viewController.setLargeTitleDisplayMode(options)
+					viewController.setLargeTitleDisplayMode(options)
 
-				// dispose preview if it's left without a window for 500ms
-				innerBag += viewController.view.windowSignal.debounce(0.5).filter(predicate: {
-					$0 == nil
-				}).onValue { _ in disposable.dispose() }
+					// dispose preview if it's left without a window for 500ms
+					innerBag += viewController.view.windowSignal.debounce(0.5)
+						.filter(predicate: { $0 == nil }).onValue { _ in disposable.dispose() }
 
-				// cancel preview disposal by disposing innerBag when a commit happens
-				innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?.signal()
-					.onValue { _ in innerBag.dispose() }
+					// cancel preview disposal by disposing innerBag when a commit happens
+					innerBag += UIViewController._didCommitPreviewingCallbackers[sourceView]?
+						.signal().onValue { _ in innerBag.dispose() }
 
-				bag += disposable
-				return (viewController, disposable)
+					bag += disposable
+					return (viewController, disposable)
+				}
 			}
-		}
 
 		return Disposer {
 			bag.dispose()

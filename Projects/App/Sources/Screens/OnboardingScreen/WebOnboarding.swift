@@ -145,10 +145,11 @@ extension WebOnboarding: Presentable {
 		return (
 			viewController,
 			Signal { callback in
-				bag += webView.signal(for: \.url).map { url in let urlString = String(describing: url)
+				bag += webView.signal(for: \.url)
+					.map { url in let urlString = String(describing: url)
 
-					if urlString.contains("connect-payment") { callback(()) }
-				}
+						if urlString.contains("connect-payment") { callback(()) }
+					}
 
 				return bag
 			}

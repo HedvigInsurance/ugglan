@@ -24,15 +24,17 @@ func getSection(
 		)
 		let amountRow = section.appendRow(title: "Amount")
 
-		bag += amountRow.append(
-			UITextField(
-				value: monetaryAmount.amount,
-				placeholder: "0.0",
-				style: FieldStyle.default.keyboard(.decimalPad)
+		bag +=
+			amountRow.append(
+				UITextField(
+					value: monetaryAmount.amount,
+					placeholder: "0.0",
+					style: FieldStyle.default.keyboard(.decimalPad)
+				)
 			)
-		).onValue { value in monetaryAmount.amount = value
-			setValue(monetaryAmount)
-		}
+			.onValue { value in monetaryAmount.amount = value
+				setValue(monetaryAmount)
+			}
 
 		let currencyRow = section.appendRow(title: "Currency")
 		let currencyValue = UILabel(value: monetaryAmount.currency, style: .brand(.headline(color: .primary)))
@@ -101,47 +103,55 @@ func getSection(
 
 		func renderRow(item: Decodable & Encodable, type: Any.Type, offset: Int) {
 			let row = RowView(title: "\(offset)")
-			bag += section.append(row).onValue { _ in
-				viewController.present(
-					ArrayItemForm(item: item, type: type, isEditing: true),
-					style: .default,
-					options: [.defaults, .autoPop]
-				).onValue { updatedItem in list.append(updatedItem)
-					setValue(list)
+			bag += section.append(row)
+				.onValue { _ in
+					viewController.present(
+						ArrayItemForm(item: item, type: type, isEditing: true),
+						style: .default,
+						options: [.defaults, .autoPop]
+					)
+					.onValue { updatedItem in list.append(updatedItem)
+						setValue(list)
+					}
 				}
+		}
+
+		list.enumerated()
+			.forEach { offset, item in
+				guard let info = try? typeInfo(of: property.type),
+					let elementType = info.genericTypes.first,
+					let item = item as? (Decodable & Encodable)
+				else { fatalError("Failed to parse array item") }
+
+				renderRow(item: item, type: elementType, offset: offset)
 			}
-		}
-
-		list.enumerated().forEach { offset, item in
-			guard let info = try? typeInfo(of: property.type), let elementType = info.genericTypes.first,
-				let item = item as? (Decodable & Encodable)
-			else { fatalError("Failed to parse array item") }
-
-			renderRow(item: item, type: elementType, offset: offset)
-		}
 
 		let createRow = RowView(title: "Create new")
 
 		createRow.append(.chevron)
 
-		bag += section.append(createRow).onValue { _ in
-			guard let info = try? typeInfo(of: property.type), let elementType = info.genericTypes.first,
-				let arrayElementInstance = try? createInstance(of: elementType)
-					as? (Decodable & Encodable)
-			else { fatalError("Failed to create instance for array") }
+		bag += section.append(createRow)
+			.onValue { _ in
+				guard let info = try? typeInfo(of: property.type),
+					let elementType = info.genericTypes.first,
+					let arrayElementInstance = try? createInstance(of: elementType)
+						as? (Decodable & Encodable)
+				else { fatalError("Failed to create instance for array") }
 
-			viewController.present(
-				ArrayItemForm(item: arrayElementInstance, type: elementType, isEditing: false),
-				style: .default,
-				options: [.defaults, .autoPop]
-			).onValue { item in list.append(item)
-				setValue(list)
+				viewController.present(
+					ArrayItemForm(item: arrayElementInstance, type: elementType, isEditing: false),
+					style: .default,
+					options: [.defaults, .autoPop]
+				)
+				.onValue { item in list.append(item)
+					setValue(list)
 
-				bag += Signal(after: 0).animated(style: SpringAnimationStyle.lightBounce()) {
-					renderRow(item: item, type: elementType, offset: list.endIndex)
+					bag += Signal(after: 0)
+						.animated(style: SpringAnimationStyle.lightBounce()) {
+							renderRow(item: item, type: elementType, offset: list.endIndex)
+						}
 				}
 			}
-		}
 
 		return (section, bag)
 	} else if let string = try? property.get(from: typeInstance) as? String {
@@ -154,9 +164,8 @@ func getSection(
 		let row = RowView()
 		section.append(row)
 
-		bag += row.append(UITextField(value: string, placeholder: "value", style: .default)).onValue { value in
-			setValue(value)
-		}
+		bag += row.append(UITextField(value: string, placeholder: "value", style: .default))
+			.onValue { value in setValue(value) }
 
 		return (section, bag)
 	} else if let boolean = try? property.get(from: typeInstance) as? Bool {

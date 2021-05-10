@@ -10,7 +10,8 @@ extension ApolloClient {
 		fetch(
 			query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
 			cachePolicy: .fetchIgnoringCacheData
-		).map { data -> Bool in
+		)
+		.map { data -> Bool in
 			data.contracts.contains { contract -> Bool in contract.switchedFromInsuranceProvider != nil }
 		}
 	}

@@ -63,58 +63,67 @@ extension Forever: Presentable {
 
 		tableKit.view.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
 
-		bag += service.dataSignal.atOnce().compactMap { $0?.invitations }.onValue { invitations in
-			var table = Table(sections: [
-				(L10n.ReferralsActive.Invited.title, invitations.map { InvitationRow(invitation: $0) })
-			])
-			table.removeEmptySections()
-			tableKit.set(table)
-		}
+		bag += service.dataSignal.atOnce().compactMap { $0?.invitations }
+			.onValue { invitations in
+				var table = Table(sections: [
+					(
+						L10n.ReferralsActive.Invited.title,
+						invitations.map { InvitationRow(invitation: $0) }
+					)
+				])
+				table.removeEmptySections()
+				tableKit.set(table)
+			}
 
 		if Localization.Locale.currentLocale.market == .no {
-			bag += tableKit.view.hasWindowSignal.filter(predicate: { $0 }).take(first: 1).onValue { _ in
-				let defaultsKey = "hasShownInvitation"
-				let hasShownInvitation = UserDefaults.standard.bool(forKey: defaultsKey)
+			bag += tableKit.view.hasWindowSignal.filter(predicate: { $0 }).take(first: 1)
+				.onValue { _ in let defaultsKey = "hasShownInvitation"
+					let hasShownInvitation = UserDefaults.standard.bool(forKey: defaultsKey)
 
-				if !hasShownInvitation {
-					viewController.present(
-						InvitationScreen(
-							potentialDiscountAmountSignal: self.service.dataSignal.map {
-								$0?.potentialDiscountAmount
-							}
-						),
-						style: .detented(.large)
-					).onResult { _ in UserDefaults.standard.set(true, forKey: defaultsKey)
-						UserDefaults.standard.synchronize()
+					if !hasShownInvitation {
+						viewController.present(
+							InvitationScreen(
+								potentialDiscountAmountSignal: self.service.dataSignal
+									.map { $0?.potentialDiscountAmount }
+							),
+							style: .detented(.large)
+						)
+						.onResult { _ in UserDefaults.standard.set(true, forKey: defaultsKey)
+							UserDefaults.standard.synchronize()
+						}
 					}
 				}
-			}
 		}
 
 		let shareButton = ShareButton()
 
-		bag += containerView.add(shareButton) { buttonView in
-			buttonView.snp.makeConstraints { make in make.bottom.leading.trailing.equalToSuperview() }
+		bag +=
+			containerView.add(shareButton) { buttonView in
+				buttonView.snp.makeConstraints { make in make.bottom.leading.trailing.equalToSuperview()
+				}
 
-			bag += buttonView.didLayoutSignal.onValue {
-				let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
-				tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
-					top: 0,
-					left: 0,
-					bottom: bottomInset,
-					right: 0
-				)
-				tableKit.view.contentInset = UIEdgeInsets(
-					top: 0,
-					left: 0,
-					bottom: bottomInset,
-					right: 0
-				)
+				bag += buttonView.didLayoutSignal.onValue {
+					let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
+					tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: bottomInset,
+						right: 0
+					)
+					tableKit.view.contentInset = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: bottomInset,
+						right: 0
+					)
+				}
 			}
-		}.withLatestFrom(service.dataSignal.atOnce().compactMap { $0?.discountCode }).onValue {
-			buttonView,
-			discountCode in shareButton.loadableButton.startLoading()
-			viewController.presentConditionally(PushNotificationReminder(), style: .detented(.large))
+			.withLatestFrom(service.dataSignal.atOnce().compactMap { $0?.discountCode })
+			.onValue { buttonView, discountCode in shareButton.loadableButton.startLoading()
+				viewController.presentConditionally(
+					PushNotificationReminder(),
+					style: .detented(.large)
+				)
 				.onResult { _ in
 					let encodedDiscountCode =
 						discountCode.addingPercentEncoding(
@@ -131,7 +140,7 @@ extension Forever: Presentable {
 					viewController.present(activity)
 					shareButton.loadableButton.stopLoading()
 				}
-		}
+			}
 
 		return (viewController, bag)
 	}

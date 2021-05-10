@@ -57,9 +57,8 @@ extension EmbarkNumberAction: Viewable {
 				)
 				boxStack.addArrangedSubview(textInputView)
 
-				let isValidSignal = textSignal.atOnce().map { text in
-					!text.isEmpty && masking.isValid(text: text)
-				}
+				let isValidSignal = textSignal.atOnce()
+					.map { text in !text.isEmpty && masking.isValid(text: text) }
 
 				bag += textField.shouldReturn.set { value -> Bool in
 					if isValidSignal.value { handleSubmit(textValue: value) }
@@ -91,10 +90,8 @@ extension EmbarkNumberAction: Viewable {
 
 				bag += view.addArranged(button)
 
-				bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain()).onFirstValue {
-					_,
-					textValue in handleSubmit(textValue: textValue)
-				}
+				bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain())
+					.onFirstValue { _, textValue in handleSubmit(textValue: textValue) }
 
 				return bag
 			}

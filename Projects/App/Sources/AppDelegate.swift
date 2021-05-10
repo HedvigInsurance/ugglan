@@ -29,9 +29,10 @@ let log = Logger.self
 	func logout() {
 		ApolloClient.cache = InMemoryNormalizedCache()
 		ApolloClient.deleteToken()
-		bag += ApolloClient.initAndRegisterClient().onValue { _ in ChatState.shared = ChatState()
-			self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
-		}
+		bag += ApolloClient.initAndRegisterClient()
+			.onValue { _ in ChatState.shared = ChatState()
+				self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
+			}
 	}
 
 	func applicationWillTerminate(_: UIApplication) {
@@ -55,23 +56,27 @@ let log = Logger.self
 
 	func registerForPushNotifications() -> Future<Void> {
 		Future { completion in
-			UNUserNotificationCenter.current().getNotificationSettings { settings in
-				guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
-				if settings.authorizationStatus == .denied {
-					DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-				}
-			}
-
-			let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-			UNUserNotificationCenter.current().requestAuthorization(
-				options: authOptions,
-				completionHandler: { _, _ in completion(.success)
-
-					DispatchQueue.main.async {
-						UIApplication.shared.registerForRemoteNotifications()
+			UNUserNotificationCenter.current()
+				.getNotificationSettings { settings in
+					guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+						return
+					}
+					if settings.authorizationStatus == .denied {
+						DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
 					}
 				}
-			)
+
+			let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+			UNUserNotificationCenter.current()
+				.requestAuthorization(
+					options: authOptions,
+					completionHandler: { _, _ in completion(.success)
+
+						DispatchQueue.main.async {
+							UIApplication.shared.registerForRemoteNotifications()
+						}
+					}
+				)
 
 			return NilDisposer()
 		}
@@ -93,9 +98,10 @@ let log = Logger.self
 			return true
 		} else if dynamicLinkUrl.pathComponents.contains("forever") {
 			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-			bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }.onValue { _ in
-				NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
-			}
+			bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+				.onValue { _ in
+					NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
+				}
 
 			Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
 
@@ -113,9 +119,11 @@ let log = Logger.self
 		return false
 	}
 
-	func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
-		-> Bool
-	{
+	func application(
+		_ app: UIApplication,
+		open url: URL,
+		options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+	) -> Bool {
 		application(
 			app,
 			open: url,
@@ -126,9 +134,10 @@ let log = Logger.self
 
 	var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
 
-	func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?)
-		-> Bool
-	{
+	func application(
+		_: UIApplication,
+		didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+	) -> Bool {
 		SentrySDK.start { options in
 			options.dsn = "https://09505787f04f4c6ea7e560de075ba552@o123400.ingest.sentry.io/5208267"
 			#if DEBUG
@@ -146,21 +155,24 @@ let log = Logger.self
 
 		Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
-		bag += Localization.Locale.$currentLocale.distinct().onValue { locale in
-			ApplicationState.setPreferredLocale(locale)
-			ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
+		bag += Localization.Locale.$currentLocale.distinct()
+			.onValue { locale in ApplicationState.setPreferredLocale(locale)
+				ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
 
-			ApolloClient.initAndRegisterClient().always {
-				ChatState.shared = ChatState()
-				let client: ApolloClient = Dependencies.shared.resolve()
-				self.bag += client.perform(
-					mutation: GraphQL.UpdateLanguageMutation(
-						language: locale.code,
-						pickedLocale: locale.asGraphQLLocale()
-					)
-				).onValue { _ in }
+				ApolloClient.initAndRegisterClient()
+					.always {
+						ChatState.shared = ChatState()
+						let client: ApolloClient = Dependencies.shared.resolve()
+						self.bag +=
+							client.perform(
+								mutation: GraphQL.UpdateLanguageMutation(
+									language: locale.code,
+									pickedLocale: locale.asGraphQLLocale()
+								)
+							)
+							.onValue { _ in }
+					}
 			}
-		}
 
 		ApolloClient.bundle = Bundle.main
 		ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
@@ -177,22 +189,25 @@ let log = Logger.self
 
 			switch presentationEvent {
 			case let .willEnqueue(presentableId, context):
-				Mixpanel.mainInstance().track(
-					event: "PRESENTABLE_WILL_ENQUEUE",
-					properties: ["presentableId": presentableId.value]
-				)
+				Mixpanel.mainInstance()
+					.track(
+						event: "PRESENTABLE_WILL_ENQUEUE",
+						properties: ["presentableId": presentableId.value]
+					)
 				message = "\(context) will enqueue modal presentation of \(presentableId)"
 			case let .willDequeue(presentableId, context):
-				Mixpanel.mainInstance().track(
-					event: "PRESENTABLE_WILL_DEQUEUE",
-					properties: ["presentableId": presentableId.value]
-				)
+				Mixpanel.mainInstance()
+					.track(
+						event: "PRESENTABLE_WILL_DEQUEUE",
+						properties: ["presentableId": presentableId.value]
+					)
 				message = "\(context) will dequeue modal presentation of \(presentableId)"
 			case let .willPresent(presentableId, context, styleName):
-				Mixpanel.mainInstance().track(
-					event: "PRESENTABLE_WILL_PRESENT",
-					properties: ["presentableId": presentableId.value]
-				)
+				Mixpanel.mainInstance()
+					.track(
+						event: "PRESENTABLE_WILL_PRESENT",
+						properties: ["presentableId": presentableId.value]
+					)
 
 				SentrySDK.configureScope { scope in
 					scope.setExtra(value: presentableId.value, key: "presentableId")
@@ -200,25 +215,28 @@ let log = Logger.self
 
 				message = "\(context) will '\(styleName)' present: \(presentableId)"
 			case let .didCancel(presentableId, context):
-				Mixpanel.mainInstance().track(
-					event: "PRESENTABLE_DID_CANCEL",
-					properties: ["presentableId": presentableId.value]
-				)
+				Mixpanel.mainInstance()
+					.track(
+						event: "PRESENTABLE_DID_CANCEL",
+						properties: ["presentableId": presentableId.value]
+					)
 				message = "\(context) did cancel presentation of: \(presentableId)"
 			case let .didDismiss(presentableId, context, result):
 				switch result {
 				case let .success(result):
-					Mixpanel.mainInstance().track(
-						event: "PRESENTABLE_DID_DISMISS_SUCCESS",
-						properties: ["presentableId": presentableId.value]
-					)
+					Mixpanel.mainInstance()
+						.track(
+							event: "PRESENTABLE_DID_DISMISS_SUCCESS",
+							properties: ["presentableId": presentableId.value]
+						)
 					message = "\(context) did end presentation of: \(presentableId)"
 					data = "\(result)"
 				case let .failure(error):
-					Mixpanel.mainInstance().track(
-						event: "PRESENTABLE_DID_DISMISS_FAILURE",
-						properties: ["presentableId": presentableId.value]
-					)
+					Mixpanel.mainInstance()
+						.track(
+							event: "PRESENTABLE_DID_DISMISS_FAILURE",
+							properties: ["presentableId": presentableId.value]
+						)
 					message = "\(context) did end presentation of: \(presentableId)"
 					data = "\(error)"
 				}
@@ -263,17 +281,17 @@ let log = Logger.self
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
 		if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
 
-		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain().atValue { _ in
-			Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+			.atValue { _ in Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
-			AnalyticsCoordinator().setUserId()
+				AnalyticsCoordinator().setUserId()
 
-			self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
-		}.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-			self.bag += client.fetch(query: GraphQL.FeaturesQuery()).onValue { _ in
-				launch.completeAnimationCallbacker.callAll()
+				self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
 			}
-		}
+			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
+				self.bag += client.fetch(query: GraphQL.FeaturesQuery())
+					.onValue { _ in launch.completeAnimationCallbacker.callAll() }
+			}
 
 		bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
 			ApplicationContext.shared.hasFinishedBootstrapping = true
@@ -288,11 +306,12 @@ let log = Logger.self
 
 				if #available(iOS 13, *) {
 					self.bag += toast.onTap.onValue {
-						self.appFlow.window.rootViewController?.present(
-							UIHostingController(rootView: Debug()),
-							style: .detented(.medium, .large),
-							options: []
-						)
+						self.appFlow.window.rootViewController?
+							.present(
+								UIHostingController(rootView: Debug()),
+								style: .detented(.medium, .large),
+								options: []
+							)
 					}
 				}
 
@@ -320,25 +339,28 @@ let log = Logger.self
 
 extension ApolloClient {
 	public static func initAndRegisterClient() -> Future<Void> {
-		Self.initClient().onValue { store, client in Dependencies.shared.add(module: Module { store })
+		Self.initClient()
+			.onValue { store, client in Dependencies.shared.add(module: Module { store })
 
-			Dependencies.shared.add(module: Module { client })
-		}.toVoid()
+				Dependencies.shared.add(module: Module { client })
+			}
+			.toVoid()
 	}
 }
 
 extension AppDelegate: MessagingDelegate {
 	func registerFCMToken(_ token: String) {
-		bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 }).onValue { _ in
-			let client: ApolloClient = Dependencies.shared.resolve()
-			client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token)).onValue { data in
-				if data.registerPushToken != nil {
-					log.info("Did register push token for user")
-				} else {
-					log.info("Failed to register push token for user")
-				}
+		bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
+			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
+				client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
+					.onValue { data in
+						if data.registerPushToken != nil {
+							log.info("Did register push token for user")
+						} else {
+							log.info("Failed to register push token for user")
+						}
+					}
 			}
-		}
 	}
 
 	func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
@@ -363,28 +385,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 				if ApplicationState.currentState == .onboardingChat {
 					return
 				} else if ApplicationState.currentState == .offer {
-					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter {
-						$0
-					}.onValue { _ in
-						self.appFlow.window.rootViewController?.present(
-							OfferChat(),
-							style: .modally(
-								presentationStyle: .pageSheet,
-								transitionStyle: nil,
-								capturesStatusBarAppearance: true
-							)
-						)
-					}
+					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
+						.filter { $0 }
+						.onValue { _ in
+							self.appFlow.window.rootViewController?
+								.present(
+									OfferChat(),
+									style: .modally(
+										presentationStyle: .pageSheet,
+										transitionStyle: nil,
+										capturesStatusBarAppearance: true
+									)
+								)
+						}
 					return
 				} else if ApplicationState.currentState == .loggedIn {
-					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter {
-						$0
-					}.onValue { _ in
-						self.appFlow.window.rootViewController?.present(
-							FreeTextChat(),
-							style: .detented(.large)
-						)
-					}
+					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
+						.filter { $0 }
+						.onValue { _ in
+							self.appFlow.window.rootViewController?
+								.present(FreeTextChat(), style: .detented(.large))
+						}
 					return
 				}
 			} else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
@@ -397,26 +418,28 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 			} else if notificationType == "CONNECT_DIRECT_DEBIT" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						self.appFlow.window.rootViewController?.present(
-							PaymentSetup(
-								setupType: .initial,
-								urlScheme: Bundle.main.urlScheme ?? ""
-							),
-							style: .modal,
-							options: [.defaults]
-						)
+						self.appFlow.window.rootViewController?
+							.present(
+								PaymentSetup(
+									setupType: .initial,
+									urlScheme: Bundle.main.urlScheme ?? ""
+								),
+								style: .modal,
+								options: [.defaults]
+							)
 					}
 			} else if notificationType == "PAYMENT_FAILED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						self.appFlow.window.rootViewController?.present(
-							PaymentSetup(
-								setupType: .replacement,
-								urlScheme: Bundle.main.urlScheme ?? ""
-							),
-							style: .modal,
-							options: [.defaults]
-						)
+						self.appFlow.window.rootViewController?
+							.present(
+								PaymentSetup(
+									setupType: .replacement,
+									urlScheme: Bundle.main.urlScheme ?? ""
+								),
+								style: .modal,
+								options: [.defaults]
+							)
 					}
 			}
 		}

@@ -19,8 +19,8 @@ extension ImportantMessagesSection: Viewable {
 		outerSection.append(sectionView)
 
 		client.fetch(query: GraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
-			.compactMap { $0.importantMessages.first }.compactMap { $0 }.onValue { importantMessage in
-				let row = RowView()
+			.compactMap { $0.importantMessages.first }.compactMap { $0 }
+			.onValue { importantMessage in let row = RowView()
 				bag += row.append(
 					MultilineLabel(
 						value: importantMessage.message ?? "",
@@ -38,13 +38,13 @@ extension ImportantMessagesSection: Viewable {
 					make.width.equalTo(hCoreUIAssets.chevronRight.image.size.width)
 				}
 
-				bag += sectionView.append(row).compactMap { row.viewController }.onValue {
-					viewController in
-					guard let url = URL(string: importantMessage.link) else { return }
-					let safariViewController = SFSafariViewController(url: url)
-					safariViewController.modalPresentationStyle = .formSheet
-					viewController.present(safariViewController, animated: true)
-				}
+				bag += sectionView.append(row).compactMap { row.viewController }
+					.onValue { viewController in
+						guard let url = URL(string: importantMessage.link) else { return }
+						let safariViewController = SFSafariViewController(url: url)
+						safariViewController.modalPresentationStyle = .formSheet
+						viewController.present(safariViewController, animated: true)
+					}
 
 				outerSection.appendSpacing(.top)
 			}

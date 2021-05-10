@@ -12,7 +12,10 @@ struct AttachGIFPane {
 	let chatState: ChatState
 	@Inject var client: ApolloClient
 
-	init(isOpenSignal: ReadWriteSignal<Bool>, chatState: ChatState) {
+	init(
+		isOpenSignal: ReadWriteSignal<Bool>,
+		chatState: ChatState
+	) {
 		self.isOpenSignal = isOpenSignal
 		self.chatState = chatState
 	}
@@ -23,12 +26,13 @@ extension AttachGIFPane: Viewable {
 		let bag = DisposeBag()
 		let view = UIView()
 
-		bag += isOpenSignal.atOnce().map { !$0 }.animated(
-			style: SpringAnimationStyle.lightBounce(),
-			animations: { isHidden in view.animationSafeIsHidden = isHidden
-				view.layoutSuperviewsIfNeeded()
-			}
-		)
+		bag += isOpenSignal.atOnce().map { !$0 }
+			.animated(
+				style: SpringAnimationStyle.lightBounce(),
+				animations: { isHidden in view.animationSafeIsHidden = isHidden
+					view.layoutSuperviewsIfNeeded()
+				}
+			)
 
 		view.backgroundColor = .clear
 
@@ -89,24 +93,28 @@ extension AttachGIFPane: Viewable {
 				make.left.equalTo(view).offset(10)
 				make.right.bottom.equalTo(view).offset(-10)
 
-				bag += searchBarValue.map { string -> Bool in string.isEmpty }.onValue { isEmpty in
-					if isEmpty { labelView.alpha = 1 } else { labelView.alpha = 0 }
-				}
+				bag += searchBarValue.map { string -> Bool in string.isEmpty }
+					.onValue { isEmpty in
+						if isEmpty { labelView.alpha = 1 } else { labelView.alpha = 0 }
+					}
 			}
 		}
 
 		bag += isOpenSignal.onValue { isOpen in if !isOpen { searchBarValue.value = "" } }
 
-		bag += searchBarValue.mapLatestToFuture { value in
-			self.client.fetch(query: GraphQL.GifQuery(query: value))
-		}.compactMap { data in data.gifs.compactMap { $0 } }.onValue { gifs in
-			let attachGIFImages = gifs.compactMap { gif -> AttachGIFImage? in
-				guard let url = URL(string: gif.url) else { return nil }
-
-				return AttachGIFImage(url: url, chatState: self.chatState)
+		bag +=
+			searchBarValue.mapLatestToFuture { value in
+				self.client.fetch(query: GraphQL.GifQuery(query: value))
 			}
-			collectionKit.table = Table(rows: attachGIFImages)
-		}
+			.compactMap { data in data.gifs.compactMap { $0 } }
+			.onValue { gifs in
+				let attachGIFImages = gifs.compactMap { gif -> AttachGIFImage? in
+					guard let url = URL(string: gif.url) else { return nil }
+
+					return AttachGIFImage(url: url, chatState: self.chatState)
+				}
+				collectionKit.table = Table(rows: attachGIFImages)
+			}
 
 		bag += collectionKit.onValueDisposePrevious { table -> Disposable? in let innerBag = DisposeBag()
 
@@ -114,10 +122,10 @@ extension AttachGIFPane: Viewable {
 				gifImage.uploadGifDelegate.set { url -> Signal<Void> in
 
 					Signal { callback in let signalBag = DisposeBag()
-						signalBag += self.chatState.sendChatFreeTextResponse(text: url).onValue
-						{ _ in self.isOpenSignal.value = false
-							callback(())
-						}
+						signalBag += self.chatState.sendChatFreeTextResponse(text: url)
+							.onValue { _ in self.isOpenSignal.value = false
+								callback(())
+							}
 
 						return signalBag
 					}
@@ -127,16 +135,17 @@ extension AttachGIFPane: Viewable {
 			return innerBag
 		}
 
-		bag += view.traitCollectionSignal.atOnce().wait(until: view.hasWindowSignal).onValue { trait in
-			view.snp.remakeConstraints { make in make.width.equalToSuperview()
+		bag += view.traitCollectionSignal.atOnce().wait(until: view.hasWindowSignal)
+			.onValue { trait in
+				view.snp.remakeConstraints { make in make.width.equalToSuperview()
 
-				if trait.verticalSizeClass == .compact {
-					make.height.equalTo(100)
-				} else {
-					make.height.equalTo(300)
+					if trait.verticalSizeClass == .compact {
+						make.height.equalTo(100)
+					} else {
+						make.height.equalTo(300)
+					}
 				}
 			}
-		}
 
 		return (view, bag)
 	}

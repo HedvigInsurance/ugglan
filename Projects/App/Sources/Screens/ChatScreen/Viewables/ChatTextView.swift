@@ -29,10 +29,10 @@ extension ChatTextView: Viewable {
 
 		let bag = DisposeBag()
 
-		bag += chatState.currentMessageSignal.atOnce().compactMap { $0 }.onValue { message in
-			textView.keyboardTypeSignal.value = message.keyboardType
-			textView.placeholder.value = message.placeholder ?? defaultPlaceholder
-		}
+		bag += chatState.currentMessageSignal.atOnce().compactMap { $0 }
+			.onValue { message in textView.keyboardTypeSignal.value = message.keyboardType
+				textView.placeholder.value = message.placeholder ?? defaultPlaceholder
+			}
 
 		bag += value.onValue { _ in
 			if let message = self.chatState.currentMessageSignal.value {
@@ -49,13 +49,16 @@ extension ChatTextView: Viewable {
 			view.animationSafeIsHidden = isHidden
 		}
 
-		bag += view.add(SendButton()) { buttonView in
-			buttonView.snp.makeConstraints { make in make.bottom.equalToSuperview().inset(5)
-				make.right.equalToSuperview().inset(5)
+		bag +=
+			view.add(SendButton()) { buttonView in
+				buttonView.snp.makeConstraints { make in make.bottom.equalToSuperview().inset(5)
+					make.right.equalToSuperview().inset(5)
+				}
 			}
-		}.withLatestFrom(value.plain()).onValue { _, textFieldValue in value.value = ""
-			bag += self.chatState.sendChatFreeTextResponse(text: textFieldValue).onValue { _ in }
-		}
+			.withLatestFrom(value.plain())
+			.onValue { _, textFieldValue in value.value = ""
+				bag += self.chatState.sendChatFreeTextResponse(text: textFieldValue).onValue { _ in }
+			}
 
 		return (view, bag)
 	}

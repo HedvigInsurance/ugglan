@@ -71,65 +71,69 @@ extension CharityPicker: Viewable {
 
 		let rows = ReadWriteSignal<[CharityOption]>([])
 
-		bag += rows.atOnce().onValue { charityOptions in
-			tableKit.set(Table(rows: charityOptions), animation: .none, rowIdentifier: { $0.title })
-		}
-
-		bag += client.watch(query: GraphQL.CharityOptionsQuery()).compactMap {
-			$0.cashbackOptions.compactMap { $0 }
-		}.onValue { cashbackOptions in
-			let charityOptions = cashbackOptions.map { cashbackOption in
-				CharityOption(
-					id: cashbackOption.id ?? "",
-					name: cashbackOption.name ?? "",
-					title: cashbackOption.title ?? "",
-					description: cashbackOption.description ?? "",
-					paragraph: cashbackOption.paragraph ?? ""
-				)
+		bag += rows.atOnce()
+			.onValue { charityOptions in
+				tableKit.set(Table(rows: charityOptions), animation: .none, rowIdentifier: { $0.title })
 			}
 
-			rows.value = charityOptions
-		}
+		bag += client.watch(query: GraphQL.CharityOptionsQuery())
+			.compactMap { $0.cashbackOptions.compactMap { $0 } }
+			.onValue { cashbackOptions in
+				let charityOptions = cashbackOptions.map { cashbackOption in
+					CharityOption(
+						id: cashbackOption.id ?? "",
+						name: cashbackOption.name ?? "",
+						title: cashbackOption.title ?? "",
+						description: cashbackOption.description ?? "",
+						paragraph: cashbackOption.paragraph ?? ""
+					)
+				}
+
+				rows.value = charityOptions
+			}
 
 		return (
 			tableKit.view,
 			Signal { callback in
-				bag += rows.atOnce().onValueDisposePrevious { charityOptions -> Disposable? in
-					let innerBag = bag.innerBag()
+				bag += rows.atOnce()
+					.onValueDisposePrevious { charityOptions -> Disposable? in
+						let innerBag = bag.innerBag()
 
-					innerBag += charityOptions.map { charityOption -> Disposable in
-						charityOption.onSelectSignal.onValueDisposePrevious { buttonView in
-							let dismissCallbacker = Callbacker<Void>()
+						innerBag += charityOptions.map { charityOption -> Disposable in
+							charityOption.onSelectSignal.onValueDisposePrevious {
+								buttonView in let dismissCallbacker = Callbacker<Void>()
 
-							let bubbleLoading = BubbleLoading(
-								originatingView: buttonView,
-								dismissSignal: dismissCallbacker.signal()
-							)
-
-							self.presentingViewController.present(
-								bubbleLoading,
-								style: .modally(
-									presentationStyle: .overFullScreen,
-									transitionStyle: .none,
-									capturesStatusBarAppearance: true
-								),
-								options: [.unanimated]
-							)
-
-							bag += bubbleLoading.dismissSignal.delay(by: 0.2).onValue { _ in
-								callback(charityOption)
-							}
-
-							return self.client.perform(
-								mutation: GraphQL.SelectCharityMutation(
-									id: charityOption.id
+								let bubbleLoading = BubbleLoading(
+									originatingView: buttonView,
+									dismissSignal: dismissCallbacker.signal()
 								)
-							).onValue { _ in dismissCallbacker.callAll() }.disposable
-						}
-					}
 
-					return innerBag
-				}
+								self.presentingViewController.present(
+									bubbleLoading,
+									style: .modally(
+										presentationStyle: .overFullScreen,
+										transitionStyle: .none,
+										capturesStatusBarAppearance: true
+									),
+									options: [.unanimated]
+								)
+
+								bag += bubbleLoading.dismissSignal.delay(by: 0.2)
+									.onValue { _ in callback(charityOption) }
+
+								return self.client
+									.perform(
+										mutation: GraphQL.SelectCharityMutation(
+											id: charityOption.id
+										)
+									)
+									.onValue { _ in dismissCallbacker.callAll() }
+									.disposable
+							}
+						}
+
+						return innerBag
+					}
 
 				return bag
 			}

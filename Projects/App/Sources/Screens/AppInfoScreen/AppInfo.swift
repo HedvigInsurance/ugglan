@@ -80,15 +80,16 @@ extension AppInfo: Presentable {
 			debugGesture.numberOfTapsRequired = 3
 			form.addGestureRecognizer(debugGesture)
 
-			bag += debugGesture.signal(forState: .recognized).onValue { _ in
-				if #available(iOS 13, *) {
-					viewController.present(
-						UIHostingController(rootView: Debug()),
-						style: .detented(.large),
-						options: []
-					)
+			bag += debugGesture.signal(forState: .recognized)
+				.onValue { _ in
+					if #available(iOS 13, *) {
+						viewController.present(
+							UIHostingController(rootView: Debug()),
+							style: .detented(.large),
+							options: []
+						)
+					}
 				}
-			}
 		}
 
 		func footerView() -> UIView? {
@@ -117,8 +118,9 @@ extension AppInfo: Presentable {
 				case .market: completion(.success(Localization.Locale.currentLocale.market.marketName))
 				case .version: completion(.success(Bundle.main.appVersion))
 				case .memberId:
-					innerBag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal.compactMap
-					{ $0.member.id }.onValue { memberId in completion(.success(memberId)) }
+					innerBag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal
+						.compactMap { $0.member.id }
+						.onValue { memberId in completion(.success(memberId)) }
 				}
 
 				return innerBag
@@ -141,12 +143,13 @@ extension AppInfo: Presentable {
 				]
 			)
 
-			bag += viewController.present(alert).onValue { shouldLogout in
-				if shouldLogout {
-					ApplicationState.preserveState(.marketPicker)
-					UIApplication.shared.appDelegate.logout()
+			bag += viewController.present(alert)
+				.onValue { shouldLogout in
+					if shouldLogout {
+						ApplicationState.preserveState(.marketPicker)
+						UIApplication.shared.appDelegate.logout()
+					}
 				}
-			}
 		}
 
 		func setupAppSettings() {
@@ -179,16 +182,17 @@ extension AppInfo: Presentable {
 		}
 
 		func setupAppInfo() {
-			[AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version].forEach { row in
-				bag += bodySection.append(
-					AppInfoRow(
-						title: row.title,
-						icon: row.icon,
-						trailingIcon: nil,
-						value: value(row: row)
+			[AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version]
+				.forEach { row in
+					bag += bodySection.append(
+						AppInfoRow(
+							title: row.title,
+							icon: row.icon,
+							trailingIcon: nil,
+							value: value(row: row)
+						)
 					)
-				)
-			}
+				}
 		}
 
 		switch type {

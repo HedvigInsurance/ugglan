@@ -39,21 +39,20 @@ extension MyPayment: Presentable {
 			form.transform = CGAffineTransform.identity
 		}
 
-		bag += combineLatest(failedChargesSignalData, nextPaymentSignalData).onValueDisposePrevious {
-			failedCharges,
-			nextPayment in let innerbag = DisposeBag()
-			if let failedCharges = failedCharges, let nextPayment = nextPayment {
-				if failedCharges > 0 {
-					let latePaymentHeaderCard = LatePaymentHeaderSection(
-						failedCharges: failedCharges,
-						lastDate: nextPayment
-					)
-					innerbag += form.prepend(latePaymentHeaderCard)
-					innerbag += form.prepend(Spacing(height: 20))
+		bag += combineLatest(failedChargesSignalData, nextPaymentSignalData)
+			.onValueDisposePrevious { failedCharges, nextPayment in let innerbag = DisposeBag()
+				if let failedCharges = failedCharges, let nextPayment = nextPayment {
+					if failedCharges > 0 {
+						let latePaymentHeaderCard = LatePaymentHeaderSection(
+							failedCharges: failedCharges,
+							lastDate: nextPayment
+						)
+						innerbag += form.prepend(latePaymentHeaderCard)
+						innerbag += form.prepend(Spacing(height: 20))
+					}
 				}
+				return innerbag
 			}
-			return innerbag
-		}
 
 		let paymentHeaderCard = PaymentHeaderCard()
 		bag += form.prepend(paymentHeaderCard)

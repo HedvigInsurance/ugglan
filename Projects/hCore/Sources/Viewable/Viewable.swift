@@ -25,7 +25,10 @@ public struct SelectableViewableEvents {
 
 	public var onSelect: Signal<Void> { onSelectCallbacker.providedSignal }
 
-	public init(wasAddedCallbacker: Callbacker<Void>, onSelectCallbacker: Callbacker<Void>) {
+	public init(
+		wasAddedCallbacker: Callbacker<Void>,
+		onSelectCallbacker: Callbacker<Void>
+	) {
 		wasAdded = wasAddedCallbacker.providedSignal
 		self.onSelectCallbacker = onSelectCallbacker
 	}

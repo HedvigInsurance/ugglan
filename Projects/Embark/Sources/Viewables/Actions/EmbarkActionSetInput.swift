@@ -19,7 +19,10 @@ struct EmbarkNumberActionSet {
 }
 
 struct EmbarkActionSetInputData {
-	internal init(numberActionSet: EmbarkNumberActionSetData, state: EmbarkState) {
+	internal init(
+		numberActionSet: EmbarkNumberActionSetData,
+		state: EmbarkState
+	) {
 		actions = numberActionSet.numberActions.map { numberAction in
 			.init(
 				placeholder: numberAction.data?.placeholder,
@@ -32,7 +35,10 @@ struct EmbarkActionSetInputData {
 		self.state = state
 	}
 
-	internal init(textActionSet: EmbarkTextActionSetData, state: EmbarkState) {
+	internal init(
+		textActionSet: EmbarkTextActionSetData,
+		state: EmbarkState
+	) {
 		actions = textActionSet.textActions.map { textAction in
 			.init(
 				placeholder: textAction.data?.placeholder,
@@ -79,57 +85,58 @@ extension EmbarkActionSetInputData: Viewable {
 			return Masking(type: mask)
 		}
 
-		let actionSignals = actions.enumerated().map {
-			index,
-			action -> (
-				signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>, action: Action
-			) in let endIndex = actions.endIndex
-			let isLastAction: Bool = index == endIndex - 1
+		let actionSignals = actions.enumerated()
+			.map {
+				index,
+				action -> (
+					signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>,
+					action: Action
+				) in let endIndex = actions.endIndex
+				let isLastAction: Bool = index == endIndex - 1
 
-			let masking = getMasking(action)
+				let masking = getMasking(action)
 
-			let input = EmbarkInput(
-				placeholder: action.placeholder ?? "",
-				keyboardType: masking?.keyboardType,
-				textContentType: masking?.textContentType,
-				returnKeyType: isLastAction ? .done : .next,
-				autocapitalisationType: masking?.autocapitalizationType ?? .words,
-				masking: masking ?? Masking(type: .none),
-				shouldAutoFocus: index == 0,
-				fieldStyle: .embarkInputSmall,
-				textFieldAlignment: .right
-			)
+				let input = EmbarkInput(
+					placeholder: action.placeholder ?? "",
+					keyboardType: masking?.keyboardType,
+					textContentType: masking?.textContentType,
+					returnKeyType: isLastAction ? .done : .next,
+					autocapitalisationType: masking?.autocapitalizationType ?? .words,
+					masking: masking ?? Masking(type: .none),
+					shouldAutoFocus: index == 0,
+					fieldStyle: .embarkInputSmall,
+					textFieldAlignment: .right
+				)
 
-			let label = UILabel(value: action.title ?? "", style: .brand(.body(color: .primary)))
+				let label = UILabel(value: action.title ?? "", style: .brand(.body(color: .primary)))
 
-			let stack = UIStackView()
-			stack.axis = .horizontal
-			stack.distribution = .equalSpacing
+				let stack = UIStackView()
+				stack.axis = .horizontal
+				stack.distribution = .equalSpacing
 
-			stack.addArrangedSubview(label)
+				stack.addArrangedSubview(label)
 
-			boxStack.addArrangedSubview(stack)
+				boxStack.addArrangedSubview(stack)
 
-			if !isLastAction, endIndex > 0 {
-				let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
-				bag += boxStack.addArranged(divider)
-			}
-
-			var prefillValue: String {
-				guard let key = action.key, let value = state.store.getPrefillValue(key: key) else {
-					return ""
+				if !isLastAction, endIndex > 0 {
+					let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
+					bag += boxStack.addArranged(divider)
 				}
 
-				if let masking = masking { return masking.maskValueFromStore(text: value) }
+				var prefillValue: String {
+					guard let key = action.key, let value = state.store.getPrefillValue(key: key)
+					else { return "" }
 
-				return value
+					if let masking = masking { return masking.maskValueFromStore(text: value) }
+
+					return value
+				}
+
+				let textSignal = stack.addArranged(input)
+				textSignal.value = prefillValue
+
+				return (signal: textSignal, shouldReturn: input.shouldReturn, action: action)
 			}
-
-			let textSignal = stack.addArranged(input)
-			textSignal.value = prefillValue
-
-			return (signal: textSignal, shouldReturn: input.shouldReturn, action: action)
-		}
 
 		return (
 			view,
@@ -142,9 +149,8 @@ extension EmbarkActionSetInputData: Viewable {
 					if let passageName = self.state.passageNameSignal.value {
 						self.state.store.setValue(
 							key: "\(passageName)Result",
-							value: actionSignals.map { $0.signal.value }.joined(
-								separator: " "
-							)
+							value: actionSignals.map { $0.signal.value }
+								.joined(separator: " ")
 						)
 					}
 
@@ -168,29 +174,32 @@ extension EmbarkActionSetInputData: Viewable {
 				bag += view.addArranged(button)
 
 				func isValid(signal: ReadWriteSignal<String>, action: Action) -> Signal<Bool> {
-					signal.atOnce().map { text in
-						!text.isEmpty && (getMasking(action)?.isValid(text: text) ?? true)
-					}.plain()
-				}
-
-				bag += actionSignals.map { _, shouldReturn, _ in shouldReturn }.enumerated().map {
-					offset,
-					shouldReturn in
-					shouldReturn.set { value -> Bool in
-						if !value.isEmpty {
-							if offset == actionSignals.count - 1 { complete() }
-
-							return true
+					signal.atOnce()
+						.map { text in
+							!text.isEmpty
+								&& (getMasking(action)?.isValid(text: text) ?? true)
 						}
-
-						return false
-					}
+						.plain()
 				}
+
+				bag += actionSignals.map { _, shouldReturn, _ in shouldReturn }.enumerated()
+					.map { offset, shouldReturn in
+						shouldReturn.set { value -> Bool in
+							if !value.isEmpty {
+								if offset == actionSignals.count - 1 { complete() }
+
+								return true
+							}
+
+							return false
+						}
+					}
 
 				bag += combineLatest(
 					actionSignals.map { signal, _, action in isValid(signal: signal, action: action)
 					}
-				).map { !$0.contains(false) }.bindTo(button.isEnabled)
+				)
+				.map { !$0.contains(false) }.bindTo(button.isEnabled)
 
 				bag += containerView.applyShadow { (_) -> UIView.ShadowProperties in .embark }
 

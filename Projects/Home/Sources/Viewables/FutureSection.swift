@@ -30,8 +30,10 @@ extension FutureSection: Viewable {
 				query: GraphQL.HomeInsuranceProvidersQuery(
 					locale: Localization.Locale.currentLocale.asGraphQLLocale()
 				)
-			).valueSignal
-		).onValue { homeData, insuranceProvidersData in
+			)
+			.valueSignal
+		)
+		.onValue { homeData, insuranceProvidersData in
 			if let contract = homeData.contracts.first(where: {
 				$0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil
 			}) {

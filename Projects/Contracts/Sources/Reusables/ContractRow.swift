@@ -154,62 +154,67 @@ extension ContractRow: Reusable {
 
 				orbImageView.tintColor = self.orbTintColor
 
-				bag += contentView.traitCollectionSignal.atOnce().onValueDisposePrevious {
-					_ -> Disposable? in let bag = DisposeBag()
+				bag += contentView.traitCollectionSignal.atOnce()
+					.onValueDisposePrevious { _ -> Disposable? in let bag = DisposeBag()
 
-					if let gradientLayer = self.gradientLayer {
-						gradientView.layer.addSublayer(gradientLayer)
+						if let gradientLayer = self.gradientLayer {
+							gradientView.layer.addSublayer(gradientLayer)
 
-						bag += gradientView.didLayoutSignal.onValue {
-							gradientLayer.bounds = gradientView.layer.bounds
-							gradientLayer.frame = gradientView.layer.frame
-							gradientLayer.position = gradientView.layer.position
+							bag += gradientView.didLayoutSignal.onValue {
+								gradientLayer.bounds = gradientView.layer.bounds
+								gradientLayer.frame = gradientView.layer.frame
+								gradientLayer.position = gradientView.layer.position
+							}
+
+							bag += { gradientLayer.removeFromSuperlayer() }
 						}
 
-						bag += { gradientLayer.removeFromSuperlayer() }
+						return bag
 					}
-
-					return bag
-				}
 
 				displayNameLabel.value = self.displayName
 
 				if self.allowDetailNavigation {
-					bag += contentView.trackedTouchUpInsideSignal.compactMap { _ in
-						contentView.viewController
-					}.onValue { viewController in
-						guard let navigationController = viewController.navigationController
-						else { return }
+					bag += contentView.trackedTouchUpInsideSignal
+						.compactMap { _ in contentView.viewController }
+						.onValue { viewController in
+							guard
+								let navigationController = viewController
+									.navigationController
+							else { return }
 
-						if !UITraitCollection.isCatalyst {
-							navigationController.hero.isEnabled = true
-							navigationController.hero.navigationAnimationType = .fade
-						} else {
-							navigationController.hero.isEnabled = false
-						}
-
-						viewController.present(
-							ContractDetail(contractRow: self),
-							options: [.largeTitleDisplayMode(.never), .autoPop]
-						).onResult { _ in
 							if !UITraitCollection.isCatalyst {
+								navigationController.hero.isEnabled = true
+								navigationController.hero.navigationAnimationType =
+									.fade
+							} else {
 								navigationController.hero.isEnabled = false
 							}
+
+							viewController.present(
+								ContractDetail(contractRow: self),
+								options: [.largeTitleDisplayMode(.never), .autoPop]
+							)
+							.onResult { _ in
+								if !UITraitCollection.isCatalyst {
+									navigationController.hero.isEnabled = false
+								}
+							}
 						}
-					}
 
 					bag += contentView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
-					bag += contentView.signal(for: .touchDown).animated(
-						style: .easeOut(duration: 0.25)
-					) {
-						touchFocusView.backgroundColor = backgroundColor.darkened(amount: 0.2)
-							.withAlphaComponent(0.25)
-					}
+					bag += contentView.signal(for: .touchDown)
+						.animated(style: .easeOut(duration: 0.25)) {
+							touchFocusView.backgroundColor =
+								backgroundColor.darkened(amount: 0.2)
+								.withAlphaComponent(0.25)
+						}
 
-					bag += contentView.delayedTouchCancel().animated(
-						style: .easeOut(duration: 0.25)
-					) { touchFocusView.backgroundColor = .clear }
+					bag += contentView.delayedTouchCancel()
+						.animated(style: .easeOut(duration: 0.25)) {
+							touchFocusView.backgroundColor = .clear
+						}
 				}
 
 				bag += statusPillsContainer.addArranged(

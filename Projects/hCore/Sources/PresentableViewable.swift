@@ -9,7 +9,10 @@ where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<
 	public let viewable: View
 	public let customizeViewController: (_ vc: UIViewController) -> Void
 
-	public init(viewable: View, customizeViewController: @escaping (_ vc: UIViewController) -> Void = { _ in }) {
+	public init(
+		viewable: View,
+		customizeViewController: @escaping (_ vc: UIViewController) -> Void = { _ in }
+	) {
 		self.viewable = viewable
 		self.customizeViewController = customizeViewController
 	}
@@ -26,7 +29,8 @@ where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<
 				bag += view.traitCollectionSignal.onValue { _ in
 					self.customizeViewController(viewController)
 				}
-			}.hold(bag)
+			}
+			.hold(bag)
 		)
 	}
 }

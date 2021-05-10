@@ -38,19 +38,19 @@ extension CategoryPicker: Viewable {
 
 		bag += collectionKit.onValueDisposePrevious { table -> Disposable? in let innerBag = DisposeBag()
 
-			innerBag += table.signal().onValue { item in
-				innerBag += item.selectedSignal.onValueDisposePrevious { selected in
-					if selected {
-						onPickItem.callAll(with: item.category)
+			innerBag += table.signal()
+				.onValue { item in
+					innerBag += item.selectedSignal.onValueDisposePrevious { selected in
+						if selected {
+							onPickItem.callAll(with: item.category)
 
-						return table.signal().filter { $0 != item }.onValue {
-							$0.selectedSignal.value = false
+							return table.signal().filter { $0 != item }
+								.onValue { $0.selectedSignal.value = false }
 						}
-					}
 
-					return NilDisposer()
+						return NilDisposer()
+					}
 				}
-			}
 
 			return innerBag
 		}

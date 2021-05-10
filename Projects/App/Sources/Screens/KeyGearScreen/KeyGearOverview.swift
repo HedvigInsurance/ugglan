@@ -36,36 +36,51 @@ struct KeyGearOverview {
 						let bag = DisposeBag()
 
 						bag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal
-							.compactMap { $0.member.id }.onValue { memberId in
-								bag += self.client.perform(
-									mutation: GraphQL.CreateKeyGearItemMutation(
-										input: GraphQL.CreateKeyGearItemInput(
-											photos: [],
-											category: .smartWatch,
-											physicalReferenceHash:
-												"apple-watch-\(memberId)"
-										)
-									)
-								).valueSignal.compactMap { $0.createKeyGearItem.id }
-									.onValue { itemId in
-										self.client.perform(
-											mutation:
-												GraphQL
-												.UpdateKeyGearItemNameMutation(
-													id: itemId,
-													name:
-														"Apple Watch"
-												)
-										).onValue { _ in
-											self.client.fetch(
-												query:
+							.compactMap { $0.member.id }
+							.onValue { memberId in
+								bag += self.client
+									.perform(
+										mutation:
+											GraphQL
+											.CreateKeyGearItemMutation(
+												input:
 													GraphQL
-													.KeyGearItemsQuery(),
-												cachePolicy:
-													.fetchIgnoringCacheData
-											).onValue { _ in }
-											bag.dispose()
-										}
+													.CreateKeyGearItemInput(
+														photos: [],
+														category:
+															.smartWatch,
+														physicalReferenceHash:
+															"apple-watch-\(memberId)"
+													)
+											)
+									)
+									.valueSignal
+									.compactMap { $0.createKeyGearItem.id }
+									.onValue { itemId in
+										self.client
+											.perform(
+												mutation:
+													GraphQL
+													.UpdateKeyGearItemNameMutation(
+														id:
+															itemId,
+														name:
+															"Apple Watch"
+													)
+											)
+											.onValue { _ in
+												self.client
+													.fetch(
+														query:
+															GraphQL
+															.KeyGearItemsQuery(),
+														cachePolicy:
+															.fetchIgnoringCacheData
+													)
+													.onValue { _ in
+													}
+												bag.dispose()
+											}
 									}
 							}
 					}
@@ -86,25 +101,35 @@ struct KeyGearOverview {
 		let category: GraphQL.KeyGearItemCategory =
 			viewController.traitCollection.userInterfaceIdiom == .pad ? .tablet : .phone
 
-		bag += client.perform(
-			mutation: GraphQL.CreateKeyGearItemMutation(
-				input: GraphQL.CreateKeyGearItemInput(
-					photos: [],
-					category: category,
-					physicalReferenceHash: deviceId
+		bag +=
+			client.perform(
+				mutation: GraphQL.CreateKeyGearItemMutation(
+					input: GraphQL.CreateKeyGearItemInput(
+						photos: [],
+						category: category,
+						physicalReferenceHash: deviceId
+					)
 				)
 			)
-		).valueSignal.compactMap { $0.createKeyGearItem.id }.onValue { itemId in
-			self.client.perform(
-				mutation: GraphQL.UpdateKeyGearItemNameMutation(id: itemId, name: UIDevice.current.name)
-			).onValue { _ in
-				self.client.fetch(
-					query: GraphQL.KeyGearItemsQuery(),
-					cachePolicy: .fetchIgnoringCacheData
-				).onValue { _ in }
-				bag.dispose()
+			.valueSignal.compactMap { $0.createKeyGearItem.id }
+			.onValue { itemId in
+				self.client
+					.perform(
+						mutation: GraphQL.UpdateKeyGearItemNameMutation(
+							id: itemId,
+							name: UIDevice.current.name
+						)
+					)
+					.onValue { _ in
+						self.client
+							.fetch(
+								query: GraphQL.KeyGearItemsQuery(),
+								cachePolicy: .fetchIgnoringCacheData
+							)
+							.onValue { _ in }
+						bag.dispose()
+					}
 			}
-		}
 	}
 }
 
@@ -119,9 +144,10 @@ extension KeyGearOverview: Presentable {
 		let bag = DisposeBag()
 
 		let split = UISplitViewController()
-		bag += split.view.traitCollectionSignal.atOnce().onValue { trait in
-			split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .allVisible : .automatic
-		}
+		bag += split.view.traitCollectionSignal.atOnce()
+			.onValue { trait in
+				split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .allVisible : .automatic
+			}
 
 		split.view.backgroundColor = .brand(.primaryBackground())
 		split.extendedLayoutIncludesOpaqueBars = true
@@ -160,24 +186,25 @@ extension KeyGearOverview: Presentable {
 			}
 		}
 
-		bag += viewController.install(KeyGearListCollection()) { collectionView in
-			let refreshControl = UIRefreshControl()
-			bag += client.refetchOnRefresh(
-				query: GraphQL.KeyGearItemsQuery(),
-				refreshControl: refreshControl
-			)
+		bag +=
+			viewController.install(KeyGearListCollection()) { collectionView in
+				let refreshControl = UIRefreshControl()
+				bag += client.refetchOnRefresh(
+					query: GraphQL.KeyGearItemsQuery(),
+					refreshControl: refreshControl
+				)
 
-			collectionView.refreshControl = refreshControl
+				collectionView.refreshControl = refreshControl
 
-		}.onValue { result in
-			switch result {
-			case .add:
-				viewController.present(AddKeyGearItem(), style: .modally()).onValue { id in
-					presentDetail(id: id)
-				}
-			case let .row(id): presentDetail(id: id)
 			}
-		}
+			.onValue { result in
+				switch result {
+				case .add:
+					viewController.present(AddKeyGearItem(), style: .modally())
+						.onValue { id in presentDetail(id: id) }
+				case let .row(id): presentDetail(id: id)
+				}
+			}
 
 		return (split, bag)
 	}

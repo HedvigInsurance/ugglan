@@ -12,7 +12,9 @@ public struct AppFlow {
 	let window: UIWindow
 	let bag = DisposeBag()
 
-	init(window: UIWindow) {
+	init(
+		window: UIWindow
+	) {
 		self.window = window
 		self.window.rootViewController = rootNavigationController
 	}
@@ -35,11 +37,13 @@ struct WebOnboardingFlow: Presentable {
 			viewController,
 			Signal { callback in
 				bag += signal.onValue { _ in
-					bag += viewController.present(
-						PostOnboarding(),
-						style: .detented(.large),
-						options: [.prefersNavigationBarHidden(true)]
-					).onValue(callback)
+					bag +=
+						viewController.present(
+							PostOnboarding(),
+							style: .detented(.large),
+							options: [.prefersNavigationBarHidden(true)]
+						)
+						.onValue(callback)
 				}
 
 				return bag
@@ -62,19 +66,20 @@ struct EmbarkOnboardingFlow: Presentable {
 		bag += signal.atValue { story in
 			let embark = Embark(name: story.name, menu: Menu(title: nil, children: menuChildren))
 
-			bag += viewController.present(embark, options: [.autoPop]).onValue { redirect in
-				switch redirect {
-				case .mailingList: break
-				case let .offer(ids):
-					let webOnboardingSignal = viewController.present(
-						WebOnboardingFlow(webScreen: .webOffer(ids: ids))
-					)
+			bag += viewController.present(embark, options: [.autoPop])
+				.onValue { redirect in
+					switch redirect {
+					case .mailingList: break
+					case let .offer(ids):
+						let webOnboardingSignal = viewController.present(
+							WebOnboardingFlow(webScreen: .webOffer(ids: ids))
+						)
 
-					bag += webOnboardingSignal.onEnd { embark.goBack() }
+						bag += webOnboardingSignal.onEnd { embark.goBack() }
 
-					bag += webOnboardingSignal.nil()
+						bag += webOnboardingSignal.nil()
+					}
 				}
-			}
 		}
 
 		return (viewController, bag)

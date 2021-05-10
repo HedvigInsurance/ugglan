@@ -17,9 +17,8 @@ struct AddKeyGearItem {
 		let categorySignal = ReadWriteSignal<GraphQL.KeyGearItemCategory?>(nil)
 
 		var isValidSignal: ReadSignal<Bool> {
-			combineLatest(imageSignal, categorySignal).map { image, category in
-				image != nil && category != nil
-			}
+			combineLatest(imageSignal, categorySignal)
+				.map { image, category in image != nil && category != nil }
 		}
 	}
 }
@@ -50,9 +49,13 @@ extension AddKeyGearItem: Presentable {
 		let categoryPickerSection = form.appendSection(header: L10n.keyGearAddItemTypeHeadline)
 		categoryPickerSection.alpha = 0.5
 		categoryPickerSection.isUserInteractionEnabled = false
-		bag += categoryPickerSection.append(
-			CategoryPicker(onSelectCategorySignal: state.categorySignal.compactMap { $0 }.distinct())
-		).onValue { category in self.state.categorySignal.value = category }
+		bag +=
+			categoryPickerSection.append(
+				CategoryPicker(
+					onSelectCategorySignal: state.categorySignal.compactMap { $0 }.distinct()
+				)
+			)
+			.onValue { category in self.state.categorySignal.value = category }
 
 		bag += form.append(Spacing(height: 30))
 
@@ -65,13 +68,15 @@ extension AddKeyGearItem: Presentable {
 				)
 			)
 		)
-		bag += state.isValidSignal.atOnce().map { valid in
-			valid
-				? ButtonType.standard(
-					backgroundColor: .brand(.primaryButtonBackgroundColor),
-					textColor: .brand(.primaryButtonTextColor)
-				) : ButtonType.standard(backgroundColor: .gray, textColor: .white)
-		}.bindTo(saveButton.button.type)
+		bag += state.isValidSignal.atOnce()
+			.map { valid in
+				valid
+					? ButtonType.standard(
+						backgroundColor: .brand(.primaryButtonBackgroundColor),
+						textColor: .brand(.primaryButtonTextColor)
+					) : ButtonType.standard(backgroundColor: .gray, textColor: .white)
+			}
+			.bindTo(saveButton.button.type)
 
 		let saveButtonContainer = UIStackView()
 		saveButtonContainer.axis = .vertical
@@ -90,9 +95,8 @@ extension AddKeyGearItem: Presentable {
 					saveButton.isLoadingSignal.value = true
 
 					guard
-						let jpegData = self.state.imageSignal.value?.jpegData(
-							compressionQuality: 0.9
-						)
+						let jpegData = self.state.imageSignal.value?
+							.jpegData(compressionQuality: 0.9)
 					else {
 						log.error("couldn't process image")
 						return
@@ -104,43 +108,67 @@ extension AddKeyGearItem: Presentable {
 						fileName: "image.jpg"
 					)
 
-					fileUpload.upload().onValue { key, bucket in
-						self.client.perform(
-							mutation: GraphQL.CreateKeyGearItemMutation(
-								input: GraphQL.CreateKeyGearItemInput(
-									photos: [
-										GraphQL.S3FileInput(
-											bucket: bucket,
-											key: key
+					fileUpload.upload()
+						.onValue { key, bucket in
+							self.client
+								.perform(
+									mutation: GraphQL.CreateKeyGearItemMutation(
+										input: GraphQL.CreateKeyGearItemInput(
+											photos: [
+												GraphQL.S3FileInput(
+													bucket: bucket,
+													key: key
+												)
+											],
+											category: .computer
 										)
-									],
-									category: .computer
+									)
 								)
-							)
-						).onValue { data in
-							self.client.fetch(
-								query: GraphQL.KeyGearItemsQuery(),
-								cachePolicy: .fetchIgnoringCacheData
-							).onValue { _ in
-								let bubbleLoading = BubbleLoading(
-									originatingView: saveButtonContainer,
-									dismissSignal: Signal(after: 2)
-								)
+								.onValue { data in
+									self.client
+										.fetch(
+											query:
+												GraphQL
+												.KeyGearItemsQuery(),
+											cachePolicy:
+												.fetchIgnoringCacheData
+										)
+										.onValue { _ in
+											let bubbleLoading =
+												BubbleLoading(
+													originatingView:
+														saveButtonContainer,
+													dismissSignal:
+														Signal(
+															after:
+																2
+														)
+												)
 
-								viewController.present(
-									bubbleLoading,
-									style: .modally(
-										presentationStyle: .overFullScreen,
-										transitionStyle: .none,
-										capturesStatusBarAppearance: true
-									),
-									options: [.unanimated]
-								).onValue { _ in
-									completion(.success(data.createKeyGearItem.id))
+											viewController.present(
+												bubbleLoading,
+												style: .modally(
+													presentationStyle:
+														.overFullScreen,
+													transitionStyle:
+														.none,
+													capturesStatusBarAppearance:
+														true
+												),
+												options: [.unanimated]
+											)
+											.onValue { _ in
+												completion(
+													.success(
+														data
+															.createKeyGearItem
+															.id
+													)
+												)
+											}
+										}
 								}
-							}
 						}
-					}
 				}
 
 				bag += saveButton.onTapSignal.onValue(save)
@@ -148,17 +176,18 @@ extension AddKeyGearItem: Presentable {
 				func handleImage(image: UIImage) {
 					self.state.imageSignal.value = image
 
-					self.classifyImage(image).onValue { category in
-						bag += Signal(after: 0).animated(
-							style: AnimationStyle.easeOut(duration: 0.35)
-						) { _ in categoryPickerSection.alpha = 1
-							categoryPickerSection.isUserInteractionEnabled = true
+					self.classifyImage(image)
+						.onValue { category in
+							bag += Signal(after: 0)
+								.animated(style: AnimationStyle.easeOut(duration: 0.35))
+							{ _ in categoryPickerSection.alpha = 1
+								categoryPickerSection.isUserInteractionEnabled = true
+							}
+
+							guard let category = category else { return }
+
+							self.state.categorySignal.value = category
 						}
-
-						guard let category = category else { return }
-
-						self.state.categorySignal.value = category
-					}
 				}
 
 				bag += addPhotoButtonSignal.onValue { view in
@@ -168,13 +197,14 @@ extension AddKeyGearItem: Presentable {
 							allowedTypes: [.camera, .photoLibrary]
 						),
 						style: .sheet(from: view, rect: nil)
-					).flatMap { $0.left! }.onValue { result in
+					)
+					.flatMap { $0.left! }
+					.onValue { result in
 						if let image = result.right {
 							handleImage(image: image)
 						} else if let asset = result.left {
-							bag += asset.image.valueSignal.compactMap { $0 }.onValue(
-								handleImage
-							)
+							bag += asset.image.valueSignal.compactMap { $0 }
+								.onValue(handleImage)
 						}
 					}
 				}

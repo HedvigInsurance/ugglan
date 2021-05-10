@@ -10,14 +10,21 @@ public struct ImageWithOptions {
 	let contentMode: UIView.ContentMode
 	let insets: UIEdgeInsets
 
-	public init(image: UIImage) {
+	public init(
+		image: UIImage
+	) {
 		self.image = image
 		size = nil
 		contentMode = .scaleAspectFit
 		insets = .zero
 	}
 
-	public init(image: UIImage, size: CGSize?, contentMode: UIView.ContentMode, insets: UIEdgeInsets? = nil) {
+	public init(
+		image: UIImage,
+		size: CGSize?,
+		contentMode: UIView.ContentMode,
+		insets: UIEdgeInsets? = nil
+	) {
 		self.image = image
 		self.size = size
 		self.contentMode = contentMode
@@ -166,9 +173,8 @@ extension ImageTextAction: Viewable {
 			scrollView,
 			Signal { callback in
 				bag += self.actions.map { _, button in
-					let buttonInStackView = button.alignedTo(alignment: .fill).insetted(
-						UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
-					)
+					let buttonInStackView = button.alignedTo(alignment: .fill)
+						.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0))
 					return buttonsContainer.addArranged(buttonInStackView)
 				}
 

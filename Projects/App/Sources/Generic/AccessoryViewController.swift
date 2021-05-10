@@ -7,7 +7,9 @@ class AccessoryViewController<Accessory: Viewable>: UIViewController
 where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Result == Disposable {
 	let accessoryView: Accessory.Matter
 
-	init(accessoryView: Accessory) {
+	init(
+		accessoryView: Accessory
+	) {
 		let (view, disposable) = accessoryView.materialize(
 			events: ViewableEvents(wasAddedCallbacker: Callbacker<Void>())
 		)
@@ -22,9 +24,9 @@ where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Re
 		bag += deallocSignal.onValue { _ in bag.dispose() }
 	}
 
-	@available(*, unavailable) required init?(coder _: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+	@available(*, unavailable) required init?(
+		coder _: NSCoder
+	) { fatalError("init(coder:) has not been implemented") }
 
 	override var canBecomeFirstResponder: Bool { true }
 

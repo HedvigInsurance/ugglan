@@ -10,7 +10,10 @@ public struct PaymentSetup {
 
 	public enum SetupType { case initial, replacement, postOnboarding }
 
-	public init(setupType: SetupType, urlScheme: String) {
+	public init(
+		setupType: SetupType,
+		urlScheme: String
+	) {
 		self.setupType = setupType
 		self.urlScheme = urlScheme
 	}

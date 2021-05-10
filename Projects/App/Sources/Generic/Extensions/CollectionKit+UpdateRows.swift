@@ -10,10 +10,8 @@ extension CollectionKit {
 		let row = getItemForIndex(index: index)
 
 		if let row = row {
-			let changeStep = ChangeStep<Row, TableIndex>.update(
-				item: row,
-				at: TableIndex(section: 0, row: index)
-			)
+			let changeStep = ChangeStep<Row, TableIndex>
+				.update(item: row, at: TableIndex(section: 0, row: index))
 			let tableChange = TableChange<Section, Row>.row(changeStep)
 			apply(changes: [tableChange], animation: .none)
 		}

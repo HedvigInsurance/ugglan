@@ -79,33 +79,42 @@ extension ApplyDiscount: Presentable {
 		return (
 			viewController,
 			Future { completion in
-				bag += shouldSubmitCallbacker.atValue { _ in
-					loadableSubmitButton.isLoadingSignal.value = true
-				}.withLatestFrom(textField.value.plain()).onValue { _, discountCode in
-					self.client.perform(mutation: GraphQL.RedeemCodeMutation(code: discountCode))
-						.delay(by: 0.5).onError { _ in
-							let alert = Alert(
-								title: L10n.discountCodeMissing,
-								message: L10n.discountCodeMissingBody,
-								actions: [
-									Alert.Action(
-										title: L10n.discountCodeMissingButton
-									) {}
-								]
+				bag +=
+					shouldSubmitCallbacker.atValue { _ in
+						loadableSubmitButton.isLoadingSignal.value = true
+					}
+					.withLatestFrom(textField.value.plain())
+					.onValue { _, discountCode in
+						self.client
+							.perform(
+								mutation: GraphQL.RedeemCodeMutation(code: discountCode)
 							)
+							.delay(by: 0.5)
+							.onError { _ in
+								let alert = Alert(
+									title: L10n.discountCodeMissing,
+									message: L10n.discountCodeMissingBody,
+									actions: [
+										Alert.Action(
+											title: L10n
+												.discountCodeMissingButton
+										) {}
+									]
+								)
 
-							viewController.present(alert)
+								viewController.present(alert)
 
-							loadableSubmitButton.isLoadingSignal.value = false
-						}.compactMap { $0.redeemCodeV2.asSuccessfulRedeemResult }.onValue {
-							successfulRedeemResult in
-							loadableSubmitButton.isLoadingSignal.value = false
-							self.didRedeemValidCodeCallbacker.callAll(
-								with: successfulRedeemResult
-							)
-							completion(.success)
-						}
-				}
+								loadableSubmitButton.isLoadingSignal.value = false
+							}
+							.compactMap { $0.redeemCodeV2.asSuccessfulRedeemResult }
+							.onValue { successfulRedeemResult in
+								loadableSubmitButton.isLoadingSignal.value = false
+								self.didRedeemValidCodeCallbacker.callAll(
+									with: successfulRedeemResult
+								)
+								completion(.success)
+							}
+					}
 
 				return bag
 			}

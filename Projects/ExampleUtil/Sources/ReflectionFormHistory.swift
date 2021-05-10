@@ -16,10 +16,8 @@ public struct ReflectionFormHistory<T: Codable> {
 
 	func getItems() -> [ReflectionFormHistoryRow<T>] {
 		guard let prevValueJSON = UserDefaults.standard.value(forKey: title) as? Data,
-			let decodedValue = try? JSONDecoder().decode(
-				[ReflectionFormHistoryRow<T>].self,
-				from: prevValueJSON
-			)
+			let decodedValue = try? JSONDecoder()
+				.decode([ReflectionFormHistoryRow<T>].self, from: prevValueJSON)
 		else { return [] }
 
 		return decodedValue
@@ -99,64 +97,73 @@ extension ReflectionFormHistory: Presentable {
 
 		fetch()
 
-		bag += tableKit.delegate.installAction(
-			title: "Delete",
-			style: .destructive,
-			backgroundColor: nil,
-			isVisibleAt: { _ -> Bool in true }
-		).onValue { index in let item = tableKit.table[index]
-			self.removeItem(item)
-			fetch()
-		}
-
-		bag += tableKit.delegate.installAction(
-			title: "Rename",
-			style: .normal,
-			backgroundColor: nil,
-			isVisibleAt: { _ -> Bool in true }
-		).onValue { index in var item = tableKit.table[index]
-			viewController.present(
-				Alert<Void>(
-					title: "Name",
-					message: "",
-					tintColor: nil,
-					fields: [
-						Alert.Field(initial: item.name ?? "") { textField in
-							textField.style = .default
-						}
-					],
-					actions: [
-						.init(
-							title: "Change",
-							action: { values in item.name = values.first
-
-								self.updateItem(item)
-
-								fetch()
-								return ()
-							}
-						)
-					]
-				)
+		bag += tableKit.delegate
+			.installAction(
+				title: "Delete",
+				style: .destructive,
+				backgroundColor: nil,
+				isVisibleAt: { _ -> Bool in true }
 			)
-		}
-
-		bag += tableKit.delegate.installAction(
-			title: "Edit",
-			style: .normal,
-			backgroundColor: nil,
-			isVisibleAt: { _ -> Bool in true }
-		).onValue { index in var item = tableKit.table[index]
-
-			viewController.present(
-				ReflectionForm<T>(editInstance: item.value, title: self.title),
-				style: .modal,
-				options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-			).onValue { value in item.value = value
-				self.updateItem(item)
+			.onValue { index in let item = tableKit.table[index]
+				self.removeItem(item)
 				fetch()
 			}
-		}
+
+		bag += tableKit.delegate
+			.installAction(
+				title: "Rename",
+				style: .normal,
+				backgroundColor: nil,
+				isVisibleAt: { _ -> Bool in true }
+			)
+			.onValue { index in var item = tableKit.table[index]
+				viewController.present(
+					Alert<Void>(
+						title: "Name",
+						message: "",
+						tintColor: nil,
+						fields: [
+							Alert.Field(initial: item.name ?? "") { textField in
+								textField.style = .default
+							}
+						],
+						actions: [
+							.init(
+								title: "Change",
+								action: { values in item.name = values.first
+
+									self.updateItem(item)
+
+									fetch()
+									return ()
+								}
+							)
+						]
+					)
+				)
+			}
+
+		bag += tableKit.delegate
+			.installAction(
+				title: "Edit",
+				style: .normal,
+				backgroundColor: nil,
+				isVisibleAt: { _ -> Bool in true }
+			)
+			.onValue { index in var item = tableKit.table[index]
+
+				viewController.present(
+					ReflectionForm<T>(editInstance: item.value, title: self.title),
+					style: .modal,
+					options: [
+						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+					]
+				)
+				.onValue { value in item.value = value
+					self.updateItem(item)
+					fetch()
+				}
+			}
 
 		return (
 			viewController,
@@ -169,7 +176,8 @@ extension ReflectionFormHistory: Presentable {
 							.defaults, .prefersLargeTitles(true),
 							.largeTitleDisplayMode(.always),
 						]
-					).onValue { value in fetch()
+					)
+					.onValue { value in fetch()
 						callback(value)
 					}
 				}

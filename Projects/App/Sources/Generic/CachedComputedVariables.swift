@@ -5,7 +5,9 @@ class CachedComputedProperties {
 	private let bag = DisposeBag()
 	private var values: [String: Any]
 
-	init(_ clearCacheSignal: Signal<Void>) {
+	init(
+		_ clearCacheSignal: Signal<Void>
+	) {
 		values = [:]
 
 		bag += clearCacheSignal.with(weak: self).onValue { _, _ in self.values = [:] }

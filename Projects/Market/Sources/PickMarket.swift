@@ -26,23 +26,25 @@ extension PickMarket: Presentable {
 		return (
 			viewController,
 			Future { completion in
-				Market.allCases.filter { market in
-					availableLocales.first { locale -> Bool in
-						locale.rawValue.lowercased().contains(market.id)
-					} != nil
-				}.forEach { market in let row = RowView(title: market.title)
+				Market.allCases
+					.filter { market in
+						availableLocales.first { locale -> Bool in
+							locale.rawValue.lowercased().contains(market.id)
+						} != nil
+					}
+					.forEach { market in let row = RowView(title: market.title)
 
-					let iconImageView = UIImageView()
-					iconImageView.contentMode = .scaleAspectFit
-					iconImageView.image = market.icon
-					row.prepend(iconImageView)
+						let iconImageView = UIImageView()
+						iconImageView.contentMode = .scaleAspectFit
+						iconImageView.image = market.icon
+						row.prepend(iconImageView)
 
-					row.setCustomSpacing(16, after: iconImageView)
+						row.setCustomSpacing(16, after: iconImageView)
 
-					if market == currentMarket { row.append(Asset.checkmark.image) }
+						if market == currentMarket { row.append(Asset.checkmark.image) }
 
-					bag += section.append(row).onValue { completion(.success(market)) }
-				}
+						bag += section.append(row).onValue { completion(.success(market)) }
+					}
 
 				return bag
 			}

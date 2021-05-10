@@ -53,7 +53,10 @@ extension OfferTermsBulletPoints {
 		let title: String
 		let message: String?
 
-		init(title: String, message: String? = nil) {
+		init(
+			title: String,
+			message: String? = nil
+		) {
 			self.title = title
 			self.message = message
 		}
@@ -99,16 +102,17 @@ extension OfferTermsBulletPoints: Viewable {
 		stackView.axis = .vertical
 		stackView.spacing = 15
 
-		bag += stackView.didMoveToWindowSignal.take(first: 1).onValue {
-			stackView.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.8) }
-		}
+		bag += stackView.didMoveToWindowSignal.take(first: 1)
+			.onValue {
+				stackView.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.8)
+				}
+			}
 
 		bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.type }
 			.onValueDisposePrevious { insuranceType in let innerBag = DisposeBag()
 
-				innerBag += self.bullets(for: insuranceType).map { bulletPoint in
-					stackView.addArranged(bulletPoint)
-				}
+				innerBag += self.bullets(for: insuranceType)
+					.map { bulletPoint in stackView.addArranged(bulletPoint) }
 
 				return innerBag
 			}

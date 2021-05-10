@@ -22,18 +22,17 @@ struct WhenEnabled<V: Viewable>: Viewable where V.Events == ViewableEvents, V.Ma
 		let bag = DisposeBag()
 		let view = UIStackView()
 
-		bag += view.didMoveToWindowSignal.take(first: 1).onValue { _ in
-			view.snp.makeConstraints { make in make.trailing.leading.equalToSuperview() }
-		}
+		bag += view.didMoveToWindowSignal.take(first: 1)
+			.onValue { _ in view.snp.makeConstraints { make in make.trailing.leading.equalToSuperview() } }
 
-		bag += enabledSignal.atOnce().wait(until: view.hasWindowSignal).onValueDisposePrevious {
-			enabled -> Disposable? in
-			if enabled {
-				return view.addArranged(self.getViewable(), onCreate: self.onCreate)
-			} else {
-				return NilDisposer()
+		bag += enabledSignal.atOnce().wait(until: view.hasWindowSignal)
+			.onValueDisposePrevious { enabled -> Disposable? in
+				if enabled {
+					return view.addArranged(self.getViewable(), onCreate: self.onCreate)
+				} else {
+					return NilDisposer()
+				}
 			}
-		}
 
 		return (view, bag)
 	}

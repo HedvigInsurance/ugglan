@@ -11,7 +11,11 @@ public struct Tooltip {
 
 	func when(_ when: WhenTooltip.When) -> WhenTooltip { WhenTooltip(when: when, tooltip: self) }
 
-	init(id: String, value: String, sourceRect: CGRect) {
+	init(
+		id: String,
+		value: String,
+		sourceRect: CGRect
+	) {
 		self.id = id
 		self.value = value
 		self.sourceRect = sourceRect
@@ -22,55 +26,60 @@ extension UIView {
 	public func present(_ tooltip: Tooltip) -> Disposable {
 		let bag = DisposeBag()
 		let tooltipView = tooltip.materialize(into: bag)
-		tooltipView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1).concatenating(
-			CGAffineTransform(translationX: 0, y: -20)
-		)
+		tooltipView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+			.concatenating(CGAffineTransform(translationX: 0, y: -20))
 
 		addSubview(tooltipView)
 
 		bag += Signal(after: 0).feedback(type: .impactLight)
 
 		let disposer = Disposer {
-			bag += Signal(after: 0).animated(style: .lightBounce()) {
-				tooltipView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-				tooltipView.alpha = 0
-			}.onValue { _ in bag.dispose()
-				tooltipView.removeFromSuperview()
-			}
+			bag += Signal(after: 0)
+				.animated(style: .lightBounce()) {
+					tooltipView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+					tooltipView.alpha = 0
+				}
+				.onValue { _ in bag.dispose()
+					tooltipView.removeFromSuperview()
+				}
 		}
 
 		tooltipView.snp.makeConstraints { make in make.top.equalTo(self.snp.bottom).offset(14)
 			make.right.equalTo(self.snp.right)
 		}
 
-		bag += tooltipView.windowSignal.atOnce().compactMap { $0 }.take(first: 1).animated(
-			style: .lightBounce()
-		) { window in tooltipView.transform = .identity
+		bag += tooltipView.windowSignal.atOnce().compactMap { $0 }.take(first: 1)
+			.animated(style: .lightBounce()) { window in tooltipView.transform = .identity
 
-			class Delegate: NSObject, UIGestureRecognizerDelegate {
-				let onReceiveTouch: (_ touch: UITouch) -> Void
+				class Delegate: NSObject, UIGestureRecognizerDelegate {
+					let onReceiveTouch: (_ touch: UITouch) -> Void
 
-				init(onReceiveTouch: @escaping (_ touch: UITouch) -> Void) {
-					self.onReceiveTouch = onReceiveTouch
-					super.init()
+					init(
+						onReceiveTouch: @escaping (_ touch: UITouch) -> Void
+					) {
+						self.onReceiveTouch = onReceiveTouch
+						super.init()
+					}
+
+					func gestureRecognizer(
+						_: UIGestureRecognizer,
+						shouldReceive touch: UITouch
+					) -> Bool {
+						onReceiveTouch(touch)
+						return false
+					}
 				}
 
-				func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-					onReceiveTouch(touch)
-					return false
+				let delegate = Delegate { touch in let touchPoint = touch.location(in: tooltipView)
+					guard tooltipView.hitTest(touchPoint, with: nil) != nil else { return }
+					disposer.dispose()
 				}
-			}
+				bag.hold(delegate)
 
-			let delegate = Delegate { touch in let touchPoint = touch.location(in: tooltipView)
-				guard tooltipView.hitTest(touchPoint, with: nil) != nil else { return }
-				disposer.dispose()
+				let tapGesture = UITapGestureRecognizer()
+				tapGesture.delegate = delegate
+				bag += window.rootView.install(tapGesture)
 			}
-			bag.hold(delegate)
-
-			let tapGesture = UITapGestureRecognizer()
-			tapGesture.delegate = delegate
-			bag += window.rootView.install(tapGesture)
-		}
 
 		bag += Signal(after: 5).onValue { _ in disposer.dispose() }
 

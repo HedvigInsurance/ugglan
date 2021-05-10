@@ -55,16 +55,16 @@ extension ShareButton: Viewable {
 
 		stackView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-		bag += stackView.traitCollectionSignal.atOnce().onValue { trait in
-			let style = DynamicFormStyle.brandInset.style(from: trait)
-			let insets = style.insets
-			stackView.layoutMargins = UIEdgeInsets(
-				top: 15,
-				left: insets.left,
-				bottom: 15,
-				right: insets.right
-			)
-		}
+		bag += stackView.traitCollectionSignal.atOnce()
+			.onValue { trait in let style = DynamicFormStyle.brandInset.style(from: trait)
+				let insets = style.insets
+				stackView.layoutMargins = UIEdgeInsets(
+					top: 15,
+					left: insets.left,
+					bottom: 15,
+					right: insets.right
+				)
+			}
 
 		bag += stackView.addArranged(loadableButton)
 

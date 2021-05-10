@@ -68,37 +68,36 @@ extension BankIdSign: Presentable {
 		let closeButton = Button(title: "Stäng", type: .standard(backgroundColor: .purple, textColor: .white))
 		bag += closeButtonContainer.addArranged(closeButton)
 
-		let statusSignal = client.subscribe(subscription: GraphQL.SignStatusSubscription()).compactMap {
-			$0.signStatus?.status
-		}
+		let statusSignal = client.subscribe(subscription: GraphQL.SignStatusSubscription())
+			.compactMap { $0.signStatus?.status }
 
-		bag += statusSignal.compactMap { $0.collectStatus }.skip(first: 1).onValue { collectStatus in
-			let statusText: String
+		bag += statusSignal.compactMap { $0.collectStatus }.skip(first: 1)
+			.onValue { collectStatus in let statusText: String
 
-			switch collectStatus.code {
-			case "noClient", "outstandingTransaction": statusText = L10n.signStartBankid
-			case "userSign": statusText = L10n.signInProgress
-			case "userCancel", "cancelled": statusText = L10n.signCanceled
-			default: statusText = L10n.signFailedReasonUnknown
+				switch collectStatus.code {
+				case "noClient", "outstandingTransaction": statusText = L10n.signStartBankid
+				case "userSign": statusText = L10n.signInProgress
+				case "userCancel", "cancelled": statusText = L10n.signCanceled
+				default: statusText = L10n.signFailedReasonUnknown
+				}
+
+				statusLabel.value = statusText
 			}
 
-			statusLabel.value = statusText
-		}
+		bag += client.perform(mutation: GraphQL.SignOfferMutation()).valueSignal
+			.compactMap { $0.signOfferV2.autoStartToken }
+			.onValue { autoStartToken in let urlScheme = Bundle.main.urlScheme ?? ""
+				guard
+					let url = URL(
+						string:
+							"bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+					)
+				else { return }
 
-		bag += client.perform(mutation: GraphQL.SignOfferMutation()).valueSignal.compactMap {
-			$0.signOfferV2.autoStartToken
-		}.onValue { autoStartToken in let urlScheme = Bundle.main.urlScheme ?? ""
-			guard
-				let url = URL(
-					string:
-						"bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-				)
-			else { return }
-
-			if UIApplication.shared.canOpenURL(url) {
-				UIApplication.shared.open(url, options: [:], completionHandler: nil)
+				if UIApplication.shared.canOpenURL(url) {
+					UIApplication.shared.open(url, options: [:], completionHandler: nil)
+				}
 			}
-		}
 
 		return (
 			viewController,
@@ -106,7 +105,8 @@ extension BankIdSign: Presentable {
 				bag += closeButton.onTapSignal.onValue { completion(.failure(BankIdSignError.failed)) }
 
 				bag += statusSignal.compactMap { $0.signState }.filter { state in state == .completed }
-					.take(first: 1).onValue { _ in
+					.take(first: 1)
+					.onValue { _ in
 						if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
 							UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
 						}
@@ -114,39 +114,45 @@ extension BankIdSign: Presentable {
 						completion(.success)
 					}
 
-				bag += statusSignal.compactMap { $0 }.onValue { status in
-					guard let code = status.collectStatus?.code, let state = status.signState else {
-						return
-					}
+				bag += statusSignal.compactMap { $0 }
+					.onValue { status in
+						guard let code = status.collectStatus?.code,
+							let state = status.signState
+						else { return }
 
-					if code == "userCancel", state == .failed {
-						bag += Signal(after: 0).animated(
-							style: SpringAnimationStyle.mediumBounce()
-						) { _ in headerContainer.animationSafeIsHidden = true
-							closeButtonContainer.animationSafeIsHidden = false
-							containerStackView.layoutIfNeeded()
+						if code == "userCancel", state == .failed {
+							bag += Signal(after: 0)
+								.animated(style: SpringAnimationStyle.mediumBounce()) {
+									_ in
+									headerContainer.animationSafeIsHidden = true
+									closeButtonContainer.animationSafeIsHidden =
+										false
+									containerStackView.layoutIfNeeded()
+								}
+						}
+
+						if code == "expiredTransaction", state == .failed {
+							let alert = Alert<Void>(
+								title: L10n.bankidInactiveTitle,
+								message: L10n.bankidInactiveMessage,
+								actions: [
+									Alert.Action(
+										title: L10n.bankidInactiveButton,
+										action: { _ in
+											completion(
+												.failure(
+													BankIdSignError
+														.failed
+												)
+											)
+										}
+									)
+								]
+							)
+
+							viewController.present(alert)
 						}
 					}
-
-					if code == "expiredTransaction", state == .failed {
-						let alert = Alert<Void>(
-							title: L10n.bankidInactiveTitle,
-							message: L10n.bankidInactiveMessage,
-							actions: [
-								Alert.Action(
-									title: L10n.bankidInactiveButton,
-									action: { _ in
-										completion(
-											.failure(BankIdSignError.failed)
-										)
-									}
-								)
-							]
-						)
-
-						viewController.present(alert)
-					}
-				}
 
 				return bag
 			}

@@ -10,7 +10,10 @@ public struct Document {
 	let url: URL
 	let title: String
 
-	public init(url: URL, title: String) {
+	public init(
+		url: URL,
+		title: String
+	) {
 		self.url = url
 		self.title = title
 	}
@@ -30,26 +33,26 @@ extension Document: Presentable {
 
 		let activityButton = UIBarButtonItem(system: .action)
 
-		bag += viewController.navigationItem.addItem(activityButton, position: .right).withLatestFrom(
-			pdfViewer.data
-		).onValueDisposePrevious { _, value -> Disposable? in
-			guard let value = value else { return NilDisposer() }
+		bag += viewController.navigationItem.addItem(activityButton, position: .right)
+			.withLatestFrom(pdfViewer.data)
+			.onValueDisposePrevious { _, value -> Disposable? in
+				guard let value = value else { return NilDisposer() }
 
-			let activityView = ActivityView(
-				activityItems: [value],
-				applicationActivities: nil,
-				sourceView: activityButton.view,
-				sourceRect: activityButton.bounds
-			)
+				let activityView = ActivityView(
+					activityItems: [value],
+					applicationActivities: nil,
+					sourceView: activityButton.view,
+					sourceRect: activityButton.bounds
+				)
 
-			let activityViewPresentation = Presentation(
-				activityView,
-				style: .activityView,
-				options: .defaults
-			)
+				let activityViewPresentation = Presentation(
+					activityView,
+					style: .activityView,
+					options: .defaults
+				)
 
-			return viewController.present(activityViewPresentation).disposable
-		}
+				return viewController.present(activityViewPresentation).disposable
+			}
 
 		return (viewController, bag)
 	}

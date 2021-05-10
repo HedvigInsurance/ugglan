@@ -7,7 +7,10 @@ struct LoadableView<V: Viewable> where V.Matter: UIView, V.Result == Disposable 
 	let view: V
 	let isLoadingSignal: ReadWriteSignal<Bool>
 
-	init(view: V, initialLoadingState: Bool = false) {
+	init(
+		view: V,
+		initialLoadingState: Bool = false
+	) {
 		self.view = view
 		isLoadingSignal = ReadWriteSignal(initialLoadingState)
 	}
@@ -52,13 +55,13 @@ extension LoadableView: Viewable {
 			containerView.layoutIfNeeded()
 		}
 
-		bag += isLoadingSignal.atOnce().take(first: 1).onValue { isLoading in
-			handleStateChange(isLoading: isLoading)
-		}
+		bag += isLoadingSignal.atOnce().take(first: 1)
+			.onValue { isLoading in handleStateChange(isLoading: isLoading) }
 
-		bag += isLoadingSignal.delay(by: 0.25).animated(style: SpringAnimationStyle.lightBounce()) {
-			isLoading in handleStateChange(isLoading: isLoading)
-		}
+		bag += isLoadingSignal.delay(by: 0.25)
+			.animated(style: SpringAnimationStyle.lightBounce()) { isLoading in
+				handleStateChange(isLoading: isLoading)
+			}
 
 		return (
 			containerView,
