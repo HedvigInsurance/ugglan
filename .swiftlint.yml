@@ -2,6 +2,8 @@ included:
   - Projects
 excluded:
   - 'Projects/*/Sources/Derived'
+disabled_rules:
+  - weak_delegate
 opt_in_rules:
   - empty_count
   - explicit_init
