@@ -4,6 +4,7 @@ import Foundation
 import SwiftUI
 import hCore
 import hGraphQL
+import Market
 
 @available(iOS 13, *) struct Debug: View {
 	enum EnvironmentOption: String, CaseIterable {
@@ -80,6 +81,10 @@ import hGraphQL
 						}
 					)
 				}
+                Section {
+                    Text("Available locales")
+                    ForceAvailableLocales()
+                }
 				Section {
 					SwiftUI.NavigationLink(
 						"Exchange token",
@@ -104,6 +109,15 @@ import hGraphQL
 						}
 					)
 				}
+                Section {
+                    SwiftUI.Button(
+                        "Go to market picker",
+                        action: {
+                            ApplicationState.preserveState(.marketPicker)
+                            UIApplication.shared.appDelegate.appFlow.bag += ApplicationState.presentRootViewController(UIApplication.shared.appDelegate.appFlow.window)
+                        }
+                    )
+                }
 				Section {
 					SwiftUI.Button(
 						"Logout",
