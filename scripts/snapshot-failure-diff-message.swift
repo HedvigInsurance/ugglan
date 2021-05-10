@@ -60,13 +60,13 @@ let actualAndReference = allFailures.map { failure -> (failure: URL, reference: 
 }
 
 let githubComment = """
-			WorkspaceTests found a missmatch in screenshots:
+    WorkspaceTests found a missmatch in screenshots:
 
-			Failure  |  Reference
-			:-------------------------:|:-------------------------:
-			\(actualAndReference.map { "![](\($0.failure)) | ![](\($0.reference))" }.joined(separator: "\n"))
+    Failure  |  Reference
+    :-------------------------:|:-------------------------:
+    \(actualAndReference.map { "![](\($0.failure)) | ![](\($0.reference))" }.joined(separator: "\n"))
 
-			If you changed styling which expects this outcome run the `WorkspaceTests Record` scheme and commit the updated reference screenshots.
-			"""
+    If you changed styling which expects this outcome run the `WorkspaceTests Record` scheme and commit the updated reference screenshots.
+"""
 
 print(githubComment)
