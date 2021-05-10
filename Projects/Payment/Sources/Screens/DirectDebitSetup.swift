@@ -125,8 +125,7 @@ extension DirectDebitSetup: Presentable {
 
 					switch self.setupType {
 					case .initial:
-						alert = Alert<Bool>
-							(
+						alert = Alert<Bool>(
 								title: L10n.PayInIframeInAppCancelAlert.title,
 								message: L10n.PayInIframeInAppCancelAlert.body,
 								actions: [
@@ -141,8 +140,7 @@ extension DirectDebitSetup: Presentable {
 								]
 							)
 					case .postOnboarding:
-						alert = Alert<Bool>
-							(
+						alert = Alert<Bool>(
 								title: L10n.PayInIframePostSignSkipAlert.title,
 								message: L10n.PayInIframePostSignSkipAlertDirectDebit
 									.body,
