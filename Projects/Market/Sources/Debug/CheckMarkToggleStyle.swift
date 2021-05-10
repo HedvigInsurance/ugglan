@@ -1,11 +1,3 @@
-//
-//  CheckMarkToggleStyle.swift
-//  Market
-//
-//  Created by Sam Pettersson on 2021-05-10.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
 

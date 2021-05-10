@@ -1,10 +1,3 @@
-//
-//  CoreSignal+Feedback.swift
-//  FlowFeedback
-//
-//  Created by Sam Pettersson on 2018-11-30.
-//  Copyright © 2018 Hedvig AB. All rights reserved.
-//
 import Flow
 import Foundation
 import UIKit
@@ -33,6 +26,7 @@ extension CoreSignal {
 	public func feedback(type: FeedbackType) -> Disposable {
 		if #available(iOS 10.0, *), !UITraitCollection.isCatalyst {
 			let bag = DisposeBag()
+			// hello
 
 			bag += onValue { _ in
 				switch type {

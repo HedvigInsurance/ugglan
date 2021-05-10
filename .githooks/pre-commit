@@ -9,6 +9,10 @@ then
     done
 fi
 
+for file_path in $(git diff --name-only --cached | grep ".swift$"); do
+    sed -i '' -e '1,/^import/{/^\/\/.*/d;}' -e '/./,$!d' $file_path
+done
+
 #Path to swiftlint
 SWIFT_LINT=/usr/local/bin/swiftlint
 
