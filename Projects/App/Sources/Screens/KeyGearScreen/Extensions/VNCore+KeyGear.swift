@@ -3,10 +3,10 @@ import CoreML
 import Disk
 import Flow
 import Foundation
-import UIKit
-import Vision
 import hCore
 import hGraphQL
+import UIKit
+import Vision
 
 extension AddKeyGearItem {
 	private enum Category: String {

@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCoreUI
 import hGraphQL
+import UIKit
 
 struct ContractInsurableLimitRow: Hashable {
 	static func == (lhs: ContractInsurableLimitRow, rhs: ContractInsurableLimitRow) -> Bool {
@@ -71,8 +71,7 @@ extension ContractInsurableLimitRow: Reusable {
 		contentContainer.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
 		return (
-			view,
-			{ `self` in let bag = DisposeBag()
+			view, { `self` in let bag = DisposeBag()
 
 				bag += self.makeContent(contentContainer: contentContainer)
 

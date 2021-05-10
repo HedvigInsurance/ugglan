@@ -1,13 +1,13 @@
 import Apollo
 import Flow
 import Form
+import hCore
+import hCoreUI
+import hGraphQL
 import Market
 import Presentation
 import SwiftUI
 import UIKit
-import hCore
-import hCoreUI
-import hGraphQL
 
 struct AppInfo {
 	@Inject var client: ApolloClient
@@ -139,7 +139,7 @@ extension AppInfo: Presentable {
 					Alert.Action(
 						title: L10n.settingsAlertChangeMarketCancel,
 						style: UIAlertAction.Style.cancel
-					) { false },
+					) { false }
 				]
 			)
 

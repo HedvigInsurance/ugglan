@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct EmailRow { let state: MyInfoState }
 

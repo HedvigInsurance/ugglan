@@ -1,12 +1,12 @@
 import Apollo
 import Flow
 import Foundation
+import hCore
+import hGraphQL
 import Presentation
 import SafariServices
 import UIKit
 import WebKit
-import hCore
-import hGraphQL
 
 struct DirectDebitSetup {
 	@Inject var client: ApolloClient
@@ -126,7 +126,7 @@ extension DirectDebitSetup: Presentable {
 					switch self.setupType {
 					case .initial:
 						alert = Alert<Bool>
-							.init(
+							(
 								title: L10n.PayInIframeInAppCancelAlert.title,
 								message: L10n.PayInIframeInAppCancelAlert.body,
 								actions: [
@@ -137,12 +137,12 @@ extension DirectDebitSetup: Presentable {
 									Alert.Action(
 										title: L10n.PayInIframeInAppCancelAlert
 											.dismissButton
-									) { false },
+									) { false }
 								]
 							)
 					case .postOnboarding:
 						alert = Alert<Bool>
-							.init(
+							(
 								title: L10n.PayInIframePostSignSkipAlert.title,
 								message: L10n.PayInIframePostSignSkipAlertDirectDebit
 									.body,
@@ -154,7 +154,7 @@ extension DirectDebitSetup: Presentable {
 									Alert.Action(
 										title: L10n.PayInIframePostSignSkipAlert
 											.dismissButton
-									) { false },
+									) { false }
 								]
 							)
 					case .replacement:

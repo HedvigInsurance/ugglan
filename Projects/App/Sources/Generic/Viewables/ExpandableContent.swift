@@ -1,8 +1,8 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 struct ExpandableContent<Content: Viewable>
 where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
@@ -87,7 +87,7 @@ extension ExpandableContent: Viewable {
 			gradient.colors = [
 				UIColor.brand(.primaryBackground()).withAlphaComponent(0).cgColor,
 				UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
-				UIColor.brand(.primaryBackground()).cgColor,
+				UIColor.brand(.primaryBackground()).cgColor
 			]
 		}
 

@@ -1,8 +1,8 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 public struct PieChartState {
 	public let percentagePerSlice: CGFloat
@@ -65,7 +65,7 @@ extension PieChart: Viewable {
 			arcCenter: pieView.center,
 			radius: radius,
 			startAngle: percentToRadian(0),
-			endAngle: percentToRadian(0.999999),
+			endAngle: percentToRadian(0.999_999),
 			clockwise: true
 		)
 
@@ -131,7 +131,7 @@ extension PieChart: Viewable {
 					arcCenter: pieView.center,
 					radius: pieViewWidth * 3 / 8,
 					startAngle: self.percentToRadian(0),
-					endAngle: self.percentToRadian(0.999999),
+					endAngle: self.percentToRadian(0.999_999),
 					clockwise: true
 				)
 

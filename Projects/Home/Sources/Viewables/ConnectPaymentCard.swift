@@ -1,11 +1,11 @@
 import Apollo
 import Flow
 import Foundation
-import SnapKit
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SnapKit
+import UIKit
 
 struct ConnectPaymentCard { @Inject var client: ApolloClient }
 

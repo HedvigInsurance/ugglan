@@ -2,9 +2,9 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 struct CharityOption {
 	let id: GraphQLID
@@ -39,8 +39,7 @@ extension CharityOption: Reusable {
 		stackView.distribution = .fill
 
 		return (
-			stackView,
-			{ charityOption in stackView.arrangedSubviews.forEach { view in view.removeFromSuperview() }
+			stackView, { charityOption in stackView.arrangedSubviews.forEach { view in view.removeFromSuperview() }
 
 				let bag = DisposeBag()
 

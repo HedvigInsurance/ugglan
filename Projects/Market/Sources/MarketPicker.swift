@@ -2,14 +2,14 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
 import Hero
+import hGraphQL
 import Kingfisher
 import Mixpanel
 import Presentation
 import UIKit
-import hCore
-import hCoreUI
-import hGraphQL
 
 public struct MarketPicker {
 	@Inject var client: ApolloClient

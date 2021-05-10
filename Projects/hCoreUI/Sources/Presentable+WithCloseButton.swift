@@ -1,8 +1,8 @@
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 enum CloseButtonError: Error { case cancelled }
 
@@ -12,8 +12,7 @@ extension Presentable where Matter: UIViewController, Result == Disposable {
 			let (viewController, disposable) = self.materialize()
 
 			if let presentableIdentifier = (self as? PresentableIdentifierExpressible)?
-				.presentableIdentifier
-			{
+				.presentableIdentifier {
 				viewController.debugPresentationTitle = presentableIdentifier.value
 			} else {
 				let title = "\(type(of: self))"
@@ -53,8 +52,7 @@ extension Presentable where Matter: UIViewController {
 		AnyPresentable { () -> (Self.Matter, Future<T>) in let (viewController, future) = self.materialize()
 
 			if let presentableIdentifier = (self as? PresentableIdentifierExpressible)?
-				.presentableIdentifier
-			{
+				.presentableIdentifier {
 				viewController.debugPresentationTitle = presentableIdentifier.value
 			} else {
 				let title = "\(type(of: self))"

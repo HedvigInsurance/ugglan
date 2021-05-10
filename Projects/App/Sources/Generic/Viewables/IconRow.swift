@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 struct IconRow {
 	enum Options { case defaults, withArrow, disabled, hidden }

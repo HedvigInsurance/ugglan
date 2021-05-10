@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import Presentation
 import SafariServices
 import UIKit
-import hCore
 
 public struct Document {
 	let url: URL

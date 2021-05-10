@@ -1,7 +1,7 @@
 import Apollo
-import Home
 import hCore
 import hGraphQL
+import Home
 
 extension JSONObject {
 	public static func makeImportantMessages() -> JSONObject {

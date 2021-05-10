@@ -1,8 +1,8 @@
 import Apollo
 import Flow
 import Foundation
-import UIKit
 import hGraphQL
+import UIKit
 
 struct Message: Equatable, Hashable { static func == (lhs: Message, rhs: Message) -> Bool {
 	lhs.globalId == rhs.globalId
@@ -40,11 +40,11 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 
 	enum MessageType: Equatable { static func == (lhs: Message.MessageType, rhs: Message.MessageType) -> Bool {
 		switch (lhs, rhs) {
-		case (.file(_), .file(_)): return true
+		case (.file, .file): return true
 		case (.text, .text): return true
-		case (.image(_), .image(_)): return true
-		case (.video(_), .video(_)): return true
-		case (.gif(_), .gif(_)): return true
+		case (.image, .image): return true
+		case (.video, .video): return true
+		case (.gif, .gif): return true
 		default: return false
 		}
 	}
@@ -136,7 +136,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 				if !list.indices.contains(nextIndex) { return nil }
 
 				return list[nextIndex].left
-			} ?? nil
+			}
 	}
 
 	var previous: Message? {
@@ -150,7 +150,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
 				if !list.indices.contains(previousIndex) { return nil }
 
 				return list[previousIndex].left
-			} ?? nil
+			}
 	}
 
 	enum Radius {

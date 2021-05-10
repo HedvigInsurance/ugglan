@@ -2,9 +2,9 @@ import Apollo
 import Disk
 import Flow
 import Foundation
-import UIKit
 import hCore
 import hGraphQL
+import UIKit
 
 public struct RemoteVectorIcon {
 	let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)

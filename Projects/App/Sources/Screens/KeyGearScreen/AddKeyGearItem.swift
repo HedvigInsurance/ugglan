@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 struct AddKeyGearItem {
 	@Inject var client: ApolloClient
@@ -179,10 +179,9 @@ extension AddKeyGearItem: Presentable {
 					self.classifyImage(image)
 						.onValue { category in
 							bag += Signal(after: 0)
-								.animated(style: AnimationStyle.easeOut(duration: 0.35))
-							{ _ in categoryPickerSection.alpha = 1
+								.animated(style: AnimationStyle.easeOut(duration: 0.35)) { _ in categoryPickerSection.alpha = 1
 								categoryPickerSection.isUserInteractionEnabled = true
-							}
+								}
 
 							guard let category = category else { return }
 

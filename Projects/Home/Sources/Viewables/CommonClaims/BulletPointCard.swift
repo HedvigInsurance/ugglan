@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCoreUI
+import UIKit
 
 struct BulletPointCard {
 	let title: String
@@ -43,8 +43,7 @@ extension BulletPointCard: Reusable {
 		var descriptionLabel = MultilineLabel(value: "", style: .brand(.body(color: .secondary)))
 
 		return (
-			view,
-			{ bulletPointCard in let bag = DisposeBag()
+			view, { bulletPointCard in let bag = DisposeBag()
 
 				bag += cardContainer.applyShadow { _ -> UIView.ShadowProperties in
 					UIView.ShadowProperties(

@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import hGraphQL
 import Kingfisher
 import UIKit
-import hGraphQL
 
 struct KeyGearImageCarouselItem { let resource: Either<URL, GraphQL.KeyGearItemCategory> }
 
@@ -19,8 +19,7 @@ extension KeyGearImageCarouselItem: Reusable {
 		imageView.clipsToBounds = true
 
 		return (
-			containerView,
-			{ `self` in let bag = DisposeBag()
+			containerView, { `self` in let bag = DisposeBag()
 
 				if let imageUrl = self.resource.left {
 					imageView.kf.setImage(
@@ -30,7 +29,7 @@ extension KeyGearImageCarouselItem: Reusable {
 							.processor(
 								DownsamplingImageProcessor(size: imageView.frame.size)
 							), .scaleFactor(UIScreen.main.scale), .backgroundDecode,
-							.transition(.fade(0.25)),
+							.transition(.fade(0.25))
 						]
 					)
 					imageView.contentMode = .scaleAspectFill

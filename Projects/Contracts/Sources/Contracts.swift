@@ -1,8 +1,8 @@
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 public indirect enum ContractFilter {
 	var displaysActiveContracts: Bool {

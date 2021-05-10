@@ -4,7 +4,7 @@ import ProjectDescriptionHelpers
 
 let sdkFrameworks: [TargetDependency] = [
 	.sdk(name: "libc++.tbd"), .sdk(name: "libz.tbd"), .sdk(name: "SwiftUI.framework", status: .optional),
-	.sdk(name: "SceneKit.framework"), .sdk(name: "AdSupport.framework"),
+	.sdk(name: "SceneKit.framework"), .sdk(name: "AdSupport.framework")
 ]
 
 let ugglanConfigurations: [CustomConfiguration] = [
@@ -17,7 +17,7 @@ let ugglanConfigurations: [CustomConfiguration] = [
 		name: "Release",
 		settings: [:],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
-	),
+	)
 ]
 
 let hedvigConfigurations: [CustomConfiguration] = [
@@ -30,7 +30,7 @@ let hedvigConfigurations: [CustomConfiguration] = [
 		name: "Release",
 		settings: [:],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
-	),
+	)
 ]
 
 let testsConfigurations: [CustomConfiguration] = [
@@ -43,7 +43,7 @@ let testsConfigurations: [CustomConfiguration] = [
 		name: "Release",
 		settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
-	),
+	)
 ]
 
 let appDependencies: [TargetDependency] = [
@@ -60,8 +60,8 @@ let appDependencies: [TargetDependency] = [
 		.project(
 			target: "ResourceBundledDependencies",
 			path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
-		), .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
-	], sdkFrameworks,
+		), .project(target: "Embark", path: .relativeToRoot("Projects/Embark"))
+	], sdkFrameworks
 ]
 .flatMap { $0 }
 
@@ -104,7 +104,7 @@ let project = Project(
 					.project(
 						target: "TestDependencies",
 						path: .relativeToRoot("Dependencies/TestDependencies")
-					), .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
+					), .project(target: "Testing", path: .relativeToRoot("Projects/Testing"))
 				]
 			]
 			.flatMap { $0 },
@@ -123,7 +123,7 @@ let project = Project(
 			actions: targetActions,
 			dependencies: appDependencies,
 			settings: Settings(configurations: hedvigConfigurations)
-		),
+		)
 	],
 	schemes: [
 		Scheme(
@@ -141,7 +141,7 @@ let project = Project(
 					environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"],
 					launchArguments: [
 						"-UIPreferredContentSizeCategoryName": true,
-						"UICTContentSizeCategoryM": true,
+						"UICTContentSizeCategoryM": true
 					]
 				)
 			),
@@ -152,7 +152,7 @@ let project = Project(
 			shared: true,
 			buildAction: BuildAction(targets: ["Hedvig"]),
 			runAction: RunAction(executable: "Hedvig")
-		),
+		)
 	],
 	additionalFiles: [.folderReference(path: "GraphQL")]
 )

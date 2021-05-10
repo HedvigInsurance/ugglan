@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 public struct ApplyDiscount {
 	@Inject var client: ApolloClient
@@ -15,9 +15,7 @@ public struct ApplyDiscount {
 		GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult
 	>()
 
-	public var didRedeemValidCodeSignal:
-		Signal<GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult>
-	{ didRedeemValidCodeCallbacker.providedSignal }
+	public var didRedeemValidCodeSignal: Signal<GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult> { didRedeemValidCodeCallbacker.providedSignal }
 
 	public init() {}
 }

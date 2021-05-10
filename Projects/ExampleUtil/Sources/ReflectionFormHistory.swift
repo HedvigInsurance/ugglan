@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 public struct ReflectionFormHistory<T: Codable> {
 	let title: String
@@ -46,7 +46,7 @@ public struct ReflectionFormHistory<T: Codable> {
 
 	func appendItem(_ value: T) {
 		var items = getItems()
-		items.append(ReflectionFormHistoryRow<T>.init(name: nil, creation: Date(), value: value))
+		items.append(ReflectionFormHistoryRow<T>(name: nil, creation: Date(), value: value))
 		storeItems(items)
 	}
 }
@@ -69,8 +69,7 @@ struct ReflectionFormHistoryRow<T: Codable>: Reusable, Hashable, Codable {
 		let row = RowView(title: "")
 
 		return (
-			row,
-			{ `self` in let dateFormatter = DateFormatter()
+			row, { `self` in let dateFormatter = DateFormatter()
 				dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 				row.title = self.name ?? dateFormatter.string(from: self.creation)
 				return NilDisposer()
@@ -156,7 +155,7 @@ extension ReflectionFormHistory: Presentable {
 					ReflectionForm<T>(editInstance: item.value, title: self.title),
 					style: .modal,
 					options: [
-						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)
 					]
 				)
 				.onValue { value in item.value = value
@@ -174,7 +173,7 @@ extension ReflectionFormHistory: Presentable {
 						style: .modal,
 						options: [
 							.defaults, .prefersLargeTitles(true),
-							.largeTitleDisplayMode(.always),
+							.largeTitleDisplayMode(.always)
 						]
 					)
 					.onValue { value in fetch()

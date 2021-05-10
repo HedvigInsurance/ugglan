@@ -1,13 +1,13 @@
 import Apollo
 import Flow
 import Foundation
+import hCore
+import hCoreUI
+import hGraphQL
 import SnapshotTesting
 import Testing
 import TestingUtil
 import XCTest
-import hCore
-import hCoreUI
-import hGraphQL
 
 @testable import Home
 

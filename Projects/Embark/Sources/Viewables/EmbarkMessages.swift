@@ -1,8 +1,8 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
 import hGraphQL
+import UIKit
 
 struct EmbarkMessages { let state: EmbarkState }
 
@@ -81,8 +81,7 @@ extension EmbarkMessages: Viewable {
 		bag += state.edgePanGestureRecognizer?.signal(forState: .ended)
 			.animated(style: .heavyBounce()) { view.transform = CGAffineTransform(translationX: 0, y: 0) }
 
-		let previousResponseSignal:
-			ReadWriteSignal<(response: GraphQL.ResponseFragment?, passageName: String?)?> = ReadWriteSignal(
+		let previousResponseSignal: ReadWriteSignal<(response: GraphQL.ResponseFragment?, passageName: String?)?> = ReadWriteSignal(
 				nil
 			)
 
@@ -121,8 +120,7 @@ extension EmbarkMessages: Viewable {
 								bag += view.addArranged(messageBubble)
 							}
 						} else if let embarkResponseExpression = previousResponse?.response?
-							.asEmbarkResponseExpression
-						{
+							.asEmbarkResponseExpression {
 							let msgText = self.parse(
 								embarkResponseExpression.expressions.map {
 									$0.fragments.expressionFragment
@@ -139,8 +137,7 @@ extension EmbarkMessages: Viewable {
 							)
 							bag += view.addArranged(messageBubble)
 						} else if let embarkGroupedResponse = previousResponse?.response?
-							.asEmbarkGroupedResponse
-						{
+							.asEmbarkGroupedResponse {
 							let pills = embarkGroupedResponse.items.map { item in
 								mapItems(item: item)
 							}

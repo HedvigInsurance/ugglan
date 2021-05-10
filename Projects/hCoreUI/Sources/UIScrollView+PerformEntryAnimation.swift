@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 extension UIScrollView {
 	public func performEntryAnimation<Value>(

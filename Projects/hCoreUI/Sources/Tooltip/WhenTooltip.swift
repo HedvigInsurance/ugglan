@@ -1,8 +1,8 @@
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 extension TimeInterval { static func days(numberOfDays: Int) -> TimeInterval { Double(numberOfDays) * 24 * 60 * 60 } }
 

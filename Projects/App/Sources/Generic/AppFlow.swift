@@ -1,10 +1,10 @@
 import Embark
 import Flow
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 public struct AppFlow {
 	private let rootNavigationController = UINavigationController()
@@ -56,7 +56,7 @@ struct EmbarkOnboardingFlow: Presentable {
 	public func materialize() -> (UIViewController, Disposable) {
 		let menuChildren: [MenuChildable] = [
 			MenuChild.appInformation, MenuChild.appSettings,
-			MenuChild.login(onLogin: { UIApplication.shared.appDelegate.appFlow.presentLoggedIn() }),
+			MenuChild.login(onLogin: { UIApplication.shared.appDelegate.appFlow.presentLoggedIn() })
 		]
 
 		let (viewController, signal) = EmbarkPlans(menu: Menu(title: nil, children: menuChildren)).materialize()

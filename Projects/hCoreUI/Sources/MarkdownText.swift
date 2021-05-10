@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import MarkdownKit
 import UIKit
-import hCore
 
 public struct MarkdownText {
 	public let textSignal: ReadWriteSignal<String>
@@ -52,7 +52,7 @@ extension MarkdownText: Viewable {
 					mutableAttributedString.addAttribute(
 						.paragraphStyle,
 						value: paragraphStyle,
-						range: NSMakeRange(0, mutableAttributedString.length - 1)
+						range: NSRange(location: 0, length: mutableAttributedString.length - 1)
 					)
 
 					markdownText.attributedText = mutableAttributedString

@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 enum DirectDebitResultType {
 	case success(setupType: PaymentSetup.SetupType)

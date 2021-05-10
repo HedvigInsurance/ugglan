@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
+import hGraphQL
 import Presentation
 import UIKit
 import WatchConnectivity
-import hCore
-import hGraphQL
 
 struct KeyGearOverview {
 	@Inject var client: ApolloClient

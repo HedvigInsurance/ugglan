@@ -1,8 +1,8 @@
 import Apollo
 import Foundation
-import SwiftUI
 import hCore
 import hGraphQL
+import SwiftUI
 
 @available(iOS 13, *) public struct ForceAvailableLocales: View {
 	public init() {}

@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Foundation
-import Market
-import SwiftUI
 import hCore
 import hGraphQL
+import Market
+import SwiftUI
 
 @available(iOS 13, *) struct Debug: View {
 	enum EnvironmentOption: String, CaseIterable {

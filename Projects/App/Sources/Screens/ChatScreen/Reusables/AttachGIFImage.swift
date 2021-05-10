@@ -1,15 +1,15 @@
 import Flow
 import Form
 import Foundation
-import Kingfisher
-import UIKit
 import hCore
 import hCoreUI
+import Kingfisher
+import UIKit
 
 struct AttachGIFImage {
 	let url: URL
 	let chatstate: ChatState
-	let uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
+	weak var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
 
 	init(
 		url: URL,
@@ -36,8 +36,7 @@ extension AttachGIFImage: Reusable {
 		imageView.contentMode = .scaleAspectFill
 
 		return (
-			view,
-			{ `self` in let bag = DisposeBag()
+			view, { `self` in let bag = DisposeBag()
 				let sendOverlayBag = bag.innerBag()
 				imageView.kf.setImage(
 					with: self.url,

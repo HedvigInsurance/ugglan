@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import UIKit
 
 struct OfferHeader {
 	let containerScrollView: UIScrollView

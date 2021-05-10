@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import UIKit
 
 struct ContractTable {
 	@Inject var client: ApolloClient
@@ -91,8 +91,7 @@ extension ContractTable: Viewable {
 						}
 					}
 
-					if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts
-					{
+					if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts {
 						contractsToShow = contracts
 					}
 

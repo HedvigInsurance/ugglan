@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public struct LoadableButton {
 	public let button: Button

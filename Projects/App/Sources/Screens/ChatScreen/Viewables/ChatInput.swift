@@ -1,8 +1,8 @@
 import Apollo
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct ChatInput {
 	let chatState: ChatState

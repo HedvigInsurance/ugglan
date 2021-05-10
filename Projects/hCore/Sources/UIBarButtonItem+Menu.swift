@@ -89,7 +89,7 @@ extension UIBarButtonItem {
 					title: menu.title,
 					actions: [
 						composeAlertActions(menu.children, viewController: viewController),
-						[Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in }],
+						[Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in }]
 					]
 					.flatMap { $0 }
 				)

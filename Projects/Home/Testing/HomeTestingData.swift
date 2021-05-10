@@ -1,9 +1,9 @@
 import Apollo
 import Foundation
-import Home
-import TestingUtil
 import hCore
 import hGraphQL
+import Home
+import TestingUtil
 
 func addDaysToDate(_ days: Int = 30) -> Date {
 	let today = Date()
@@ -80,7 +80,7 @@ extension JSONObject {
 								draftCertificateUrl:
 									"https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
 							)
-						),
+						)
 					]
 				)
 				.jsonObject
@@ -110,7 +110,7 @@ extension JSONObject {
 								draftCertificateUrl:
 									"https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
 							)
-						),
+						)
 					]
 				)
 				.jsonObject
@@ -127,7 +127,7 @@ extension JSONObject {
 				.jsonObject,
 			GraphQL.HomeInsuranceProvidersQuery
 				.Data(insuranceProviders: [.init(name: "Hedvig", switchable: true)]).jsonObject,
-			makeCommonClaims(),
+			makeCommonClaims()
 		])
 	}
 
@@ -148,7 +148,7 @@ extension JSONObject {
 				.jsonObject,
 			GraphQL.HomeInsuranceProvidersQuery
 				.Data(insuranceProviders: [.init(name: "Hedvig", switchable: switchable)]).jsonObject,
-			makeCommonClaims(),
+			makeCommonClaims()
 		])
 	}
 
@@ -168,7 +168,7 @@ extension JSONObject {
 				.jsonObject,
 			GraphQL.HomeInsuranceProvidersQuery
 				.Data(insuranceProviders: [.init(name: "Hedvig", switchable: switchable)]).jsonObject,
-			makeCommonClaims(),
+			makeCommonClaims()
 		])
 	}
 
@@ -185,7 +185,7 @@ extension JSONObject {
 						)
 					]
 				)
-				.jsonObject, makeCommonClaims(),
+				.jsonObject, makeCommonClaims()
 		])
 	}
 }

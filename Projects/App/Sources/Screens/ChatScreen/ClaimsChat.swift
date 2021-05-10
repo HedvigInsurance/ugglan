@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Form
-import Presentation
-import UIKit
 import hCore
 import hGraphQL
+import Presentation
+import UIKit
 
 struct ClaimsChat { @Inject var client: ApolloClient }
 

@@ -1,11 +1,11 @@
 import Apollo
 import Flow
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 struct WelcomePager { @Inject var client: ApolloClient }
 

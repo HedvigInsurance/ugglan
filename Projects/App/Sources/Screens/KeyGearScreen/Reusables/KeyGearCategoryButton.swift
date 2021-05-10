@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hGraphQL
+import UIKit
 
 extension CGSize {
 	func append(inset: UIEdgeInsets) -> CGSize {
@@ -55,8 +55,7 @@ extension KeyGearCategoryButton: Reusable {
 		contentContainer.addArrangedSubview(label)
 
 		return (
-			control,
-			{ `self` in let bag = DisposeBag()
+			control, { `self` in let bag = DisposeBag()
 
 				bag += control.signal(for: .touchDown)
 					.animated(style: AnimationStyle.easeOut(duration: 0.25)) {

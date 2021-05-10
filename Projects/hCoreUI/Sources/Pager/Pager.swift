@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hGraphQL
+import Presentation
+import UIKit
 
 /// Presents a UICollectionView of multiple screens that are scrolled horizontally
 public struct Pager {

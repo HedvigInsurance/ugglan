@@ -54,33 +54,33 @@ extension GradientView {
 			case (.insuranceOne, .light):
 				return [
 					UIColor(red: 0.921, green: 0.825, blue: 0.834, alpha: 1),
-					UIColor(red: 0.85, green: 0.82, blue: 0.946, alpha: 1),
+					UIColor(red: 0.85, green: 0.82, blue: 0.946, alpha: 1)
 				]
 			case (.insuranceOne, .dark):
 				return [
 					UIColor(red: 0.416, green: 0.302, blue: 0.212, alpha: 1),
-					UIColor(red: 0.247, green: 0.463, blue: 0.682, alpha: 1),
+					UIColor(red: 0.247, green: 0.463, blue: 0.682, alpha: 1)
 				]
 			case (.insuranceTwo, .light):
 				return [
 					UIColor(red: 0.725, green: 0.686, blue: 0.89, alpha: 1),
-					UIColor(red: 0.973, green: 0.725, blue: 0.573, alpha: 1),
+					UIColor(red: 0.973, green: 0.725, blue: 0.573, alpha: 1)
 				]
 			case (.insuranceTwo, .dark):
 				return [
 					UIColor(red: 0.247, green: 0.463, blue: 0.682, alpha: 1),
-					UIColor(red: 0.627, green: 0.467, blue: 0.325, alpha: 1),
+					UIColor(red: 0.627, green: 0.467, blue: 0.325, alpha: 1)
 				]
 			case (.insuranceThree, .light):
 				return [
 					UIColor(red: 0.831, green: 0.812, blue: 0.8, alpha: 1),
-					UIColor(red: 0.886, green: 0.8, blue: 0.808, alpha: 1),
+					UIColor(red: 0.886, green: 0.8, blue: 0.808, alpha: 1)
 				]
 
 			case (.insuranceThree, .dark):
 				return [
 					UIColor(red: 0.512, green: 0.326, blue: 0.162, alpha: 1),
-					UIColor(red: 0.796, green: 0.481, blue: 0.481, alpha: 1),
+					UIColor(red: 0.796, green: 0.481, blue: 0.481, alpha: 1)
 				]
 			default: return []
 			}

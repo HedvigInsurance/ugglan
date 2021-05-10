@@ -1,8 +1,8 @@
 import Flow
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 public struct Tooltip {
 	var id: String

@@ -1,11 +1,11 @@
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 extension GraphQL.PerilFragment: Equatable {
 	public static func == (lhs: GraphQL.PerilFragment, rhs: GraphQL.PerilFragment) -> Bool {
@@ -49,8 +49,7 @@ extension ContractPerilRow: Reusable {
 		contentContainer.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
 		return (
-			view,
-			{ `self` in let bag = DisposeBag()
+			view, { `self` in let bag = DisposeBag()
 
 				let remoteVectorIcon = RemoteVectorIcon(
 					self.fragment.icon.fragments.iconFragment,

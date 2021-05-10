@@ -13,7 +13,7 @@ final class StringTokensTests: XCTestCase {
 			"'hej' + 300".tokens,
 			[
 				.stringConstant(constant: "hej"), .binaryOperator(operator: .addition),
-				.numberConstant(constant: 300),
+				.numberConstant(constant: 300)
 			]
 		)
 
@@ -21,7 +21,7 @@ final class StringTokensTests: XCTestCase {
 			"storeValue + 20.2".tokens,
 			[
 				.storeKey(key: "storeValue"), .binaryOperator(operator: .addition),
-				.numberConstant(constant: 20.2),
+				.numberConstant(constant: 20.2)
 			]
 		)
 
@@ -29,7 +29,7 @@ final class StringTokensTests: XCTestCase {
 			"storeValue - 223.2".tokens,
 			[
 				.storeKey(key: "storeValue"), .binaryOperator(operator: .subtraction),
-				.numberConstant(constant: 223.2),
+				.numberConstant(constant: 223.2)
 			]
 		)
 
@@ -38,7 +38,7 @@ final class StringTokensTests: XCTestCase {
 			[
 				.storeKey(key: "storeValue"), .binaryOperator(operator: .subtraction),
 				.numberConstant(constant: 223.2), .binaryOperator(operator: .subtraction),
-				.numberConstant(constant: 20),
+				.numberConstant(constant: 20)
 			]
 		)
 
@@ -46,7 +46,7 @@ final class StringTokensTests: XCTestCase {
 			"storeValue-223.2".tokens,
 			[
 				.storeKey(key: "storeValue"), .binaryOperator(operator: .subtraction),
-				.numberConstant(constant: 223.2),
+				.numberConstant(constant: 223.2)
 			]
 		)
 	}

@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public struct ChatButton {
 	public static var openChatHandler: (_ self: Self) -> Void = { _ in }

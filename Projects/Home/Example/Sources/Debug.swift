@@ -3,14 +3,14 @@ import ExampleUtil
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
+import hGraphQL
 import Home
 import HomeTesting
 import Presentation
 import TestingUtil
 import UIKit
-import hCore
-import hCoreUI
-import hGraphQL
 
 struct Debug {}
 
@@ -41,7 +41,7 @@ extension Debug: Presentable {
 				.present(
 					Home(),
 					options: [
-						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)
 					]
 				)
 		}

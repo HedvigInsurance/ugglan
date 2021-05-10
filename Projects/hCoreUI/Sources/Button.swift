@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 public enum ButtonType { case standard(backgroundColor: UIColor, textColor: UIColor)
 	case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)

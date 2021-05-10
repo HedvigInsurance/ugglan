@@ -1,9 +1,9 @@
 import Flow
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct BankIDLoginQR {}
 
@@ -35,7 +35,7 @@ extension BankIDLoginQR: Presentable {
 						UIApplication.shared.appDelegate.bag += UIApplication.shared.keyWindow?
 							.present(LoggedIn(), options: [])
 					}
-				), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
+				), .init(title: L10n.demoModeCancel, style: .cancel, action: {})
 			])
 
 			viewController.present(

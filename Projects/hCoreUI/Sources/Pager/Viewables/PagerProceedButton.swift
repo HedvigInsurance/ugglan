@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hGraphQL
+import UIKit
 
 struct PagerProceedButton {
 	let buttonContinueTitle: String

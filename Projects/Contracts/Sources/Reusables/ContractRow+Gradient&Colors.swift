@@ -19,7 +19,7 @@ extension ContractRow {
 					}
 
 					return UIColor(red: 0.894, green: 0.871, blue: 0.969, alpha: 1)
-				}),
+				})
 			]
 		case .swedishHouse, .danishAccident:
 			return [
@@ -36,7 +36,7 @@ extension ContractRow {
 					}
 
 					return UIColor(red: 0.89, green: 0.80, blue: 0.81, alpha: 1.00)
-				}),
+				})
 			]
 		case .norwegianTravel, .danishTravel:
 			return [
@@ -53,7 +53,7 @@ extension ContractRow {
 					}
 
 					return UIColor(red: 0.97, green: 0.73, blue: 0.57, alpha: 1.00)
-				}),
+				})
 			]
 		}
 	}

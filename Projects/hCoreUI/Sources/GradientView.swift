@@ -6,8 +6,8 @@
 //  Copyright © 2021 Hedvig AB. All rights reserved.
 //
 import Flow
-import UIKit
 import hCore
+import UIKit
 
 public struct GradientView {
 	public init(
@@ -39,7 +39,7 @@ extension GradientView: Viewable {
 		layer.colors = [
 			UIColor(red: 1, green: 1, blue: 1, alpha: 0).cgColor,
 			UIColor(red: 1, green: 1, blue: 1, alpha: 0.5).cgColor,
-			UIColor(red: 1, green: 1, blue: 1, alpha: 0).cgColor,
+			UIColor(red: 1, green: 1, blue: 1, alpha: 0).cgColor
 		]
 		layer.locations = [0, 0.5, 1]
 		layer.startPoint = CGPoint(x: 0.25, y: 0.5)

@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hGraphQL
+import Presentation
+import UIKit
 
 public struct ContentIconPagerItem {
 	let title: String?

@@ -23,7 +23,7 @@ class HeadersInterceptor: ApolloInterceptor {
 		completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
 	) {
 		let httpAdditionalHeaders = [
-			"Authorization": token, "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent,
+			"Authorization": token, "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent
 		]
 
 		httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }

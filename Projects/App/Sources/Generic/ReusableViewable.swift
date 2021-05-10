@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct ReusableDisposableViewable<View: Viewable>: Reusable
 where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Disposable {
@@ -12,8 +12,7 @@ where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Disposa
 		let containerView = UIView()
 
 		return (
-			containerView,
-			{ anyReusable in let bag = DisposeBag()
+			containerView, { anyReusable in let bag = DisposeBag()
 
 				bag += containerView.add(anyReusable.viewable) { view in
 					view.snp.remakeConstraints { make in
@@ -38,8 +37,7 @@ where View.Events == ViewableEvents, View.Matter: UIView, View.Result == Signal<
 		let containerView = UIView()
 
 		return (
-			containerView,
-			{ anyReusable in let bag = DisposeBag()
+			containerView, { anyReusable in let bag = DisposeBag()
 
 				bag +=
 					containerView.add(anyReusable.viewable) { view in

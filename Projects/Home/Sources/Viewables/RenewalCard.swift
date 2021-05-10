@@ -1,12 +1,12 @@
 import Apollo
 import Flow
 import Foundation
-import Presentation
-import SnapKit
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import SnapKit
+import UIKit
 
 struct RenewalCard { @Inject var client: ApolloClient }
 
@@ -26,8 +26,7 @@ extension RenewalCard: Viewable {
 
 		func openDocument(_ contract: GraphQL.HomeQuery.Data.Contract, viewController: UIViewController) {
 			if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
-				let url = URL(string: draftCertificateUrl)
-			{
+				let url = URL(string: draftCertificateUrl) {
 				viewController.present(
 					Document(url: url, title: L10n.insuranceCertificateTitle).withCloseButton,
 					style: .detented(.large)
@@ -45,8 +44,7 @@ extension RenewalCard: Viewable {
 						contract.upcomingRenewal?.renewalDate
 							== contracts.first?.upcomingRenewal?.renewalDate
 					}),
-					let renewalDate = contracts.first?.upcomingRenewal?.renewalDate.localDateToDate
-				{
+					let renewalDate = contracts.first?.upcomingRenewal?.renewalDate.localDateToDate {
 					let components = Calendar.current.dateComponents(
 						[.day],
 						from: Date(),
@@ -100,7 +98,7 @@ extension RenewalCard: Viewable {
 											style: .cancel,
 											action: {}
 										)
-									],
+									]
 								]
 								.flatMap { $0 }
 							)

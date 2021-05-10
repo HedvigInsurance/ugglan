@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct AnimatedSavingsLabel {
 	let from: ReadSignal<MonetaryAmount?>
@@ -21,7 +21,7 @@ extension AnimatedSavingsLabel: Viewable {
 		bag += maskContainer.didLayoutSignal.onValue { gradientMaskLayer.frame = maskContainer.bounds }
 
 		gradientMaskLayer.colors = [
-			UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor,
+			UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor
 		]
 		gradientMaskLayer.locations = [0, 0.1, 0.9, 1]
 

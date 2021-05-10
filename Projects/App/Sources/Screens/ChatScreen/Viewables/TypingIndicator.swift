@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hGraphQL
+import Presentation
+import UIKit
 
 struct TypingIndicator: Hashable, Equatable {
 	static func == (lhs: TypingIndicator, rhs: TypingIndicator) -> Bool { lhs.id == rhs.id }
@@ -50,8 +50,7 @@ extension TypingIndicator: Reusable {
 		containerView.addArrangedSubview(spacingContainer)
 
 		return (
-			containerView,
-			{ typingIndicator in
+			containerView, { typingIndicator in
 				spacingContainer.edgeInsets = UIEdgeInsets(
 					top: typingIndicator.hasPreviousMessage ? 2 : 20,
 					left: 20,

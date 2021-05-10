@@ -11,8 +11,7 @@ public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
 		if let parsed = getParsedJSON(object: message.body as AnyObject),
 			let callback: String = parsed.object(forKey: "callback") as? String,
 			let urlscheme: String = parsed.object(forKey: "urlscheme") as? String,
-			let appUrl: URL = NSURL(string: urlscheme) as URL?
-		{
+			let appUrl: URL = NSURL(string: urlscheme) as URL? {
 			let canOpenApplicationUrl = UIApplication.shared.canOpenURL(appUrl)
 			if canOpenApplicationUrl {
 				if #available(iOS 10.0, *) {

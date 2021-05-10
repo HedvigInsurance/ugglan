@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import SnapKit
 import UIKit
-import hCore
 
 public struct LoadingIndicator {
 	public let showAfter: TimeInterval

@@ -1,6 +1,6 @@
 import Flow
-import UIKit
 import hCore
+import UIKit
 
 public struct Bullet {
 	@ReadWriteState public var isSelected = false

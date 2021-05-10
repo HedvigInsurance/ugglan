@@ -1,9 +1,9 @@
 import Flow
 import Foundation
-import Market
-import UIKit
 import hCore
 import hGraphQL
+import Market
+import UIKit
 
 extension ApplicationState {
 	private static let firebaseMessagingTokenKey = "firebaseMessagingToken"

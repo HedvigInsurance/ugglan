@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
 import Payment
 import Presentation
 import UIKit
-import hCore
-import hCoreUI
 
 struct PostOnboarding {
 	@Inject var client: ApolloClient
@@ -64,7 +64,7 @@ struct PostOnboarding {
 		)
 
 		let table = Table(rows: [
-			ReusableSignalViewable(viewable: payment), ReusableSignalViewable(viewable: pushNotifications),
+			ReusableSignalViewable(viewable: payment), ReusableSignalViewable(viewable: pushNotifications)
 		])
 
 		return (table, bag)

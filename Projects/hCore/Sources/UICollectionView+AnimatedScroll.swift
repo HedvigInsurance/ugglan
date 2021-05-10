@@ -74,7 +74,7 @@ extension CAMediaTimingFunction {
 		var x = startPoint
 		var lastX: Double = 1
 		let kMaximumSteps = 10
-		let kApproximationTolerance = 0.00000001
+		let kApproximationTolerance = 0.000_000_01
 
 		// Approximate a root by using the Newton-Raphson method
 		var y = 0

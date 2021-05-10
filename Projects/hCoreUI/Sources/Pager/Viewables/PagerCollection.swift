@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import Presentation
 import UIKit
-import hCore
 
 public struct PagerItem {
 	let id: UUID
@@ -23,8 +23,7 @@ extension PagerItem: Reusable {
 		let sliderPageView = UIView()
 
 		return (
-			sliderPageView,
-			{ sliderPage in sliderPageView.subviews.forEach { view in view.removeFromSuperview() }
+			sliderPageView, { sliderPage in sliderPageView.subviews.forEach { view in view.removeFromSuperview() }
 
 				let (contentScreen, contentDisposable) = sliderPage.content.materialize()
 

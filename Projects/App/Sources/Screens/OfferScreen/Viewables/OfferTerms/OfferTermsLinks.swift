@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import SafariServices
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SafariServices
+import UIKit
 
 struct OfferTermsLinks { @Inject var client: ApolloClient }
 
@@ -34,8 +34,7 @@ extension OfferTermsLinks: Viewable {
 						let isSwedishMarket = Localization.Locale.currentLocale.market == .se
 
 						if let termType = term.type, termType == .termsAndConditions,
-							isSwedishMarket
-						{
+							isSwedishMarket {
 							url = URL(string: "https://www.hedvig.com/se/villkor")
 						} else {
 							url = URL(string: term.url)

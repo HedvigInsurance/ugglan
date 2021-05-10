@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hGraphQL
+import Presentation
+import UIKit
 
 public struct ContractInsurableLimits {
 	let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>

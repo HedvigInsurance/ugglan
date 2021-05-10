@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import SnapKit
-import UIKit
 import hCore
 import hCoreUI
+import SnapKit
+import UIKit
 
 struct EmbarkInput {
 	let placeholder: ReadWriteSignal<String>

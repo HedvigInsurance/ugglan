@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
+import Presentation
+import UIKit
 
 struct EmergencyActions { let presentingViewController: UIViewController }
 
@@ -47,8 +47,7 @@ struct EmergencyAction: Reusable, SignalProvider {
 		contentView.setCustomSpacing(8, after: titleLabel)
 
 		return (
-			view,
-			{ action in let bag = DisposeBag()
+			view, { action in let bag = DisposeBag()
 
 				titleLabel.text = action.title
 

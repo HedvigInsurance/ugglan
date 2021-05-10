@@ -1,12 +1,12 @@
 import Apollo
 import Flow
 import Foundation
-import Presentation
-import UIKit
-import WebKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
+import WebKit
 
 struct WebOnboarding {
 	@Inject var client: ApolloClient
@@ -32,7 +32,7 @@ extension WebOnboarding: Presentable {
 					MenuChild.appInformation, MenuChild.appSettings,
 					MenuChild.login(onLogin: {
 						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-					}),
+					})
 				]
 			)
 		)
@@ -133,7 +133,7 @@ extension WebOnboarding: Presentable {
 					Alert.Action(
 						title: L10n.chatRestartAlertConfirm,
 						action: { loadWebOnboarding() }
-					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {}),
+					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {})
 				]
 			)
 

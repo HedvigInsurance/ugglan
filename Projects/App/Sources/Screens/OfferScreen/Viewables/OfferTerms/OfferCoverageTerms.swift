@@ -2,9 +2,9 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import UIKit
 
 struct OfferCoverageTerms {
 	@Inject var client: ApolloClient
@@ -53,9 +53,9 @@ extension OfferCoverageTerms: Viewable {
 		}
 
 		let notInsuredAtOtherCompanyBlob = WhenEnabled(
-			insuredAtOtherCompanySignal.map { !$0 },
-			{ Blob(color: Offer.primaryAccentColor, position: .top) }
-		) { view in view.backgroundColor = .brand(.primaryBackground()) }
+			insuredAtOtherCompanySignal.map { !$0 }, { Blob(color: Offer.primaryAccentColor, position: .top) }
+		) { view in view.backgroundColor = .brand(.primaryBackground())
+		}
 
 		bag += outerView.addArranged(notInsuredAtOtherCompanyBlob)
 

@@ -18,8 +18,7 @@ private var didCancelImagePickerCallbackerKey = 1
 extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	private var didPickImageCallbacker: Callbacker<Either<PHAsset, UIImage>> {
 		if let callbacker = objc_getAssociatedObject(self, &didPickImageCallbackerKey)
-			as? Callbacker<Either<PHAsset, UIImage>>
-		{
+			as? Callbacker<Either<PHAsset, UIImage>> {
 			return callbacker
 		}
 
@@ -39,8 +38,7 @@ extension UIImagePickerController: UIImagePickerControllerDelegate, UINavigation
 
 	private var didCancelImagePickerCallbacker: Callbacker<Void> {
 		if let callbacker = objc_getAssociatedObject(self, &didCancelImagePickerCallbackerKey)
-			as? Callbacker<Void>
-		{
+			as? Callbacker<Void> {
 			return callbacker
 		}
 

@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 struct CommonClaimCard {
 	let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
@@ -94,8 +94,7 @@ extension CommonClaimCard: Reusable {
 		containerView.isLayoutMarginsRelativeArrangement = true
 
 		return (
-			containerView,
-			{ commonClaimCard in let bag = DisposeBag()
+			containerView, { commonClaimCard in let bag = DisposeBag()
 
 				containerView.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
 

@@ -1,11 +1,11 @@
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
 import Presentation
 import Runtime
 import UIKit
-import hCore
-import hCoreUI
 
 struct ReflectionForm<T: Codable> {
 	let editInstance: T?

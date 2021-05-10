@@ -2,11 +2,11 @@ import AVFoundation
 import Flow
 import Form
 import Foundation
+import hCore
+import hCoreUI
 import Kingfisher
 import SafariServices
 import UIKit
-import hCore
-import hCoreUI
 
 private let fiveMinutes: TimeInterval = 60 * 5
 
@@ -172,8 +172,7 @@ extension Message: Reusable {
 		contentContainer.snp.makeConstraints { make in make.leading.trailing.top.bottom.equalToSuperview() }
 
 		return (
-			containerView,
-			{ message in let bag = DisposeBag()
+			containerView, { message in let bag = DisposeBag()
 
 				UIView.performWithoutAnimation {
 					func handleTimeStamp() {
@@ -297,7 +296,7 @@ extension Message: Reusable {
 							with: url,
 							options: [
 								.preloadAllAnimationData, .processor(processor),
-								.backgroundDecode, .transition(.fade(1)),
+								.backgroundDecode, .transition(.fade(1))
 							]
 						)
 
@@ -428,7 +427,7 @@ extension Message: Reusable {
 								with: asset,
 								options: [
 									.preloadAllAnimationData, .processor(processor),
-									.backgroundDecode, .transition(.fade(1)),
+									.backgroundDecode, .transition(.fade(1))
 								]
 							)
 						}
@@ -474,7 +473,7 @@ extension Message: Reusable {
 									NSAttributedString.Key.underlineStyle:
 										NSUnderlineStyle.single.rawValue,
 									NSAttributedString.Key.underlineColor:
-										messageTextColor,
+										messageTextColor
 								],
 								range: linkRange.range
 							)
@@ -500,8 +499,7 @@ extension Message: Reusable {
 								}
 
 								if let url = tappedLink?.url,
-									["http", "https"].contains(url.scheme)
-								{
+									["http", "https"].contains(url.scheme) {
 									label.viewController?
 										.present(
 											SFSafariViewController(

@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
+import hCore
 import Payment
 import Presentation
 import UIKit
-import hCore
 
 struct MyPaymentRow {
 	let monthlyCostSignal = ReadWriteSignal<Int?>(nil)

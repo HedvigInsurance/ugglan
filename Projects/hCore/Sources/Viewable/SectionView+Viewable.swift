@@ -127,8 +127,7 @@ extension SectionView {
 	) -> Disposable
 	where
 		V.Matter == Matter, Matter.Matter == RowView, Matter.Result == Disposable,
-		Matter.Events == SelectableViewableEvents, V.Result == Disposable, V.Events == SelectableViewableEvents
-	{
+		Matter.Events == SelectableViewableEvents, V.Result == Disposable, V.Events == SelectableViewableEvents {
 		let onSelectCallbacker = Callbacker<Void>()
 		let wasAddedCallbacker = Callbacker<Void>()
 

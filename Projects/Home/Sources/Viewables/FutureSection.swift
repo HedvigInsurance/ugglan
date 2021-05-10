@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 struct FutureSection { @Inject var client: ApolloClient }
 
@@ -46,8 +46,7 @@ extension FutureSection: Viewable {
 				} else if let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider,
 					let insuranceProvider = insuranceProvidersData.insuranceProviders.first(where: {
 						provider -> Bool in provider.id == switchedFromInsuranceProvider
-					}), insuranceProvider.switchable
-				{
+					}), insuranceProvider.switchable {
 					titleLabel.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(
 						homeData.member.firstName ?? ""
 					)

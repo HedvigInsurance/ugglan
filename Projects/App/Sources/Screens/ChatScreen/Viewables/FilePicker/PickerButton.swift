@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 struct PickerButton: Viewable {
 	let icon: UIImage

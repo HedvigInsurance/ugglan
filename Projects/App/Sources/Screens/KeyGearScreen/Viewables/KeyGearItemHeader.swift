@@ -2,9 +2,9 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import UIKit
 import hCore
 import hGraphQL
+import UIKit
 
 struct KeyGearItemHeader {
 	let presentingViewController: UIViewController
@@ -113,8 +113,7 @@ struct ValuationBox: Viewable {
 							valuationValueDescription.value =
 								L10n.keyGearItemViewValuationPercentageLabel
 						} else if let marketValuation = valuation?
-							.asKeyGearItemValuationMarketValue
-						{
+							.asKeyGearItemValuationMarketValue {
 							valuationValueLabel.value = "\(marketValuation.ratio)%"
 							valuationValueDescription.value =
 								L10n.keyGearItemViewValuationMarketDescription

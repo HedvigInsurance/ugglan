@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 struct KeyGearItem {
 	let id: String
@@ -49,7 +49,7 @@ struct KeyGearItem {
 
 		let gradient = CAGradientLayer()
 		gradient.colors = [
-			UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor,
+			UIColor.black.withAlphaComponent(0.7).cgColor, UIColor.black.withAlphaComponent(0).cgColor
 		]
 		gradient.locations = [0, 1]
 
@@ -339,7 +339,7 @@ extension KeyGearItem: Presentable {
 								title: L10n.keyGearItemOptionsCancel,
 								style: .cancel,
 								action: { _ in throw GenericError.cancelled }
-							),
+							)
 						]),
 						style: .sheet(from: optionsButton.view, rect: nil)
 					)

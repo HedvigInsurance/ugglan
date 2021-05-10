@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hGraphQL
+import Presentation
+import UIKit
 
 struct CallMeChat { @Inject var client: ApolloClient }
 

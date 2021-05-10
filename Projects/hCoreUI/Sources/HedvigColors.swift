@@ -1,7 +1,7 @@
 import DynamicColor
 import Foundation
-import UIKit
 import hCore
+import UIKit
 
 extension UIColor { private enum BrandColorBase {
 	static let almostBlack = UIColor(red: 0.04, green: 0.04, blue: 0.04, alpha: 1.0)
@@ -150,17 +150,17 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
 				return UIColor(dynamic: { trait -> UIColor in
 					if trait.userInterfaceStyle == .dark {
 						return #colorLiteral(
-							red: 0.8401703238,
-							green: 0.6963499188,
-							blue: 0.2325098217,
+							red: 0.840_170_323_8,
+							green: 0.696_349_918_8,
+							blue: 0.232_509_821_7,
 							alpha: 1
 						)
 					}
 
 					return #colorLiteral(
-						red: 0.9490196078,
-						green: 0.7843137255,
-						blue: 0.3215686275,
+						red: 0.949_019_607_8,
+						green: 0.784_313_725_5,
+						blue: 0.321_568_627_5,
 						alpha: 1
 					)
 				})
@@ -168,17 +168,17 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
 				return UIColor(dynamic: { trait -> UIColor in
 					if trait.userInterfaceStyle == .dark {
 						return #colorLiteral(
-							red: 0.890196085,
-							green: 0.7254902124,
-							blue: 0.270588249,
+							red: 0.890_196_085,
+							green: 0.725_490_212_4,
+							blue: 0.270_588_249,
 							alpha: 1
 						)
 					}
 
 					return #colorLiteral(
-						red: 0.980392158,
-						green: 0.8784313798,
-						blue: 0.5960784554,
+						red: 0.980_392_158,
+						green: 0.878_431_379_8,
+						blue: 0.596_078_455_4,
 						alpha: 1
 					)
 				})
@@ -186,17 +186,17 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
 				return UIColor(dynamic: { trait -> UIColor in
 					if trait.userInterfaceStyle == .dark {
 						return #colorLiteral(
-							red: 0.7450980392,
-							green: 0.6078431373,
-							blue: 0.9529411765,
+							red: 0.745_098_039_2,
+							green: 0.607_843_137_3,
+							blue: 0.952_941_176_5,
 							alpha: 1
 						)
 					}
 
 					return #colorLiteral(
-						red: 0.7882352941,
-						green: 0.6705882353,
-						blue: 0.9607843137,
+						red: 0.788_235_294_1,
+						green: 0.670_588_235_3,
+						blue: 0.960_784_313_7,
 						alpha: 1
 					)
 				})
@@ -204,9 +204,9 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
 				return UIColor(dynamic: { trait -> UIColor in
 					if trait.userInterfaceStyle == .dark {
 						return #colorLiteral(
-							red: 0.168627451,
-							green: 0.1254901961,
-							blue: 0.231372549,
+							red: 0.168_627_451,
+							green: 0.125_490_196_1,
+							blue: 0.231_372_549,
 							alpha: 1
 						)
 					}
@@ -227,9 +227,9 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
 			switch self {
 			case .grayOne:
 				return #colorLiteral(
-					red: 0.9176470588,
-					green: 0.9176470588,
-					blue: 0.9176470588,
+					red: 0.917_647_058_8,
+					green: 0.917_647_058_8,
+					blue: 0.917_647_058_8,
 					alpha: 1
 				)
 			case .grayFive:

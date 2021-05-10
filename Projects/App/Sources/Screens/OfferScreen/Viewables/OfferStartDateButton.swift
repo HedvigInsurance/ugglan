@@ -1,11 +1,11 @@
 import Apollo
 import Flow
 import Foundation
-import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
+import UIKit
 
 struct OfferStartDateButton {
 	let presentingViewController: UIViewController
@@ -75,11 +75,11 @@ extension OfferStartDateButton: Viewable {
 							style: .detented(.scrollViewContentSize(20), .large),
 							options: [
 								.defaults, .prefersLargeTitles(true),
-								.largeTitleDisplayMode(.always),
+								.largeTitleDisplayMode(.always)
 							]
 						)
 					}
-				),
+				)
 			]
 		)
 
@@ -87,8 +87,7 @@ extension OfferStartDateButton: Viewable {
 			bag += self.client.fetch(query: GraphQL.OfferQuery())
 				.onValue { data in
 					if data.insurance.previousInsurer != nil,
-						data.lastQuoteOfMember.asCompleteQuote?.startDate == nil
-					{
+						data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
 						self.presentingViewController.present(alert)
 					} else {
 						self.presentingViewController.present(
@@ -96,7 +95,7 @@ extension OfferStartDateButton: Viewable {
 							style: .detented(.scrollViewContentSize(20), .large),
 							options: [
 								.defaults, .prefersLargeTitles(true),
-								.largeTitleDisplayMode(.always),
+								.largeTitleDisplayMode(.always)
 							]
 						)
 					}
@@ -106,12 +105,10 @@ extension OfferStartDateButton: Viewable {
 		bag += client.watch(query: GraphQL.OfferQuery())
 			.onValue { data in
 				if data.insurance.previousInsurer != nil,
-					data.lastQuoteOfMember.asCompleteQuote?.startDate == nil
-				{
+					data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
 					valueLabel.value = L10n.startDateExpires
 				} else if data.insurance.previousInsurer == nil,
-					data.lastQuoteOfMember.asCompleteQuote?.startDate == nil
-				{
+					data.lastQuoteOfMember.asCompleteQuote?.startDate == nil {
 					valueLabel.value = L10n.chooseDateBtn
 				} else {
 					valueLabel.value = data.lastQuoteOfMember.asCompleteQuote?.startDate ?? ""
