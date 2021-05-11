@@ -17,13 +17,15 @@ default_platform(:ios)
 
 platform :ios do
     lane :load_api do
-      app_store_connect_api_key(
-        key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-        key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
-        duration: 1200,
-        in_house: false
-      )
+      if is_ci
+        app_store_connect_api_key(
+            key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+            issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+            key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+            duration: 1200,
+            in_house: false
+        )
+      end
     end
     
     lane :setup do
@@ -33,27 +35,100 @@ platform :ios do
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     end
 
-    lane :reprovision_everything do
-      sh("fastlane match nuke distribution --skip_confirmation true")
+    lane :provision do
+      register_devices(
+        devices_file: "./devices.txt"
+      )
 
       match(
         type: "appstore",
         app_identifier: "com.hedvig.app",
+        force: true
+      )
+
+      match(
+        type: "appstore",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.app",
+        force: true
       )
 
       match(
         type: "adhoc",
         app_identifier: "com.hedvig.app",
+        force: true
+      )
+
+      match(
+        type: "development",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.app",
+        force: true
       )
 
       match(
         type: "adhoc",
         app_identifier: "com.hedvig.test.app",
+        force: true
+      )
+
+      match(
+        type: "development",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.test.app",
+        force: true
       )
 
       match(
         type: "adhoc",
         app_identifier: "com.hedvig.example.*",
+        force: true
+      )
+
+      match(
+        type: "adhoc",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.example.*",
+        force: true
+      )
+
+      match(
+        type: "development",
+        app_identifier: "com.hedvig.app",
+        force: true
+      )
+
+      match(
+        type: "development",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.app",
+        force: true
+      )
+
+      match(
+        type: "development",
+        app_identifier: "com.hedvig.test.app",
+        force: true
+      )
+
+      match(
+        type: "development",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.test.app",
+        force: true
+      )
+
+      match(
+        type: "development",
+        app_identifier: "com.hedvig.example.*",
+        force: true
+      )
+
+      match(
+        type: "development",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.example.*",
+        force: true
       )
     end
     
@@ -109,6 +184,7 @@ platform :ios do
             workspace: "Ugglan.xcworkspace",
             configuration: "Release",
             scheme: "Hedvig",
+            catalyst_platform: "ios",
             output_directory: "fastlane/build_output",
             codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
             export_options: {
@@ -198,6 +274,7 @@ platform :ios do
                 output_directory: "fastlane/build_output",
                 codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,
+                catalyst_platform: "ios",
                 export_options: {
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",

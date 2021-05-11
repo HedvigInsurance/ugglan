@@ -1,0 +1,2 @@
+Device ID	Device Name
+00008103-000E414626D2001E	S Mac Mini
