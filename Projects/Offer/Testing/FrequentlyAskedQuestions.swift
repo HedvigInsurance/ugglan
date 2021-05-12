@@ -1,16 +1,8 @@
-//
-//  FrequentlyAskedQuestions.swift
-//  OfferTesting
-//
-//  Created by Sam Pettersson on 2021-05-07.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import hGraphQL
 
 func generateFrequentlyAskedQuestions() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.FrequentlyAskedQuestion] {
-    return [
+    [
         .init(
             id: UUID().uuidString,
             headline: "What is included in my home insurance?",
@@ -25,6 +17,6 @@ func generateFrequentlyAskedQuestions() -> [GraphQL.QuoteBundleQuery.Data.QuoteB
             id: UUID().uuidString,
             headline: "Can I get Hedvig even though I already have an insurance policy?",
             body: "Of course. You can choose to activate your Hedvig insurance when your old insurance expires. We can help you with the switch from your old insurance company."
-        )
+        ),
     ]
 }
