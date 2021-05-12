@@ -47,6 +47,11 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         }
         freeUntil
     }
+    frequentlyAskedQuestions(locale: $locale) {
+        id
+        headline
+        body
+    }
   }
   redeemedCampaigns {
     displayValue(locale: $locale)
