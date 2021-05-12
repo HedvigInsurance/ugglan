@@ -6,24 +6,26 @@ import hCoreUI
 import Market
 import UIKit
 
-struct MultiActionObjectRow {
+struct MultiActionValueRow: Hashable, Equatable {
     let title: String
+    let keyInformation: [String]
+    let id = UUID()
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func == (lhs: MultiActionValueRow, rhs: MultiActionValueRow) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
 }
 
-extension MultiActionObjectRow: Reusable {
-    static func makeAndConfigure() -> (make: UIView, configure: (MultiActionObjectRow) -> Disposable) {
+extension MultiActionValueRow: Reusable {
+    static func makeAndConfigure() -> (make: UIView, configure: (MultiActionValueRow) -> Disposable) {
         let view = UIControl()
         view.backgroundColor = .clear
 
         let stackView = UIStackView()
-
-        let imageView = UIImageView()
-        stackView.addSubview(imageView)
-        view.clipsToBounds = true
-        imageView.isUserInteractionEnabled = false
-        imageView.backgroundColor = .clear
-        imageView.contentMode = .scaleAspectFill
-        imageView.image = hCoreUIAssets.addButton.image
 
         return (view, { `self` in
             let bag = DisposeBag()
@@ -31,7 +33,7 @@ extension MultiActionObjectRow: Reusable {
             let title = UILabel()
             title.text = self.title
 
-            stackView.addSubview(title)
+            stackView.addArrangedSubview(title)
             view.addSubview(stackView)
             stackView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()

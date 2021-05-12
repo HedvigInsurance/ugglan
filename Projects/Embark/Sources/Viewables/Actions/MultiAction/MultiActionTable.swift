@@ -12,10 +12,13 @@ typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.P
 
 typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
 
-enum MultiActionComponent {
-    case number(EmbarkNumberActionData)
+typealias EmbarkNumberActionFragment = GraphQL.EmbarkNumberActionFragment
+
+internal enum MultiActionComponent {
+    case number(EmbarkNumberActionFragment)
     case dropDown(EmbarkDropDownActionData)
     case `switch`(EmbarkSwitchActionData)
+    case empty
 }
 
 struct MultiActionTable {
@@ -23,8 +26,8 @@ struct MultiActionTable {
     var components: [MultiActionComponent]
 }
 
-extension MultiActionTable: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIViewController, Future<[String: Any]>) {
+extension MultiActionTable: Presentable {
+    func materialize() -> (UIViewController, Future<[String: Any]>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -43,6 +46,9 @@ extension MultiActionTable: Viewable {
             case let .dropDown(data):
                 break
             case let .switch(data):
+                break
+
+            case .empty:
                 break
             }
         }

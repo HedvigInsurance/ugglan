@@ -74,7 +74,12 @@ private extension EmbarkStory {
     }
 
     static let mockedMultiAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkMultiAction(
-        multiActionData: .init(components: .init([EmbarkStory.embarkNumberComponent])),
+        multiActionData: .init(
+            addLabel: "Add Building",
+            maxAmount: "1",
+            link: .init(name: "Next", label: "Next"),
+            components: [EmbarkStory.embarkNumberComponent]
+        ),
         component: ""
     )
 

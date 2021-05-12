@@ -121,7 +121,7 @@ extension Action: Viewable {
                         state: self.state,
                         data: textAction
                     )).onValue(performCallback)
-                } else if let numberAction = actionData?.asEmbarkNumberAction {
+                } else if let numberAction = actionData?.asEmbarkNumberAction?.numberActionData.fragments.embarkNumberActionFragment {
                     innerBag += view.addArranged(EmbarkNumberAction(
                         state: self.state,
                         data: numberAction
@@ -149,6 +149,11 @@ extension Action: Viewable {
                     innerBag += view.addArranged(InsuranceProviderAction(
                         state: self.state,
                         data: .previous(previousInsuranceProviderAction)
+                    )).onValue(performCallback)
+                } else if let multiAction = actionData?.asEmbarkMultiAction {
+                    innerBag += view.addArranged(MultiAction(
+                        state: self.state,
+                        data: multiAction.multiActionData
                     )).onValue(performCallback)
                 }
 
