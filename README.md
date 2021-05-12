@@ -28,9 +28,33 @@ Hedvig is a new approach to insurance currently available in Sweden and Norway, 
 
    `open Ugglan.xcworkspace`
 
+## Provision new devices
+
+1. Add device UDID to devices.txt
+2. `fastlane ios provision`
+3. Trigger new build for latest commit on `main` by clicking `re-run` in Github Actions
+   
+## Formatting
+
+We use swift-format for formatting, it's ran on all staged files automatically in a pre-commit hook.
+
+1. Install githooks
+   
+   sh `scripts/githooks.sh`
+   
+2. In a separate directory from ugglan
+   
+   sh `git clone -b swift-5.4-branch https://github.com/apple/swift-format.git`
+   
+3. sh `swift build -c release --disable-sandbox`
+4. sh `find . -type f -name swift-format`
+5. Find the corresponding build, should be something like `./.build/arm64-apple-macosx/release/swift-format`
+6. sh `cp .build/arm64-apple-macosx/release/swift-format /usr/local/bin/swift-format`
+7. Done!
+
 ## How to release
 
-1. Go to `Actions` -> `ProductionDeploy` ([link](https://github.com/HedvigInsurance/ugglan/actions?query=workflow%3AProductionDeploy))
+1. Go to `Actions` -> `ProductionDeploy`
 
 2. Click `Run workflow`
 
