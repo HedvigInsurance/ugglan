@@ -8,7 +8,7 @@ import UIKit
 
 struct MultiActionAddObjectRow: Hashable, Equatable {
     let title: String
-    let callbacker = Callbacker<Void>()
+    let didTapRow = ReadWriteSignal<Bool>(false)
     let id = UUID()
 
     func hash(into hasher: inout Hasher) {
@@ -29,25 +29,29 @@ extension MultiActionAddObjectRow: Reusable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        stackView.isUserInteractionEnabled = false
+
+        control.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         let imageView = UIImageView()
-        stackView.addArrangedSubview(imageView)
-        imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFit
         imageView.image = hCoreUIAssets.addButton.image
+        stackView.addArrangedSubview(imageView)
 
         return (control, { `self` in
             let title = UILabel()
             title.text = self.title
 
             stackView.addArrangedSubview(title)
-            control.addSubview(stackView)
-            stackView.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
 
-            bag += control.signal(for: .touchDown).onValue { () in
-                bag += self.callbacker.addCallback { _ in }
+            let didTapButton = control.signal(for: .touchDown)
+
+            bag += didTapButton.onValue {
+                self.didTapRow.value = true
             }
 
             return bag

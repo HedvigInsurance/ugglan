@@ -33,28 +33,35 @@ extension MultiActionTable: Presentable {
 
         let form = FormView()
 
+        var dictionary = [String: Any]()
+
+        let section = form.appendSection()
+
         bag += viewController.install(form)
+
+        func addNumberAction(_ data: EmbarkNumberActionFragment) {
+            let numberAction = MultiActionNumberRow(data: data)
+
+            bag += section.append(numberAction)
+        }
 
         components.forEach { component in
             switch component {
             case let .number(data):
-                let numberAction = EmbarkNumberAction(state: self.state, data: data)
-                let row = RowView()
-                bag += row.append(numberAction).onValue { _ in
-                }
-
+                addNumberAction(data)
             case let .dropDown(data):
                 break
             case let .switch(data):
                 break
-
             case .empty:
                 break
             }
         }
 
         return (viewController, Future { callback in
-            callback(.success([:]))
+            func submit() {
+                callback(.success([:]))
+            }
 
             return bag
         })

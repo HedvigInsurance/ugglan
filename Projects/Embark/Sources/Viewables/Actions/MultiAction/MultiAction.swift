@@ -21,7 +21,6 @@ struct MultiAction {
     let state: EmbarkState
     let data: MultiActionData
     @ReadWriteState var rows: [MultiActionRow] = []
-    let callbacker = Callbacker<Void>()
 }
 
 extension MultiAction: Viewable {
@@ -30,37 +29,48 @@ extension MultiAction: Viewable {
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsets(horizontalInset: 15,
-                                           verticalInset: 10)
+
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 10
 
         let collectionKit = CollectionKit<EmptySection, MultiActionRow>(
-            layout: layout
+            table: Table(rows: []),
+            layout: layout,
+            holdIn: bag
         )
+        collectionKit.view.backgroundColor = .clear
+        view.addArrangedSubview(collectionKit.view)
+
+        collectionKit.view.snp.updateConstraints { make in
+            make.height.equalTo(200)
+        }
 
         bag += $rows.atOnce()
             .map { Table<EmptySection, MultiActionRow>(rows: $0) }
             .onValue { table in
-                collectionKit.table = table
+                collectionKit.set(table)
             }
 
-        $rows.value = [.right(.init(title: data.addLabel ?? ""))]
+        bag += collectionKit.onValueDisposePrevious { table in
+            let innerBag = DisposeBag()
 
-//        func table(newRows: [MultiActionValueRow]) -> Table<EmptySection, MultiActionRow> {
-//            var rows = [Either<MultiActionValueRow, MultiActionAddObjectRow>]()
-//            rows.append()
-//
-//            let leftRows = newRows.map { (row) ->  Either<MultiActionValueRow, MultiActionAddObjectRow> in
-//                return .make(row)
-//            }
-//
-//            rows += leftRows
-//
-//            return
-//        }
+            innerBag += table.signal().onValue { item in
+                switch item {
+                case .left:
+                    break
+                case let .right(row):
+                    innerBag += row.didTapRow.onValue { _ in
+                        innerBag += present().onValue { values in
+                            print(values)
+                        }
+                    }
+                }
+            }
 
-        collectionKit.view.backgroundColor = .clear
+            return innerBag
+        }
+
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(width: 100, height: 50.0)
         }
@@ -80,40 +90,37 @@ extension MultiAction: Viewable {
 
             let multiActionForm = MultiActionTable(state: state, components: components)
 
-            return collectionKit.view.viewController!.present(multiActionForm)
+            return collectionKit.view.viewController!.present(multiActionForm, style: .detented(.medium))
+        }
+
+        bag += collectionKit.delegate.didSelectRow.onValue { row in
+            print(row)
         }
 
         bag += collectionKit.delegate.didSelect.onValue { index in
             print(index)
         }
 
-        bag += collectionKit.onValueDisposePrevious { table -> Disposable? in
-            let innerBag = DisposeBag()
+        $rows.value = [.right(.init(title: data.addLabel ?? "")), .left(.init(title: "Black", keyInformation: ["Blue"]))]
 
-            innerBag += table.signal().onValue { item in
-                switch item {
-                case .left:
-                    break
-                case let .right(row):
-                    innerBag += row.callbacker.onValue {
-                        bag += present()
-                    }
-                }
-            }
+        return (view, Signal { callback in
 
-            return innerBag
-        }
+            let button = Button(
+                title: self.data.link.fragments.embarkLinkFragment.label,
+                type: .standard(
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
+                )
+            )
 
-        bag += collectionKit.view.didLayoutSignal.onValue {
-            collectionKit.view.snp.makeConstraints { make in
-                make.height.equalTo(collectionKit.view.collectionViewLayout.collectionViewContentSize.height)
-            }
-        }
+            bag += view.addArranged(button)
 
-        return (collectionKit.view, Signal { callback in
-
-            bag += callbacker.onValue { () in
+            func submit() {
                 callback(data.link.fragments.embarkLinkFragment)
+            }
+
+            bag += button.onTapSignal.onValue {
+                submit()
             }
 
             return bag

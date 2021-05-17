@@ -43,29 +43,31 @@ private extension EmbarkStory {
             action = embarkNumberAction
         }
 
-        let passage = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage(
-            id: "asd123",
-            name: "Enter Address",
-            externalRedirect: nil,
-            offerRedirect: nil,
-            tooltips: [],
-            allLinks: [],
-            response: .makeEmbarkMessage(
-                text: "Mocked Repsonse",
-                expressions: []
-            ),
-            messages: [],
-            api: nil,
-            redirects: [],
-            tracks: [],
-            action: action
-        )
+        func passage(name: String) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage {
+            GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage(
+                id: name,
+                name: "Enter Address",
+                externalRedirect: nil,
+                offerRedirect: nil,
+                tooltips: [],
+                allLinks: [],
+                response: .makeEmbarkMessage(
+                    text: "Mocked Repsonse",
+                    expressions: []
+                ),
+                messages: [],
+                api: nil,
+                redirects: [],
+                tracks: [],
+                action: action
+            )
+        }
 
         let mockedStory = GraphQL.EmbarkStoryQuery.Data.EmbarkStory(
             id: "asd",
             startPassage: "asd123",
             name: "Mocked Story",
-            passages: [passage]
+            passages: [passage(name: "asd123"), passage(name: "asd1234")]
         )
 
         let mockedData = GraphQL.EmbarkStoryQuery.Data(embarkStory: mockedStory)
@@ -86,6 +88,8 @@ private extension EmbarkStory {
     static let embarkNumberComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkNumberAction(
         numberActionData: .init(key: "Embark Test Nubmeraction",
                                 placeholder: "478",
+                                unit: "m",
+                                label: "Size of building",
                                 link: .init(
                                     name: "next passage",
                                     label: "Continue"
@@ -136,7 +140,7 @@ extension Debug: Presentable {
                     menu: Menu(title: nil, children: [])
                 ),
                 options: [.autoPop]
-            )
+            ).nil()
         }
 
         let components = Component.allCases

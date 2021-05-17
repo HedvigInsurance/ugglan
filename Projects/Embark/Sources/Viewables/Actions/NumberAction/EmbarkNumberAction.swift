@@ -10,8 +10,15 @@ import UIKit
 internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
 
 struct EmbarkNumberAction {
+    internal init(state: EmbarkState, data: EmbarkNumberActionFragment, style: FieldStyle = .embarkInputLarge) {
+        self.state = state
+        self.data = data
+        self.style = style
+    }
+
     let state: EmbarkState
     let data: EmbarkNumberActionFragment
+    let style: FieldStyle
 }
 
 extension EmbarkNumberAction: Viewable {
@@ -49,7 +56,8 @@ extension EmbarkNumberAction: Viewable {
                 keyboardType: masking.keyboardType,
                 textContentType: masking.textContentType,
                 autocapitalisationType: masking.autocapitalizationType,
-                masking: masking
+                masking: masking,
+                fieldStyle: self.style
             )
             let (textInputView, textSignal) = textField.materialize(events: events)
             textSignal.value = masking.maskValueFromStore(text: state.store.getPrefillValue(key: data.key) ?? "")

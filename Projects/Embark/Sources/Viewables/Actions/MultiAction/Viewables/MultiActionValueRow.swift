@@ -26,6 +26,7 @@ extension MultiActionValueRow: Reusable {
         view.backgroundColor = .clear
 
         let stackView = UIStackView()
+        stackView.isUserInteractionEnabled = false
 
         return (view, { `self` in
             let bag = DisposeBag()
