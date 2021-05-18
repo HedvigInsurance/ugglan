@@ -12,6 +12,7 @@ struct MultiActionTable {
     let state: EmbarkState
     var components: [MultiActionComponent]
     let title: String?
+    let storeSignal = MultiActionStoreSignal()
 }
 
 extension MultiActionTable: Presentable {
@@ -38,13 +39,17 @@ extension MultiActionTable: Presentable {
             }
         }
 
+        func addValues(storeValues: [String: Any]) {
+            dictionary = dictionary.merging(storeValues, uniquingKeysWith: takeLeft)
+        }
+
         func addNumberAction(_ data: EmbarkNumberActionFragment, index: Int) {
             let numberAction = MultiActionNumberRow(data: data)
 
             bag += section.append(numberAction) { _ in
                 addDividerIfNeeded(index: index)
-            }.onValue { selectedValue in
-                dictionary = dictionary.merging(selectedValue, uniquingKeysWith: takeLeft)
+            }.onValue {
+                addValues(storeValues: $0)
             }
         }
 
@@ -53,8 +58,8 @@ extension MultiActionTable: Presentable {
 
             bag += section.append(dropDownAction) { _ in
                 addDividerIfNeeded(index: index)
-            }.onValue { selectedValue in
-                dictionary = dictionary.merging(selectedValue, uniquingKeysWith: takeLeft)
+            }.onValue {
+                addValues(storeValues: $0)
             }
         }
 
@@ -63,8 +68,8 @@ extension MultiActionTable: Presentable {
 
             bag += section.append(switchAction) { _ in
                 addDividerIfNeeded(index: index)
-            }.onValue { selectedValue in
-                dictionary = dictionary.merging(selectedValue, uniquingKeysWith: takeLeft)
+            }.onValue {
+                addValues(storeValues: $0)
             }
         }
 
