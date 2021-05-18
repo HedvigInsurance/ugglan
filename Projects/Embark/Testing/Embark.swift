@@ -80,7 +80,7 @@ private extension EmbarkStory {
             addLabel: "Add Building",
             maxAmount: "1",
             link: .init(name: "Next", label: "Next"),
-            components: [EmbarkStory.embarkNumberComponent]
+            components: [EmbarkStory.embarkNumberComponent, EmbarkStory.embarkDropDownComponent, EmbarkStory.embarkSwitchComponent]
         ),
         component: ""
     )
@@ -94,6 +94,30 @@ private extension EmbarkStory {
                                     name: "next passage",
                                     label: "Continue"
                                 ))
+    )
+
+    static let embarkDropDownComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkDropdownAction(
+        dropDownActionData: .init(
+            label: "Building Type",
+            key: "building",
+            options: [.init(
+                value: "garage",
+                text: "garage"
+            ),
+            .init(
+                value: "boat house",
+                text: "boat house"
+            )]
+        )
+    )
+
+    static let embarkSwitchComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkSwitchAction(
+        switchActionData:
+        .init(
+            label: "Is there water",
+            key: "water",
+            defaultValue: true
+        )
     )
 
     static let embarkNumberAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkNumberAction(

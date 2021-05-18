@@ -8,22 +8,10 @@ import hGraphQL
 import Presentation
 import UIKit
 
-typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkDropdownAction.DropDownActionDatum
-
-typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
-
-typealias EmbarkNumberActionFragment = GraphQL.EmbarkNumberActionFragment
-
-internal enum MultiActionComponent {
-    case number(EmbarkNumberActionFragment)
-    case dropDown(EmbarkDropDownActionData)
-    case `switch`(EmbarkSwitchActionData)
-    case empty
-}
-
 struct MultiActionTable {
     let state: EmbarkState
     var components: [MultiActionComponent]
+    let title: String?
 }
 
 extension MultiActionTable: Presentable {
@@ -38,32 +26,96 @@ extension MultiActionTable: Presentable {
         let section = form.appendSection()
 
         bag += viewController.install(form)
+        viewController.title = title
 
-        func addNumberAction(_ data: EmbarkNumberActionFragment) {
-            let numberAction = MultiActionNumberRow(data: data)
+        func addDividerIfNeeded(index: Int) {
+            let endIndex = components.endIndex
+            let isLastComponent: Bool = index == endIndex - 1
 
-            bag += section.append(numberAction)
+            if !isLastComponent {
+                let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
+                bag += section.add(divider)
+            }
         }
 
-        components.forEach { component in
+        func addNumberAction(_ data: EmbarkNumberActionFragment, index: Int) {
+            let numberAction = MultiActionNumberRow(data: data)
+
+            bag += section.append(numberAction) { _ in
+                addDividerIfNeeded(index: index)
+            }.onValue { selectedValue in
+                dictionary = dictionary.merging(selectedValue, uniquingKeysWith: takeLeft)
+            }
+        }
+
+        func addDropDownAction(_ data: EmbarkDropDownActionData, index: Int) {
+            let dropDownAction = MultiActionDropDownRow(data: data)
+
+            bag += section.append(dropDownAction) { _ in
+                addDividerIfNeeded(index: index)
+            }.onValue { selectedValue in
+                dictionary = dictionary.merging(selectedValue, uniquingKeysWith: takeLeft)
+            }
+        }
+
+        func addSwitchAction(_ data: EmbarkSwitchActionData, index: Int) {
+            let switchAction = MultiActionSwitchRow(data: data)
+
+            bag += section.append(switchAction) { _ in
+                addDividerIfNeeded(index: index)
+            }.onValue { selectedValue in
+                dictionary = dictionary.merging(selectedValue, uniquingKeysWith: takeLeft)
+            }
+        }
+
+        components.enumerated().forEach { index, component in
             switch component {
             case let .number(data):
-                addNumberAction(data)
+                addNumberAction(data, index: index)
             case let .dropDown(data):
-                break
+                addDropDownAction(data, index: index)
             case let .switch(data):
-                break
+                addSwitchAction(data, index: index)
             case .empty:
                 break
             }
         }
 
+        let button = Button(
+            title: "Save",
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
+            )
+        )
+
+        bag += section.append(button)
+
         return (viewController, Future { callback in
             func submit() {
-                callback(.success([:]))
+                callback(.success(dictionary))
+            }
+
+            bag += button.onTapSignal.onValue { _ in
+                submit()
             }
 
             return bag
         })
     }
+}
+
+typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkDropdownAction.DropDownActionDatum
+
+typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
+
+typealias EmbarkNumberActionFragment = GraphQL.EmbarkNumberActionFragment
+
+internal typealias MultiActionStoreSignal = Signal<[String: Any]>
+
+internal enum MultiActionComponent {
+    case number(EmbarkNumberActionFragment)
+    case dropDown(EmbarkDropDownActionData)
+    case `switch`(EmbarkSwitchActionData)
+    case empty
 }

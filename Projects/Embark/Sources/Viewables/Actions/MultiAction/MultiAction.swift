@@ -88,7 +88,7 @@ extension MultiAction: Viewable {
                 return .empty
             }
 
-            let multiActionForm = MultiActionTable(state: state, components: components)
+            let multiActionForm = MultiActionTable(state: state, components: components, title: data.addLabel)
 
             return collectionKit.view.viewController!.present(multiActionForm, style: .detented(.medium))
         }

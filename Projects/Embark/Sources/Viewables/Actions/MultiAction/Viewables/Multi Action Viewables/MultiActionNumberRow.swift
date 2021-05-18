@@ -11,20 +11,20 @@ struct MultiActionNumberRow {
 }
 
 extension MultiActionNumberRow: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    func materialize(events _: ViewableEvents) -> (UIView, MultiActionStoreSignal) {
         let bag = DisposeBag()
 
         let view = UIStackView()
         view.axis = .horizontal
         view.spacing = 10
+        view.edgeInsets = .init(top: 5, left: 16, bottom: 5, right: 16)
 
         let titleLabel = UILabel()
-        titleLabel.style = .brand(.title1(color: .primary))
+        titleLabel.style = .brand(.body(color: .primary))
         titleLabel.text = data.label
+        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
 
         view.addArrangedSubview(titleLabel)
-
-        var dictionary = [String: Any]()
 
         let masking = Masking(type: .digits)
         let numberField = EmbarkInput(
@@ -32,14 +32,18 @@ extension MultiActionNumberRow: Viewable {
             keyboardType: masking.keyboardType,
             textContentType: masking.textContentType,
             autocapitalisationType: masking.autocapitalizationType,
+            insets: .zero,
             masking: masking,
-            fieldStyle: .embarkInputSmall
+            fieldStyle: .embarkInputSmall,
+            textFieldAlignment: .right
         )
 
-        bag += view.addArranged(numberField).onValue { text in
-            dictionary[data.key] = text
-        }
+        return (view, Signal { callback in
+            bag += view.addArranged(numberField).onValue { text in
+                callback([data.key: text])
+            }
 
-        return (view, bag)
+            return bag
+        })
     }
 }
