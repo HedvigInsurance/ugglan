@@ -124,7 +124,7 @@ extension ContractRow: Reusable {
 
 				chevronImageView.isHidden = !self.allowDetailNavigation
 
-				contentView.accessibilityIdentifier = String(describing: self)
+				contentView.accessibilityIdentifier = "ContractRow"
 				contentView.layer.zPosition = .greatestFiniteMagnitude
 
 				if !UITraitCollection.isCatalyst {
