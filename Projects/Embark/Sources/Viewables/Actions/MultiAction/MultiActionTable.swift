@@ -13,18 +13,27 @@ struct MultiActionTable {
     var components: [MultiActionComponent]
     let title: String?
     let storeSignal = MultiActionStoreSignal()
+    @ReadWriteState var multiActionValues = [String: String]()
 }
 
 extension MultiActionTable: Presentable {
-    func materialize() -> (UIViewController, Future<[String: Any]>) {
+    func materialize() -> (UIViewController, Future<[String: String]>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
         let form = FormView()
 
-        var dictionary = [String: Any]()
-
         let section = form.appendSection()
+        section.dynamicStyle = .brandGroupedNoBackground
+
+        bag += form.traitCollectionSignal.onValue { trait in
+            switch trait.userInterfaceStyle {
+            case .dark:
+                form.backgroundColor = .grayscale(.grayFive)
+            default:
+                form.backgroundColor = .brand(.primaryBackground())
+            }
+        }
 
         bag += viewController.install(form)
         viewController.title = title
@@ -34,13 +43,14 @@ extension MultiActionTable: Presentable {
             let isLastComponent: Bool = index == endIndex - 1
 
             if !isLastComponent {
-                let divider = Divider(backgroundColor: .brand(.primaryBorderColor))
-                bag += section.add(divider)
+                let color = form.traitCollection.userInterfaceStyle == .light ? UIColor.brand(.primaryBorderColor) : UIColor.white
+                let divider = Divider(backgroundColor: color)
+                bag += section.append(divider)
             }
         }
 
-        func addValues(storeValues: [String: Any]) {
-            dictionary = dictionary.merging(storeValues, uniquingKeysWith: takeLeft)
+        func addValues(storeValues: [String: String]) {
+            $multiActionValues.value = $multiActionValues.value.merging(storeValues, uniquingKeysWith: takeLeft)
         }
 
         func addNumberAction(_ data: EmbarkNumberActionFragment, index: Int) {
@@ -86,19 +96,34 @@ extension MultiActionTable: Presentable {
             }
         }
 
-        let button = Button(
+        func didCompleteForm() -> Bool {
+            $multiActionValues.value.count == components.count
+        }
+
+        let button = ButtonRowViewWrapper(
             title: "Save",
             type: .standard(
                 backgroundColor: .brand(.secondaryButtonBackgroundColor),
                 textColor: .brand(.secondaryButtonTextColor)
-            )
+            ),
+            isEnabled: false
         )
 
-        bag += section.append(button)
+        bag += $multiActionValues
+            .map { _ in didCompleteForm() }
+            .bindTo(button.isEnabledSignal)
+
+        bag += section.append(Spacing(height: 16))
+
+        section.backgroundColor = .clear
+
+        bag += section.append(button) { rowView in
+            rowView.row.backgroundColor = .clear
+        }
 
         return (viewController, Future { callback in
             func submit() {
-                callback(.success(dictionary))
+                callback(.success($multiActionValues.value))
             }
 
             bag += button.onTapSignal.onValue { _ in
@@ -116,7 +141,7 @@ typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Pas
 
 typealias EmbarkNumberActionFragment = GraphQL.EmbarkNumberActionFragment
 
-internal typealias MultiActionStoreSignal = Signal<[String: Any]>
+internal typealias MultiActionStoreSignal = Signal<[String: String]>
 
 internal enum MultiActionComponent {
     case number(EmbarkNumberActionFragment)

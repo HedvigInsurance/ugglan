@@ -3,7 +3,6 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
-import Market
 import UIKit
 
 struct MultiActionAddObjectRow: Hashable, Equatable {
@@ -25,12 +24,25 @@ extension MultiActionAddObjectRow: Reusable {
         let bag = DisposeBag()
 
         let control = UIControl()
-        control.backgroundColor = .red
+        control.layer.borderWidth = 0.5
+        control.layer.cornerRadius = 8
+        bag += control.applyBorderColor { (traitCollection) -> UIColor in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor.brand(.primaryText())
+            case .light:
+                return UIColor.brand(.primaryBorderColor)
+            default:
+                return UIColor.brand(.primaryBorderColor)
+            }
+        }
 
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .fillEqually
+        stackView.alignment = .center
         stackView.isUserInteractionEnabled = false
+        stackView.edgeInsets = .init(top: 8, left: 0, bottom: 8, right: 0)
 
         control.addSubview(stackView)
         stackView.snp.makeConstraints { make in
@@ -39,14 +51,19 @@ extension MultiActionAddObjectRow: Reusable {
 
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = hCoreUIAssets.addButton.image
+        imageView.image = hCoreUIAssets.circularPlus.image
+        imageView.snp.makeConstraints { make in
+            make.height.width.equalTo(24)
+        }
         stackView.addArrangedSubview(imageView)
+        imageView.tintColor = .brand(.primaryText())
+
+        let title = UILabel(value: "", style: .brand(.body(color: .primary)))
+        stackView.addArrangedSubview(title)
 
         return (control, { `self` in
-            let title = UILabel()
-            title.text = self.title
 
-            stackView.addArrangedSubview(title)
+            title.text = self.title
 
             let didTapButton = control.signal(for: .touchDown)
 

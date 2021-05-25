@@ -5,7 +5,6 @@ import Form
 import Foundation
 import hCore
 import hGraphQL
-import Offer
 import Presentation
 import TestingUtil
 import UIKit
@@ -78,6 +77,7 @@ private extension EmbarkStory {
     static let mockedMultiAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkMultiAction(
         multiActionData: .init(
             addLabel: "Add Building",
+            key: "multiActionItem",
             maxAmount: "1",
             link: .init(name: "Next", label: "Next"),
             components: [EmbarkStory.embarkNumberComponent, EmbarkStory.embarkDropDownComponent, EmbarkStory.embarkSwitchComponent]

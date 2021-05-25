@@ -3,7 +3,6 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
-import Market
 import UIKit
 
 struct MultiActionDropDownRow {
@@ -15,9 +14,24 @@ extension MultiActionDropDownRow: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, MultiActionStoreSignal) {
         let bag = DisposeBag()
 
+        let containerView = UIView()
+        bag += containerView.traitCollectionSignal.onValue { trait in
+            switch trait.userInterfaceStyle {
+            case .dark:
+                containerView.backgroundColor = .grayscale(.grayFive)
+            default:
+                containerView.backgroundColor = .brand(.primaryBackground())
+            }
+        }
+
         let mainStack = UIStackView()
         mainStack.axis = .vertical
         mainStack.distribution = .fill
+
+        containerView.addSubview(mainStack)
+        mainStack.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         let topStack = UIStackView()
         topStack.axis = .horizontal
@@ -69,7 +83,7 @@ extension MultiActionDropDownRow: Viewable {
             .withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }
             .bindTo(isExpanded)
 
-        return (mainStack, Signal { callback in
+        return (containerView, Signal { callback in
             let pickerView = PickerView(options: options)
             bag += mainStack.addArranged(pickerView) { view in
                 bag += isExpanded
@@ -84,9 +98,9 @@ extension MultiActionDropDownRow: Viewable {
             }.map { option in
                 data.options.first(where: { $0.text == option })
             }.onValue { selectedOption in
-                buttonTitle.text = selectedOption?.text
-
+                buttonTitle.style = .brand(.body(color: .primary))
                 guard let selectedOption = selectedOption else { return }
+                buttonTitle.value = selectedOption.text
                 callback([data.key: selectedOption.value])
             }
 
@@ -98,6 +112,7 @@ extension MultiActionDropDownRow: Viewable {
 struct PickerView {
     let options: [String]
     let didSelectSignal = ReadWriteSignal<String>("")
+    let resignationSignal = ReadWriteSignal<Bool>(false)
 
     private class PickerDelegateHandler: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
         internal init(options: [String], onSelect: @escaping (String) -> Void) {
