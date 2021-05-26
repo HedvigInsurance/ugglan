@@ -27,7 +27,7 @@ extension MultiActionSwitchRow: Viewable {
         view.axis = .horizontal
         view.alignment = .center
         view.spacing = 10
-        view.edgeInsets = .init(top: 5, left: 16, bottom: 5, right: 16)
+        view.edgeInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
 
         containerView.addSubview(view)
         view.snp.makeConstraints { make in

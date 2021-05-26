@@ -74,4 +74,21 @@ final class StoreTests: XCTestCase {
         XCTAssertEqual(store.getValue(key: "fish2"), "90.0")
         XCTAssertEqual(store.getValue(key: "fish3"), "90.0hej")
     }
+
+    func testAddMultiActionObject() {
+        let store = EmbarkStore()
+
+        store.addMultiActionItems(
+            actionKey: "actionKey",
+            componentValues: [["type": "garage", "size": "big"],
+                              ["type": "sauna", "size": "40"]]
+        ) {
+            store.createRevision()
+        }
+
+        XCTAssertEqual(store.getValue(key: "actionKey[0]type"), "garage")
+        XCTAssertEqual(store.getValue(key: "actionKey[0]size"), "big")
+        XCTAssertEqual(store.getValue(key: "actionKey[1]type"), "sauna")
+        XCTAssertEqual(store.getValue(key: "actionKey[1]size"), "40")
+    }
 }

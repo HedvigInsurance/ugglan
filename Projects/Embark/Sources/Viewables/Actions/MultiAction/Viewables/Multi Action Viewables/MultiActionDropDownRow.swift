@@ -46,7 +46,7 @@ extension MultiActionDropDownRow: Viewable {
         titleLabel.style = .brand(.body(color: .primary))
         titleLabel.text = data.label
 
-        let options = data.options.map { $0.text }
+        let options = data.options.map { $0.value }
 
         let buttonStack = UIStackView()
         buttonStack.axis = .horizontal
@@ -96,11 +96,11 @@ extension MultiActionDropDownRow: Viewable {
                         buttonIcon.transform = transform
                     }
             }.map { option in
-                data.options.first(where: { $0.text == option })
+                data.options.first(where: { $0.value == option })
             }.onValue { selectedOption in
                 buttonTitle.style = .brand(.body(color: .primary))
                 guard let selectedOption = selectedOption else { return }
-                buttonTitle.value = selectedOption.text
+                buttonTitle.value = selectedOption.value
                 callback([data.key: selectedOption.value])
             }
 

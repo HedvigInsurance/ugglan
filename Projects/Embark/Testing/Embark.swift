@@ -4,6 +4,7 @@ import Flow
 import Form
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 import Presentation
 import TestingUtil
@@ -12,21 +13,12 @@ import UIKit
 public struct Debug {
     public init() {}
 
-    enum Component: CaseIterable {
-        case multiAction
-        case numberAction
+    enum Component: String, CaseIterable {
+        case multiAction = "Multi Action"
+        case numberAction = "Number Action"
 
         var json: JSONObject {
             EmbarkStory.makeFor(component: self).jsonObject
-        }
-
-        var title: String {
-            switch self {
-            case .multiAction:
-                return "Multi Action"
-            case .numberAction:
-                return "Number Action"
-            }
         }
     }
 }
@@ -85,15 +77,11 @@ private extension EmbarkStory {
         component: ""
     )
 
-    static let embarkNumberComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkNumberAction(
-        numberActionData: .init(key: "Embark Test Nubmeraction",
-                                placeholder: "478",
-                                unit: "m",
-                                label: "Size of building",
-                                link: .init(
-                                    name: "next passage",
-                                    label: "Continue"
-                                ))
+    static let embarkNumberComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkMultiActionNumberAction(
+        data: .init(key: "Embark Test Nubmeraction",
+                    placeholder: "478",
+                    unit: "m",
+                    label: "Size of building")
     )
 
     static let embarkDropDownComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkDropdownAction(
@@ -137,15 +125,8 @@ extension Debug: Presentable {
 
         let bag = DisposeBag()
 
-        let form = FormView()
-
-        let section = form.appendSection(
-            headerView: UILabel(
-                value: "Components",
-                style: .default
-            ),
-            footerView: nil
-        )
+        let tableKit = TableKit<EmptySection, StringRow>(holdIn: bag)
+        bag += viewController.install(tableKit)
 
         func present(component: Component) {
             let apolloClient = ApolloClient(
@@ -169,13 +150,13 @@ extension Debug: Presentable {
 
         let components = Component.allCases
 
-        components.forEach { component in
-            bag += section.appendRow(title: component.title).onValue { _ in
-                present(component: component)
-            }
-        }
+        let rows = components.map { StringRow(value: $0.rawValue) }
 
-        bag += viewController.install(form)
+        tableKit.set(Table(rows: rows))
+
+        bag += tableKit.delegate.didSelectRow.onValue { row in
+            present(component: Component(rawValue: row.value)!)
+        }
 
         return (viewController, bag)
     }

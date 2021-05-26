@@ -6,8 +6,8 @@ import hCoreUI
 import UIKit
 
 struct MultiActionValueRow: Hashable, Equatable {
-    let title: String
-    let keyInformation: [String]
+    let didTapRow = ReadWriteSignal<Bool>(false)
+    let values: [String: String]
     let id = UUID()
 
     func hash(into hasher: inout Hasher) {
@@ -15,7 +15,7 @@ struct MultiActionValueRow: Hashable, Equatable {
     }
 
     static func == (lhs: MultiActionValueRow, rhs: MultiActionValueRow) -> Bool {
-        lhs.hashValue == rhs.hashValue
+        lhs.id == rhs.id
     }
 }
 
@@ -23,8 +23,8 @@ extension MultiActionValueRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (MultiActionValueRow) -> Disposable) {
         let bag = DisposeBag()
 
-        let view = UIControl()
-        view.backgroundColor = .clear
+        let control = UIControl()
+        control.backgroundColor = .clear
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -46,8 +46,9 @@ extension MultiActionValueRow: Reusable {
         stylingView.layer.cornerRadius = 8
         stylingView.alpha = 0
         stylingView.backgroundColor = .brand(.embarkMessageBubble(false))
+        stylingView.isUserInteractionEnabled = false
 
-        view.addSubview(stylingView)
+        control.addSubview(stylingView)
         stylingView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -64,12 +65,30 @@ extension MultiActionValueRow: Reusable {
             make.edges.equalToSuperview()
         }
 
-        return (view, { `self` in
-            title.text = self.title
+        let close = UIImageView()
+        close.image = hCoreUIAssets.close.image
+        close.contentMode = .scaleAspectFit
+        close.tintColor = .brand(.secondaryText)
+
+        stylingView.addSubview(close)
+        close.snp.makeConstraints { make in
+            make.top.right.equalToSuperview().inset(8)
+        }
+
+        return (control, { `self` in
+            title.text = self.values.first?.value
 
             values.numberOfLines = 0
             values.lineBreakMode = .byWordWrapping
-            values.text = self.keyInformation.joined(separator: "\u{2022}")
+            values.text = self.values.map { _, value in
+                value
+            }.joined(separator: "\u{2022}")
+
+            let didTapButton = control.signal(for: .touchDown)
+
+            bag += didTapButton.onValue {
+                self.didTapRow.value = true
+            }
 
             bag += stackView.didLayoutSignal.take(first: 1).onValue { _ in
                 stackView.transform = CGAffineTransform.identity

@@ -248,9 +248,12 @@ query EmbarkStory($name: String!, $locale: String!) {
               ...EmbarkLinkFragment
             }
             components {
-              ... on EmbarkNumberAction {
-                numberActionData: data {
-                  ...EmbarkNumberActionFragment
+              ... on EmbarkMultiActionNumberAction {
+                data {
+                                    key
+                  placeholder
+                  unit
+                  label
                 }
               }
               ... on EmbarkDropdownAction {

@@ -41,17 +41,6 @@ extension MultiAction: Viewable {
         let delegate = collectionKit.delegate
         bag.hold(delegate)
 
-        func refreshTable() {
-            guard let key = data.key else { return }
-            let rowData = state.store.getMultiActionItems(actionKey: key)
-            let values = Dictionary(grouping: rowData) { $0.index }
-            let rows = values.map { _, storeables in
-                MultiActionRow.make(.init(title: storeables.title ?? "", keyInformation: storeables.map { $0.value }))
-            }
-
-            $rows.value = [.right(.init(title: data.addLabel ?? ""))] + rows
-        }
-
         bag += $rows.atOnce()
             .map { Table<EmptySection, MultiActionRow>(rows: $0) }
             .onValue { table in
@@ -63,15 +52,22 @@ extension MultiAction: Viewable {
 
             innerBag += table.signal().onValue { item in
                 switch item {
-                case .left:
-                    break
+                case let .left(row):
+                    innerBag += row.didTapRow.onValue { _ in
+                        if let firstIndex = $rows.value.firstIndex(where: { (either) -> Bool in
+                            if case let .left(iteratedRow) = either {
+                                return iteratedRow.id == row.id
+                            } else {
+                                return false
+                            }
+                        }) {
+                            $rows.value.remove(at: firstIndex)
+                        }
+                    }
                 case let .right(row):
                     innerBag += row.didTapRow.onValue { _ in
                         innerBag += present().onValue { values in
-                            guard let actionKey = data.key else { return }
-                            self.state.store.addMultiActionItem(actionKey: actionKey, componentValues: values) {
-                                refreshTable()
-                            }
+                            $rows.value.append(.make(.init(values: values)))
                         }
                     }
                 }
@@ -86,13 +82,13 @@ extension MultiAction: Viewable {
             return CGSize(width: maxCellWidth, height: height)
         }
 
-        func present() -> Future<[String: String]> {
+        func present() -> FiniteSignal<[String: String]> {
             let components = data.components.map { (component) -> MultiActionComponent in
                 if let dropDownAction = component.asEmbarkDropdownAction?.dropDownActionData {
                     return .dropDown(dropDownAction)
                 } else if let switchAction = component.asEmbarkSwitchAction?.switchActionData {
                     return .switch(switchAction)
-                } else if let numberAction = component.asEmbarkNumberAction?.numberActionData.fragments.embarkNumberActionFragment {
+                } else if let numberAction = component.asEmbarkMultiActionNumberAction?.data {
                     return .number(numberAction)
                 }
 
@@ -101,7 +97,7 @@ extension MultiAction: Viewable {
 
             let multiActionForm = MultiActionTable(state: state, components: components, title: data.addLabel)
 
-            return collectionKit.view.viewController!.present(multiActionForm, style: .detented(.preferredContentSize))
+            return collectionKit.view.viewController!.present(multiActionForm, style: .detented(.medium, .large), options: [.defaults])
         }
 
         $rows.value = [.right(.init(title: data.addLabel ?? ""))]
@@ -136,6 +132,12 @@ extension MultiAction: Viewable {
             bag += view.addArranged(button)
 
             func submit() {
+                guard let key = data.key else { return }
+
+                let values = rows.compactMap { $0.left?.values }
+                self.state.store.addMultiActionItems(actionKey: key, componentValues: values) {
+                    self.state.store.createRevision()
+                }
                 callback(data.link.fragments.embarkLinkFragment)
             }
 
@@ -155,7 +157,7 @@ typealias MultiActionRow = Either<MultiActionValueRow, MultiActionAddObjectRow>
 private extension Sequence where Element == MultiActionStoreable {
     var title: String? {
         first { (element) -> Bool in
-            element.componentKey == "dropDown"
+            element.componentKey == "type"
         }?.value
     }
 }

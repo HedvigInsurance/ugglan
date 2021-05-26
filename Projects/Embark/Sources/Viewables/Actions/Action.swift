@@ -121,7 +121,7 @@ extension Action: Viewable {
                         state: self.state,
                         data: textAction
                     )).onValue(performCallback)
-                } else if let numberAction = actionData?.asEmbarkNumberAction?.numberActionData.fragments.embarkNumberActionFragment {
+                } else if let numberAction = actionData?.asEmbarkNumberAction?.numberActionData {
                     innerBag += view.addArranged(EmbarkNumberAction(
                         state: self.state,
                         data: numberAction

@@ -30,17 +30,21 @@ internal struct MultiActionStoreable {
 }
 
 internal extension EmbarkStore {
-    func addMultiActionItem(actionKey: String, componentValues: [String: String], completion: @escaping () -> Void) {
-        let currentItems = getMultiActionItems(actionKey: actionKey)
-        let nextIndex = currentItems.isEmpty ? 0 : (currentItems.count - 1)
-
-        let newStoreables = componentValues.map { MultiActionStoreable(actionKey: actionKey, value: $0.value, componentKey: $0.key, index: nextIndex) }
-
-        newStoreables.forEach { storeable in
-            setValue(key: storeable.storeKey, value: storeable.value)
+    func addMultiActionItems(actionKey: String, componentValues: [[String: String]], completion: @escaping () -> Void) {
+        let newStoreables = componentValues.enumerated().flatMap { index, element in
+            element.map { component in
+                MultiActionStoreable(
+                    actionKey: actionKey,
+                    value: component.value,
+                    componentKey: component.key,
+                    index: index
+                )
+            }
         }
 
-        createRevision()
+        newStoreables.forEach {
+            setValue(key: $0.storeKey, value: $0.value)
+        }
 
         completion()
     }

@@ -11,7 +11,7 @@ final class EmbarkInputTests: XCTestCase {
     }
 
     func testInput() {
-        let embarkInput = EmbarkInput(placeholder: "Test 123")
+        let embarkInput = EmbarkInput(placeholder: "Test 123", autocapitalisationType: .none)
 
         materializeViewable(embarkInput) { tooltipView in
             tooltipView.snp.makeConstraints { make in

@@ -17,7 +17,7 @@ struct MultiActionTable {
 }
 
 extension MultiActionTable: Presentable {
-    func materialize() -> (UIViewController, Future<[String: String]>) {
+    func materialize() -> (UIViewController, FiniteSignal<[String: String]>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -35,7 +35,11 @@ extension MultiActionTable: Presentable {
             }
         }
 
-        bag += viewController.install(form)
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.contentSizeSignal.onValue { size in
+                viewController.currentDetentSignal.value = size.height > section.bounds.height ? .large : .medium
+            }
+        }
         viewController.title = title
 
         func addDividerIfNeeded(index: Int) {
@@ -43,7 +47,7 @@ extension MultiActionTable: Presentable {
             let isLastComponent: Bool = index == endIndex - 1
 
             if !isLastComponent {
-                let color = form.traitCollection.userInterfaceStyle == .light ? UIColor.brand(.primaryBorderColor) : UIColor.white
+                let color = form.traitCollection.userInterfaceStyle == .light ? UIColor.brand(.primaryBorderColor) : .brand(.primaryBorderColor)
                 let divider = Divider(backgroundColor: color)
                 bag += section.append(divider)
             }
@@ -53,7 +57,7 @@ extension MultiActionTable: Presentable {
             $multiActionValues.value = $multiActionValues.value.merging(storeValues, uniquingKeysWith: takeLeft)
         }
 
-        func addNumberAction(_ data: EmbarkNumberActionFragment, index: Int) {
+        func addNumberAction(_ data: EmbarkNumberMultiActionData, index: Int) {
             let numberAction = MultiActionNumberRow(data: data)
 
             bag += section.append(numberAction) { _ in
@@ -121,10 +125,21 @@ extension MultiActionTable: Presentable {
             rowView.row.backgroundColor = .clear
         }
 
-        return (viewController, Future { callback in
+        return (viewController, FiniteSignal { callback in
             func submit() {
-                callback(.success($multiActionValues.value))
+                callback(.value($multiActionValues.value))
             }
+
+            let cancelButton = UIButton()
+            let textStyle = TextStyle.brand(.body(color: .primary))
+            let attributedTitle = NSAttributedString(string: "Cancel", attributes: textStyle.attributes)
+            cancelButton.setAttributedTitle(attributedTitle, for: .normal)
+
+            bag += cancelButton.signal(for: .touchUpInside).onValue { _ in
+                callback(.end)
+            }
+
+            viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(button: cancelButton)
 
             bag += button.onTapSignal.onValue { _ in
                 submit()
@@ -139,12 +154,11 @@ typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.P
 
 typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
 
-typealias EmbarkNumberActionFragment = GraphQL.EmbarkNumberActionFragment
-
+typealias EmbarkNumberMultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.Datum
 internal typealias MultiActionStoreSignal = Signal<[String: String]>
 
 internal enum MultiActionComponent {
-    case number(EmbarkNumberActionFragment)
+    case number(EmbarkNumberMultiActionData)
     case dropDown(EmbarkDropDownActionData)
     case `switch`(EmbarkSwitchActionData)
     case empty

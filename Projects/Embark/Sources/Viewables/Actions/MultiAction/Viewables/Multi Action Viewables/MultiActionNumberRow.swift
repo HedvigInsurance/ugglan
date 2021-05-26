@@ -6,7 +6,7 @@ import hCoreUI
 import UIKit
 
 struct MultiActionNumberRow {
-    let data: EmbarkNumberActionFragment
+    let data: EmbarkNumberMultiActionData
 }
 
 extension MultiActionNumberRow: Viewable {
@@ -14,7 +14,6 @@ extension MultiActionNumberRow: Viewable {
         let bag = DisposeBag()
 
         let containerView = UIView()
-
         bag += containerView.traitCollectionSignal.onValue { trait in
             switch trait.userInterfaceStyle {
             case .dark:
@@ -26,7 +25,7 @@ extension MultiActionNumberRow: Viewable {
         let view = UIStackView()
         view.axis = .horizontal
         view.spacing = 10
-        view.edgeInsets = .init(top: 5, left: 16, bottom: 5, right: 16)
+        view.edgeInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
 
         containerView.addSubview(view)
         view.snp.makeConstraints { make in

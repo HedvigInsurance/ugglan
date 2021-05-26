@@ -7,17 +7,17 @@ import hGraphQL
 import Presentation
 import UIKit
 
-internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
+internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction.NumberActionDatum
 
 struct EmbarkNumberAction {
-    internal init(state: EmbarkState, data: EmbarkNumberActionFragment, style: FieldStyle = .embarkInputLarge) {
+    internal init(state: EmbarkState, data: EmbarkNumberActionData, style: FieldStyle = .embarkInputLarge) {
         self.state = state
         self.data = data
         self.style = style
     }
 
     let state: EmbarkState
-    let data: EmbarkNumberActionFragment
+    let data: EmbarkNumberActionData
     let style: FieldStyle
 }
 
