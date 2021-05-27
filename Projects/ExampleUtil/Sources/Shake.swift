@@ -4,9 +4,9 @@ import Foundation
 import Shake
 import UIKit
 
-public extension UIApplication {
-    func setup() {
-        DefaultStyling.installCustom()
-        Shake.setup()
-    }
+extension UIApplication {
+	public func setup() {
+		DefaultStyling.installCustom()
+		Shake.setup()
+	}
 }

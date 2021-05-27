@@ -5,6 +5,6 @@ import Presentation
 
 /// Something that can preview something that is a presentable 👀
 protocol Previewable {
-    associatedtype PreviewMatter: Presentable
-    func preview() -> (PreviewMatter, PresentationOptions)
+	associatedtype PreviewMatter: Presentable
+	func preview() -> (PreviewMatter, PresentationOptions)
 }

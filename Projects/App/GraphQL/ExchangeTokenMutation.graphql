@@ -1,0 +1,13 @@
+mutation ExchangeToken($exchangeToken: String!) {
+  exchangeToken(input: { exchangeToken: $exchangeToken }) {
+    ... on ExchangeTokenExpiredResponse {
+      _
+    }
+    ... on ExchangeTokenInvalidResponse {
+      _
+    }
+    ... on ExchangeTokenSuccessResponse {
+      token
+    }
+  }
+}

@@ -82,7 +82,7 @@ extension Debug: Presentable {
                         monthlyNet: .init(amount: "100", currency: "SEK")
                     ),
                     redeemedCampaigns: [
-                        .init(code: "ABC", incentive: .makeMonthlyCostDeduction(amount: .init(amount: "10", currency: "SEK")))
+                        .init(displayValue: "-10 kr per month")
                     ]
                 )
             )
@@ -97,7 +97,7 @@ extension Debug: Presentable {
                         monthlyNet: .init(amount: "82.5", currency: "SEK")
                     ),
                     redeemedCampaigns: [
-                        .init(code: "ABC", incentive: .makeIndefinitePercentageDiscount(percentageDiscount: 25))
+                        .init(displayValue: "-25% forever")
                     ]
                 )
             )
@@ -112,7 +112,7 @@ extension Debug: Presentable {
                         monthlyNet: .init(amount: "0", currency: "SEK")
                     ),
                     redeemedCampaigns: [
-                        .init(code: "ABC", incentive: .makeFreeMonths(quantity: 3))
+                        .init(displayValue: "3 free months")
                     ]
                 )
             )
@@ -127,7 +127,7 @@ extension Debug: Presentable {
                         monthlyNet: .init(amount: "82.5", currency: "SEK")
                     ),
                     redeemedCampaigns: [
-                        .init(code: "ABC", incentive: .makePercentageDiscountMonths(percentageDiscount: 25, percentageNumberOfMonths: 3))
+                        .init(displayValue: "25% discount for 3 months")
                     ]
                 )
             )

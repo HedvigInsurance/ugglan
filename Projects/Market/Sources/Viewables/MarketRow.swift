@@ -3,62 +3,67 @@ import Form
 import Foundation
 import hCore
 import hCoreUI
+import hGraphQL
 import UIKit
 
 public struct MarketRow {
-    @ReadWriteState var market: Market
-    
-    public init(market: Market) {
-        self.market = market
-    }
+	@ReadWriteState var market: Market
+	var availableLocales: [GraphQL.Locale]
+
+	public init(
+		market: Market,
+		availableLocales: [GraphQL.Locale]
+	) {
+		self.market = market
+		self.availableLocales = availableLocales
+	}
 }
 
 extension MarketRow: Viewable {
-    public func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
-        let bag = DisposeBag()
-        let row = RowView(
-            title: "",
-            subtitle: market.title,
-            style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
-                style.title = .brand(.headline(color: .primary(state: .negative)))
-                style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
-            }
-        )
-        bag += $market.map { $0.title }.bindTo(row, \.subtitle)
-        
-        bag += Localization.Locale.$currentLocale.atOnce()
-            .delay(by: 0)
-            .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
-                row.title = L10n.MarketLanguageScreen.marketLabel
-        }
+	public func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
+		let bag = DisposeBag()
+		let row = RowView(
+			title: "",
+			subtitle: market.title,
+			style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
+				style.title = .brand(.headline(color: .primary(state: .negative)))
+				style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
+			}
+		)
+		bag += $market.map { $0.title }.bindTo(row, \.subtitle)
 
-        let flagImageView = UIImageView()
-        flagImageView.image = market.icon
-        flagImageView.contentMode = .scaleAspectFit
-        row.prepend(flagImageView)
+		bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
+			.transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
+				row.title = L10n.MarketLanguageScreen.marketLabel
+			}
 
-        bag += $market.map { $0.icon }.bindTo(flagImageView, \.image)
+		let flagImageView = UIImageView()
+		flagImageView.image = market.icon
+		flagImageView.contentMode = .scaleAspectFit
+		row.prepend(flagImageView)
 
-        flagImageView.snp.makeConstraints { make in
-            make.width.equalTo(24)
-        }
+		bag += $market.map { $0.icon }.bindTo(flagImageView, \.image)
 
-        row.setCustomSpacing(16, after: flagImageView)
+		flagImageView.snp.makeConstraints { make in make.width.equalTo(24) }
 
-        let chevronImageView = UIImageView()
-        chevronImageView.tintColor = .white
-        chevronImageView.image = hCoreUIAssets.chevronRight.image
+		row.setCustomSpacing(16, after: flagImageView)
 
-        row.append(chevronImageView)
+		let chevronImageView = UIImageView()
+		chevronImageView.tintColor = .white
+		chevronImageView.image = hCoreUIAssets.chevronRight.image
 
-        bag += events.onSelect.compactMap { row.viewController }.onValue { viewController in
-            viewController.present(PickMarket(currentMarket: market).wrappedInCloseButton(), style: .detented(.scrollViewContentSize(20))).onValue { newMarket in
-                $market.value = newMarket
-            }
-        }
+		row.append(chevronImageView)
 
-        return (row, bag)
-    }
+		bag += events.onSelect.compactMap { row.viewController }
+			.onValue { viewController in
+				viewController.present(
+					PickMarket(currentMarket: market, availableLocales: availableLocales)
+						.wrappedInCloseButton(),
+					style: .detented(.scrollViewContentSize(20))
+				)
+				.onValue { newMarket in $market.value = newMarket }
+			}
+
+		return (row, bag)
+	}
 }
-
-
